@@ -1,0 +1,605 @@
+{
+  "generator": "oracle-cs keyboard-pan",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "step pixels: landscape, short side times fraction",
+      "kind": "step_pixels",
+      "viewport_width": 1920,
+      "viewport_height": 1080,
+      "step_fraction": 0.17,
+      "value": 183.60000000000002
+    },
+    {
+      "name": "step pixels: portrait, the width is the short side",
+      "kind": "step_pixels",
+      "viewport_width": 1080,
+      "viewport_height": 1920,
+      "step_fraction": 0.17,
+      "value": 183.60000000000002
+    },
+    {
+      "name": "step pixels: square",
+      "kind": "step_pixels",
+      "viewport_width": 800,
+      "viewport_height": 800,
+      "step_fraction": 0.5,
+      "value": 400
+    },
+    {
+      "name": "step pixels: fraction 1 is the short side",
+      "kind": "step_pixels",
+      "viewport_width": 800,
+      "viewport_height": 600,
+      "step_fraction": 1.0,
+      "value": 600
+    },
+    {
+      "name": "step pixels: default fraction 0.1",
+      "kind": "step_pixels",
+      "viewport_width": 800,
+      "viewport_height": 600,
+      "step_fraction": 0.1,
+      "value": 60
+    },
+    {
+      "name": "step pixels: NaN side propagates (Math.Min)",
+      "kind": "step_pixels",
+      "viewport_width": "NaN",
+      "viewport_height": 600,
+      "step_fraction": 0.1,
+      "value": "NaN"
+    },
+    {
+      "name": "step pixels: NaN fraction",
+      "kind": "step_pixels",
+      "viewport_width": 800,
+      "viewport_height": 600,
+      "step_fraction": "NaN",
+      "value": "NaN"
+    },
+    {
+      "name": "step pixels: negative zero side keeps its sign",
+      "kind": "step_pixels",
+      "viewport_width": "-0",
+      "viewport_height": 600,
+      "step_fraction": 1.0,
+      "value": "-0"
+    },
+    {
+      "name": "step: Right at roomy zoom, moves by the default step",
+      "kind": "step",
+      "dx": 1,
+      "dy": 0,
+      "h": 1060,
+      "v": 1000,
+      "bounds": [
+        10000,
+        10000,
+        800,
+        600
+      ],
+      "step_fraction": 0.1,
+      "result": "Panned"
+    },
+    {
+      "name": "step: Left moves back",
+      "kind": "step",
+      "dx": -1,
+      "dy": 0,
+      "h": 940,
+      "v": 1000,
+      "bounds": [
+        10000,
+        10000,
+        800,
+        600
+      ],
+      "step_fraction": 0.1,
+      "result": "Panned"
+    },
+    {
+      "name": "step: Down on the vertical axis uses the same short-side step",
+      "kind": "step",
+      "dx": 0,
+      "dy": 1,
+      "h": 1000,
+      "v": 1060,
+      "bounds": [
+        10000,
+        10000,
+        800,
+        600
+      ],
+      "step_fraction": 0.1,
+      "result": "Panned"
+    },
+    {
+      "name": "step: Up moves up",
+      "kind": "step",
+      "dx": 0,
+      "dy": -1,
+      "h": 1000,
+      "v": 940,
+      "bounds": [
+        10000,
+        10000,
+        800,
+        600
+      ],
+      "step_fraction": 0.1,
+      "result": "Panned"
+    },
+    {
+      "name": "step: both dx and dy set uses the horizontal axis and dx + dy",
+      "kind": "step",
+      "dx": 1,
+      "dy": 1,
+      "h": 1120,
+      "v": 1000,
+      "bounds": [
+        10000,
+        10000,
+        800,
+        600
+      ],
+      "step_fraction": 0.1,
+      "result": "Panned"
+    },
+    {
+      "name": "step: dx + dy = 0 gives a zero step, AtEdge",
+      "kind": "step",
+      "dx": 1,
+      "dy": -1,
+      "h": 1000,
+      "v": 1000,
+      "bounds": [
+        10000,
+        10000,
+        800,
+        600
+      ],
+      "step_fraction": 0.1,
+      "result": "AtEdge"
+    },
+    {
+      "name": "step: custom fraction 0.01",
+      "kind": "step",
+      "dx": 1,
+      "dy": 0,
+      "h": 6,
+      "v": 0,
+      "bounds": [
+        10000,
+        10000,
+        800,
+        600
+      ],
+      "step_fraction": 0.01,
+      "result": "Panned"
+    },
+    {
+      "name": "step: fraction 1.0 moves the short side",
+      "kind": "step",
+      "dx": 1,
+      "dy": 0,
+      "h": 600,
+      "v": 0,
+      "bounds": [
+        10000,
+        10000,
+        800,
+        600
+      ],
+      "step_fraction": 1.0,
+      "result": "Panned"
+    },
+    {
+      "name": "step: at the right edge returns AtEdge and keeps the offsets",
+      "kind": "step",
+      "dx": 1,
+      "dy": 0,
+      "h": 9200,
+      "v": 0,
+      "bounds": [
+        10000,
+        10000,
+        800,
+        600
+      ],
+      "step_fraction": 0.1,
+      "result": "AtEdge"
+    },
+    {
+      "name": "step: near the right edge clamps to the boundary",
+      "kind": "step",
+      "dx": 1,
+      "dy": 0,
+      "h": 9200,
+      "v": 0,
+      "bounds": [
+        10000,
+        10000,
+        800,
+        600
+      ],
+      "step_fraction": 0.1,
+      "result": "Panned"
+    },
+    {
+      "name": "step: at the bottom edge returns AtEdge",
+      "kind": "step",
+      "dx": 0,
+      "dy": 1,
+      "h": 0,
+      "v": 9400,
+      "bounds": [
+        10000,
+        10000,
+        800,
+        600
+      ],
+      "step_fraction": 0.1,
+      "result": "AtEdge"
+    },
+    {
+      "name": "step: near the bottom edge clamps",
+      "kind": "step",
+      "dx": 0,
+      "dy": 1,
+      "h": 0,
+      "v": 9400,
+      "bounds": [
+        10000,
+        10000,
+        800,
+        600
+      ],
+      "step_fraction": 0.1,
+      "result": "Panned"
+    },
+    {
+      "name": "step: at the left edge, Left returns AtEdge",
+      "kind": "step",
+      "dx": -1,
+      "dy": 0,
+      "h": 0,
+      "v": 0,
+      "bounds": [
+        10000,
+        10000,
+        800,
+        600
+      ],
+      "step_fraction": 0.1,
+      "result": "AtEdge"
+    },
+    {
+      "name": "step: Fit (no scroll range) is NotScrollable",
+      "kind": "step",
+      "dx": 1,
+      "dy": 0,
+      "h": 0,
+      "v": 0,
+      "bounds": [
+        800,
+        600,
+        800,
+        600
+      ],
+      "step_fraction": 0.1,
+      "result": "NotScrollable"
+    },
+    {
+      "name": "step: scroll range exactly 0.5 is NotScrollable",
+      "kind": "step",
+      "dx": 1,
+      "dy": 0,
+      "h": 0,
+      "v": 0,
+      "bounds": [
+        800.5,
+        600,
+        800,
+        600
+      ],
+      "step_fraction": 0.1,
+      "result": "NotScrollable"
+    },
+    {
+      "name": "step: scroll range just above 0.5 is scrollable",
+      "kind": "step",
+      "dx": 1,
+      "dy": 0,
+      "h": 0.5000000999999656,
+      "v": 0,
+      "bounds": [
+        800.5000001,
+        600,
+        800,
+        600
+      ],
+      "step_fraction": 0.1,
+      "result": "Panned"
+    },
+    {
+      "name": "step: vertical axis not scrollable while horizontal is: Up is NotScrollable",
+      "kind": "step",
+      "dx": 0,
+      "dy": -1,
+      "h": 0,
+      "v": 0,
+      "bounds": [
+        10000,
+        600,
+        800,
+        600
+      ],
+      "step_fraction": 0.1,
+      "result": "NotScrollable"
+    },
+    {
+      "name": "step: a move of exactly 0.5 DIP still pans (diff 0.5 is not below the slack)",
+      "kind": "step",
+      "dx": 1,
+      "dy": 0,
+      "h": 9000.5,
+      "v": 0,
+      "bounds": [
+        10000,
+        10000,
+        500,
+        500
+      ],
+      "step_fraction": 0.001,
+      "result": "Panned"
+    },
+    {
+      "name": "step: NaN offset gives Panned with a NaN target (comparisons are false)",
+      "kind": "step",
+      "dx": 1,
+      "dy": 0,
+      "h": "NaN",
+      "v": 0,
+      "bounds": [
+        10000,
+        10000,
+        800,
+        600
+      ],
+      "step_fraction": 0.1,
+      "result": "Panned"
+    },
+    {
+      "name": "step: NaN scroll range is not NotScrollable; the target is clamped with a NaN max (no panic)",
+      "kind": "step",
+      "dx": 1,
+      "dy": 0,
+      "h": 60,
+      "v": 0,
+      "bounds": [
+        "NaN",
+        10000,
+        800,
+        600
+      ],
+      "step_fraction": 0.1,
+      "result": "Panned"
+    },
+    {
+      "name": "is zoomed: roomy on both axes",
+      "kind": "is_zoomed",
+      "bounds": [
+        2000,
+        1500,
+        800,
+        600
+      ],
+      "value": true
+    },
+    {
+      "name": "is zoomed: horizontal only",
+      "kind": "is_zoomed",
+      "bounds": [
+        2000,
+        600,
+        800,
+        600
+      ],
+      "value": true
+    },
+    {
+      "name": "is zoomed: vertical only",
+      "kind": "is_zoomed",
+      "bounds": [
+        800,
+        1500,
+        800,
+        600
+      ],
+      "value": true
+    },
+    {
+      "name": "is zoomed: Fit is false",
+      "kind": "is_zoomed",
+      "bounds": [
+        800,
+        600,
+        800,
+        600
+      ],
+      "value": false
+    },
+    {
+      "name": "is zoomed: range exactly 0.5 is false",
+      "kind": "is_zoomed",
+      "bounds": [
+        800.5,
+        600,
+        800,
+        600
+      ],
+      "value": false
+    },
+    {
+      "name": "impulse velocity: zero step gives +0",
+      "kind": "impulse",
+      "step_x": 0,
+      "step_y": 0,
+      "vx": 0,
+      "vy": 0
+    },
+    {
+      "name": "impulse velocity: negative zero step gives +0",
+      "kind": "impulse",
+      "step_x": "-0",
+      "step_y": 1,
+      "vx": 0,
+      "vy": 0.023076923076923078
+    },
+    {
+      "name": "impulse velocity: sign follows the step",
+      "kind": "impulse",
+      "step_x": 183.6,
+      "step_y": -183.6,
+      "vx": 0.5849230769230769,
+      "vy": -0.5849230769230769
+    },
+    {
+      "name": "impulse velocity: padded by StopVelocity",
+      "kind": "impulse",
+      "step_x": 325,
+      "step_y": 0,
+      "vx": 1.02,
+      "vy": 0
+    },
+    {
+      "name": "impulse velocity: NaN step",
+      "kind": "impulse",
+      "step_x": "NaN",
+      "step_y": 0,
+      "vx": "NaN",
+      "vy": 0
+    },
+    {
+      "name": "impulse velocity: infinite step",
+      "kind": "impulse",
+      "step_x": "-Infinity",
+      "step_y": 0,
+      "vx": "-Infinity",
+      "vy": 0
+    },
+    {
+      "name": "consumes: Panned always consumed",
+      "kind": "consumes",
+      "result": "Panned",
+      "is_repeat": false,
+      "navigates_at_edge": false,
+      "bounds": [
+        2000,
+        1500,
+        800,
+        600
+      ],
+      "value": true
+    },
+    {
+      "name": "consumes: zoomed at edge consumed by default",
+      "kind": "consumes",
+      "result": "AtEdge",
+      "is_repeat": false,
+      "navigates_at_edge": false,
+      "bounds": [
+        2000,
+        1500,
+        800,
+        600
+      ],
+      "value": true
+    },
+    {
+      "name": "consumes: at Fit falls through by default",
+      "kind": "consumes",
+      "result": "AtEdge",
+      "is_repeat": false,
+      "navigates_at_edge": false,
+      "bounds": [
+        800,
+        600,
+        800,
+        600
+      ],
+      "value": false
+    },
+    {
+      "name": "consumes: NotScrollable falls through at Fit",
+      "kind": "consumes",
+      "result": "NotScrollable",
+      "is_repeat": true,
+      "navigates_at_edge": false,
+      "bounds": [
+        800,
+        600,
+        800,
+        600
+      ],
+      "value": false
+    },
+    {
+      "name": "consumes: navigates at edge, fresh press at edge falls through",
+      "kind": "consumes",
+      "result": "AtEdge",
+      "is_repeat": false,
+      "navigates_at_edge": true,
+      "bounds": [
+        2000,
+        1500,
+        800,
+        600
+      ],
+      "value": false
+    },
+    {
+      "name": "consumes: navigates at edge, auto-repeat at edge is swallowed",
+      "kind": "consumes",
+      "result": "AtEdge",
+      "is_repeat": true,
+      "navigates_at_edge": true,
+      "bounds": [
+        2000,
+        1500,
+        800,
+        600
+      ],
+      "value": true
+    },
+    {
+      "name": "consumes: navigates at edge, NotScrollable never consumed",
+      "kind": "consumes",
+      "result": "NotScrollable",
+      "is_repeat": true,
+      "navigates_at_edge": true,
+      "bounds": [
+        2000,
+        1500,
+        800,
+        600
+      ],
+      "value": false
+    },
+    {
+      "name": "consumes: navigates at edge, Panned consumed",
+      "kind": "consumes",
+      "result": "Panned",
+      "is_repeat": false,
+      "navigates_at_edge": true,
+      "bounds": [
+        800,
+        600,
+        800,
+        600
+      ],
+      "value": true
+    }
+  ]
+}

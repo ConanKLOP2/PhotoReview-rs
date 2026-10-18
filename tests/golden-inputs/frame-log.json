@@ -1,0 +1,28 @@
+{
+  "cases": [
+    {"name": "documented line (format)", "kind": "format", "gap_ms": 250.34, "frame_ms": 3.456, "end_draw_ms": 1.2, "present_ms": 0.987},
+    {"name": "exact binary ties at one and two decimals", "kind": "format", "gap_ms": 0.25, "frame_ms": 0.125, "end_draw_ms": 2.5, "present_ms": 0.375},
+    {"name": "negative values that round to zero keep the sign", "kind": "format", "gap_ms": 0.0, "frame_ms": -0.004, "end_draw_ms": -0.0, "present_ms": -0.001},
+    {"name": "NaN is written as NaN", "kind": "format", "gap_ms": "NaN", "frame_ms": 1.0, "end_draw_ms": 1.0, "present_ms": 1.0},
+    {"name": "infinity is written as Infinity", "kind": "format", "gap_ms": 0.0, "frame_ms": "Infinity", "end_draw_ms": "-Infinity", "present_ms": 1.0},
+    {"name": "env: unset variable gives no log", "kind": "env", "value": null},
+    {"name": "env: blank value gives no log", "kind": "env", "value": " \t "},
+    {"name": "env: unopenable path gives no log", "kind": "env", "value": "missing-dir-7d2f/frame.log"},
+    {
+      "name": "record: one line per frame, gap since previous frame start",
+      "kind": "record",
+      "frames": [
+        {"start_ms": 10, "end_ms": 20, "end_draw_ms": 1.5, "present_ms": 0.5},
+        {"start_ms": 260, "end_ms": 280, "end_draw_ms": 12, "present_ms": 1}
+      ]
+    },
+    {
+      "name": "record: a first frame starting at tick 0 keeps the next gap at zero",
+      "kind": "record",
+      "frames": [
+        {"start_ms": 0, "end_ms": 1, "end_draw_ms": 1, "present_ms": 1},
+        {"start_ms": 5, "end_ms": 6, "end_draw_ms": 1, "present_ms": 1}
+      ]
+    }
+  ]
+}

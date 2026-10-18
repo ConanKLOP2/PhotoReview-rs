@@ -1,0 +1,2274 @@
+{
+  "generator": "oracle-cs settings-reload-path",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "reload-0",
+      "presented": null,
+      "group": null,
+      "entry": null,
+      "raw_enabled": true,
+      "pair_mode": "Separate",
+      "result": null
+    },
+    {
+      "name": "reload-1",
+      "presented": null,
+      "group": null,
+      "entry": null,
+      "raw_enabled": true,
+      "pair_mode": "PreferJpeg",
+      "result": null
+    },
+    {
+      "name": "reload-2",
+      "presented": null,
+      "group": null,
+      "entry": null,
+      "raw_enabled": true,
+      "pair_mode": "PreferRaw",
+      "result": null
+    },
+    {
+      "name": "reload-3",
+      "presented": null,
+      "group": null,
+      "entry": null,
+      "raw_enabled": false,
+      "pair_mode": "Separate",
+      "result": null
+    },
+    {
+      "name": "reload-4",
+      "presented": null,
+      "group": null,
+      "entry": null,
+      "raw_enabled": false,
+      "pair_mode": "PreferJpeg",
+      "result": null
+    },
+    {
+      "name": "reload-5",
+      "presented": null,
+      "group": null,
+      "entry": null,
+      "raw_enabled": false,
+      "pair_mode": "PreferRaw",
+      "result": null
+    },
+    {
+      "name": "reload-6",
+      "presented": null,
+      "group": null,
+      "entry": "C:\\p\\a.jpg",
+      "raw_enabled": true,
+      "pair_mode": "Separate",
+      "result": "C:\\p\\a.jpg"
+    },
+    {
+      "name": "reload-7",
+      "presented": null,
+      "group": null,
+      "entry": "C:\\p\\a.jpg",
+      "raw_enabled": true,
+      "pair_mode": "PreferJpeg",
+      "result": "C:\\p\\a.jpg"
+    },
+    {
+      "name": "reload-8",
+      "presented": null,
+      "group": null,
+      "entry": "C:\\p\\a.jpg",
+      "raw_enabled": true,
+      "pair_mode": "PreferRaw",
+      "result": "C:\\p\\a.jpg"
+    },
+    {
+      "name": "reload-9",
+      "presented": null,
+      "group": null,
+      "entry": "C:\\p\\a.jpg",
+      "raw_enabled": false,
+      "pair_mode": "Separate",
+      "result": "C:\\p\\a.jpg"
+    },
+    {
+      "name": "reload-10",
+      "presented": null,
+      "group": null,
+      "entry": "C:\\p\\a.jpg",
+      "raw_enabled": false,
+      "pair_mode": "PreferJpeg",
+      "result": "C:\\p\\a.jpg"
+    },
+    {
+      "name": "reload-11",
+      "presented": null,
+      "group": null,
+      "entry": "C:\\p\\a.jpg",
+      "raw_enabled": false,
+      "pair_mode": "PreferRaw",
+      "result": "C:\\p\\a.jpg"
+    },
+    {
+      "name": "reload-12",
+      "presented": null,
+      "group": null,
+      "entry": "C:\\p\\a.cr2",
+      "raw_enabled": true,
+      "pair_mode": "Separate",
+      "result": "C:\\p\\a.cr2"
+    },
+    {
+      "name": "reload-13",
+      "presented": null,
+      "group": null,
+      "entry": "C:\\p\\a.cr2",
+      "raw_enabled": true,
+      "pair_mode": "PreferJpeg",
+      "result": "C:\\p\\a.cr2"
+    },
+    {
+      "name": "reload-14",
+      "presented": null,
+      "group": null,
+      "entry": "C:\\p\\a.cr2",
+      "raw_enabled": true,
+      "pair_mode": "PreferRaw",
+      "result": "C:\\p\\a.cr2"
+    },
+    {
+      "name": "reload-15",
+      "presented": null,
+      "group": null,
+      "entry": "C:\\p\\a.cr2",
+      "raw_enabled": false,
+      "pair_mode": "Separate",
+      "result": "C:\\p\\a.cr2"
+    },
+    {
+      "name": "reload-16",
+      "presented": null,
+      "group": null,
+      "entry": "C:\\p\\a.cr2",
+      "raw_enabled": false,
+      "pair_mode": "PreferJpeg",
+      "result": "C:\\p\\a.cr2"
+    },
+    {
+      "name": "reload-17",
+      "presented": null,
+      "group": null,
+      "entry": "C:\\p\\a.cr2",
+      "raw_enabled": false,
+      "pair_mode": "PreferRaw",
+      "result": "C:\\p\\a.cr2"
+    },
+    {
+      "name": "reload-18",
+      "presented": null,
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": null,
+      "raw_enabled": true,
+      "pair_mode": "Separate",
+      "result": null
+    },
+    {
+      "name": "reload-19",
+      "presented": null,
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": null,
+      "raw_enabled": true,
+      "pair_mode": "PreferJpeg",
+      "result": null
+    },
+    {
+      "name": "reload-20",
+      "presented": null,
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": null,
+      "raw_enabled": true,
+      "pair_mode": "PreferRaw",
+      "result": null
+    },
+    {
+      "name": "reload-21",
+      "presented": null,
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": null,
+      "raw_enabled": false,
+      "pair_mode": "Separate",
+      "result": null
+    },
+    {
+      "name": "reload-22",
+      "presented": null,
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": null,
+      "raw_enabled": false,
+      "pair_mode": "PreferJpeg",
+      "result": null
+    },
+    {
+      "name": "reload-23",
+      "presented": null,
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": null,
+      "raw_enabled": false,
+      "pair_mode": "PreferRaw",
+      "result": null
+    },
+    {
+      "name": "reload-24",
+      "presented": null,
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": "C:\\p\\a.jpg",
+      "raw_enabled": true,
+      "pair_mode": "Separate",
+      "result": "C:\\p\\a.jpg"
+    },
+    {
+      "name": "reload-25",
+      "presented": null,
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": "C:\\p\\a.jpg",
+      "raw_enabled": true,
+      "pair_mode": "PreferJpeg",
+      "result": "C:\\p\\a.jpg"
+    },
+    {
+      "name": "reload-26",
+      "presented": null,
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": "C:\\p\\a.jpg",
+      "raw_enabled": true,
+      "pair_mode": "PreferRaw",
+      "result": "C:\\p\\a.jpg"
+    },
+    {
+      "name": "reload-27",
+      "presented": null,
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": "C:\\p\\a.jpg",
+      "raw_enabled": false,
+      "pair_mode": "Separate",
+      "result": "C:\\p\\a.jpg"
+    },
+    {
+      "name": "reload-28",
+      "presented": null,
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": "C:\\p\\a.jpg",
+      "raw_enabled": false,
+      "pair_mode": "PreferJpeg",
+      "result": "C:\\p\\a.jpg"
+    },
+    {
+      "name": "reload-29",
+      "presented": null,
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": "C:\\p\\a.jpg",
+      "raw_enabled": false,
+      "pair_mode": "PreferRaw",
+      "result": "C:\\p\\a.jpg"
+    },
+    {
+      "name": "reload-30",
+      "presented": null,
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": "C:\\p\\a.cr2",
+      "raw_enabled": true,
+      "pair_mode": "Separate",
+      "result": "C:\\p\\a.cr2"
+    },
+    {
+      "name": "reload-31",
+      "presented": null,
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": "C:\\p\\a.cr2",
+      "raw_enabled": true,
+      "pair_mode": "PreferJpeg",
+      "result": "C:\\p\\a.cr2"
+    },
+    {
+      "name": "reload-32",
+      "presented": null,
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": "C:\\p\\a.cr2",
+      "raw_enabled": true,
+      "pair_mode": "PreferRaw",
+      "result": "C:\\p\\a.cr2"
+    },
+    {
+      "name": "reload-33",
+      "presented": null,
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": "C:\\p\\a.cr2",
+      "raw_enabled": false,
+      "pair_mode": "Separate",
+      "result": "C:\\p\\a.jpg"
+    },
+    {
+      "name": "reload-34",
+      "presented": null,
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": "C:\\p\\a.cr2",
+      "raw_enabled": false,
+      "pair_mode": "PreferJpeg",
+      "result": "C:\\p\\a.jpg"
+    },
+    {
+      "name": "reload-35",
+      "presented": null,
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": "C:\\p\\a.cr2",
+      "raw_enabled": false,
+      "pair_mode": "PreferRaw",
+      "result": "C:\\p\\a.jpg"
+    },
+    {
+      "name": "reload-36",
+      "presented": "C:\\p\\a.cr2",
+      "group": null,
+      "entry": null,
+      "raw_enabled": true,
+      "pair_mode": "Separate",
+      "result": "C:\\p\\a.cr2"
+    },
+    {
+      "name": "reload-37",
+      "presented": "C:\\p\\a.cr2",
+      "group": null,
+      "entry": null,
+      "raw_enabled": true,
+      "pair_mode": "PreferJpeg",
+      "result": "C:\\p\\a.cr2"
+    },
+    {
+      "name": "reload-38",
+      "presented": "C:\\p\\a.cr2",
+      "group": null,
+      "entry": null,
+      "raw_enabled": true,
+      "pair_mode": "PreferRaw",
+      "result": "C:\\p\\a.cr2"
+    },
+    {
+      "name": "reload-39",
+      "presented": "C:\\p\\a.cr2",
+      "group": null,
+      "entry": null,
+      "raw_enabled": false,
+      "pair_mode": "Separate",
+      "result": "C:\\p\\a.cr2"
+    },
+    {
+      "name": "reload-40",
+      "presented": "C:\\p\\a.cr2",
+      "group": null,
+      "entry": null,
+      "raw_enabled": false,
+      "pair_mode": "PreferJpeg",
+      "result": "C:\\p\\a.cr2"
+    },
+    {
+      "name": "reload-41",
+      "presented": "C:\\p\\a.cr2",
+      "group": null,
+      "entry": null,
+      "raw_enabled": false,
+      "pair_mode": "PreferRaw",
+      "result": "C:\\p\\a.cr2"
+    },
+    {
+      "name": "reload-42",
+      "presented": "C:\\p\\a.cr2",
+      "group": null,
+      "entry": "C:\\p\\a.jpg",
+      "raw_enabled": true,
+      "pair_mode": "Separate",
+      "result": "C:\\p\\a.cr2"
+    },
+    {
+      "name": "reload-43",
+      "presented": "C:\\p\\a.cr2",
+      "group": null,
+      "entry": "C:\\p\\a.jpg",
+      "raw_enabled": true,
+      "pair_mode": "PreferJpeg",
+      "result": "C:\\p\\a.cr2"
+    },
+    {
+      "name": "reload-44",
+      "presented": "C:\\p\\a.cr2",
+      "group": null,
+      "entry": "C:\\p\\a.jpg",
+      "raw_enabled": true,
+      "pair_mode": "PreferRaw",
+      "result": "C:\\p\\a.cr2"
+    },
+    {
+      "name": "reload-45",
+      "presented": "C:\\p\\a.cr2",
+      "group": null,
+      "entry": "C:\\p\\a.jpg",
+      "raw_enabled": false,
+      "pair_mode": "Separate",
+      "result": "C:\\p\\a.cr2"
+    },
+    {
+      "name": "reload-46",
+      "presented": "C:\\p\\a.cr2",
+      "group": null,
+      "entry": "C:\\p\\a.jpg",
+      "raw_enabled": false,
+      "pair_mode": "PreferJpeg",
+      "result": "C:\\p\\a.cr2"
+    },
+    {
+      "name": "reload-47",
+      "presented": "C:\\p\\a.cr2",
+      "group": null,
+      "entry": "C:\\p\\a.jpg",
+      "raw_enabled": false,
+      "pair_mode": "PreferRaw",
+      "result": "C:\\p\\a.cr2"
+    },
+    {
+      "name": "reload-48",
+      "presented": "C:\\p\\a.cr2",
+      "group": null,
+      "entry": "C:\\p\\a.cr2",
+      "raw_enabled": true,
+      "pair_mode": "Separate",
+      "result": "C:\\p\\a.cr2"
+    },
+    {
+      "name": "reload-49",
+      "presented": "C:\\p\\a.cr2",
+      "group": null,
+      "entry": "C:\\p\\a.cr2",
+      "raw_enabled": true,
+      "pair_mode": "PreferJpeg",
+      "result": "C:\\p\\a.cr2"
+    },
+    {
+      "name": "reload-50",
+      "presented": "C:\\p\\a.cr2",
+      "group": null,
+      "entry": "C:\\p\\a.cr2",
+      "raw_enabled": true,
+      "pair_mode": "PreferRaw",
+      "result": "C:\\p\\a.cr2"
+    },
+    {
+      "name": "reload-51",
+      "presented": "C:\\p\\a.cr2",
+      "group": null,
+      "entry": "C:\\p\\a.cr2",
+      "raw_enabled": false,
+      "pair_mode": "Separate",
+      "result": "C:\\p\\a.cr2"
+    },
+    {
+      "name": "reload-52",
+      "presented": "C:\\p\\a.cr2",
+      "group": null,
+      "entry": "C:\\p\\a.cr2",
+      "raw_enabled": false,
+      "pair_mode": "PreferJpeg",
+      "result": "C:\\p\\a.cr2"
+    },
+    {
+      "name": "reload-53",
+      "presented": "C:\\p\\a.cr2",
+      "group": null,
+      "entry": "C:\\p\\a.cr2",
+      "raw_enabled": false,
+      "pair_mode": "PreferRaw",
+      "result": "C:\\p\\a.cr2"
+    },
+    {
+      "name": "reload-54",
+      "presented": "C:\\p\\a.cr2",
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": null,
+      "raw_enabled": true,
+      "pair_mode": "Separate",
+      "result": "C:\\p\\a.cr2"
+    },
+    {
+      "name": "reload-55",
+      "presented": "C:\\p\\a.cr2",
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": null,
+      "raw_enabled": true,
+      "pair_mode": "PreferJpeg",
+      "result": "C:\\p\\a.cr2"
+    },
+    {
+      "name": "reload-56",
+      "presented": "C:\\p\\a.cr2",
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": null,
+      "raw_enabled": true,
+      "pair_mode": "PreferRaw",
+      "result": "C:\\p\\a.cr2"
+    },
+    {
+      "name": "reload-57",
+      "presented": "C:\\p\\a.cr2",
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": null,
+      "raw_enabled": false,
+      "pair_mode": "Separate",
+      "result": "C:\\p\\a.jpg"
+    },
+    {
+      "name": "reload-58",
+      "presented": "C:\\p\\a.cr2",
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": null,
+      "raw_enabled": false,
+      "pair_mode": "PreferJpeg",
+      "result": "C:\\p\\a.jpg"
+    },
+    {
+      "name": "reload-59",
+      "presented": "C:\\p\\a.cr2",
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": null,
+      "raw_enabled": false,
+      "pair_mode": "PreferRaw",
+      "result": "C:\\p\\a.jpg"
+    },
+    {
+      "name": "reload-60",
+      "presented": "C:\\p\\a.cr2",
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": "C:\\p\\a.jpg",
+      "raw_enabled": true,
+      "pair_mode": "Separate",
+      "result": "C:\\p\\a.cr2"
+    },
+    {
+      "name": "reload-61",
+      "presented": "C:\\p\\a.cr2",
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": "C:\\p\\a.jpg",
+      "raw_enabled": true,
+      "pair_mode": "PreferJpeg",
+      "result": "C:\\p\\a.cr2"
+    },
+    {
+      "name": "reload-62",
+      "presented": "C:\\p\\a.cr2",
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": "C:\\p\\a.jpg",
+      "raw_enabled": true,
+      "pair_mode": "PreferRaw",
+      "result": "C:\\p\\a.cr2"
+    },
+    {
+      "name": "reload-63",
+      "presented": "C:\\p\\a.cr2",
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": "C:\\p\\a.jpg",
+      "raw_enabled": false,
+      "pair_mode": "Separate",
+      "result": "C:\\p\\a.jpg"
+    },
+    {
+      "name": "reload-64",
+      "presented": "C:\\p\\a.cr2",
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": "C:\\p\\a.jpg",
+      "raw_enabled": false,
+      "pair_mode": "PreferJpeg",
+      "result": "C:\\p\\a.jpg"
+    },
+    {
+      "name": "reload-65",
+      "presented": "C:\\p\\a.cr2",
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": "C:\\p\\a.jpg",
+      "raw_enabled": false,
+      "pair_mode": "PreferRaw",
+      "result": "C:\\p\\a.jpg"
+    },
+    {
+      "name": "reload-66",
+      "presented": "C:\\p\\a.cr2",
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": "C:\\p\\a.cr2",
+      "raw_enabled": true,
+      "pair_mode": "Separate",
+      "result": "C:\\p\\a.cr2"
+    },
+    {
+      "name": "reload-67",
+      "presented": "C:\\p\\a.cr2",
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": "C:\\p\\a.cr2",
+      "raw_enabled": true,
+      "pair_mode": "PreferJpeg",
+      "result": "C:\\p\\a.cr2"
+    },
+    {
+      "name": "reload-68",
+      "presented": "C:\\p\\a.cr2",
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": "C:\\p\\a.cr2",
+      "raw_enabled": true,
+      "pair_mode": "PreferRaw",
+      "result": "C:\\p\\a.cr2"
+    },
+    {
+      "name": "reload-69",
+      "presented": "C:\\p\\a.cr2",
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": "C:\\p\\a.cr2",
+      "raw_enabled": false,
+      "pair_mode": "Separate",
+      "result": "C:\\p\\a.jpg"
+    },
+    {
+      "name": "reload-70",
+      "presented": "C:\\p\\a.cr2",
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": "C:\\p\\a.cr2",
+      "raw_enabled": false,
+      "pair_mode": "PreferJpeg",
+      "result": "C:\\p\\a.jpg"
+    },
+    {
+      "name": "reload-71",
+      "presented": "C:\\p\\a.cr2",
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": "C:\\p\\a.cr2",
+      "raw_enabled": false,
+      "pair_mode": "PreferRaw",
+      "result": "C:\\p\\a.jpg"
+    },
+    {
+      "name": "reload-72",
+      "presented": "C:\\p\\a.jpg",
+      "group": null,
+      "entry": null,
+      "raw_enabled": true,
+      "pair_mode": "Separate",
+      "result": "C:\\p\\a.jpg"
+    },
+    {
+      "name": "reload-73",
+      "presented": "C:\\p\\a.jpg",
+      "group": null,
+      "entry": null,
+      "raw_enabled": true,
+      "pair_mode": "PreferJpeg",
+      "result": "C:\\p\\a.jpg"
+    },
+    {
+      "name": "reload-74",
+      "presented": "C:\\p\\a.jpg",
+      "group": null,
+      "entry": null,
+      "raw_enabled": true,
+      "pair_mode": "PreferRaw",
+      "result": "C:\\p\\a.jpg"
+    },
+    {
+      "name": "reload-75",
+      "presented": "C:\\p\\a.jpg",
+      "group": null,
+      "entry": null,
+      "raw_enabled": false,
+      "pair_mode": "Separate",
+      "result": "C:\\p\\a.jpg"
+    },
+    {
+      "name": "reload-76",
+      "presented": "C:\\p\\a.jpg",
+      "group": null,
+      "entry": null,
+      "raw_enabled": false,
+      "pair_mode": "PreferJpeg",
+      "result": "C:\\p\\a.jpg"
+    },
+    {
+      "name": "reload-77",
+      "presented": "C:\\p\\a.jpg",
+      "group": null,
+      "entry": null,
+      "raw_enabled": false,
+      "pair_mode": "PreferRaw",
+      "result": "C:\\p\\a.jpg"
+    },
+    {
+      "name": "reload-78",
+      "presented": "C:\\p\\a.jpg",
+      "group": null,
+      "entry": "C:\\p\\a.jpg",
+      "raw_enabled": true,
+      "pair_mode": "Separate",
+      "result": "C:\\p\\a.jpg"
+    },
+    {
+      "name": "reload-79",
+      "presented": "C:\\p\\a.jpg",
+      "group": null,
+      "entry": "C:\\p\\a.jpg",
+      "raw_enabled": true,
+      "pair_mode": "PreferJpeg",
+      "result": "C:\\p\\a.jpg"
+    },
+    {
+      "name": "reload-80",
+      "presented": "C:\\p\\a.jpg",
+      "group": null,
+      "entry": "C:\\p\\a.jpg",
+      "raw_enabled": true,
+      "pair_mode": "PreferRaw",
+      "result": "C:\\p\\a.jpg"
+    },
+    {
+      "name": "reload-81",
+      "presented": "C:\\p\\a.jpg",
+      "group": null,
+      "entry": "C:\\p\\a.jpg",
+      "raw_enabled": false,
+      "pair_mode": "Separate",
+      "result": "C:\\p\\a.jpg"
+    },
+    {
+      "name": "reload-82",
+      "presented": "C:\\p\\a.jpg",
+      "group": null,
+      "entry": "C:\\p\\a.jpg",
+      "raw_enabled": false,
+      "pair_mode": "PreferJpeg",
+      "result": "C:\\p\\a.jpg"
+    },
+    {
+      "name": "reload-83",
+      "presented": "C:\\p\\a.jpg",
+      "group": null,
+      "entry": "C:\\p\\a.jpg",
+      "raw_enabled": false,
+      "pair_mode": "PreferRaw",
+      "result": "C:\\p\\a.jpg"
+    },
+    {
+      "name": "reload-84",
+      "presented": "C:\\p\\a.jpg",
+      "group": null,
+      "entry": "C:\\p\\a.cr2",
+      "raw_enabled": true,
+      "pair_mode": "Separate",
+      "result": "C:\\p\\a.jpg"
+    },
+    {
+      "name": "reload-85",
+      "presented": "C:\\p\\a.jpg",
+      "group": null,
+      "entry": "C:\\p\\a.cr2",
+      "raw_enabled": true,
+      "pair_mode": "PreferJpeg",
+      "result": "C:\\p\\a.jpg"
+    },
+    {
+      "name": "reload-86",
+      "presented": "C:\\p\\a.jpg",
+      "group": null,
+      "entry": "C:\\p\\a.cr2",
+      "raw_enabled": true,
+      "pair_mode": "PreferRaw",
+      "result": "C:\\p\\a.jpg"
+    },
+    {
+      "name": "reload-87",
+      "presented": "C:\\p\\a.jpg",
+      "group": null,
+      "entry": "C:\\p\\a.cr2",
+      "raw_enabled": false,
+      "pair_mode": "Separate",
+      "result": "C:\\p\\a.jpg"
+    },
+    {
+      "name": "reload-88",
+      "presented": "C:\\p\\a.jpg",
+      "group": null,
+      "entry": "C:\\p\\a.cr2",
+      "raw_enabled": false,
+      "pair_mode": "PreferJpeg",
+      "result": "C:\\p\\a.jpg"
+    },
+    {
+      "name": "reload-89",
+      "presented": "C:\\p\\a.jpg",
+      "group": null,
+      "entry": "C:\\p\\a.cr2",
+      "raw_enabled": false,
+      "pair_mode": "PreferRaw",
+      "result": "C:\\p\\a.jpg"
+    },
+    {
+      "name": "reload-90",
+      "presented": "C:\\p\\a.jpg",
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": null,
+      "raw_enabled": true,
+      "pair_mode": "Separate",
+      "result": "C:\\p\\a.jpg"
+    },
+    {
+      "name": "reload-91",
+      "presented": "C:\\p\\a.jpg",
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": null,
+      "raw_enabled": true,
+      "pair_mode": "PreferJpeg",
+      "result": "C:\\p\\a.jpg"
+    },
+    {
+      "name": "reload-92",
+      "presented": "C:\\p\\a.jpg",
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": null,
+      "raw_enabled": true,
+      "pair_mode": "PreferRaw",
+      "result": "C:\\p\\a.jpg"
+    },
+    {
+      "name": "reload-93",
+      "presented": "C:\\p\\a.jpg",
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": null,
+      "raw_enabled": false,
+      "pair_mode": "Separate",
+      "result": "C:\\p\\a.jpg"
+    },
+    {
+      "name": "reload-94",
+      "presented": "C:\\p\\a.jpg",
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": null,
+      "raw_enabled": false,
+      "pair_mode": "PreferJpeg",
+      "result": "C:\\p\\a.jpg"
+    },
+    {
+      "name": "reload-95",
+      "presented": "C:\\p\\a.jpg",
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": null,
+      "raw_enabled": false,
+      "pair_mode": "PreferRaw",
+      "result": "C:\\p\\a.jpg"
+    },
+    {
+      "name": "reload-96",
+      "presented": "C:\\p\\a.jpg",
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": "C:\\p\\a.jpg",
+      "raw_enabled": true,
+      "pair_mode": "Separate",
+      "result": "C:\\p\\a.jpg"
+    },
+    {
+      "name": "reload-97",
+      "presented": "C:\\p\\a.jpg",
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": "C:\\p\\a.jpg",
+      "raw_enabled": true,
+      "pair_mode": "PreferJpeg",
+      "result": "C:\\p\\a.jpg"
+    },
+    {
+      "name": "reload-98",
+      "presented": "C:\\p\\a.jpg",
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": "C:\\p\\a.jpg",
+      "raw_enabled": true,
+      "pair_mode": "PreferRaw",
+      "result": "C:\\p\\a.jpg"
+    },
+    {
+      "name": "reload-99",
+      "presented": "C:\\p\\a.jpg",
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": "C:\\p\\a.jpg",
+      "raw_enabled": false,
+      "pair_mode": "Separate",
+      "result": "C:\\p\\a.jpg"
+    },
+    {
+      "name": "reload-100",
+      "presented": "C:\\p\\a.jpg",
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": "C:\\p\\a.jpg",
+      "raw_enabled": false,
+      "pair_mode": "PreferJpeg",
+      "result": "C:\\p\\a.jpg"
+    },
+    {
+      "name": "reload-101",
+      "presented": "C:\\p\\a.jpg",
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": "C:\\p\\a.jpg",
+      "raw_enabled": false,
+      "pair_mode": "PreferRaw",
+      "result": "C:\\p\\a.jpg"
+    },
+    {
+      "name": "reload-102",
+      "presented": "C:\\p\\a.jpg",
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": "C:\\p\\a.cr2",
+      "raw_enabled": true,
+      "pair_mode": "Separate",
+      "result": "C:\\p\\a.jpg"
+    },
+    {
+      "name": "reload-103",
+      "presented": "C:\\p\\a.jpg",
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": "C:\\p\\a.cr2",
+      "raw_enabled": true,
+      "pair_mode": "PreferJpeg",
+      "result": "C:\\p\\a.jpg"
+    },
+    {
+      "name": "reload-104",
+      "presented": "C:\\p\\a.jpg",
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": "C:\\p\\a.cr2",
+      "raw_enabled": true,
+      "pair_mode": "PreferRaw",
+      "result": "C:\\p\\a.jpg"
+    },
+    {
+      "name": "reload-105",
+      "presented": "C:\\p\\a.jpg",
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": "C:\\p\\a.cr2",
+      "raw_enabled": false,
+      "pair_mode": "Separate",
+      "result": "C:\\p\\a.jpg"
+    },
+    {
+      "name": "reload-106",
+      "presented": "C:\\p\\a.jpg",
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": "C:\\p\\a.cr2",
+      "raw_enabled": false,
+      "pair_mode": "PreferJpeg",
+      "result": "C:\\p\\a.jpg"
+    },
+    {
+      "name": "reload-107",
+      "presented": "C:\\p\\a.jpg",
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": "C:\\p\\a.cr2",
+      "raw_enabled": false,
+      "pair_mode": "PreferRaw",
+      "result": "C:\\p\\a.jpg"
+    },
+    {
+      "name": "reload-108",
+      "presented": "C:\\P\\A.CR2",
+      "group": null,
+      "entry": null,
+      "raw_enabled": true,
+      "pair_mode": "Separate",
+      "result": "C:\\P\\A.CR2"
+    },
+    {
+      "name": "reload-109",
+      "presented": "C:\\P\\A.CR2",
+      "group": null,
+      "entry": null,
+      "raw_enabled": true,
+      "pair_mode": "PreferJpeg",
+      "result": "C:\\P\\A.CR2"
+    },
+    {
+      "name": "reload-110",
+      "presented": "C:\\P\\A.CR2",
+      "group": null,
+      "entry": null,
+      "raw_enabled": true,
+      "pair_mode": "PreferRaw",
+      "result": "C:\\P\\A.CR2"
+    },
+    {
+      "name": "reload-111",
+      "presented": "C:\\P\\A.CR2",
+      "group": null,
+      "entry": null,
+      "raw_enabled": false,
+      "pair_mode": "Separate",
+      "result": "C:\\P\\A.CR2"
+    },
+    {
+      "name": "reload-112",
+      "presented": "C:\\P\\A.CR2",
+      "group": null,
+      "entry": null,
+      "raw_enabled": false,
+      "pair_mode": "PreferJpeg",
+      "result": "C:\\P\\A.CR2"
+    },
+    {
+      "name": "reload-113",
+      "presented": "C:\\P\\A.CR2",
+      "group": null,
+      "entry": null,
+      "raw_enabled": false,
+      "pair_mode": "PreferRaw",
+      "result": "C:\\P\\A.CR2"
+    },
+    {
+      "name": "reload-114",
+      "presented": "C:\\P\\A.CR2",
+      "group": null,
+      "entry": "C:\\p\\a.jpg",
+      "raw_enabled": true,
+      "pair_mode": "Separate",
+      "result": "C:\\P\\A.CR2"
+    },
+    {
+      "name": "reload-115",
+      "presented": "C:\\P\\A.CR2",
+      "group": null,
+      "entry": "C:\\p\\a.jpg",
+      "raw_enabled": true,
+      "pair_mode": "PreferJpeg",
+      "result": "C:\\P\\A.CR2"
+    },
+    {
+      "name": "reload-116",
+      "presented": "C:\\P\\A.CR2",
+      "group": null,
+      "entry": "C:\\p\\a.jpg",
+      "raw_enabled": true,
+      "pair_mode": "PreferRaw",
+      "result": "C:\\P\\A.CR2"
+    },
+    {
+      "name": "reload-117",
+      "presented": "C:\\P\\A.CR2",
+      "group": null,
+      "entry": "C:\\p\\a.jpg",
+      "raw_enabled": false,
+      "pair_mode": "Separate",
+      "result": "C:\\P\\A.CR2"
+    },
+    {
+      "name": "reload-118",
+      "presented": "C:\\P\\A.CR2",
+      "group": null,
+      "entry": "C:\\p\\a.jpg",
+      "raw_enabled": false,
+      "pair_mode": "PreferJpeg",
+      "result": "C:\\P\\A.CR2"
+    },
+    {
+      "name": "reload-119",
+      "presented": "C:\\P\\A.CR2",
+      "group": null,
+      "entry": "C:\\p\\a.jpg",
+      "raw_enabled": false,
+      "pair_mode": "PreferRaw",
+      "result": "C:\\P\\A.CR2"
+    },
+    {
+      "name": "reload-120",
+      "presented": "C:\\P\\A.CR2",
+      "group": null,
+      "entry": "C:\\p\\a.cr2",
+      "raw_enabled": true,
+      "pair_mode": "Separate",
+      "result": "C:\\P\\A.CR2"
+    },
+    {
+      "name": "reload-121",
+      "presented": "C:\\P\\A.CR2",
+      "group": null,
+      "entry": "C:\\p\\a.cr2",
+      "raw_enabled": true,
+      "pair_mode": "PreferJpeg",
+      "result": "C:\\P\\A.CR2"
+    },
+    {
+      "name": "reload-122",
+      "presented": "C:\\P\\A.CR2",
+      "group": null,
+      "entry": "C:\\p\\a.cr2",
+      "raw_enabled": true,
+      "pair_mode": "PreferRaw",
+      "result": "C:\\P\\A.CR2"
+    },
+    {
+      "name": "reload-123",
+      "presented": "C:\\P\\A.CR2",
+      "group": null,
+      "entry": "C:\\p\\a.cr2",
+      "raw_enabled": false,
+      "pair_mode": "Separate",
+      "result": "C:\\P\\A.CR2"
+    },
+    {
+      "name": "reload-124",
+      "presented": "C:\\P\\A.CR2",
+      "group": null,
+      "entry": "C:\\p\\a.cr2",
+      "raw_enabled": false,
+      "pair_mode": "PreferJpeg",
+      "result": "C:\\P\\A.CR2"
+    },
+    {
+      "name": "reload-125",
+      "presented": "C:\\P\\A.CR2",
+      "group": null,
+      "entry": "C:\\p\\a.cr2",
+      "raw_enabled": false,
+      "pair_mode": "PreferRaw",
+      "result": "C:\\P\\A.CR2"
+    },
+    {
+      "name": "reload-126",
+      "presented": "C:\\P\\A.CR2",
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": null,
+      "raw_enabled": true,
+      "pair_mode": "Separate",
+      "result": "C:\\P\\A.CR2"
+    },
+    {
+      "name": "reload-127",
+      "presented": "C:\\P\\A.CR2",
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": null,
+      "raw_enabled": true,
+      "pair_mode": "PreferJpeg",
+      "result": "C:\\P\\A.CR2"
+    },
+    {
+      "name": "reload-128",
+      "presented": "C:\\P\\A.CR2",
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": null,
+      "raw_enabled": true,
+      "pair_mode": "PreferRaw",
+      "result": "C:\\P\\A.CR2"
+    },
+    {
+      "name": "reload-129",
+      "presented": "C:\\P\\A.CR2",
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": null,
+      "raw_enabled": false,
+      "pair_mode": "Separate",
+      "result": "C:\\p\\a.jpg"
+    },
+    {
+      "name": "reload-130",
+      "presented": "C:\\P\\A.CR2",
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": null,
+      "raw_enabled": false,
+      "pair_mode": "PreferJpeg",
+      "result": "C:\\p\\a.jpg"
+    },
+    {
+      "name": "reload-131",
+      "presented": "C:\\P\\A.CR2",
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": null,
+      "raw_enabled": false,
+      "pair_mode": "PreferRaw",
+      "result": "C:\\p\\a.jpg"
+    },
+    {
+      "name": "reload-132",
+      "presented": "C:\\P\\A.CR2",
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": "C:\\p\\a.jpg",
+      "raw_enabled": true,
+      "pair_mode": "Separate",
+      "result": "C:\\P\\A.CR2"
+    },
+    {
+      "name": "reload-133",
+      "presented": "C:\\P\\A.CR2",
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": "C:\\p\\a.jpg",
+      "raw_enabled": true,
+      "pair_mode": "PreferJpeg",
+      "result": "C:\\P\\A.CR2"
+    },
+    {
+      "name": "reload-134",
+      "presented": "C:\\P\\A.CR2",
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": "C:\\p\\a.jpg",
+      "raw_enabled": true,
+      "pair_mode": "PreferRaw",
+      "result": "C:\\P\\A.CR2"
+    },
+    {
+      "name": "reload-135",
+      "presented": "C:\\P\\A.CR2",
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": "C:\\p\\a.jpg",
+      "raw_enabled": false,
+      "pair_mode": "Separate",
+      "result": "C:\\p\\a.jpg"
+    },
+    {
+      "name": "reload-136",
+      "presented": "C:\\P\\A.CR2",
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": "C:\\p\\a.jpg",
+      "raw_enabled": false,
+      "pair_mode": "PreferJpeg",
+      "result": "C:\\p\\a.jpg"
+    },
+    {
+      "name": "reload-137",
+      "presented": "C:\\P\\A.CR2",
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": "C:\\p\\a.jpg",
+      "raw_enabled": false,
+      "pair_mode": "PreferRaw",
+      "result": "C:\\p\\a.jpg"
+    },
+    {
+      "name": "reload-138",
+      "presented": "C:\\P\\A.CR2",
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": "C:\\p\\a.cr2",
+      "raw_enabled": true,
+      "pair_mode": "Separate",
+      "result": "C:\\P\\A.CR2"
+    },
+    {
+      "name": "reload-139",
+      "presented": "C:\\P\\A.CR2",
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": "C:\\p\\a.cr2",
+      "raw_enabled": true,
+      "pair_mode": "PreferJpeg",
+      "result": "C:\\P\\A.CR2"
+    },
+    {
+      "name": "reload-140",
+      "presented": "C:\\P\\A.CR2",
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": "C:\\p\\a.cr2",
+      "raw_enabled": true,
+      "pair_mode": "PreferRaw",
+      "result": "C:\\P\\A.CR2"
+    },
+    {
+      "name": "reload-141",
+      "presented": "C:\\P\\A.CR2",
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": "C:\\p\\a.cr2",
+      "raw_enabled": false,
+      "pair_mode": "Separate",
+      "result": "C:\\p\\a.jpg"
+    },
+    {
+      "name": "reload-142",
+      "presented": "C:\\P\\A.CR2",
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": "C:\\p\\a.cr2",
+      "raw_enabled": false,
+      "pair_mode": "PreferJpeg",
+      "result": "C:\\p\\a.jpg"
+    },
+    {
+      "name": "reload-143",
+      "presented": "C:\\P\\A.CR2",
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": "C:\\p\\a.cr2",
+      "raw_enabled": false,
+      "pair_mode": "PreferRaw",
+      "result": "C:\\p\\a.jpg"
+    },
+    {
+      "name": "reload-144",
+      "presented": "",
+      "group": null,
+      "entry": null,
+      "raw_enabled": true,
+      "pair_mode": "Separate",
+      "result": ""
+    },
+    {
+      "name": "reload-145",
+      "presented": "",
+      "group": null,
+      "entry": null,
+      "raw_enabled": true,
+      "pair_mode": "PreferJpeg",
+      "result": ""
+    },
+    {
+      "name": "reload-146",
+      "presented": "",
+      "group": null,
+      "entry": null,
+      "raw_enabled": true,
+      "pair_mode": "PreferRaw",
+      "result": ""
+    },
+    {
+      "name": "reload-147",
+      "presented": "",
+      "group": null,
+      "entry": null,
+      "raw_enabled": false,
+      "pair_mode": "Separate",
+      "result": ""
+    },
+    {
+      "name": "reload-148",
+      "presented": "",
+      "group": null,
+      "entry": null,
+      "raw_enabled": false,
+      "pair_mode": "PreferJpeg",
+      "result": ""
+    },
+    {
+      "name": "reload-149",
+      "presented": "",
+      "group": null,
+      "entry": null,
+      "raw_enabled": false,
+      "pair_mode": "PreferRaw",
+      "result": ""
+    },
+    {
+      "name": "reload-150",
+      "presented": "",
+      "group": null,
+      "entry": "C:\\p\\a.jpg",
+      "raw_enabled": true,
+      "pair_mode": "Separate",
+      "result": ""
+    },
+    {
+      "name": "reload-151",
+      "presented": "",
+      "group": null,
+      "entry": "C:\\p\\a.jpg",
+      "raw_enabled": true,
+      "pair_mode": "PreferJpeg",
+      "result": ""
+    },
+    {
+      "name": "reload-152",
+      "presented": "",
+      "group": null,
+      "entry": "C:\\p\\a.jpg",
+      "raw_enabled": true,
+      "pair_mode": "PreferRaw",
+      "result": ""
+    },
+    {
+      "name": "reload-153",
+      "presented": "",
+      "group": null,
+      "entry": "C:\\p\\a.jpg",
+      "raw_enabled": false,
+      "pair_mode": "Separate",
+      "result": ""
+    },
+    {
+      "name": "reload-154",
+      "presented": "",
+      "group": null,
+      "entry": "C:\\p\\a.jpg",
+      "raw_enabled": false,
+      "pair_mode": "PreferJpeg",
+      "result": ""
+    },
+    {
+      "name": "reload-155",
+      "presented": "",
+      "group": null,
+      "entry": "C:\\p\\a.jpg",
+      "raw_enabled": false,
+      "pair_mode": "PreferRaw",
+      "result": ""
+    },
+    {
+      "name": "reload-156",
+      "presented": "",
+      "group": null,
+      "entry": "C:\\p\\a.cr2",
+      "raw_enabled": true,
+      "pair_mode": "Separate",
+      "result": ""
+    },
+    {
+      "name": "reload-157",
+      "presented": "",
+      "group": null,
+      "entry": "C:\\p\\a.cr2",
+      "raw_enabled": true,
+      "pair_mode": "PreferJpeg",
+      "result": ""
+    },
+    {
+      "name": "reload-158",
+      "presented": "",
+      "group": null,
+      "entry": "C:\\p\\a.cr2",
+      "raw_enabled": true,
+      "pair_mode": "PreferRaw",
+      "result": ""
+    },
+    {
+      "name": "reload-159",
+      "presented": "",
+      "group": null,
+      "entry": "C:\\p\\a.cr2",
+      "raw_enabled": false,
+      "pair_mode": "Separate",
+      "result": ""
+    },
+    {
+      "name": "reload-160",
+      "presented": "",
+      "group": null,
+      "entry": "C:\\p\\a.cr2",
+      "raw_enabled": false,
+      "pair_mode": "PreferJpeg",
+      "result": ""
+    },
+    {
+      "name": "reload-161",
+      "presented": "",
+      "group": null,
+      "entry": "C:\\p\\a.cr2",
+      "raw_enabled": false,
+      "pair_mode": "PreferRaw",
+      "result": ""
+    },
+    {
+      "name": "reload-162",
+      "presented": "",
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": null,
+      "raw_enabled": true,
+      "pair_mode": "Separate",
+      "result": ""
+    },
+    {
+      "name": "reload-163",
+      "presented": "",
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": null,
+      "raw_enabled": true,
+      "pair_mode": "PreferJpeg",
+      "result": ""
+    },
+    {
+      "name": "reload-164",
+      "presented": "",
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": null,
+      "raw_enabled": true,
+      "pair_mode": "PreferRaw",
+      "result": ""
+    },
+    {
+      "name": "reload-165",
+      "presented": "",
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": null,
+      "raw_enabled": false,
+      "pair_mode": "Separate",
+      "result": ""
+    },
+    {
+      "name": "reload-166",
+      "presented": "",
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": null,
+      "raw_enabled": false,
+      "pair_mode": "PreferJpeg",
+      "result": ""
+    },
+    {
+      "name": "reload-167",
+      "presented": "",
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": null,
+      "raw_enabled": false,
+      "pair_mode": "PreferRaw",
+      "result": ""
+    },
+    {
+      "name": "reload-168",
+      "presented": "",
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": "C:\\p\\a.jpg",
+      "raw_enabled": true,
+      "pair_mode": "Separate",
+      "result": ""
+    },
+    {
+      "name": "reload-169",
+      "presented": "",
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": "C:\\p\\a.jpg",
+      "raw_enabled": true,
+      "pair_mode": "PreferJpeg",
+      "result": ""
+    },
+    {
+      "name": "reload-170",
+      "presented": "",
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": "C:\\p\\a.jpg",
+      "raw_enabled": true,
+      "pair_mode": "PreferRaw",
+      "result": ""
+    },
+    {
+      "name": "reload-171",
+      "presented": "",
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": "C:\\p\\a.jpg",
+      "raw_enabled": false,
+      "pair_mode": "Separate",
+      "result": ""
+    },
+    {
+      "name": "reload-172",
+      "presented": "",
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": "C:\\p\\a.jpg",
+      "raw_enabled": false,
+      "pair_mode": "PreferJpeg",
+      "result": ""
+    },
+    {
+      "name": "reload-173",
+      "presented": "",
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": "C:\\p\\a.jpg",
+      "raw_enabled": false,
+      "pair_mode": "PreferRaw",
+      "result": ""
+    },
+    {
+      "name": "reload-174",
+      "presented": "",
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": "C:\\p\\a.cr2",
+      "raw_enabled": true,
+      "pair_mode": "Separate",
+      "result": ""
+    },
+    {
+      "name": "reload-175",
+      "presented": "",
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": "C:\\p\\a.cr2",
+      "raw_enabled": true,
+      "pair_mode": "PreferJpeg",
+      "result": ""
+    },
+    {
+      "name": "reload-176",
+      "presented": "",
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": "C:\\p\\a.cr2",
+      "raw_enabled": true,
+      "pair_mode": "PreferRaw",
+      "result": ""
+    },
+    {
+      "name": "reload-177",
+      "presented": "",
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": "C:\\p\\a.cr2",
+      "raw_enabled": false,
+      "pair_mode": "Separate",
+      "result": ""
+    },
+    {
+      "name": "reload-178",
+      "presented": "",
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": "C:\\p\\a.cr2",
+      "raw_enabled": false,
+      "pair_mode": "PreferJpeg",
+      "result": ""
+    },
+    {
+      "name": "reload-179",
+      "presented": "",
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": "C:\\p\\a.cr2",
+      "raw_enabled": false,
+      "pair_mode": "PreferRaw",
+      "result": ""
+    },
+    {
+      "name": "reload-180",
+      "presented": "C:\\p\\a.JPG",
+      "group": null,
+      "entry": null,
+      "raw_enabled": true,
+      "pair_mode": "Separate",
+      "result": "C:\\p\\a.JPG"
+    },
+    {
+      "name": "reload-181",
+      "presented": "C:\\p\\a.JPG",
+      "group": null,
+      "entry": null,
+      "raw_enabled": true,
+      "pair_mode": "PreferJpeg",
+      "result": "C:\\p\\a.JPG"
+    },
+    {
+      "name": "reload-182",
+      "presented": "C:\\p\\a.JPG",
+      "group": null,
+      "entry": null,
+      "raw_enabled": true,
+      "pair_mode": "PreferRaw",
+      "result": "C:\\p\\a.JPG"
+    },
+    {
+      "name": "reload-183",
+      "presented": "C:\\p\\a.JPG",
+      "group": null,
+      "entry": null,
+      "raw_enabled": false,
+      "pair_mode": "Separate",
+      "result": "C:\\p\\a.JPG"
+    },
+    {
+      "name": "reload-184",
+      "presented": "C:\\p\\a.JPG",
+      "group": null,
+      "entry": null,
+      "raw_enabled": false,
+      "pair_mode": "PreferJpeg",
+      "result": "C:\\p\\a.JPG"
+    },
+    {
+      "name": "reload-185",
+      "presented": "C:\\p\\a.JPG",
+      "group": null,
+      "entry": null,
+      "raw_enabled": false,
+      "pair_mode": "PreferRaw",
+      "result": "C:\\p\\a.JPG"
+    },
+    {
+      "name": "reload-186",
+      "presented": "C:\\p\\a.JPG",
+      "group": null,
+      "entry": "C:\\p\\a.jpg",
+      "raw_enabled": true,
+      "pair_mode": "Separate",
+      "result": "C:\\p\\a.JPG"
+    },
+    {
+      "name": "reload-187",
+      "presented": "C:\\p\\a.JPG",
+      "group": null,
+      "entry": "C:\\p\\a.jpg",
+      "raw_enabled": true,
+      "pair_mode": "PreferJpeg",
+      "result": "C:\\p\\a.JPG"
+    },
+    {
+      "name": "reload-188",
+      "presented": "C:\\p\\a.JPG",
+      "group": null,
+      "entry": "C:\\p\\a.jpg",
+      "raw_enabled": true,
+      "pair_mode": "PreferRaw",
+      "result": "C:\\p\\a.JPG"
+    },
+    {
+      "name": "reload-189",
+      "presented": "C:\\p\\a.JPG",
+      "group": null,
+      "entry": "C:\\p\\a.jpg",
+      "raw_enabled": false,
+      "pair_mode": "Separate",
+      "result": "C:\\p\\a.JPG"
+    },
+    {
+      "name": "reload-190",
+      "presented": "C:\\p\\a.JPG",
+      "group": null,
+      "entry": "C:\\p\\a.jpg",
+      "raw_enabled": false,
+      "pair_mode": "PreferJpeg",
+      "result": "C:\\p\\a.JPG"
+    },
+    {
+      "name": "reload-191",
+      "presented": "C:\\p\\a.JPG",
+      "group": null,
+      "entry": "C:\\p\\a.jpg",
+      "raw_enabled": false,
+      "pair_mode": "PreferRaw",
+      "result": "C:\\p\\a.JPG"
+    },
+    {
+      "name": "reload-192",
+      "presented": "C:\\p\\a.JPG",
+      "group": null,
+      "entry": "C:\\p\\a.cr2",
+      "raw_enabled": true,
+      "pair_mode": "Separate",
+      "result": "C:\\p\\a.JPG"
+    },
+    {
+      "name": "reload-193",
+      "presented": "C:\\p\\a.JPG",
+      "group": null,
+      "entry": "C:\\p\\a.cr2",
+      "raw_enabled": true,
+      "pair_mode": "PreferJpeg",
+      "result": "C:\\p\\a.JPG"
+    },
+    {
+      "name": "reload-194",
+      "presented": "C:\\p\\a.JPG",
+      "group": null,
+      "entry": "C:\\p\\a.cr2",
+      "raw_enabled": true,
+      "pair_mode": "PreferRaw",
+      "result": "C:\\p\\a.JPG"
+    },
+    {
+      "name": "reload-195",
+      "presented": "C:\\p\\a.JPG",
+      "group": null,
+      "entry": "C:\\p\\a.cr2",
+      "raw_enabled": false,
+      "pair_mode": "Separate",
+      "result": "C:\\p\\a.JPG"
+    },
+    {
+      "name": "reload-196",
+      "presented": "C:\\p\\a.JPG",
+      "group": null,
+      "entry": "C:\\p\\a.cr2",
+      "raw_enabled": false,
+      "pair_mode": "PreferJpeg",
+      "result": "C:\\p\\a.JPG"
+    },
+    {
+      "name": "reload-197",
+      "presented": "C:\\p\\a.JPG",
+      "group": null,
+      "entry": "C:\\p\\a.cr2",
+      "raw_enabled": false,
+      "pair_mode": "PreferRaw",
+      "result": "C:\\p\\a.JPG"
+    },
+    {
+      "name": "reload-198",
+      "presented": "C:\\p\\a.JPG",
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": null,
+      "raw_enabled": true,
+      "pair_mode": "Separate",
+      "result": "C:\\p\\a.JPG"
+    },
+    {
+      "name": "reload-199",
+      "presented": "C:\\p\\a.JPG",
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": null,
+      "raw_enabled": true,
+      "pair_mode": "PreferJpeg",
+      "result": "C:\\p\\a.JPG"
+    },
+    {
+      "name": "reload-200",
+      "presented": "C:\\p\\a.JPG",
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": null,
+      "raw_enabled": true,
+      "pair_mode": "PreferRaw",
+      "result": "C:\\p\\a.JPG"
+    },
+    {
+      "name": "reload-201",
+      "presented": "C:\\p\\a.JPG",
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": null,
+      "raw_enabled": false,
+      "pair_mode": "Separate",
+      "result": "C:\\p\\a.JPG"
+    },
+    {
+      "name": "reload-202",
+      "presented": "C:\\p\\a.JPG",
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": null,
+      "raw_enabled": false,
+      "pair_mode": "PreferJpeg",
+      "result": "C:\\p\\a.JPG"
+    },
+    {
+      "name": "reload-203",
+      "presented": "C:\\p\\a.JPG",
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": null,
+      "raw_enabled": false,
+      "pair_mode": "PreferRaw",
+      "result": "C:\\p\\a.JPG"
+    },
+    {
+      "name": "reload-204",
+      "presented": "C:\\p\\a.JPG",
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": "C:\\p\\a.jpg",
+      "raw_enabled": true,
+      "pair_mode": "Separate",
+      "result": "C:\\p\\a.JPG"
+    },
+    {
+      "name": "reload-205",
+      "presented": "C:\\p\\a.JPG",
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": "C:\\p\\a.jpg",
+      "raw_enabled": true,
+      "pair_mode": "PreferJpeg",
+      "result": "C:\\p\\a.JPG"
+    },
+    {
+      "name": "reload-206",
+      "presented": "C:\\p\\a.JPG",
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": "C:\\p\\a.jpg",
+      "raw_enabled": true,
+      "pair_mode": "PreferRaw",
+      "result": "C:\\p\\a.JPG"
+    },
+    {
+      "name": "reload-207",
+      "presented": "C:\\p\\a.JPG",
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": "C:\\p\\a.jpg",
+      "raw_enabled": false,
+      "pair_mode": "Separate",
+      "result": "C:\\p\\a.JPG"
+    },
+    {
+      "name": "reload-208",
+      "presented": "C:\\p\\a.JPG",
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": "C:\\p\\a.jpg",
+      "raw_enabled": false,
+      "pair_mode": "PreferJpeg",
+      "result": "C:\\p\\a.JPG"
+    },
+    {
+      "name": "reload-209",
+      "presented": "C:\\p\\a.JPG",
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": "C:\\p\\a.jpg",
+      "raw_enabled": false,
+      "pair_mode": "PreferRaw",
+      "result": "C:\\p\\a.JPG"
+    },
+    {
+      "name": "reload-210",
+      "presented": "C:\\p\\a.JPG",
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": "C:\\p\\a.cr2",
+      "raw_enabled": true,
+      "pair_mode": "Separate",
+      "result": "C:\\p\\a.JPG"
+    },
+    {
+      "name": "reload-211",
+      "presented": "C:\\p\\a.JPG",
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": "C:\\p\\a.cr2",
+      "raw_enabled": true,
+      "pair_mode": "PreferJpeg",
+      "result": "C:\\p\\a.JPG"
+    },
+    {
+      "name": "reload-212",
+      "presented": "C:\\p\\a.JPG",
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": "C:\\p\\a.cr2",
+      "raw_enabled": true,
+      "pair_mode": "PreferRaw",
+      "result": "C:\\p\\a.JPG"
+    },
+    {
+      "name": "reload-213",
+      "presented": "C:\\p\\a.JPG",
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": "C:\\p\\a.cr2",
+      "raw_enabled": false,
+      "pair_mode": "Separate",
+      "result": "C:\\p\\a.JPG"
+    },
+    {
+      "name": "reload-214",
+      "presented": "C:\\p\\a.JPG",
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": "C:\\p\\a.cr2",
+      "raw_enabled": false,
+      "pair_mode": "PreferJpeg",
+      "result": "C:\\p\\a.JPG"
+    },
+    {
+      "name": "reload-215",
+      "presented": "C:\\p\\a.JPG",
+      "group": {
+        "jpeg": "C:\\p\\a.jpg",
+        "raw": "C:\\p\\a.cr2"
+      },
+      "entry": "C:\\p\\a.cr2",
+      "raw_enabled": false,
+      "pair_mode": "PreferRaw",
+      "result": "C:\\p\\a.JPG"
+    }
+  ]
+}

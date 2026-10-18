@@ -1,0 +1,128 @@
+{
+  "generator": "oracle-cs translation-problems",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "id": "no-warnings-en",
+      "localizer": "en",
+      "warnings": [],
+      "has_problems": false,
+      "message": "Translations reloaded. No problems found in the translation files.",
+      "max_listed": 15
+    },
+    {
+      "id": "no-warnings-vi",
+      "localizer": "vi",
+      "warnings": [],
+      "has_problems": false,
+      "message": "Translations reloaded. No problems found in the translation files.",
+      "max_listed": 15
+    },
+    {
+      "id": "one-warning-en",
+      "localizer": "en",
+      "warnings": [
+        "a.json: invalid JSON"
+      ],
+      "has_problems": true,
+      "message": "Translations reloaded, but 1 problem was found. A broken file is skipped entirely; a broken entry shows the English text instead. Fix it and press 'Reload translations' again.\n\n• a.json: invalid JSON",
+      "max_listed": 15
+    },
+    {
+      "id": "one-warning-vi",
+      "localizer": "vi",
+      "warnings": [
+        "a.json: invalid JSON"
+      ],
+      "has_problems": true,
+      "message": "Translations reloaded, but 1 problem was found. A broken file is skipped entirely; a broken entry shows the English text instead. Fix it and press 'Reload translations' again.\n\n• a.json: invalid JSON",
+      "max_listed": 15
+    },
+    {
+      "id": "two-warnings-vi",
+      "localizer": "vi",
+      "warnings": [
+        "x.json: a",
+        "y.json: b"
+      ],
+      "has_problems": true,
+      "message": "Translations reloaded, but 2 problems were found. A broken file is skipped entirely; a broken entry shows the English text instead. Fix them and press 'Reload translations' again.\n\n• x.json: a\n• y.json: b",
+      "max_listed": 15
+    },
+    {
+      "id": "exactly-max-listed-en",
+      "localizer": "en",
+      "repeat": {
+        "prefix": "problem-",
+        "count": 15
+      },
+      "has_problems": true,
+      "message": "Translations reloaded, but 15 problems were found. A broken file is skipped entirely; a broken entry shows the English text instead. Fix them and press 'Reload translations' again.\n\n• problem-01\n• problem-02\n• problem-03\n• problem-04\n• problem-05\n• problem-06\n• problem-07\n• problem-08\n• problem-09\n• problem-10\n• problem-11\n• problem-12\n• problem-13\n• problem-14\n• problem-15",
+      "max_listed": 15
+    },
+    {
+      "id": "one-over-max-listed-en",
+      "localizer": "en",
+      "repeat": {
+        "prefix": "problem-",
+        "count": 16
+      },
+      "has_problems": true,
+      "message": "Translations reloaded, but 16 problems were found. A broken file is skipped entirely; a broken entry shows the English text instead. Fix them and press 'Reload translations' again.\n\n• problem-01\n• problem-02\n• problem-03\n• problem-04\n• problem-05\n• problem-06\n• problem-07\n• problem-08\n• problem-09\n• problem-10\n• problem-11\n• problem-12\n• problem-13\n• problem-14\n• problem-15\n… and 1 more (all problems are in the log).",
+      "max_listed": 15
+    },
+    {
+      "id": "one-over-max-listed-vi",
+      "localizer": "vi",
+      "repeat": {
+        "prefix": "problem-",
+        "count": 16
+      },
+      "has_problems": true,
+      "message": "Translations reloaded, but 16 problems were found. A broken file is skipped entirely; a broken entry shows the English text instead. Fix them and press 'Reload translations' again.\n\n• problem-01\n• problem-02\n• problem-03\n• problem-04\n• problem-05\n• problem-06\n• problem-07\n• problem-08\n• problem-09\n• problem-10\n• problem-11\n• problem-12\n• problem-13\n• problem-14\n• problem-15\n… and 1 more (all problems are in the log).",
+      "max_listed": 15
+    },
+    {
+      "id": "eighteen-warnings-en",
+      "localizer": "en",
+      "repeat": {
+        "prefix": "problem-",
+        "count": 18
+      },
+      "has_problems": true,
+      "message": "Translations reloaded, but 18 problems were found. A broken file is skipped entirely; a broken entry shows the English text instead. Fix them and press 'Reload translations' again.\n\n• problem-01\n• problem-02\n• problem-03\n• problem-04\n• problem-05\n• problem-06\n• problem-07\n• problem-08\n• problem-09\n• problem-10\n• problem-11\n• problem-12\n• problem-13\n• problem-14\n• problem-15\n… and 3 more (all problems are in the log).",
+      "max_listed": 15
+    },
+    {
+      "id": "eighteen-warnings-vi",
+      "localizer": "vi",
+      "repeat": {
+        "prefix": "problem-",
+        "count": 18
+      },
+      "has_problems": true,
+      "message": "Translations reloaded, but 18 problems were found. A broken file is skipped entirely; a broken entry shows the English text instead. Fix them and press 'Reload translations' again.\n\n• problem-01\n• problem-02\n• problem-03\n• problem-04\n• problem-05\n• problem-06\n• problem-07\n• problem-08\n• problem-09\n• problem-10\n• problem-11\n• problem-12\n• problem-13\n• problem-14\n• problem-15\n… and 3 more (all problems are in the log).",
+      "max_listed": 15
+    },
+    {
+      "id": "placeholder-text-in-warning-is-not-reparsed-en",
+      "localizer": "en",
+      "warnings": [
+        "file {count}.json: key 'x{0}' {details}"
+      ],
+      "has_problems": true,
+      "message": "Translations reloaded, but 1 problem was found. A broken file is skipped entirely; a broken entry shows the English text instead. Fix it and press 'Reload translations' again.\n\n• file {count}.json: key 'x{0}' {details}",
+      "max_listed": 15
+    },
+    {
+      "id": "newline-inside-warning-en",
+      "localizer": "en",
+      "warnings": [
+        "a.json:\nline 2"
+      ],
+      "has_problems": true,
+      "message": "Translations reloaded, but 1 problem was found. A broken file is skipped entirely; a broken entry shows the English text instead. Fix it and press 'Reload translations' again.\n\n• a.json:\nline 2",
+      "max_listed": 15
+    }
+  ]
+}

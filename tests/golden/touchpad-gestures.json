@@ -1,0 +1,4352 @@
+{
+  "generator": "oracle-cs touchpad-gestures",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "whole notches are a mouse wheel",
+      "kind": "classifier_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": 120,
+          "timestamp": 1000,
+          "hint": "Unknown"
+        },
+        {
+          "op": "handle",
+          "delta": -120,
+          "timestamp": 1000,
+          "hint": "Unknown"
+        },
+        {
+          "op": "handle",
+          "delta": 240,
+          "timestamp": 1000,
+          "hint": "Unknown"
+        },
+        {
+          "op": "handle",
+          "delta": -360,
+          "timestamp": 1000,
+          "hint": "Unknown"
+        }
+      ],
+      "touchpad": [
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "name": "partial notch 1 is a touchpad",
+      "kind": "classifier_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": 1,
+          "timestamp": 1000,
+          "hint": "Unknown"
+        }
+      ],
+      "touchpad": [
+        true
+      ]
+    },
+    {
+      "name": "partial notch -7 is a touchpad",
+      "kind": "classifier_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": -7,
+          "timestamp": 1000,
+          "hint": "Unknown"
+        }
+      ],
+      "touchpad": [
+        true
+      ]
+    },
+    {
+      "name": "partial notch 30 is a touchpad",
+      "kind": "classifier_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": 30,
+          "timestamp": 1000,
+          "hint": "Unknown"
+        }
+      ],
+      "touchpad": [
+        true
+      ]
+    },
+    {
+      "name": "partial notch -119 is a touchpad",
+      "kind": "classifier_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": -119,
+          "timestamp": 1000,
+          "hint": "Unknown"
+        }
+      ],
+      "touchpad": [
+        true
+      ]
+    },
+    {
+      "name": "partial notch 121 is a touchpad",
+      "kind": "classifier_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": 121,
+          "timestamp": 1000,
+          "hint": "Unknown"
+        }
+      ],
+      "touchpad": [
+        true
+      ]
+    },
+    {
+      "name": "the OS touchpad hint wins even for a whole notch",
+      "kind": "classifier_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": 120,
+          "timestamp": 1000,
+          "hint": "Touchpad"
+        }
+      ],
+      "touchpad": [
+        true
+      ]
+    },
+    {
+      "name": "exact notch inside a touchpad gesture stays touchpad until the gap is exceeded",
+      "kind": "classifier_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": -13,
+          "timestamp": 1000,
+          "hint": "Unknown"
+        },
+        {
+          "op": "handle",
+          "delta": -120,
+          "timestamp": 1250,
+          "hint": "Unknown"
+        },
+        {
+          "op": "handle",
+          "delta": -120,
+          "timestamp": 1501,
+          "hint": "Unknown"
+        },
+        {
+          "op": "handle",
+          "delta": -120,
+          "timestamp": 1502,
+          "hint": "Unknown"
+        }
+      ],
+      "touchpad": [
+        true,
+        true,
+        false,
+        false
+      ]
+    },
+    {
+      "name": "reset ends the gesture",
+      "kind": "classifier_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": -13,
+          "timestamp": 1000,
+          "hint": "Unknown"
+        },
+        {
+          "op": "reset"
+        },
+        {
+          "op": "handle",
+          "delta": -120,
+          "timestamp": 1001,
+          "hint": "Unknown"
+        }
+      ],
+      "touchpad": [
+        true,
+        false
+      ]
+    },
+    {
+      "name": "hinted touchpad then whole notch within the gap is touchpad",
+      "kind": "classifier_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": 120,
+          "timestamp": 1000,
+          "hint": "Touchpad"
+        },
+        {
+          "op": "handle",
+          "delta": 120,
+          "timestamp": 1100,
+          "hint": "Unknown"
+        }
+      ],
+      "touchpad": [
+        true,
+        true
+      ]
+    },
+    {
+      "name": "timestamp going backwards is not within the gap",
+      "kind": "classifier_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": -13,
+          "timestamp": 1000,
+          "hint": "Unknown"
+        },
+        {
+          "op": "handle",
+          "delta": -120,
+          "timestamp": 999,
+          "hint": "Unknown"
+        }
+      ],
+      "touchpad": [
+        true,
+        false
+      ]
+    },
+    {
+      "name": "tick count wrap inside the gap",
+      "kind": "classifier_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": -13,
+          "timestamp": 2147483640,
+          "hint": "Unknown"
+        },
+        {
+          "op": "handle",
+          "delta": -120,
+          "timestamp": -2147483640,
+          "hint": "Unknown"
+        }
+      ],
+      "touchpad": [
+        true,
+        true
+      ]
+    },
+    {
+      "name": "within gap last=1000 now=1000",
+      "kind": "within_gap",
+      "last": 1000,
+      "now": 1000,
+      "within": true
+    },
+    {
+      "name": "within gap last=1000 now=1250",
+      "kind": "within_gap",
+      "last": 1000,
+      "now": 1250,
+      "within": true
+    },
+    {
+      "name": "within gap last=1000 now=1251",
+      "kind": "within_gap",
+      "last": 1000,
+      "now": 1251,
+      "within": false
+    },
+    {
+      "name": "within gap last=1000 now=999",
+      "kind": "within_gap",
+      "last": 1000,
+      "now": 999,
+      "within": false
+    },
+    {
+      "name": "within gap last=0 now=250",
+      "kind": "within_gap",
+      "last": 0,
+      "now": 250,
+      "within": true
+    },
+    {
+      "name": "within gap last=0 now=251",
+      "kind": "within_gap",
+      "last": 0,
+      "now": 251,
+      "within": false
+    },
+    {
+      "name": "within gap last=0 now=-1",
+      "kind": "within_gap",
+      "last": 0,
+      "now": -1,
+      "within": false
+    },
+    {
+      "name": "within gap last=0 now=-250",
+      "kind": "within_gap",
+      "last": 0,
+      "now": -250,
+      "within": false
+    },
+    {
+      "name": "within gap last=5 now=255",
+      "kind": "within_gap",
+      "last": 5,
+      "now": 255,
+      "within": true
+    },
+    {
+      "name": "within gap last=5 now=256",
+      "kind": "within_gap",
+      "last": 5,
+      "now": 256,
+      "within": false
+    },
+    {
+      "name": "within gap last=2147483637 now=-2147483638",
+      "kind": "within_gap",
+      "last": 2147483637,
+      "now": -2147483638,
+      "within": true
+    },
+    {
+      "name": "within gap last=-2147483648 now=2147483647",
+      "kind": "within_gap",
+      "last": -2147483648,
+      "now": 2147483647,
+      "within": false
+    },
+    {
+      "name": "within gap last=2147483647 now=-2147483648",
+      "kind": "within_gap",
+      "last": 2147483647,
+      "now": -2147483648,
+      "within": true
+    },
+    {
+      "name": "within gap last=-2147483648 now=-2147483648",
+      "kind": "within_gap",
+      "last": -2147483648,
+      "now": -2147483648,
+      "within": true
+    },
+    {
+      "name": "light swipe changes one image after half the distance",
+      "kind": "navigator_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1000,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1008,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1016,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1024,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1032,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1040,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1048,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1056,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1064,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1072,
+          "distance": 200
+        }
+      ],
+      "outcomes": [
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "Next"
+      ],
+      "gesture_total": [
+        -10,
+        -20,
+        -30,
+        -40,
+        -50,
+        -60,
+        -70,
+        -80,
+        -90,
+        -100
+      ],
+      "gesture_images": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "name": "long swipe changes one image per full distance after the first",
+      "kind": "navigator_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1000,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1008,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1016,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1024,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1032,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1040,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1048,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1056,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1064,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1072,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1080,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1088,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1096,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1104,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1112,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1120,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1128,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1136,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1144,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1152,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1160,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1168,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1176,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1184,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1192,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1200,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1208,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1216,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1224,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1232,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1240,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1248,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1256,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1264,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1272,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1280,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1288,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1296,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1304,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1312,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1320,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1328,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1336,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1344,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1352,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1360,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1368,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1376,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1384,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1392,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1400,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1408,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1416,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1424,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1432,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1440,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1448,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1456,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1464,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1472,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1480,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1488,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1496,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1504,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1512,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1520,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1528,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1536,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1544,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1552,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1560,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1568,
+          "distance": 200
+        }
+      ],
+      "outcomes": [
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "Next",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "Next",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "Next",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "Next",
+        "None",
+        "None"
+      ],
+      "gesture_total": [
+        -10,
+        -20,
+        -30,
+        -40,
+        -50,
+        -60,
+        -70,
+        -80,
+        -90,
+        -100,
+        -110,
+        -120,
+        -130,
+        -140,
+        -150,
+        -160,
+        -170,
+        -180,
+        -190,
+        -200,
+        -210,
+        -220,
+        -230,
+        -240,
+        -250,
+        -260,
+        -270,
+        -280,
+        -290,
+        -300,
+        -310,
+        -320,
+        -330,
+        -340,
+        -350,
+        -360,
+        -370,
+        -380,
+        -390,
+        -400,
+        -410,
+        -420,
+        -430,
+        -440,
+        -450,
+        -460,
+        -470,
+        -480,
+        -490,
+        -500,
+        -510,
+        -520,
+        -530,
+        -540,
+        -550,
+        -560,
+        -570,
+        -580,
+        -590,
+        -600,
+        -610,
+        -620,
+        -630,
+        -640,
+        -650,
+        -660,
+        -670,
+        -680,
+        -690,
+        -700,
+        -710,
+        -720
+      ],
+      "gesture_images": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        3,
+        4,
+        4,
+        4
+      ]
+    },
+    {
+      "name": "swiping up goes to the previous image",
+      "kind": "navigator_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": 10,
+          "timestamp": 1000,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": 10,
+          "timestamp": 1008,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": 10,
+          "timestamp": 1016,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": 10,
+          "timestamp": 1024,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": 10,
+          "timestamp": 1032,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": 10,
+          "timestamp": 1040,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": 10,
+          "timestamp": 1048,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": 10,
+          "timestamp": 1056,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": 10,
+          "timestamp": 1064,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": 10,
+          "timestamp": 1072,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": 10,
+          "timestamp": 1080,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": 10,
+          "timestamp": 1088,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": 10,
+          "timestamp": 1096,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": 10,
+          "timestamp": 1104,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": 10,
+          "timestamp": 1112,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": 10,
+          "timestamp": 1120,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": 10,
+          "timestamp": 1128,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": 10,
+          "timestamp": 1136,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": 10,
+          "timestamp": 1144,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": 10,
+          "timestamp": 1152,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": 10,
+          "timestamp": 1160,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": 10,
+          "timestamp": 1168,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": 10,
+          "timestamp": 1176,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": 10,
+          "timestamp": 1184,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": 10,
+          "timestamp": 1192,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": 10,
+          "timestamp": 1200,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": 10,
+          "timestamp": 1208,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": 10,
+          "timestamp": 1216,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": 10,
+          "timestamp": 1224,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": 10,
+          "timestamp": 1232,
+          "distance": 200
+        }
+      ],
+      "outcomes": [
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "Previous",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "Previous"
+      ],
+      "gesture_total": [
+        10,
+        20,
+        30,
+        40,
+        50,
+        60,
+        70,
+        80,
+        90,
+        100,
+        110,
+        120,
+        130,
+        140,
+        150,
+        160,
+        170,
+        180,
+        190,
+        200,
+        210,
+        220,
+        230,
+        240,
+        250,
+        260,
+        270,
+        280,
+        290,
+        300
+      ],
+      "gesture_images": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        2
+      ]
+    },
+    {
+      "name": "bigger distance needs a longer swipe",
+      "kind": "navigator_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1000,
+          "distance": 600
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1008,
+          "distance": 600
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1016,
+          "distance": 600
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1024,
+          "distance": 600
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1032,
+          "distance": 600
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1040,
+          "distance": 600
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1048,
+          "distance": 600
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1056,
+          "distance": 600
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1064,
+          "distance": 600
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1072,
+          "distance": 600
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1080,
+          "distance": 600
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1088,
+          "distance": 600
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1096,
+          "distance": 600
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1104,
+          "distance": 600
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1112,
+          "distance": 600
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1120,
+          "distance": 600
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1128,
+          "distance": 600
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1136,
+          "distance": 600
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1144,
+          "distance": 600
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1152,
+          "distance": 600
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1160,
+          "distance": 600
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1168,
+          "distance": 600
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1176,
+          "distance": 600
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1184,
+          "distance": 600
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1192,
+          "distance": 600
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1200,
+          "distance": 600
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1208,
+          "distance": 600
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1216,
+          "distance": 600
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1224,
+          "distance": 600
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1232,
+          "distance": 600
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1240,
+          "distance": 600
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1248,
+          "distance": 600
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1256,
+          "distance": 600
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1264,
+          "distance": 600
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1272,
+          "distance": 600
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1280,
+          "distance": 600
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1288,
+          "distance": 600
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1296,
+          "distance": 600
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1304,
+          "distance": 600
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1312,
+          "distance": 600
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1320,
+          "distance": 600
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1328,
+          "distance": 600
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1336,
+          "distance": 600
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1344,
+          "distance": 600
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1352,
+          "distance": 600
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1360,
+          "distance": 600
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1368,
+          "distance": 600
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1376,
+          "distance": 600
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1384,
+          "distance": 600
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1392,
+          "distance": 600
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1400,
+          "distance": 600
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1408,
+          "distance": 600
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1416,
+          "distance": 600
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1424,
+          "distance": 600
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1432,
+          "distance": 600
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1440,
+          "distance": 600
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1448,
+          "distance": 600
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1456,
+          "distance": 600
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1464,
+          "distance": 600
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1472,
+          "distance": 600
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1480,
+          "distance": 600
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1488,
+          "distance": 600
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1496,
+          "distance": 600
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1504,
+          "distance": 600
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1512,
+          "distance": 600
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1520,
+          "distance": 600
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1528,
+          "distance": 600
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1536,
+          "distance": 600
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1544,
+          "distance": 600
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1552,
+          "distance": 600
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1560,
+          "distance": 600
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1568,
+          "distance": 600
+        }
+      ],
+      "outcomes": [
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "Next",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None",
+        "None"
+      ],
+      "gesture_total": [
+        -10,
+        -20,
+        -30,
+        -40,
+        -50,
+        -60,
+        -70,
+        -80,
+        -90,
+        -100,
+        -110,
+        -120,
+        -130,
+        -140,
+        -150,
+        -160,
+        -170,
+        -180,
+        -190,
+        -200,
+        -210,
+        -220,
+        -230,
+        -240,
+        -250,
+        -260,
+        -270,
+        -280,
+        -290,
+        -300,
+        -310,
+        -320,
+        -330,
+        -340,
+        -350,
+        -360,
+        -370,
+        -380,
+        -390,
+        -400,
+        -410,
+        -420,
+        -430,
+        -440,
+        -450,
+        -460,
+        -470,
+        -480,
+        -490,
+        -500,
+        -510,
+        -520,
+        -530,
+        -540,
+        -550,
+        -560,
+        -570,
+        -580,
+        -590,
+        -600,
+        -610,
+        -620,
+        -630,
+        -640,
+        -650,
+        -660,
+        -670,
+        -680,
+        -690,
+        -700,
+        -710,
+        -720
+      ],
+      "gesture_images": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "one huge message changes one image and queues nothing",
+      "kind": "navigator_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": -5000,
+          "timestamp": 1000,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1008,
+          "distance": 200
+        }
+      ],
+      "outcomes": [
+        "Next",
+        "None"
+      ],
+      "gesture_total": [
+        -5000,
+        -5010
+      ],
+      "gesture_images": [
+        1,
+        1
+      ]
+    },
+    {
+      "name": "remainder below a full step is kept for the next image",
+      "kind": "navigator_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": -150,
+          "timestamp": 1000,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": -140,
+          "timestamp": 1008,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1016,
+          "distance": 200
+        }
+      ],
+      "outcomes": [
+        "Next",
+        "None",
+        "Next"
+      ],
+      "gesture_total": [
+        -150,
+        -290,
+        -300
+      ],
+      "gesture_images": [
+        1,
+        1,
+        2
+      ]
+    },
+    {
+      "name": "reversal starts a fresh swipe",
+      "kind": "navigator_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": -100,
+          "timestamp": 1000,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": -90,
+          "timestamp": 1008,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": 90,
+          "timestamp": 1016,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": 10,
+          "timestamp": 1024,
+          "distance": 200
+        }
+      ],
+      "outcomes": [
+        "Next",
+        "None",
+        "None",
+        "Previous"
+      ],
+      "gesture_total": [
+        -100,
+        -190,
+        90,
+        100
+      ],
+      "gesture_images": [
+        1,
+        1,
+        0,
+        1
+      ]
+    },
+    {
+      "name": "pause longer than the gap starts a fresh swipe",
+      "kind": "navigator_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": -100,
+          "timestamp": 1000,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": -90,
+          "timestamp": 1008,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": -90,
+          "timestamp": 1259,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1267,
+          "distance": 200
+        }
+      ],
+      "outcomes": [
+        "Next",
+        "None",
+        "None",
+        "Next"
+      ],
+      "gesture_total": [
+        -100,
+        -190,
+        -90,
+        -100
+      ],
+      "gesture_images": [
+        1,
+        1,
+        0,
+        1
+      ]
+    },
+    {
+      "name": "within the gap continues the same swipe",
+      "kind": "navigator_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": -100,
+          "timestamp": 1000,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": -150,
+          "timestamp": 1250,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": -50,
+          "timestamp": 1258,
+          "distance": 200
+        }
+      ],
+      "outcomes": [
+        "Next",
+        "None",
+        "Next"
+      ],
+      "gesture_total": [
+        -100,
+        -250,
+        -300
+      ],
+      "gesture_images": [
+        1,
+        1,
+        2
+      ]
+    },
+    {
+      "name": "reset forgets the partial swipe",
+      "kind": "navigator_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": -90,
+          "timestamp": 1000,
+          "distance": 200
+        },
+        {
+          "op": "reset"
+        },
+        {
+          "op": "handle",
+          "delta": -90,
+          "timestamp": 1008,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": -10,
+          "timestamp": 1016,
+          "distance": 200
+        }
+      ],
+      "outcomes": [
+        "None",
+        "None",
+        "Next"
+      ],
+      "gesture_total": [
+        -90,
+        -90,
+        -100
+      ],
+      "gesture_images": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "name": "zero delta and non-positive distance treated as one",
+      "kind": "navigator_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": 0,
+          "timestamp": 1000,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": -1,
+          "timestamp": 1008,
+          "distance": 0
+        }
+      ],
+      "outcomes": [
+        "None",
+        "Next"
+      ],
+      "gesture_total": [
+        0,
+        -1
+      ],
+      "gesture_images": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "zero delta keeps the swipe alive after an image",
+      "kind": "navigator_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": -100,
+          "timestamp": 1000,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": 0,
+          "timestamp": 1008,
+          "distance": 200
+        },
+        {
+          "op": "handle",
+          "delta": -100,
+          "timestamp": 1016,
+          "distance": 200
+        }
+      ],
+      "outcomes": [
+        "Next",
+        "None",
+        "None"
+      ],
+      "gesture_total": [
+        -100,
+        -100,
+        -200
+      ],
+      "gesture_images": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "single step: distance 1 delta -6",
+      "kind": "navigator_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": -6,
+          "timestamp": 1000,
+          "distance": 1
+        }
+      ],
+      "outcomes": [
+        "Next"
+      ],
+      "gesture_total": [
+        -6
+      ],
+      "gesture_images": [
+        1
+      ]
+    },
+    {
+      "name": "single step: distance 1 delta -5",
+      "kind": "navigator_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": -5,
+          "timestamp": 1000,
+          "distance": 1
+        }
+      ],
+      "outcomes": [
+        "Next"
+      ],
+      "gesture_total": [
+        -5
+      ],
+      "gesture_images": [
+        1
+      ]
+    },
+    {
+      "name": "single step: distance 1 delta -4",
+      "kind": "navigator_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": -4,
+          "timestamp": 1000,
+          "distance": 1
+        }
+      ],
+      "outcomes": [
+        "Next"
+      ],
+      "gesture_total": [
+        -4
+      ],
+      "gesture_images": [
+        1
+      ]
+    },
+    {
+      "name": "single step: distance 1 delta -3",
+      "kind": "navigator_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": -3,
+          "timestamp": 1000,
+          "distance": 1
+        }
+      ],
+      "outcomes": [
+        "Next"
+      ],
+      "gesture_total": [
+        -3
+      ],
+      "gesture_images": [
+        1
+      ]
+    },
+    {
+      "name": "single step: distance 1 delta -2",
+      "kind": "navigator_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": -2,
+          "timestamp": 1000,
+          "distance": 1
+        }
+      ],
+      "outcomes": [
+        "Next"
+      ],
+      "gesture_total": [
+        -2
+      ],
+      "gesture_images": [
+        1
+      ]
+    },
+    {
+      "name": "single step: distance 1 delta -1",
+      "kind": "navigator_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": -1,
+          "timestamp": 1000,
+          "distance": 1
+        }
+      ],
+      "outcomes": [
+        "Next"
+      ],
+      "gesture_total": [
+        -1
+      ],
+      "gesture_images": [
+        1
+      ]
+    },
+    {
+      "name": "single step: distance 1 delta 1",
+      "kind": "navigator_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": 1,
+          "timestamp": 1000,
+          "distance": 1
+        }
+      ],
+      "outcomes": [
+        "Previous"
+      ],
+      "gesture_total": [
+        1
+      ],
+      "gesture_images": [
+        1
+      ]
+    },
+    {
+      "name": "single step: distance 1 delta 2",
+      "kind": "navigator_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": 2,
+          "timestamp": 1000,
+          "distance": 1
+        }
+      ],
+      "outcomes": [
+        "Previous"
+      ],
+      "gesture_total": [
+        2
+      ],
+      "gesture_images": [
+        1
+      ]
+    },
+    {
+      "name": "single step: distance 1 delta 3",
+      "kind": "navigator_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": 3,
+          "timestamp": 1000,
+          "distance": 1
+        }
+      ],
+      "outcomes": [
+        "Previous"
+      ],
+      "gesture_total": [
+        3
+      ],
+      "gesture_images": [
+        1
+      ]
+    },
+    {
+      "name": "single step: distance 2 delta -6",
+      "kind": "navigator_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": -6,
+          "timestamp": 1000,
+          "distance": 2
+        }
+      ],
+      "outcomes": [
+        "Next"
+      ],
+      "gesture_total": [
+        -6
+      ],
+      "gesture_images": [
+        1
+      ]
+    },
+    {
+      "name": "single step: distance 2 delta -5",
+      "kind": "navigator_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": -5,
+          "timestamp": 1000,
+          "distance": 2
+        }
+      ],
+      "outcomes": [
+        "Next"
+      ],
+      "gesture_total": [
+        -5
+      ],
+      "gesture_images": [
+        1
+      ]
+    },
+    {
+      "name": "single step: distance 2 delta -4",
+      "kind": "navigator_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": -4,
+          "timestamp": 1000,
+          "distance": 2
+        }
+      ],
+      "outcomes": [
+        "Next"
+      ],
+      "gesture_total": [
+        -4
+      ],
+      "gesture_images": [
+        1
+      ]
+    },
+    {
+      "name": "single step: distance 2 delta -3",
+      "kind": "navigator_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": -3,
+          "timestamp": 1000,
+          "distance": 2
+        }
+      ],
+      "outcomes": [
+        "Next"
+      ],
+      "gesture_total": [
+        -3
+      ],
+      "gesture_images": [
+        1
+      ]
+    },
+    {
+      "name": "single step: distance 2 delta -2",
+      "kind": "navigator_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": -2,
+          "timestamp": 1000,
+          "distance": 2
+        }
+      ],
+      "outcomes": [
+        "Next"
+      ],
+      "gesture_total": [
+        -2
+      ],
+      "gesture_images": [
+        1
+      ]
+    },
+    {
+      "name": "single step: distance 2 delta -1",
+      "kind": "navigator_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": -1,
+          "timestamp": 1000,
+          "distance": 2
+        }
+      ],
+      "outcomes": [
+        "Next"
+      ],
+      "gesture_total": [
+        -1
+      ],
+      "gesture_images": [
+        1
+      ]
+    },
+    {
+      "name": "single step: distance 2 delta 1",
+      "kind": "navigator_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": 1,
+          "timestamp": 1000,
+          "distance": 2
+        }
+      ],
+      "outcomes": [
+        "Previous"
+      ],
+      "gesture_total": [
+        1
+      ],
+      "gesture_images": [
+        1
+      ]
+    },
+    {
+      "name": "single step: distance 2 delta 2",
+      "kind": "navigator_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": 2,
+          "timestamp": 1000,
+          "distance": 2
+        }
+      ],
+      "outcomes": [
+        "Previous"
+      ],
+      "gesture_total": [
+        2
+      ],
+      "gesture_images": [
+        1
+      ]
+    },
+    {
+      "name": "single step: distance 2 delta 3",
+      "kind": "navigator_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": 3,
+          "timestamp": 1000,
+          "distance": 2
+        }
+      ],
+      "outcomes": [
+        "Previous"
+      ],
+      "gesture_total": [
+        3
+      ],
+      "gesture_images": [
+        1
+      ]
+    },
+    {
+      "name": "single step: distance 3 delta -6",
+      "kind": "navigator_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": -6,
+          "timestamp": 1000,
+          "distance": 3
+        }
+      ],
+      "outcomes": [
+        "Next"
+      ],
+      "gesture_total": [
+        -6
+      ],
+      "gesture_images": [
+        1
+      ]
+    },
+    {
+      "name": "single step: distance 3 delta -5",
+      "kind": "navigator_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": -5,
+          "timestamp": 1000,
+          "distance": 3
+        }
+      ],
+      "outcomes": [
+        "Next"
+      ],
+      "gesture_total": [
+        -5
+      ],
+      "gesture_images": [
+        1
+      ]
+    },
+    {
+      "name": "single step: distance 3 delta -4",
+      "kind": "navigator_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": -4,
+          "timestamp": 1000,
+          "distance": 3
+        }
+      ],
+      "outcomes": [
+        "Next"
+      ],
+      "gesture_total": [
+        -4
+      ],
+      "gesture_images": [
+        1
+      ]
+    },
+    {
+      "name": "single step: distance 3 delta -3",
+      "kind": "navigator_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": -3,
+          "timestamp": 1000,
+          "distance": 3
+        }
+      ],
+      "outcomes": [
+        "Next"
+      ],
+      "gesture_total": [
+        -3
+      ],
+      "gesture_images": [
+        1
+      ]
+    },
+    {
+      "name": "single step: distance 3 delta -2",
+      "kind": "navigator_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": -2,
+          "timestamp": 1000,
+          "distance": 3
+        }
+      ],
+      "outcomes": [
+        "Next"
+      ],
+      "gesture_total": [
+        -2
+      ],
+      "gesture_images": [
+        1
+      ]
+    },
+    {
+      "name": "single step: distance 3 delta -1",
+      "kind": "navigator_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": -1,
+          "timestamp": 1000,
+          "distance": 3
+        }
+      ],
+      "outcomes": [
+        "None"
+      ],
+      "gesture_total": [
+        -1
+      ],
+      "gesture_images": [
+        0
+      ]
+    },
+    {
+      "name": "single step: distance 3 delta 1",
+      "kind": "navigator_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": 1,
+          "timestamp": 1000,
+          "distance": 3
+        }
+      ],
+      "outcomes": [
+        "None"
+      ],
+      "gesture_total": [
+        1
+      ],
+      "gesture_images": [
+        0
+      ]
+    },
+    {
+      "name": "single step: distance 3 delta 2",
+      "kind": "navigator_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": 2,
+          "timestamp": 1000,
+          "distance": 3
+        }
+      ],
+      "outcomes": [
+        "Previous"
+      ],
+      "gesture_total": [
+        2
+      ],
+      "gesture_images": [
+        1
+      ]
+    },
+    {
+      "name": "single step: distance 3 delta 3",
+      "kind": "navigator_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": 3,
+          "timestamp": 1000,
+          "distance": 3
+        }
+      ],
+      "outcomes": [
+        "Previous"
+      ],
+      "gesture_total": [
+        3
+      ],
+      "gesture_images": [
+        1
+      ]
+    },
+    {
+      "name": "single step: distance 5 delta -6",
+      "kind": "navigator_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": -6,
+          "timestamp": 1000,
+          "distance": 5
+        }
+      ],
+      "outcomes": [
+        "Next"
+      ],
+      "gesture_total": [
+        -6
+      ],
+      "gesture_images": [
+        1
+      ]
+    },
+    {
+      "name": "single step: distance 5 delta -5",
+      "kind": "navigator_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": -5,
+          "timestamp": 1000,
+          "distance": 5
+        }
+      ],
+      "outcomes": [
+        "Next"
+      ],
+      "gesture_total": [
+        -5
+      ],
+      "gesture_images": [
+        1
+      ]
+    },
+    {
+      "name": "single step: distance 5 delta -4",
+      "kind": "navigator_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": -4,
+          "timestamp": 1000,
+          "distance": 5
+        }
+      ],
+      "outcomes": [
+        "Next"
+      ],
+      "gesture_total": [
+        -4
+      ],
+      "gesture_images": [
+        1
+      ]
+    },
+    {
+      "name": "single step: distance 5 delta -3",
+      "kind": "navigator_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": -3,
+          "timestamp": 1000,
+          "distance": 5
+        }
+      ],
+      "outcomes": [
+        "Next"
+      ],
+      "gesture_total": [
+        -3
+      ],
+      "gesture_images": [
+        1
+      ]
+    },
+    {
+      "name": "single step: distance 5 delta -2",
+      "kind": "navigator_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": -2,
+          "timestamp": 1000,
+          "distance": 5
+        }
+      ],
+      "outcomes": [
+        "Next"
+      ],
+      "gesture_total": [
+        -2
+      ],
+      "gesture_images": [
+        1
+      ]
+    },
+    {
+      "name": "single step: distance 5 delta -1",
+      "kind": "navigator_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": -1,
+          "timestamp": 1000,
+          "distance": 5
+        }
+      ],
+      "outcomes": [
+        "None"
+      ],
+      "gesture_total": [
+        -1
+      ],
+      "gesture_images": [
+        0
+      ]
+    },
+    {
+      "name": "single step: distance 5 delta 1",
+      "kind": "navigator_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": 1,
+          "timestamp": 1000,
+          "distance": 5
+        }
+      ],
+      "outcomes": [
+        "None"
+      ],
+      "gesture_total": [
+        1
+      ],
+      "gesture_images": [
+        0
+      ]
+    },
+    {
+      "name": "single step: distance 5 delta 2",
+      "kind": "navigator_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": 2,
+          "timestamp": 1000,
+          "distance": 5
+        }
+      ],
+      "outcomes": [
+        "Previous"
+      ],
+      "gesture_total": [
+        2
+      ],
+      "gesture_images": [
+        1
+      ]
+    },
+    {
+      "name": "single step: distance 5 delta 3",
+      "kind": "navigator_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": 3,
+          "timestamp": 1000,
+          "distance": 5
+        }
+      ],
+      "outcomes": [
+        "Previous"
+      ],
+      "gesture_total": [
+        3
+      ],
+      "gesture_images": [
+        1
+      ]
+    },
+    {
+      "name": "single step: distance 7 delta -6",
+      "kind": "navigator_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": -6,
+          "timestamp": 1000,
+          "distance": 7
+        }
+      ],
+      "outcomes": [
+        "Next"
+      ],
+      "gesture_total": [
+        -6
+      ],
+      "gesture_images": [
+        1
+      ]
+    },
+    {
+      "name": "single step: distance 7 delta -5",
+      "kind": "navigator_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": -5,
+          "timestamp": 1000,
+          "distance": 7
+        }
+      ],
+      "outcomes": [
+        "Next"
+      ],
+      "gesture_total": [
+        -5
+      ],
+      "gesture_images": [
+        1
+      ]
+    },
+    {
+      "name": "single step: distance 7 delta -4",
+      "kind": "navigator_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": -4,
+          "timestamp": 1000,
+          "distance": 7
+        }
+      ],
+      "outcomes": [
+        "Next"
+      ],
+      "gesture_total": [
+        -4
+      ],
+      "gesture_images": [
+        1
+      ]
+    },
+    {
+      "name": "single step: distance 7 delta -3",
+      "kind": "navigator_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": -3,
+          "timestamp": 1000,
+          "distance": 7
+        }
+      ],
+      "outcomes": [
+        "None"
+      ],
+      "gesture_total": [
+        -3
+      ],
+      "gesture_images": [
+        0
+      ]
+    },
+    {
+      "name": "single step: distance 7 delta -2",
+      "kind": "navigator_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": -2,
+          "timestamp": 1000,
+          "distance": 7
+        }
+      ],
+      "outcomes": [
+        "None"
+      ],
+      "gesture_total": [
+        -2
+      ],
+      "gesture_images": [
+        0
+      ]
+    },
+    {
+      "name": "single step: distance 7 delta -1",
+      "kind": "navigator_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": -1,
+          "timestamp": 1000,
+          "distance": 7
+        }
+      ],
+      "outcomes": [
+        "None"
+      ],
+      "gesture_total": [
+        -1
+      ],
+      "gesture_images": [
+        0
+      ]
+    },
+    {
+      "name": "single step: distance 7 delta 1",
+      "kind": "navigator_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": 1,
+          "timestamp": 1000,
+          "distance": 7
+        }
+      ],
+      "outcomes": [
+        "None"
+      ],
+      "gesture_total": [
+        1
+      ],
+      "gesture_images": [
+        0
+      ]
+    },
+    {
+      "name": "single step: distance 7 delta 2",
+      "kind": "navigator_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": 2,
+          "timestamp": 1000,
+          "distance": 7
+        }
+      ],
+      "outcomes": [
+        "None"
+      ],
+      "gesture_total": [
+        2
+      ],
+      "gesture_images": [
+        0
+      ]
+    },
+    {
+      "name": "single step: distance 7 delta 3",
+      "kind": "navigator_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": 3,
+          "timestamp": 1000,
+          "distance": 7
+        }
+      ],
+      "outcomes": [
+        "None"
+      ],
+      "gesture_total": [
+        3
+      ],
+      "gesture_images": [
+        0
+      ]
+    },
+    {
+      "name": "single step: distance 9 delta -6",
+      "kind": "navigator_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": -6,
+          "timestamp": 1000,
+          "distance": 9
+        }
+      ],
+      "outcomes": [
+        "Next"
+      ],
+      "gesture_total": [
+        -6
+      ],
+      "gesture_images": [
+        1
+      ]
+    },
+    {
+      "name": "single step: distance 9 delta -5",
+      "kind": "navigator_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": -5,
+          "timestamp": 1000,
+          "distance": 9
+        }
+      ],
+      "outcomes": [
+        "Next"
+      ],
+      "gesture_total": [
+        -5
+      ],
+      "gesture_images": [
+        1
+      ]
+    },
+    {
+      "name": "single step: distance 9 delta -4",
+      "kind": "navigator_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": -4,
+          "timestamp": 1000,
+          "distance": 9
+        }
+      ],
+      "outcomes": [
+        "Next"
+      ],
+      "gesture_total": [
+        -4
+      ],
+      "gesture_images": [
+        1
+      ]
+    },
+    {
+      "name": "single step: distance 9 delta -3",
+      "kind": "navigator_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": -3,
+          "timestamp": 1000,
+          "distance": 9
+        }
+      ],
+      "outcomes": [
+        "None"
+      ],
+      "gesture_total": [
+        -3
+      ],
+      "gesture_images": [
+        0
+      ]
+    },
+    {
+      "name": "single step: distance 9 delta -2",
+      "kind": "navigator_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": -2,
+          "timestamp": 1000,
+          "distance": 9
+        }
+      ],
+      "outcomes": [
+        "None"
+      ],
+      "gesture_total": [
+        -2
+      ],
+      "gesture_images": [
+        0
+      ]
+    },
+    {
+      "name": "single step: distance 9 delta -1",
+      "kind": "navigator_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": -1,
+          "timestamp": 1000,
+          "distance": 9
+        }
+      ],
+      "outcomes": [
+        "None"
+      ],
+      "gesture_total": [
+        -1
+      ],
+      "gesture_images": [
+        0
+      ]
+    },
+    {
+      "name": "single step: distance 9 delta 1",
+      "kind": "navigator_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": 1,
+          "timestamp": 1000,
+          "distance": 9
+        }
+      ],
+      "outcomes": [
+        "None"
+      ],
+      "gesture_total": [
+        1
+      ],
+      "gesture_images": [
+        0
+      ]
+    },
+    {
+      "name": "single step: distance 9 delta 2",
+      "kind": "navigator_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": 2,
+          "timestamp": 1000,
+          "distance": 9
+        }
+      ],
+      "outcomes": [
+        "None"
+      ],
+      "gesture_total": [
+        2
+      ],
+      "gesture_images": [
+        0
+      ]
+    },
+    {
+      "name": "single step: distance 9 delta 3",
+      "kind": "navigator_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": 3,
+          "timestamp": 1000,
+          "distance": 9
+        }
+      ],
+      "outcomes": [
+        "None"
+      ],
+      "gesture_total": [
+        3
+      ],
+      "gesture_images": [
+        0
+      ]
+    },
+    {
+      "name": "single step: distance 11 delta -6",
+      "kind": "navigator_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": -6,
+          "timestamp": 1000,
+          "distance": 11
+        }
+      ],
+      "outcomes": [
+        "Next"
+      ],
+      "gesture_total": [
+        -6
+      ],
+      "gesture_images": [
+        1
+      ]
+    },
+    {
+      "name": "single step: distance 11 delta -5",
+      "kind": "navigator_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": -5,
+          "timestamp": 1000,
+          "distance": 11
+        }
+      ],
+      "outcomes": [
+        "None"
+      ],
+      "gesture_total": [
+        -5
+      ],
+      "gesture_images": [
+        0
+      ]
+    },
+    {
+      "name": "single step: distance 11 delta -4",
+      "kind": "navigator_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": -4,
+          "timestamp": 1000,
+          "distance": 11
+        }
+      ],
+      "outcomes": [
+        "None"
+      ],
+      "gesture_total": [
+        -4
+      ],
+      "gesture_images": [
+        0
+      ]
+    },
+    {
+      "name": "single step: distance 11 delta -3",
+      "kind": "navigator_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": -3,
+          "timestamp": 1000,
+          "distance": 11
+        }
+      ],
+      "outcomes": [
+        "None"
+      ],
+      "gesture_total": [
+        -3
+      ],
+      "gesture_images": [
+        0
+      ]
+    },
+    {
+      "name": "single step: distance 11 delta -2",
+      "kind": "navigator_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": -2,
+          "timestamp": 1000,
+          "distance": 11
+        }
+      ],
+      "outcomes": [
+        "None"
+      ],
+      "gesture_total": [
+        -2
+      ],
+      "gesture_images": [
+        0
+      ]
+    },
+    {
+      "name": "single step: distance 11 delta -1",
+      "kind": "navigator_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": -1,
+          "timestamp": 1000,
+          "distance": 11
+        }
+      ],
+      "outcomes": [
+        "None"
+      ],
+      "gesture_total": [
+        -1
+      ],
+      "gesture_images": [
+        0
+      ]
+    },
+    {
+      "name": "single step: distance 11 delta 1",
+      "kind": "navigator_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": 1,
+          "timestamp": 1000,
+          "distance": 11
+        }
+      ],
+      "outcomes": [
+        "None"
+      ],
+      "gesture_total": [
+        1
+      ],
+      "gesture_images": [
+        0
+      ]
+    },
+    {
+      "name": "single step: distance 11 delta 2",
+      "kind": "navigator_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": 2,
+          "timestamp": 1000,
+          "distance": 11
+        }
+      ],
+      "outcomes": [
+        "None"
+      ],
+      "gesture_total": [
+        2
+      ],
+      "gesture_images": [
+        0
+      ]
+    },
+    {
+      "name": "single step: distance 11 delta 3",
+      "kind": "navigator_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": 3,
+          "timestamp": 1000,
+          "distance": 11
+        }
+      ],
+      "outcomes": [
+        "None"
+      ],
+      "gesture_total": [
+        3
+      ],
+      "gesture_images": [
+        0
+      ]
+    },
+    {
+      "name": "single step: distance 199 delta -6",
+      "kind": "navigator_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": -6,
+          "timestamp": 1000,
+          "distance": 199
+        }
+      ],
+      "outcomes": [
+        "None"
+      ],
+      "gesture_total": [
+        -6
+      ],
+      "gesture_images": [
+        0
+      ]
+    },
+    {
+      "name": "single step: distance 199 delta -5",
+      "kind": "navigator_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": -5,
+          "timestamp": 1000,
+          "distance": 199
+        }
+      ],
+      "outcomes": [
+        "None"
+      ],
+      "gesture_total": [
+        -5
+      ],
+      "gesture_images": [
+        0
+      ]
+    },
+    {
+      "name": "single step: distance 199 delta -4",
+      "kind": "navigator_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": -4,
+          "timestamp": 1000,
+          "distance": 199
+        }
+      ],
+      "outcomes": [
+        "None"
+      ],
+      "gesture_total": [
+        -4
+      ],
+      "gesture_images": [
+        0
+      ]
+    },
+    {
+      "name": "single step: distance 199 delta -3",
+      "kind": "navigator_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": -3,
+          "timestamp": 1000,
+          "distance": 199
+        }
+      ],
+      "outcomes": [
+        "None"
+      ],
+      "gesture_total": [
+        -3
+      ],
+      "gesture_images": [
+        0
+      ]
+    },
+    {
+      "name": "single step: distance 199 delta -2",
+      "kind": "navigator_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": -2,
+          "timestamp": 1000,
+          "distance": 199
+        }
+      ],
+      "outcomes": [
+        "None"
+      ],
+      "gesture_total": [
+        -2
+      ],
+      "gesture_images": [
+        0
+      ]
+    },
+    {
+      "name": "single step: distance 199 delta -1",
+      "kind": "navigator_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": -1,
+          "timestamp": 1000,
+          "distance": 199
+        }
+      ],
+      "outcomes": [
+        "None"
+      ],
+      "gesture_total": [
+        -1
+      ],
+      "gesture_images": [
+        0
+      ]
+    },
+    {
+      "name": "single step: distance 199 delta 1",
+      "kind": "navigator_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": 1,
+          "timestamp": 1000,
+          "distance": 199
+        }
+      ],
+      "outcomes": [
+        "None"
+      ],
+      "gesture_total": [
+        1
+      ],
+      "gesture_images": [
+        0
+      ]
+    },
+    {
+      "name": "single step: distance 199 delta 2",
+      "kind": "navigator_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": 2,
+          "timestamp": 1000,
+          "distance": 199
+        }
+      ],
+      "outcomes": [
+        "None"
+      ],
+      "gesture_total": [
+        2
+      ],
+      "gesture_images": [
+        0
+      ]
+    },
+    {
+      "name": "single step: distance 199 delta 3",
+      "kind": "navigator_sequence",
+      "steps": [
+        {
+          "op": "handle",
+          "delta": 3,
+          "timestamp": 1000,
+          "distance": 199
+        }
+      ],
+      "outcomes": [
+        "None"
+      ],
+      "gesture_total": [
+        3
+      ],
+      "gesture_images": [
+        0
+      ]
+    },
+    {
+      "name": "route horizontal=False ctrl=False enabled=False touchpad=False can_pan=False",
+      "kind": "route",
+      "delta": -30,
+      "horizontal": false,
+      "ctrl": false,
+      "enabled": false,
+      "is_touchpad": false,
+      "can_pan": false,
+      "action": "MouseWheel"
+    },
+    {
+      "name": "route horizontal=False ctrl=False enabled=False touchpad=False can_pan=True",
+      "kind": "route",
+      "delta": -30,
+      "horizontal": false,
+      "ctrl": false,
+      "enabled": false,
+      "is_touchpad": false,
+      "can_pan": true,
+      "action": "MouseWheel"
+    },
+    {
+      "name": "route horizontal=False ctrl=False enabled=False touchpad=True can_pan=False",
+      "kind": "route",
+      "delta": -30,
+      "horizontal": false,
+      "ctrl": false,
+      "enabled": false,
+      "is_touchpad": true,
+      "can_pan": false,
+      "action": "MouseWheel"
+    },
+    {
+      "name": "route horizontal=False ctrl=False enabled=False touchpad=True can_pan=True",
+      "kind": "route",
+      "delta": -30,
+      "horizontal": false,
+      "ctrl": false,
+      "enabled": false,
+      "is_touchpad": true,
+      "can_pan": true,
+      "action": "MouseWheel"
+    },
+    {
+      "name": "route horizontal=False ctrl=False enabled=True touchpad=False can_pan=False",
+      "kind": "route",
+      "delta": -30,
+      "horizontal": false,
+      "ctrl": false,
+      "enabled": true,
+      "is_touchpad": false,
+      "can_pan": false,
+      "action": "MouseWheel"
+    },
+    {
+      "name": "route horizontal=False ctrl=False enabled=True touchpad=False can_pan=True",
+      "kind": "route",
+      "delta": -30,
+      "horizontal": false,
+      "ctrl": false,
+      "enabled": true,
+      "is_touchpad": false,
+      "can_pan": true,
+      "action": "MouseWheel"
+    },
+    {
+      "name": "route horizontal=False ctrl=False enabled=True touchpad=True can_pan=False",
+      "kind": "route",
+      "delta": -30,
+      "horizontal": false,
+      "ctrl": false,
+      "enabled": true,
+      "is_touchpad": true,
+      "can_pan": false,
+      "action": "Navigate"
+    },
+    {
+      "name": "route horizontal=False ctrl=False enabled=True touchpad=True can_pan=True",
+      "kind": "route",
+      "delta": -30,
+      "horizontal": false,
+      "ctrl": false,
+      "enabled": true,
+      "is_touchpad": true,
+      "can_pan": true,
+      "action": "Pan"
+    },
+    {
+      "name": "route horizontal=False ctrl=True enabled=False touchpad=False can_pan=False",
+      "kind": "route",
+      "delta": -30,
+      "horizontal": false,
+      "ctrl": true,
+      "enabled": false,
+      "is_touchpad": false,
+      "can_pan": false,
+      "action": "MouseWheel"
+    },
+    {
+      "name": "route horizontal=False ctrl=True enabled=False touchpad=False can_pan=True",
+      "kind": "route",
+      "delta": -30,
+      "horizontal": false,
+      "ctrl": true,
+      "enabled": false,
+      "is_touchpad": false,
+      "can_pan": true,
+      "action": "MouseWheel"
+    },
+    {
+      "name": "route horizontal=False ctrl=True enabled=False touchpad=True can_pan=False",
+      "kind": "route",
+      "delta": -30,
+      "horizontal": false,
+      "ctrl": true,
+      "enabled": false,
+      "is_touchpad": true,
+      "can_pan": false,
+      "action": "MouseWheel"
+    },
+    {
+      "name": "route horizontal=False ctrl=True enabled=False touchpad=True can_pan=True",
+      "kind": "route",
+      "delta": -30,
+      "horizontal": false,
+      "ctrl": true,
+      "enabled": false,
+      "is_touchpad": true,
+      "can_pan": true,
+      "action": "MouseWheel"
+    },
+    {
+      "name": "route horizontal=False ctrl=True enabled=True touchpad=False can_pan=False",
+      "kind": "route",
+      "delta": -30,
+      "horizontal": false,
+      "ctrl": true,
+      "enabled": true,
+      "is_touchpad": false,
+      "can_pan": false,
+      "action": "MouseWheel"
+    },
+    {
+      "name": "route horizontal=False ctrl=True enabled=True touchpad=False can_pan=True",
+      "kind": "route",
+      "delta": -30,
+      "horizontal": false,
+      "ctrl": true,
+      "enabled": true,
+      "is_touchpad": false,
+      "can_pan": true,
+      "action": "MouseWheel"
+    },
+    {
+      "name": "route horizontal=False ctrl=True enabled=True touchpad=True can_pan=False",
+      "kind": "route",
+      "delta": -30,
+      "horizontal": false,
+      "ctrl": true,
+      "enabled": true,
+      "is_touchpad": true,
+      "can_pan": false,
+      "action": "MouseWheel"
+    },
+    {
+      "name": "route horizontal=False ctrl=True enabled=True touchpad=True can_pan=True",
+      "kind": "route",
+      "delta": -30,
+      "horizontal": false,
+      "ctrl": true,
+      "enabled": true,
+      "is_touchpad": true,
+      "can_pan": true,
+      "action": "MouseWheel"
+    },
+    {
+      "name": "route horizontal=True ctrl=False enabled=False touchpad=False can_pan=False",
+      "kind": "route",
+      "delta": -30,
+      "horizontal": true,
+      "ctrl": false,
+      "enabled": false,
+      "is_touchpad": false,
+      "can_pan": false,
+      "action": "Ignore"
+    },
+    {
+      "name": "route horizontal=True ctrl=False enabled=False touchpad=False can_pan=True",
+      "kind": "route",
+      "delta": -30,
+      "horizontal": true,
+      "ctrl": false,
+      "enabled": false,
+      "is_touchpad": false,
+      "can_pan": true,
+      "action": "Ignore"
+    },
+    {
+      "name": "route horizontal=True ctrl=False enabled=False touchpad=True can_pan=False",
+      "kind": "route",
+      "delta": -30,
+      "horizontal": true,
+      "ctrl": false,
+      "enabled": false,
+      "is_touchpad": true,
+      "can_pan": false,
+      "action": "Ignore"
+    },
+    {
+      "name": "route horizontal=True ctrl=False enabled=False touchpad=True can_pan=True",
+      "kind": "route",
+      "delta": -30,
+      "horizontal": true,
+      "ctrl": false,
+      "enabled": false,
+      "is_touchpad": true,
+      "can_pan": true,
+      "action": "Ignore"
+    },
+    {
+      "name": "route horizontal=True ctrl=False enabled=True touchpad=False can_pan=False",
+      "kind": "route",
+      "delta": -30,
+      "horizontal": true,
+      "ctrl": false,
+      "enabled": true,
+      "is_touchpad": false,
+      "can_pan": false,
+      "action": "Ignore"
+    },
+    {
+      "name": "route horizontal=True ctrl=False enabled=True touchpad=False can_pan=True",
+      "kind": "route",
+      "delta": -30,
+      "horizontal": true,
+      "ctrl": false,
+      "enabled": true,
+      "is_touchpad": false,
+      "can_pan": true,
+      "action": "Ignore"
+    },
+    {
+      "name": "route horizontal=True ctrl=False enabled=True touchpad=True can_pan=False",
+      "kind": "route",
+      "delta": -30,
+      "horizontal": true,
+      "ctrl": false,
+      "enabled": true,
+      "is_touchpad": true,
+      "can_pan": false,
+      "action": "Ignore"
+    },
+    {
+      "name": "route horizontal=True ctrl=False enabled=True touchpad=True can_pan=True",
+      "kind": "route",
+      "delta": -30,
+      "horizontal": true,
+      "ctrl": false,
+      "enabled": true,
+      "is_touchpad": true,
+      "can_pan": true,
+      "action": "Pan"
+    },
+    {
+      "name": "route horizontal=True ctrl=True enabled=False touchpad=False can_pan=False",
+      "kind": "route",
+      "delta": -30,
+      "horizontal": true,
+      "ctrl": true,
+      "enabled": false,
+      "is_touchpad": false,
+      "can_pan": false,
+      "action": "Ignore"
+    },
+    {
+      "name": "route horizontal=True ctrl=True enabled=False touchpad=False can_pan=True",
+      "kind": "route",
+      "delta": -30,
+      "horizontal": true,
+      "ctrl": true,
+      "enabled": false,
+      "is_touchpad": false,
+      "can_pan": true,
+      "action": "Ignore"
+    },
+    {
+      "name": "route horizontal=True ctrl=True enabled=False touchpad=True can_pan=False",
+      "kind": "route",
+      "delta": -30,
+      "horizontal": true,
+      "ctrl": true,
+      "enabled": false,
+      "is_touchpad": true,
+      "can_pan": false,
+      "action": "Ignore"
+    },
+    {
+      "name": "route horizontal=True ctrl=True enabled=False touchpad=True can_pan=True",
+      "kind": "route",
+      "delta": -30,
+      "horizontal": true,
+      "ctrl": true,
+      "enabled": false,
+      "is_touchpad": true,
+      "can_pan": true,
+      "action": "Ignore"
+    },
+    {
+      "name": "route horizontal=True ctrl=True enabled=True touchpad=False can_pan=False",
+      "kind": "route",
+      "delta": -30,
+      "horizontal": true,
+      "ctrl": true,
+      "enabled": true,
+      "is_touchpad": false,
+      "can_pan": false,
+      "action": "Ignore"
+    },
+    {
+      "name": "route horizontal=True ctrl=True enabled=True touchpad=False can_pan=True",
+      "kind": "route",
+      "delta": -30,
+      "horizontal": true,
+      "ctrl": true,
+      "enabled": true,
+      "is_touchpad": false,
+      "can_pan": true,
+      "action": "Ignore"
+    },
+    {
+      "name": "route horizontal=True ctrl=True enabled=True touchpad=True can_pan=False",
+      "kind": "route",
+      "delta": -30,
+      "horizontal": true,
+      "ctrl": true,
+      "enabled": true,
+      "is_touchpad": true,
+      "can_pan": false,
+      "action": "Ignore"
+    },
+    {
+      "name": "route horizontal=True ctrl=True enabled=True touchpad=True can_pan=True",
+      "kind": "route",
+      "delta": -30,
+      "horizontal": true,
+      "ctrl": true,
+      "enabled": true,
+      "is_touchpad": true,
+      "can_pan": true,
+      "action": "Ignore"
+    },
+    {
+      "name": "pan offset delta=0 horizontal=False",
+      "kind": "pan_offset",
+      "delta": 0,
+      "horizontal": 0,
+      "vertical": 0
+    },
+    {
+      "name": "pan offset delta=0 horizontal=True",
+      "kind": "pan_offset",
+      "delta": 0,
+      "horizontal": 0,
+      "vertical": 0
+    },
+    {
+      "name": "pan offset delta=1 horizontal=False",
+      "kind": "pan_offset",
+      "delta": 1,
+      "horizontal": 0,
+      "vertical": -1
+    },
+    {
+      "name": "pan offset delta=1 horizontal=True",
+      "kind": "pan_offset",
+      "delta": 1,
+      "horizontal": 1,
+      "vertical": 0
+    },
+    {
+      "name": "pan offset delta=-1 horizontal=False",
+      "kind": "pan_offset",
+      "delta": -1,
+      "horizontal": 0,
+      "vertical": 1
+    },
+    {
+      "name": "pan offset delta=-1 horizontal=True",
+      "kind": "pan_offset",
+      "delta": -1,
+      "horizontal": -1,
+      "vertical": 0
+    },
+    {
+      "name": "pan offset delta=30 horizontal=False",
+      "kind": "pan_offset",
+      "delta": 30,
+      "horizontal": 0,
+      "vertical": -30
+    },
+    {
+      "name": "pan offset delta=30 horizontal=True",
+      "kind": "pan_offset",
+      "delta": 30,
+      "horizontal": 30,
+      "vertical": 0
+    },
+    {
+      "name": "pan offset delta=-30 horizontal=False",
+      "kind": "pan_offset",
+      "delta": -30,
+      "horizontal": 0,
+      "vertical": 30
+    },
+    {
+      "name": "pan offset delta=-30 horizontal=True",
+      "kind": "pan_offset",
+      "delta": -30,
+      "horizontal": -30,
+      "vertical": 0
+    },
+    {
+      "name": "pan offset delta=2147483647 horizontal=False",
+      "kind": "pan_offset",
+      "delta": 2147483647,
+      "horizontal": 0,
+      "vertical": -2147483647
+    },
+    {
+      "name": "pan offset delta=2147483647 horizontal=True",
+      "kind": "pan_offset",
+      "delta": 2147483647,
+      "horizontal": 2147483647,
+      "vertical": 0
+    },
+    {
+      "name": "pan offset delta=-2147483647 horizontal=False",
+      "kind": "pan_offset",
+      "delta": -2147483647,
+      "horizontal": 0,
+      "vertical": 2147483647
+    },
+    {
+      "name": "pan offset delta=-2147483647 horizontal=True",
+      "kind": "pan_offset",
+      "delta": -2147483647,
+      "horizontal": -2147483647,
+      "vertical": 0
+    },
+    {
+      "name": "pan offset delta=-2147483648 horizontal=False",
+      "kind": "pan_offset",
+      "delta": -2147483648,
+      "horizontal": 0,
+      "vertical": -2147483648
+    },
+    {
+      "name": "pan offset delta=-2147483648 horizontal=True",
+      "kind": "pan_offset",
+      "delta": -2147483648,
+      "horizontal": -2147483648,
+      "vertical": 0
+    }
+  ]
+}

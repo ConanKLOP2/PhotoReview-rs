@@ -84,3 +84,6 @@ pub mod spike_ui;
 /// Test-only Win32 process memory metrics used by native decoder parity tests.
 #[cfg(all(windows, feature = "test-support"))]
 pub mod test_support;
+
+/// Wave 8 viewing adapters that need no `pr-app` type (W8-16a/16e stubs; `pr-app` depends on this crate).
+pub mod shell_viewing;

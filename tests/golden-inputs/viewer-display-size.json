@@ -1,0 +1,21 @@
+{
+ "cases": [
+  {"name": "100 percent DPI, zoom 1 keeps the source size", "width": 1000, "height": 800, "zoom": 1.0, "dpi_scale": 1.0},
+  {"name": "minimum plausible DPI 0.25 quadruples", "width": 1000, "height": 1000, "zoom": 1.0, "dpi_scale": 0.25},
+  {"name": "maximum plausible DPI 16", "width": 1000, "height": 1000, "zoom": 1.0, "dpi_scale": 16.0},
+  {"name": "DPI 16.01 is implausible and reads as 1.0", "width": 1000, "height": 1000, "zoom": 1.0, "dpi_scale": 16.01},
+  {"name": "DPI 0.24 is implausible and reads as 1.0", "width": 1000, "height": 1000, "zoom": 1.0, "dpi_scale": 0.24},
+  {"name": "DPI NaN reads as 1.0", "width": 1000, "height": 1000, "zoom": 1.0, "dpi_scale": "NaN"},
+  {"name": "DPI infinity reads as 1.0", "width": 1000, "height": 1000, "zoom": 1.0, "dpi_scale": "Infinity"},
+  {"name": "DPI negative reads as 1.0", "width": 1000, "height": 1000, "zoom": 1.0, "dpi_scale": -1.0},
+  {"name": "200 percent DPI halves the size at zoom 1", "width": 1000, "height": 1000, "zoom": 1.0, "dpi_scale": 2.0},
+  {"name": "200 percent DPI at zoom 2 keeps the source size", "width": 1000, "height": 1000, "zoom": 2.0, "dpi_scale": 2.0},
+  {"name": "non-square at fractional zoom and DPI", "width": 3, "height": 7, "zoom": 0.5, "dpi_scale": 1.5},
+  {"name": "zero source size stays zero", "width": 0, "height": 0, "zoom": 1.0, "dpi_scale": 1.0},
+  {"name": "1 by 1 at zoom 8", "width": 1, "height": 1, "zoom": 8.0, "dpi_scale": 1.0},
+  {"name": "zoom 0.1 of a 4000 by 3000 image", "width": 4000, "height": 3000, "zoom": 0.1, "dpi_scale": 1.0},
+  {"name": "portrait at 50 percent DPI scale 0.5 doubles", "width": 2000, "height": 4000, "zoom": 1.0, "dpi_scale": 0.5},
+  {"name": "zero zoom gives zero size", "width": 1000, "height": 1000, "zoom": 0.0, "dpi_scale": 1.0},
+  {"name": "NaN zoom gives NaN size", "width": 1000, "height": 1000, "zoom": "NaN", "dpi_scale": 1.0}
+ ]
+}

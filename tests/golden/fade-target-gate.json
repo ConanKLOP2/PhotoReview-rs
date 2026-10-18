@@ -1,0 +1,118 @@
+{
+  "generator": "oracle-cs fade-target-gate",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "first target always starts a fade",
+      "kind": "sequence",
+      "targets": [
+        1.0
+      ],
+      "results": [
+        true
+      ]
+    },
+    {
+      "name": "repeated target starts once",
+      "kind": "sequence",
+      "targets": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "results": [
+        true,
+        false,
+        false
+      ]
+    },
+    {
+      "name": "change back and forth",
+      "kind": "sequence",
+      "targets": [
+        1.0,
+        0.0,
+        0.0,
+        0.6,
+        0.0
+      ],
+      "results": [
+        true,
+        true,
+        false,
+        true,
+        true
+      ]
+    },
+    {
+      "name": "negative zero equals zero (IEEE ==)",
+      "kind": "sequence",
+      "targets": [
+        0.0,
+        "-0",
+        0.0
+      ],
+      "results": [
+        true,
+        false,
+        false
+      ]
+    },
+    {
+      "name": "NaN is never equal, so every NaN starts",
+      "kind": "sequence",
+      "targets": [
+        "NaN",
+        "NaN"
+      ],
+      "results": [
+        true,
+        true
+      ]
+    },
+    {
+      "name": "NaN, a number, NaN: each change starts",
+      "kind": "sequence",
+      "targets": [
+        "NaN",
+        0.5,
+        "NaN"
+      ],
+      "results": [
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "name": "infinity equals itself",
+      "kind": "sequence",
+      "targets": [
+        "Infinity",
+        "Infinity"
+      ],
+      "results": [
+        true,
+        false
+      ]
+    },
+    {
+      "name": "opacity steps 0.2 and 1.0",
+      "kind": "sequence",
+      "targets": [
+        0.2,
+        0.2,
+        1.0,
+        1.0,
+        0.2
+      ],
+      "results": [
+        true,
+        false,
+        true,
+        false,
+        true
+      ]
+    }
+  ]
+}

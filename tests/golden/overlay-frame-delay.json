@@ -1,0 +1,498 @@
+{
+  "generator": "oracle-cs overlay-frame-delay",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "Fires on the first frame at or after the deadline, exactly once",
+      "kind": "script",
+      "ticks_per_second": 1000,
+      "ops": [
+        {
+          "op": "start",
+          "now": 100,
+          "delay_ticks": 5000000
+        },
+        {
+          "op": "tick",
+          "timestamp": 599
+        },
+        {
+          "op": "tick",
+          "timestamp": 600
+        },
+        {
+          "op": "tick",
+          "timestamp": 900
+        }
+      ],
+      "results": [
+        {
+          "op": "start",
+          "running": true,
+          "fired": 0,
+          "fired_now": false,
+          "request_frame": true
+        },
+        {
+          "op": "tick",
+          "running": true,
+          "fired": 0,
+          "fired_now": false,
+          "request_frame": false
+        },
+        {
+          "op": "tick",
+          "running": false,
+          "fired": 1,
+          "fired_now": true,
+          "request_frame": false
+        },
+        {
+          "op": "tick",
+          "running": false,
+          "fired": 1,
+          "fired_now": false,
+          "request_frame": false
+        }
+      ]
+    },
+    {
+      "name": "Start while running replaces the deadline",
+      "kind": "script",
+      "ticks_per_second": 1000,
+      "ops": [
+        {
+          "op": "start",
+          "now": 0,
+          "delay_ticks": 5000000
+        },
+        {
+          "op": "start",
+          "now": 400,
+          "delay_ticks": 5000000
+        },
+        {
+          "op": "tick",
+          "timestamp": 500
+        },
+        {
+          "op": "tick",
+          "timestamp": 900
+        }
+      ],
+      "results": [
+        {
+          "op": "start",
+          "running": true,
+          "fired": 0,
+          "fired_now": false,
+          "request_frame": true
+        },
+        {
+          "op": "start",
+          "running": true,
+          "fired": 0,
+          "fired_now": false,
+          "request_frame": true
+        },
+        {
+          "op": "tick",
+          "running": true,
+          "fired": 0,
+          "fired_now": false,
+          "request_frame": false
+        },
+        {
+          "op": "tick",
+          "running": false,
+          "fired": 1,
+          "fired_now": true,
+          "request_frame": false
+        }
+      ]
+    },
+    {
+      "name": "Stop cancels, releases the clock, and start requests a frame",
+      "kind": "script",
+      "ticks_per_second": 1000,
+      "ops": [
+        {
+          "op": "start",
+          "now": 0,
+          "delay_ticks": 100000
+        },
+        {
+          "op": "stop"
+        },
+        {
+          "op": "tick",
+          "timestamp": 1000000
+        },
+        {
+          "op": "stop"
+        }
+      ],
+      "results": [
+        {
+          "op": "start",
+          "running": true,
+          "fired": 0,
+          "fired_now": false,
+          "request_frame": true
+        },
+        {
+          "op": "stop",
+          "running": false,
+          "fired": 0,
+          "fired_now": false,
+          "request_frame": false
+        },
+        {
+          "op": "tick",
+          "running": false,
+          "fired": 0,
+          "fired_now": false,
+          "request_frame": false
+        },
+        {
+          "op": "stop",
+          "running": false,
+          "fired": 0,
+          "fired_now": false,
+          "request_frame": false
+        }
+      ]
+    },
+    {
+      "name": "Callback may restart the timer (three firings)",
+      "kind": "script",
+      "ticks_per_second": 1000,
+      "restart": {
+        "delay_ms": 100,
+        "until_fired": 3
+      },
+      "ops": [
+        {
+          "op": "start",
+          "now": 0,
+          "delay_ticks": 1000000
+        },
+        {
+          "op": "tick",
+          "timestamp": 100,
+          "now": 100
+        },
+        {
+          "op": "tick",
+          "timestamp": 200,
+          "now": 200
+        },
+        {
+          "op": "tick",
+          "timestamp": 300,
+          "now": 300
+        },
+        {
+          "op": "tick",
+          "timestamp": 400,
+          "now": 400
+        }
+      ],
+      "results": [
+        {
+          "op": "start",
+          "running": true,
+          "fired": 0,
+          "fired_now": false,
+          "request_frame": true
+        },
+        {
+          "op": "tick",
+          "running": true,
+          "fired": 1,
+          "fired_now": true,
+          "request_frame": true
+        },
+        {
+          "op": "tick",
+          "running": true,
+          "fired": 2,
+          "fired_now": true,
+          "request_frame": true
+        },
+        {
+          "op": "tick",
+          "running": false,
+          "fired": 3,
+          "fired_now": true,
+          "request_frame": false
+        },
+        {
+          "op": "tick",
+          "running": false,
+          "fired": 3,
+          "fired_now": false,
+          "request_frame": false
+        }
+      ]
+    },
+    {
+      "name": "Negative delay fires on the next frame; disposed timer refuses to start",
+      "kind": "script",
+      "ticks_per_second": 1000,
+      "ops": [
+        {
+          "op": "start",
+          "now": 0,
+          "delay_ticks": -50000
+        },
+        {
+          "op": "tick",
+          "timestamp": 0
+        },
+        {
+          "op": "dispose"
+        },
+        {
+          "op": "start",
+          "now": 0,
+          "delay_ticks": 10000
+        }
+      ],
+      "results": [
+        {
+          "op": "start",
+          "running": true,
+          "fired": 0,
+          "fired_now": false,
+          "request_frame": true
+        },
+        {
+          "op": "tick",
+          "running": false,
+          "fired": 1,
+          "fired_now": true,
+          "request_frame": false
+        },
+        {
+          "op": "dispose",
+          "running": false,
+          "fired": 1,
+          "fired_now": false,
+          "request_frame": false
+        },
+        {
+          "op": "start",
+          "running": false,
+          "fired": 1,
+          "fired_now": false,
+          "request_frame": false,
+          "threw": "ObjectDisposedException"
+        }
+      ]
+    },
+    {
+      "name": "Zero delay fires on the first frame at the same instant",
+      "kind": "script",
+      "ticks_per_second": 1000,
+      "ops": [
+        {
+          "op": "start",
+          "now": 0,
+          "delay_ticks": 0
+        },
+        {
+          "op": "tick",
+          "timestamp": 0
+        }
+      ],
+      "results": [
+        {
+          "op": "start",
+          "running": true,
+          "fired": 0,
+          "fired_now": false,
+          "request_frame": true
+        },
+        {
+          "op": "tick",
+          "running": false,
+          "fired": 1,
+          "fired_now": true,
+          "request_frame": false
+        }
+      ]
+    },
+    {
+      "name": "Half a millisecond rounds up to one tick",
+      "kind": "script",
+      "ticks_per_second": 1000,
+      "ops": [
+        {
+          "op": "start",
+          "now": 1000,
+          "delay_ticks": 5000
+        },
+        {
+          "op": "tick",
+          "timestamp": 1000
+        },
+        {
+          "op": "tick",
+          "timestamp": 1001
+        }
+      ],
+      "results": [
+        {
+          "op": "start",
+          "running": true,
+          "fired": 0,
+          "fired_now": false,
+          "request_frame": true
+        },
+        {
+          "op": "tick",
+          "running": true,
+          "fired": 0,
+          "fired_now": false,
+          "request_frame": false
+        },
+        {
+          "op": "tick",
+          "running": false,
+          "fired": 1,
+          "fired_now": true,
+          "request_frame": false
+        }
+      ]
+    },
+    {
+      "name": "Frame before the deadline with a large tick rate",
+      "kind": "script",
+      "ticks_per_second": 1000000,
+      "ops": [
+        {
+          "op": "start",
+          "now": 1000000,
+          "delay_ticks": 1000000
+        },
+        {
+          "op": "tick",
+          "timestamp": 1099999
+        },
+        {
+          "op": "tick",
+          "timestamp": 1100000
+        }
+      ],
+      "results": [
+        {
+          "op": "start",
+          "running": true,
+          "fired": 0,
+          "fired_now": false,
+          "request_frame": true
+        },
+        {
+          "op": "tick",
+          "running": true,
+          "fired": 0,
+          "fired_now": false,
+          "request_frame": false
+        },
+        {
+          "op": "tick",
+          "running": false,
+          "fired": 1,
+          "fired_now": true,
+          "request_frame": false
+        }
+      ]
+    },
+    {
+      "name": "Timestamp far below the deadline never fires",
+      "kind": "script",
+      "ticks_per_second": 1000,
+      "ops": [
+        {
+          "op": "start",
+          "now": 5000,
+          "delay_ticks": 10000000
+        },
+        {
+          "op": "tick",
+          "timestamp": 0
+        },
+        {
+          "op": "tick",
+          "timestamp": 5999
+        }
+      ],
+      "results": [
+        {
+          "op": "start",
+          "running": true,
+          "fired": 0,
+          "fired_now": false,
+          "request_frame": true
+        },
+        {
+          "op": "tick",
+          "running": true,
+          "fired": 0,
+          "fired_now": false,
+          "request_frame": false
+        },
+        {
+          "op": "tick",
+          "running": true,
+          "fired": 0,
+          "fired_now": false,
+          "request_frame": false
+        }
+      ]
+    },
+    {
+      "name": "Dispose while running stops and does not fire later",
+      "kind": "script",
+      "ticks_per_second": 1000,
+      "ops": [
+        {
+          "op": "start",
+          "now": 0,
+          "delay_ticks": 100000
+        },
+        {
+          "op": "dispose"
+        },
+        {
+          "op": "tick",
+          "timestamp": 1000
+        }
+      ],
+      "results": [
+        {
+          "op": "start",
+          "running": true,
+          "fired": 0,
+          "fired_now": false,
+          "request_frame": true
+        },
+        {
+          "op": "dispose",
+          "running": false,
+          "fired": 0,
+          "fired_now": false,
+          "request_frame": false
+        },
+        {
+          "op": "tick",
+          "running": false,
+          "fired": 0,
+          "fired_now": false,
+          "request_frame": false
+        }
+      ]
+    }
+  ]
+}

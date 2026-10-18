@@ -1,0 +1,110 @@
+{
+  "_comment": "W8-02a input for oracle command menu-model (tools/oracle-cs/Commands/W8-02a.cs). settings.hidden: \"default\" = new AppSettings() untouched; an array = ContextMenuItems.ApplyHidden(settings, ids); null = HiddenContextMenuItems null and the three legacy flags from show_zoom/show_folder/show_recycle. shortcuts maps PascalCase ShortcutMappings property names to the text set on the default mappings.",
+  "build": [
+    {
+      "name": "default",
+      "settings": { "hidden": "default", "show_zoom": true, "show_folder": true, "show_recycle": true, "click_zoom_percent": 100, "set_zoom_also_sets_click_level": true, "shortcuts": {} },
+      "has_image": true, "can_copy_path": true, "effective_zoom": 1.0
+    },
+    {
+      "name": "nothing_hidden",
+      "settings": { "hidden": [], "show_zoom": true, "show_folder": true, "show_recycle": true, "click_zoom_percent": 100, "set_zoom_also_sets_click_level": true, "shortcuts": {} },
+      "has_image": true, "can_copy_path": true, "effective_zoom": 1.0
+    },
+    {
+      "name": "no_photo",
+      "settings": { "hidden": [], "show_zoom": true, "show_folder": true, "show_recycle": true, "click_zoom_percent": 100, "set_zoom_also_sets_click_level": true, "shortcuts": {} },
+      "has_image": false, "can_copy_path": false, "effective_zoom": 1.0
+    },
+    {
+      "name": "copy_path_without_image",
+      "settings": { "hidden": [], "show_zoom": true, "show_folder": true, "show_recycle": true, "click_zoom_percent": 100, "set_zoom_also_sets_click_level": true, "shortcuts": {} },
+      "has_image": false, "can_copy_path": true, "effective_zoom": 1.0
+    },
+    {
+      "name": "image_without_copy_path",
+      "settings": { "hidden": [], "show_zoom": true, "show_folder": true, "show_recycle": true, "click_zoom_percent": 100, "set_zoom_also_sets_click_level": true, "shortcuts": {} },
+      "has_image": true, "can_copy_path": false, "effective_zoom": 1.0
+    },
+    {
+      "name": "only_settings_left",
+      "settings": { "hidden": ["Undo", "MoveToRecycleBin", "Fit", "ZoomToLevel", "ZoomSubmenu", "Refresh", "OpenFolder", "NextFolder", "PreviousFolder", "ExternalEditor", "CopyFileName", "CopyFullPath"], "show_zoom": true, "show_folder": true, "show_recycle": true, "click_zoom_percent": 100, "set_zoom_also_sets_click_level": true, "shortcuts": {} },
+      "has_image": true, "can_copy_path": true, "effective_zoom": 1.0
+    },
+    {
+      "name": "zoom_children_hidden",
+      "settings": { "hidden": ["ZoomFitWidth", "ZoomFitWidth2", "ZoomFitHeight", "ZoomPresets", "ZoomLevelOptions"], "show_zoom": true, "show_folder": true, "show_recycle": true, "click_zoom_percent": 100, "set_zoom_also_sets_click_level": true, "shortcuts": {} },
+      "has_image": true, "can_copy_path": true, "effective_zoom": 1.0
+    },
+    {
+      "name": "zoom_top_hidden_but_refresh_shown",
+      "settings": { "hidden": ["Fit", "ZoomToLevel", "ZoomSubmenu"], "show_zoom": true, "show_folder": true, "show_recycle": true, "click_zoom_percent": 100, "set_zoom_also_sets_click_level": true, "shortcuts": {} },
+      "has_image": true, "can_copy_path": true, "effective_zoom": 1.0
+    },
+    {
+      "name": "custom_click_level_123",
+      "settings": { "hidden": [], "show_zoom": true, "show_folder": true, "show_recycle": true, "click_zoom_percent": 123, "set_zoom_also_sets_click_level": true, "shortcuts": {} },
+      "has_image": true, "can_copy_path": true, "effective_zoom": 1.0
+    },
+    {
+      "name": "click_150_also_set_off",
+      "settings": { "hidden": [], "show_zoom": true, "show_folder": true, "show_recycle": true, "click_zoom_percent": 150, "set_zoom_also_sets_click_level": false, "shortcuts": {} },
+      "has_image": true, "can_copy_path": true, "effective_zoom": 1.5
+    },
+    {
+      "name": "click_200_preset_checked",
+      "settings": { "hidden": [], "show_zoom": true, "show_folder": true, "show_recycle": true, "click_zoom_percent": 200, "set_zoom_also_sets_click_level": true, "shortcuts": {} },
+      "has_image": true, "can_copy_path": true, "effective_zoom": null
+    },
+    {
+      "name": "effective_zoom_null_is_fit",
+      "settings": { "hidden": [], "show_zoom": true, "show_folder": true, "show_recycle": true, "click_zoom_percent": 100, "set_zoom_also_sets_click_level": true, "shortcuts": {} },
+      "has_image": true, "can_copy_path": true, "effective_zoom": null
+    },
+    {
+      "name": "effective_zoom_1_5",
+      "settings": { "hidden": [], "show_zoom": true, "show_folder": true, "show_recycle": true, "click_zoom_percent": 100, "set_zoom_also_sets_click_level": true, "shortcuts": {} },
+      "has_image": true, "can_copy_path": true, "effective_zoom": 1.5
+    },
+    {
+      "name": "effective_zoom_0_004_clamped_to_min",
+      "settings": { "hidden": [], "show_zoom": true, "show_folder": true, "show_recycle": true, "click_zoom_percent": 100, "set_zoom_also_sets_click_level": true, "shortcuts": {} },
+      "has_image": true, "can_copy_path": true, "effective_zoom": 0.004
+    },
+    {
+      "name": "legacy_flags_zoom_on_folder_off",
+      "settings": { "hidden": null, "show_zoom": true, "show_folder": false, "show_recycle": true, "click_zoom_percent": 100, "set_zoom_also_sets_click_level": true, "shortcuts": {} },
+      "has_image": true, "can_copy_path": true, "effective_zoom": 1.0
+    },
+    {
+      "name": "legacy_flags_all_off",
+      "settings": { "hidden": null, "show_zoom": false, "show_folder": false, "show_recycle": false, "click_zoom_percent": 100, "set_zoom_also_sets_click_level": true, "shortcuts": {} },
+      "has_image": true, "can_copy_path": true, "effective_zoom": 1.0
+    },
+    {
+      "name": "shortcut_texts",
+      "settings": { "hidden": [], "show_zoom": true, "show_folder": true, "show_recycle": true, "click_zoom_percent": 100, "set_zoom_also_sets_click_level": true,
+        "shortcuts": { "ClickZoom": "D3", "SendToRecycleBin": "Delete", "ToggleFit": "F", "NextFolder": "N", "PreviousFolder": "P", "FitWidth": "W", "FitWidth2": "D4", "FitHeight": "H" } },
+      "has_image": true, "can_copy_path": true, "effective_zoom": 1.0
+    },
+    {
+      "name": "shortcut_blank_and_padded",
+      "settings": { "hidden": [], "show_zoom": true, "show_folder": true, "show_recycle": true, "click_zoom_percent": 100, "set_zoom_also_sets_click_level": true,
+        "shortcuts": { "Refresh": "", "FitHeight": " D5 ", "FitWidth2": "   ", "ToggleFit": " ", "NextFolder": "\u001c" } },
+      "has_image": true, "can_copy_path": true, "effective_zoom": 1.0
+    },
+    {
+      "name": "settings_locked_and_undo_hidden",
+      "settings": { "hidden": ["Settings", "Undo"], "show_zoom": true, "show_folder": true, "show_recycle": true, "click_zoom_percent": 100, "set_zoom_also_sets_click_level": true, "shortcuts": {} },
+      "has_image": true, "can_copy_path": true, "effective_zoom": 1.0
+    }
+  ],
+  "masks": [
+    0, 4095,
+    1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048,
+    4094, 4093, 4091, 4087, 4079, 4063, 4031, 3967, 3839, 3583, 3071, 2047,
+    3094, 1063, 1308, 2710, 3868, 3426, 3535, 2733, 2679, 1331, 3268, 2991, 3762, 3894, 873, 153, 2331, 3270, 3560, 39, 4028, 2304, 3886, 212, 1216, 3302, 1246, 3480, 674
+  ],
+  "submenu_masks": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31],
+  "tools": [true, false]
+}

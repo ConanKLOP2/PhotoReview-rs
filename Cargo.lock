@@ -47,7 +47,9 @@ dependencies = [
  "pr-l10n",
  "pr-libraw",
  "pr-platform-win",
+ "pr-test-support",
  "pr-turbojpeg",
+ "serde_json",
 ]
 
 [[package]]

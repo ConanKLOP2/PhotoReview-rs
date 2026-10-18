@@ -534,3 +534,92 @@ they are logged as P-35..P-37 in `docs/PROPOSED-DECISIONS.md`.
   `Platform.Windows` in); the two internal CLI classes (`BenchmarkCliArguments`, `ToolPathGuard`) are compiled from the baseline source through
   `-p:CSharpSrcDir`. The `cli-process` golden (runs the baseline WPF-bound Cli exe) is NOT generated: its input was dropped and `CliProcess` is not
   dispatched; process-level behaviour is covered by hand-written expectations (P-37).
+
+## Wave 8 batch B1 roster (pure leaves and goldens, `pr-app` / `pr-platform-win`)
+
+Batch B1 of `docs/WAVE-8-PLAN.md` (P-38): 35 contracts (`contracts/W8-*.md`), stubs under `crates/pr-app/src/` (and `crates/pr-platform-win/src/shell_viewing/`),
+22 oracle files (`tools/oracle-cs/Commands/W8-*.cs`) and 50 goldens (`tests/golden/`, inputs in `tests/golden-inputs/`). Ports start per P-28 when the direct
+dependencies merge (the plan's Depends-on column plus the missing edges in D-W8B1-9). Nothing in B1 is ported yet: every stub body is `todo!()`.
+
+| WU | Unit | Rust | Porter | Golden (cases) |
+|---|---|---|---|---|
+| W8-01a | Viewport contracts, snapshot, state, ArrowPanRule + Input primitives + ViewerStretchMode | `viewport::{types, state, arrow_pan}`, `input::primitives` | Haiku | `viewport-state` 11, `arrow-pan` 26, `viewport-snapshot-text` 6, `viewport-values` 17 |
+| W8-01b | ViewportLayoutEngine | `viewport::layout` | Haiku (Sonnet if the net_max/-0 traps fail twice) | `viewport-layout-engine` 361 |
+| W8-01c | RenderGeometry (pure) | `viewport::render_geometry` | Haiku | `render-geometry` 133 |
+| W8-01d | FitViewController, ZoomMenuRules | `viewport::fit`, `menus::zoom_rules` | Haiku (Sonnet if the trace tests fail twice) | none (F) |
+| W8-02a | ContextMenuModelBuilder, MenuContracts | `menus::{model, builder}` | Haiku | `menu-model` 196 |
+| W8-02b | Exif/Status/TitleBar formatters, SettingsReloadPath | `viewmodels::format::*` | Haiku (`context.rs` to Sonnet if the .NET number formats fail twice) | `format-exif` 104, `format-status` 109, `format-title-bar` 39, `settings-reload-path` 216 |
+| W8-03a | Windowing contracts, monitor layout, placement visibility, JSON store | `windowing::{contracts, monitor_layout, visibility, placement_store}` | Sonnet | `window-placement-rules` 66, `-visibility` 37, `-json` 111 |
+| W8-03b | FullscreenController over `WindowOps` | `windowing::fullscreen` | Sonnet | none (F) |
+| W8-04a | Localization service, language options, translation problems | `localization::{language_options, source, service, translation_problems}` | Haiku | `language-options` 7, `localization-service` 35, `translation-problems` 12 |
+| W8-04b | TranslationExport | `localization::export` | Haiku | `translation-export` 39 |
+| W8-04c | App services (clipboard/observer/prompt contracts, prewarm, preview state, frame trace, ShortcutKeyName, ViewportSizeSource, InitialViewportPredictor) | `services::*` | Sonnet | none (F + committed `key-names.v1.json`) |
+| W8-04d | AppLog, BuildInfo, LaunchArguments, TaskLogging | `misc::{app_log, build_info, launch_args, task_logging}` | Haiku | none (F) |
+| W8-04e | FileHashService, MainWindowConvergence, MainWindowHelpers | `misc::{file_hash, viewport_convergence, window_helpers}` | Sonnet | none (F) |
+| W8-05a | FrameClock, ViewportOperationVersion, WheelMessageSource (pure), IImageSurface, ReviewCommand | `input::{frame_clock, operation_version, wheel_message, surface, review_command}` | Haiku | none (F) |
+| W8-05b | KeyId | `input::key_id` | Haiku | `key-id` 886 |
+| W8-05c | KeyIdMapping | `input::key_mapping` | Haiku (Sonnet if traps 1-4 fail) | `key-id-mapping` 762 |
+| W8-05d | ShortcutRouter | `input::shortcut_router` | Sonnet | `shortcut-router` 9604 |
+| W8-05e | MouseGestures, TouchpadGestures | `input::{mouse_gestures, touchpad_gestures}` | Haiku | `mouse-gestures` 235, `touchpad-gestures` 158 |
+| W8-05f | KineticPan | `input::kinetic_pan` | Sonnet | `kinetic-velocity` 20, `kinetic-scroller` 31, `keyboard-pan` 47, `glide-clock` 14 |
+| W8-06a | ViewerState | `viewmodels::viewer_state` | Sonnet | `viewer-state-trace` 31, `viewer-step-zoom` 33, `viewer-display-size` 17 |
+| W8-06b | InfoOverlayViewModel, auto-hide policies, FadeTargetGate, ImageTransitionDecision | `viewmodels::info_overlay`, `coordinators::{autohide, fade_gate, transition}` | Haiku (Sonnet if the 12-state view model fails twice) | `info-overlay-view-model` 23, `info-overlay-autohide` 107, `toolbar-autohide` 91, `fade-target-gate` 8, `image-transition` 108 |
+| W8-06d | Coordinator traits and adapters | `coordinators::traits` | Haiku | none (F) |
+| W8-10a | ActionListJson, ActionProfilesPresenter | `presenters::{action_list_json, action_profiles}` | Haiku (`action_list_json.rs` to Sonnet if the escaping fails twice) | `action-list-json` 26, `action-profiles` 38, `action-profiles-io` 13 |
+| W8-10b | SettingsFieldMap | `presenters::settings_field_map` | Sonnet (contract Q2) | `settings-field-map` 617 |
+| W8-10c | SettingsFormState, secondary dialog presenters | `presenters::{settings_form_state, secondary}` | Haiku | none (F) |
+| W8-10f | RecoveryFilter, RecoveryPresentation | `presenters::{recovery_filter, recovery_presentation}` | Haiku | `recovery-presentation` 48 |
+| W8-10h | BenchmarkPresentation | `presenters::benchmark_presentation` | Haiku | `benchmark-presentation` 94 |
+| W8-12a | Render contracts (traits), TiledGpuImage | `services::render::*` | Haiku | none (F) |
+| W8-15a | Overlay contracts, model, element template, layer | `overlay::{contracts, model, element, layer}` | Haiku | none (F) |
+| W8-15b | Animator, FrameDelayTimer, DarkPalette | `overlay::{animator, frame_delay, palette}` | Haiku | `overlay-animator` 27, `overlay-frame-delay` 10, `overlay-palette` 17 |
+| W8-15c | ButtonElement, TextElement | `overlay::{button, text}` | Haiku | none (F) |
+| W8-15d | PanelElement, CapturePairBadge, FolderInfoPanel | `overlay::{panel, capture_badge, folder_info}` | Haiku | none (F) |
+| W8-15e | StatusPanel, ToolbarPanel, ToolsMenu, ZoomIndicatorPanel | `overlay::{status, toolbar, tools_menu, zoom_indicator}` | Haiku | none (F) |
+| W8-16a | ScalingPolicy, ImageLayer, FrameStats, FramePacer, FrameLog | `pr_app::viewing::{scaling_policy, image_layer}`, `pr_platform_win::shell_viewing::{frame_stats, pacer, frame_log}` | Haiku | `scaling-policy` 17, `frame-stats` 12, `frame-pacer` 13, `frame-log` 10 |
+| W8-16e | ScrollBarGeometry, ScrollBarNative | `pr_app::viewing::scrollbar_geometry`, `pr_platform_win::shell_viewing::scrollbar_native` | Haiku | `scrollbar-geometry` 133, `scrollbar-repeat-timing` 145 |
+
+## Lead decisions (Wave 8 batch B1)
+
+The recommended option of every open question in the 35 contracts was taken (standing user instruction: never stop to ask), unless a decision below says otherwise;
+logged as P-39 in `docs/PROPOSED-DECISIONS.md`.
+
+- **D-W8B1-1 Crate layering (blocks B3):** `pr-app` still depends on `pr-platform-win` (the R0001 spike). The B1 stubs respect that edge: logic that needs `pr_app`
+  types lives in `pr_app::viewing` (`scaling_policy`, `image_layer`, `scrollbar_geometry`); the std-only or OS-only parts stay in
+  `pr_platform_win::shell_viewing` (`frame_log`, `frame_stats`, `pacer`, `scrollbar_native`). Before any B3 unit (W8-12b onward: Direct2D/DirectWrite
+  implementations of the `pr_app::services::render` traits) a layering PR must reverse the edge (option A of the W8-12a contract: `pr-platform-win` depends on
+  `pr-app`; `main.rs`, the spike and the composition move to a thin package such as `pr-shell`). Not done here: it moves existing code.
+- **D-W8B1-2 Overlay element API:** W8-15a owns the shape. `ElementNode` (template with hooks, now with required `as_any`/`as_any_mut`) is what elements implement;
+  `OverlayElement` is the host surface from a blanket impl. The W8-15c/15d stubs were retargeted from their assumed single trait to `ElementNode`
+  (`measure_core` returns `SizeD`, `render_core(&self)`, leaves get `find_at`/`find`); `ElementError::EmptyId` and the `Result` constructors live in `element.rs`.
+  NOT adopted from 15c: `Result`-returning measure and `OverlayLayoutContext::text_renderer_id`; the 15c porter must reconcile layout-cache identity with 15a (open item).
+  W8-15e composites own their typed children (15e O1) while W8-15d `PanelElement` owns `Box<dyn ElementNode>` children: confirm before porting 15e.
+- **D-W8B1-3 Shared types:** `RectD`, `PointD`, `SizeD`, `PointerButton`, `KeyModifiers` live in `input::primitives` (W8-01a owns the file; 05a adds tests only);
+  `ViewerStretchMode` in `viewport::types` (01d no longer ports it); `ColorF`, `ImageInterpolation`, `Matrix3x2`, `PixelRect`, `TileSpec` in
+  `viewport::render_geometry` (01c), re-exported from `services::render`; `KeyId` is W8-05b's (the W8-05c placeholder `key_id.rs` was dropped, the 05c tables compile against 05b).
+- **D-W8B1-4 Index files:** every `mod.rs` and the `lib.rs` module list are lead-owned and generated from the files present (`input`, `viewport`, `menus`, `viewmodels(/format)`,
+  `windowing`, `localization`, `services(/render)`, `misc`, `coordinators`, `presenters`, `overlay`, `viewing`). `pr-app` gets dev-dependencies `pr-test-support` and `serde_json`;
+  `pr-platform-win` enables the `windows` features `Win32_UI_WindowsAndMessaging` and `Win32_UI_Input_KeyboardAndMouse` outside `ui-spike`. The new pr-app modules contain no `unsafe` and no `windows` code.
+- **D-W8B1-5 Windowing:** the `FullscreenControl` trait of W8-03a was deleted (nothing used it; 03b's controller needs a `WindowOps` on every call). The native `Win32MonitorLayout` is owned by W8-13k.
+- **D-W8B1-6 Oracle wiring:** `tools/oracle.ps1` builds `App.Shared`, `Shell.Interop`, `Shell.Rendering` and `Shell.Win32` (assembly `PhotoReview.dll`) from the baseline archive into `$coreDir`;
+  `OracleCs.csproj` references them plus `Platform.Windows`, adds the App.Shared global usings and the `CommunityToolkit.Mvvm` 8.4.0 and `Microsoft.Extensions.DependencyInjection` 10.0.0 packages,
+  and compiles the internal baseline files (ViewModels formatters, Windowing, Presenters `SettingsFieldMap`/`SettingsFormState`/`ActionListJson`, Shell.Win32 `Viewing/*`) through `-p:CSharpSrcDir`
+  (CS0436 warnings where a type also exists in a referenced assembly: the compiled-in copy wins, same source). `Program.cs` sets `Commands.FormatInputsDir` (the `vi` catalog lives in `assets/languages`).
+- **D-W8B1-7 Oracle and input fixes found by the first runs:** `format-status.json` held `9223372036854776000` (a Node float) where `long.MaxValue` is meant: now `9223372036854775807` and `-9223372036854775808`;
+  `benchmark-presentation.json` had three cases with two `name` keys: the profile override is now `profileName` (the oracle reads it); `W8-05f.cs` and `W8-15b.cs` add `c.DeepClone()` (node already had a parent);
+  `W8-10a.cs` passes `(object?)null` for `Open(null)` and imports `PhotoReview.App` and `Core.IO`; `W8-10f.cs` imports `System.Runtime.CompilerServices`; `W8-15b.cs` loads assembly `PhotoReview`.
+  All 50 commands ran twice with byte-identical output; no pre-existing golden changed; no command was dropped.
+- **D-W8B1-8 Behaviour decisions (golden wins):** ArrowPanRule ports the file as it is at `d92d6aae` (the equal-step rule; K-27 `Different` and an ADR are owed by the 01a/05f porters);
+  `Math.Round` is ties-to-even (`round_ties_even`), .NET `F`/`N` formats round half away from zero; `Math.Min/Max/Clamp` NaN and `-0` rules are reproduced, never `f64::min/max`;
+  diagnostics text uses the invariant culture; the Rust env var is `PHOTOREVIEW_RS_FRAME_LOG` (R0002, Different row; `tools/diag/stall-experiment.ps1` is not in this repo);
+  NaN equals NaN in golden comparisons; a golden that disagrees with a hand-derived table in a contract wins.
+- **D-W8B1-9 Missing plan edges (add to `docs/WAVE-8-PLAN.md` when a unit is scheduled):** 04c needs 05b and 03a; 05d needs 04c and 01a; 10a needs 04c, 05b, 04d; 10b needs 10a and 10c;
+  07g needs 01d; 15b needs 12a and 15a; 15c needs 12a, 01a, 01c; 15e needs 02a; 06a needs 04e for its `MainWindowHelpers` tests.
+- **D-W8B1-10 Plan-row corrections:** W8-01a covers 299 lines (adds `InputPrimitives` 45 and `ViewerStretchMode` 11); W8-05a adds `input::operation_version` and `input::wheel_message` (pure part;
+  `WheelMessageSource.Current()` is W8-14a); W8-16a adds `frame_log`; W8-16e's pure geometry is in `pr_app::viewing`, not `pr_platform_win`.
+- **D-W8B1-11 Stub hygiene:** `Debug` impls were added by hand where a field is a closure or trait object (`TaskEnd`, `StartFault`, `AppLog`, `RecoveryTexts`, `FileActionServiceExecutor`, `PreloadControllerAdapter`)
+  to satisfy `missing_debug_implementations`. The stub-only `#![allow(unused_variables, dead_code)]` lines stay until each porter removes them (D11).
+- **D-W8B1-12 Open items for porters (not decided here):** the strict-JSON wrapper in W8-03a versus a `parse_strict` in `app_settings::json`; the lenient notes reader of W8-04b;
+  `NumberCulture` has no group separator (W8-02b/10c/10f carry a parameter or trait); `.NET Enum.TryParse` folding of non-ASCII key names (W8-04c Q9); the Windows implementations of
+  `RecoveryTimeFormatter`, `DateText`, `UtcOffsetSource`, `MonitorProbe` and the production `CultureLookup` have no owner yet (assign in B3/B4); `ViewerChanges` is a temporary change-set type in
+  `viewmodels::viewer_state` until D-W8-1's shared `ChangeSet` exists; the unresolved W8-12a render-trait details (`as_oriented` seam, `DeviceRecreated` subscribe).

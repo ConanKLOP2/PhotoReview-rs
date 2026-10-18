@@ -1,0 +1,115 @@
+{
+  "_comment": "W8-04a golden inputs for oracle command localization-service. Only explicit codes are used: the 'auto' setting follows the machine UI culture and is never in a golden. Culture names used: en, vi, fr (known to .NET) and 'community', 'not a culture!' (unknown: CultureNotFoundException). The Rust CultureLookup test table must know exactly en, vi, fr. Outputs go to tests/golden/localization-service.json.",
+  "cases": [
+    { "id": "parse-none-empty", "kind": "parse_mode", "args": [] },
+    { "id": "parse-keys-lower", "kind": "parse_mode", "args": ["--i18n-keys"] },
+    { "id": "parse-keys-upper", "kind": "parse_mode", "args": ["--I18N-KEYS"] },
+    { "id": "parse-pseudo-lower", "kind": "parse_mode", "args": ["--i18n-pseudo"] },
+    { "id": "parse-pseudo-mixed", "kind": "parse_mode", "args": ["--I18N-Pseudo"] },
+    { "id": "parse-keys-wins-over-pseudo", "kind": "parse_mode", "args": ["--i18n-pseudo", "--i18n-keys"] },
+    { "id": "parse-near-miss-not-a-switch", "kind": "parse_mode", "args": ["--i18n", "i18n-keys", "pseudo"] },
+    { "id": "parse-switch-among-paths", "kind": "parse_mode", "args": ["C:\\photos", "--i18n-pseudo"] },
+    { "id": "parse-leading-space-not-a-switch", "kind": "parse_mode", "args": [" --i18n-keys"] },
+    { "id": "parse-suffix-not-a-switch", "kind": "parse_mode", "args": ["--i18n-keys-x"] },
+
+    { "id": "load-none-en", "kind": "load", "mode": "None", "language": "en" },
+    { "id": "load-none-vi", "kind": "load", "mode": "None", "language": "vi" },
+    { "id": "load-keys-en-shows-keys", "kind": "load", "mode": "Keys", "language": "en" },
+    { "id": "load-keys-vi-keeps-code", "kind": "load", "mode": "Keys", "language": "vi" },
+    { "id": "load-pseudo-en", "kind": "load", "mode": "Pseudo", "language": "en" },
+    { "id": "load-unknown-code-falls-back-to-en", "kind": "load", "mode": "None", "language": "zz-not-shipped" },
+
+    {
+      "id": "apply-pseudo-keeps-english-ui-culture",
+      "kind": "apply_culture",
+      "start_culture": "fr",
+      "mode": "Pseudo",
+      "load_language": "vi",
+      "language": "vi"
+    },
+    {
+      "id": "apply-none-vi-sets-vi-culture",
+      "kind": "apply_culture",
+      "start_culture": "fr",
+      "mode": "None",
+      "load_language": "vi",
+      "language": "vi"
+    },
+    {
+      "id": "apply-unknown-culture-keeps-current-culture",
+      "kind": "apply_culture",
+      "start_culture": "fr",
+      "mode": "None",
+      "load_language": "en",
+      "language": "community"
+    },
+    {
+      "id": "apply-not-a-culture-name-keeps-current-culture",
+      "kind": "apply_culture",
+      "start_culture": "fr",
+      "mode": "None",
+      "load_language": "en",
+      "language": "not a culture!"
+    },
+    {
+      "id": "apply-blank-empty-is-recorded-auto",
+      "kind": "apply_culture",
+      "start_culture": "fr",
+      "mode": "None",
+      "load_language": "en",
+      "language": ""
+    },
+    {
+      "id": "apply-blank-spaces-is-recorded-auto",
+      "kind": "apply_culture",
+      "start_culture": "fr",
+      "mode": "None",
+      "load_language": "en",
+      "language": "   "
+    },
+    {
+      "id": "apply-keys-mode-uses-localizer-code-for-culture",
+      "kind": "apply_culture",
+      "start_culture": "fr",
+      "mode": "Keys",
+      "load_language": "vi",
+      "language": "vi"
+    },
+
+    { "id": "reload-no-user-files-vi", "kind": "reload_problems", "language": "vi", "user_files": {} },
+    {
+      "id": "reload-valid-user-file-replaces-title",
+      "kind": "reload_problems",
+      "language": "vi",
+      "user_files": {
+        "vi.json": "{ \"_meta\": { \"code\": \"vi\" }, \"app.title\": \"Duyệt ảnh\" }"
+      }
+    },
+    {
+      "id": "reload-broken-user-file-is-skipped-with-problem",
+      "kind": "reload_problems",
+      "language": "vi",
+      "user_files": {
+        "vi.json": "{ \"_meta\": { \"code\": \"vi\" }, \"app.title\": \"Duyệt ảnh\" "
+      }
+    },
+    {
+      "id": "reload-bad-placeholder-reports-that-key",
+      "kind": "reload_problems",
+      "language": "vi",
+      "user_files": {
+        "vi.json": "{ \"_meta\": { \"code\": \"vi\" }, \"main.skipped.warning.other\": \"Bỏ qua {soLuong} tệp\", \"app.title\": \"Duyệt ảnh\" }"
+      }
+    },
+
+    { "id": "resolve-vi", "kind": "resolve_code", "language": "vi" },
+    { "id": "resolve-en", "kind": "resolve_code", "language": "en" },
+    { "id": "resolve-unknown-is-en", "kind": "resolve_code", "language": "zz-not-shipped" },
+    { "id": "resolve-uppercase-matches-code", "kind": "resolve_code", "language": "VI" },
+    { "id": "resolve-padded-code-is-not-trimmed-to-en", "kind": "resolve_code", "language": " vi " },
+
+    { "id": "source-known-key-vi", "kind": "source_text", "localizer": "vi", "key": "app.title" },
+    { "id": "source-known-key-en", "kind": "source_text", "localizer": "en", "key": "app.title" },
+    { "id": "source-unknown-key-is-the-key", "kind": "source_text", "localizer": "en", "key": "no.such.key" }
+  ]
+}

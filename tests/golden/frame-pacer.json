@@ -1,0 +1,135 @@
+{
+  "generator": "oracle-cs frame-pacer",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "windowed frame is Immediate",
+      "kind": "mode_for",
+      "mode": "Immediate"
+    },
+    {
+      "name": "windowed first image is Immediate",
+      "kind": "mode_for",
+      "mode": "Immediate"
+    },
+    {
+      "name": "fullscreen first image is Immediate",
+      "kind": "mode_for",
+      "mode": "Immediate"
+    },
+    {
+      "name": "fullscreen frame is VSync",
+      "kind": "mode_for",
+      "mode": "VSync"
+    },
+    {
+      "name": "defer: busy streak of 3 then drawn anyway, then a new cycle",
+      "kind": "defer",
+      "deferred": [
+        true,
+        true,
+        true,
+        false,
+        true,
+        true,
+        true,
+        false
+      ],
+      "deferred_total": 6
+    },
+    {
+      "name": "defer: a ready frame resets the streak",
+      "kind": "defer",
+      "deferred": [
+        true,
+        true,
+        false,
+        true,
+        true,
+        true,
+        false
+      ],
+      "deferred_total": 5
+    },
+    {
+      "name": "defer: ready frames are never deferred",
+      "kind": "defer",
+      "deferred": [
+        false,
+        false,
+        false
+      ],
+      "deferred_total": 0
+    },
+    {
+      "name": "degrade after two VSync frames at exactly 40 ms",
+      "kind": "observe",
+      "raised": [
+        false,
+        true
+      ],
+      "raised_total": 1,
+      "degraded": true,
+      "mode_after": "Immediate"
+    },
+    {
+      "name": "a fast frame breaks the blocked streak",
+      "kind": "observe",
+      "raised": [
+        false,
+        false,
+        false
+      ],
+      "raised_total": 0,
+      "degraded": false,
+      "mode_after": "VSync"
+    },
+    {
+      "name": "Immediate frames never count towards degrading",
+      "kind": "observe",
+      "raised": [
+        false,
+        false,
+        false
+      ],
+      "raised_total": 0,
+      "degraded": false,
+      "mode_after": "VSync"
+    },
+    {
+      "name": "the degraded event is raised once, on the call that degrades",
+      "kind": "observe",
+      "raised": [
+        false,
+        true,
+        false,
+        false
+      ],
+      "raised_total": 1,
+      "degraded": true,
+      "mode_after": "Immediate"
+    },
+    {
+      "name": "NaN present counts as blocked (NaN < 40 is false)",
+      "kind": "observe",
+      "raised": [
+        false,
+        true
+      ],
+      "raised_total": 1,
+      "degraded": true,
+      "mode_after": "Immediate"
+    },
+    {
+      "name": "windowed mode is Immediate after degrading",
+      "kind": "observe",
+      "raised": [
+        false,
+        true
+      ],
+      "raised_total": 1,
+      "degraded": true,
+      "mode_after": "Immediate"
+    }
+  ]
+}

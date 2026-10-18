@@ -1,0 +1,47 @@
+{
+  "cases": [
+    {"name": "windowed frame is Immediate", "kind": "mode_for", "fullscreen": false, "awaiting": false},
+    {"name": "windowed first image is Immediate", "kind": "mode_for", "fullscreen": false, "awaiting": true},
+    {"name": "fullscreen first image is Immediate", "kind": "mode_for", "fullscreen": true, "awaiting": true},
+    {"name": "fullscreen frame is VSync", "kind": "mode_for", "fullscreen": true, "awaiting": false},
+    {"name": "defer: busy streak of 3 then drawn anyway, then a new cycle", "kind": "defer", "ready": [false, false, false, false, false, false, false, false]},
+    {"name": "defer: a ready frame resets the streak", "kind": "defer", "ready": [false, false, true, false, false, false, false]},
+    {"name": "defer: ready frames are never deferred", "kind": "defer", "ready": [true, true, true]},
+    {
+      "name": "degrade after two VSync frames at exactly 40 ms",
+      "kind": "observe",
+      "steps": [{"mode": "VSync", "present_ms": 40}, {"mode": "VSync", "present_ms": 300}],
+      "after": {"fullscreen": true, "awaiting": false}
+    },
+    {
+      "name": "a fast frame breaks the blocked streak",
+      "kind": "observe",
+      "steps": [{"mode": "VSync", "present_ms": 300}, {"mode": "VSync", "present_ms": 39.9}, {"mode": "VSync", "present_ms": 300}],
+      "after": {"fullscreen": true, "awaiting": false}
+    },
+    {
+      "name": "Immediate frames never count towards degrading",
+      "kind": "observe",
+      "steps": [{"mode": "VSync", "present_ms": 300}, {"mode": "Immediate", "present_ms": 900}, {"mode": "VSync", "present_ms": 300}],
+      "after": {"fullscreen": true, "awaiting": false}
+    },
+    {
+      "name": "the degraded event is raised once, on the call that degrades",
+      "kind": "observe",
+      "steps": [{"mode": "VSync", "present_ms": 300}, {"mode": "VSync", "present_ms": 300}, {"mode": "VSync", "present_ms": 500}, {"mode": "VSync", "present_ms": 500}],
+      "after": {"fullscreen": true, "awaiting": false}
+    },
+    {
+      "name": "NaN present counts as blocked (NaN < 40 is false)",
+      "kind": "observe",
+      "steps": [{"mode": "VSync", "present_ms": "NaN"}, {"mode": "VSync", "present_ms": "NaN"}],
+      "after": {"fullscreen": true, "awaiting": false}
+    },
+    {
+      "name": "windowed mode is Immediate after degrading",
+      "kind": "observe",
+      "steps": [{"mode": "VSync", "present_ms": 60}, {"mode": "VSync", "present_ms": 60}],
+      "after": {"fullscreen": false, "awaiting": false}
+    }
+  ]
+}

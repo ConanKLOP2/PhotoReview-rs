@@ -1,0 +1,81 @@
+{
+  "_comment": "W8-04a golden inputs for oracle command language-options (LanguageOptions.Build / IndexOf / ToSetting). Outputs are written by the oracle into tests/golden/language-options.json; never edit by hand.",
+  "cases": [
+    {
+      "id": "three-languages-en-labels",
+      "localizer": "en",
+      "languages": [
+        { "code": "en", "name": "English", "nativeName": "English", "isUserProvided": false },
+        { "code": "vi", "name": "Vietnamese", "nativeName": "Tiếng Việt", "isUserProvided": false },
+        { "code": "fr", "name": "French", "nativeName": "Français", "isUserProvided": true }
+      ],
+      "index_of": [null, "", "   ", "auto", "AUTO", "Auto", "en", "VI", " fr ", "de", " ", "vi ", "\tvi"],
+      "to_setting": [
+        { "selected": 0, "current": "vi" },
+        { "selected": 2, "current": "auto" },
+        { "selected": 1, "current": "de" },
+        { "selected": null, "current": "de" },
+        { "selected": null, "current": "  " },
+        { "selected": null, "current": null },
+        { "selected": null, "current": "" },
+        { "selected": null, "current": " VI " }
+      ]
+    },
+    {
+      "id": "three-languages-vi-labels",
+      "localizer": "vi",
+      "languages": [
+        { "code": "en", "name": "English", "nativeName": "English", "isUserProvided": false },
+        { "code": "vi", "name": "Vietnamese", "nativeName": "Tiếng Việt", "isUserProvided": false },
+        { "code": "fr", "name": "French", "nativeName": "Français", "isUserProvided": true }
+      ],
+      "index_of": ["auto", "fr", "xx"],
+      "to_setting": [{ "selected": 3, "current": "de" }, { "selected": 0, "current": "de" }]
+    },
+    {
+      "id": "blank-native-name-falls-back-to-code",
+      "localizer": "en",
+      "languages": [
+        { "code": "xx", "name": "Xx", "nativeName": "", "isUserProvided": false },
+        { "code": "yy", "name": "Yy", "nativeName": "   ", "isUserProvided": true },
+        { "code": "zz", "name": "Zz", "nativeName": "Zed", "isUserProvided": false }
+      ],
+      "index_of": ["yy", "zz"],
+      "to_setting": [{ "selected": 3, "current": "auto" }, { "selected": 2, "current": "auto" }]
+    },
+    {
+      "id": "user-native-name-with-braces-is-a-value",
+      "localizer": "en",
+      "languages": [
+        { "code": "bq", "name": "Bq", "nativeName": "Ω {name} {count}", "isUserProvided": true }
+      ],
+      "index_of": ["bq"],
+      "to_setting": []
+    },
+    {
+      "id": "no-languages-only-auto-entry",
+      "localizer": "en",
+      "languages": [],
+      "index_of": ["auto", "en", null],
+      "to_setting": [{ "selected": 0, "current": "vi" }]
+    },
+    {
+      "id": "auto-looking-code-is-the-auto-entry",
+      "localizer": "en",
+      "languages": [
+        { "code": "Auto", "name": "Odd", "nativeName": "Odd", "isUserProvided": true }
+      ],
+      "index_of": ["auto", "Auto"],
+      "to_setting": [{ "selected": 1, "current": "de" }, { "selected": 0, "current": "de" }]
+    },
+    {
+      "id": "selected-entry-returns-stored-code-unchanged-case",
+      "localizer": "en",
+      "languages": [
+        { "code": "vi", "name": "Vietnamese", "nativeName": "Tiếng Việt", "isUserProvided": false }
+      ],
+      "index_of": ["VI", " vi"],
+      "to_setting": [{ "selected": 1, "current": null }]
+    }
+  ]
+}

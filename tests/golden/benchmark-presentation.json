@@ -1,0 +1,1159 @@
+{
+  "generator": "oracle-cs benchmark-presentation",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "key-fast-sequential-name",
+      "kind": "profile-key",
+      "id": "fast-sequential",
+      "field": "name",
+      "expected": "benchmark.profile.fastSequential.name"
+    },
+    {
+      "name": "key-ssd-throughput-description",
+      "kind": "profile-key",
+      "id": "ssd-throughput",
+      "field": "description",
+      "expected": "benchmark.profile.ssdThroughput.description"
+    },
+    {
+      "name": "key-empty-id",
+      "kind": "profile-key",
+      "id": "",
+      "field": "name",
+      "expected": "benchmark.profile..name"
+    },
+    {
+      "name": "key-leading-dash",
+      "kind": "profile-key",
+      "id": "-a",
+      "field": "name",
+      "expected": "benchmark.profile.A.name"
+    },
+    {
+      "name": "key-double-dash",
+      "kind": "profile-key",
+      "id": "a--b",
+      "field": "name",
+      "expected": "benchmark.profile.aB.name"
+    },
+    {
+      "name": "key-trailing-dash",
+      "kind": "profile-key",
+      "id": "a-",
+      "field": "name",
+      "expected": "benchmark.profile.a.name"
+    },
+    {
+      "name": "key-digit-after-dash",
+      "kind": "profile-key",
+      "id": "a-1b",
+      "field": "name",
+      "expected": "benchmark.profile.a1b.name"
+    },
+    {
+      "name": "key-no-dash-keeps-case",
+      "kind": "profile-key",
+      "id": "ABC",
+      "field": "name",
+      "expected": "benchmark.profile.ABC.name"
+    },
+    {
+      "name": "key-latin1-accent",
+      "kind": "profile-key",
+      "id": "a-été",
+      "field": "name",
+      "expected": "benchmark.profile.aÉté.name"
+    },
+    {
+      "name": "key-sharp-s-unchanged",
+      "kind": "profile-key",
+      "id": "a-ß",
+      "field": "name",
+      "expected": "benchmark.profile.aß.name"
+    },
+    {
+      "name": "key-y-diaeresis",
+      "kind": "profile-key",
+      "id": "a-ÿ",
+      "field": "name",
+      "expected": "benchmark.profile.aŸ.name"
+    },
+    {
+      "name": "key-long-s",
+      "kind": "profile-key",
+      "id": "a-ſ",
+      "field": "name",
+      "expected": "benchmark.profile.aS.name"
+    },
+    {
+      "name": "key-dotless-i",
+      "kind": "profile-key",
+      "id": "a-ı",
+      "field": "name",
+      "expected": "benchmark.profile.aı.name"
+    },
+    {
+      "name": "key-astral-after-dash",
+      "kind": "profile-key",
+      "id": "a-\uD83D\uDE00x",
+      "field": "name",
+      "expected": "benchmark.profile.a\uD83D\uDE00x.name"
+    },
+    {
+      "name": "texts-instant-review",
+      "kind": "profile-texts",
+      "baseId": "instant-review",
+      "expected": {
+        "name": "Instant Review",
+        "description": "Prioritize the first image",
+        "itemName": "Instant Review",
+        "itemDescription": "Prioritize the first image"
+      }
+    },
+    {
+      "name": "texts-fast-sequential",
+      "kind": "profile-texts",
+      "baseId": "fast-sequential",
+      "expected": {
+        "name": "Fast Sequential",
+        "description": "Continuous Next",
+        "itemName": "Fast Sequential",
+        "itemDescription": "Continuous Next"
+      }
+    },
+    {
+      "name": "texts-fast-balanced",
+      "kind": "profile-texts",
+      "baseId": "fast-balanced",
+      "expected": {
+        "name": "Fast Balanced",
+        "description": "Balance Next and Previous",
+        "itemName": "Fast Balanced",
+        "itemDescription": "Balance Next and Previous"
+      }
+    },
+    {
+      "name": "texts-fast-aggressive",
+      "kind": "profile-texts",
+      "baseId": "fast-aggressive",
+      "expected": {
+        "name": "Fast Aggressive",
+        "description": "Deep preload with many workers",
+        "itemName": "Fast Aggressive",
+        "itemDescription": "Deep preload with many workers"
+      }
+    },
+    {
+      "name": "texts-preview-light",
+      "kind": "profile-texts",
+      "baseId": "preview-light",
+      "expected": {
+        "name": "Preview Light",
+        "description": "Small preview, low RAM",
+        "itemName": "Preview Light",
+        "itemDescription": "Small preview, low RAM"
+      }
+    },
+    {
+      "name": "texts-preview-balanced",
+      "kind": "profile-texts",
+      "baseId": "preview-balanced",
+      "expected": {
+        "name": "Preview Balanced",
+        "description": "Viewport-sized preview",
+        "itemName": "Preview Balanced",
+        "itemDescription": "Viewport-sized preview"
+      }
+    },
+    {
+      "name": "texts-preview-quality",
+      "kind": "profile-texts",
+      "baseId": "preview-quality",
+      "expected": {
+        "name": "Preview Quality",
+        "description": "Large preview, quality first",
+        "itemName": "Preview Quality",
+        "itemDescription": "Large preview, quality first"
+      }
+    },
+    {
+      "name": "texts-preview-high-quality",
+      "kind": "profile-texts",
+      "baseId": "preview-high-quality",
+      "expected": {
+        "name": "Preview High Quality",
+        "description": "Close to Original quality",
+        "itemName": "Preview High Quality",
+        "itemDescription": "Close to Original quality"
+      }
+    },
+    {
+      "name": "texts-no-preload-baseline",
+      "kind": "profile-texts",
+      "baseId": "no-preload-baseline",
+      "expected": {
+        "name": "No Preload Baseline",
+        "description": "Baseline without preload",
+        "itemName": "No Preload Baseline",
+        "itemDescription": "Baseline without preload"
+      }
+    },
+    {
+      "name": "texts-nearby-only",
+      "kind": "profile-texts",
+      "baseId": "nearby-only",
+      "expected": {
+        "name": "Nearby Only",
+        "description": "Preload nearby images only",
+        "itemName": "Nearby Only",
+        "itemDescription": "Preload nearby images only"
+      }
+    },
+    {
+      "name": "texts-full-folder-warm",
+      "kind": "profile-texts",
+      "baseId": "full-folder-warm",
+      "expected": {
+        "name": "Full Folder Warm",
+        "description": "Warm up the whole folder",
+        "itemName": "Full Folder Warm",
+        "itemDescription": "Warm up the whole folder"
+      }
+    },
+    {
+      "name": "texts-large-folder-safe",
+      "kind": "profile-texts",
+      "baseId": "large-folder-safe",
+      "expected": {
+        "name": "Large Folder Safe",
+        "description": "Cap RAM for large folders",
+        "itemName": "Large Folder Safe",
+        "itemDescription": "Cap RAM for large folders"
+      }
+    },
+    {
+      "name": "texts-huge-image-safe",
+      "kind": "profile-texts",
+      "baseId": "huge-image-safe",
+      "expected": {
+        "name": "Huge Image Safe",
+        "description": "Lower concurrency for huge images",
+        "itemName": "Huge Image Safe",
+        "itemDescription": "Lower concurrency for huge images"
+      }
+    },
+    {
+      "name": "texts-ssd-throughput",
+      "kind": "profile-texts",
+      "baseId": "ssd-throughput",
+      "expected": {
+        "name": "SSD High Throughput",
+        "description": "Parallel reads on SSD",
+        "itemName": "SSD High Throughput",
+        "itemDescription": "Parallel reads on SSD"
+      }
+    },
+    {
+      "name": "texts-hdd-conservative",
+      "kind": "profile-texts",
+      "baseId": "hdd-conservative",
+      "expected": {
+        "name": "HDD Conservative",
+        "description": "Fewer seeks on HDD",
+        "itemName": "HDD Conservative",
+        "itemDescription": "Fewer seeks on HDD"
+      }
+    },
+    {
+      "name": "texts-network-safe",
+      "kind": "profile-texts",
+      "baseId": "network-safe",
+      "expected": {
+        "name": "Network Safe",
+        "description": "Careful reads on network drives",
+        "itemName": "Network Safe",
+        "itemDescription": "Careful reads on network drives"
+      }
+    },
+    {
+      "name": "texts-low-memory",
+      "kind": "profile-texts",
+      "baseId": "low-memory",
+      "expected": {
+        "name": "Low Memory",
+        "description": "Keep a large RAM reserve",
+        "itemName": "Low Memory",
+        "itemDescription": "Keep a large RAM reserve"
+      }
+    },
+    {
+      "name": "texts-ram-maximizer",
+      "kind": "profile-texts",
+      "baseId": "ram-maximizer",
+      "expected": {
+        "name": "RAM Maximizer",
+        "description": "Use RAM up to the safe limit",
+        "itemName": "RAM Maximizer",
+        "itemDescription": "Use RAM up to the safe limit"
+      }
+    },
+    {
+      "name": "texts-rapid-key-press",
+      "kind": "profile-texts",
+      "baseId": "rapid-key-press",
+      "expected": {
+        "name": "Rapid Key Press",
+        "description": "Rapid Next presses, no skipping",
+        "itemName": "Rapid Key Press",
+        "itemDescription": "Rapid Next presses, no skipping"
+      }
+    },
+    {
+      "name": "texts-random-navigation",
+      "kind": "profile-texts",
+      "baseId": "random-navigation",
+      "expected": {
+        "name": "Random Navigation",
+        "description": "Random navigation",
+        "itemName": "Random Navigation",
+        "itemDescription": "Random navigation"
+      }
+    },
+    {
+      "name": "texts-cache-recovery",
+      "kind": "profile-texts",
+      "baseId": "cache-recovery",
+      "expected": {
+        "name": "Cache Recovery",
+        "description": "Clear and rebuild the cache",
+        "itemName": "Cache Recovery",
+        "itemDescription": "Clear and rebuild the cache"
+      }
+    },
+    {
+      "name": "texts-explorer-reindex",
+      "kind": "profile-texts",
+      "baseId": "explorer-reindex",
+      "expected": {
+        "name": "Explorer Reindex",
+        "description": "Check the native order",
+        "itemName": "Explorer Reindex",
+        "itemDescription": "Check the native order"
+      }
+    },
+    {
+      "name": "texts-logging-on",
+      "kind": "profile-texts",
+      "baseId": "logging-on",
+      "expected": {
+        "name": "Logging On",
+        "description": "Measure the detailed-logging overhead",
+        "itemName": "Logging On",
+        "itemDescription": "Measure the detailed-logging overhead"
+      }
+    },
+    {
+      "name": "texts-logging-off",
+      "kind": "profile-texts",
+      "baseId": "logging-off",
+      "expected": {
+        "name": "Logging Off",
+        "description": "Measure without detailed logging",
+        "itemName": "Logging Off",
+        "itemDescription": "Measure without detailed logging"
+      }
+    },
+    {
+      "name": "texts-recommended-auto",
+      "kind": "profile-texts",
+      "baseId": "recommended-auto",
+      "expected": {
+        "name": "Recommended Auto",
+        "description": "Choose automatically by folder and RAM",
+        "itemName": "Recommended Auto",
+        "itemDescription": "Choose automatically by folder and RAM"
+      }
+    },
+    {
+      "name": "texts-action-move",
+      "kind": "profile-texts",
+      "baseId": "action-move",
+      "expected": {
+        "name": "Move Race",
+        "description": "Move while decoding",
+        "itemName": "Move Race",
+        "itemDescription": "Move while decoding"
+      }
+    },
+    {
+      "name": "texts-action-delete",
+      "kind": "profile-texts",
+      "baseId": "action-delete",
+      "expected": {
+        "name": "Delete To Recycle Bin Race",
+        "description": "Delete while decoding, no retry",
+        "itemName": "Delete To Recycle Bin Race",
+        "itemDescription": "Delete while decoding, no retry"
+      }
+    },
+    {
+      "name": "texts-action-copy",
+      "kind": "profile-texts",
+      "baseId": "action-copy",
+      "expected": {
+        "name": "Copy During Decode",
+        "description": "Copy while decoding",
+        "itemName": "Copy During Decode",
+        "itemDescription": "Copy while decoding"
+      }
+    },
+    {
+      "name": "texts-action-interleaved",
+      "kind": "profile-texts",
+      "baseId": "action-interleaved",
+      "expected": {
+        "name": "Interleaved Actions",
+        "description": "Next, Move, Delete, Copy interleaved",
+        "itemName": "Interleaved Actions",
+        "itemDescription": "Next, Move, Delete, Copy interleaved"
+      }
+    },
+    {
+      "name": "texts-original-correctness",
+      "kind": "profile-texts",
+      "baseId": "original-correctness",
+      "expected": {
+        "name": "Original Correctness",
+        "description": "Check quality and cache identity",
+        "itemName": "Original Correctness",
+        "itemDescription": "Check quality and cache identity"
+      }
+    },
+    {
+      "name": "texts-fallback-unknown-id",
+      "kind": "profile-texts",
+      "baseId": "fast-sequential",
+      "id": "custom-profile",
+      "profileName": "Custom name",
+      "description": "Custom description",
+      "expected": {
+        "name": "Custom name",
+        "description": "Custom description",
+        "itemName": "Custom name",
+        "itemDescription": "Custom description"
+      }
+    },
+    {
+      "name": "texts-fallback-upper-case-id",
+      "kind": "profile-texts",
+      "baseId": "fast-sequential",
+      "id": "FAST-SEQUENTIAL",
+      "profileName": "Upper name",
+      "description": "Upper description",
+      "expected": {
+        "name": "Upper name",
+        "description": "Upper description",
+        "itemName": "Upper name",
+        "itemDescription": "Upper description"
+      }
+    },
+    {
+      "name": "texts-catalog-wins-over-override",
+      "kind": "profile-texts",
+      "baseId": "fast-sequential",
+      "profileName": "Other name",
+      "description": "Other description",
+      "expected": {
+        "name": "Fast Sequential",
+        "description": "Continuous Next",
+        "itemName": "Fast Sequential",
+        "itemDescription": "Continuous Next"
+      }
+    },
+    {
+      "name": "progress-ok",
+      "kind": "progress",
+      "message": "OK",
+      "expected": "OK"
+    },
+    {
+      "name": "progress-correctness-failed",
+      "kind": "progress",
+      "message": "Correctness failed",
+      "expected": "Correctness failed"
+    },
+    {
+      "name": "progress-lower-case-passes-through",
+      "kind": "progress",
+      "message": "ok",
+      "expected": "ok"
+    },
+    {
+      "name": "progress-other-passes-through",
+      "kind": "progress",
+      "message": "Something else",
+      "expected": "Something else"
+    },
+    {
+      "name": "progress-empty-passes-through",
+      "kind": "progress",
+      "message": "",
+      "expected": ""
+    },
+    {
+      "name": "loading-fast",
+      "kind": "loading-mode",
+      "mode": "Fast",
+      "expected": "Fast"
+    },
+    {
+      "name": "loading-preview",
+      "kind": "loading-mode",
+      "mode": "Preview",
+      "expected": "Preview"
+    },
+    {
+      "name": "loading-original",
+      "kind": "loading-mode",
+      "mode": "Original",
+      "expected": "Original"
+    },
+    {
+      "name": "workload-first-frame",
+      "kind": "workload",
+      "workload": "FirstFrame",
+      "expected": "FirstFrame"
+    },
+    {
+      "name": "workload-sequential",
+      "kind": "workload",
+      "workload": "Sequential",
+      "expected": "Sequential"
+    },
+    {
+      "name": "workload-random",
+      "kind": "workload",
+      "workload": "Random",
+      "expected": "Random"
+    },
+    {
+      "name": "workload-warm-next",
+      "kind": "workload",
+      "workload": "WarmNext",
+      "expected": "WarmNext"
+    },
+    {
+      "name": "workload-preload",
+      "kind": "workload",
+      "workload": "Preload",
+      "expected": "Preload"
+    },
+    {
+      "name": "workload-file-action",
+      "kind": "workload",
+      "workload": "FileAction",
+      "expected": "FileAction"
+    },
+    {
+      "name": "workload-correctness",
+      "kind": "workload",
+      "workload": "Correctness",
+      "expected": "Correctness"
+    },
+    {
+      "name": "describe-not-implemented-cache-recovery",
+      "kind": "describe",
+      "error": {
+        "kind": "profile",
+        "problem": "NotImplemented",
+        "profileId": "cache-recovery",
+        "message": "m"
+      },
+      "expected": "Cache Recovery has no real check yet, so it was not run (a decode-only stand-in would give misleading results)."
+    },
+    {
+      "name": "describe-not-implemented-explorer-reindex",
+      "kind": "describe",
+      "error": {
+        "kind": "profile",
+        "problem": "NotImplemented",
+        "profileId": "explorer-reindex",
+        "message": "m"
+      },
+      "expected": "Explorer Reindex has no real check yet, so it was not run (a decode-only stand-in would give misleading results)."
+    },
+    {
+      "name": "describe-not-implemented-unknown-id",
+      "kind": "describe",
+      "error": {
+        "kind": "profile",
+        "problem": "NotImplemented",
+        "profileId": "no-such-profile",
+        "message": "m"
+      },
+      "expected": "no-such-profile has no real check yet, so it was not run (a decode-only stand-in would give misleading results)."
+    },
+    {
+      "name": "describe-not-implemented-upper-case-id",
+      "kind": "describe",
+      "error": {
+        "kind": "profile",
+        "problem": "NotImplemented",
+        "profileId": "CACHE-RECOVERY",
+        "message": "m"
+      },
+      "expected": "Cache Recovery has no real check yet, so it was not run (a decode-only stand-in would give misleading results)."
+    },
+    {
+      "name": "describe-missing-id-or-mode",
+      "kind": "describe",
+      "error": {
+        "kind": "profile",
+        "problem": "MissingIdOrMode",
+        "profileId": "",
+        "message": "Profile id and loading mode are required"
+      },
+      "expected": "The configuration has no id or loading mode."
+    },
+    {
+      "name": "describe-invalid-settings",
+      "kind": "describe",
+      "error": {
+        "kind": "profile",
+        "problem": "InvalidSettings",
+        "profileId": "fast-sequential",
+        "message": "Invalid benchmark settings for profile 'fast-sequential'"
+      },
+      "expected": "The settings of configuration 'fast-sequential' are invalid."
+    },
+    {
+      "name": "describe-other-message",
+      "kind": "describe",
+      "error": {
+        "kind": "other",
+        "message": "disk full"
+      },
+      "expected": "Unexpected error: disk full"
+    },
+    {
+      "name": "row-best-pass",
+      "kind": "row",
+      "profileId": "fast-sequential",
+      "isBest": true,
+      "phase": {
+        "workload": "Sequential",
+        "samples": [
+          10,
+          20,
+          30,
+          40
+        ],
+        "status": "Pass",
+        "message": null,
+        "imagesPerSample": null
+      },
+      "expected": {
+        "cells": [
+          "\uD83C\uDFC6",
+          "Fast Sequential",
+          "Fast",
+          "Sequential",
+          "4",
+          "25 ms",
+          "38 ms",
+          "40 ms",
+          "40 ms",
+          "Pass"
+        ],
+        "statusText": "Pass"
+      }
+    },
+    {
+      "name": "row-not-best-pass",
+      "kind": "row",
+      "profileId": "fast-sequential",
+      "isBest": false,
+      "phase": {
+        "workload": "Sequential",
+        "samples": [
+          10,
+          20,
+          30,
+          40
+        ],
+        "status": "Pass",
+        "message": null,
+        "imagesPerSample": null
+      },
+      "expected": {
+        "cells": [
+          "",
+          "Fast Sequential",
+          "Fast",
+          "Sequential",
+          "4",
+          "25 ms",
+          "38 ms",
+          "40 ms",
+          "40 ms",
+          "Pass"
+        ],
+        "statusText": "Pass"
+      }
+    },
+    {
+      "name": "row-no-samples",
+      "kind": "row",
+      "profileId": "preview-balanced",
+      "isBest": false,
+      "phase": {
+        "workload": "WarmNext",
+        "samples": [],
+        "status": "InsufficientData",
+        "message": null,
+        "imagesPerSample": null
+      },
+      "expected": {
+        "cells": [
+          "",
+          "Preview Balanced",
+          "Preview",
+          "WarmNext",
+          "0",
+          "—",
+          "—",
+          "—",
+          "—",
+          "Insufficient data"
+        ],
+        "statusText": "Insufficient data"
+      }
+    },
+    {
+      "name": "row-warn-ignores-message",
+      "kind": "row",
+      "profileId": "preview-light",
+      "isBest": false,
+      "phase": {
+        "workload": "Sequential",
+        "samples": [
+          5,
+          6
+        ],
+        "status": "Warn",
+        "message": "ignored",
+        "imagesPerSample": 4
+      },
+      "expected": {
+        "cells": [
+          "",
+          "Preview Light",
+          "Preview",
+          "Sequential",
+          "2",
+          "6 ms",
+          "6 ms",
+          "6 ms",
+          "6 ms",
+          "Warning"
+        ],
+        "statusText": "Warning"
+      }
+    },
+    {
+      "name": "row-fail-no-message-with-error-shows-plain-fail",
+      "kind": "row",
+      "profileId": "preview-light",
+      "isBest": false,
+      "error": {
+        "kind": "other",
+        "message": "boom"
+      },
+      "phase": {
+        "workload": "Sequential",
+        "samples": [
+          5
+        ],
+        "status": "Fail",
+        "message": null,
+        "imagesPerSample": null
+      },
+      "expected": {
+        "cells": [
+          "",
+          "Preview Light",
+          "Preview",
+          "Sequential",
+          "1",
+          "5 ms",
+          "5 ms",
+          "5 ms",
+          "5 ms",
+          "Error"
+        ],
+        "statusText": "Error"
+      }
+    },
+    {
+      "name": "row-fail-correctness-message",
+      "kind": "row",
+      "profileId": "preview-light",
+      "isBest": false,
+      "phase": {
+        "workload": "Sequential",
+        "samples": [
+          5
+        ],
+        "status": "Fail",
+        "message": "One or more samples failed correctness",
+        "imagesPerSample": null
+      },
+      "expected": {
+        "cells": [
+          "",
+          "Preview Light",
+          "Preview",
+          "Sequential",
+          "1",
+          "5 ms",
+          "5 ms",
+          "5 ms",
+          "5 ms",
+          "One or more samples failed correctness"
+        ],
+        "statusText": "One or more samples failed correctness"
+      }
+    },
+    {
+      "name": "row-fail-correctness-message-with-error-wins",
+      "kind": "row",
+      "profileId": "preview-light",
+      "isBest": false,
+      "error": {
+        "kind": "other",
+        "message": "boom"
+      },
+      "phase": {
+        "workload": "Sequential",
+        "samples": [
+          5
+        ],
+        "status": "Fail",
+        "message": "One or more samples failed correctness",
+        "imagesPerSample": null
+      },
+      "expected": {
+        "cells": [
+          "",
+          "Preview Light",
+          "Preview",
+          "Sequential",
+          "1",
+          "5 ms",
+          "5 ms",
+          "5 ms",
+          "5 ms",
+          "One or more samples failed correctness"
+        ],
+        "statusText": "One or more samples failed correctness"
+      }
+    },
+    {
+      "name": "row-fail-message-no-error",
+      "kind": "row",
+      "profileId": "preview-light",
+      "isBest": false,
+      "phase": {
+        "workload": "Sequential",
+        "samples": [
+          5
+        ],
+        "status": "Fail",
+        "message": "Decoder crashed",
+        "imagesPerSample": null
+      },
+      "expected": {
+        "cells": [
+          "",
+          "Preview Light",
+          "Preview",
+          "Sequential",
+          "1",
+          "5 ms",
+          "5 ms",
+          "5 ms",
+          "5 ms",
+          "Failed: Decoder crashed"
+        ],
+        "statusText": "Failed: Decoder crashed"
+      }
+    },
+    {
+      "name": "row-fail-message-other-error-uses-describe",
+      "kind": "row",
+      "profileId": "preview-light",
+      "isBest": false,
+      "error": {
+        "kind": "other",
+        "message": "io"
+      },
+      "phase": {
+        "workload": "Sequential",
+        "samples": [
+          5
+        ],
+        "status": "Fail",
+        "message": "Decoder crashed",
+        "imagesPerSample": null
+      },
+      "expected": {
+        "cells": [
+          "",
+          "Preview Light",
+          "Preview",
+          "Sequential",
+          "1",
+          "5 ms",
+          "5 ms",
+          "5 ms",
+          "5 ms",
+          "Failed: Unexpected error: io"
+        ],
+        "statusText": "Failed: Unexpected error: io"
+      }
+    },
+    {
+      "name": "row-fail-message-profile-error-uses-describe",
+      "kind": "row",
+      "profileId": "cache-recovery",
+      "isBest": false,
+      "error": {
+        "kind": "profile",
+        "problem": "NotImplemented",
+        "profileId": "cache-recovery",
+        "message": "m"
+      },
+      "phase": {
+        "workload": "Correctness",
+        "samples": [],
+        "status": "Fail",
+        "message": "Not run",
+        "imagesPerSample": null
+      },
+      "expected": {
+        "cells": [
+          "",
+          "Cache Recovery",
+          "Preview",
+          "Correctness",
+          "0",
+          "—",
+          "—",
+          "—",
+          "—",
+          "Failed: Cache Recovery has no real check yet, so it was not run (a decode-only stand-in would give misleading results)."
+        ],
+        "statusText": "Failed: Cache Recovery has no real check yet, so it was not run (a decode-only stand-in would give misleading results)."
+      }
+    },
+    {
+      "name": "row-insufficient-data",
+      "kind": "row",
+      "profileId": "random-navigation",
+      "isBest": false,
+      "phase": {
+        "workload": "Random",
+        "samples": [
+          7
+        ],
+        "status": "InsufficientData",
+        "message": null,
+        "imagesPerSample": null
+      },
+      "expected": {
+        "cells": [
+          "",
+          "Random Navigation",
+          "Preview",
+          "Random",
+          "1",
+          "7 ms",
+          "7 ms",
+          "7 ms",
+          "7 ms",
+          "Insufficient data"
+        ],
+        "statusText": "Insufficient data"
+      }
+    },
+    {
+      "name": "row-nan-sample",
+      "kind": "row",
+      "profileId": "fast-sequential",
+      "isBest": false,
+      "phase": {
+        "workload": "Sequential",
+        "samples": [
+          "NaN",
+          1.0
+        ],
+        "status": "Pass",
+        "message": null,
+        "imagesPerSample": null
+      },
+      "expected": {
+        "cells": [
+          "",
+          "Fast Sequential",
+          "Fast",
+          "Sequential",
+          "2",
+          "NaN ms",
+          "NaN ms",
+          "NaN ms",
+          "1 ms",
+          "Pass"
+        ],
+        "statusText": "Pass"
+      }
+    },
+    {
+      "name": "row-negative-small-sample",
+      "kind": "row",
+      "profileId": "fast-sequential",
+      "isBest": false,
+      "phase": {
+        "workload": "Sequential",
+        "samples": [
+          -0.4
+        ],
+        "status": "Pass",
+        "message": null,
+        "imagesPerSample": null
+      },
+      "expected": {
+        "cells": [
+          "",
+          "Fast Sequential",
+          "Fast",
+          "Sequential",
+          "1",
+          "-0 ms",
+          "-0 ms",
+          "-0 ms",
+          "-0 ms",
+          "Pass"
+        ],
+        "statusText": "Pass"
+      }
+    },
+    {
+      "name": "row-infinite-sample",
+      "kind": "row",
+      "profileId": "fast-sequential",
+      "isBest": false,
+      "phase": {
+        "workload": "Sequential",
+        "samples": [
+          "Infinity"
+        ],
+        "status": "Pass",
+        "message": null,
+        "imagesPerSample": null
+      },
+      "expected": {
+        "cells": [
+          "",
+          "Fast Sequential",
+          "Fast",
+          "Sequential",
+          "1",
+          "Infinity ms",
+          "Infinity ms",
+          "Infinity ms",
+          "Infinity ms",
+          "Pass"
+        ],
+        "statusText": "Pass"
+      }
+    },
+    {
+      "name": "ms-zero",
+      "kind": "milliseconds",
+      "value": 0.0,
+      "count": 1,
+      "expected": "0 ms"
+    },
+    {
+      "name": "ms-half-rounds-to-even-zero",
+      "kind": "milliseconds",
+      "value": 0.5,
+      "count": 1,
+      "expected": "0 ms"
+    },
+    {
+      "name": "ms-one-and-half-to-two",
+      "kind": "milliseconds",
+      "value": 1.5,
+      "count": 1,
+      "expected": "2 ms"
+    },
+    {
+      "name": "ms-two-and-half-to-two",
+      "kind": "milliseconds",
+      "value": 2.5,
+      "count": 1,
+      "expected": "2 ms"
+    },
+    {
+      "name": "ms-minus-point-four",
+      "kind": "milliseconds",
+      "value": -0.4,
+      "count": 1,
+      "expected": "-0 ms"
+    },
+    {
+      "name": "ms-round-up",
+      "kind": "milliseconds",
+      "value": 12.6,
+      "count": 1,
+      "expected": "13 ms"
+    },
+    {
+      "name": "ms-large",
+      "kind": "milliseconds",
+      "value": 1e20,
+      "count": 1,
+      "expected": "100000000000000000000 ms"
+    },
+    {
+      "name": "ms-nan",
+      "kind": "milliseconds",
+      "value": "NaN",
+      "count": 1,
+      "expected": "NaN ms"
+    },
+    {
+      "name": "ms-infinity",
+      "kind": "milliseconds",
+      "value": "Infinity",
+      "count": 1,
+      "expected": "Infinity ms"
+    },
+    {
+      "name": "ms-minus-infinity",
+      "kind": "milliseconds",
+      "value": "-Infinity",
+      "count": 1,
+      "expected": "-Infinity ms"
+    },
+    {
+      "name": "ms-no-samples-ignores-value",
+      "kind": "milliseconds",
+      "value": 42.0,
+      "count": 0,
+      "expected": "—"
+    }
+  ]
+}

@@ -1,0 +1,1170 @@
+{
+  "generator": "oracle-cs kinetic-scroller",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "start: release below the start speed does not glide",
+      "kind": "start",
+      "vx": 0,
+      "vy": 0,
+      "ret": false,
+      "active": false
+    },
+    {
+      "name": "start: zero release is a no-glide (negative zero intermediate must not leak)",
+      "kind": "start",
+      "vx": 0,
+      "vy": 0,
+      "ret": false,
+      "active": false
+    },
+    {
+      "name": "start: NaN release counts as zero",
+      "kind": "start",
+      "vx": 0,
+      "vy": 0,
+      "ret": false,
+      "active": false
+    },
+    {
+      "name": "start: infinite release counts as zero",
+      "kind": "start",
+      "vx": 0,
+      "vy": 0,
+      "ret": false,
+      "active": false
+    },
+    {
+      "name": "start: pointer right scrolls left (negated) and damped",
+      "kind": "start",
+      "vx": -0.65,
+      "vy": "-0",
+      "ret": true,
+      "active": true
+    },
+    {
+      "name": "start: pointer velocity -0.2 (damped to 0.13, scroll 0.13 positive)",
+      "kind": "start",
+      "vx": 0.13,
+      "vy": "-0",
+      "ret": true,
+      "active": true
+    },
+    {
+      "name": "start: release speed exactly at the threshold after damping",
+      "kind": "start",
+      "vx": -0.1,
+      "vy": "-0",
+      "ret": true,
+      "active": true
+    },
+    {
+      "name": "start: diagonal release, each component below the threshold but speed above it",
+      "kind": "start",
+      "vx": 0,
+      "vy": 0,
+      "ret": false,
+      "active": false
+    },
+    {
+      "name": "start: large release is capped per axis to 8",
+      "kind": "start",
+      "vx": -8,
+      "vy": 8,
+      "ret": true,
+      "active": true
+    },
+    {
+      "name": "start: realistic flick (-0.9, 0.4)",
+      "kind": "start",
+      "vx": 0.5850000000000001,
+      "vy": -0.26,
+      "ret": true,
+      "active": true
+    },
+    {
+      "name": "start after a glide replaces the velocity",
+      "kind": "script",
+      "ops": [
+        {
+          "op": "start",
+          "vx": -1,
+          "vy": 0
+        },
+        {
+          "op": "start",
+          "vx": 0.01,
+          "vy": 0
+        }
+      ],
+      "results": [
+        {
+          "ret": true,
+          "vx": 0.65,
+          "vy": "-0",
+          "active": true
+        },
+        {
+          "ret": false,
+          "vx": 0,
+          "vy": 0,
+          "active": false
+        }
+      ]
+    },
+    {
+      "name": "add impulse while idle starts a glide",
+      "kind": "script",
+      "ops": [
+        {
+          "op": "impulse",
+          "vx": 0.5,
+          "vy": -0.25
+        }
+      ],
+      "results": [
+        {
+          "vx": 0.5,
+          "vy": -0.25,
+          "active": true
+        }
+      ]
+    },
+    {
+      "name": "add impulse of exactly zero still activates (IsActive true)",
+      "kind": "script",
+      "ops": [
+        {
+          "op": "impulse",
+          "vx": 0,
+          "vy": 0
+        }
+      ],
+      "results": [
+        {
+          "vx": 0,
+          "vy": 0,
+          "active": true
+        }
+      ]
+    },
+    {
+      "name": "impulses accumulate onto the current velocity",
+      "kind": "script",
+      "ops": [
+        {
+          "op": "impulse",
+          "vx": 1,
+          "vy": 0
+        },
+        {
+          "op": "impulse",
+          "vx": 2,
+          "vy": 1
+        }
+      ],
+      "results": [
+        {
+          "vx": 1,
+          "vy": 0,
+          "active": true
+        },
+        {
+          "vx": 3,
+          "vy": 1,
+          "active": true
+        }
+      ]
+    },
+    {
+      "name": "opposite impulse reduces then reverses",
+      "kind": "script",
+      "ops": [
+        {
+          "op": "impulse",
+          "vx": 1,
+          "vy": 0
+        },
+        {
+          "op": "impulse",
+          "vx": -3,
+          "vy": 0
+        }
+      ],
+      "results": [
+        {
+          "vx": 1,
+          "vy": 0,
+          "active": true
+        },
+        {
+          "vx": -2,
+          "vy": 0,
+          "active": true
+        }
+      ]
+    },
+    {
+      "name": "impulses clamp each axis to 8, independently",
+      "kind": "script",
+      "ops": [
+        {
+          "op": "impulse",
+          "vx": 6,
+          "vy": 1
+        },
+        {
+          "op": "impulse",
+          "vx": 6,
+          "vy": -20
+        }
+      ],
+      "results": [
+        {
+          "vx": 6,
+          "vy": 1,
+          "active": true
+        },
+        {
+          "vx": 8,
+          "vy": -8,
+          "active": true
+        }
+      ]
+    },
+    {
+      "name": "NaN impulse component is ignored, the other axis applies",
+      "kind": "script",
+      "ops": [
+        {
+          "op": "impulse",
+          "vx": "NaN",
+          "vy": 2
+        }
+      ],
+      "results": [
+        {
+          "vx": 0,
+          "vy": 2,
+          "active": true
+        }
+      ]
+    },
+    {
+      "name": "infinite impulse component is ignored",
+      "kind": "script",
+      "ops": [
+        {
+          "op": "impulse",
+          "vx": "-Infinity",
+          "vy": 1
+        }
+      ],
+      "results": [
+        {
+          "vx": 0,
+          "vy": 1,
+          "active": true
+        }
+      ]
+    },
+    {
+      "name": "stop ends the glide and zeroes both axes",
+      "kind": "script",
+      "ops": [
+        {
+          "op": "impulse",
+          "vx": 2,
+          "vy": 3
+        },
+        {
+          "op": "stop"
+        }
+      ],
+      "results": [
+        {
+          "vx": 2,
+          "vy": 3,
+          "active": true
+        },
+        {
+          "vx": 0,
+          "vy": 0,
+          "active": false
+        }
+      ]
+    },
+    {
+      "name": "step while idle returns the offsets unchanged",
+      "kind": "script",
+      "ops": [
+        {
+          "op": "step",
+          "elapsed": 16,
+          "h": 100,
+          "v": 200,
+          "bounds": [
+            10000,
+            10000,
+            800,
+            600
+          ]
+        }
+      ],
+      "results": [
+        {
+          "h": 100,
+          "v": 200,
+          "vx": 0,
+          "vy": 0,
+          "active": false
+        }
+      ]
+    },
+    {
+      "name": "step moves by velocity and decays exponentially (60 Hz, 6 frames)",
+      "kind": "script",
+      "ops": [
+        {
+          "op": "impulse",
+          "vx": 2,
+          "vy": -1
+        },
+        {
+          "op": "step",
+          "elapsed": 16.6667,
+          "h": 1000,
+          "v": 1000,
+          "bounds": [
+            10000,
+            10000,
+            800,
+            600
+          ]
+        },
+        {
+          "op": "step",
+          "elapsed": 16.6667,
+          "h": 1000,
+          "v": 1000,
+          "bounds": [
+            10000,
+            10000,
+            800,
+            600
+          ]
+        },
+        {
+          "op": "step",
+          "elapsed": 16.6667,
+          "h": 1000,
+          "v": 1000,
+          "bounds": [
+            10000,
+            10000,
+            800,
+            600
+          ]
+        },
+        {
+          "op": "step",
+          "elapsed": 16.6667,
+          "h": 1000,
+          "v": 1000,
+          "bounds": [
+            10000,
+            10000,
+            800,
+            600
+          ]
+        },
+        {
+          "op": "step",
+          "elapsed": 16.6667,
+          "h": 1000,
+          "v": 1000,
+          "bounds": [
+            10000,
+            10000,
+            800,
+            600
+          ]
+        },
+        {
+          "op": "step",
+          "elapsed": 16.6667,
+          "h": 1000,
+          "v": 1000,
+          "bounds": [
+            10000,
+            10000,
+            800,
+            600
+          ]
+        }
+      ],
+      "results": [
+        {
+          "vx": 2,
+          "vy": -1,
+          "active": true
+        },
+        {
+          "h": 1032.4931206773679,
+          "v": 983.7534396613161,
+          "vx": 1.9000211671465603,
+          "vy": -0.9500105835732802,
+          "active": true
+        },
+        {
+          "h": 1030.8688085368233,
+          "v": 984.5655957315884,
+          "vx": 1.8050402178024887,
+          "vy": -0.9025201089012443,
+          "active": true
+        },
+        {
+          "h": 1029.3256948122794,
+          "v": 985.3371525938603,
+          "vx": 1.714807310687783,
+          "vy": -0.8574036553438915,
+          "active": true
+        },
+        {
+          "h": 1027.8597204423054,
+          "v": 986.0701397788473,
+          "vx": 1.629085093942228,
+          "vy": -0.814542546971114,
+          "active": true
+        },
+        {
+          "h": 1026.467029275583,
+          "v": 986.7664853622085,
+          "vx": 1.5476480807865878,
+          "vy": -0.7738240403932939,
+          "active": true
+        },
+        {
+          "h": 1025.1439579275477,
+          "v": 987.4280210362261,
+          "vx": 1.4702820563941332,
+          "vy": -0.7351410281970666,
+          "active": true
+        }
+      ]
+    },
+    {
+      "name": "144 Hz frame steps: 9 frames of 6.9444 ms (62.5 ms in total)",
+      "kind": "script",
+      "ops": [
+        {
+          "op": "impulse",
+          "vx": 2,
+          "vy": -1
+        },
+        {
+          "op": "step",
+          "elapsed": 6.9444,
+          "h": 1000,
+          "v": 1000,
+          "bounds": [
+            10000,
+            10000,
+            800,
+            600
+          ]
+        },
+        {
+          "op": "step",
+          "elapsed": 6.9444,
+          "h": 1000,
+          "v": 1000,
+          "bounds": [
+            10000,
+            10000,
+            800,
+            600
+          ]
+        },
+        {
+          "op": "step",
+          "elapsed": 6.9444,
+          "h": 1000,
+          "v": 1000,
+          "bounds": [
+            10000,
+            10000,
+            800,
+            600
+          ]
+        },
+        {
+          "op": "step",
+          "elapsed": 6.9444,
+          "h": 1000,
+          "v": 1000,
+          "bounds": [
+            10000,
+            10000,
+            800,
+            600
+          ]
+        },
+        {
+          "op": "step",
+          "elapsed": 6.9444,
+          "h": 1000,
+          "v": 1000,
+          "bounds": [
+            10000,
+            10000,
+            800,
+            600
+          ]
+        },
+        {
+          "op": "step",
+          "elapsed": 6.9444,
+          "h": 1000,
+          "v": 1000,
+          "bounds": [
+            10000,
+            10000,
+            800,
+            600
+          ]
+        },
+        {
+          "op": "step",
+          "elapsed": 6.9444,
+          "h": 1000,
+          "v": 1000,
+          "bounds": [
+            10000,
+            10000,
+            800,
+            600
+          ]
+        },
+        {
+          "op": "step",
+          "elapsed": 6.9444,
+          "h": 1000,
+          "v": 1000,
+          "bounds": [
+            10000,
+            10000,
+            800,
+            600
+          ]
+        },
+        {
+          "op": "step",
+          "elapsed": 6.9444,
+          "h": 1000,
+          "v": 1000,
+          "bounds": [
+            10000,
+            10000,
+            800,
+            600
+          ]
+        }
+      ],
+      "results": [
+        {
+          "vx": 2,
+          "vy": -1,
+          "active": true
+        },
+        {
+          "h": 1013.7414675697023,
+          "v": 993.1292662151488,
+          "vx": 1.957718561323993,
+          "vy": -0.9788592806619965,
+          "active": true
+        },
+        {
+          "h": 1013.4509630605189,
+          "v": 993.2745184697405,
+          "vx": 1.9163309826762422,
+          "vy": -0.9581654913381211,
+          "active": true
+        },
+        {
+          "h": 1013.1666000256307,
+          "v": 993.4166999871846,
+          "vx": 1.8758183672127633,
+          "vy": -0.9379091836063816,
+          "active": true
+        },
+        {
+          "h": 1012.888248629853,
+          "v": 993.5558756850735,
+          "vx": 1.8361622175824461,
+          "vy": -0.9180811087912231,
+          "active": true
+        },
+        {
+          "h": 1012.6157817828109,
+          "v": 993.6921091085945,
+          "vx": 1.7973444274814894,
+          "vy": -0.8986722137407447,
+          "active": true
+        },
+        {
+          "h": 1012.349075080911,
+          "v": 993.8254624595445,
+          "vx": 1.7593472733863786,
+          "vy": -0.8796736366931893,
+          "active": true
+        },
+        {
+          "h": 1012.0880067505416,
+          "v": 993.9559966247292,
+          "vx": 1.7221534064616355,
+          "vy": -0.8610767032308178,
+          "active": true
+        },
+        {
+          "h": 1011.8324575924725,
+          "v": 994.0837712037637,
+          "vx": 1.6857458446386433,
+          "vy": -0.8428729223193216,
+          "active": true
+        },
+        {
+          "h": 1011.5823109274312,
+          "v": 994.2088445362845,
+          "vx": 1.6501079648619321,
+          "vy": -0.8250539824309661,
+          "active": true
+        }
+      ]
+    },
+    {
+      "name": "glide runs out of friction and becomes inactive",
+      "kind": "script",
+      "ops": [
+        {
+          "op": "start",
+          "vx": -0.5,
+          "vy": 0.2
+        },
+        {
+          "op": "step",
+          "elapsed": 100,
+          "h": 5000,
+          "v": 5000,
+          "bounds": [
+            10000,
+            10000,
+            800,
+            600
+          ]
+        },
+        {
+          "op": "step",
+          "elapsed": 100,
+          "h": 5000,
+          "v": 5000,
+          "bounds": [
+            10000,
+            10000,
+            800,
+            600
+          ]
+        },
+        {
+          "op": "step",
+          "elapsed": 100,
+          "h": 5000,
+          "v": 5000,
+          "bounds": [
+            10000,
+            10000,
+            800,
+            600
+          ]
+        },
+        {
+          "op": "step",
+          "elapsed": 100,
+          "h": 5000,
+          "v": 5000,
+          "bounds": [
+            10000,
+            10000,
+            800,
+            600
+          ]
+        },
+        {
+          "op": "step",
+          "elapsed": 100,
+          "h": 5000,
+          "v": 5000,
+          "bounds": [
+            10000,
+            10000,
+            800,
+            600
+          ]
+        },
+        {
+          "op": "step",
+          "elapsed": 100,
+          "h": 5000,
+          "v": 5000,
+          "bounds": [
+            10000,
+            10000,
+            800,
+            600
+          ]
+        },
+        {
+          "op": "step",
+          "elapsed": 100,
+          "h": 5000,
+          "v": 5000,
+          "bounds": [
+            10000,
+            10000,
+            800,
+            600
+          ]
+        },
+        {
+          "op": "step",
+          "elapsed": 100,
+          "h": 5000,
+          "v": 5000,
+          "bounds": [
+            10000,
+            10000,
+            800,
+            600
+          ]
+        },
+        {
+          "op": "step",
+          "elapsed": 100,
+          "h": 5000,
+          "v": 5000,
+          "bounds": [
+            10000,
+            10000,
+            800,
+            600
+          ]
+        },
+        {
+          "op": "step",
+          "elapsed": 100,
+          "h": 5000,
+          "v": 5000,
+          "bounds": [
+            10000,
+            10000,
+            800,
+            600
+          ]
+        }
+      ],
+      "results": [
+        {
+          "ret": true,
+          "vx": 0.325,
+          "vy": -0.13,
+          "active": true
+        },
+        {
+          "h": 5027.9756811125035,
+          "v": 4988.809727554999,
+          "vx": 0.23892098119229746,
+          "vy": -0.09556839247691899,
+          "active": true
+        },
+        {
+          "h": 5020.5660836336065,
+          "v": 4991.773566546557,
+          "vx": 0.17564072385812357,
+          "vy": -0.07025628954324943,
+          "active": true
+        },
+        {
+          "h": 5015.118981172382,
+          "v": 4993.952407531047,
+          "vx": 0.12912078178925618,
+          "vy": -0.05164831271570247,
+          "active": true
+        },
+        {
+          "h": 5011.114590204103,
+          "v": 4995.554163918359,
+          "vx": 0.0949220426997096,
+          "vy": -0.03796881707988384,
+          "active": true
+        },
+        {
+          "h": 5008.170796298814,
+          "v": 4996.731681480474,
+          "vx": 0.0697811310110516,
+          "vy": -0.027912452404420644,
+          "active": true
+        },
+        {
+          "h": 5006.006691288723,
+          "v": 4997.5973234845105,
+          "vx": 0.051299003968826785,
+          "vy": -0.020519601587530717,
+          "active": true
+        },
+        {
+          "h": 5004.415767927449,
+          "v": 4998.233692829021,
+          "vx": 0.03771202573052202,
+          "vy": 0,
+          "active": true
+        },
+        {
+          "h": 5003.246214172134,
+          "v": 5000,
+          "vx": 0.027723674431647662,
+          "vy": 0,
+          "active": true
+        },
+        {
+          "h": 5002.38642669282,
+          "v": 5000,
+          "vx": 0.02038082306912329,
+          "vy": 0,
+          "active": true
+        },
+        {
+          "h": 5001.754361252283,
+          "v": 5000,
+          "vx": 0,
+          "vy": 0,
+          "active": false
+        }
+      ]
+    },
+    {
+      "name": "reaching the right edge stops that axis only",
+      "kind": "script",
+      "ops": [
+        {
+          "op": "impulse",
+          "vx": 4,
+          "vy": 1
+        },
+        {
+          "op": "step",
+          "elapsed": 16,
+          "h": 9990,
+          "v": 100,
+          "bounds": [
+            10000,
+            10000,
+            800,
+            600
+          ]
+        },
+        {
+          "op": "step",
+          "elapsed": 16,
+          "h": 9995,
+          "v": 100,
+          "bounds": [
+            10000,
+            10000,
+            800,
+            600
+          ]
+        }
+      ],
+      "results": [
+        {
+          "vx": 4,
+          "vy": 1,
+          "active": true
+        },
+        {
+          "h": 9200,
+          "v": 115.61253819331812,
+          "vx": 0,
+          "vy": 0.9519614209436366,
+          "active": true
+        },
+        {
+          "h": 9200,
+          "v": 114.86253404304792,
+          "vx": 0,
+          "vy": 0.9062305469650276,
+          "active": true
+        }
+      ]
+    },
+    {
+      "name": "already at the top edge and pushing into it stops the glide",
+      "kind": "script",
+      "ops": [
+        {
+          "op": "impulse",
+          "vx": 0,
+          "vy": -2
+        },
+        {
+          "op": "step",
+          "elapsed": 16,
+          "h": 100,
+          "v": 0,
+          "bounds": [
+            10000,
+            10000,
+            800,
+            600
+          ]
+        }
+      ],
+      "results": [
+        {
+          "vx": 0,
+          "vy": -2,
+          "active": true
+        },
+        {
+          "h": 100,
+          "v": 0,
+          "vx": 0,
+          "vy": 0,
+          "active": false
+        }
+      ]
+    },
+    {
+      "name": "frame gap longer than 100 ms is capped at 100",
+      "kind": "script",
+      "ops": [
+        {
+          "op": "impulse",
+          "vx": 1,
+          "vy": 0
+        },
+        {
+          "op": "step",
+          "elapsed": 500,
+          "h": 0,
+          "v": 0,
+          "bounds": [
+            10000000,
+            10000,
+            800,
+            600
+          ]
+        }
+      ],
+      "results": [
+        {
+          "vx": 1,
+          "vy": 0,
+          "active": true
+        },
+        {
+          "h": 86.07901880770254,
+          "v": 0,
+          "vx": 0.7351414805916845,
+          "vy": 0,
+          "active": true
+        }
+      ]
+    },
+    {
+      "name": "negative elapsed is treated as zero",
+      "kind": "script",
+      "ops": [
+        {
+          "op": "impulse",
+          "vx": 1,
+          "vy": 0
+        },
+        {
+          "op": "step",
+          "elapsed": -50,
+          "h": 10,
+          "v": 10,
+          "bounds": [
+            10000,
+            10000,
+            800,
+            600
+          ]
+        }
+      ],
+      "results": [
+        {
+          "vx": 1,
+          "vy": 0,
+          "active": true
+        },
+        {
+          "h": 10,
+          "v": 10,
+          "vx": 1,
+          "vy": 0,
+          "active": true
+        }
+      ]
+    },
+    {
+      "name": "NaN elapsed is treated as zero",
+      "kind": "script",
+      "ops": [
+        {
+          "op": "impulse",
+          "vx": 1,
+          "vy": 0
+        },
+        {
+          "op": "step",
+          "elapsed": "NaN",
+          "h": 10,
+          "v": 10,
+          "bounds": [
+            10000,
+            10000,
+            800,
+            600
+          ]
+        }
+      ],
+      "results": [
+        {
+          "vx": 1,
+          "vy": 0,
+          "active": true
+        },
+        {
+          "h": 10,
+          "v": 10,
+          "vx": 1,
+          "vy": 0,
+          "active": true
+        }
+      ]
+    },
+    {
+      "name": "NaN start offset is treated as zero",
+      "kind": "script",
+      "ops": [
+        {
+          "op": "impulse",
+          "vx": 1,
+          "vy": 0
+        },
+        {
+          "op": "step",
+          "elapsed": 10,
+          "h": "NaN",
+          "v": 10,
+          "bounds": [
+            10000,
+            10000,
+            800,
+            600
+          ]
+        }
+      ],
+      "results": [
+        {
+          "vx": 1,
+          "vy": 0,
+          "active": true
+        },
+        {
+          "h": 9.847719691972989,
+          "v": 10,
+          "vx": 0.9696993240246985,
+          "vy": 0,
+          "active": true
+        }
+      ]
+    },
+    {
+      "name": "bounds smaller than the viewport: max is zero, glide stops at once",
+      "kind": "script",
+      "ops": [
+        {
+          "op": "impulse",
+          "vx": 1,
+          "vy": 1
+        },
+        {
+          "op": "step",
+          "elapsed": 16,
+          "h": 0,
+          "v": 0,
+          "bounds": [
+            100,
+            100,
+            800,
+            600
+          ]
+        }
+      ],
+      "results": [
+        {
+          "vx": 1,
+          "vy": 1,
+          "active": true
+        },
+        {
+          "h": 0,
+          "v": 0,
+          "vx": 0,
+          "vy": 0,
+          "active": false
+        }
+      ]
+    },
+    {
+      "name": "NaN extent: max is NaN, offset kept (Math.Max propagates NaN)",
+      "kind": "script",
+      "ops": [
+        {
+          "op": "impulse",
+          "vx": 1,
+          "vy": 0
+        },
+        {
+          "op": "step",
+          "elapsed": 16,
+          "h": 5,
+          "v": 5,
+          "bounds": [
+            "NaN",
+            10000,
+            800,
+            600
+          ]
+        }
+      ],
+      "results": [
+        {
+          "vx": 1,
+          "vy": 0,
+          "active": true
+        },
+        {
+          "h": 20.612538193318116,
+          "v": 5,
+          "vx": 0.9519614209436366,
+          "vy": 0,
+          "active": true
+        }
+      ]
+    }
+  ]
+}

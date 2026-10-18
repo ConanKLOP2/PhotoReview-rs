@@ -1,0 +1,1003 @@
+{
+  "cases": [
+    {
+      "name": "default-folder-name",
+      "fields": 1,
+      "folder_path": "C:\\Photos\\Vacation 2024",
+      "index": 11,
+      "count": 340,
+      "file_name": "IMG_1234.jpg",
+      "length": 2500000,
+      "width": 6000,
+      "height": 4000,
+      "modified_local": "2024-06-10T08:00:00",
+      "exif": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8",
+        "iso": 400,
+        "focal_length": {
+          "n": 50,
+          "d": 1
+        },
+        "f_number": {
+          "n": 28,
+          "d": 10
+        },
+        "exposure_time": {
+          "n": 1,
+          "d": 250
+        }
+      },
+      "language": "en",
+      "culture": "invariant"
+    },
+    {
+      "name": "folder-path",
+      "fields": 2,
+      "folder_path": "C:\\Photos\\Vacation 2024",
+      "index": 11,
+      "count": 340,
+      "file_name": "IMG_1234.jpg",
+      "length": 2500000,
+      "width": 6000,
+      "height": 4000,
+      "modified_local": "2024-06-10T08:00:00",
+      "exif": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8",
+        "iso": 400,
+        "focal_length": {
+          "n": 50,
+          "d": 1
+        },
+        "f_number": {
+          "n": 28,
+          "d": 10
+        },
+        "exposure_time": {
+          "n": 1,
+          "d": 250
+        }
+      },
+      "language": "en",
+      "culture": "invariant"
+    },
+    {
+      "name": "all-en",
+      "fields": 16383,
+      "folder_path": "C:\\Photos\\Vacation 2024",
+      "index": 11,
+      "count": 340,
+      "file_name": "IMG_1234.jpg",
+      "length": 2500000,
+      "width": 6000,
+      "height": 4000,
+      "modified_local": "2024-06-10T08:00:00",
+      "exif": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8",
+        "iso": 400,
+        "focal_length": {
+          "n": 50,
+          "d": 1
+        },
+        "f_number": {
+          "n": 28,
+          "d": 10
+        },
+        "exposure_time": {
+          "n": 1,
+          "d": 250
+        }
+      },
+      "language": "en",
+      "culture": "invariant"
+    },
+    {
+      "name": "all-vi",
+      "fields": 16383,
+      "folder_path": "C:\\Photos\\Vacation 2024",
+      "index": 11,
+      "count": 340,
+      "file_name": "IMG_1234.jpg",
+      "length": 2500000,
+      "width": 6000,
+      "height": 4000,
+      "modified_local": "2024-06-10T08:00:00",
+      "exif": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8",
+        "iso": 400,
+        "focal_length": {
+          "n": 50,
+          "d": 1
+        },
+        "f_number": {
+          "n": 28,
+          "d": 10
+        },
+        "exposure_time": {
+          "n": 1,
+          "d": 250
+        }
+      },
+      "language": "vi",
+      "culture": "invariant"
+    },
+    {
+      "name": "all-en-vi-VN",
+      "fields": 16383,
+      "folder_path": "C:\\Photos\\Vacation 2024",
+      "index": 11,
+      "count": 340,
+      "file_name": "IMG_1234.jpg",
+      "length": 2500000,
+      "width": 6000,
+      "height": 4000,
+      "modified_local": "2024-06-10T08:00:00",
+      "exif": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8",
+        "iso": 400,
+        "focal_length": {
+          "n": 50,
+          "d": 1
+        },
+        "f_number": {
+          "n": 28,
+          "d": 10
+        },
+        "exposure_time": {
+          "n": 1,
+          "d": 250
+        }
+      },
+      "language": "en",
+      "culture": "vi-VN"
+    },
+    {
+      "name": "index-count-0-of-5",
+      "fields": 4,
+      "folder_path": "C:\\Photos\\Vacation 2024",
+      "index": 0,
+      "count": 5,
+      "file_name": "IMG_1234.jpg",
+      "length": 2500000,
+      "width": 6000,
+      "height": 4000,
+      "modified_local": "2024-06-10T08:00:00",
+      "exif": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8",
+        "iso": 400,
+        "focal_length": {
+          "n": 50,
+          "d": 1
+        },
+        "f_number": {
+          "n": 28,
+          "d": 10
+        },
+        "exposure_time": {
+          "n": 1,
+          "d": 250
+        }
+      },
+      "language": "en",
+      "culture": "invariant"
+    },
+    {
+      "name": "index-count-zero-count",
+      "fields": 4,
+      "folder_path": "C:\\Photos\\Vacation 2024",
+      "index": 11,
+      "count": 0,
+      "file_name": "IMG_1234.jpg",
+      "length": 2500000,
+      "width": 6000,
+      "height": 4000,
+      "modified_local": "2024-06-10T08:00:00",
+      "exif": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8",
+        "iso": 400,
+        "focal_length": {
+          "n": 50,
+          "d": 1
+        },
+        "f_number": {
+          "n": 28,
+          "d": 10
+        },
+        "exposure_time": {
+          "n": 1,
+          "d": 250
+        }
+      },
+      "language": "en",
+      "culture": "invariant"
+    },
+    {
+      "name": "missing-bit-1",
+      "fields": 1,
+      "folder_path": "C:\\Photos\\Vacation 2024",
+      "index": null,
+      "count": null,
+      "file_name": null,
+      "length": null,
+      "width": 0,
+      "height": 0,
+      "modified_local": null,
+      "exif": null,
+      "language": "en",
+      "culture": "invariant"
+    },
+    {
+      "name": "missing-bit-2",
+      "fields": 3,
+      "folder_path": "C:\\Photos\\Vacation 2024",
+      "index": null,
+      "count": null,
+      "file_name": null,
+      "length": null,
+      "width": 0,
+      "height": 0,
+      "modified_local": null,
+      "exif": null,
+      "language": "en",
+      "culture": "invariant"
+    },
+    {
+      "name": "missing-bit-4",
+      "fields": 5,
+      "folder_path": "C:\\Photos\\Vacation 2024",
+      "index": null,
+      "count": null,
+      "file_name": null,
+      "length": null,
+      "width": 0,
+      "height": 0,
+      "modified_local": null,
+      "exif": null,
+      "language": "en",
+      "culture": "invariant"
+    },
+    {
+      "name": "missing-bit-8",
+      "fields": 9,
+      "folder_path": "C:\\Photos\\Vacation 2024",
+      "index": null,
+      "count": null,
+      "file_name": null,
+      "length": null,
+      "width": 0,
+      "height": 0,
+      "modified_local": null,
+      "exif": null,
+      "language": "en",
+      "culture": "invariant"
+    },
+    {
+      "name": "missing-bit-16",
+      "fields": 17,
+      "folder_path": "C:\\Photos\\Vacation 2024",
+      "index": null,
+      "count": null,
+      "file_name": null,
+      "length": null,
+      "width": 0,
+      "height": 0,
+      "modified_local": null,
+      "exif": null,
+      "language": "en",
+      "culture": "invariant"
+    },
+    {
+      "name": "missing-bit-32",
+      "fields": 33,
+      "folder_path": "C:\\Photos\\Vacation 2024",
+      "index": null,
+      "count": null,
+      "file_name": null,
+      "length": null,
+      "width": 0,
+      "height": 0,
+      "modified_local": null,
+      "exif": null,
+      "language": "en",
+      "culture": "invariant"
+    },
+    {
+      "name": "missing-bit-64",
+      "fields": 65,
+      "folder_path": "C:\\Photos\\Vacation 2024",
+      "index": null,
+      "count": null,
+      "file_name": null,
+      "length": null,
+      "width": 0,
+      "height": 0,
+      "modified_local": null,
+      "exif": null,
+      "language": "en",
+      "culture": "invariant"
+    },
+    {
+      "name": "missing-bit-128",
+      "fields": 129,
+      "folder_path": "C:\\Photos\\Vacation 2024",
+      "index": null,
+      "count": null,
+      "file_name": null,
+      "length": null,
+      "width": 0,
+      "height": 0,
+      "modified_local": null,
+      "exif": null,
+      "language": "en",
+      "culture": "invariant"
+    },
+    {
+      "name": "missing-bit-256",
+      "fields": 257,
+      "folder_path": "C:\\Photos\\Vacation 2024",
+      "index": null,
+      "count": null,
+      "file_name": null,
+      "length": null,
+      "width": 0,
+      "height": 0,
+      "modified_local": null,
+      "exif": null,
+      "language": "en",
+      "culture": "invariant"
+    },
+    {
+      "name": "missing-bit-512",
+      "fields": 513,
+      "folder_path": "C:\\Photos\\Vacation 2024",
+      "index": null,
+      "count": null,
+      "file_name": null,
+      "length": null,
+      "width": 0,
+      "height": 0,
+      "modified_local": null,
+      "exif": null,
+      "language": "en",
+      "culture": "invariant"
+    },
+    {
+      "name": "missing-bit-1024",
+      "fields": 1025,
+      "folder_path": "C:\\Photos\\Vacation 2024",
+      "index": null,
+      "count": null,
+      "file_name": null,
+      "length": null,
+      "width": 0,
+      "height": 0,
+      "modified_local": null,
+      "exif": null,
+      "language": "en",
+      "culture": "invariant"
+    },
+    {
+      "name": "missing-bit-2048",
+      "fields": 2049,
+      "folder_path": "C:\\Photos\\Vacation 2024",
+      "index": null,
+      "count": null,
+      "file_name": null,
+      "length": null,
+      "width": 0,
+      "height": 0,
+      "modified_local": null,
+      "exif": null,
+      "language": "en",
+      "culture": "invariant"
+    },
+    {
+      "name": "missing-bit-4096",
+      "fields": 4097,
+      "folder_path": "C:\\Photos\\Vacation 2024",
+      "index": null,
+      "count": null,
+      "file_name": null,
+      "length": null,
+      "width": 0,
+      "height": 0,
+      "modified_local": null,
+      "exif": null,
+      "language": "en",
+      "culture": "invariant"
+    },
+    {
+      "name": "missing-bit-8192",
+      "fields": 8193,
+      "folder_path": "C:\\Photos\\Vacation 2024",
+      "index": null,
+      "count": null,
+      "file_name": null,
+      "length": null,
+      "width": 0,
+      "height": 0,
+      "modified_local": null,
+      "exif": null,
+      "language": "en",
+      "culture": "invariant"
+    },
+    {
+      "name": "drive-root",
+      "fields": 13,
+      "folder_path": "D:\\",
+      "index": 0,
+      "count": 40,
+      "file_name": "IMG_1.jpg",
+      "length": null,
+      "width": 0,
+      "height": 0,
+      "modified_local": null,
+      "exif": null,
+      "language": "en",
+      "culture": "invariant"
+    },
+    {
+      "name": "trailing-separator",
+      "fields": 1,
+      "folder_path": "C:\\Photos\\Vacation 2024\\",
+      "index": 11,
+      "count": 340,
+      "file_name": "IMG_1234.jpg",
+      "length": 2500000,
+      "width": 6000,
+      "height": 4000,
+      "modified_local": "2024-06-10T08:00:00",
+      "exif": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8",
+        "iso": 400,
+        "focal_length": {
+          "n": 50,
+          "d": 1
+        },
+        "f_number": {
+          "n": 28,
+          "d": 10
+        },
+        "exposure_time": {
+          "n": 1,
+          "d": 250
+        }
+      },
+      "language": "en",
+      "culture": "invariant"
+    },
+    {
+      "name": "unc-root",
+      "fields": 1,
+      "folder_path": "\\\\server\\share\\",
+      "index": 11,
+      "count": 340,
+      "file_name": "IMG_1234.jpg",
+      "length": 2500000,
+      "width": 6000,
+      "height": 4000,
+      "modified_local": "2024-06-10T08:00:00",
+      "exif": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8",
+        "iso": 400,
+        "focal_length": {
+          "n": 50,
+          "d": 1
+        },
+        "f_number": {
+          "n": 28,
+          "d": 10
+        },
+        "exposure_time": {
+          "n": 1,
+          "d": 250
+        }
+      },
+      "language": "en",
+      "culture": "invariant"
+    },
+    {
+      "name": "trailing-space-name",
+      "fields": 1,
+      "folder_path": "C:\\Photos\\Vacation 2024 ",
+      "index": 11,
+      "count": 340,
+      "file_name": "IMG_1234.jpg",
+      "length": 2500000,
+      "width": 6000,
+      "height": 4000,
+      "modified_local": "2024-06-10T08:00:00",
+      "exif": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8",
+        "iso": 400,
+        "focal_length": {
+          "n": 50,
+          "d": 1
+        },
+        "f_number": {
+          "n": 28,
+          "d": 10
+        },
+        "exposure_time": {
+          "n": 1,
+          "d": 250
+        }
+      },
+      "language": "en",
+      "culture": "invariant"
+    },
+    {
+      "name": "none-fields",
+      "fields": 0,
+      "folder_path": "C:\\Photos\\Vacation 2024",
+      "index": 11,
+      "count": 340,
+      "file_name": "IMG_1234.jpg",
+      "length": 2500000,
+      "width": 6000,
+      "height": 4000,
+      "modified_local": "2024-06-10T08:00:00",
+      "exif": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8",
+        "iso": 400,
+        "focal_length": {
+          "n": 50,
+          "d": 1
+        },
+        "f_number": {
+          "n": 28,
+          "d": 10
+        },
+        "exposure_time": {
+          "n": 1,
+          "d": 250
+        }
+      },
+      "language": "en",
+      "culture": "invariant"
+    },
+    {
+      "name": "file-size-only",
+      "fields": 16,
+      "folder_path": "C:\\Photos\\Vacation 2024",
+      "index": 11,
+      "count": 340,
+      "file_name": "IMG_1234.jpg",
+      "length": 2500000,
+      "width": 6000,
+      "height": 4000,
+      "modified_local": "2024-06-10T08:00:00",
+      "exif": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8",
+        "iso": 400,
+        "focal_length": {
+          "n": 50,
+          "d": 1
+        },
+        "f_number": {
+          "n": 28,
+          "d": 10
+        },
+        "exposure_time": {
+          "n": 1,
+          "d": 250
+        }
+      },
+      "language": "en",
+      "culture": "invariant"
+    },
+    {
+      "name": "file-size-zero",
+      "fields": 16,
+      "folder_path": "C:\\Photos\\Vacation 2024",
+      "index": 11,
+      "count": 340,
+      "file_name": "IMG_1234.jpg",
+      "length": 0,
+      "width": 6000,
+      "height": 4000,
+      "modified_local": "2024-06-10T08:00:00",
+      "exif": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8",
+        "iso": 400,
+        "focal_length": {
+          "n": 50,
+          "d": 1
+        },
+        "f_number": {
+          "n": 28,
+          "d": 10
+        },
+        "exposure_time": {
+          "n": 1,
+          "d": 250
+        }
+      },
+      "language": "en",
+      "culture": "invariant"
+    },
+    {
+      "name": "file-size-negative",
+      "fields": 16,
+      "folder_path": "C:\\Photos\\Vacation 2024",
+      "index": 11,
+      "count": 340,
+      "file_name": "IMG_1234.jpg",
+      "length": -10,
+      "width": 6000,
+      "height": 4000,
+      "modified_local": "2024-06-10T08:00:00",
+      "exif": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8",
+        "iso": 400,
+        "focal_length": {
+          "n": 50,
+          "d": 1
+        },
+        "f_number": {
+          "n": 28,
+          "d": 10
+        },
+        "exposure_time": {
+          "n": 1,
+          "d": 250
+        }
+      },
+      "language": "en",
+      "culture": "invariant"
+    },
+    {
+      "name": "dimensions-only",
+      "fields": 32,
+      "folder_path": "C:\\Photos\\Vacation 2024",
+      "index": 11,
+      "count": 340,
+      "file_name": "IMG_1234.jpg",
+      "length": 2500000,
+      "width": 6000,
+      "height": 4000,
+      "modified_local": "2024-06-10T08:00:00",
+      "exif": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8",
+        "iso": 400,
+        "focal_length": {
+          "n": 50,
+          "d": 1
+        },
+        "f_number": {
+          "n": 28,
+          "d": 10
+        },
+        "exposure_time": {
+          "n": 1,
+          "d": 250
+        }
+      },
+      "language": "en",
+      "culture": "invariant"
+    },
+    {
+      "name": "modified-only",
+      "fields": 64,
+      "folder_path": "C:\\Photos\\Vacation 2024",
+      "index": 11,
+      "count": 340,
+      "file_name": "IMG_1234.jpg",
+      "length": 2500000,
+      "width": 6000,
+      "height": 4000,
+      "modified_local": "2024-06-10T08:00:00",
+      "exif": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8",
+        "iso": 400,
+        "focal_length": {
+          "n": 50,
+          "d": 1
+        },
+        "f_number": {
+          "n": 28,
+          "d": 10
+        },
+        "exposure_time": {
+          "n": 1,
+          "d": 250
+        }
+      },
+      "language": "en",
+      "culture": "invariant"
+    },
+    {
+      "name": "date-taken-only",
+      "fields": 128,
+      "folder_path": "C:\\Photos\\Vacation 2024",
+      "index": 11,
+      "count": 340,
+      "file_name": "IMG_1234.jpg",
+      "length": 2500000,
+      "width": 6000,
+      "height": 4000,
+      "modified_local": "2024-06-10T08:00:00",
+      "exif": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8",
+        "iso": 400,
+        "focal_length": {
+          "n": 50,
+          "d": 1
+        },
+        "f_number": {
+          "n": 28,
+          "d": 10
+        },
+        "exposure_time": {
+          "n": 1,
+          "d": 250
+        }
+      },
+      "language": "en",
+      "culture": "invariant"
+    },
+    {
+      "name": "camera-only",
+      "fields": 256,
+      "folder_path": "C:\\Photos\\Vacation 2024",
+      "index": 11,
+      "count": 340,
+      "file_name": "IMG_1234.jpg",
+      "length": 2500000,
+      "width": 6000,
+      "height": 4000,
+      "modified_local": "2024-06-10T08:00:00",
+      "exif": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8",
+        "iso": 400,
+        "focal_length": {
+          "n": 50,
+          "d": 1
+        },
+        "f_number": {
+          "n": 28,
+          "d": 10
+        },
+        "exposure_time": {
+          "n": 1,
+          "d": 250
+        }
+      },
+      "language": "en",
+      "culture": "invariant"
+    },
+    {
+      "name": "all-minus-modified",
+      "fields": 16319,
+      "folder_path": "C:\\Photos\\Vacation 2024",
+      "index": 11,
+      "count": 340,
+      "file_name": "IMG_1234.jpg",
+      "length": 2500000,
+      "width": 6000,
+      "height": 4000,
+      "modified_local": "2024-06-10T08:00:00",
+      "exif": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8",
+        "iso": 400,
+        "focal_length": {
+          "n": 50,
+          "d": 1
+        },
+        "f_number": {
+          "n": 28,
+          "d": 10
+        },
+        "exposure_time": {
+          "n": 1,
+          "d": 250
+        }
+      },
+      "language": "en",
+      "culture": "invariant"
+    },
+    {
+      "name": "blank-file-name",
+      "fields": 8,
+      "folder_path": "C:\\Photos\\Vacation 2024",
+      "index": 11,
+      "count": 340,
+      "file_name": "   ",
+      "length": 2500000,
+      "width": 6000,
+      "height": 4000,
+      "modified_local": "2024-06-10T08:00:00",
+      "exif": null,
+      "language": "en",
+      "culture": "invariant"
+    },
+    {
+      "name": "blank-folder-path",
+      "fields": 3,
+      "folder_path": "   ",
+      "index": 11,
+      "count": 340,
+      "file_name": "IMG_1234.jpg",
+      "length": 2500000,
+      "width": 6000,
+      "height": 4000,
+      "modified_local": "2024-06-10T08:00:00",
+      "exif": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8",
+        "iso": 400,
+        "focal_length": {
+          "n": 50,
+          "d": 1
+        },
+        "f_number": {
+          "n": 28,
+          "d": 10
+        },
+        "exposure_time": {
+          "n": 1,
+          "d": 250
+        }
+      },
+      "language": "en",
+      "culture": "invariant"
+    },
+    {
+      "name": "index-with-null-count",
+      "fields": 4,
+      "folder_path": "C:\\Photos\\Vacation 2024",
+      "index": 11,
+      "count": null,
+      "file_name": "IMG_1234.jpg",
+      "length": 2500000,
+      "width": 6000,
+      "height": 4000,
+      "modified_local": "2024-06-10T08:00:00",
+      "exif": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8",
+        "iso": 400,
+        "focal_length": {
+          "n": 50,
+          "d": 1
+        },
+        "f_number": {
+          "n": 28,
+          "d": 10
+        },
+        "exposure_time": {
+          "n": 1,
+          "d": 250
+        }
+      },
+      "language": "en",
+      "culture": "invariant"
+    },
+    {
+      "name": "index-int-max",
+      "fields": 4,
+      "folder_path": "C:\\Photos\\Vacation 2024",
+      "index": 2147483647,
+      "count": 10,
+      "file_name": "IMG_1234.jpg",
+      "length": 2500000,
+      "width": 6000,
+      "height": 4000,
+      "modified_local": "2024-06-10T08:00:00",
+      "exif": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8",
+        "iso": 400,
+        "focal_length": {
+          "n": 50,
+          "d": 1
+        },
+        "f_number": {
+          "n": 28,
+          "d": 10
+        },
+        "exposure_time": {
+          "n": 1,
+          "d": 250
+        }
+      },
+      "language": "en",
+      "culture": "invariant"
+    },
+    {
+      "name": "all-minus-folder-name",
+      "fields": 16382,
+      "folder_path": "C:\\Photos\\Vacation 2024",
+      "index": 11,
+      "count": 340,
+      "file_name": "IMG_1234.jpg",
+      "length": 2500000,
+      "width": 6000,
+      "height": 4000,
+      "modified_local": "2024-06-10T08:00:00",
+      "exif": {
+        "date_taken": "2024-05-01T14:03:22",
+        "camera_make": "Canon",
+        "camera_model": "Canon EOS R5",
+        "lens_model": "RF24-70mm F2.8",
+        "iso": 400,
+        "focal_length": {
+          "n": 50,
+          "d": 1
+        },
+        "f_number": {
+          "n": 28,
+          "d": 10
+        },
+        "exposure_time": {
+          "n": 1,
+          "d": 250
+        }
+      },
+      "language": "en",
+      "culture": "invariant"
+    }
+  ]
+}

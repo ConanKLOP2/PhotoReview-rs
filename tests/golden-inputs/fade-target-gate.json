@@ -1,0 +1,12 @@
+{
+ "cases": [
+  {"name": "first target always starts a fade", "kind": "sequence", "targets": [1.0]},
+  {"name": "repeated target starts once", "kind": "sequence", "targets": [1.0, 1.0, 1.0]},
+  {"name": "change back and forth", "kind": "sequence", "targets": [1.0, 0.0, 0.0, 0.6, 0.0]},
+  {"name": "negative zero equals zero (IEEE ==)", "kind": "sequence", "targets": [0.0, "-0", 0.0]},
+  {"name": "NaN is never equal, so every NaN starts", "kind": "sequence", "targets": ["NaN", "NaN"]},
+  {"name": "NaN, a number, NaN: each change starts", "kind": "sequence", "targets": ["NaN", 0.5, "NaN"]},
+  {"name": "infinity equals itself", "kind": "sequence", "targets": ["Infinity", "Infinity"]},
+  {"name": "opacity steps 0.2 and 1.0", "kind": "sequence", "targets": [0.2, 0.2, 1.0, 1.0, 0.2]}
+ ]
+}

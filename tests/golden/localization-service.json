@@ -1,0 +1,359 @@
+{
+  "generator": "oracle-cs localization-service",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "id": "parse-none-empty",
+      "kind": "parse_mode",
+      "args": [],
+      "out": "None"
+    },
+    {
+      "id": "parse-keys-lower",
+      "kind": "parse_mode",
+      "args": [
+        "--i18n-keys"
+      ],
+      "out": "Keys"
+    },
+    {
+      "id": "parse-keys-upper",
+      "kind": "parse_mode",
+      "args": [
+        "--I18N-KEYS"
+      ],
+      "out": "Keys"
+    },
+    {
+      "id": "parse-pseudo-lower",
+      "kind": "parse_mode",
+      "args": [
+        "--i18n-pseudo"
+      ],
+      "out": "Pseudo"
+    },
+    {
+      "id": "parse-pseudo-mixed",
+      "kind": "parse_mode",
+      "args": [
+        "--I18N-Pseudo"
+      ],
+      "out": "Pseudo"
+    },
+    {
+      "id": "parse-keys-wins-over-pseudo",
+      "kind": "parse_mode",
+      "args": [
+        "--i18n-pseudo",
+        "--i18n-keys"
+      ],
+      "out": "Keys"
+    },
+    {
+      "id": "parse-near-miss-not-a-switch",
+      "kind": "parse_mode",
+      "args": [
+        "--i18n",
+        "i18n-keys",
+        "pseudo"
+      ],
+      "out": "None"
+    },
+    {
+      "id": "parse-switch-among-paths",
+      "kind": "parse_mode",
+      "args": [
+        "C:\\photos",
+        "--i18n-pseudo"
+      ],
+      "out": "Pseudo"
+    },
+    {
+      "id": "parse-leading-space-not-a-switch",
+      "kind": "parse_mode",
+      "args": [
+        " --i18n-keys"
+      ],
+      "out": "None"
+    },
+    {
+      "id": "parse-suffix-not-a-switch",
+      "kind": "parse_mode",
+      "args": [
+        "--i18n-keys-x"
+      ],
+      "out": "None"
+    },
+    {
+      "id": "load-none-en",
+      "kind": "load",
+      "mode": "None",
+      "language": "en",
+      "out": {
+        "code": "en",
+        "appTitle": "Photo Review"
+      }
+    },
+    {
+      "id": "load-none-vi",
+      "kind": "load",
+      "mode": "None",
+      "language": "vi",
+      "out": {
+        "code": "en",
+        "appTitle": "Photo Review"
+      }
+    },
+    {
+      "id": "load-keys-en-shows-keys",
+      "kind": "load",
+      "mode": "Keys",
+      "language": "en",
+      "out": {
+        "code": "en",
+        "appTitle": "[app.title]"
+      }
+    },
+    {
+      "id": "load-keys-vi-keeps-code",
+      "kind": "load",
+      "mode": "Keys",
+      "language": "vi",
+      "out": {
+        "code": "en",
+        "appTitle": "[app.title]"
+      }
+    },
+    {
+      "id": "load-pseudo-en",
+      "kind": "load",
+      "mode": "Pseudo",
+      "language": "en",
+      "out": {
+        "code": "qps-ploc",
+        "appTitle": "[Ṕĥóťó Ŕéṽíéŵ ~~~~~]"
+      }
+    },
+    {
+      "id": "load-unknown-code-falls-back-to-en",
+      "kind": "load",
+      "mode": "None",
+      "language": "zz-not-shipped",
+      "out": {
+        "code": "en",
+        "appTitle": "Photo Review"
+      }
+    },
+    {
+      "id": "apply-pseudo-keeps-english-ui-culture",
+      "kind": "apply_culture",
+      "start_culture": "fr",
+      "mode": "Pseudo",
+      "load_language": "vi",
+      "language": "vi",
+      "out": {
+        "requestedLanguage": "vi",
+        "localizerCode": "qps-ploc",
+        "uiCulture": "en",
+        "warnings": []
+      }
+    },
+    {
+      "id": "apply-none-vi-sets-vi-culture",
+      "kind": "apply_culture",
+      "start_culture": "fr",
+      "mode": "None",
+      "load_language": "vi",
+      "language": "vi",
+      "out": {
+        "requestedLanguage": "vi",
+        "localizerCode": "en",
+        "uiCulture": "en",
+        "warnings": []
+      }
+    },
+    {
+      "id": "apply-unknown-culture-keeps-current-culture",
+      "kind": "apply_culture",
+      "start_culture": "fr",
+      "mode": "None",
+      "load_language": "en",
+      "language": "community",
+      "out": {
+        "requestedLanguage": "community",
+        "localizerCode": "en",
+        "uiCulture": "en",
+        "warnings": []
+      }
+    },
+    {
+      "id": "apply-not-a-culture-name-keeps-current-culture",
+      "kind": "apply_culture",
+      "start_culture": "fr",
+      "mode": "None",
+      "load_language": "en",
+      "language": "not a culture!",
+      "out": {
+        "requestedLanguage": "not a culture!",
+        "localizerCode": "en",
+        "uiCulture": "en",
+        "warnings": []
+      }
+    },
+    {
+      "id": "apply-blank-empty-is-recorded-auto",
+      "kind": "apply_culture",
+      "start_culture": "fr",
+      "mode": "None",
+      "load_language": "en",
+      "language": "",
+      "out": {
+        "requestedLanguage": "auto",
+        "localizerCode": "en",
+        "uiCulture": "en",
+        "warnings": []
+      }
+    },
+    {
+      "id": "apply-blank-spaces-is-recorded-auto",
+      "kind": "apply_culture",
+      "start_culture": "fr",
+      "mode": "None",
+      "load_language": "en",
+      "language": "   ",
+      "out": {
+        "requestedLanguage": "auto",
+        "localizerCode": "en",
+        "uiCulture": "en",
+        "warnings": []
+      }
+    },
+    {
+      "id": "apply-keys-mode-uses-localizer-code-for-culture",
+      "kind": "apply_culture",
+      "start_culture": "fr",
+      "mode": "Keys",
+      "load_language": "vi",
+      "language": "vi",
+      "out": {
+        "requestedLanguage": "vi",
+        "localizerCode": "en",
+        "uiCulture": "en",
+        "warnings": []
+      }
+    },
+    {
+      "id": "reload-no-user-files-vi",
+      "kind": "reload_problems",
+      "language": "vi",
+      "user_files": {},
+      "out": {
+        "problems": [],
+        "appTitle": "Photo Review",
+        "requestedLanguage": "vi",
+        "logWarnings": []
+      }
+    },
+    {
+      "id": "reload-valid-user-file-replaces-title",
+      "kind": "reload_problems",
+      "language": "vi",
+      "user_files": {
+        "vi.json": "{ \"_meta\": { \"code\": \"vi\" }, \"app.title\": \"Duyệt ảnh\" }"
+      },
+      "out": {
+        "problems": [],
+        "appTitle": "Duyệt ảnh",
+        "requestedLanguage": "vi",
+        "logWarnings": []
+      }
+    },
+    {
+      "id": "reload-broken-user-file-is-skipped-with-problem",
+      "kind": "reload_problems",
+      "language": "vi",
+      "user_files": {
+        "vi.json": "{ \"_meta\": { \"code\": \"vi\" }, \"app.title\": \"Duyệt ảnh\" "
+      },
+      "out": {
+        "problems": [
+          "<ROOT>\\Languages\\vi.json: invalid JSON (*)"
+        ],
+        "appTitle": "Photo Review",
+        "requestedLanguage": "vi",
+        "logWarnings": [
+          "i18n: <ROOT>\\Languages\\vi.json: invalid JSON (*)"
+        ]
+      }
+    },
+    {
+      "id": "reload-bad-placeholder-reports-that-key",
+      "kind": "reload_problems",
+      "language": "vi",
+      "user_files": {
+        "vi.json": "{ \"_meta\": { \"code\": \"vi\" }, \"main.skipped.warning.other\": \"Bỏ qua {soLuong} tệp\", \"app.title\": \"Duyệt ảnh\" }"
+      },
+      "out": {
+        "problems": [
+          "vi: 'main.skipped.warning.other' uses unknown placeholder {soLuong}; English used"
+        ],
+        "appTitle": "Duyệt ảnh",
+        "requestedLanguage": "vi",
+        "logWarnings": [
+          "i18n: vi: 'main.skipped.warning.other' uses unknown placeholder {soLuong}; English used"
+        ]
+      }
+    },
+    {
+      "id": "resolve-vi",
+      "kind": "resolve_code",
+      "language": "vi",
+      "out": "en"
+    },
+    {
+      "id": "resolve-en",
+      "kind": "resolve_code",
+      "language": "en",
+      "out": "en"
+    },
+    {
+      "id": "resolve-unknown-is-en",
+      "kind": "resolve_code",
+      "language": "zz-not-shipped",
+      "out": "en"
+    },
+    {
+      "id": "resolve-uppercase-matches-code",
+      "kind": "resolve_code",
+      "language": "VI",
+      "out": "en"
+    },
+    {
+      "id": "resolve-padded-code-is-not-trimmed-to-en",
+      "kind": "resolve_code",
+      "language": " vi ",
+      "out": "en"
+    },
+    {
+      "id": "source-known-key-vi",
+      "kind": "source_text",
+      "localizer": "vi",
+      "key": "app.title",
+      "out": "Photo Review"
+    },
+    {
+      "id": "source-known-key-en",
+      "kind": "source_text",
+      "localizer": "en",
+      "key": "app.title",
+      "out": "Photo Review"
+    },
+    {
+      "id": "source-unknown-key-is-the-key",
+      "kind": "source_text",
+      "localizer": "en",
+      "key": "no.such.key",
+      "out": "no.such.key"
+    }
+  ]
+}

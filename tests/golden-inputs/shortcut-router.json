@@ -1,0 +1,111 @@
+{
+ "command": "shortcut-router",
+ "note": "Inputs for the oracle command shortcut-router (tools/oracle-cs/Commands/W8-05d.cs). Read-only for the Rust tests. The oracle expands fixtures x key_pairs x modifiers x states into 'resolve' cases and copies each 'sequences' entry into one 'sequence' case. Numbers are raw ModifierKeys bits (Alt=1, Control=2, Shift=4, Windows=8). Key names are KeyId enum names. Shortcut values are the C# property names of ShortcutMappings. No case reads the clock, the cwd or a file.",
+ "fixtures": [
+  { "name": "defaults" },
+  { "name": "empty-router", "router": "empty" },
+  {
+   "name": "remapped",
+   "shortcuts": { "Next": "A", "Previous": "Q", "Skip": "Enter", "Compare": "S", "ZoomIn": "F9", "FitWidth2": "Q" },
+   "actions": [
+    { "name": "Move1", "shortcut": "S", "operation": "Move", "destination": "X" },
+    { "name": "Disabled", "shortcut": "", "operation": "Copy", "destination": "Y" },
+    { "name": "Unparseable", "shortcut": "NotAKey", "operation": "Move", "destination": "Z" },
+    { "name": "Fourth", "shortcut": "D5", "operation": "Copy", "destination": "W" },
+    { "name": "Fifth", "shortcut": "  Enter ", "operation": "Move", "destination": "V" }
+   ]
+  },
+  {
+   "name": "optional-disabled",
+   "shortcuts": {
+    "LastImage": "", "ZoomActualSize": "", "ToggleInfoOverlay": "  ", "ClickZoom": "NotAKey",
+    "FitWidth": "", "FitWidth2": "", "FitHeight": "", "ToggleKeepZoom": "", "OpenFolder": "",
+    "CustomZoom": "", "ToggleCaptureMember": "B", "Refresh": "", "MoveToFolder": "", "CopyToFolder": "", "Undo": ""
+   }
+  },
+  {
+   "name": "collisions",
+   "shortcuts": {
+    "Compare": "S", "Skip": "S", "SendToRecycleBin": "D5", "ZoomIn": "D1", "ZoomActualSize": "D1",
+    "FirstImage": "Home", "LastImage": "Home", "Fullscreen": "F4", "ToggleInfoOverlay": "Escape"
+   },
+   "actions": [
+    { "name": "A", "shortcut": "D5", "operation": "Move", "destination": "X" },
+    { "name": "B", "shortcut": "D1", "operation": "Copy", "destination": "Y" },
+    { "name": "C", "shortcut": "Home", "operation": "Move", "destination": "Z" }
+   ]
+  }
+ ],
+ "states": [
+  { "is_fullscreen": false, "has_image": false, "has_compare_pair": true,  "is_compare_visible": false, "has_capture_pair": false },
+  { "is_fullscreen": false, "has_image": true,  "has_compare_pair": false, "is_compare_visible": false, "has_capture_pair": false },
+  { "is_fullscreen": false, "has_image": true,  "has_compare_pair": true,  "is_compare_visible": false, "has_capture_pair": false },
+  { "is_fullscreen": false, "has_image": true,  "has_compare_pair": false, "is_compare_visible": true,  "has_capture_pair": false },
+  { "is_fullscreen": true,  "has_image": true,  "has_compare_pair": true,  "is_compare_visible": true,  "has_capture_pair": true  },
+  { "is_fullscreen": false, "has_image": true,  "has_compare_pair": false, "is_compare_visible": false, "has_capture_pair": true  },
+  { "is_fullscreen": true,  "has_image": false, "has_compare_pair": false, "is_compare_visible": false, "has_capture_pair": false },
+  { "is_fullscreen": false, "has_image": true,  "has_compare_pair": true,  "is_compare_visible": true,  "has_capture_pair": true  }
+ ],
+ "key_pairs": [
+  ["F11", "None"], ["F4", "None"], ["System", "F11"], ["System", "F4"], ["Escape", "None"], ["Tab", "None"],
+  ["PageDown", "None"], ["PageUp", "None"], ["Home", "None"], ["End", "None"],
+  ["I", "None"], ["K", "None"], ["Z", "None"], ["O", "None"], ["B", "None"],
+  ["D1", "None"], ["D2", "None"], ["D3", "None"], ["D4", "None"], ["D5", "None"],
+  ["C", "None"], ["S", "None"], ["F", "None"], ["W", "None"], ["H", "None"], ["R", "None"],
+  ["M", "None"], ["Y", "None"], ["Right", "None"], ["Left", "None"], ["Delete", "None"], ["Enter", "None"],
+  ["Add", "None"], ["Subtract", "None"], ["OemPlus", "None"], ["OemMinus", "None"],
+  ["F5", "None"], ["F3", "None"], ["None", "None"], ["Q", "None"]
+ ],
+ "modifiers": [0, 1, 2, 3, 4, 6],
+ "sequences": [
+  {
+   "name": "rebuild-clears-stale-bindings",
+   "start": "defaults",
+   "steps": [
+    { "op": "resolve", "key": "Z", "system_key": "None", "modifiers": 2, "state": 1 },
+    { "op": "rebuild", "fixture": "optional-disabled" },
+    { "op": "resolve", "key": "Z", "system_key": "None", "modifiers": 2, "state": 1 },
+    { "op": "resolve", "key": "B", "system_key": "None", "modifiers": 0, "state": 5 },
+    { "op": "rebuild", "fixture": "remapped" },
+    { "op": "resolve", "key": "Right", "system_key": "None", "modifiers": 0, "state": 1 },
+    { "op": "resolve", "key": "A", "system_key": "None", "modifiers": 0, "state": 1 },
+    { "op": "resolve", "key": "B", "system_key": "None", "modifiers": 0, "state": 5 }
+   ]
+  },
+  {
+   "name": "empty-router-then-rebuild",
+   "start": "empty-router",
+   "steps": [
+    { "op": "resolve", "key": "Escape", "system_key": "None", "modifiers": 0, "state": 6 },
+    { "op": "resolve", "key": "Escape", "system_key": "None", "modifiers": 0, "state": 1 },
+    { "op": "resolve", "key": "Right", "system_key": "None", "modifiers": 0, "state": 1 },
+    { "op": "rebuild", "fixture": "defaults" },
+    { "op": "resolve", "key": "Right", "system_key": "None", "modifiers": 0, "state": 1 },
+    { "op": "resolve", "key": "Right", "system_key": "None", "modifiers": 0, "state": 0 }
+   ]
+  },
+  {
+   "name": "action-index-survives-skipped-entries",
+   "start": "remapped",
+   "steps": [
+    { "op": "resolve", "key": "Enter", "system_key": "None", "modifiers": 0, "state": 1 },
+    { "op": "resolve", "key": "S", "system_key": "None", "modifiers": 0, "state": 2 },
+    { "op": "resolve", "key": "S", "system_key": "None", "modifiers": 0, "state": 1 },
+    { "op": "resolve", "key": "D5", "system_key": "None", "modifiers": 0, "state": 1 },
+    { "op": "resolve", "key": "Q", "system_key": "None", "modifiers": 0, "state": 1 }
+   ]
+  },
+  {
+   "name": "modifier-rules-across-a-rebuild",
+   "start": "defaults",
+   "steps": [
+    { "op": "resolve", "key": "Delete", "system_key": "None", "modifiers": 2, "state": 1 },
+    { "op": "rebuild", "fixture": "collisions" },
+    { "op": "resolve", "key": "D5", "system_key": "None", "modifiers": 0, "state": 1 },
+    { "op": "resolve", "key": "D5", "system_key": "None", "modifiers": 2, "state": 1 },
+    { "op": "resolve", "key": "Home", "system_key": "None", "modifiers": 0, "state": 1 },
+    { "op": "resolve", "key": "S", "system_key": "None", "modifiers": 0, "state": 0 }
+   ]
+  }
+ ]
+}

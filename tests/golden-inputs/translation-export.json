@@ -1,0 +1,400 @@
+{
+  "generator": "oracle-cs translation-export",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "notes": "Inputs for tools/oracle-cs/Commands/W8-04b.cs. A JSON object value in english/translations/shipped/user is serialized as-is; a JSON string there is raw JSON text (may be broken on purpose). english null means the built-in English catalog (BuiltInCatalog.English). Every output is written to tests/golden/translation-export.json by the wiring step; the writer did not run the oracle.",
+  "cases": [
+    {
+      "id": "build-no-translations-nonenglish",
+      "kind": "build",
+      "code": "xx",
+      "english": {
+        "_meta": { "code": "en", "name": "English", "nativeName": "English", "plural": "one-other", "authors": ["PhotoReview"] },
+        "app.title": "PhotoReview",
+        "common.save": "Save",
+        "common.cancel": "Cancel",
+        "item.count.one": "{count} item",
+        "item.count.other": "{count} items",
+        "zz.only.en": "Only English"
+      },
+      "translations": [],
+      "notes": {}
+    },
+    {
+      "id": "build-partial-translation",
+      "kind": "build",
+      "code": "xx",
+      "english": {
+        "_meta": { "code": "en", "name": "English", "nativeName": "English", "plural": "one-other", "authors": ["PhotoReview"] },
+        "app.title": "PhotoReview",
+        "common.save": "Save",
+        "common.cancel": "Cancel",
+        "item.count.one": "{count} item",
+        "item.count.other": "{count} items",
+        "zz.only.en": "Only English"
+      },
+      "translations": [
+        { "_meta": { "code": "xx", "name": "Test", "nativeName": "Testish", "plural": "one-other", "authors": ["A"] }, "app.title": "Tst", "common.cancel": "Nope" }
+      ],
+      "notes": { "common.save": "Save button.", "app.title": "Product name." }
+    },
+    {
+      "id": "build-plural-none-skips-untranslated-one",
+      "kind": "build",
+      "code": "vi",
+      "english": {
+        "_meta": { "code": "en", "name": "English", "nativeName": "English", "plural": "one-other", "authors": ["PhotoReview"] },
+        "app.title": "PhotoReview",
+        "common.save": "Save",
+        "common.cancel": "Cancel",
+        "item.count.one": "{count} item",
+        "item.count.other": "{count} items",
+        "zz.only.en": "Only English"
+      },
+      "translations": [
+        { "_meta": { "code": "vi", "name": "Tiếng Việt", "nativeName": "Tiếng Việt", "plural": "none" }, "app.title": "Ứng dụng" }
+      ],
+      "notes": {}
+    },
+    {
+      "id": "build-plural-none-keeps-translated-one",
+      "kind": "build",
+      "code": "vi",
+      "english": {
+        "_meta": { "code": "en", "name": "English", "nativeName": "English", "plural": "one-other", "authors": ["PhotoReview"] },
+        "app.title": "PhotoReview",
+        "common.save": "Save",
+        "common.cancel": "Cancel",
+        "item.count.one": "{count} item",
+        "item.count.other": "{count} items",
+        "zz.only.en": "Only English"
+      },
+      "translations": [
+        { "_meta": { "code": "vi", "name": "Tiếng Việt", "nativeName": "Tiếng Việt", "plural": "none" }, "item.count.one": "{count} mục" }
+      ],
+      "notes": { "item.count.one": "Count of images." }
+    },
+    {
+      "id": "build-plural-one-other-lists-one-forms",
+      "kind": "build",
+      "code": "xx",
+      "english": {
+        "_meta": { "code": "en", "name": "English", "nativeName": "English", "plural": "one-other", "authors": ["PhotoReview"] },
+        "app.title": "PhotoReview",
+        "common.save": "Save",
+        "common.cancel": "Cancel",
+        "item.count.one": "{count} item",
+        "item.count.other": "{count} items",
+        "zz.only.en": "Only English"
+      },
+      "translations": [
+        { "_meta": { "code": "xx", "name": "X", "nativeName": "X", "plural": "one-other" } }
+      ],
+      "notes": {}
+    },
+    {
+      "id": "build-english-no-translations",
+      "kind": "build",
+      "code": "en",
+      "english": {
+        "_meta": { "code": "en", "name": "English", "nativeName": "English", "plural": "one-other", "authors": ["PhotoReview"] },
+        "app.title": "PhotoReview",
+        "common.save": "Save",
+        "common.cancel": "Cancel",
+        "item.count.one": "{count} item",
+        "item.count.other": "{count} items",
+        "zz.only.en": "Only English"
+      },
+      "translations": [],
+      "notes": { "common.save": "Save button.", "zz.only.en": "Only note" }
+    },
+    {
+      "id": "build-english-user-override-code-case",
+      "kind": "build",
+      "code": "EN",
+      "english": {
+        "_meta": { "code": "en", "name": "English", "nativeName": "English", "plural": "one-other", "authors": ["PhotoReview"] },
+        "app.title": "PhotoReview",
+        "common.save": "Save",
+        "common.cancel": "Cancel",
+        "item.count.one": "{count} item",
+        "item.count.other": "{count} items",
+        "zz.only.en": "Only English"
+      },
+      "translations": [
+        { "_meta": { "code": "en", "name": "English", "nativeName": "English" }, "common.save": "Keep" }
+      ],
+      "notes": {}
+    },
+    {
+      "id": "build-drops-unknown-keys",
+      "kind": "build",
+      "code": "xx",
+      "english": {
+        "_meta": { "code": "en", "name": "English", "nativeName": "English", "plural": "one-other", "authors": ["PhotoReview"] },
+        "app.title": "PhotoReview",
+        "common.save": "Save",
+        "common.cancel": "Cancel",
+        "item.count.one": "{count} item",
+        "item.count.other": "{count} items",
+        "zz.only.en": "Only English"
+      },
+      "translations": [
+        { "_meta": { "code": "xx", "name": "X", "nativeName": "X" }, "no.such.key": "x", "app.title": "T" }
+      ],
+      "notes": {}
+    },
+    {
+      "id": "build-notes-only-for-exported-keys",
+      "kind": "build",
+      "code": "xx",
+      "english": {
+        "_meta": { "code": "en", "name": "English", "nativeName": "English", "plural": "one-other", "authors": ["PhotoReview"] },
+        "app.title": "PhotoReview",
+        "common.save": "Save",
+        "common.cancel": "Cancel",
+        "item.count.one": "{count} item",
+        "item.count.other": "{count} items",
+        "zz.only.en": "Only English"
+      },
+      "translations": [],
+      "notes": { "nope": "not exported", "zz.only.en": "Only note", "_meta": "ignored" }
+    },
+    {
+      "id": "build-json-escapes",
+      "kind": "build",
+      "code": "xx",
+      "english": {
+        "_meta": { "code": "en", "name": "English", "nativeName": "English", "plural": "one-other", "authors": ["PhotoReview"] },
+        "app.title": "PhotoReview",
+        "common.save": "Save",
+        "common.cancel": "Cancel",
+        "item.count.one": "{count} item",
+        "item.count.other": "{count} items",
+        "zz.only.en": "Only English"
+      },
+      "translations": [
+        { "_meta": { "code": "xx", "name": "X", "nativeName": "X" }, "app.title": "Say \"hi\"\\ tab\there \u0001 ctl </b> & 'q' /slash" }
+      ],
+      "notes": {}
+    },
+    {
+      "id": "build-unicode-passthrough",
+      "kind": "build",
+      "code": "xx",
+      "english": {
+        "_meta": { "code": "en", "name": "English", "nativeName": "English", "plural": "one-other", "authors": ["PhotoReview"] },
+        "app.title": "PhotoReview",
+        "common.save": "Save",
+        "common.cancel": "Cancel",
+        "item.count.one": "{count} item",
+        "item.count.other": "{count} items",
+        "zz.only.en": "Only English"
+      },
+      "translations": [
+        { "_meta": { "code": "xx", "name": "X", "nativeName": "X" }, "common.save": "Lưu ✓ 😀   \u007f é" }
+      ],
+      "notes": {}
+    },
+    {
+      "id": "build-broken-translation-is-ignored",
+      "kind": "build",
+      "code": "xx",
+      "english": {
+        "_meta": { "code": "en", "name": "English", "nativeName": "English", "plural": "one-other", "authors": ["PhotoReview"] },
+        "app.title": "PhotoReview",
+        "common.save": "Save",
+        "common.cancel": "Cancel",
+        "item.count.one": "{count} item",
+        "item.count.other": "{count} items",
+        "zz.only.en": "Only English"
+      },
+      "translations": [
+        "{ broken",
+        { "_meta": { "code": "xx", "name": "X", "nativeName": "X" }, "app.title": "T" }
+      ],
+      "notes": {}
+    },
+    {
+      "id": "build-last-translation-supplies-meta",
+      "kind": "build",
+      "code": "xx",
+      "english": {
+        "_meta": { "code": "en", "name": "English", "nativeName": "English", "plural": "one-other", "authors": ["PhotoReview"] },
+        "app.title": "PhotoReview",
+        "common.save": "Save",
+        "common.cancel": "Cancel",
+        "item.count.one": "{count} item",
+        "item.count.other": "{count} items",
+        "zz.only.en": "Only English"
+      },
+      "translations": [
+        { "_meta": { "code": "xx", "name": "A", "nativeName": "AA" }, "app.title": "a1", "common.cancel": "ca" },
+        { "_meta": { "code": "xx", "name": "B", "nativeName": "BB", "plural": "none" }, "app.title": "b1" }
+      ],
+      "notes": {}
+    },
+    {
+      "id": "build-builtin-english-meta-fallback",
+      "kind": "build",
+      "code": "vi",
+      "english": null,
+      "translations": [],
+      "notes": {}
+    },
+    {
+      "id": "export-merges-shipped-and-user",
+      "kind": "export",
+      "code": "xx",
+      "shipped": {
+        "xx.json": { "_meta": { "code": "xx", "name": "Shipped", "nativeName": "Shipped" }, "app.title": "T" },
+        "en.notes.json": { "_meta": {}, "common.save": "Save button." },
+        "yy.json": { "_meta": { "code": "yy", "name": "Y", "nativeName": "Y" }, "common.save": "other language" }
+      },
+      "user": {
+        "xx.json": { "_meta": { "code": "xx", "name": "Mine", "nativeName": "Mine" }, "common.cancel": "C", "app.title": "U" },
+        "xx.draft.json": { "_meta": { "code": "xx", "name": "Draft", "nativeName": "Draft" }, "app.title": "DRAFT" }
+      },
+      "runs": 1
+    },
+    {
+      "id": "export-overwrites-stale-file-with-backup",
+      "kind": "export",
+      "code": "xx",
+      "shipped": {},
+      "user": { "xx.todo.json": "stale" },
+      "runs": 1
+    },
+    {
+      "id": "export-keeps-hand-edit-backup",
+      "kind": "export",
+      "code": "xx",
+      "shipped": {},
+      "user": { "xx.todo.json": "my half-done translation" },
+      "runs": 1
+    },
+    {
+      "id": "export-second-run-keeps-hand-edit-in-bak2",
+      "kind": "export",
+      "code": "xx",
+      "shipped": {},
+      "user": { "xx.todo.json": "first hand edit" },
+      "between_runs": { "xx.todo.json": "second hand edit" },
+      "runs": 2
+    },
+    {
+      "id": "export-unchanged-second-run-no-backup",
+      "kind": "export",
+      "code": "xx",
+      "shipped": {},
+      "user": {},
+      "runs": 2
+    },
+    {
+      "id": "export-user-folder-missing-is-created",
+      "kind": "export",
+      "code": "xx",
+      "shipped": { "xx.json": { "_meta": { "code": "xx", "name": "S", "nativeName": "S" }, "app.title": "T" } },
+      "user_missing": true,
+      "runs": 1
+    },
+    {
+      "id": "export-uppercase-code-lowercase-file-name",
+      "kind": "export",
+      "code": "XX",
+      "shipped": {},
+      "user": {},
+      "runs": 1
+    },
+    {
+      "id": "read-notes-valid",
+      "kind": "read_notes",
+      "text": "{\"common.save\":\"Save button.\",\"app.title\":\"Product name.\"}"
+    },
+    {
+      "id": "read-notes-skip-underscore-and-non-string",
+      "kind": "read_notes",
+      "text": "{\"_meta\":{},\"_help\":\"x\",\"common.save\":\"S\",\"n\":1,\"b\":true,\"arr\":[\"x\"],\"nul\":null}"
+    },
+    {
+      "id": "read-notes-comments-and-trailing-commas",
+      "kind": "read_notes",
+      "text": "// c\n{ /* c */ \"common.save\": \"S\", }"
+    },
+    {
+      "id": "read-notes-duplicate-last-wins",
+      "kind": "read_notes",
+      "text": "{\"a\":\"1\",\"a\":\"2\"}"
+    },
+    {
+      "id": "read-notes-broken-json-empty",
+      "kind": "read_notes",
+      "text": "{\"a\":"
+    },
+    {
+      "id": "read-notes-root-not-object-empty",
+      "kind": "read_notes",
+      "text": "[\"a\"]"
+    },
+    {
+      "id": "read-notes-missing-file-empty",
+      "kind": "read_notes",
+      "missing": true
+    },
+    {
+      "id": "read-notes-escapes-decoded",
+      "kind": "read_notes",
+      "text": "{\"a\":\"x\\u00e9\\n\\\"q\\\"\"}"
+    },
+    {
+      "id": "read-notes-trailing-garbage-empty",
+      "kind": "read_notes",
+      "text": "{\"a\":\"1\"} x"
+    },
+    {
+      "id": "read-notes-bom-skipped",
+      "kind": "read_notes",
+      "text": "﻿{\"a\":\"1\"}"
+    },
+    {
+      "id": "read-notes-too-large-empty",
+      "kind": "read_notes",
+      "text": "{\"a\":\"1\"}",
+      "pad_to_bytes": 1048577
+    },
+    {
+      "id": "read-notes-empty-file-empty",
+      "kind": "read_notes",
+      "text": ""
+    },
+    {
+      "id": "invalid-code-blank-empty",
+      "kind": "invalid_code",
+      "code": ""
+    },
+    {
+      "id": "invalid-code-whitespace-only",
+      "kind": "invalid_code",
+      "code": "   "
+    },
+    {
+      "id": "invalid-code-too-short",
+      "kind": "invalid_code",
+      "code": "x"
+    },
+    {
+      "id": "invalid-code-starts-with-digit",
+      "kind": "invalid_code",
+      "code": "1ab"
+    },
+    {
+      "id": "invalid-code-path-traversal",
+      "kind": "invalid_code",
+      "code": "..\\evil"
+    },
+    {
+      "id": "invalid-code-too-long-17-chars",
+      "kind": "invalid_code",
+      "code": "abcdefghijklmnopq"
+    }
+  ]
+}

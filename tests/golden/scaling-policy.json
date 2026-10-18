@@ -1,0 +1,91 @@
+{
+  "generator": "oracle-cs scaling-policy",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "resting keeps HQ for a heavy downscale",
+      "kind": "choose",
+      "interpolation": "HighQualityCubic"
+    },
+    {
+      "name": "in motion + heavy downscale falls back to Linear",
+      "kind": "choose",
+      "interpolation": "Linear"
+    },
+    {
+      "name": "in motion, exactly 4x area is not heavy",
+      "kind": "choose",
+      "interpolation": "HighQualityCubic"
+    },
+    {
+      "name": "in motion upscale keeps HQ",
+      "kind": "choose",
+      "interpolation": "HighQualityCubic"
+    },
+    {
+      "name": "Linear is never changed",
+      "kind": "choose",
+      "interpolation": "Linear"
+    },
+    {
+      "name": "NearestNeighbor is never changed",
+      "kind": "choose",
+      "interpolation": "NearestNeighbor"
+    },
+    {
+      "name": "zero source width is not heavy",
+      "kind": "choose",
+      "interpolation": "HighQualityCubic"
+    },
+    {
+      "name": "negative source height is not heavy",
+      "kind": "choose",
+      "interpolation": "HighQualityCubic"
+    },
+    {
+      "name": "zero destination width is not heavy",
+      "kind": "choose",
+      "interpolation": "HighQualityCubic"
+    },
+    {
+      "name": "zero destination height is not heavy",
+      "kind": "choose",
+      "interpolation": "HighQualityCubic"
+    },
+    {
+      "name": "NaN destination width is not heavy",
+      "kind": "choose",
+      "interpolation": "HighQualityCubic"
+    },
+    {
+      "name": "infinite destination width gives area 0, not heavy",
+      "kind": "choose",
+      "interpolation": "HighQualityCubic"
+    },
+    {
+      "name": "is_heavy: exactly 4x is not heavy",
+      "kind": "is_heavy",
+      "heavy": false
+    },
+    {
+      "name": "is_heavy: 4x plus one source pixel is heavy",
+      "kind": "is_heavy",
+      "heavy": true
+    },
+    {
+      "name": "is_heavy: NaN destination height is not heavy",
+      "kind": "is_heavy",
+      "heavy": false
+    },
+    {
+      "name": "is_heavy: large source area does not overflow int (46340^2 over 1x1)",
+      "kind": "is_heavy",
+      "heavy": true
+    },
+    {
+      "name": "is_heavy: 24 MP over a 1000x667 viewport",
+      "kind": "is_heavy",
+      "heavy": true
+    }
+  ]
+}

@@ -39,7 +39,7 @@ $coreDir = Join-Path $work 'core'
 # PhotoReview.PerfAnalysis.dll (separate project, no references), PhotoReview.Imaging.dll (W4: references Core only) and the W5
 # Imaging.Raw / Imaging.TurboJpeg / Imaging.LibRaw DLLs (each references Core + Imaging) are built into the same folder; rebuild if
 # any of the DLLs is missing.
-$requiredDlls = 'PhotoReview.Core.dll', 'PhotoReview.PerfAnalysis.dll', 'PhotoReview.Imaging.dll', 'PhotoReview.Imaging.Raw.dll', 'PhotoReview.Imaging.TurboJpeg.dll', 'PhotoReview.Imaging.LibRaw.dll', 'PhotoReview.Benchmarking.dll'
+$requiredDlls = 'PhotoReview.Core.dll', 'PhotoReview.PerfAnalysis.dll', 'PhotoReview.Imaging.dll', 'PhotoReview.Imaging.Raw.dll', 'PhotoReview.Imaging.TurboJpeg.dll', 'PhotoReview.Imaging.LibRaw.dll', 'PhotoReview.Benchmarking.dll', 'PhotoReview.App.Shared.dll', 'PhotoReview.Shell.Interop.dll', 'PhotoReview.Shell.Rendering.dll', 'PhotoReview.dll'
 if ($requiredDlls | Where-Object { -not (Test-Path (Join-Path $coreDir $_)) }) {
     $src = Join-Path $work 'src'
     if (Test-Path $src) { Remove-Item -Recurse -Force -Confirm:$false $src }
@@ -70,6 +70,12 @@ if ($requiredDlls | Where-Object { -not (Test-Path (Join-Path $coreDir $_)) }) {
     # W7: PhotoReview.Benchmarking (references Core, Imaging, Platform.Windows, PerfAnalysis; Platform.Windows lands in $coreDir too).
     & dotnet build (Join-Path $src 'src\PhotoReview.Benchmarking\PhotoReview.Benchmarking.csproj') -c Release -o $coreDir -nologo -v quiet
     if ($LASTEXITCODE -ne 0) { throw 'C# Benchmarking build failed' }
+    # W8 (batch B1): App.Shared (references Core, Benchmarking, Imaging*, Platform.Windows; needs CommunityToolkit.Mvvm and DI from NuGet),
+    # Shell.Interop, Shell.Rendering and Shell.Win32 (PhotoReview.exe/.dll; no WPF). All net10.0-windows.
+    foreach ($project in 'App.Shared', 'Shell.Interop', 'Shell.Rendering', 'Shell.Win32') {
+        & dotnet build (Join-Path $src "src\PhotoReview.$project\PhotoReview.$project.csproj") -c Release -o $coreDir -nologo -v quiet
+        if ($LASTEXITCODE -ne 0) { throw "C# $project build failed" }
+    }
 }
 
 $oracleOut = Join-Path $work 'oracle'

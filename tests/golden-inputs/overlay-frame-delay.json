@@ -1,0 +1,117 @@
+{
+ "command": "overlay-frame-delay",
+ "notes": [
+  "delay_ticks is a .NET TimeSpan tick count (100 ns): 1 ms = 10000. The oracle builds TimeSpan.FromTicks(delay_ticks); the Rust port takes the same tick count.",
+  "now is the clock value returned by the injected timestamp function (set before the op runs). tick ops raise one frame with Timestamp = timestamp; an op's optional now is applied before the frame.",
+  "restart (case field, optional): the elapsed callback calls Start(TimeSpan.FromMilliseconds(delay_ms)) again, using the current now, while fired < until_fired (C# CallbackMayRestartTheTimer).",
+  "Output per op: running (IsRunning after the op), fired (cumulative elapsed count), fired_now (elapsed during this op), request_frame (start only: RequestFrame was called), threw (exception type name, only when thrown)."
+ ],
+ "cases": [
+  {
+   "name": "Fires on the first frame at or after the deadline, exactly once",
+   "kind": "script",
+   "ticks_per_second": 1000,
+   "ops": [
+    {"op": "start", "now": 100, "delay_ticks": 5000000},
+    {"op": "tick", "timestamp": 599},
+    {"op": "tick", "timestamp": 600},
+    {"op": "tick", "timestamp": 900}
+   ]
+  },
+  {
+   "name": "Start while running replaces the deadline",
+   "kind": "script",
+   "ticks_per_second": 1000,
+   "ops": [
+    {"op": "start", "now": 0, "delay_ticks": 5000000},
+    {"op": "start", "now": 400, "delay_ticks": 5000000},
+    {"op": "tick", "timestamp": 500},
+    {"op": "tick", "timestamp": 900}
+   ]
+  },
+  {
+   "name": "Stop cancels, releases the clock, and start requests a frame",
+   "kind": "script",
+   "ticks_per_second": 1000,
+   "ops": [
+    {"op": "start", "now": 0, "delay_ticks": 100000},
+    {"op": "stop"},
+    {"op": "tick", "timestamp": 1000000},
+    {"op": "stop"}
+   ]
+  },
+  {
+   "name": "Callback may restart the timer (three firings)",
+   "kind": "script",
+   "ticks_per_second": 1000,
+   "restart": {"delay_ms": 100, "until_fired": 3},
+   "ops": [
+    {"op": "start", "now": 0, "delay_ticks": 1000000},
+    {"op": "tick", "timestamp": 100, "now": 100},
+    {"op": "tick", "timestamp": 200, "now": 200},
+    {"op": "tick", "timestamp": 300, "now": 300},
+    {"op": "tick", "timestamp": 400, "now": 400}
+   ]
+  },
+  {
+   "name": "Negative delay fires on the next frame; disposed timer refuses to start",
+   "kind": "script",
+   "ticks_per_second": 1000,
+   "ops": [
+    {"op": "start", "now": 0, "delay_ticks": -50000},
+    {"op": "tick", "timestamp": 0},
+    {"op": "dispose"},
+    {"op": "start", "now": 0, "delay_ticks": 10000}
+   ]
+  },
+  {
+   "name": "Zero delay fires on the first frame at the same instant",
+   "kind": "script",
+   "ticks_per_second": 1000,
+   "ops": [
+    {"op": "start", "now": 0, "delay_ticks": 0},
+    {"op": "tick", "timestamp": 0}
+   ]
+  },
+  {
+   "name": "Half a millisecond rounds up to one tick",
+   "kind": "script",
+   "ticks_per_second": 1000,
+   "ops": [
+    {"op": "start", "now": 1000, "delay_ticks": 5000},
+    {"op": "tick", "timestamp": 1000},
+    {"op": "tick", "timestamp": 1001}
+   ]
+  },
+  {
+   "name": "Frame before the deadline with a large tick rate",
+   "kind": "script",
+   "ticks_per_second": 1000000,
+   "ops": [
+    {"op": "start", "now": 1000000, "delay_ticks": 1000000},
+    {"op": "tick", "timestamp": 1099999},
+    {"op": "tick", "timestamp": 1100000}
+   ]
+  },
+  {
+   "name": "Timestamp far below the deadline never fires",
+   "kind": "script",
+   "ticks_per_second": 1000,
+   "ops": [
+    {"op": "start", "now": 5000, "delay_ticks": 10000000},
+    {"op": "tick", "timestamp": 0},
+    {"op": "tick", "timestamp": 5999}
+   ]
+  },
+  {
+   "name": "Dispose while running stops and does not fire later",
+   "kind": "script",
+   "ticks_per_second": 1000,
+   "ops": [
+    {"op": "start", "now": 0, "delay_ticks": 100000},
+    {"op": "dispose"},
+    {"op": "tick", "timestamp": 1000}
+   ]
+  }
+ ]
+}

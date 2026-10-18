@@ -1,0 +1,430 @@
+{
+  "generator": "oracle-cs action-profiles",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "has-invalid-empty-list",
+      "kind": "has_invalid",
+      "value": true
+    },
+    {
+      "name": "has-invalid-valid-pair",
+      "kind": "has_invalid",
+      "value": false
+    },
+    {
+      "name": "has-invalid-blank-name",
+      "kind": "has_invalid",
+      "value": true
+    },
+    {
+      "name": "has-invalid-reserved-escape",
+      "kind": "has_invalid",
+      "value": true
+    },
+    {
+      "name": "has-invalid-reserved-tab",
+      "kind": "has_invalid",
+      "value": true
+    },
+    {
+      "name": "has-invalid-number-text",
+      "kind": "has_invalid",
+      "value": true
+    },
+    {
+      "name": "has-invalid-return-enter-alias",
+      "kind": "has_invalid",
+      "value": true
+    },
+    {
+      "name": "has-invalid-prior-pageup-alias",
+      "kind": "has_invalid",
+      "value": true
+    },
+    {
+      "name": "has-invalid-lowercase-duplicate",
+      "kind": "has_invalid",
+      "value": true
+    },
+    {
+      "name": "has-invalid-recycle-destination-not-checked",
+      "kind": "has_invalid",
+      "value": false
+    },
+    {
+      "name": "next-free-empty",
+      "kind": "next_free",
+      "value": "F6"
+    },
+    {
+      "name": "next-free-f6-used",
+      "kind": "next_free",
+      "value": "F7"
+    },
+    {
+      "name": "next-free-alias-spelling-counts",
+      "kind": "next_free",
+      "value": "F8"
+    },
+    {
+      "name": "next-free-return-does-not-block-f-keys",
+      "kind": "next_free",
+      "value": "F6"
+    },
+    {
+      "name": "next-free-unparseable-ignored",
+      "kind": "next_free",
+      "value": "F6"
+    },
+    {
+      "name": "next-free-f6-to-f11-used",
+      "kind": "next_free",
+      "value": "F12"
+    },
+    {
+      "name": "next-free-all-seven-used-falls-back-to-f6",
+      "kind": "next_free",
+      "value": "F6"
+    },
+    {
+      "name": "dest-none-when-all-fine",
+      "kind": "destination_problem",
+      "value": null
+    },
+    {
+      "name": "dest-escape-en",
+      "kind": "destination_problem",
+      "value": "Action \"A\": a relative destination must stay inside the photo folder (no \"..\"). Use an absolute path to save elsewhere."
+    },
+    {
+      "name": "dest-escape-vi",
+      "kind": "destination_problem",
+      "value": "Hành động \"A\": thư mục đích tương đối phải nằm trong thư mục ảnh (không dùng \"..\"). Hãy dùng đường dẫn tuyệt đối nếu muốn lưu ở nơi khác."
+    },
+    {
+      "name": "dest-invalid-chars-copy",
+      "kind": "destination_problem",
+      "value": "Action \"x\": the destination folder is empty or contains invalid characters."
+    },
+    {
+      "name": "dest-empty-copy-vi",
+      "kind": "destination_problem",
+      "value": "Hành động \"x\": thư mục đích đang trống hoặc chứa ký tự không hợp lệ."
+    },
+    {
+      "name": "dest-recycle-skipped",
+      "kind": "destination_problem",
+      "value": null
+    },
+    {
+      "name": "dest-first-problem-wins",
+      "kind": "destination_problem",
+      "value": "Action \"B\": a relative destination must stay inside the photo folder (no \"..\"). Use an absolute path to save elsewhere."
+    },
+    {
+      "name": "dest-absolute-is-ok",
+      "kind": "destination_problem",
+      "value": null
+    },
+    {
+      "name": "apply-accepts-valid",
+      "kind": "apply",
+      "accepted": true,
+      "message": null
+    },
+    {
+      "name": "apply-refuses-empty-en",
+      "kind": "apply",
+      "accepted": false,
+      "message": "Each action needs a name and a valid shortcut, and shortcuts must not repeat."
+    },
+    {
+      "name": "apply-refuses-empty-vi",
+      "kind": "apply",
+      "accepted": false,
+      "message": "Mỗi hành động cần có tên và phím tắt hợp lệ, và các phím tắt không được trùng nhau."
+    },
+    {
+      "name": "apply-refuses-escape",
+      "kind": "apply",
+      "accepted": false,
+      "message": "Action \"A\": a relative destination must stay inside the photo folder (no \"..\"). Use an absolute path to save elsewhere."
+    },
+    {
+      "name": "script-open-save-none-open",
+      "kind": "script",
+      "steps": [
+        {
+          "steps": [
+            {
+              "name": "A",
+              "shortcut": "F6",
+              "operation_index": 0,
+              "destination": "Out",
+              "confirm": false
+            },
+            true,
+            null,
+            false
+          ],
+          "actions": [
+            {
+              "Name": "New name",
+              "Shortcut": "f8",
+              "Operation": "Recycle",
+              "Destination": "Dest",
+              "Confirm": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "script-remove-open-row-is-not-written-back",
+      "kind": "script",
+      "steps": [
+        {
+          "steps": [
+            {
+              "name": "A",
+              "shortcut": "F6",
+              "operation_index": 0,
+              "destination": "Out",
+              "confirm": false
+            },
+            0,
+            false
+          ],
+          "actions": [
+            {
+              "Name": "B",
+              "Shortcut": "F7",
+              "Operation": "Move",
+              "Destination": "Out",
+              "Confirm": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "script-remove-selection-rules",
+      "kind": "script",
+      "steps": [
+        {
+          "steps": [
+            1,
+            0,
+            -1
+          ],
+          "actions": []
+        }
+      ]
+    },
+    {
+      "name": "script-add-uses-next-free-key-en",
+      "kind": "script",
+      "steps": [
+        {
+          "steps": [
+            2,
+            {
+              "name": "New action",
+              "shortcut": "F7",
+              "operation_index": 0,
+              "destination": "Output",
+              "confirm": false
+            }
+          ],
+          "actions": [
+            {
+              "Name": "A",
+              "Shortcut": "F6",
+              "Operation": "Move",
+              "Destination": "Out",
+              "Confirm": false
+            },
+            {
+              "Name": "B",
+              "Shortcut": "Return",
+              "Operation": "Move",
+              "Destination": "Out",
+              "Confirm": false
+            },
+            {
+              "Name": "New action",
+              "Shortcut": "F7",
+              "Operation": "Move",
+              "Destination": "Output",
+              "Confirm": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "script-add-uses-next-free-key-vi",
+      "kind": "script",
+      "steps": [
+        {
+          "steps": [
+            0
+          ],
+          "actions": [
+            {
+              "Name": "Hành động mới",
+              "Shortcut": "F6",
+              "Operation": "Move",
+              "Destination": "Output",
+              "Confirm": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "script-open-maps-operation-index",
+      "kind": "script",
+      "steps": [
+        {
+          "steps": [
+            {
+              "name": "C",
+              "shortcut": "F6",
+              "operation_index": 1,
+              "destination": "Backup",
+              "confirm": false
+            },
+            {
+              "name": "R",
+              "shortcut": "F7",
+              "operation_index": 2,
+              "destination": "",
+              "confirm": true
+            },
+            {
+              "name": "M",
+              "shortcut": "F8",
+              "operation_index": 0,
+              "destination": "Out",
+              "confirm": false
+            }
+          ],
+          "actions": [
+            {
+              "Name": "C",
+              "Shortcut": "F6",
+              "Operation": "Copy",
+              "Destination": "Backup",
+              "Confirm": false
+            },
+            {
+              "Name": "R",
+              "Shortcut": "F7",
+              "Operation": "Recycle",
+              "Destination": "",
+              "Confirm": true
+            },
+            {
+              "Name": "M",
+              "Shortcut": "F8",
+              "Operation": "Move",
+              "Destination": "Out",
+              "Confirm": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "script-save-trims-but-not-bom",
+      "kind": "script",
+      "steps": [
+        {
+          "steps": [
+            {
+              "name": "A",
+              "shortcut": "F6",
+              "operation_index": 0,
+              "destination": "Out",
+              "confirm": false
+            },
+            true
+          ],
+          "actions": [
+            {
+              "Name": "x",
+              "Shortcut": "\uFEFFF6",
+              "Operation": "Move",
+              "Destination": "d",
+              "Confirm": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "script-replace-all-then-open",
+      "kind": "script",
+      "steps": [
+        {
+          "steps": [
+            null,
+            {
+              "name": "Y",
+              "shortcut": "F8",
+              "operation_index": 1,
+              "destination": "Out",
+              "confirm": false
+            }
+          ],
+          "actions": [
+            {
+              "Name": "X",
+              "Shortcut": "F7",
+              "Operation": "Move",
+              "Destination": "Out",
+              "Confirm": false
+            },
+            {
+              "Name": "Y",
+              "Shortcut": "F8",
+              "Operation": "Copy",
+              "Destination": "Out",
+              "Confirm": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "script-replace-all-makes-open-row-stale",
+      "kind": "script",
+      "steps": [
+        {
+          "steps": [
+            {
+              "name": "A",
+              "shortcut": "F6",
+              "operation_index": 0,
+              "destination": "Out",
+              "confirm": false
+            },
+            null,
+            false
+          ],
+          "actions": [
+            {
+              "Name": "X",
+              "Shortcut": "F7",
+              "Operation": "Move",
+              "Destination": "Out",
+              "Confirm": false
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

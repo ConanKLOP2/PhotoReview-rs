@@ -1,0 +1,1164 @@
+{
+  "generator": "oracle-cs scrollbar-repeat-timing",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "constants: WM_MOUSELEAVE and WM_CANCELMODE",
+      "kind": "constants",
+      "wm_mouse_leave": 675,
+      "wm_cancel_mode": 31
+    },
+    {
+      "name": "C# theory row: delay 0, speed 31",
+      "kind": "timing",
+      "keyboard_delay": 0,
+      "keyboard_speed": 31,
+      "delay_ms": 250,
+      "interval_ms": 33
+    },
+    {
+      "name": "C# theory row: delay 1, speed 31",
+      "kind": "timing",
+      "keyboard_delay": 1,
+      "keyboard_speed": 31,
+      "delay_ms": 500,
+      "interval_ms": 33
+    },
+    {
+      "name": "C# theory row: delay 3, speed 0",
+      "kind": "timing",
+      "keyboard_delay": 3,
+      "keyboard_speed": 0,
+      "delay_ms": 1000,
+      "interval_ms": 400
+    },
+    {
+      "name": "C# theory row: delay 2, speed 15",
+      "kind": "timing",
+      "keyboard_delay": 2,
+      "keyboard_speed": 15,
+      "delay_ms": 750,
+      "interval_ms": 222
+    },
+    {
+      "name": "grid: delay 0, speed 0",
+      "kind": "timing",
+      "keyboard_delay": 0,
+      "keyboard_speed": 0,
+      "delay_ms": 250,
+      "interval_ms": 400
+    },
+    {
+      "name": "grid: delay 0, speed 1",
+      "kind": "timing",
+      "keyboard_delay": 0,
+      "keyboard_speed": 1,
+      "delay_ms": 250,
+      "interval_ms": 388
+    },
+    {
+      "name": "grid: delay 0, speed 2",
+      "kind": "timing",
+      "keyboard_delay": 0,
+      "keyboard_speed": 2,
+      "delay_ms": 250,
+      "interval_ms": 376
+    },
+    {
+      "name": "grid: delay 0, speed 3",
+      "kind": "timing",
+      "keyboard_delay": 0,
+      "keyboard_speed": 3,
+      "delay_ms": 250,
+      "interval_ms": 364
+    },
+    {
+      "name": "grid: delay 0, speed 4",
+      "kind": "timing",
+      "keyboard_delay": 0,
+      "keyboard_speed": 4,
+      "delay_ms": 250,
+      "interval_ms": 352
+    },
+    {
+      "name": "grid: delay 0, speed 5",
+      "kind": "timing",
+      "keyboard_delay": 0,
+      "keyboard_speed": 5,
+      "delay_ms": 250,
+      "interval_ms": 340
+    },
+    {
+      "name": "grid: delay 0, speed 6",
+      "kind": "timing",
+      "keyboard_delay": 0,
+      "keyboard_speed": 6,
+      "delay_ms": 250,
+      "interval_ms": 328
+    },
+    {
+      "name": "grid: delay 0, speed 7",
+      "kind": "timing",
+      "keyboard_delay": 0,
+      "keyboard_speed": 7,
+      "delay_ms": 250,
+      "interval_ms": 317
+    },
+    {
+      "name": "grid: delay 0, speed 8",
+      "kind": "timing",
+      "keyboard_delay": 0,
+      "keyboard_speed": 8,
+      "delay_ms": 250,
+      "interval_ms": 305
+    },
+    {
+      "name": "grid: delay 0, speed 9",
+      "kind": "timing",
+      "keyboard_delay": 0,
+      "keyboard_speed": 9,
+      "delay_ms": 250,
+      "interval_ms": 293
+    },
+    {
+      "name": "grid: delay 0, speed 10",
+      "kind": "timing",
+      "keyboard_delay": 0,
+      "keyboard_speed": 10,
+      "delay_ms": 250,
+      "interval_ms": 281
+    },
+    {
+      "name": "grid: delay 0, speed 11",
+      "kind": "timing",
+      "keyboard_delay": 0,
+      "keyboard_speed": 11,
+      "delay_ms": 250,
+      "interval_ms": 269
+    },
+    {
+      "name": "grid: delay 0, speed 12",
+      "kind": "timing",
+      "keyboard_delay": 0,
+      "keyboard_speed": 12,
+      "delay_ms": 250,
+      "interval_ms": 257
+    },
+    {
+      "name": "grid: delay 0, speed 13",
+      "kind": "timing",
+      "keyboard_delay": 0,
+      "keyboard_speed": 13,
+      "delay_ms": 250,
+      "interval_ms": 246
+    },
+    {
+      "name": "grid: delay 0, speed 14",
+      "kind": "timing",
+      "keyboard_delay": 0,
+      "keyboard_speed": 14,
+      "delay_ms": 250,
+      "interval_ms": 234
+    },
+    {
+      "name": "grid: delay 0, speed 15",
+      "kind": "timing",
+      "keyboard_delay": 0,
+      "keyboard_speed": 15,
+      "delay_ms": 250,
+      "interval_ms": 222
+    },
+    {
+      "name": "grid: delay 0, speed 16",
+      "kind": "timing",
+      "keyboard_delay": 0,
+      "keyboard_speed": 16,
+      "delay_ms": 250,
+      "interval_ms": 210
+    },
+    {
+      "name": "grid: delay 0, speed 17",
+      "kind": "timing",
+      "keyboard_delay": 0,
+      "keyboard_speed": 17,
+      "delay_ms": 250,
+      "interval_ms": 198
+    },
+    {
+      "name": "grid: delay 0, speed 18",
+      "kind": "timing",
+      "keyboard_delay": 0,
+      "keyboard_speed": 18,
+      "delay_ms": 250,
+      "interval_ms": 186
+    },
+    {
+      "name": "grid: delay 0, speed 19",
+      "kind": "timing",
+      "keyboard_delay": 0,
+      "keyboard_speed": 19,
+      "delay_ms": 250,
+      "interval_ms": 175
+    },
+    {
+      "name": "grid: delay 0, speed 20",
+      "kind": "timing",
+      "keyboard_delay": 0,
+      "keyboard_speed": 20,
+      "delay_ms": 250,
+      "interval_ms": 163
+    },
+    {
+      "name": "grid: delay 0, speed 21",
+      "kind": "timing",
+      "keyboard_delay": 0,
+      "keyboard_speed": 21,
+      "delay_ms": 250,
+      "interval_ms": 151
+    },
+    {
+      "name": "grid: delay 0, speed 22",
+      "kind": "timing",
+      "keyboard_delay": 0,
+      "keyboard_speed": 22,
+      "delay_ms": 250,
+      "interval_ms": 139
+    },
+    {
+      "name": "grid: delay 0, speed 23",
+      "kind": "timing",
+      "keyboard_delay": 0,
+      "keyboard_speed": 23,
+      "delay_ms": 250,
+      "interval_ms": 127
+    },
+    {
+      "name": "grid: delay 0, speed 24",
+      "kind": "timing",
+      "keyboard_delay": 0,
+      "keyboard_speed": 24,
+      "delay_ms": 250,
+      "interval_ms": 115
+    },
+    {
+      "name": "grid: delay 0, speed 25",
+      "kind": "timing",
+      "keyboard_delay": 0,
+      "keyboard_speed": 25,
+      "delay_ms": 250,
+      "interval_ms": 104
+    },
+    {
+      "name": "grid: delay 0, speed 26",
+      "kind": "timing",
+      "keyboard_delay": 0,
+      "keyboard_speed": 26,
+      "delay_ms": 250,
+      "interval_ms": 92
+    },
+    {
+      "name": "grid: delay 0, speed 27",
+      "kind": "timing",
+      "keyboard_delay": 0,
+      "keyboard_speed": 27,
+      "delay_ms": 250,
+      "interval_ms": 80
+    },
+    {
+      "name": "grid: delay 0, speed 28",
+      "kind": "timing",
+      "keyboard_delay": 0,
+      "keyboard_speed": 28,
+      "delay_ms": 250,
+      "interval_ms": 68
+    },
+    {
+      "name": "grid: delay 0, speed 29",
+      "kind": "timing",
+      "keyboard_delay": 0,
+      "keyboard_speed": 29,
+      "delay_ms": 250,
+      "interval_ms": 56
+    },
+    {
+      "name": "grid: delay 0, speed 30",
+      "kind": "timing",
+      "keyboard_delay": 0,
+      "keyboard_speed": 30,
+      "delay_ms": 250,
+      "interval_ms": 44
+    },
+    {
+      "name": "grid: delay 1, speed 0",
+      "kind": "timing",
+      "keyboard_delay": 1,
+      "keyboard_speed": 0,
+      "delay_ms": 500,
+      "interval_ms": 400
+    },
+    {
+      "name": "grid: delay 1, speed 1",
+      "kind": "timing",
+      "keyboard_delay": 1,
+      "keyboard_speed": 1,
+      "delay_ms": 500,
+      "interval_ms": 388
+    },
+    {
+      "name": "grid: delay 1, speed 2",
+      "kind": "timing",
+      "keyboard_delay": 1,
+      "keyboard_speed": 2,
+      "delay_ms": 500,
+      "interval_ms": 376
+    },
+    {
+      "name": "grid: delay 1, speed 3",
+      "kind": "timing",
+      "keyboard_delay": 1,
+      "keyboard_speed": 3,
+      "delay_ms": 500,
+      "interval_ms": 364
+    },
+    {
+      "name": "grid: delay 1, speed 4",
+      "kind": "timing",
+      "keyboard_delay": 1,
+      "keyboard_speed": 4,
+      "delay_ms": 500,
+      "interval_ms": 352
+    },
+    {
+      "name": "grid: delay 1, speed 5",
+      "kind": "timing",
+      "keyboard_delay": 1,
+      "keyboard_speed": 5,
+      "delay_ms": 500,
+      "interval_ms": 340
+    },
+    {
+      "name": "grid: delay 1, speed 6",
+      "kind": "timing",
+      "keyboard_delay": 1,
+      "keyboard_speed": 6,
+      "delay_ms": 500,
+      "interval_ms": 328
+    },
+    {
+      "name": "grid: delay 1, speed 7",
+      "kind": "timing",
+      "keyboard_delay": 1,
+      "keyboard_speed": 7,
+      "delay_ms": 500,
+      "interval_ms": 317
+    },
+    {
+      "name": "grid: delay 1, speed 8",
+      "kind": "timing",
+      "keyboard_delay": 1,
+      "keyboard_speed": 8,
+      "delay_ms": 500,
+      "interval_ms": 305
+    },
+    {
+      "name": "grid: delay 1, speed 9",
+      "kind": "timing",
+      "keyboard_delay": 1,
+      "keyboard_speed": 9,
+      "delay_ms": 500,
+      "interval_ms": 293
+    },
+    {
+      "name": "grid: delay 1, speed 10",
+      "kind": "timing",
+      "keyboard_delay": 1,
+      "keyboard_speed": 10,
+      "delay_ms": 500,
+      "interval_ms": 281
+    },
+    {
+      "name": "grid: delay 1, speed 11",
+      "kind": "timing",
+      "keyboard_delay": 1,
+      "keyboard_speed": 11,
+      "delay_ms": 500,
+      "interval_ms": 269
+    },
+    {
+      "name": "grid: delay 1, speed 12",
+      "kind": "timing",
+      "keyboard_delay": 1,
+      "keyboard_speed": 12,
+      "delay_ms": 500,
+      "interval_ms": 257
+    },
+    {
+      "name": "grid: delay 1, speed 13",
+      "kind": "timing",
+      "keyboard_delay": 1,
+      "keyboard_speed": 13,
+      "delay_ms": 500,
+      "interval_ms": 246
+    },
+    {
+      "name": "grid: delay 1, speed 14",
+      "kind": "timing",
+      "keyboard_delay": 1,
+      "keyboard_speed": 14,
+      "delay_ms": 500,
+      "interval_ms": 234
+    },
+    {
+      "name": "grid: delay 1, speed 15",
+      "kind": "timing",
+      "keyboard_delay": 1,
+      "keyboard_speed": 15,
+      "delay_ms": 500,
+      "interval_ms": 222
+    },
+    {
+      "name": "grid: delay 1, speed 16",
+      "kind": "timing",
+      "keyboard_delay": 1,
+      "keyboard_speed": 16,
+      "delay_ms": 500,
+      "interval_ms": 210
+    },
+    {
+      "name": "grid: delay 1, speed 17",
+      "kind": "timing",
+      "keyboard_delay": 1,
+      "keyboard_speed": 17,
+      "delay_ms": 500,
+      "interval_ms": 198
+    },
+    {
+      "name": "grid: delay 1, speed 18",
+      "kind": "timing",
+      "keyboard_delay": 1,
+      "keyboard_speed": 18,
+      "delay_ms": 500,
+      "interval_ms": 186
+    },
+    {
+      "name": "grid: delay 1, speed 19",
+      "kind": "timing",
+      "keyboard_delay": 1,
+      "keyboard_speed": 19,
+      "delay_ms": 500,
+      "interval_ms": 175
+    },
+    {
+      "name": "grid: delay 1, speed 20",
+      "kind": "timing",
+      "keyboard_delay": 1,
+      "keyboard_speed": 20,
+      "delay_ms": 500,
+      "interval_ms": 163
+    },
+    {
+      "name": "grid: delay 1, speed 21",
+      "kind": "timing",
+      "keyboard_delay": 1,
+      "keyboard_speed": 21,
+      "delay_ms": 500,
+      "interval_ms": 151
+    },
+    {
+      "name": "grid: delay 1, speed 22",
+      "kind": "timing",
+      "keyboard_delay": 1,
+      "keyboard_speed": 22,
+      "delay_ms": 500,
+      "interval_ms": 139
+    },
+    {
+      "name": "grid: delay 1, speed 23",
+      "kind": "timing",
+      "keyboard_delay": 1,
+      "keyboard_speed": 23,
+      "delay_ms": 500,
+      "interval_ms": 127
+    },
+    {
+      "name": "grid: delay 1, speed 24",
+      "kind": "timing",
+      "keyboard_delay": 1,
+      "keyboard_speed": 24,
+      "delay_ms": 500,
+      "interval_ms": 115
+    },
+    {
+      "name": "grid: delay 1, speed 25",
+      "kind": "timing",
+      "keyboard_delay": 1,
+      "keyboard_speed": 25,
+      "delay_ms": 500,
+      "interval_ms": 104
+    },
+    {
+      "name": "grid: delay 1, speed 26",
+      "kind": "timing",
+      "keyboard_delay": 1,
+      "keyboard_speed": 26,
+      "delay_ms": 500,
+      "interval_ms": 92
+    },
+    {
+      "name": "grid: delay 1, speed 27",
+      "kind": "timing",
+      "keyboard_delay": 1,
+      "keyboard_speed": 27,
+      "delay_ms": 500,
+      "interval_ms": 80
+    },
+    {
+      "name": "grid: delay 1, speed 28",
+      "kind": "timing",
+      "keyboard_delay": 1,
+      "keyboard_speed": 28,
+      "delay_ms": 500,
+      "interval_ms": 68
+    },
+    {
+      "name": "grid: delay 1, speed 29",
+      "kind": "timing",
+      "keyboard_delay": 1,
+      "keyboard_speed": 29,
+      "delay_ms": 500,
+      "interval_ms": 56
+    },
+    {
+      "name": "grid: delay 1, speed 30",
+      "kind": "timing",
+      "keyboard_delay": 1,
+      "keyboard_speed": 30,
+      "delay_ms": 500,
+      "interval_ms": 44
+    },
+    {
+      "name": "grid: delay 2, speed 0",
+      "kind": "timing",
+      "keyboard_delay": 2,
+      "keyboard_speed": 0,
+      "delay_ms": 750,
+      "interval_ms": 400
+    },
+    {
+      "name": "grid: delay 2, speed 1",
+      "kind": "timing",
+      "keyboard_delay": 2,
+      "keyboard_speed": 1,
+      "delay_ms": 750,
+      "interval_ms": 388
+    },
+    {
+      "name": "grid: delay 2, speed 2",
+      "kind": "timing",
+      "keyboard_delay": 2,
+      "keyboard_speed": 2,
+      "delay_ms": 750,
+      "interval_ms": 376
+    },
+    {
+      "name": "grid: delay 2, speed 3",
+      "kind": "timing",
+      "keyboard_delay": 2,
+      "keyboard_speed": 3,
+      "delay_ms": 750,
+      "interval_ms": 364
+    },
+    {
+      "name": "grid: delay 2, speed 4",
+      "kind": "timing",
+      "keyboard_delay": 2,
+      "keyboard_speed": 4,
+      "delay_ms": 750,
+      "interval_ms": 352
+    },
+    {
+      "name": "grid: delay 2, speed 5",
+      "kind": "timing",
+      "keyboard_delay": 2,
+      "keyboard_speed": 5,
+      "delay_ms": 750,
+      "interval_ms": 340
+    },
+    {
+      "name": "grid: delay 2, speed 6",
+      "kind": "timing",
+      "keyboard_delay": 2,
+      "keyboard_speed": 6,
+      "delay_ms": 750,
+      "interval_ms": 328
+    },
+    {
+      "name": "grid: delay 2, speed 7",
+      "kind": "timing",
+      "keyboard_delay": 2,
+      "keyboard_speed": 7,
+      "delay_ms": 750,
+      "interval_ms": 317
+    },
+    {
+      "name": "grid: delay 2, speed 8",
+      "kind": "timing",
+      "keyboard_delay": 2,
+      "keyboard_speed": 8,
+      "delay_ms": 750,
+      "interval_ms": 305
+    },
+    {
+      "name": "grid: delay 2, speed 9",
+      "kind": "timing",
+      "keyboard_delay": 2,
+      "keyboard_speed": 9,
+      "delay_ms": 750,
+      "interval_ms": 293
+    },
+    {
+      "name": "grid: delay 2, speed 10",
+      "kind": "timing",
+      "keyboard_delay": 2,
+      "keyboard_speed": 10,
+      "delay_ms": 750,
+      "interval_ms": 281
+    },
+    {
+      "name": "grid: delay 2, speed 11",
+      "kind": "timing",
+      "keyboard_delay": 2,
+      "keyboard_speed": 11,
+      "delay_ms": 750,
+      "interval_ms": 269
+    },
+    {
+      "name": "grid: delay 2, speed 12",
+      "kind": "timing",
+      "keyboard_delay": 2,
+      "keyboard_speed": 12,
+      "delay_ms": 750,
+      "interval_ms": 257
+    },
+    {
+      "name": "grid: delay 2, speed 13",
+      "kind": "timing",
+      "keyboard_delay": 2,
+      "keyboard_speed": 13,
+      "delay_ms": 750,
+      "interval_ms": 246
+    },
+    {
+      "name": "grid: delay 2, speed 14",
+      "kind": "timing",
+      "keyboard_delay": 2,
+      "keyboard_speed": 14,
+      "delay_ms": 750,
+      "interval_ms": 234
+    },
+    {
+      "name": "grid: delay 2, speed 16",
+      "kind": "timing",
+      "keyboard_delay": 2,
+      "keyboard_speed": 16,
+      "delay_ms": 750,
+      "interval_ms": 210
+    },
+    {
+      "name": "grid: delay 2, speed 17",
+      "kind": "timing",
+      "keyboard_delay": 2,
+      "keyboard_speed": 17,
+      "delay_ms": 750,
+      "interval_ms": 198
+    },
+    {
+      "name": "grid: delay 2, speed 18",
+      "kind": "timing",
+      "keyboard_delay": 2,
+      "keyboard_speed": 18,
+      "delay_ms": 750,
+      "interval_ms": 186
+    },
+    {
+      "name": "grid: delay 2, speed 19",
+      "kind": "timing",
+      "keyboard_delay": 2,
+      "keyboard_speed": 19,
+      "delay_ms": 750,
+      "interval_ms": 175
+    },
+    {
+      "name": "grid: delay 2, speed 20",
+      "kind": "timing",
+      "keyboard_delay": 2,
+      "keyboard_speed": 20,
+      "delay_ms": 750,
+      "interval_ms": 163
+    },
+    {
+      "name": "grid: delay 2, speed 21",
+      "kind": "timing",
+      "keyboard_delay": 2,
+      "keyboard_speed": 21,
+      "delay_ms": 750,
+      "interval_ms": 151
+    },
+    {
+      "name": "grid: delay 2, speed 22",
+      "kind": "timing",
+      "keyboard_delay": 2,
+      "keyboard_speed": 22,
+      "delay_ms": 750,
+      "interval_ms": 139
+    },
+    {
+      "name": "grid: delay 2, speed 23",
+      "kind": "timing",
+      "keyboard_delay": 2,
+      "keyboard_speed": 23,
+      "delay_ms": 750,
+      "interval_ms": 127
+    },
+    {
+      "name": "grid: delay 2, speed 24",
+      "kind": "timing",
+      "keyboard_delay": 2,
+      "keyboard_speed": 24,
+      "delay_ms": 750,
+      "interval_ms": 115
+    },
+    {
+      "name": "grid: delay 2, speed 25",
+      "kind": "timing",
+      "keyboard_delay": 2,
+      "keyboard_speed": 25,
+      "delay_ms": 750,
+      "interval_ms": 104
+    },
+    {
+      "name": "grid: delay 2, speed 26",
+      "kind": "timing",
+      "keyboard_delay": 2,
+      "keyboard_speed": 26,
+      "delay_ms": 750,
+      "interval_ms": 92
+    },
+    {
+      "name": "grid: delay 2, speed 27",
+      "kind": "timing",
+      "keyboard_delay": 2,
+      "keyboard_speed": 27,
+      "delay_ms": 750,
+      "interval_ms": 80
+    },
+    {
+      "name": "grid: delay 2, speed 28",
+      "kind": "timing",
+      "keyboard_delay": 2,
+      "keyboard_speed": 28,
+      "delay_ms": 750,
+      "interval_ms": 68
+    },
+    {
+      "name": "grid: delay 2, speed 29",
+      "kind": "timing",
+      "keyboard_delay": 2,
+      "keyboard_speed": 29,
+      "delay_ms": 750,
+      "interval_ms": 56
+    },
+    {
+      "name": "grid: delay 2, speed 30",
+      "kind": "timing",
+      "keyboard_delay": 2,
+      "keyboard_speed": 30,
+      "delay_ms": 750,
+      "interval_ms": 44
+    },
+    {
+      "name": "grid: delay 2, speed 31",
+      "kind": "timing",
+      "keyboard_delay": 2,
+      "keyboard_speed": 31,
+      "delay_ms": 750,
+      "interval_ms": 33
+    },
+    {
+      "name": "grid: delay 3, speed 1",
+      "kind": "timing",
+      "keyboard_delay": 3,
+      "keyboard_speed": 1,
+      "delay_ms": 1000,
+      "interval_ms": 388
+    },
+    {
+      "name": "grid: delay 3, speed 2",
+      "kind": "timing",
+      "keyboard_delay": 3,
+      "keyboard_speed": 2,
+      "delay_ms": 1000,
+      "interval_ms": 376
+    },
+    {
+      "name": "grid: delay 3, speed 3",
+      "kind": "timing",
+      "keyboard_delay": 3,
+      "keyboard_speed": 3,
+      "delay_ms": 1000,
+      "interval_ms": 364
+    },
+    {
+      "name": "grid: delay 3, speed 4",
+      "kind": "timing",
+      "keyboard_delay": 3,
+      "keyboard_speed": 4,
+      "delay_ms": 1000,
+      "interval_ms": 352
+    },
+    {
+      "name": "grid: delay 3, speed 5",
+      "kind": "timing",
+      "keyboard_delay": 3,
+      "keyboard_speed": 5,
+      "delay_ms": 1000,
+      "interval_ms": 340
+    },
+    {
+      "name": "grid: delay 3, speed 6",
+      "kind": "timing",
+      "keyboard_delay": 3,
+      "keyboard_speed": 6,
+      "delay_ms": 1000,
+      "interval_ms": 328
+    },
+    {
+      "name": "grid: delay 3, speed 7",
+      "kind": "timing",
+      "keyboard_delay": 3,
+      "keyboard_speed": 7,
+      "delay_ms": 1000,
+      "interval_ms": 317
+    },
+    {
+      "name": "grid: delay 3, speed 8",
+      "kind": "timing",
+      "keyboard_delay": 3,
+      "keyboard_speed": 8,
+      "delay_ms": 1000,
+      "interval_ms": 305
+    },
+    {
+      "name": "grid: delay 3, speed 9",
+      "kind": "timing",
+      "keyboard_delay": 3,
+      "keyboard_speed": 9,
+      "delay_ms": 1000,
+      "interval_ms": 293
+    },
+    {
+      "name": "grid: delay 3, speed 10",
+      "kind": "timing",
+      "keyboard_delay": 3,
+      "keyboard_speed": 10,
+      "delay_ms": 1000,
+      "interval_ms": 281
+    },
+    {
+      "name": "grid: delay 3, speed 11",
+      "kind": "timing",
+      "keyboard_delay": 3,
+      "keyboard_speed": 11,
+      "delay_ms": 1000,
+      "interval_ms": 269
+    },
+    {
+      "name": "grid: delay 3, speed 12",
+      "kind": "timing",
+      "keyboard_delay": 3,
+      "keyboard_speed": 12,
+      "delay_ms": 1000,
+      "interval_ms": 257
+    },
+    {
+      "name": "grid: delay 3, speed 13",
+      "kind": "timing",
+      "keyboard_delay": 3,
+      "keyboard_speed": 13,
+      "delay_ms": 1000,
+      "interval_ms": 246
+    },
+    {
+      "name": "grid: delay 3, speed 14",
+      "kind": "timing",
+      "keyboard_delay": 3,
+      "keyboard_speed": 14,
+      "delay_ms": 1000,
+      "interval_ms": 234
+    },
+    {
+      "name": "grid: delay 3, speed 15",
+      "kind": "timing",
+      "keyboard_delay": 3,
+      "keyboard_speed": 15,
+      "delay_ms": 1000,
+      "interval_ms": 222
+    },
+    {
+      "name": "grid: delay 3, speed 16",
+      "kind": "timing",
+      "keyboard_delay": 3,
+      "keyboard_speed": 16,
+      "delay_ms": 1000,
+      "interval_ms": 210
+    },
+    {
+      "name": "grid: delay 3, speed 17",
+      "kind": "timing",
+      "keyboard_delay": 3,
+      "keyboard_speed": 17,
+      "delay_ms": 1000,
+      "interval_ms": 198
+    },
+    {
+      "name": "grid: delay 3, speed 18",
+      "kind": "timing",
+      "keyboard_delay": 3,
+      "keyboard_speed": 18,
+      "delay_ms": 1000,
+      "interval_ms": 186
+    },
+    {
+      "name": "grid: delay 3, speed 19",
+      "kind": "timing",
+      "keyboard_delay": 3,
+      "keyboard_speed": 19,
+      "delay_ms": 1000,
+      "interval_ms": 175
+    },
+    {
+      "name": "grid: delay 3, speed 20",
+      "kind": "timing",
+      "keyboard_delay": 3,
+      "keyboard_speed": 20,
+      "delay_ms": 1000,
+      "interval_ms": 163
+    },
+    {
+      "name": "grid: delay 3, speed 21",
+      "kind": "timing",
+      "keyboard_delay": 3,
+      "keyboard_speed": 21,
+      "delay_ms": 1000,
+      "interval_ms": 151
+    },
+    {
+      "name": "grid: delay 3, speed 22",
+      "kind": "timing",
+      "keyboard_delay": 3,
+      "keyboard_speed": 22,
+      "delay_ms": 1000,
+      "interval_ms": 139
+    },
+    {
+      "name": "grid: delay 3, speed 23",
+      "kind": "timing",
+      "keyboard_delay": 3,
+      "keyboard_speed": 23,
+      "delay_ms": 1000,
+      "interval_ms": 127
+    },
+    {
+      "name": "grid: delay 3, speed 24",
+      "kind": "timing",
+      "keyboard_delay": 3,
+      "keyboard_speed": 24,
+      "delay_ms": 1000,
+      "interval_ms": 115
+    },
+    {
+      "name": "grid: delay 3, speed 25",
+      "kind": "timing",
+      "keyboard_delay": 3,
+      "keyboard_speed": 25,
+      "delay_ms": 1000,
+      "interval_ms": 104
+    },
+    {
+      "name": "grid: delay 3, speed 26",
+      "kind": "timing",
+      "keyboard_delay": 3,
+      "keyboard_speed": 26,
+      "delay_ms": 1000,
+      "interval_ms": 92
+    },
+    {
+      "name": "grid: delay 3, speed 27",
+      "kind": "timing",
+      "keyboard_delay": 3,
+      "keyboard_speed": 27,
+      "delay_ms": 1000,
+      "interval_ms": 80
+    },
+    {
+      "name": "grid: delay 3, speed 28",
+      "kind": "timing",
+      "keyboard_delay": 3,
+      "keyboard_speed": 28,
+      "delay_ms": 1000,
+      "interval_ms": 68
+    },
+    {
+      "name": "grid: delay 3, speed 29",
+      "kind": "timing",
+      "keyboard_delay": 3,
+      "keyboard_speed": 29,
+      "delay_ms": 1000,
+      "interval_ms": 56
+    },
+    {
+      "name": "grid: delay 3, speed 30",
+      "kind": "timing",
+      "keyboard_delay": 3,
+      "keyboard_speed": 30,
+      "delay_ms": 1000,
+      "interval_ms": 44
+    },
+    {
+      "name": "grid: delay 3, speed 31",
+      "kind": "timing",
+      "keyboard_delay": 3,
+      "keyboard_speed": 31,
+      "delay_ms": 1000,
+      "interval_ms": 33
+    },
+    {
+      "name": "out of range: negative delay",
+      "kind": "timing",
+      "keyboard_delay": -1,
+      "keyboard_speed": 31,
+      "delay_ms": 0,
+      "interval_ms": 33
+    },
+    {
+      "name": "out of range: delay above 3",
+      "kind": "timing",
+      "keyboard_delay": 4,
+      "keyboard_speed": 31,
+      "delay_ms": 1250,
+      "interval_ms": 33
+    },
+    {
+      "name": "out of range: negative speed",
+      "kind": "timing",
+      "keyboard_delay": 0,
+      "keyboard_speed": -1,
+      "delay_ms": 250,
+      "interval_ms": 411
+    },
+    {
+      "name": "out of range: speed above 31",
+      "kind": "timing",
+      "keyboard_delay": 0,
+      "keyboard_speed": 32,
+      "delay_ms": 250,
+      "interval_ms": 22
+    },
+    {
+      "name": "out of range: both far out of range",
+      "kind": "timing",
+      "keyboard_delay": 100,
+      "keyboard_speed": 100,
+      "delay_ms": 25250,
+      "interval_ms": -783
+    },
+    {
+      "name": "out of range: delay int.MaxValue wraps in the multiplication",
+      "kind": "timing",
+      "keyboard_delay": 2147483647,
+      "keyboard_speed": 31,
+      "delay_ms": 0,
+      "interval_ms": 33
+    },
+    {
+      "name": "out of range: delay int.MaxValue - 1",
+      "kind": "timing",
+      "keyboard_delay": 2147483646,
+      "keyboard_speed": 31,
+      "delay_ms": -250,
+      "interval_ms": 33
+    },
+    {
+      "name": "out of range: speed int.MinValue wraps",
+      "kind": "timing",
+      "keyboard_delay": 0,
+      "keyboard_speed": -2147483648,
+      "delay_ms": 250,
+      "interval_ms": -69273266
+    },
+    {
+      "name": "out of range: speed int.MaxValue",
+      "kind": "timing",
+      "keyboard_delay": 0,
+      "keyboard_speed": 2147483647,
+      "delay_ms": 250,
+      "interval_ms": -69273254
+    },
+    {
+      "name": "out of range: delay int.MinValue",
+      "kind": "timing",
+      "keyboard_delay": -2147483648,
+      "keyboard_speed": 0,
+      "delay_ms": 250,
+      "interval_ms": 400
+    },
+    {
+      "name": "out of range: delay near the multiplication overflow",
+      "kind": "timing",
+      "keyboard_delay": 8589934,
+      "keyboard_speed": 0,
+      "delay_ms": -2147483546,
+      "interval_ms": 400
+    },
+    {
+      "name": "out of range: delay just below it",
+      "kind": "timing",
+      "keyboard_delay": 8589933,
+      "keyboard_speed": 0,
+      "delay_ms": 2147483500,
+      "interval_ms": 400
+    },
+    {
+      "name": "out of range: negative delay near the overflow",
+      "kind": "timing",
+      "keyboard_delay": -8589935,
+      "keyboard_speed": 0,
+      "delay_ms": -2147483500,
+      "interval_ms": 400
+    },
+    {
+      "name": "out of range: speed whose product with 367 overflows (negative side)",
+      "kind": "timing",
+      "keyboard_delay": 0,
+      "keyboard_speed": 5851500,
+      "delay_ms": 250,
+      "interval_ms": 69273522
+    },
+    {
+      "name": "out of range: speed whose product with 367 overflows (positive side)",
+      "kind": "timing",
+      "keyboard_delay": 0,
+      "keyboard_speed": -5851500,
+      "delay_ms": 250,
+      "interval_ms": -69272722
+    },
+    {
+      "name": "out of range: speed just below the overflow",
+      "kind": "timing",
+      "keyboard_delay": 0,
+      "keyboard_speed": 5845420,
+      "delay_ms": 250,
+      "interval_ms": -69201830
+    }
+  ]
+}

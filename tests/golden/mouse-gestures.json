@@ -1,0 +1,2310 @@
+{
+  "generator": "oracle-cs mouse-gestures",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "zoom mode: every event zooms whatever the delta",
+      "kind": "wheel_sequence",
+      "mode": "Zoom",
+      "steps": [
+        {
+          "delta": 120,
+          "ctrl": false
+        },
+        {
+          "delta": -120,
+          "ctrl": false
+        },
+        {
+          "delta": 15,
+          "ctrl": false
+        }
+      ],
+      "outcomes": [
+        "Zoom",
+        "Zoom",
+        "Zoom"
+      ]
+    },
+    {
+      "name": "zoom mode: zero delta is none",
+      "kind": "wheel_sequence",
+      "mode": "Zoom",
+      "steps": [
+        {
+          "delta": 0,
+          "ctrl": false
+        }
+      ],
+      "outcomes": [
+        "None"
+      ]
+    },
+    {
+      "name": "zoom mode: ctrl with zero delta is none",
+      "kind": "wheel_sequence",
+      "mode": "Zoom",
+      "steps": [
+        {
+          "delta": 0,
+          "ctrl": true
+        }
+      ],
+      "outcomes": [
+        "None"
+      ]
+    },
+    {
+      "name": "ctrl zooms in zoom mode",
+      "kind": "wheel_sequence",
+      "mode": "Zoom",
+      "steps": [
+        {
+          "delta": -120,
+          "ctrl": true
+        }
+      ],
+      "outcomes": [
+        "Zoom"
+      ]
+    },
+    {
+      "name": "ctrl zooms in navigate mode",
+      "kind": "wheel_sequence",
+      "mode": "Navigate",
+      "steps": [
+        {
+          "delta": -120,
+          "ctrl": true
+        }
+      ],
+      "outcomes": [
+        "Zoom"
+      ]
+    },
+    {
+      "name": "navigate: wheel down is next, up is previous",
+      "kind": "wheel_sequence",
+      "mode": "Navigate",
+      "steps": [
+        {
+          "delta": -120,
+          "ctrl": false
+        },
+        {
+          "delta": 120,
+          "ctrl": false
+        }
+      ],
+      "outcomes": [
+        "Next",
+        "Previous"
+      ]
+    },
+    {
+      "name": "navigate: high-resolution deltas accumulate to one notch",
+      "kind": "wheel_sequence",
+      "mode": "Navigate",
+      "steps": [
+        {
+          "delta": -30,
+          "ctrl": false
+        },
+        {
+          "delta": -30,
+          "ctrl": false
+        },
+        {
+          "delta": -30,
+          "ctrl": false
+        },
+        {
+          "delta": -30,
+          "ctrl": false
+        },
+        {
+          "delta": -30,
+          "ctrl": false
+        }
+      ],
+      "outcomes": [
+        "None",
+        "None",
+        "None",
+        "Next",
+        "None"
+      ]
+    },
+    {
+      "name": "navigate: reversing direction drops the partial notch",
+      "kind": "wheel_sequence",
+      "mode": "Navigate",
+      "steps": [
+        {
+          "delta": -100,
+          "ctrl": false
+        },
+        {
+          "delta": 40,
+          "ctrl": false
+        },
+        {
+          "delta": 80,
+          "ctrl": false
+        }
+      ],
+      "outcomes": [
+        "None",
+        "None",
+        "Previous"
+      ]
+    },
+    {
+      "name": "navigate: coarse event moves one image and drops the excess",
+      "kind": "wheel_sequence",
+      "mode": "Navigate",
+      "steps": [
+        {
+          "delta": -360,
+          "ctrl": false
+        },
+        {
+          "delta": -60,
+          "ctrl": false
+        }
+      ],
+      "outcomes": [
+        "Next",
+        "None"
+      ]
+    },
+    {
+      "name": "navigate: ctrl clears a partial navigation notch",
+      "kind": "wheel_sequence",
+      "mode": "Navigate",
+      "steps": [
+        {
+          "delta": -100,
+          "ctrl": false
+        },
+        {
+          "delta": -120,
+          "ctrl": true
+        },
+        {
+          "delta": -40,
+          "ctrl": false
+        }
+      ],
+      "outcomes": [
+        "None",
+        "Zoom",
+        "None"
+      ]
+    },
+    {
+      "name": "navigate: two halves of a notch in the same direction",
+      "kind": "wheel_sequence",
+      "mode": "Navigate",
+      "steps": [
+        {
+          "delta": -60,
+          "ctrl": false
+        },
+        {
+          "delta": -60,
+          "ctrl": false
+        }
+      ],
+      "outcomes": [
+        "None",
+        "Next"
+      ]
+    },
+    {
+      "name": "navigate: a zero delta keeps the partial sum",
+      "kind": "wheel_sequence",
+      "mode": "Navigate",
+      "steps": [
+        {
+          "delta": -100,
+          "ctrl": false
+        },
+        {
+          "delta": 0,
+          "ctrl": false
+        },
+        {
+          "delta": -20,
+          "ctrl": false
+        }
+      ],
+      "outcomes": [
+        "None",
+        "None",
+        "Next"
+      ]
+    },
+    {
+      "name": "navigate: ctrl with zero delta clears the partial sum",
+      "kind": "wheel_sequence",
+      "mode": "Navigate",
+      "steps": [
+        {
+          "delta": -100,
+          "ctrl": false
+        },
+        {
+          "delta": 0,
+          "ctrl": true
+        },
+        {
+          "delta": -20,
+          "ctrl": false
+        }
+      ],
+      "outcomes": [
+        "None",
+        "None",
+        "None"
+      ]
+    },
+    {
+      "name": "navigate: upward accumulation is previous",
+      "kind": "wheel_sequence",
+      "mode": "Navigate",
+      "steps": [
+        {
+          "delta": 60,
+          "ctrl": false
+        },
+        {
+          "delta": 60,
+          "ctrl": false
+        }
+      ],
+      "outcomes": [
+        "None",
+        "Previous"
+      ]
+    },
+    {
+      "name": "navigate: excess dropped, the small event after is none",
+      "kind": "wheel_sequence",
+      "mode": "Navigate",
+      "steps": [
+        {
+          "delta": 240,
+          "ctrl": false
+        },
+        {
+          "delta": 10,
+          "ctrl": false
+        }
+      ],
+      "outcomes": [
+        "Previous",
+        "None"
+      ]
+    },
+    {
+      "name": "navigate: 119 then 1 in the same direction makes one notch",
+      "kind": "wheel_sequence",
+      "mode": "Navigate",
+      "steps": [
+        {
+          "delta": -119,
+          "ctrl": false
+        },
+        {
+          "delta": -1,
+          "ctrl": false
+        }
+      ],
+      "outcomes": [
+        "None",
+        "Next"
+      ]
+    },
+    {
+      "name": "navigate: 119 then 1 in opposite directions makes none",
+      "kind": "wheel_sequence",
+      "mode": "Navigate",
+      "steps": [
+        {
+          "delta": -119,
+          "ctrl": false
+        },
+        {
+          "delta": 1,
+          "ctrl": false
+        }
+      ],
+      "outcomes": [
+        "None",
+        "None"
+      ]
+    },
+    {
+      "name": "navigate: exactly one notch from the first event",
+      "kind": "wheel_sequence",
+      "mode": "Navigate",
+      "steps": [
+        {
+          "delta": 120,
+          "ctrl": false
+        }
+      ],
+      "outcomes": [
+        "Previous"
+      ]
+    },
+    {
+      "name": "navigate: 90 then 30 reaches a notch on the second event",
+      "kind": "wheel_sequence",
+      "mode": "Navigate",
+      "steps": [
+        {
+          "delta": 90,
+          "ctrl": false
+        },
+        {
+          "delta": 30,
+          "ctrl": false
+        }
+      ],
+      "outcomes": [
+        "None",
+        "Previous"
+      ]
+    },
+    {
+      "name": "release dragged=False panned=False consumed=False click_to_zoom=False kinetic=False",
+      "kind": "classify_release",
+      "dragged": false,
+      "panned": false,
+      "press_was_consumed": false,
+      "click_to_zoom_enabled": false,
+      "kinetic_pan_enabled": false,
+      "action": "None"
+    },
+    {
+      "name": "release dragged=False panned=False consumed=False click_to_zoom=False kinetic=True",
+      "kind": "classify_release",
+      "dragged": false,
+      "panned": false,
+      "press_was_consumed": false,
+      "click_to_zoom_enabled": false,
+      "kinetic_pan_enabled": true,
+      "action": "None"
+    },
+    {
+      "name": "release dragged=False panned=False consumed=False click_to_zoom=True kinetic=False",
+      "kind": "classify_release",
+      "dragged": false,
+      "panned": false,
+      "press_was_consumed": false,
+      "click_to_zoom_enabled": true,
+      "kinetic_pan_enabled": false,
+      "action": "ClickZoom"
+    },
+    {
+      "name": "release dragged=False panned=False consumed=False click_to_zoom=True kinetic=True",
+      "kind": "classify_release",
+      "dragged": false,
+      "panned": false,
+      "press_was_consumed": false,
+      "click_to_zoom_enabled": true,
+      "kinetic_pan_enabled": true,
+      "action": "ClickZoom"
+    },
+    {
+      "name": "release dragged=False panned=False consumed=True click_to_zoom=False kinetic=False",
+      "kind": "classify_release",
+      "dragged": false,
+      "panned": false,
+      "press_was_consumed": true,
+      "click_to_zoom_enabled": false,
+      "kinetic_pan_enabled": false,
+      "action": "None"
+    },
+    {
+      "name": "release dragged=False panned=False consumed=True click_to_zoom=False kinetic=True",
+      "kind": "classify_release",
+      "dragged": false,
+      "panned": false,
+      "press_was_consumed": true,
+      "click_to_zoom_enabled": false,
+      "kinetic_pan_enabled": true,
+      "action": "None"
+    },
+    {
+      "name": "release dragged=False panned=False consumed=True click_to_zoom=True kinetic=False",
+      "kind": "classify_release",
+      "dragged": false,
+      "panned": false,
+      "press_was_consumed": true,
+      "click_to_zoom_enabled": true,
+      "kinetic_pan_enabled": false,
+      "action": "None"
+    },
+    {
+      "name": "release dragged=False panned=False consumed=True click_to_zoom=True kinetic=True",
+      "kind": "classify_release",
+      "dragged": false,
+      "panned": false,
+      "press_was_consumed": true,
+      "click_to_zoom_enabled": true,
+      "kinetic_pan_enabled": true,
+      "action": "None"
+    },
+    {
+      "name": "release dragged=False panned=True consumed=False click_to_zoom=False kinetic=False",
+      "kind": "classify_release",
+      "dragged": false,
+      "panned": true,
+      "press_was_consumed": false,
+      "click_to_zoom_enabled": false,
+      "kinetic_pan_enabled": false,
+      "action": "None"
+    },
+    {
+      "name": "release dragged=False panned=True consumed=False click_to_zoom=False kinetic=True",
+      "kind": "classify_release",
+      "dragged": false,
+      "panned": true,
+      "press_was_consumed": false,
+      "click_to_zoom_enabled": false,
+      "kinetic_pan_enabled": true,
+      "action": "None"
+    },
+    {
+      "name": "release dragged=False panned=True consumed=False click_to_zoom=True kinetic=False",
+      "kind": "classify_release",
+      "dragged": false,
+      "panned": true,
+      "press_was_consumed": false,
+      "click_to_zoom_enabled": true,
+      "kinetic_pan_enabled": false,
+      "action": "ClickZoom"
+    },
+    {
+      "name": "release dragged=False panned=True consumed=False click_to_zoom=True kinetic=True",
+      "kind": "classify_release",
+      "dragged": false,
+      "panned": true,
+      "press_was_consumed": false,
+      "click_to_zoom_enabled": true,
+      "kinetic_pan_enabled": true,
+      "action": "ClickZoom"
+    },
+    {
+      "name": "release dragged=False panned=True consumed=True click_to_zoom=False kinetic=False",
+      "kind": "classify_release",
+      "dragged": false,
+      "panned": true,
+      "press_was_consumed": true,
+      "click_to_zoom_enabled": false,
+      "kinetic_pan_enabled": false,
+      "action": "None"
+    },
+    {
+      "name": "release dragged=False panned=True consumed=True click_to_zoom=False kinetic=True",
+      "kind": "classify_release",
+      "dragged": false,
+      "panned": true,
+      "press_was_consumed": true,
+      "click_to_zoom_enabled": false,
+      "kinetic_pan_enabled": true,
+      "action": "None"
+    },
+    {
+      "name": "release dragged=False panned=True consumed=True click_to_zoom=True kinetic=False",
+      "kind": "classify_release",
+      "dragged": false,
+      "panned": true,
+      "press_was_consumed": true,
+      "click_to_zoom_enabled": true,
+      "kinetic_pan_enabled": false,
+      "action": "None"
+    },
+    {
+      "name": "release dragged=False panned=True consumed=True click_to_zoom=True kinetic=True",
+      "kind": "classify_release",
+      "dragged": false,
+      "panned": true,
+      "press_was_consumed": true,
+      "click_to_zoom_enabled": true,
+      "kinetic_pan_enabled": true,
+      "action": "None"
+    },
+    {
+      "name": "release dragged=True panned=False consumed=False click_to_zoom=False kinetic=False",
+      "kind": "classify_release",
+      "dragged": true,
+      "panned": false,
+      "press_was_consumed": false,
+      "click_to_zoom_enabled": false,
+      "kinetic_pan_enabled": false,
+      "action": "None"
+    },
+    {
+      "name": "release dragged=True panned=False consumed=False click_to_zoom=False kinetic=True",
+      "kind": "classify_release",
+      "dragged": true,
+      "panned": false,
+      "press_was_consumed": false,
+      "click_to_zoom_enabled": false,
+      "kinetic_pan_enabled": true,
+      "action": "None"
+    },
+    {
+      "name": "release dragged=True panned=False consumed=False click_to_zoom=True kinetic=False",
+      "kind": "classify_release",
+      "dragged": true,
+      "panned": false,
+      "press_was_consumed": false,
+      "click_to_zoom_enabled": true,
+      "kinetic_pan_enabled": false,
+      "action": "None"
+    },
+    {
+      "name": "release dragged=True panned=False consumed=False click_to_zoom=True kinetic=True",
+      "kind": "classify_release",
+      "dragged": true,
+      "panned": false,
+      "press_was_consumed": false,
+      "click_to_zoom_enabled": true,
+      "kinetic_pan_enabled": true,
+      "action": "None"
+    },
+    {
+      "name": "release dragged=True panned=False consumed=True click_to_zoom=False kinetic=False",
+      "kind": "classify_release",
+      "dragged": true,
+      "panned": false,
+      "press_was_consumed": true,
+      "click_to_zoom_enabled": false,
+      "kinetic_pan_enabled": false,
+      "action": "None"
+    },
+    {
+      "name": "release dragged=True panned=False consumed=True click_to_zoom=False kinetic=True",
+      "kind": "classify_release",
+      "dragged": true,
+      "panned": false,
+      "press_was_consumed": true,
+      "click_to_zoom_enabled": false,
+      "kinetic_pan_enabled": true,
+      "action": "None"
+    },
+    {
+      "name": "release dragged=True panned=False consumed=True click_to_zoom=True kinetic=False",
+      "kind": "classify_release",
+      "dragged": true,
+      "panned": false,
+      "press_was_consumed": true,
+      "click_to_zoom_enabled": true,
+      "kinetic_pan_enabled": false,
+      "action": "None"
+    },
+    {
+      "name": "release dragged=True panned=False consumed=True click_to_zoom=True kinetic=True",
+      "kind": "classify_release",
+      "dragged": true,
+      "panned": false,
+      "press_was_consumed": true,
+      "click_to_zoom_enabled": true,
+      "kinetic_pan_enabled": true,
+      "action": "None"
+    },
+    {
+      "name": "release dragged=True panned=True consumed=False click_to_zoom=False kinetic=False",
+      "kind": "classify_release",
+      "dragged": true,
+      "panned": true,
+      "press_was_consumed": false,
+      "click_to_zoom_enabled": false,
+      "kinetic_pan_enabled": false,
+      "action": "None"
+    },
+    {
+      "name": "release dragged=True panned=True consumed=False click_to_zoom=False kinetic=True",
+      "kind": "classify_release",
+      "dragged": true,
+      "panned": true,
+      "press_was_consumed": false,
+      "click_to_zoom_enabled": false,
+      "kinetic_pan_enabled": true,
+      "action": "StartKinetic"
+    },
+    {
+      "name": "release dragged=True panned=True consumed=False click_to_zoom=True kinetic=False",
+      "kind": "classify_release",
+      "dragged": true,
+      "panned": true,
+      "press_was_consumed": false,
+      "click_to_zoom_enabled": true,
+      "kinetic_pan_enabled": false,
+      "action": "None"
+    },
+    {
+      "name": "release dragged=True panned=True consumed=False click_to_zoom=True kinetic=True",
+      "kind": "classify_release",
+      "dragged": true,
+      "panned": true,
+      "press_was_consumed": false,
+      "click_to_zoom_enabled": true,
+      "kinetic_pan_enabled": true,
+      "action": "StartKinetic"
+    },
+    {
+      "name": "release dragged=True panned=True consumed=True click_to_zoom=False kinetic=False",
+      "kind": "classify_release",
+      "dragged": true,
+      "panned": true,
+      "press_was_consumed": true,
+      "click_to_zoom_enabled": false,
+      "kinetic_pan_enabled": false,
+      "action": "None"
+    },
+    {
+      "name": "release dragged=True panned=True consumed=True click_to_zoom=False kinetic=True",
+      "kind": "classify_release",
+      "dragged": true,
+      "panned": true,
+      "press_was_consumed": true,
+      "click_to_zoom_enabled": false,
+      "kinetic_pan_enabled": true,
+      "action": "StartKinetic"
+    },
+    {
+      "name": "release dragged=True panned=True consumed=True click_to_zoom=True kinetic=False",
+      "kind": "classify_release",
+      "dragged": true,
+      "panned": true,
+      "press_was_consumed": true,
+      "click_to_zoom_enabled": true,
+      "kinetic_pan_enabled": false,
+      "action": "None"
+    },
+    {
+      "name": "release dragged=True panned=True consumed=True click_to_zoom=True kinetic=True",
+      "kind": "classify_release",
+      "dragged": true,
+      "panned": true,
+      "press_was_consumed": true,
+      "click_to_zoom_enabled": true,
+      "kinetic_pan_enabled": true,
+      "action": "StartKinetic"
+    },
+    {
+      "name": "double click press count -2147483648",
+      "kind": "fit_double_click",
+      "click_count": -2147483648,
+      "result": false
+    },
+    {
+      "name": "double click press count -1",
+      "kind": "fit_double_click",
+      "click_count": -1,
+      "result": false
+    },
+    {
+      "name": "double click press count 0",
+      "kind": "fit_double_click",
+      "click_count": 0,
+      "result": false
+    },
+    {
+      "name": "double click press count 1",
+      "kind": "fit_double_click",
+      "click_count": 1,
+      "result": false
+    },
+    {
+      "name": "double click press count 2",
+      "kind": "fit_double_click",
+      "click_count": 2,
+      "result": true
+    },
+    {
+      "name": "double click press count 3",
+      "kind": "fit_double_click",
+      "click_count": 3,
+      "result": true
+    },
+    {
+      "name": "double click press count 2147483647",
+      "kind": "fit_double_click",
+      "click_count": 2147483647,
+      "result": true
+    },
+    {
+      "name": "click zoom target is_fit=True zoom=1.0 click=1.0",
+      "kind": "click_zoom_target",
+      "is_fit": true,
+      "current_zoom": 1.0,
+      "click_zoom": 1.0,
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=True zoom=1.0 click=0.0",
+      "kind": "click_zoom_target",
+      "is_fit": true,
+      "current_zoom": 1.0,
+      "click_zoom": 0.0,
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=True zoom=1.0 click=2.0",
+      "kind": "click_zoom_target",
+      "is_fit": true,
+      "current_zoom": 1.0,
+      "click_zoom": 2.0,
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=True zoom=1.0 click=NaN",
+      "kind": "click_zoom_target",
+      "is_fit": true,
+      "current_zoom": 1.0,
+      "click_zoom": "NaN",
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=True zoom=2.0 click=1.0",
+      "kind": "click_zoom_target",
+      "is_fit": true,
+      "current_zoom": 2.0,
+      "click_zoom": 1.0,
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=True zoom=2.0 click=0.0",
+      "kind": "click_zoom_target",
+      "is_fit": true,
+      "current_zoom": 2.0,
+      "click_zoom": 0.0,
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=True zoom=2.0 click=2.0",
+      "kind": "click_zoom_target",
+      "is_fit": true,
+      "current_zoom": 2.0,
+      "click_zoom": 2.0,
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=True zoom=2.0 click=NaN",
+      "kind": "click_zoom_target",
+      "is_fit": true,
+      "current_zoom": 2.0,
+      "click_zoom": "NaN",
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=True zoom=0.5 click=1.0",
+      "kind": "click_zoom_target",
+      "is_fit": true,
+      "current_zoom": 0.5,
+      "click_zoom": 1.0,
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=True zoom=0.5 click=0.0",
+      "kind": "click_zoom_target",
+      "is_fit": true,
+      "current_zoom": 0.5,
+      "click_zoom": 0.0,
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=True zoom=0.5 click=2.0",
+      "kind": "click_zoom_target",
+      "is_fit": true,
+      "current_zoom": 0.5,
+      "click_zoom": 2.0,
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=True zoom=0.5 click=NaN",
+      "kind": "click_zoom_target",
+      "is_fit": true,
+      "current_zoom": 0.5,
+      "click_zoom": "NaN",
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=True zoom=0.0 click=1.0",
+      "kind": "click_zoom_target",
+      "is_fit": true,
+      "current_zoom": 0.0,
+      "click_zoom": 1.0,
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=True zoom=0.0 click=0.0",
+      "kind": "click_zoom_target",
+      "is_fit": true,
+      "current_zoom": 0.0,
+      "click_zoom": 0.0,
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=True zoom=0.0 click=2.0",
+      "kind": "click_zoom_target",
+      "is_fit": true,
+      "current_zoom": 0.0,
+      "click_zoom": 2.0,
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=True zoom=0.0 click=NaN",
+      "kind": "click_zoom_target",
+      "is_fit": true,
+      "current_zoom": 0.0,
+      "click_zoom": "NaN",
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=True zoom=-0 click=1.0",
+      "kind": "click_zoom_target",
+      "is_fit": true,
+      "current_zoom": "-0",
+      "click_zoom": 1.0,
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=True zoom=-0 click=0.0",
+      "kind": "click_zoom_target",
+      "is_fit": true,
+      "current_zoom": "-0",
+      "click_zoom": 0.0,
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=True zoom=-0 click=2.0",
+      "kind": "click_zoom_target",
+      "is_fit": true,
+      "current_zoom": "-0",
+      "click_zoom": 2.0,
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=True zoom=-0 click=NaN",
+      "kind": "click_zoom_target",
+      "is_fit": true,
+      "current_zoom": "-0",
+      "click_zoom": "NaN",
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=True zoom=0.001 click=1.0",
+      "kind": "click_zoom_target",
+      "is_fit": true,
+      "current_zoom": 0.001,
+      "click_zoom": 1.0,
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=True zoom=0.001 click=0.0",
+      "kind": "click_zoom_target",
+      "is_fit": true,
+      "current_zoom": 0.001,
+      "click_zoom": 0.0,
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=True zoom=0.001 click=2.0",
+      "kind": "click_zoom_target",
+      "is_fit": true,
+      "current_zoom": 0.001,
+      "click_zoom": 2.0,
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=True zoom=0.001 click=NaN",
+      "kind": "click_zoom_target",
+      "is_fit": true,
+      "current_zoom": 0.001,
+      "click_zoom": "NaN",
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=True zoom=0.999 click=1.0",
+      "kind": "click_zoom_target",
+      "is_fit": true,
+      "current_zoom": 0.999,
+      "click_zoom": 1.0,
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=True zoom=0.999 click=0.0",
+      "kind": "click_zoom_target",
+      "is_fit": true,
+      "current_zoom": 0.999,
+      "click_zoom": 0.0,
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=True zoom=0.999 click=2.0",
+      "kind": "click_zoom_target",
+      "is_fit": true,
+      "current_zoom": 0.999,
+      "click_zoom": 2.0,
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=True zoom=0.999 click=NaN",
+      "kind": "click_zoom_target",
+      "is_fit": true,
+      "current_zoom": 0.999,
+      "click_zoom": "NaN",
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=True zoom=0.9995 click=1.0",
+      "kind": "click_zoom_target",
+      "is_fit": true,
+      "current_zoom": 0.9995,
+      "click_zoom": 1.0,
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=True zoom=0.9995 click=0.0",
+      "kind": "click_zoom_target",
+      "is_fit": true,
+      "current_zoom": 0.9995,
+      "click_zoom": 0.0,
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=True zoom=0.9995 click=2.0",
+      "kind": "click_zoom_target",
+      "is_fit": true,
+      "current_zoom": 0.9995,
+      "click_zoom": 2.0,
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=True zoom=0.9995 click=NaN",
+      "kind": "click_zoom_target",
+      "is_fit": true,
+      "current_zoom": 0.9995,
+      "click_zoom": "NaN",
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=True zoom=1.0005 click=1.0",
+      "kind": "click_zoom_target",
+      "is_fit": true,
+      "current_zoom": 1.0005,
+      "click_zoom": 1.0,
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=True zoom=1.0005 click=0.0",
+      "kind": "click_zoom_target",
+      "is_fit": true,
+      "current_zoom": 1.0005,
+      "click_zoom": 0.0,
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=True zoom=1.0005 click=2.0",
+      "kind": "click_zoom_target",
+      "is_fit": true,
+      "current_zoom": 1.0005,
+      "click_zoom": 2.0,
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=True zoom=1.0005 click=NaN",
+      "kind": "click_zoom_target",
+      "is_fit": true,
+      "current_zoom": 1.0005,
+      "click_zoom": "NaN",
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=True zoom=1.0009 click=1.0",
+      "kind": "click_zoom_target",
+      "is_fit": true,
+      "current_zoom": 1.0009,
+      "click_zoom": 1.0,
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=True zoom=1.0009 click=0.0",
+      "kind": "click_zoom_target",
+      "is_fit": true,
+      "current_zoom": 1.0009,
+      "click_zoom": 0.0,
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=True zoom=1.0009 click=2.0",
+      "kind": "click_zoom_target",
+      "is_fit": true,
+      "current_zoom": 1.0009,
+      "click_zoom": 2.0,
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=True zoom=1.0009 click=NaN",
+      "kind": "click_zoom_target",
+      "is_fit": true,
+      "current_zoom": 1.0009,
+      "click_zoom": "NaN",
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=True zoom=1.001 click=1.0",
+      "kind": "click_zoom_target",
+      "is_fit": true,
+      "current_zoom": 1.001,
+      "click_zoom": 1.0,
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=True zoom=1.001 click=0.0",
+      "kind": "click_zoom_target",
+      "is_fit": true,
+      "current_zoom": 1.001,
+      "click_zoom": 0.0,
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=True zoom=1.001 click=2.0",
+      "kind": "click_zoom_target",
+      "is_fit": true,
+      "current_zoom": 1.001,
+      "click_zoom": 2.0,
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=True zoom=1.001 click=NaN",
+      "kind": "click_zoom_target",
+      "is_fit": true,
+      "current_zoom": 1.001,
+      "click_zoom": "NaN",
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=True zoom=1.0011 click=1.0",
+      "kind": "click_zoom_target",
+      "is_fit": true,
+      "current_zoom": 1.0011,
+      "click_zoom": 1.0,
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=True zoom=1.0011 click=0.0",
+      "kind": "click_zoom_target",
+      "is_fit": true,
+      "current_zoom": 1.0011,
+      "click_zoom": 0.0,
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=True zoom=1.0011 click=2.0",
+      "kind": "click_zoom_target",
+      "is_fit": true,
+      "current_zoom": 1.0011,
+      "click_zoom": 2.0,
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=True zoom=1.0011 click=NaN",
+      "kind": "click_zoom_target",
+      "is_fit": true,
+      "current_zoom": 1.0011,
+      "click_zoom": "NaN",
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=True zoom=NaN click=1.0",
+      "kind": "click_zoom_target",
+      "is_fit": true,
+      "current_zoom": "NaN",
+      "click_zoom": 1.0,
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=True zoom=NaN click=0.0",
+      "kind": "click_zoom_target",
+      "is_fit": true,
+      "current_zoom": "NaN",
+      "click_zoom": 0.0,
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=True zoom=NaN click=2.0",
+      "kind": "click_zoom_target",
+      "is_fit": true,
+      "current_zoom": "NaN",
+      "click_zoom": 2.0,
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=True zoom=NaN click=NaN",
+      "kind": "click_zoom_target",
+      "is_fit": true,
+      "current_zoom": "NaN",
+      "click_zoom": "NaN",
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=True zoom=Infinity click=1.0",
+      "kind": "click_zoom_target",
+      "is_fit": true,
+      "current_zoom": "Infinity",
+      "click_zoom": 1.0,
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=True zoom=Infinity click=0.0",
+      "kind": "click_zoom_target",
+      "is_fit": true,
+      "current_zoom": "Infinity",
+      "click_zoom": 0.0,
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=True zoom=Infinity click=2.0",
+      "kind": "click_zoom_target",
+      "is_fit": true,
+      "current_zoom": "Infinity",
+      "click_zoom": 2.0,
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=True zoom=Infinity click=NaN",
+      "kind": "click_zoom_target",
+      "is_fit": true,
+      "current_zoom": "Infinity",
+      "click_zoom": "NaN",
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=True zoom=1e-300 click=1.0",
+      "kind": "click_zoom_target",
+      "is_fit": true,
+      "current_zoom": 1e-300,
+      "click_zoom": 1.0,
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=True zoom=1e-300 click=0.0",
+      "kind": "click_zoom_target",
+      "is_fit": true,
+      "current_zoom": 1e-300,
+      "click_zoom": 0.0,
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=True zoom=1e-300 click=2.0",
+      "kind": "click_zoom_target",
+      "is_fit": true,
+      "current_zoom": 1e-300,
+      "click_zoom": 2.0,
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=True zoom=1e-300 click=NaN",
+      "kind": "click_zoom_target",
+      "is_fit": true,
+      "current_zoom": 1e-300,
+      "click_zoom": "NaN",
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=False zoom=1.0 click=1.0",
+      "kind": "click_zoom_target",
+      "is_fit": false,
+      "current_zoom": 1.0,
+      "click_zoom": 1.0,
+      "target": "Fit"
+    },
+    {
+      "name": "click zoom target is_fit=False zoom=1.0 click=0.0",
+      "kind": "click_zoom_target",
+      "is_fit": false,
+      "current_zoom": 1.0,
+      "click_zoom": 0.0,
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=False zoom=1.0 click=2.0",
+      "kind": "click_zoom_target",
+      "is_fit": false,
+      "current_zoom": 1.0,
+      "click_zoom": 2.0,
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=False zoom=1.0 click=NaN",
+      "kind": "click_zoom_target",
+      "is_fit": false,
+      "current_zoom": 1.0,
+      "click_zoom": "NaN",
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=False zoom=2.0 click=1.0",
+      "kind": "click_zoom_target",
+      "is_fit": false,
+      "current_zoom": 2.0,
+      "click_zoom": 1.0,
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=False zoom=2.0 click=0.0",
+      "kind": "click_zoom_target",
+      "is_fit": false,
+      "current_zoom": 2.0,
+      "click_zoom": 0.0,
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=False zoom=2.0 click=2.0",
+      "kind": "click_zoom_target",
+      "is_fit": false,
+      "current_zoom": 2.0,
+      "click_zoom": 2.0,
+      "target": "Fit"
+    },
+    {
+      "name": "click zoom target is_fit=False zoom=2.0 click=NaN",
+      "kind": "click_zoom_target",
+      "is_fit": false,
+      "current_zoom": 2.0,
+      "click_zoom": "NaN",
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=False zoom=0.5 click=1.0",
+      "kind": "click_zoom_target",
+      "is_fit": false,
+      "current_zoom": 0.5,
+      "click_zoom": 1.0,
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=False zoom=0.5 click=0.0",
+      "kind": "click_zoom_target",
+      "is_fit": false,
+      "current_zoom": 0.5,
+      "click_zoom": 0.0,
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=False zoom=0.5 click=2.0",
+      "kind": "click_zoom_target",
+      "is_fit": false,
+      "current_zoom": 0.5,
+      "click_zoom": 2.0,
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=False zoom=0.5 click=NaN",
+      "kind": "click_zoom_target",
+      "is_fit": false,
+      "current_zoom": 0.5,
+      "click_zoom": "NaN",
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=False zoom=0.0 click=1.0",
+      "kind": "click_zoom_target",
+      "is_fit": false,
+      "current_zoom": 0.0,
+      "click_zoom": 1.0,
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=False zoom=0.0 click=0.0",
+      "kind": "click_zoom_target",
+      "is_fit": false,
+      "current_zoom": 0.0,
+      "click_zoom": 0.0,
+      "target": "Fit"
+    },
+    {
+      "name": "click zoom target is_fit=False zoom=0.0 click=2.0",
+      "kind": "click_zoom_target",
+      "is_fit": false,
+      "current_zoom": 0.0,
+      "click_zoom": 2.0,
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=False zoom=0.0 click=NaN",
+      "kind": "click_zoom_target",
+      "is_fit": false,
+      "current_zoom": 0.0,
+      "click_zoom": "NaN",
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=False zoom=-0 click=1.0",
+      "kind": "click_zoom_target",
+      "is_fit": false,
+      "current_zoom": "-0",
+      "click_zoom": 1.0,
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=False zoom=-0 click=0.0",
+      "kind": "click_zoom_target",
+      "is_fit": false,
+      "current_zoom": "-0",
+      "click_zoom": 0.0,
+      "target": "Fit"
+    },
+    {
+      "name": "click zoom target is_fit=False zoom=-0 click=2.0",
+      "kind": "click_zoom_target",
+      "is_fit": false,
+      "current_zoom": "-0",
+      "click_zoom": 2.0,
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=False zoom=-0 click=NaN",
+      "kind": "click_zoom_target",
+      "is_fit": false,
+      "current_zoom": "-0",
+      "click_zoom": "NaN",
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=False zoom=0.001 click=1.0",
+      "kind": "click_zoom_target",
+      "is_fit": false,
+      "current_zoom": 0.001,
+      "click_zoom": 1.0,
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=False zoom=0.001 click=0.0",
+      "kind": "click_zoom_target",
+      "is_fit": false,
+      "current_zoom": 0.001,
+      "click_zoom": 0.0,
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=False zoom=0.001 click=2.0",
+      "kind": "click_zoom_target",
+      "is_fit": false,
+      "current_zoom": 0.001,
+      "click_zoom": 2.0,
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=False zoom=0.001 click=NaN",
+      "kind": "click_zoom_target",
+      "is_fit": false,
+      "current_zoom": 0.001,
+      "click_zoom": "NaN",
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=False zoom=0.999 click=1.0",
+      "kind": "click_zoom_target",
+      "is_fit": false,
+      "current_zoom": 0.999,
+      "click_zoom": 1.0,
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=False zoom=0.999 click=0.0",
+      "kind": "click_zoom_target",
+      "is_fit": false,
+      "current_zoom": 0.999,
+      "click_zoom": 0.0,
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=False zoom=0.999 click=2.0",
+      "kind": "click_zoom_target",
+      "is_fit": false,
+      "current_zoom": 0.999,
+      "click_zoom": 2.0,
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=False zoom=0.999 click=NaN",
+      "kind": "click_zoom_target",
+      "is_fit": false,
+      "current_zoom": 0.999,
+      "click_zoom": "NaN",
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=False zoom=0.9995 click=1.0",
+      "kind": "click_zoom_target",
+      "is_fit": false,
+      "current_zoom": 0.9995,
+      "click_zoom": 1.0,
+      "target": "Fit"
+    },
+    {
+      "name": "click zoom target is_fit=False zoom=0.9995 click=0.0",
+      "kind": "click_zoom_target",
+      "is_fit": false,
+      "current_zoom": 0.9995,
+      "click_zoom": 0.0,
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=False zoom=0.9995 click=2.0",
+      "kind": "click_zoom_target",
+      "is_fit": false,
+      "current_zoom": 0.9995,
+      "click_zoom": 2.0,
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=False zoom=0.9995 click=NaN",
+      "kind": "click_zoom_target",
+      "is_fit": false,
+      "current_zoom": 0.9995,
+      "click_zoom": "NaN",
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=False zoom=1.0005 click=1.0",
+      "kind": "click_zoom_target",
+      "is_fit": false,
+      "current_zoom": 1.0005,
+      "click_zoom": 1.0,
+      "target": "Fit"
+    },
+    {
+      "name": "click zoom target is_fit=False zoom=1.0005 click=0.0",
+      "kind": "click_zoom_target",
+      "is_fit": false,
+      "current_zoom": 1.0005,
+      "click_zoom": 0.0,
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=False zoom=1.0005 click=2.0",
+      "kind": "click_zoom_target",
+      "is_fit": false,
+      "current_zoom": 1.0005,
+      "click_zoom": 2.0,
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=False zoom=1.0005 click=NaN",
+      "kind": "click_zoom_target",
+      "is_fit": false,
+      "current_zoom": 1.0005,
+      "click_zoom": "NaN",
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=False zoom=1.0009 click=1.0",
+      "kind": "click_zoom_target",
+      "is_fit": false,
+      "current_zoom": 1.0009,
+      "click_zoom": 1.0,
+      "target": "Fit"
+    },
+    {
+      "name": "click zoom target is_fit=False zoom=1.0009 click=0.0",
+      "kind": "click_zoom_target",
+      "is_fit": false,
+      "current_zoom": 1.0009,
+      "click_zoom": 0.0,
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=False zoom=1.0009 click=2.0",
+      "kind": "click_zoom_target",
+      "is_fit": false,
+      "current_zoom": 1.0009,
+      "click_zoom": 2.0,
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=False zoom=1.0009 click=NaN",
+      "kind": "click_zoom_target",
+      "is_fit": false,
+      "current_zoom": 1.0009,
+      "click_zoom": "NaN",
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=False zoom=1.001 click=1.0",
+      "kind": "click_zoom_target",
+      "is_fit": false,
+      "current_zoom": 1.001,
+      "click_zoom": 1.0,
+      "target": "Fit"
+    },
+    {
+      "name": "click zoom target is_fit=False zoom=1.001 click=0.0",
+      "kind": "click_zoom_target",
+      "is_fit": false,
+      "current_zoom": 1.001,
+      "click_zoom": 0.0,
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=False zoom=1.001 click=2.0",
+      "kind": "click_zoom_target",
+      "is_fit": false,
+      "current_zoom": 1.001,
+      "click_zoom": 2.0,
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=False zoom=1.001 click=NaN",
+      "kind": "click_zoom_target",
+      "is_fit": false,
+      "current_zoom": 1.001,
+      "click_zoom": "NaN",
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=False zoom=1.0011 click=1.0",
+      "kind": "click_zoom_target",
+      "is_fit": false,
+      "current_zoom": 1.0011,
+      "click_zoom": 1.0,
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=False zoom=1.0011 click=0.0",
+      "kind": "click_zoom_target",
+      "is_fit": false,
+      "current_zoom": 1.0011,
+      "click_zoom": 0.0,
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=False zoom=1.0011 click=2.0",
+      "kind": "click_zoom_target",
+      "is_fit": false,
+      "current_zoom": 1.0011,
+      "click_zoom": 2.0,
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=False zoom=1.0011 click=NaN",
+      "kind": "click_zoom_target",
+      "is_fit": false,
+      "current_zoom": 1.0011,
+      "click_zoom": "NaN",
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=False zoom=NaN click=1.0",
+      "kind": "click_zoom_target",
+      "is_fit": false,
+      "current_zoom": "NaN",
+      "click_zoom": 1.0,
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=False zoom=NaN click=0.0",
+      "kind": "click_zoom_target",
+      "is_fit": false,
+      "current_zoom": "NaN",
+      "click_zoom": 0.0,
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=False zoom=NaN click=2.0",
+      "kind": "click_zoom_target",
+      "is_fit": false,
+      "current_zoom": "NaN",
+      "click_zoom": 2.0,
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=False zoom=NaN click=NaN",
+      "kind": "click_zoom_target",
+      "is_fit": false,
+      "current_zoom": "NaN",
+      "click_zoom": "NaN",
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=False zoom=Infinity click=1.0",
+      "kind": "click_zoom_target",
+      "is_fit": false,
+      "current_zoom": "Infinity",
+      "click_zoom": 1.0,
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=False zoom=Infinity click=0.0",
+      "kind": "click_zoom_target",
+      "is_fit": false,
+      "current_zoom": "Infinity",
+      "click_zoom": 0.0,
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=False zoom=Infinity click=2.0",
+      "kind": "click_zoom_target",
+      "is_fit": false,
+      "current_zoom": "Infinity",
+      "click_zoom": 2.0,
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=False zoom=Infinity click=NaN",
+      "kind": "click_zoom_target",
+      "is_fit": false,
+      "current_zoom": "Infinity",
+      "click_zoom": "NaN",
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=False zoom=1e-300 click=1.0",
+      "kind": "click_zoom_target",
+      "is_fit": false,
+      "current_zoom": 1e-300,
+      "click_zoom": 1.0,
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=False zoom=1e-300 click=0.0",
+      "kind": "click_zoom_target",
+      "is_fit": false,
+      "current_zoom": 1e-300,
+      "click_zoom": 0.0,
+      "target": "Fit"
+    },
+    {
+      "name": "click zoom target is_fit=False zoom=1e-300 click=2.0",
+      "kind": "click_zoom_target",
+      "is_fit": false,
+      "current_zoom": 1e-300,
+      "click_zoom": 2.0,
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom target is_fit=False zoom=1e-300 click=NaN",
+      "kind": "click_zoom_target",
+      "is_fit": false,
+      "current_zoom": 1e-300,
+      "click_zoom": "NaN",
+      "target": "ClickZoom"
+    },
+    {
+      "name": "click zoom factor for percent -2147483648",
+      "kind": "click_zoom_factor",
+      "percent": -2147483648,
+      "factor": 0.1
+    },
+    {
+      "name": "click zoom factor for percent -1",
+      "kind": "click_zoom_factor",
+      "percent": -1,
+      "factor": 0.1
+    },
+    {
+      "name": "click zoom factor for percent 0",
+      "kind": "click_zoom_factor",
+      "percent": 0,
+      "factor": 0.1
+    },
+    {
+      "name": "click zoom factor for percent 5",
+      "kind": "click_zoom_factor",
+      "percent": 5,
+      "factor": 0.1
+    },
+    {
+      "name": "click zoom factor for percent 9",
+      "kind": "click_zoom_factor",
+      "percent": 9,
+      "factor": 0.1
+    },
+    {
+      "name": "click zoom factor for percent 10",
+      "kind": "click_zoom_factor",
+      "percent": 10,
+      "factor": 0.1
+    },
+    {
+      "name": "click zoom factor for percent 11",
+      "kind": "click_zoom_factor",
+      "percent": 11,
+      "factor": 0.11
+    },
+    {
+      "name": "click zoom factor for percent 100",
+      "kind": "click_zoom_factor",
+      "percent": 100,
+      "factor": 1
+    },
+    {
+      "name": "click zoom factor for percent 250",
+      "kind": "click_zoom_factor",
+      "percent": 250,
+      "factor": 2.5
+    },
+    {
+      "name": "click zoom factor for percent 799",
+      "kind": "click_zoom_factor",
+      "percent": 799,
+      "factor": 7.99
+    },
+    {
+      "name": "click zoom factor for percent 800",
+      "kind": "click_zoom_factor",
+      "percent": 800,
+      "factor": 8
+    },
+    {
+      "name": "click zoom factor for percent 801",
+      "kind": "click_zoom_factor",
+      "percent": 801,
+      "factor": 8
+    },
+    {
+      "name": "click zoom factor for percent 2000",
+      "kind": "click_zoom_factor",
+      "percent": 2000,
+      "factor": 8
+    },
+    {
+      "name": "click zoom factor for percent 2147483647",
+      "kind": "click_zoom_factor",
+      "percent": 2147483647,
+      "factor": 8
+    },
+    {
+      "name": "keyboard anchor mode=Pointer pointer=None viewport=800x600",
+      "kind": "keyboard_zoom_anchor",
+      "mode": "Pointer",
+      "pointer": null,
+      "viewport_width": 800,
+      "viewport_height": 600,
+      "anchor": {
+        "x": 400,
+        "y": 300
+      }
+    },
+    {
+      "name": "keyboard anchor mode=Pointer pointer=None viewport=0x0",
+      "kind": "keyboard_zoom_anchor",
+      "mode": "Pointer",
+      "pointer": null,
+      "viewport_width": 0,
+      "viewport_height": 0,
+      "anchor": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "name": "keyboard anchor mode=Pointer pointer=None viewport=1x1.5",
+      "kind": "keyboard_zoom_anchor",
+      "mode": "Pointer",
+      "pointer": null,
+      "viewport_width": 1,
+      "viewport_height": 1.5,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.75
+      }
+    },
+    {
+      "name": "keyboard anchor mode=Pointer pointer=None viewport=NaNx600",
+      "kind": "keyboard_zoom_anchor",
+      "mode": "Pointer",
+      "pointer": null,
+      "viewport_width": "NaN",
+      "viewport_height": 600,
+      "anchor": {
+        "x": "NaN",
+        "y": 300
+      }
+    },
+    {
+      "name": "keyboard anchor mode=Pointer pointer={'x': 120, 'y': 40} viewport=800x600",
+      "kind": "keyboard_zoom_anchor",
+      "mode": "Pointer",
+      "pointer": {
+        "x": 120,
+        "y": 40
+      },
+      "viewport_width": 800,
+      "viewport_height": 600,
+      "anchor": {
+        "x": 120,
+        "y": 40
+      }
+    },
+    {
+      "name": "keyboard anchor mode=Pointer pointer={'x': 120, 'y': 40} viewport=0x0",
+      "kind": "keyboard_zoom_anchor",
+      "mode": "Pointer",
+      "pointer": {
+        "x": 120,
+        "y": 40
+      },
+      "viewport_width": 0,
+      "viewport_height": 0,
+      "anchor": {
+        "x": 120,
+        "y": 40
+      }
+    },
+    {
+      "name": "keyboard anchor mode=Pointer pointer={'x': 120, 'y': 40} viewport=1x1.5",
+      "kind": "keyboard_zoom_anchor",
+      "mode": "Pointer",
+      "pointer": {
+        "x": 120,
+        "y": 40
+      },
+      "viewport_width": 1,
+      "viewport_height": 1.5,
+      "anchor": {
+        "x": 120,
+        "y": 40
+      }
+    },
+    {
+      "name": "keyboard anchor mode=Pointer pointer={'x': 120, 'y': 40} viewport=NaNx600",
+      "kind": "keyboard_zoom_anchor",
+      "mode": "Pointer",
+      "pointer": {
+        "x": 120,
+        "y": 40
+      },
+      "viewport_width": "NaN",
+      "viewport_height": 600,
+      "anchor": {
+        "x": 120,
+        "y": 40
+      }
+    },
+    {
+      "name": "keyboard anchor mode=Pointer pointer={'x': -5.5, 'y': 300.25} viewport=800x600",
+      "kind": "keyboard_zoom_anchor",
+      "mode": "Pointer",
+      "pointer": {
+        "x": -5.5,
+        "y": 300.25
+      },
+      "viewport_width": 800,
+      "viewport_height": 600,
+      "anchor": {
+        "x": -5.5,
+        "y": 300.25
+      }
+    },
+    {
+      "name": "keyboard anchor mode=Pointer pointer={'x': -5.5, 'y': 300.25} viewport=0x0",
+      "kind": "keyboard_zoom_anchor",
+      "mode": "Pointer",
+      "pointer": {
+        "x": -5.5,
+        "y": 300.25
+      },
+      "viewport_width": 0,
+      "viewport_height": 0,
+      "anchor": {
+        "x": -5.5,
+        "y": 300.25
+      }
+    },
+    {
+      "name": "keyboard anchor mode=Pointer pointer={'x': -5.5, 'y': 300.25} viewport=1x1.5",
+      "kind": "keyboard_zoom_anchor",
+      "mode": "Pointer",
+      "pointer": {
+        "x": -5.5,
+        "y": 300.25
+      },
+      "viewport_width": 1,
+      "viewport_height": 1.5,
+      "anchor": {
+        "x": -5.5,
+        "y": 300.25
+      }
+    },
+    {
+      "name": "keyboard anchor mode=Pointer pointer={'x': -5.5, 'y': 300.25} viewport=NaNx600",
+      "kind": "keyboard_zoom_anchor",
+      "mode": "Pointer",
+      "pointer": {
+        "x": -5.5,
+        "y": 300.25
+      },
+      "viewport_width": "NaN",
+      "viewport_height": 600,
+      "anchor": {
+        "x": -5.5,
+        "y": 300.25
+      }
+    },
+    {
+      "name": "keyboard anchor mode=Pointer pointer={'x': 'NaN', 'y': 1} viewport=800x600",
+      "kind": "keyboard_zoom_anchor",
+      "mode": "Pointer",
+      "pointer": {
+        "x": "NaN",
+        "y": 1
+      },
+      "viewport_width": 800,
+      "viewport_height": 600,
+      "anchor": {
+        "x": "NaN",
+        "y": 1
+      }
+    },
+    {
+      "name": "keyboard anchor mode=Pointer pointer={'x': 'NaN', 'y': 1} viewport=0x0",
+      "kind": "keyboard_zoom_anchor",
+      "mode": "Pointer",
+      "pointer": {
+        "x": "NaN",
+        "y": 1
+      },
+      "viewport_width": 0,
+      "viewport_height": 0,
+      "anchor": {
+        "x": "NaN",
+        "y": 1
+      }
+    },
+    {
+      "name": "keyboard anchor mode=Pointer pointer={'x': 'NaN', 'y': 1} viewport=1x1.5",
+      "kind": "keyboard_zoom_anchor",
+      "mode": "Pointer",
+      "pointer": {
+        "x": "NaN",
+        "y": 1
+      },
+      "viewport_width": 1,
+      "viewport_height": 1.5,
+      "anchor": {
+        "x": "NaN",
+        "y": 1
+      }
+    },
+    {
+      "name": "keyboard anchor mode=Pointer pointer={'x': 'NaN', 'y': 1} viewport=NaNx600",
+      "kind": "keyboard_zoom_anchor",
+      "mode": "Pointer",
+      "pointer": {
+        "x": "NaN",
+        "y": 1
+      },
+      "viewport_width": "NaN",
+      "viewport_height": 600,
+      "anchor": {
+        "x": "NaN",
+        "y": 1
+      }
+    },
+    {
+      "name": "keyboard anchor mode=ViewportCentre pointer=None viewport=800x600",
+      "kind": "keyboard_zoom_anchor",
+      "mode": "ViewportCentre",
+      "pointer": null,
+      "viewport_width": 800,
+      "viewport_height": 600,
+      "anchor": {
+        "x": 400,
+        "y": 300
+      }
+    },
+    {
+      "name": "keyboard anchor mode=ViewportCentre pointer=None viewport=0x0",
+      "kind": "keyboard_zoom_anchor",
+      "mode": "ViewportCentre",
+      "pointer": null,
+      "viewport_width": 0,
+      "viewport_height": 0,
+      "anchor": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "name": "keyboard anchor mode=ViewportCentre pointer=None viewport=1x1.5",
+      "kind": "keyboard_zoom_anchor",
+      "mode": "ViewportCentre",
+      "pointer": null,
+      "viewport_width": 1,
+      "viewport_height": 1.5,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.75
+      }
+    },
+    {
+      "name": "keyboard anchor mode=ViewportCentre pointer=None viewport=NaNx600",
+      "kind": "keyboard_zoom_anchor",
+      "mode": "ViewportCentre",
+      "pointer": null,
+      "viewport_width": "NaN",
+      "viewport_height": 600,
+      "anchor": {
+        "x": "NaN",
+        "y": 300
+      }
+    },
+    {
+      "name": "keyboard anchor mode=ViewportCentre pointer={'x': 120, 'y': 40} viewport=800x600",
+      "kind": "keyboard_zoom_anchor",
+      "mode": "ViewportCentre",
+      "pointer": {
+        "x": 120,
+        "y": 40
+      },
+      "viewport_width": 800,
+      "viewport_height": 600,
+      "anchor": {
+        "x": 400,
+        "y": 300
+      }
+    },
+    {
+      "name": "keyboard anchor mode=ViewportCentre pointer={'x': 120, 'y': 40} viewport=0x0",
+      "kind": "keyboard_zoom_anchor",
+      "mode": "ViewportCentre",
+      "pointer": {
+        "x": 120,
+        "y": 40
+      },
+      "viewport_width": 0,
+      "viewport_height": 0,
+      "anchor": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "name": "keyboard anchor mode=ViewportCentre pointer={'x': 120, 'y': 40} viewport=1x1.5",
+      "kind": "keyboard_zoom_anchor",
+      "mode": "ViewportCentre",
+      "pointer": {
+        "x": 120,
+        "y": 40
+      },
+      "viewport_width": 1,
+      "viewport_height": 1.5,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.75
+      }
+    },
+    {
+      "name": "keyboard anchor mode=ViewportCentre pointer={'x': 120, 'y': 40} viewport=NaNx600",
+      "kind": "keyboard_zoom_anchor",
+      "mode": "ViewportCentre",
+      "pointer": {
+        "x": 120,
+        "y": 40
+      },
+      "viewport_width": "NaN",
+      "viewport_height": 600,
+      "anchor": {
+        "x": "NaN",
+        "y": 300
+      }
+    },
+    {
+      "name": "keyboard anchor mode=ViewportCentre pointer={'x': -5.5, 'y': 300.25} viewport=800x600",
+      "kind": "keyboard_zoom_anchor",
+      "mode": "ViewportCentre",
+      "pointer": {
+        "x": -5.5,
+        "y": 300.25
+      },
+      "viewport_width": 800,
+      "viewport_height": 600,
+      "anchor": {
+        "x": 400,
+        "y": 300
+      }
+    },
+    {
+      "name": "keyboard anchor mode=ViewportCentre pointer={'x': -5.5, 'y': 300.25} viewport=0x0",
+      "kind": "keyboard_zoom_anchor",
+      "mode": "ViewportCentre",
+      "pointer": {
+        "x": -5.5,
+        "y": 300.25
+      },
+      "viewport_width": 0,
+      "viewport_height": 0,
+      "anchor": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "name": "keyboard anchor mode=ViewportCentre pointer={'x': -5.5, 'y': 300.25} viewport=1x1.5",
+      "kind": "keyboard_zoom_anchor",
+      "mode": "ViewportCentre",
+      "pointer": {
+        "x": -5.5,
+        "y": 300.25
+      },
+      "viewport_width": 1,
+      "viewport_height": 1.5,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.75
+      }
+    },
+    {
+      "name": "keyboard anchor mode=ViewportCentre pointer={'x': -5.5, 'y': 300.25} viewport=NaNx600",
+      "kind": "keyboard_zoom_anchor",
+      "mode": "ViewportCentre",
+      "pointer": {
+        "x": -5.5,
+        "y": 300.25
+      },
+      "viewport_width": "NaN",
+      "viewport_height": 600,
+      "anchor": {
+        "x": "NaN",
+        "y": 300
+      }
+    },
+    {
+      "name": "keyboard anchor mode=ViewportCentre pointer={'x': 'NaN', 'y': 1} viewport=800x600",
+      "kind": "keyboard_zoom_anchor",
+      "mode": "ViewportCentre",
+      "pointer": {
+        "x": "NaN",
+        "y": 1
+      },
+      "viewport_width": 800,
+      "viewport_height": 600,
+      "anchor": {
+        "x": 400,
+        "y": 300
+      }
+    },
+    {
+      "name": "keyboard anchor mode=ViewportCentre pointer={'x': 'NaN', 'y': 1} viewport=0x0",
+      "kind": "keyboard_zoom_anchor",
+      "mode": "ViewportCentre",
+      "pointer": {
+        "x": "NaN",
+        "y": 1
+      },
+      "viewport_width": 0,
+      "viewport_height": 0,
+      "anchor": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "name": "keyboard anchor mode=ViewportCentre pointer={'x': 'NaN', 'y': 1} viewport=1x1.5",
+      "kind": "keyboard_zoom_anchor",
+      "mode": "ViewportCentre",
+      "pointer": {
+        "x": "NaN",
+        "y": 1
+      },
+      "viewport_width": 1,
+      "viewport_height": 1.5,
+      "anchor": {
+        "x": 0.5,
+        "y": 0.75
+      }
+    },
+    {
+      "name": "keyboard anchor mode=ViewportCentre pointer={'x': 'NaN', 'y': 1} viewport=NaNx600",
+      "kind": "keyboard_zoom_anchor",
+      "mode": "ViewportCentre",
+      "pointer": {
+        "x": "NaN",
+        "y": 1
+      },
+      "viewport_width": "NaN",
+      "viewport_height": 600,
+      "anchor": {
+        "x": "NaN",
+        "y": 300
+      }
+    },
+    {
+      "name": "middle click action None",
+      "kind": "middle_click",
+      "action": "None",
+      "command": null
+    },
+    {
+      "name": "middle click action ClickZoom",
+      "kind": "middle_click",
+      "action": "ClickZoom",
+      "command": "ClickZoom"
+    },
+    {
+      "name": "middle click action ActualSize",
+      "kind": "middle_click",
+      "action": "ActualSize",
+      "command": "ZoomActualSize"
+    },
+    {
+      "name": "middle click action Fit",
+      "kind": "middle_click",
+      "action": "Fit",
+      "command": "ToggleFit"
+    },
+    {
+      "name": "middle click action FitWidth",
+      "kind": "middle_click",
+      "action": "FitWidth",
+      "command": "FitWidth"
+    },
+    {
+      "name": "middle click action FitWidth2",
+      "kind": "middle_click",
+      "action": "FitWidth2",
+      "command": "FitWidth2"
+    },
+    {
+      "name": "middle click action PreviousImage",
+      "kind": "middle_click",
+      "action": "PreviousImage",
+      "command": "Previous"
+    },
+    {
+      "name": "middle click action NextImage",
+      "kind": "middle_click",
+      "action": "NextImage",
+      "command": "Next"
+    },
+    {
+      "name": "middle click action PreviousFolder",
+      "kind": "middle_click",
+      "action": "PreviousFolder",
+      "command": "PreviousFolder"
+    },
+    {
+      "name": "middle click action NextFolder",
+      "kind": "middle_click",
+      "action": "NextFolder",
+      "command": "NextFolder"
+    },
+    {
+      "name": "middle click action OpenFolder",
+      "kind": "middle_click",
+      "action": "OpenFolder",
+      "command": "OpenFolder"
+    }
+  ]
+}

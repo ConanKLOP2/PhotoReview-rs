@@ -1,0 +1,213 @@
+{
+  "generator": "oracle-cs action-list-json",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "serialize-en-basic",
+      "kind": "serialize",
+      "text": "[\r\n  {\r\n    \"Name\": \"Move it\",\r\n    \"Shortcut\": \"F6\",\r\n    \"Operation\": \"Move\",\r\n    \"Destination\": \"Group-2\",\r\n    \"Confirm\": false\r\n  }\r\n]"
+    },
+    {
+      "name": "serialize-empty",
+      "kind": "serialize",
+      "text": "[]"
+    },
+    {
+      "name": "serialize-relaxed-vi-and-specials",
+      "kind": "serialize",
+      "text": "[\r\n  {\r\n    \"Name\": \"Việt <Ctrl>&'+ \\\"q\\\" back\\\\slash\",\r\n    \"Shortcut\": \"F6\",\r\n    \"Operation\": \"Copy\",\r\n    \"Destination\": \"Sao lưu/a+b\",\r\n    \"Confirm\": true\r\n  },\r\n  {\r\n    \"Name\": \"Bin\",\r\n    \"Shortcut\": \"F7\",\r\n    \"Operation\": \"Recycle\",\r\n    \"Destination\": \"\",\r\n    \"Confirm\": false\r\n  }\r\n]"
+    },
+    {
+      "name": "serialize-control-characters",
+      "kind": "serialize",
+      "text": "[\r\n  {\r\n    \"Name\": \"tab\\tnl\\nctl\\u0001\",\r\n    \"Shortcut\": \"F8\",\r\n    \"Operation\": \"Move\",\r\n    \"Destination\": \"D\",\r\n    \"Confirm\": false\r\n  }\r\n]"
+    },
+    {
+      "name": "export-vi-default-escaping",
+      "kind": "serialize_export",
+      "text": "[\r\n  {\r\n    \"Name\": \"Vi\\u1EC7t\",\r\n    \"Shortcut\": \"F6\",\r\n    \"Operation\": \"Copy\",\r\n    \"Destination\": \"Backup\",\r\n    \"Confirm\": false\r\n  }\r\n]"
+    },
+    {
+      "name": "export-html-sensitive-and-plus",
+      "kind": "serialize_export",
+      "text": "[\r\n  {\r\n    \"Name\": \"\\u003Ca\\u003E\\u0026\\u0027\\u0022\\u002B\\u0060\\\\\",\r\n    \"Shortcut\": \"F9\",\r\n    \"Operation\": \"Move\",\r\n    \"Destination\": \"x\",\r\n    \"Confirm\": true\r\n  }\r\n]"
+    },
+    {
+      "name": "export-empty",
+      "kind": "serialize_export",
+      "text": "[]"
+    },
+    {
+      "name": "deserialize-basic",
+      "kind": "deserialize",
+      "result": {
+        "value": [
+          {
+            "Name": "A",
+            "Shortcut": "F6",
+            "Operation": "Copy",
+            "Destination": "Backup",
+            "Confirm": true
+          }
+        ]
+      }
+    },
+    {
+      "name": "deserialize-literal-null-is-empty",
+      "kind": "deserialize",
+      "result": {
+        "value": []
+      }
+    },
+    {
+      "name": "deserialize-empty-object-takes-defaults",
+      "kind": "deserialize",
+      "result": {
+        "value": [
+          {
+            "Name": "Action 2",
+            "Shortcut": "Enter",
+            "Operation": "Move",
+            "Destination": "Group-2",
+            "Confirm": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "deserialize-property-names-are-case-sensitive",
+      "kind": "deserialize",
+      "result": {
+        "value": [
+          {
+            "Name": "Action 2",
+            "Shortcut": "Enter",
+            "Operation": "Move",
+            "Destination": "Group-2",
+            "Confirm": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "deserialize-unknown-property-ignored",
+      "kind": "deserialize",
+      "result": {
+        "value": [
+          {
+            "Name": "A",
+            "Shortcut": "F6",
+            "Operation": "Copy",
+            "Destination": "Group-2",
+            "Confirm": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "deserialize-legacy-delete-alias-is-recycle",
+      "kind": "deserialize",
+      "result": {
+        "value": [
+          {
+            "Name": "A",
+            "Shortcut": "F6",
+            "Operation": "Recycle",
+            "Destination": "Group-2",
+            "Confirm": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "deserialize-numeric-operation-is-lenient",
+      "kind": "deserialize",
+      "result": {
+        "value": [
+          {
+            "Name": "A",
+            "Shortcut": "F6",
+            "Operation": "Copy",
+            "Destination": "Group-2",
+            "Confirm": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "deserialize-malformed-text",
+      "kind": "deserialize",
+      "result": {
+        "throws": "JsonException"
+      }
+    },
+    {
+      "name": "deserialize-object-instead-of-list",
+      "kind": "deserialize",
+      "result": {
+        "throws": "JsonException"
+      }
+    },
+    {
+      "name": "deserialize-or-null-literal-null",
+      "kind": "deserialize_or_null",
+      "result": {
+        "value": null
+      }
+    },
+    {
+      "name": "deserialize-or-null-empty-list",
+      "kind": "deserialize_or_null",
+      "result": {
+        "value": []
+      }
+    },
+    {
+      "name": "deserialize-or-null-malformed",
+      "kind": "deserialize_or_null",
+      "result": {
+        "throws": "JsonException"
+      }
+    },
+    {
+      "name": "throw-valid-list",
+      "kind": "throw_if_invalid",
+      "ok": true
+    },
+    {
+      "name": "throw-empty-list-passes",
+      "kind": "throw_if_invalid",
+      "ok": true
+    },
+    {
+      "name": "throw-blank-name",
+      "kind": "throw_if_invalid",
+      "throws": "JsonException",
+      "message": "An action has no name, an invalid shortcut or an invalid operation."
+    },
+    {
+      "name": "throw-unparseable-shortcut",
+      "kind": "throw_if_invalid",
+      "throws": "JsonException",
+      "message": "An action has no name, an invalid shortcut or an invalid operation."
+    },
+    {
+      "name": "throw-blank-shortcut",
+      "kind": "throw_if_invalid",
+      "throws": "JsonException",
+      "message": "An action has no name, an invalid shortcut or an invalid operation."
+    },
+    {
+      "name": "throw-same-shortcut-text",
+      "kind": "throw_if_invalid",
+      "throws": "JsonException",
+      "message": "Two actions use the same shortcut."
+    },
+    {
+      "name": "throw-aliases-return-enter",
+      "kind": "throw_if_invalid",
+      "throws": "JsonException",
+      "message": "Two actions use the same shortcut."
+    }
+  ]
+}
