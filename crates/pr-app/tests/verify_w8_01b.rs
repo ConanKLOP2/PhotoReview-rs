@@ -55,3 +55,25 @@ fn sanitize_length_negative_zero_becomes_positive_zero() {
     assert_eq!(l.viewport_width.to_bits(), 0.0f64.to_bits());
     assert_eq!(l.viewport_height.to_bits(), 0.0f64.to_bits());
 }
+
+#[test]
+fn hidden_policy_negative_zero_client_is_positive_zero() {
+    let mut i = base();
+    i.scroll_bars = ScrollBarPolicy::Hidden;
+    i.client_width = -0.0;
+    i.client_height = -0.0;
+    let l = compute(&i);
+    assert_eq!(l.viewport_width.to_bits(), 0.0f64.to_bits());
+    assert_eq!(l.viewport_height.to_bits(), 0.0f64.to_bits());
+}
+
+#[test]
+fn overlay_policy_negative_zero_client_is_positive_zero() {
+    let mut i = base();
+    i.scroll_bars = ScrollBarPolicy::Overlay;
+    i.client_width = -0.0;
+    i.client_height = -0.0;
+    let l = compute(&i);
+    assert_eq!(l.viewport_width.to_bits(), 0.0f64.to_bits());
+    assert_eq!(l.viewport_height.to_bits(), 0.0f64.to_bits());
+}
