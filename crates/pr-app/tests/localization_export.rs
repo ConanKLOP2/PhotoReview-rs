@@ -801,3 +801,131 @@ fn check_invalid_code_case(case: &Value) {
     let expected_created = case["user_dir_created"].as_bool().expect("user_dir_created bool");
     assert_eq!(user.exists(), expected_created, "{id}");
 }
+
+#[test]
+// new: a catalog file of exactly MAX_FILE_BYTES is still read (the limit is "longer than"), one byte more is not.
+fn read_catalogs_reads_a_file_of_exactly_max_file_bytes() {
+    let temp = TempRoot::new("translation-export");
+    let shipped = temp.join("shipped");
+    let user = temp.join("user");
+    fs::create_dir_all(&shipped).expect("create shipped");
+    fs::create_dir_all(&user).expect("create user");
+    let mut exact = br#"{ "_meta": { "code": "xx" }, "app.title": "EXACT" }"#.to_vec();
+    exact.resize(MAX_FILE_BYTES as usize, b' ');
+    fs::write(shipped.join("xx.json"), exact).expect("write exact catalog");
+
+    let path = export("xx", &shipped, &user).expect("export");
+
+    assert_eq!(str_at(&parse_root(&read_text(&path)), "app.title"), "EXACT");
+}
+
+#[test]
+// new: plural "none" skips only an untranslated `X.one` whose English also has `X.other`; a lone `.one`, an `.other`
+// and a plain key stay listed as missing. With "one-other" nothing is skipped.
+fn build_json_unused_one_form_rule_is_exact() {
+    let english = parse_catalog(
+        r#"{ "_meta": { "code": "en" }, "a.one": "A1", "a.other": "A2", "b.one": "B1", "c.other": "C2", "d": "D" }"#,
+    );
+    let none = parse_catalog(r#"{ "_meta": { "code": "xx", "plural": "none" } }"#);
+    let one_other = parse_catalog(r#"{ "_meta": { "code": "xx", "plural": "one-other" } }"#);
+    let help = english_help();
+
+    let root = parse_root(&build_json_with_help(&english, "xx", &[none], &BTreeMap::new(), &help));
+    assert_eq!(missing_list(&root), vec!["a.other", "b.one", "c.other", "d"]);
+    let root = parse_root(&build_json_with_help(
+        &english,
+        "xx",
+        &[one_other],
+        &BTreeMap::new(),
+        &help,
+    ));
+    assert_eq!(missing_list(&root), vec!["a.one", "a.other", "b.one", "c.other", "d"]);
+}
+
+/// Value of the key `k` as the raw text between the quotes of its line.
+fn raw_value_for(value: &str) -> String {
+    let english = parse_catalog(r#"{ "_meta": { "code": "en" }, "k": "v" }"#);
+    let json = format!(
+        "{{\"_meta\":{{\"code\":\"xx\"}},\"k\":{}}}",
+        serde_json::to_string(value).expect("encode")
+    );
+    let tr = parse_catalog(&json);
+    let out = build_json_with_help(&english, "xx", &[tr], &BTreeMap::new(), "h");
+    let line = out
+        .lines()
+        .find(|l| l.starts_with("  \"k\": "))
+        .expect("k line")
+        .to_owned();
+    line["  \"k\": ".len()..].trim_end_matches(',').to_owned()
+}
+
+#[test]
+// new: .NET UnsafeRelaxedJsonEscaping also escapes NBSP, other space separators, private use, noncharacters and
+// unassigned BMP points; it leaves U+00A1, U+00AD, U+200B..U+200F, accented letters and CJK raw.
+fn build_json_escapes_the_dotnet_unsafe_relaxed_set() {
+    for (ch, escaped) in [
+        ("\u{A0}", "\\u00A0"),
+        ("\u{1680}", "\\u1680"),
+        ("\u{2000}", "\\u2000"),
+        ("\u{200A}", "\\u200A"),
+        ("\u{202F}", "\\u202F"),
+        ("\u{205F}", "\\u205F"),
+        ("\u{3000}", "\\u3000"),
+        ("\u{E000}", "\\uE000"),
+        ("\u{F8FF}", "\\uF8FF"),
+        ("\u{378}", "\\u0378"),
+        ("\u{2065}", "\\u2065"),
+        ("\u{FFFE}", "\\uFFFE"),
+        ("\u{FFFF}", "\\uFFFF"),
+        ("\u{FEFF}", "\\uFEFF"),
+        ("\u{10000}", "\\uD800\\uDC00"),
+        ("\u{10FFFF}", "\\uDBFF\\uDFFF"),
+    ] {
+        assert_eq!(
+            raw_value_for(ch),
+            format!("\"{escaped}\""),
+            "U+{:04X}",
+            ch.chars().next().unwrap() as u32
+        );
+    }
+    for ch in [
+        "\u{A1}", "\u{AD}", "\u{200B}", "\u{200F}", "\u{E9}", "\u{1EA1}", "\u{4E2D}",
+    ] {
+        assert_eq!(raw_value_for(ch), format!("\"{ch}\""));
+    }
+}
+
+fn notes_from_bytes(bytes: &[u8]) -> BTreeMap<String, String> {
+    let temp = TempRoot::new("translation-export");
+    let path = temp.join(NOTES_FILE_NAME);
+    fs::write(&path, bytes).expect("write notes");
+    read_notes(&path)
+}
+
+#[test]
+// new: .NET ends a `//` comment at a lone CR as well as at LF.
+fn read_notes_line_comment_ends_at_cr() {
+    assert_eq!(
+        notes_from_bytes(b"// c\r{\"a\":\"1\"}").get("a").map(String::as_str),
+        Some("1")
+    );
+    assert_eq!(
+        notes_from_bytes(b"// c\n{\"a\":\"1\"}").get("a").map(String::as_str),
+        Some("1")
+    );
+}
+
+#[test]
+// new: a comment between a property name and its colon is rejected (empty map); one after the colon is accepted.
+fn read_notes_comment_before_colon_is_rejected_after_colon_is_accepted() {
+    assert!(notes_from_bytes(b"{\"a\" /*c*/ : \"1\"}").is_empty());
+    assert!(notes_from_bytes(b"{\"a\" // c\n : \"1\"}").is_empty());
+    assert_eq!(
+        notes_from_bytes(b"{\"a\": /*c*/ \"1\"}").get("a").map(String::as_str),
+        Some("1")
+    );
+    assert_eq!(
+        notes_from_bytes(b"{\"a\" \r\n : \"1\"}").get("a").map(String::as_str),
+        Some("1")
+    );
+}
