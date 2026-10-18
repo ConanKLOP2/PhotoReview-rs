@@ -979,3 +979,83 @@ fn golden_scrollbar_geometry() {
         }
     }
 }
+
+// new: C# record-struct equality uses EqualityComparer<double>, so NaN equals NaN (and still differs on real changes)
+#[test]
+fn box_with_nan_equals_itself_like_csharp_record() {
+    let mut a = ScrollBarBox::hidden(ScrollAxis::Vertical);
+    a.max_offset = f64::NAN;
+    a.offset = f64::NAN;
+    a.viewport_length = f64::NAN;
+    let b = a;
+    assert_eq!(a, b);
+    let mut c = b;
+    c.offset = 1.0;
+    assert_ne!(a, c);
+    let mut d = b;
+    d.visible = true;
+    assert_ne!(a, d);
+    let mut e = b;
+    e.thumb_visible = true;
+    assert_ne!(a, e);
+    let mut f = b;
+    f.axis = ScrollAxis::Horizontal;
+    assert_ne!(a, f);
+    let mut g = b;
+    g.bar = rect(1.0, 0.0, 0.0, 0.0);
+    assert_ne!(a, g);
+    let mut h = b;
+    h.track = rect(0.0, 1.0, 0.0, 0.0);
+    assert_ne!(a, h);
+    let mut i = b;
+    i.thumb = rect(0.0, 0.0, 1.0, 0.0);
+    assert_ne!(a, i);
+    let mut j = b;
+    j.max_offset = 2.0;
+    assert_ne!(a, j);
+    let mut k = b;
+    k.viewport_length = 2.0;
+    assert_ne!(a, k);
+}
+
+#[test]
+fn metrics_with_nan_equals_itself_like_csharp_record() {
+    let a = ScrollBarMetrics {
+        thickness: f64::NAN,
+        ..ScrollBarMetrics::default()
+    };
+    let b = a;
+    assert_eq!(a, b);
+    let base = ScrollBarMetrics::default();
+    for i in 0..5 {
+        let mut m = base;
+        match i {
+            0 => m.thickness = 11.0,
+            1 => m.track_margin_along = 11.0,
+            2 => m.track_margin_across = 11.0,
+            3 => m.min_thumb_length = 11.0,
+            _ => m.thumb_radius = 11.0,
+        }
+        assert_ne!(base, m, "field {i}");
+    }
+}
+
+#[test]
+fn layout_with_nan_equals_itself_and_compares_every_member() {
+    let mut a = compute_for("both", 200.0, 100.0, 0.0, 0.0);
+    a.vertical.max_offset = f64::NAN;
+    let b = a;
+    assert_eq!(a, b);
+    let mut c = b;
+    c.has_corner = !c.has_corner;
+    assert_ne!(a, c);
+    let mut d = b;
+    d.corner = rect(9.0, 9.0, 9.0, 9.0);
+    assert_ne!(a, d);
+    let mut e = b;
+    e.horizontal.offset = 5.0;
+    assert_ne!(a, e);
+    let mut f = b;
+    f.vertical.offset = 5.0;
+    assert_ne!(a, f);
+}

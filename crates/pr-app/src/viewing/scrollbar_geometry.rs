@@ -10,7 +10,7 @@
 //! .NET arithmetic that must be reproduced (contract traps T1 to T3): `Math.Min`/`Math.Max` propagate NaN and order `-0.0` below
 //! `+0.0`, Rust `f64::min`/`f64::max` ignore a NaN operand. Use the private helpers `cs_min`/`cs_max` for every C# `Math.Min`/`Math.Max`.
 
-use crate::input::primitives::{PointD, RectD, SizeD};
+use crate::input::primitives::{PointD, RectD, SizeD, f64_same};
 use crate::viewport::types::ViewportLayout;
 
 /// C# `ScrollAxis`: `Vertical = 0`, `Horizontal = 1`.
@@ -38,7 +38,7 @@ pub const DEFAULT_MIN_THUMB_LENGTH: f64 = 8.0;
 
 /// C# `ScrollBarMetrics` (record struct with `init` properties). `Default` is the WPF 96 DPI set, NOT all zeros:
 /// `thickness 10`, `track_margin_along 2`, `track_margin_across 1`, `min_thumb_length 8`, `thumb_radius 4`.
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy)]
 pub struct ScrollBarMetrics {
     /// `ScrollBar Width/Height = 10`.
     pub thickness: f64,
@@ -50,6 +50,17 @@ pub struct ScrollBarMetrics {
     pub min_thumb_length: f64,
     /// `CornerRadius="4"` of `Dark.ScrollThumb`.
     pub thumb_radius: f64,
+}
+
+impl PartialEq for ScrollBarMetrics {
+    /// C# record-struct equality: `EqualityComparer<double>` per field (NaN equals NaN), see `f64_same`.
+    fn eq(&self, other: &Self) -> bool {
+        f64_same(self.thickness, other.thickness)
+            && f64_same(self.track_margin_along, other.track_margin_along)
+            && f64_same(self.track_margin_across, other.track_margin_across)
+            && f64_same(self.min_thumb_length, other.min_thumb_length)
+            && f64_same(self.thumb_radius, other.thumb_radius)
+    }
 }
 
 impl Default for ScrollBarMetrics {
@@ -65,7 +76,7 @@ impl Default for ScrollBarMetrics {
 }
 
 /// C# `ScrollBarBox` (record struct): geometry of one bar. `thumb` is `RectD::default()` when `thumb_visible` is false.
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy)]
 pub struct ScrollBarBox {
     pub axis: ScrollAxis,
     pub visible: bool,
@@ -81,6 +92,21 @@ pub struct ScrollBarBox {
     pub offset: f64,
     /// `ViewportSize` along the axis (one page).
     pub viewport_length: f64,
+}
+
+impl PartialEq for ScrollBarBox {
+    /// C# record-struct equality: `EqualityComparer<double>` per double field (NaN equals NaN), see `f64_same`.
+    fn eq(&self, other: &Self) -> bool {
+        self.axis == other.axis
+            && self.visible == other.visible
+            && self.bar == other.bar
+            && self.track == other.track
+            && self.thumb == other.thumb
+            && self.thumb_visible == other.thumb_visible
+            && f64_same(self.max_offset, other.max_offset)
+            && f64_same(self.offset, other.offset)
+            && f64_same(self.viewport_length, other.viewport_length)
+    }
 }
 
 impl ScrollBarBox {
@@ -146,12 +172,22 @@ impl ScrollBarBox {
 }
 
 /// C# `ScrollBarLayout` (record struct): both bars and the corner square.
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy)]
 pub struct ScrollBarLayout {
     pub vertical: ScrollBarBox,
     pub horizontal: ScrollBarBox,
     pub corner: RectD,
     pub has_corner: bool,
+}
+
+impl PartialEq for ScrollBarLayout {
+    /// C# record-struct equality (members compared with their own equality, NaN-aware).
+    fn eq(&self, other: &Self) -> bool {
+        self.vertical == other.vertical
+            && self.horizontal == other.horizontal
+            && self.corner == other.corner
+            && self.has_corner == other.has_corner
+    }
 }
 
 impl ScrollBarLayout {
