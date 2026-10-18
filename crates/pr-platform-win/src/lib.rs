@@ -6,6 +6,7 @@
 pub(crate) mod explorer_com_interop;
 
 #[cfg(windows)]
+#[allow(dead_code)] // W6-01d consumes the native query helpers once lead-owned wiring lands.
 pub(crate) mod explorer_native_view;
 
 #[cfg(windows)]
@@ -33,6 +34,7 @@ pub mod instance_scope;
 pub mod recycle_bin;
 
 #[cfg(windows)]
+#[allow(dead_code)] // Failure-kind policy is consumed by the Recycle Bin shell adapter wiring.
 mod recycle_candidate;
 
 #[cfg(windows)]

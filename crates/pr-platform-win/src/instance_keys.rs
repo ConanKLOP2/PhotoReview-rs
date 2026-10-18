@@ -6,6 +6,7 @@ use std::sync::OnceLock;
 use pr_core::model::InstanceMode;
 
 /// Rust object-name prefix, isolated from the C# application per ADR R0002.
+#[allow(dead_code)] // Consumed by instance_scope; integration-test targets that include this source do not use it.
 pub const DEFAULT_PREFIX: &str = "PhotoReviewRs";
 
 /// C# canonical key used when no folder is available (kept for oracle parity).

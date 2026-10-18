@@ -322,6 +322,7 @@ mod native_pipe {
     }
 
     #[cfg(test)]
+    #[allow(clippy::items_after_test_module)] // Native factory below shares this private module with the mode helper.
     mod tests {
         use super::*;
 

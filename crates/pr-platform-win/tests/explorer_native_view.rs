@@ -207,9 +207,8 @@ unsafe extern "system" fn enum_next(
         unsafe { *fetched = 0 };
         return value.enum_hr;
     }
-    let count = (requested as usize)
-        .min(value.enum_chunk)
-        .min(value.enum_items.len() - value.enum_position);
+    let remaining = value.enum_items.len() - value.enum_position;
+    let count = (requested as usize).min(value.enum_chunk).min(remaining);
     for offset in 0..count {
         let item = value.enum_items[value.enum_position + offset];
         // SAFETY: CoTaskMemAlloc reserves one FakePidl and the output array has `requested` writable slots.
@@ -227,7 +226,8 @@ unsafe extern "system" fn enum_next(
     value.enum_position += count;
     // SAFETY: fetched is a writable IEnumIDList::Next output.
     unsafe { *fetched = count as u32 };
-    if count < requested as usize {
+    // Like IEnumIDList::Next, S_FALSE only signals exhaustion, not a chunk limit imposed by the enumerator.
+    if remaining == count && count < requested as usize {
         explorer_com_interop::ids::S_FALSE
     } else {
         0
@@ -291,6 +291,12 @@ unsafe extern "system" fn query_service(
     iid: *const windows_core::GUID,
     output: *mut *mut c_void,
 ) -> i32 {
+    // The fake is one object serving IServiceProvider and IEnumIDList, which both use vtable slot 3.
+    // IEnumIDList::Next receives a small element count in the first argument; QueryService receives a GUID pointer.
+    if (service as usize) < 0x1_0000 {
+        // SAFETY: the argument layout is IEnumIDList::Next(this, count, output, fetched) in this branch.
+        return unsafe { enum_next(this, service as usize as u32, iid as *mut *mut c_void, output.cast()) };
+    }
     let mut values = views().lock().unwrap();
     let value = values
         .get_mut(&(this as usize))
@@ -633,7 +639,7 @@ fn batched_read_collects_short_s_false_chunks_in_view_order() {
     assert_eq!(result, paths);
     let values = views().lock().unwrap();
     let value = &values[&(fake.object as usize)];
-    assert_eq!(value.enum_calls, 4); // three S_FALSE chunks followed by the terminal empty read
+    assert!(value.enum_calls >= 3); // C#: EnumNextCalls >= 3; the last chunk reports S_FALSE (exhausted)
     assert_eq!(value.refs, 1);
 }
 
@@ -660,7 +666,7 @@ fn native_view_batched_happy_path_preserves_order_sort_group_and_progress() {
     data.items_hr = 0;
     data.items_return_self = true;
     data.enum_items = vec![0, 1, 2];
-    let fake = FakeView::new(data);
+    let mut fake = FakeView::new(data);
     fake.table[0] = self_query as *const c_void;
     fake.table[3] = query_service as *const c_void;
     fake.table[15] = active_view_success as *const c_void;
@@ -710,7 +716,7 @@ fn native_view_grouped_batched_read_reports_active_grouping_without_sorts() {
     data.items_return_self = true;
     data.enum_items = vec![0];
     data.group = key(0x1020_3040_5060_7080_90a0_b0c0_d0e0_f000, 3);
-    let fake = FakeView::new(data);
+    let mut fake = FakeView::new(data);
     fake.table[0] = self_query as *const c_void;
     fake.table[3] = query_service as *const c_void;
     fake.table[15] = active_view_success as *const c_void;
@@ -745,7 +751,7 @@ fn native_view_falls_back_to_get_item_when_enumerator_cannot_open() {
         .iter()
         .map(|path| path.encode_utf16().chain([0]).collect())
         .collect();
-    let fake = FakeView::new(data);
+    let mut fake = FakeView::new(data);
     fake.table[0] = self_query as *const c_void;
     fake.table[3] = query_service as *const c_void;
     fake.table[15] = active_view_success as *const c_void;
@@ -802,7 +808,7 @@ fn native_view_falls_back_when_batched_enumerator_is_incomplete() {
         .iter()
         .map(|path| path.encode_utf16().chain([0]).collect())
         .collect();
-    let fake = FakeView::new(data);
+    let mut fake = FakeView::new(data);
     fake.table[0] = self_query as *const c_void;
     fake.table[3] = query_service as *const c_void;
     fake.table[15] = active_view_success as *const c_void;
@@ -842,7 +848,7 @@ fn native_view_falls_back_to_get_item_when_enum_next_fails() {
         .iter()
         .map(|path| path.encode_utf16().chain([0]).collect())
         .collect();
-    let fake = FakeView::new(data);
+    let mut fake = FakeView::new(data);
     fake.table[0] = self_query as *const c_void;
     fake.table[3] = query_service as *const c_void;
     fake.table[15] = active_view_success as *const c_void;
@@ -881,7 +887,7 @@ fn native_view_falls_back_to_get_item_when_folder_pidls_cannot_be_parsed() {
         .iter()
         .map(|path| path.encode_utf16().chain([0]).collect())
         .collect();
-    let fake = FakeView::new(data);
+    let mut fake = FakeView::new(data);
     fake.table[0] = self_query as *const c_void;
     fake.table[3] = query_service as *const c_void;
     fake.table[15] = active_view_success as *const c_void;
@@ -1151,7 +1157,7 @@ fn failed_service_provider_query_releases_a_non_null_partial_output() {
 fn window_browser_service_failure_reports_query_service_and_requests_top_level_browser() {
     // C#: Window_BrowserServiceFails_ReportsQueryService
     // C#: Window_AsksTheTopLevelBrowserServiceForIShellBrowser
-    let fake = FakeView::new(fake_data(vec![]));
+    let mut fake = FakeView::new(fake_data(vec![]));
     fake.table[0] = self_query as *const c_void;
     fake.table[3] = query_service as *const c_void;
 
@@ -1177,7 +1183,7 @@ fn window_active_shell_view_failure_reports_the_exact_com_stage() {
     // C#: Window_ActiveShellViewFails_ReportsIt
     let mut data = fake_data(vec![]);
     data.service_hr = 0;
-    let fake = FakeView::new(data);
+    let mut fake = FakeView::new(data);
     fake.table[0] = self_query as *const c_void;
     fake.table[3] = query_service as *const c_void;
 
@@ -1197,7 +1203,7 @@ fn window_without_folder_view2_reports_interface_query_failure() {
     let mut data = fake_data(vec![]);
     data.service_hr = 0;
     data.query_fail_at = Some(2);
-    let fake = FakeView::new(data);
+    let mut fake = FakeView::new(data);
     fake.table[0] = self_query as *const c_void;
     fake.table[3] = query_service as *const c_void;
     fake.table[15] = active_view_success as *const c_void;
@@ -1218,7 +1224,7 @@ fn window_empty_or_uncountable_view_is_reported_as_empty() {
     let mut empty_data = fake_data(vec![]);
     empty_data.service_hr = 0;
     empty_data.item_count = 0;
-    let empty = FakeView::new(empty_data);
+    let mut empty = FakeView::new(empty_data);
     empty.table[0] = self_query as *const c_void;
     empty.table[3] = query_service as *const c_void;
     empty.table[15] = active_view_success as *const c_void;
@@ -1230,7 +1236,7 @@ fn window_empty_or_uncountable_view_is_reported_as_empty() {
     let mut failed_data = fake_data(vec![]);
     failed_data.service_hr = 0;
     failed_data.item_count_hr = E_FAIL;
-    let failed = FakeView::new(failed_data);
+    let mut failed = FakeView::new(failed_data);
     failed.table[0] = self_query as *const c_void;
     failed.table[3] = query_service as *const c_void;
     failed.table[15] = active_view_success as *const c_void;

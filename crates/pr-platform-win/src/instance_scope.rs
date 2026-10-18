@@ -67,6 +67,12 @@ pub struct InstanceScope {
     release_state: Arc<(Mutex<usize>, Condvar)>,
 }
 
+impl std::fmt::Debug for InstanceScope {
+    fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        formatter.write_str("InstanceScope")
+    }
+}
+
 #[derive(Default)]
 struct ScopeState {
     claims: HashMap<String, Arc<dyn ScopeClaim>>,
@@ -102,7 +108,7 @@ impl InstanceScope {
             let client =
                 ForwardPipeClient::new(Some(pipe_name.to_owned()), allow_server_foreground).map_err(|error| {
                     InstanceScopeError {
-                        message: error.to_string(),
+                        message: format!("{error:?}"),
                     }
                 })?;
             Ok(Box::new(client) as Box<dyn InstanceForwardClient>)
@@ -527,7 +533,8 @@ impl OwnedKernelHandle {
         let handle = match unsafe { CreateMutexW(None, false, PCWSTR(wide.as_ptr())) } {
             Ok(handle) => handle,
             Err(error) => {
-                let code = GetLastError();
+                // SAFETY: GetLastError only reads this thread's last-error value, immediately after the failed call.
+                let code = unsafe { GetLastError() };
                 if code == ERROR_ACCESS_DENIED || code == ERROR_INVALID_HANDLE {
                     return Ok(None);
                 }
@@ -536,7 +543,8 @@ impl OwnedKernelHandle {
                 });
             }
         };
-        if GetLastError() == ERROR_ALREADY_EXISTS {
+        // SAFETY: GetLastError only reads this thread's last-error value, immediately after CreateMutexW.
+        if unsafe { GetLastError() } == ERROR_ALREADY_EXISTS {
             // SAFETY: CreateMutexW returned this owned handle; it is closed exactly once here.
             let _ = unsafe { CloseHandle(handle) };
             return Ok(None);
@@ -1191,8 +1199,12 @@ mod tests {
             Arc::clone(&clients),
         ));
         let cancel = CancelToken::none();
+        // C# twin: TryAcquire(x) and OnFolderShown(x) leave no open pending, so A is released once B is shown.
         scope.before_open(r"C:\A", None, &cancel).unwrap();
+        scope.after_open(r"C:\A", Some(r"C:\A"));
+        scope.before_open(r"C:\B", None, &cancel).unwrap();
         scope.on_folder_shown(r"C:\B");
+        scope.after_open(r"C:\B", Some(r"C:\B"));
         barrier.wait_started();
 
         let (started_tx, started_rx): (Sender<()>, Receiver<()>) = mpsc::channel();
@@ -1292,6 +1304,8 @@ mod tests {
         lock(&shared.fail_dispose).insert(bad);
         scope.on_folder_shown(r"C:\C");
         wait_for_disposed(&shared, 2);
+        // The worker logs the failure and finishes after the last dispose; wait for it instead of racing it.
+        scope.wait_for_releases(&CancelToken::none()).unwrap();
         assert!(lock(&shared.held).is_empty());
         assert!(
             lock(&log.0)

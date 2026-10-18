@@ -12,7 +12,7 @@ use windows::Win32::UI::Shell::{
     BHID_EnumItems, BHID_SFUIObject, CMINVOKECOMMANDINFO, FOLDERID_RecycleBinFolder, IContextMenu, IEnumShellItems,
     IShellItem, IShellItem2, SHGetKnownFolderItem, SIGDN_PARENTRELATIVE,
 };
-use windows::core::{PCSTR, PWSTR};
+use windows::core::{Interface, PCSTR, PWSTR};
 
 use crate::recycle_candidate::RecycleCandidate;
 use crate::recycle_restore::{
@@ -107,10 +107,7 @@ struct ComRecycleBinEntry {
 impl RecycleRestoreEntry for ComRecycleBinEntry {
     fn candidate(&self) -> Result<Option<RecycleCandidate>, RecycleRestoreItemError> {
         // System.Recycle.DeletedFrom is optional for Shell items.
-        let deleted_from = match get_shell_string(&self.item, &PKEY_RECYCLE_DELETED_FROM) {
-            Ok(value) => value,
-            Err(_) => None,
-        };
+        let deleted_from = get_shell_string(&self.item, &PKEY_RECYCLE_DELETED_FROM).unwrap_or_default();
 
         // SAFETY: `item` is a live IShellItem2; GetDisplayName allocates a CoTaskMem string, released below.
         let display_name = unsafe { self.item.GetDisplayName(SIGDN_PARENTRELATIVE) }
@@ -144,7 +141,7 @@ impl RecycleRestoreEntry for ComRecycleBinEntry {
         };
         Ok(Some(RecycleCandidate::new(
             deleted_from,
-            name,
+            Some(name),
             size,
             modified_utc,
             None,

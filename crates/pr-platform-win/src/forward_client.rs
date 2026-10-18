@@ -202,6 +202,12 @@ mod native {
         pipe: Mutex<Option<HANDLE>>,
     }
 
+    impl std::fmt::Debug for WindowsForwardTransport {
+        fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            formatter.write_str("WindowsForwardTransport")
+        }
+    }
+
     fn sid_bytes(token: HANDLE) -> Option<Vec<u8>> {
         let mut required = 0u32;
         // SAFETY: the first call requests the required length; null buffer and zero size are the documented probe.
@@ -441,7 +447,7 @@ mod native {
                 let _ = unsafe { FreeLibrary(module) };
                 return Err(ForegroundPermissionError::EntryPointUnavailable);
             };
-            type AllowForeground = unsafe extern "system" fn(u32) -> windows::Win32::Foundation::BOOL;
+            type AllowForeground = unsafe extern "system" fn(u32) -> windows::core::BOOL;
             // SAFETY: the named Windows API has the declared system ABI and one u32 PID parameter.
             let allow: AllowForeground =
                 unsafe { std::mem::transmute::<unsafe extern "system" fn() -> isize, AllowForeground>(procedure) };
@@ -538,6 +544,7 @@ pub use native::WindowsForwardTransport;
 #[cfg(windows)]
 impl ForwardPipeClient<WindowsForwardTransport> {
     /// Creates a production client over a Windows named pipe.
+    #[allow(dead_code)] // Used by instance_scope; test targets including this source do not call it.
     pub fn new(pipe_name: Option<String>, allow_server_foreground: bool) -> Result<Self, ForwardError> {
         Self::with_transport(pipe_name, allow_server_foreground, WindowsForwardTransport::default())
     }

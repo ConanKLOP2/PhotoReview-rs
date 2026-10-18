@@ -226,6 +226,7 @@ fn open_native_session() -> io::Result<Option<Box<dyn RecycleRestoreSession>>> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::recycle_bin::RecycleBinRestoreBackend;
     use std::sync::atomic::{AtomicUsize, Ordering};
 
     fn stamp() -> DateTimeUtc {

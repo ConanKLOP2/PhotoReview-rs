@@ -345,7 +345,8 @@ pub(crate) fn read_batched_with(
             }
         }
         free_pidls(&mut children);
-        if fetched == 0 || result.len() >= expected {
+        // C# TryReadViewOrderBatched: stop on S_FALSE (enumerator exhausted) or an empty read.
+        if hr == com::ids::S_FALSE || fetched == 0 {
             break;
         }
     }

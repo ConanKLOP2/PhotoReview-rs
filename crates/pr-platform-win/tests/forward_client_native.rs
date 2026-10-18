@@ -6,7 +6,7 @@ mod forward_client;
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::time::Duration;
 
-use forward_client::{ForwardPipeClient, WindowsForwardTransport};
+use forward_client::ForwardPipeClient;
 use pr_core::instance::forwarding::ForwardOutcome;
 use pr_core::sync::CancelToken;
 
