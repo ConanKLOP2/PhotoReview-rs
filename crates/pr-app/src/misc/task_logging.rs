@@ -79,8 +79,9 @@ pub fn start_and_observe(
             }
         }
         Err(StartFault::Failed(error)) => {
+            // C# catch (Exception ex) { AppLog.Error(context, ex); }: the exception itself, not its base.
             let error: &(dyn Error + 'static) = error.as_ref();
-            log.error(context, Some(base_error(error)));
+            log.error(context, Some(error));
         }
     }
 }

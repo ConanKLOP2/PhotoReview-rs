@@ -132,6 +132,16 @@ fn build_time_parse_is_strict() {
         "2026-09-24 07:15:30 +14:00",
         "2026-09-24 07:15:30 -14:00",
         "2028-02-29 12:00:00 +00:00",
+        // .NET `zzz` takes a one-digit hour and an offset without the colon (verified on .NET 10).
+        "2026-09-24 07:15:30 +7:00",
+        "2026-09-24 07:15:30 +0700",
+        "2026-09-24 07:15:30 -7:00",
+        // A format space matches a space or U+00A0 (not a tab).
+        "2026-09-24\u{A0}07:15:30 +07:00",
+        "2026-09-24 07:15:30\u{A0}+07:00",
+        // The UTC instant is exactly the DateTime bounds.
+        "0001-01-01 05:00:00 +05:00",
+        "9999-12-31 23:59:59 +00:00",
     ];
     let invalid = [
         "2026-02-30 07:15:30 +07:00",
@@ -140,9 +150,16 @@ fn build_time_parse_is_strict() {
         "2026-09-24T07:15:30 +07:00",
         "26-09-24 07:15:30 +07:00",
         "2026-9-24 07:15:30 +07:00",
-        "2026-09-24 07:15:30 +7:00",
         "2026-09-24 07:15:30 +14:01",
         "2026-09-24 07:15:30 -14:01",
+        "2026-09-24 07:15:30 +700",
+        "2026-09-24  07:15:30 +07:00",
+        "2026-09-24\t07:15:30 +07:00",
+        " 2026-09-24 07:15:30 +07:00",
+        "2026-09-24 07:15:30 +07:00 ",
+        // UTC instant outside 0001..9999 (.NET returns false).
+        "0001-01-01 00:00:00 +05:00",
+        "9999-12-31 23:59:59 -05:00",
         "2026-09-24 07:15:30 UTC",
         "2026-09-24 25:15:30 +07:00",
         "",
@@ -208,4 +225,26 @@ fn version_empty_string_is_some_empty_not_none() {
 
     assert_eq!(empty.version(), Some(""));
     assert_eq!(absent.version(), None);
+}
+
+#[test]
+fn utc_overflow_build_time_has_no_build_part() {
+    // .NET: TryParseExact is false when the UTC instant is outside 0001..9999 (verified on .NET 10).
+    let loc = vi();
+    let text = describe_parts(
+        &loc,
+        Some("1.0+abc"),
+        Some("0001-01-01 00:00:00 +05:00"),
+        &FixedOffset(420),
+    );
+    let with_build = describe_parts(
+        &loc,
+        Some("1.0+abc"),
+        Some("2026-09-24 07:15:30 +07:00"),
+        &FixedOffset(420),
+    );
+    assert!(
+        with_build.chars().count() > text.chars().count(),
+        "{text} / {with_build}"
+    );
 }

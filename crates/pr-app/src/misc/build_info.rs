@@ -69,36 +69,36 @@ pub struct BuildTime {
     pub utc_unix_seconds: i64,
 }
 
-/// Length of `yyyy-MM-dd HH:mm:ss zzz` (`"2026-09-24 07:15:30 +07:00"`).
-const BUILD_TIME_LEN: usize = 26;
-
 /// C# `DateTimeOffset.TryParseExact(text, "yyyy-MM-dd HH:mm:ss zzz", Invariant, None, out built)`. `None` input (C#
-/// `null`) and any text that does not match the format exactly give `None`. Strict: four-digit year, two-digit fields,
-/// a signed `hh:mm` offset, real calendar dates only.
+/// `null`) and any text that does not match the format give `None`. Four-digit year, two-digit fields, real calendar
+/// dates only. Like .NET: each format space matches exactly one ASCII space or U+00A0 (a tab is rejected), `zzz` takes
+/// a sign, a one- or two-digit (greedy) hour, an optional `':'` and two-digit minutes (`+7:00`, `+0700`, `+07:00`),
+/// and the UTC instant must lie within 0001-01-01T00:00:00Z..9999-12-31T23:59:59Z.
 pub fn parse_build_time(text: Option<&str>) -> Option<BuildTime> {
-    let bytes = text?.as_bytes();
-    if bytes.len() != BUILD_TIME_LEN {
+    let chars: Vec<char> = text?.chars().collect();
+    let mut pos = 0usize;
+
+    let year = take_digits(&chars, &mut pos, 4, 4)?;
+    take_char(&chars, &mut pos, |c| c == '-')?;
+    let month = take_digits(&chars, &mut pos, 2, 2)?;
+    take_char(&chars, &mut pos, |c| c == '-')?;
+    let day = take_digits(&chars, &mut pos, 2, 2)?;
+    take_char(&chars, &mut pos, is_format_space)?;
+    let hour = take_digits(&chars, &mut pos, 2, 2)?;
+    take_char(&chars, &mut pos, |c| c == ':')?;
+    let minute = take_digits(&chars, &mut pos, 2, 2)?;
+    take_char(&chars, &mut pos, |c| c == ':')?;
+    let second = take_digits(&chars, &mut pos, 2, 2)?;
+    take_char(&chars, &mut pos, is_format_space)?;
+    let sign = take_char(&chars, &mut pos, |c| c == '+' || c == '-')?;
+    let offset_hours = take_digits(&chars, &mut pos, 1, 2)?;
+    if chars.get(pos) == Some(&':') {
+        pos += 1;
+    }
+    let offset_minutes = take_digits(&chars, &mut pos, 2, 2)?;
+    if pos != chars.len() {
         return None;
     }
-    let shape_ok = bytes[4] == b'-'
-        && bytes[7] == b'-'
-        && bytes[10] == b' '
-        && bytes[13] == b':'
-        && bytes[16] == b':'
-        && bytes[19] == b' '
-        && bytes[20..21].iter().all(|&b| b == b'+' || b == b'-')
-        && bytes[23] == b':';
-    if !shape_ok {
-        return None;
-    }
-    let year = digits(&bytes[0..4])?;
-    let month = digits(&bytes[5..7])?;
-    let day = digits(&bytes[8..10])?;
-    let hour = digits(&bytes[11..13])?;
-    let minute = digits(&bytes[14..16])?;
-    let second = digits(&bytes[17..19])?;
-    let offset_hours = digits(&bytes[21..23])?;
-    let offset_minutes = digits(&bytes[24..26])?;
 
     // .NET DateTimeOffset: years 0001..9999, real calendar dates, 0..23 h, 0..59 min and s, offsets within +-14:00.
     if !(1..=9999).contains(&year) || !(1..=12).contains(&month) {
@@ -114,14 +114,51 @@ pub fn parse_build_time(text: Option<&str>) -> Option<BuildTime> {
     if offset_total > 14 * 60 {
         return None;
     }
-    let signed_offset = if bytes[20] == b'-' { -offset_total } else { offset_total };
+    let signed_offset = if sign == '-' { -offset_total } else { offset_total };
 
     let local_seconds = days_from_civil(year, month, day) * 86_400 + hour * 3_600 + minute * 60 + second;
-    Some(BuildTime {
-        utc_unix_seconds: local_seconds - signed_offset * 60,
-    })
+    let utc = local_seconds - signed_offset * 60;
+    // The UTC instant must be a valid DateTime (0001-01-01T00:00:00 .. 9999-12-31T23:59:59).
+    let min_utc = days_from_civil(1, 1, 1) * 86_400;
+    let max_utc = days_from_civil(9999, 12, 31) * 86_400 + 86_399;
+    if utc < min_utc || utc > max_utc {
+        return None;
+    }
+    Some(BuildTime { utc_unix_seconds: utc })
 }
 
+/// A format space in .NET `ParseExact` matches a space or, as its fallback, U+00A0.
+fn is_format_space(c: char) -> bool {
+    c == ' ' || c == '\u{A0}'
+}
+
+/// Consumes one char that satisfies `accept`; `None` at the end of input or on a mismatch.
+fn take_char(chars: &[char], pos: &mut usize, accept: impl Fn(char) -> bool) -> Option<char> {
+    let c = *chars.get(*pos)?;
+    if accept(c) {
+        *pos += 1;
+        Some(c)
+    } else {
+        None
+    }
+}
+
+/// Consumes between `min` and `max` ASCII digits (greedy) and returns their value.
+fn take_digits(chars: &[char], pos: &mut usize, min: usize, max: usize) -> Option<i64> {
+    let mut value = 0i64;
+    let mut count = 0usize;
+    while count < max {
+        match chars.get(*pos) {
+            Some(c) if c.is_ascii_digit() => {
+                value = value * 10 + i64::from(*c as u8 - b'0');
+                *pos += 1;
+                count += 1;
+            }
+            _ => break,
+        }
+    }
+    (count >= min).then_some(value)
+}
 /// C# `BuildInfo.Describe(string? informationalVersion, string? buildTime)` (internal overload, the one the tests call).
 ///
 /// * `informational_version` empty or whitespace-only (C# `IsNullOrWhiteSpace`, including `None`): returns
@@ -187,17 +224,6 @@ fn local_year_in_range(utc_unix_seconds: i64, offset_minutes: i32) -> bool {
     let local = utc_unix_seconds + i64::from(offset_minutes) * 60;
     let (year, _, _) = civil_from_days(local.div_euclid(86_400));
     (1..=9999).contains(&year)
-}
-
-/// Decimal value of ASCII digit bytes; `None` when any byte is not a digit.
-fn digits(bytes: &[u8]) -> Option<i64> {
-    bytes.iter().try_fold(0i64, |acc, &b| {
-        if b.is_ascii_digit() {
-            Some(acc * 10 + i64::from(b - b'0'))
-        } else {
-            None
-        }
-    })
 }
 
 fn is_leap_year(year: i64) -> bool {

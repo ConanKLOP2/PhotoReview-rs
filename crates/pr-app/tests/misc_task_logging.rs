@@ -232,3 +232,22 @@ fn dropped_sender_is_silent() {
     assert!(recording.contains(LogLevel::Error, "fault context"));
     assert!(!recording.contains(LogLevel::Error, "dropped context"));
 }
+
+#[test]
+fn start_failure_logs_the_exception_itself_not_its_base() {
+    // C# catch arm: AppLog.Error(context, ex), NOT GetBaseException (only the task-fault path unwraps).
+    let recording = Arc::new(RecordingLog::new());
+    let log: Arc<dyn Log> = recording.clone();
+
+    start_and_observe(
+        || {
+            Err(StartFault::Failed(Box::new(Wrapper {
+                inner: Inner("root-cause"),
+            })))
+        },
+        "wrapped start",
+        log,
+    );
+
+    assert!(recording.contains(LogLevel::Error, "outer-wrap"));
+}
