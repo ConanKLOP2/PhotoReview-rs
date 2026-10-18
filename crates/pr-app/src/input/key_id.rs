@@ -10,9 +10,6 @@
 //!   `ShortcutKeyName` (W8-04c) and `KeyIdMapping.TryParse` (W8-05c) own it. This module answers name and value lookups only.
 //! - No `unsafe`, no `windows` crate. Only `pr_core::text` (OrdinalIgnoreCase) is used.
 //!
-//! Stub only: bodies are `todo!()`; the porter removes the `allow` line with the last body (contracts/README.md D11).
-
-#![allow(unused_variables, dead_code)] // stub only: removed by the porter when the bodies are filled
 
 /// Every declared name with its raw value, in C# declaration order (aliases included).
 /// The golden `declared` cases pin this order and these values; `ContractMirrorTests` pins them against WPF `Key`.
@@ -219,6 +216,184 @@ pub const KEY_ID_NAMES: &[(&str, u8)] = &[
     ("DbeEnterDialogConversionMode", 170),
     ("OemClear", 171),
     ("DeadCharProcessed", 172),
+];
+
+/// Canonical name per raw value 0..=172 (C# `Enum.GetName`), copied from the golden `canonical` cases: the baseline
+/// runtime picks `Return` for 6, `Capital` for 8, `PageUp` for 19 and so on, not the first declared alias.
+const CANONICAL_NAMES: [&str; 173] = [
+    "None",                     // 0
+    "Cancel",                   // 1
+    "Back",                     // 2
+    "Tab",                      // 3
+    "LineFeed",                 // 4
+    "Clear",                    // 5
+    "Return",                   // 6
+    "Pause",                    // 7
+    "Capital",                  // 8
+    "KanaMode",                 // 9
+    "JunjaMode",                // 10
+    "FinalMode",                // 11
+    "HanjaMode",                // 12
+    "Escape",                   // 13
+    "ImeConvert",               // 14
+    "ImeNonConvert",            // 15
+    "ImeAccept",                // 16
+    "ImeModeChange",            // 17
+    "Space",                    // 18
+    "PageUp",                   // 19
+    "Next",                     // 20
+    "End",                      // 21
+    "Home",                     // 22
+    "Left",                     // 23
+    "Up",                       // 24
+    "Right",                    // 25
+    "Down",                     // 26
+    "Select",                   // 27
+    "Print",                    // 28
+    "Execute",                  // 29
+    "Snapshot",                 // 30
+    "Insert",                   // 31
+    "Delete",                   // 32
+    "Help",                     // 33
+    "D0",                       // 34
+    "D1",                       // 35
+    "D2",                       // 36
+    "D3",                       // 37
+    "D4",                       // 38
+    "D5",                       // 39
+    "D6",                       // 40
+    "D7",                       // 41
+    "D8",                       // 42
+    "D9",                       // 43
+    "A",                        // 44
+    "B",                        // 45
+    "C",                        // 46
+    "D",                        // 47
+    "E",                        // 48
+    "F",                        // 49
+    "G",                        // 50
+    "H",                        // 51
+    "I",                        // 52
+    "J",                        // 53
+    "K",                        // 54
+    "L",                        // 55
+    "M",                        // 56
+    "N",                        // 57
+    "O",                        // 58
+    "P",                        // 59
+    "Q",                        // 60
+    "R",                        // 61
+    "S",                        // 62
+    "T",                        // 63
+    "U",                        // 64
+    "V",                        // 65
+    "W",                        // 66
+    "X",                        // 67
+    "Y",                        // 68
+    "Z",                        // 69
+    "LWin",                     // 70
+    "RWin",                     // 71
+    "Apps",                     // 72
+    "Sleep",                    // 73
+    "NumPad0",                  // 74
+    "NumPad1",                  // 75
+    "NumPad2",                  // 76
+    "NumPad3",                  // 77
+    "NumPad4",                  // 78
+    "NumPad5",                  // 79
+    "NumPad6",                  // 80
+    "NumPad7",                  // 81
+    "NumPad8",                  // 82
+    "NumPad9",                  // 83
+    "Multiply",                 // 84
+    "Add",                      // 85
+    "Separator",                // 86
+    "Subtract",                 // 87
+    "Decimal",                  // 88
+    "Divide",                   // 89
+    "F1",                       // 90
+    "F2",                       // 91
+    "F3",                       // 92
+    "F4",                       // 93
+    "F5",                       // 94
+    "F6",                       // 95
+    "F7",                       // 96
+    "F8",                       // 97
+    "F9",                       // 98
+    "F10",                      // 99
+    "F11",                      // 100
+    "F12",                      // 101
+    "F13",                      // 102
+    "F14",                      // 103
+    "F15",                      // 104
+    "F16",                      // 105
+    "F17",                      // 106
+    "F18",                      // 107
+    "F19",                      // 108
+    "F20",                      // 109
+    "F21",                      // 110
+    "F22",                      // 111
+    "F23",                      // 112
+    "F24",                      // 113
+    "NumLock",                  // 114
+    "Scroll",                   // 115
+    "LeftShift",                // 116
+    "RightShift",               // 117
+    "LeftCtrl",                 // 118
+    "RightCtrl",                // 119
+    "LeftAlt",                  // 120
+    "RightAlt",                 // 121
+    "BrowserBack",              // 122
+    "BrowserForward",           // 123
+    "BrowserRefresh",           // 124
+    "BrowserStop",              // 125
+    "BrowserSearch",            // 126
+    "BrowserFavorites",         // 127
+    "BrowserHome",              // 128
+    "VolumeMute",               // 129
+    "VolumeDown",               // 130
+    "VolumeUp",                 // 131
+    "MediaNextTrack",           // 132
+    "MediaPreviousTrack",       // 133
+    "MediaStop",                // 134
+    "MediaPlayPause",           // 135
+    "LaunchMail",               // 136
+    "SelectMedia",              // 137
+    "LaunchApplication1",       // 138
+    "LaunchApplication2",       // 139
+    "Oem1",                     // 140
+    "OemPlus",                  // 141
+    "OemComma",                 // 142
+    "OemMinus",                 // 143
+    "OemPeriod",                // 144
+    "OemQuestion",              // 145
+    "Oem3",                     // 146
+    "AbntC1",                   // 147
+    "AbntC2",                   // 148
+    "OemOpenBrackets",          // 149
+    "Oem5",                     // 150
+    "Oem6",                     // 151
+    "OemQuotes",                // 152
+    "Oem8",                     // 153
+    "OemBackslash",             // 154
+    "ImeProcessed",             // 155
+    "System",                   // 156
+    "OemAttn",                  // 157
+    "OemFinish",                // 158
+    "OemCopy",                  // 159
+    "DbeSbcsChar",              // 160
+    "OemEnlw",                  // 161
+    "OemBackTab",               // 162
+    "DbeNoRoman",               // 163
+    "DbeEnterWordRegisterMode", // 164
+    "DbeEnterImeConfigureMode", // 165
+    "EraseEof",                 // 166
+    "Play",                     // 167
+    "DbeNoCodeInput",           // 168
+    "NoName",                   // 169
+    "Pa1",                      // 170
+    "OemClear",                 // 171
+    "DeadCharProcessed",        // 172
 ];
 
 /// Port of C# `KeyId`: a raw WPF `Key` value (0..=172). Equality, ordering and hashing are by value, as C# enum equality is.
@@ -466,25 +641,42 @@ impl KeyId {
 
     /// C# `Enum.IsDefined((KeyId)value)`: `Some` exactly for 0..=172, `None` for every other `i32` (negative, 173 and up).
     pub fn from_value(value: i32) -> Option<KeyId> {
-        todo!()
+        let raw = u8::try_from(value).ok()?;
+        (usize::from(raw) < CANONICAL_NAMES.len()).then_some(KeyId(raw))
     }
 
     /// The canonical name of this value (C# `Enum.GetName`). Exactly one name per value. Which alias the baseline runtime
     /// returns is pinned by the golden `canonical` cases; the porter fills the table from those answers, not from declaration order.
     pub fn name(self) -> &'static str {
-        todo!()
+        CANONICAL_NAMES.get(usize::from(self.0)).copied().unwrap_or("None")
     }
 
     /// Name lookup as C# `Enum.TryParse(text, ignoreCase: false)` followed by `Enum.IsDefined`, for names only.
-    /// Surrounding whitespace is ignored (golden `from_name`, probes with spaces and tabs). Numbers and comma lists are NOT
-    /// accepted here: C# accepts them, the callers (`ShortcutKeyName`, `KeyIdMapping.TryParse`) reject or handle them.
+    /// Surrounding whitespace is ignored (golden `from_name`, probes with spaces and tabs). Numbers are NOT accepted here:
+    /// the callers (`ShortcutKeyName`, `KeyIdMapping.TryParse`) reject or handle them.
     pub fn from_name(name: &str) -> Option<KeyId> {
-        todo!()
+        from_names(name, |candidate, token| candidate == token)
     }
 
     /// Same as [`KeyId::from_name`] with `ignoreCase: true`. Compares with `pr_core::text::eq_ignore_case`
     /// (OrdinalIgnoreCase: no `ı`/`ſ`/`K` (Kelvin) folding), never `to_lowercase`.
     pub fn from_name_ignore_case(name: &str) -> Option<KeyId> {
-        todo!()
+        from_names(name, pr_core::text::eq_ignore_case)
     }
+}
+
+/// `Enum.TryParse` over comma-separated names: each token is trimmed and looked up in `KEY_ID_NAMES` (first match), and the
+/// values are OR-combined (golden: `"Tab,Back"` is `Some(TAB)`, 3 = 3 | 2). The result must be `Enum.IsDefined`. An empty token
+/// (`"Tab,"`, `""`, whitespace only) or an unknown name gives `None`.
+fn from_names(text: &str, same: fn(&str, &str) -> bool) -> Option<KeyId> {
+    let mut bits: i32 = 0;
+    for token in text.split(',') {
+        let token = token.trim();
+        if token.is_empty() {
+            return None;
+        }
+        let row = KEY_ID_NAMES.iter().find(|row| same(row.0, token))?;
+        bits |= i32::from(row.1);
+    }
+    KeyId::from_value(bits)
 }
