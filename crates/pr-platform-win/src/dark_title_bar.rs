@@ -82,6 +82,15 @@ mod tests {
     use super::*;
 
     #[test]
+    fn only_missing_library_error_uses_false_fallback() {
+        // C# twin: WindowsDarkTitleBar.TrySet catches DllNotFoundException only.
+        let missing = windows::core::Error::from_hresult(windows::core::HRESULT(0x8007_007E_u32 as i32));
+        let access_denied = windows::core::Error::from_hresult(windows::core::HRESULT(0x8007_0005_u32 as i32));
+        assert_eq!(win32_error_code(&missing), ERROR_MOD_NOT_FOUND.0);
+        assert_ne!(win32_error_code(&access_denied), ERROR_MOD_NOT_FOUND.0);
+    }
+
+    #[test]
     fn null_hwnd_is_rejected_without_calling_dwm() {
         // C# twins: LibraryImportInteropTests.DwmCalls_OnNullHandle_ReturnFalse and
         // PlatformPrimitivesTests.WindowsDarkTitleBarEnablesDarkModeOnARealHandle.
