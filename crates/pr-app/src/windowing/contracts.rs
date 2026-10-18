@@ -8,8 +8,6 @@
 //! `IFullscreenController` is not a trait here (lead decision D-W8B1-5): W8-03b's `FullscreenController` takes a `WindowOps` on every call,
 //! `WindowPlacementRules` is the three free functions below.
 
-#![allow(unused_variables, dead_code)] // D11: remove with the last `todo!()`.
-
 use std::io;
 use std::thread::JoinHandle;
 
@@ -36,12 +34,21 @@ pub enum WindowShowState {
 impl WindowShowState {
     /// The name C# `ToString()` gives (`"Normal"`, `"Minimized"`, `"Maximized"`); used by the goldens.
     pub fn name(self) -> &'static str {
-        todo!()
+        match self {
+            Self::Normal => "Normal",
+            Self::Minimized => "Minimized",
+            Self::Maximized => "Maximized",
+        }
     }
 
     /// `None` for a value that is not one of the three members (C# can hold such a value in an enum; Rust cannot).
     pub fn from_i32(value: i32) -> Option<Self> {
-        todo!()
+        match value {
+            0 => Some(Self::Normal),
+            1 => Some(Self::Minimized),
+            2 => Some(Self::Maximized),
+            _ => None,
+        }
     }
 }
 
@@ -65,19 +72,31 @@ pub struct WindowPlacementData {
 /// `WindowPlacementRules.NormalizeShowCommand`: only "maximized" (3) survives; every other value (0, 1, 2, 7, negatives...) is
 /// "normal" (1). R2-F-26: a minimized or hidden show command from a damaged file must never reopen a hidden window.
 pub fn normalize_show_command(show_command: i32) -> i32 {
-    todo!()
+    if show_command == SHOW_MAXIMIZED {
+        SHOW_MAXIMIZED
+    } else {
+        SHOW_NORMAL
+    }
 }
 
 /// `WindowPlacementRules.ResolveShowCommand`: `Some(Maximized)` gives 3; `Some(Normal)` and `Some(Minimized)` give 1; `None`
 /// gives [`normalize_show_command`] of `show_command`. R7-10: closing while in fullscreen saves the state from BEFORE fullscreen.
 pub fn resolve_show_command(show_command: i32, fullscreen_restore_state: Option<WindowShowState>) -> i32 {
-    todo!()
+    match fullscreen_restore_state {
+        Some(WindowShowState::Maximized) => SHOW_MAXIMIZED,
+        Some(WindowShowState::Normal | WindowShowState::Minimized) => SHOW_NORMAL,
+        None => normalize_show_command(show_command),
+    }
 }
 
 /// `WindowPlacementRules.PlanStateBeforeShow`: `Maximized` when the normalized command is 3, otherwise `Normal`
 /// (never `Minimized`).
 pub fn plan_state_before_show(saved_show_command: i32) -> WindowShowState {
-    todo!()
+    if normalize_show_command(saved_show_command) == SHOW_MAXIMIZED {
+        WindowShowState::Maximized
+    } else {
+        WindowShowState::Normal
+    }
 }
 
 /// The result of [`WindowPlacementStore::prefetch`]: C# returns a `Task<WindowPlacementData?>` started on the thread pool.
@@ -92,7 +111,8 @@ impl PrefetchHandle {
     /// Waits for the read. `None` when the file was missing, damaged, unreadable or the thread panicked
     /// (the C# task result is `null` for the first three; a panic cannot happen in C#).
     pub fn join(self) -> Option<WindowPlacementData> {
-        todo!()
+        // A panicked worker gives `None` (the caller reads the file itself).
+        self.handle?.join().ok().flatten()
     }
 }
 
