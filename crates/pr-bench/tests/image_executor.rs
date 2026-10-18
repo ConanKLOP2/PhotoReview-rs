@@ -29,6 +29,7 @@ use pr_bench::image_executor::{
     BenchmarkExecutorOptions, BenchmarkImageExecutor, BenchmarkProfile, BenchmarkProfileScope, WindowedPreloadTarget,
     new_scratch_directory_name,
 };
+use pr_bench::models::BenchmarkWorkload;
 use pr_core::abstractions::Log;
 use pr_core::catalog::types::CatalogEntry;
 use pr_core::model::enums::LoadingMode;
@@ -42,7 +43,7 @@ use pr_imaging::preload::target::{KeyError, PreloadTarget};
 use pr_imaging::service::PreviewError;
 use pr_test_support::golden::{self, bool_of, i64_of, str_of};
 use pr_test_support::{FakeFileSystem, LogLevel, RecordingLog, TempRoot};
-use preview_service::{FakeDecoder, FakePayloadCodec, GIB, PHYSICAL_32_GIB, PixelsCodec};
+use preview_service::{FakeDecoder, FakePayloadCodec, GIB, PHYSICAL_32_GIB, PixelsCodec, Script};
 use serde_json::Value;
 
 /// Hang guard for every blocking wait in this file (AGENTS.md "Tests").
@@ -56,7 +57,7 @@ const WRITTEN_TICKS: i64 = 638_769_024_000_000_000;
 
 // ---- fixtures -----------------------------------------------------------------------------------------------------
 
-/// A profile with the fields the executor reads. The stub's stand-in struct; the lead swaps it for `crate::models` at wiring.
+/// A profile with the fields the executor reads (the rest is filled with neutral values).
 /// Values mirror `BenchmarkProfiles.cs` for the ids the tests name (`fast-balanced`, `fast-sequential`, ...).
 fn make_profile(
     id: &str,
@@ -76,6 +77,12 @@ fn make_profile(
         memory_reserve_bytes: 2 * GIB,
         disk_cache: false,
         detailed_logging: false,
+        name: id.to_owned(),
+        description: String::new(),
+        workload: BenchmarkWorkload::Sequential,
+        warmup_count: 1,
+        iterations: 1,
+        correctness_only: false,
     }
 }
 
@@ -798,6 +805,12 @@ fn disk_cache_on_profile_probes_the_disk() {
     let root = TempRoot::new("gap-disk-on");
     let files = write_files(&root, 1);
     let decoder = FakeDecoder::new();
+    // Only a preview that really decoded downscaled is persisted, so the fake reports a smaller decode than the original.
+    decoder.script_default(Script {
+        downscaled: true,
+        original: Some((400, 300)),
+        ..Script::default()
+    });
     let profile = BenchmarkProfile {
         disk_cache: true,
         ..fast_balanced()
