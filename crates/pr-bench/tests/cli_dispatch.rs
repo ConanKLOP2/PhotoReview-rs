@@ -323,3 +323,59 @@ fn run_other_mode_default_is_not_available_in_this_build() {
         "PhotoReview.Benchmark.Cli: mode not available in this build\r\n"
     );
 }
+
+// ---- SystemToolEnvironment ---------------------------------------------------------------------------------------------
+
+fn civil_from_days(z: i64) -> (i64, u32, u32) {
+    let z = z + 719_468;
+    let era = z.div_euclid(146_097);
+    let doe = z.rem_euclid(146_097);
+    let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365;
+    let y = yoe + era * 400;
+    let doy = doe - (365 * yoe + yoe / 4 - yoe / 100);
+    let mp = (5 * doy + 2) / 153;
+    let d = (doy - (153 * mp + 2) / 5 + 1) as u32;
+    let m = if mp < 10 { mp + 3 } else { mp - 9 } as u32;
+    (if m <= 2 { y + 1 } else { y }, m, d)
+}
+
+#[test]
+fn system_environment_utc_stamp_is_yyyymmdd_hhmmss_of_now() {
+    use pr_bench::cli::ToolEnvironment;
+    let secs = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .expect("clock after 1970")
+        .as_secs() as i64;
+    let stamp = SystemToolEnvironment.utc_stamp();
+    let (y, mo, d) = civil_from_days(secs.div_euclid(86_400));
+    let rem = secs.rem_euclid(86_400);
+    let expected_prefix = format!("{y:04}{mo:02}{d:02}-");
+    assert_eq!(stamp.len(), 15, "yyyyMMdd-HHmmss, got {stamp:?}");
+    let t = &stamp[9..];
+    assert!(t.bytes().all(|b| b.is_ascii_digit()), "{stamp:?}");
+    let got = i64::from(t[0..2].parse::<u32>().expect("hh")) * 3600
+        + i64::from(t[2..4].parse::<u32>().expect("mm")) * 60
+        + i64::from(t[4..6].parse::<u32>().expect("ss"));
+    assert!(
+        (got - rem).abs() <= 5 || (got - rem).abs() >= 86_395,
+        "{stamp:?} not within 5 s of now"
+    );
+    // The clock may tick over midnight between the two reads: only compare the date away from it.
+    if (5..86_395).contains(&rem) {
+        assert!(stamp.starts_with(&expected_prefix), "{stamp:?} vs {expected_prefix:?}");
+    }
+}
+
+#[test]
+fn system_environment_temp_path_ends_with_backslash_and_guid_is_32_hex() {
+    use pr_bench::cli::ToolEnvironment;
+    let temp = SystemToolEnvironment.temp_path();
+    assert!(temp.ends_with('\\') && temp.len() > 3, "{temp:?}");
+    let guid = SystemToolEnvironment.new_guid_n();
+    assert_eq!(guid.len(), 32);
+    assert!(
+        guid.bytes().all(|b| b.is_ascii_digit() || (b'a'..=b'f').contains(&b)),
+        "{guid:?}"
+    );
+    assert_ne!(guid, SystemToolEnvironment.new_guid_n());
+}

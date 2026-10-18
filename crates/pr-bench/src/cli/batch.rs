@@ -25,6 +25,9 @@ pub const FILE_LIMIT: usize = 64;
 pub struct DatasetPlan {
     /// First [`FILE_LIMIT`] supported files, `Path.GetFullPath` applied, in listing order.
     pub files: Vec<String>,
+    /// The same files as the directory listing returned them (NOT passed through `Path.GetFullPath`): C# hands these to the
+    /// engine, so a relative folder yields `rel\a.jpg` and decode errors that echo the path name that text.
+    pub listing_files: Vec<String>,
     /// `(key, count)` ordered by key, ordinal. Key = `"<none>"` when the extension is blank, else the extension lower-cased
     /// (`ToLowerInvariant`).
     pub unsupported_extensions: Vec<(String, usize)>,
@@ -77,9 +80,9 @@ pub fn plan_dataset(all_files: &[String]) -> Result<DatasetPlan, ToolError> {
     }
     unsupported_extensions.sort_by(|a, b| cmp_ordinal(&a.0, &b.0));
 
-    let files = supported
-        .into_iter()
-        .take(FILE_LIMIT)
+    let listing_files: Vec<String> = supported.into_iter().take(FILE_LIMIT).cloned().collect();
+    let files = listing_files
+        .iter()
         .map(|path| get_full_path(path))
         .collect::<Result<Vec<String>, ToolError>>()?;
     if files.is_empty() {
@@ -89,6 +92,7 @@ pub fn plan_dataset(all_files: &[String]) -> Result<DatasetPlan, ToolError> {
     }
     Ok(DatasetPlan {
         files,
+        listing_files,
         unsupported_extensions,
     })
 }
@@ -179,6 +183,7 @@ pub fn run_cli_benchmarks(
     let all_files: Vec<String> = listed.iter().map(|p| p.to_string_lossy().into_owned()).collect();
     let plan = plan_dataset(&all_files)?;
     let folder_full_path = get_full_path(folder)?;
+    let listing_files = plan.listing_files;
     let manifest = DatasetManifest {
         folder: folder_full_path.clone(),
         files: plan.files,
@@ -191,7 +196,7 @@ pub fn run_cli_benchmarks(
         write_line(ctx.out, &format_start_line(profile));
         let attempt = {
             let out: &mut dyn std::io::Write = &mut *ctx.out;
-            ctx.backend.run_profile(folder, profile, &manifest.files, &mut |p| {
+            ctx.backend.run_profile(folder, profile, &listing_files, &mut |p| {
                 write_line(
                     out,
                     &format!("  {}: {}/{} {}", p.profile_id, p.completed, p.total, p.message),
@@ -268,5 +273,17 @@ pub fn run_benchmark_mode(ctx: &mut CliContext<'_>, mode: CliMode, args: &[Strin
             );
             UNHANDLED_EXIT_CODE
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::combine;
+
+    #[test]
+    fn combine_follows_path_combine() {
+        assert_eq!(combine("", "x"), "x");
+        assert_eq!(combine("C:\\d", "x"), "C:\\d\\x");
+        assert_eq!(combine("C:\\d\\", "x"), "C:\\d\\x");
     }
 }

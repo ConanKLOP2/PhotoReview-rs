@@ -43,8 +43,17 @@ pub fn real(fs: &dyn FileSystem, path: &str) -> Result<String, ToolError> {
             let text = resolved.to_string_lossy();
             Ok(dotnet_path::trim_ending_directory_separator(&text).to_owned())
         }
-        Err(error) if error.kind() == ErrorKind::InvalidInput => Err(ToolError::argument(error.to_string())),
-        Err(error) => Err(ToolError::from_io(&error, path, "DirectoryNotFoundException")),
+        Err(error) => Err(map_resolve_error(&error, path)),
+    }
+}
+
+/// A failed `resolve_real_path`: `InvalidInput` (a blank or NUL-bearing path) is an `ArgumentException`, everything else an
+/// `IOException` family member through [`ToolError::from_io`].
+pub(crate) fn map_resolve_error(error: &std::io::Error, path: &str) -> ToolError {
+    if error.kind() == ErrorKind::InvalidInput {
+        ToolError::argument(error.to_string())
+    } else {
+        ToolError::from_io(error, path, "DirectoryNotFoundException")
     }
 }
 
@@ -144,18 +153,20 @@ pub fn claim_cache_directory(cache_dir: &str) -> Result<(), ToolError> {
 /// Writes a report file without ever writing THROUGH its final path (R13): the text goes to a sibling temp file
 /// `{full}.{first 8 of guid N}.tmp`, which then replaces the leaf (`std::fs::rename` over an existing file; a leaf that is a
 /// symlink or hard link to a photo is replaced by a regular file and the photo's bytes stay untouched). UTF-8, no BOM, text
-/// written as given (no newline conversion). The temp file is deleted when it still exists after a failure. I/O errors become
-/// `ToolError::from_io`.
+/// written as given (no newline conversion). The temp file is deleted when it still exists after a failure.
+///
+/// Errors follow .NET: the temp write maps like `File.WriteAllTextAsync` (an `IOException` without a more specific type reads
+/// `{system message} : '{temp path}'.`), the replace like `File.Move(overwrite: true)`: an existing directory, a read-only leaf
+/// and a leaf another handle holds open with `FILE_SHARE_DELETE` (which POSIX-style `rename` would silently replace) are
+/// `UnauthorizedAccessException("Access to the path is denied.")`, with no path in the text.
 pub fn write_report_file(path: &str, content: &str) -> Result<(), ToolError> {
     let full = get_full_path(path)?;
     let guid = pr_core::io::physical::new_guid_n();
     let short: String = guid.chars().take(8).collect();
     let temp = format!("{full}.{short}.tmp");
     let result = std::fs::write(&temp, content.as_bytes())
-        .map_err(|error| ToolError::from_io(&error, &temp, "DirectoryNotFoundException"))
-        .and_then(|()| {
-            std::fs::rename(&temp, &full).map_err(|error| ToolError::from_io(&error, &full, "FileNotFoundException"))
-        });
+        .map_err(|error| map_write_error(&error, &temp))
+        .and_then(|()| replace_leaf(&temp, &full));
     if Path::new(&temp).is_file() {
         // Best effort, like the C# `finally`; the original error (if any) is what the caller needs.
         let _ = std::fs::remove_file(&temp);
@@ -163,11 +174,109 @@ pub fn write_report_file(path: &str, content: &str) -> Result<(), ToolError> {
     result
 }
 
+const ERROR_FILE_NOT_FOUND: i32 = 2;
+const ERROR_PATH_NOT_FOUND: i32 = 3;
+const ERROR_BAD_NETPATH: i32 = 53;
+const ERROR_BAD_NET_NAME: i32 = 67;
+
+/// `new IOException("{system message} : '{path}'.")`, what .NET builds for an error code without a dedicated exception type.
+fn io_exception_with_path(error: &std::io::Error, path: &str) -> ToolError {
+    ToolError::new(
+        "IOException",
+        format!("{} : '{path}'.", super::backend::os_error_description(error)),
+    )
+}
+
+/// Failures of writing the temp file, typed like `File.WriteAllTextAsync` (`Win32Marshal.GetExceptionForWin32Error`).
+pub(crate) fn map_write_error(error: &std::io::Error, path: &str) -> ToolError {
+    match error.raw_os_error() {
+        Some(ERROR_FILE_NOT_FOUND) => ToolError::from_io(error, path, "FileNotFoundException"),
+        Some(ERROR_PATH_NOT_FOUND) => ToolError::from_io(error, path, "DirectoryNotFoundException"),
+        Some(ERROR_BAD_NETPATH | ERROR_BAD_NET_NAME) => io_exception_with_path(error, path),
+        // Sharing and lock violations have their own text.
+        Some(32 | 33) => ToolError::from_io(error, path, "DirectoryNotFoundException"),
+        _ => match error.kind() {
+            ErrorKind::NotFound | ErrorKind::PermissionDenied | ErrorKind::AlreadyExists => {
+                ToolError::from_io(error, path, "DirectoryNotFoundException")
+            }
+            _ => io_exception_with_path(error, path),
+        },
+    }
+}
+
+/// `File.Move(temp, full, overwrite: true)`.
+fn replace_leaf(temp: &str, full: &str) -> Result<(), ToolError> {
+    if leaf_refuses_replacement(full) {
+        return Err(access_denied_without_path());
+    }
+    std::fs::rename(temp, full).map_err(|error| {
+        if error.kind() == ErrorKind::PermissionDenied {
+            access_denied_without_path()
+        } else {
+            ToolError::from_io(&error, full, "FileNotFoundException")
+        }
+    })
+}
+
+/// `File.Move` reports `Access to the path is denied.` WITHOUT the path.
+fn access_denied_without_path() -> ToolError {
+    ToolError::new("UnauthorizedAccessException", "Access to the path is denied.")
+}
+
+/// True when `MoveFileEx(MOVEFILE_REPLACE_EXISTING)` would answer `ERROR_ACCESS_DENIED` for the existing `full`: a directory (also a
+/// directory link), a read-only file, or a file another handle holds open WITH `FILE_SHARE_DELETE` (Rust's `rename` has POSIX
+/// semantics and would replace it). A leaf held open without `FILE_SHARE_DELETE` is left to `rename`, which fails with a
+/// sharing violation like .NET does.
+#[cfg(windows)]
+fn leaf_refuses_replacement(full: &str) -> bool {
+    use std::fs::OpenOptions;
+    use std::os::windows::fs::{MetadataExt, OpenOptionsExt};
+    const FILE_ATTRIBUTE_READONLY: u32 = 0x1;
+    const FILE_ATTRIBUTE_DIRECTORY: u32 = 0x10;
+    const DELETE: u32 = 0x1_0000;
+    const FILE_SHARE_ALL: u32 = 0x7;
+    const FILE_FLAG_OPEN_REPARSE_POINT: u32 = 0x0020_0000;
+    const ERROR_SHARING_VIOLATION: i32 = 32;
+
+    let Ok(metadata) = std::fs::symlink_metadata(full) else {
+        return false;
+    };
+    if metadata.file_attributes() & (FILE_ATTRIBUTE_READONLY | FILE_ATTRIBUTE_DIRECTORY) != 0 {
+        return true;
+    }
+    let open = |share: u32| {
+        OpenOptions::new()
+            .access_mode(DELETE)
+            .share_mode(share)
+            .custom_flags(FILE_FLAG_OPEN_REPARSE_POINT)
+            .open(full)
+    };
+    // Opening for DELETE while allowing every share succeeds only when no other handle denies delete sharing; a second open that
+    // allows nothing then fails exactly when some other handle exists.
+    match open(FILE_SHARE_ALL) {
+        Ok(probe) => {
+            drop(probe);
+            matches!(open(0), Err(error) if error.raw_os_error() == Some(ERROR_SHARING_VIOLATION))
+        }
+        Err(_) => false,
+    }
+}
+
+#[cfg(not(windows))]
+fn leaf_refuses_replacement(full: &str) -> bool {
+    std::fs::symlink_metadata(full).is_ok_and(|metadata| metadata.is_dir() || metadata.permissions().readonly())
+}
+
 /// `Path.Combine(Environment.GetFolderPath(LocalApplicationData), name)`.
 fn local_app_data_child(name: &str) -> String {
-    match std::env::var_os("LOCALAPPDATA") {
+    combine_with_base(std::env::var_os("LOCALAPPDATA").as_deref(), name)
+}
+
+/// `Path.Combine(base, name)` where an unset or empty `base` leaves just `name`.
+fn combine_with_base(base: Option<&std::ffi::OsStr>, name: &str) -> String {
+    match base {
         Some(base) if !base.is_empty() => {
-            let base = base.to_string_lossy().into_owned();
+            let base = base.to_string_lossy();
             if dotnet_path::ends_in_directory_separator(&base) {
                 format!("{base}{name}")
             } else {
@@ -186,4 +295,72 @@ pub fn app_data_folder() -> String {
 /// The C# app's data folder `%LOCALAPPDATA%\PhotoReview` (`ToolPathGuard.AppDataFolder` in C#). Also protected (R0002: never touch it).
 pub fn csharp_app_data_folder() -> String {
     local_app_data_child(CSHARP_APP_DIR_NAME)
+}
+
+#[cfg(test)]
+mod tests {
+    use std::ffi::OsStr;
+    use std::io::{Error, ErrorKind};
+
+    use super::*;
+
+    #[test]
+    fn combine_with_base_follows_path_combine() {
+        assert_eq!(combine_with_base(None, "PhotoReview"), "PhotoReview");
+        assert_eq!(combine_with_base(Some(OsStr::new("")), "PhotoReview"), "PhotoReview");
+        assert_eq!(
+            combine_with_base(Some(OsStr::new("C:\\L")), "PhotoReview"),
+            "C:\\L\\PhotoReview"
+        );
+        assert_eq!(
+            combine_with_base(Some(OsStr::new("C:\\L\\")), "PhotoReview"),
+            "C:\\L\\PhotoReview"
+        );
+    }
+
+    #[test]
+    fn app_data_folders_sit_under_local_app_data() {
+        let Some(base) = std::env::var_os("LOCALAPPDATA").filter(|b| !b.is_empty()) else {
+            return;
+        };
+        let base = base.to_string_lossy().trim_end_matches('\\').to_owned();
+        assert_eq!(app_data_folder(), format!("{base}\\{APP_DIR_NAME}"));
+        assert_eq!(csharp_app_data_folder(), format!("{base}\\{CSHARP_APP_DIR_NAME}"));
+    }
+
+    #[test]
+    fn resolve_errors_map_by_kind() {
+        let invalid = map_resolve_error(&Error::new(ErrorKind::InvalidInput, "bad path"), "p");
+        assert_eq!(
+            (invalid.type_name.as_str(), invalid.message.as_str()),
+            ("ArgumentException", "bad path")
+        );
+        let denied = map_resolve_error(&Error::from(ErrorKind::PermissionDenied), "p");
+        assert_eq!(denied.type_name, "UnauthorizedAccessException");
+        let other = map_resolve_error(&Error::from_raw_os_error(1921), "p");
+        assert_eq!(other.type_name, "IOException");
+    }
+
+    #[test]
+    fn write_errors_map_like_dotnet() {
+        let missing_file = map_write_error(&Error::from_raw_os_error(2), "p");
+        assert_eq!(missing_file.type_name, "FileNotFoundException");
+        let missing_dir = map_write_error(&Error::from_raw_os_error(3), "p");
+        assert_eq!(missing_dir.type_name, "DirectoryNotFoundException");
+        let share = map_write_error(&Error::from_raw_os_error(67), "p");
+        assert_eq!(share.type_name, "IOException");
+        assert_eq!(share.message, "The network name cannot be found. : 'p'.");
+        let syntax = map_write_error(&Error::from_raw_os_error(123), "p");
+        assert_eq!(syntax.type_name, "IOException");
+        assert_eq!(
+            syntax.message,
+            "The filename, directory name, or volume label syntax is incorrect. : 'p'."
+        );
+        let sharing = map_write_error(&Error::from_raw_os_error(32), "p");
+        assert!(
+            sharing.message.starts_with("The process cannot access the file 'p'"),
+            "{}",
+            sharing.message
+        );
+    }
 }

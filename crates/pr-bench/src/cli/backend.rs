@@ -77,7 +77,7 @@ impl ToolError {
 }
 
 /// The error's text without Rust's ` (os error N)` suffix (.NET prints only the system message).
-fn os_error_description(err: &std::io::Error) -> String {
+pub(crate) fn os_error_description(err: &std::io::Error) -> String {
     let text = err.to_string();
     match text.rfind(" (os error ") {
         Some(i) if text.ends_with(')') => text[..i].to_owned(),

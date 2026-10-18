@@ -449,3 +449,71 @@ fn invalid_numbers_are_argument_errors_not_format_errors() {
     let err = parse_int_in_range("abc", "--repeat", 1, 1000).expect_err("not a number");
     assert_eq!(err.type_name, "ArgumentException");
 }
+
+// ---- .NET number parsing inside Enum.TryParse (differential findings) ----------------------------------------------------------------
+
+const ENUM_MEMBERS: [(&str, i32); 5] = [("Zero", 0), ("One", 1), ("Two", 2), ("Three", 3), ("Five", 5)];
+
+/// Only U+0009..U+000D and U+0020 may FOLLOW the digits (.NET `AllowTrailingWhite`); NBSP, U+0085 and U+2003 make the parse fail, while
+/// leading Unicode white space is trimmed.
+#[test]
+fn enum_number_with_trailing_unicode_whitespace_is_rejected() {
+    for text in ["1\u{a0}", "0\u{2003}", "3\u{85}", "+2\u{a0}", "\u{a0}5\u{2003}"] {
+        assert!(
+            parse_defined_enum(text, "n", &ENUM_MEMBERS).is_err(),
+            "{text:?} must be rejected like .NET"
+        );
+    }
+    assert_eq!(parse_defined_enum("\u{a0}\u{2003}5", "n", &ENUM_MEMBERS), Ok(5));
+    assert_eq!(parse_defined_enum("1 \t\r\n", "n", &ENUM_MEMBERS), Ok(1));
+}
+
+/// `Enum.TryParse("5 \0")` is true (ASCII white space, then trailing NULs); `"5\0 "` is false.
+#[test]
+fn enum_number_nul_and_white_space_order() {
+    assert_eq!(parse_defined_enum("5 \0", "n", &ENUM_MEMBERS), Ok(5));
+    assert_eq!(parse_defined_enum("5\0\0", "n", &ENUM_MEMBERS), Ok(5));
+    assert!(parse_defined_enum("5\0 ", "n", &ENUM_MEMBERS).is_err());
+}
+
+/// Arithmetic and range of the signed parser.
+#[test]
+fn enum_number_range_and_digits() {
+    let members = [("Min", i32::MIN), ("Zero", 0), ("Twelve", 12), ("Max", i32::MAX)];
+    assert_eq!(parse_defined_enum("12", "n", &members), Ok(12));
+    assert_eq!(parse_defined_enum("+012", "n", &members), Ok(12));
+    assert_eq!(parse_defined_enum("-0", "n", &members), Ok(0));
+    assert_eq!(parse_defined_enum("2147483647", "n", &members), Ok(i32::MAX));
+    assert_eq!(parse_defined_enum("-2147483648", "n", &members), Ok(i32::MIN));
+    assert!(parse_defined_enum("2147483648", "n", &members).is_err());
+    assert!(parse_defined_enum("-2147483649", "n", &members).is_err());
+    assert!(parse_defined_enum("99999999999999999999", "n", &members).is_err());
+    assert!(parse_defined_enum("1 2", "n", &members).is_err());
+}
+
+#[test]
+fn perf_analyze_repeated_rules_keeps_the_last_and_checks_every_token() {
+    let a = args(&[
+        "--perf-analyze",
+        "in.json",
+        "--rules",
+        "a",
+        "--rules",
+        "b",
+        "--rules",
+        "c",
+    ]);
+    assert_eq!(parse_perf_analyze_rules(&a).expect("rules"), Some("c".to_owned()));
+    let bad = args(&["--perf-analyze", "in.json", "--rules", "a", "--rules", "b", "bogus"]);
+    assert!(parse_perf_analyze_rules(&bad).is_err());
+}
+
+#[test]
+fn positive_double_exponent_syntax() {
+    assert_eq!(parse_positive_finite_double("1e+2", "n").expect("1e+2"), 100.0);
+    assert_eq!(parse_positive_finite_double("1E2", "n").expect("1E2"), 100.0);
+    assert_eq!(parse_positive_finite_double("1e-1", "n").expect("1e-1"), 0.1);
+    assert!(parse_positive_finite_double("1e", "n").is_err());
+    assert!(parse_positive_finite_double("1e+", "n").is_err());
+    assert!(parse_positive_finite_double("1e-", "n").is_err());
+}

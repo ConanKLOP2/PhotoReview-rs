@@ -106,16 +106,22 @@ fn parse_unsigned_i32(text: &str) -> Option<i32> {
     i32::try_from(value).ok()
 }
 
-/// `int.TryParse(text, NumberStyles.AllowLeadingSign, Invariant)` as `Enum.TryParse` uses it: one optional `+`/`-`, ASCII
-/// digits, trailing U+0000 accepted, value in the `i32` range.
+/// `int.TryParse(text, AllowLeadingSign | AllowTrailingWhite, Invariant)` as `Enum.TryParse` uses it (after a `TrimStart`): one
+/// optional `+`/`-`, ASCII digits, then optional trailing white space (U+0009..U+000D and U+0020 ONLY, not NBSP or U+0085), then any
+/// number of U+0000; `"5 \0"` is accepted and `"5\0 "` is not. The value must fit `i32`.
 fn parse_signed_i32(text: &str) -> Option<i32> {
     let (negative, rest) = match text.as_bytes().first() {
         Some(b'-') => (true, &text[1..]),
         Some(b'+') => (false, &text[1..]),
         _ => (false, text),
     };
-    let digits = rest.trim_end_matches('\0');
-    if digits.is_empty() || !digits.bytes().all(|b| b.is_ascii_digit()) {
+    let end = rest.bytes().position(|b| !b.is_ascii_digit()).unwrap_or(rest.len());
+    let digits = &rest[..end];
+    if digits.is_empty() {
+        return None;
+    }
+    let tail = rest[end..].trim_start_matches(is_number_whitespace);
+    if !tail.bytes().all(|b| b == 0) {
         return None;
     }
     let mut value: i64 = 0;
@@ -266,7 +272,8 @@ fn try_parse_defined_enum(text: &str, members: &[(&str, i32)]) -> Option<i32> {
     let trimmed = dotnet_trim(text);
     let first = trimmed.chars().next()?;
     let value = if first.is_ascii_digit() || first == '+' || first == '-' {
-        match parse_signed_i32(trimmed) {
+        // The number parser sees the text with only its LEADING white space removed (trailing Unicode white space fails it).
+        match parse_signed_i32(text.trim_start_matches(is_dotnet_whitespace)) {
             Some(number) => number,
             // Not a number: .NET falls back to name parsing, which cannot match a name that starts like a number.
             None => parse_enum_names(trimmed, members)?,

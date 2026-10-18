@@ -85,6 +85,8 @@ struct FakeBackend {
     ran: Vec<String>,
     /// The number of files each `run_profile` call received.
     files_seen: Vec<usize>,
+    /// The file list each `run_profile` call received.
+    files_lists: Vec<Vec<String>>,
     /// Every stored report: (run id, profile id, failed-before-samples).
     stored: Vec<(String, String, bool)>,
     next_run: usize,
@@ -101,6 +103,7 @@ impl FakeBackend {
             summary_error: None,
             ran: Vec::new(),
             files_seen: Vec::new(),
+            files_lists: Vec::new(),
             stored: Vec::new(),
             next_run: 0,
         }
@@ -134,6 +137,7 @@ impl BenchmarkBackend for FakeBackend {
     ) -> Result<ProfileRun, ToolError> {
         self.ran.push(profile.id.clone());
         self.files_seen.push(files.len());
+        self.files_lists.push(files.to_vec());
         if self.fail_ids.contains(&profile.id) {
             return Err(ToolError::new("BenchmarkProfileException", "boom"));
         }
@@ -697,4 +701,28 @@ fn golden_cli_dataset_plan() {
         failures.len(),
         failures.join("\n")
     );
+}
+
+// C# builds the engine's file list from `Directory.EnumerateFiles(folder, ...)` as listed (`rel\a.jpg` for a relative folder); only
+// the manifest gets `Path.GetFullPath`. Decode errors that echo the path therefore name the listing text.
+#[test]
+fn batch_engine_receives_the_listing_paths_not_full_paths() {
+    let root = TempRoot::new("batch-listing");
+    let rel = format!("zz-w703d-rel-{}", &pr_core::io::physical::new_guid_n()[..6]);
+    std::fs::create_dir_all(&rel).expect("relative photo folder");
+    std::fs::write(Path::new(&rel).join("a.jpg"), [1u8]).expect("photo");
+    let out = root.join("out").to_string_lossy().into_owned();
+    let mut backend = FakeBackend::new(catalog());
+    let (code, _) = run_mode(
+        &mut backend,
+        &root,
+        CliMode::BenchmarkAll,
+        &["--benchmark-all", &rel, &out],
+    );
+    let _ = std::fs::remove_dir_all(&rel);
+    assert_eq!(code, 0);
+    assert!(!backend.files_lists.is_empty());
+    for list in &backend.files_lists {
+        assert_eq!(list, &vec![format!("{rel}\\a.jpg")]);
+    }
 }

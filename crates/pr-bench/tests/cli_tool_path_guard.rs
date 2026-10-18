@@ -632,3 +632,89 @@ fn golden_cli_tool_path_guard() {
 fn golden_cli_tool_path_guard_junctions() {
     run_guard_golden(true);
 }
+
+// ---- write_report_file: error text and replace semantics of File.Move(overwrite) --------------------------------------------------
+
+/// `File.Move(temp, existingDirectory, overwrite: true)` throws `UnauthorizedAccessException("Access to the path is denied.")`, no path.
+#[test]
+fn rename_over_a_directory_message_has_no_path_like_dotnet() {
+    let root = TempRoot::new("w703d-dirtarget");
+    std::fs::create_dir_all(root.join("d")).expect("dir");
+    let e = write_report_file(&root.join("d").to_string_lossy(), "x").expect_err("directory leaf");
+    assert_eq!(e.type_name, "UnauthorizedAccessException");
+    assert_eq!(e.message, "Access to the path is denied.");
+    let left = std::fs::read_dir(root.path()).expect("list").flatten().count();
+    assert_eq!(left, 1, "the temp file must be cleaned up");
+}
+
+#[test]
+#[allow(clippy::permissions_set_readonly_false)] // Windows only: clears the read-only attribute again
+fn rename_over_a_read_only_file_message_has_no_path_like_dotnet() {
+    let root = TempRoot::new("w703d-rotarget");
+    let ro = root.join("ro.json");
+    std::fs::write(&ro, "x").expect("file");
+    let mut p = std::fs::metadata(&ro).expect("meta").permissions();
+    p.set_readonly(true);
+    std::fs::set_permissions(&ro, p).expect("readonly");
+    let e = write_report_file(&ro.to_string_lossy(), "y").expect_err("read-only leaf");
+    let mut p = std::fs::metadata(&ro).expect("meta").permissions();
+    p.set_readonly(false);
+    std::fs::set_permissions(&ro, p).expect("writable");
+    assert_eq!(e.type_name, "UnauthorizedAccessException");
+    assert_eq!(e.message, "Access to the path is denied.");
+    assert_eq!(std::fs::read_to_string(&ro).expect("read"), "x");
+}
+
+/// A path-bearing `IOException` reads `{system message} : '{temp path}'.`.
+#[test]
+fn invalid_file_name_io_exception_names_the_temp_path() {
+    let root = TempRoot::new("w703d-badname");
+    let target = root.join("a?b").to_string_lossy().into_owned();
+    let e = write_report_file(&target, "y").expect_err("invalid name");
+    assert_eq!(e.type_name, "IOException");
+    assert!(
+        e.message
+            .starts_with("The filename, directory name, or volume label syntax is incorrect. : '")
+            && e.message.ends_with(".tmp'."),
+        "{}",
+        e.message
+    );
+}
+
+/// A target another handle holds open WITH FILE_SHARE_DELETE is still refused by `File.Move(overwrite)`; POSIX-style `rename` would replace it.
+#[test]
+fn leaf_open_with_share_delete_is_refused_like_file_move() {
+    use std::os::windows::fs::OpenOptionsExt;
+    let root = TempRoot::new("w703d-sharedelete");
+    let leaf = root.join("l.json");
+    std::fs::write(&leaf, "x").expect("file");
+    let handle = std::fs::OpenOptions::new()
+        .read(true)
+        .share_mode(7)
+        .open(&leaf)
+        .expect("open");
+    let r = write_report_file(&leaf.to_string_lossy(), "y");
+    drop(handle);
+    assert_eq!(r.expect_err("refused").type_name, "UnauthorizedAccessException");
+    assert_eq!(std::fs::read_to_string(&leaf).expect("read"), "x");
+    write_report_file(&leaf.to_string_lossy(), "z").expect("a free leaf is replaced");
+    assert_eq!(std::fs::read_to_string(&leaf).expect("read"), "z");
+}
+
+/// An unreachable share is `IOException("The network name cannot be found. : '...'.")`.
+#[test]
+fn missing_share_is_an_io_exception_like_dotnet() {
+    let e = write_report_file(r"\\localhost\nonexistent-share-zz\x.json", "y").expect_err("share");
+    assert_eq!(e.type_name, "IOException");
+    assert!(
+        e.message.starts_with("The network name cannot be found. : '"),
+        "{}",
+        e.message
+    );
+}
+
+#[test]
+fn real_maps_a_blank_path_to_argument_exception() {
+    let e = pr_bench::cli::tool_path_guard::real(&fs(), "").expect_err("blank path");
+    assert_eq!(e.type_name, "ArgumentException");
+}
