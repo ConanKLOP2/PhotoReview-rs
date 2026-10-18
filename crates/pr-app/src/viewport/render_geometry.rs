@@ -326,7 +326,12 @@ fn math_max(a: f64, b: f64) -> f64 {
     if a.is_nan() || b.is_nan() {
         return f64::NAN;
     }
-    if a > b { a } else { b }
+    // Equal operands are signed zeros: Max(+0.0, -0.0) = +0.0 whichever order.
+    if a > b || (a == b && a.is_sign_positive()) {
+        a
+    } else {
+        b
+    }
 }
 
 /// `Math.Min(double, double)`: NaN propagates. Not `f64::min`.
@@ -334,7 +339,12 @@ fn math_min(a: f64, b: f64) -> f64 {
     if a.is_nan() || b.is_nan() {
         return f64::NAN;
     }
-    if a < b { a } else { b }
+    // Equal operands are signed zeros: Min(+0.0, -0.0) = -0.0 whichever order.
+    if a < b || (a == b && a.is_sign_negative()) {
+        a
+    } else {
+        b
+    }
 }
 
 /// `DrawGeometry.Intersect(a, b)`: overlap of two rects, or `RectD { 0, 0, 0, 0 }` (C# `default`) when the overlap is
