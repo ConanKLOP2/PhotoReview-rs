@@ -77,9 +77,11 @@ fn matrix_hidden_only_when_enabled_and_idle_and_no_stay_visible_rule() {
 // C#: InfoOverlayAutoHidePolicyTests.DelayMs_UsesOnlyTheInfoDelay_IndependentOfTheToolbarDelay
 #[test]
 fn delay_ms_uses_only_the_info_delay_independent_of_the_toolbar_delay() {
-    let mut settings = AppSettings::default();
-    settings.toolbar_auto_hide_delay_ms = 9000;
-    settings.info_overlay_auto_hide_delay_ms = 3000;
+    let mut settings = AppSettings {
+        toolbar_auto_hide_delay_ms: 9000,
+        info_overlay_auto_hide_delay_ms: 3000,
+        ..AppSettings::default()
+    };
     assert_eq!(InfoOverlayAutoHidePolicy::delay_ms(&settings), 3000);
 
     settings.toolbar_auto_hide_delay_ms = 1;
@@ -93,8 +95,10 @@ fn delay_ms_uses_only_the_info_delay_independent_of_the_toolbar_delay() {
 #[test]
 fn delay_ms_is_clamped_to_the_allowed_range() {
     for (stored, expected) in [(-5, 0), (99_999, 10_000)] {
-        let mut settings = AppSettings::default();
-        settings.info_overlay_auto_hide_delay_ms = stored;
+        let settings = AppSettings {
+            info_overlay_auto_hide_delay_ms: stored,
+            ..AppSettings::default()
+        };
         assert_eq!(
             InfoOverlayAutoHidePolicy::delay_ms(&settings),
             expected,
@@ -190,9 +194,11 @@ fn target_opacity_is_the_clamped_percent_as_fraction() {
 // C#: ToolbarAutoHidePolicyTests.DelayMs_UsesOnlyTheToolbarDelay_IndependentOfTheInfoDelay
 #[test]
 fn delay_ms_uses_only_the_toolbar_delay_independent_of_the_info_delay() {
-    let mut settings = AppSettings::default();
-    settings.toolbar_auto_hide_delay_ms = 700;
-    settings.info_overlay_auto_hide_delay_ms = 9000;
+    let mut settings = AppSettings {
+        toolbar_auto_hide_delay_ms: 700,
+        info_overlay_auto_hide_delay_ms: 9000,
+        ..AppSettings::default()
+    };
     assert_eq!(ToolbarAutoHidePolicy::delay_ms(&settings), 700);
 
     settings.info_overlay_auto_hide_delay_ms = 1;

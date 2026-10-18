@@ -115,9 +115,11 @@ fn info_overlay_autohide_golden_every_case() {
                 );
             }
             "delay" => {
-                let mut settings = AppSettings::default();
-                settings.info_overlay_auto_hide_delay_ms = i32_of(case, "info_delay_ms");
-                settings.toolbar_auto_hide_delay_ms = i32_of(case, "toolbar_delay_ms");
+                let settings = AppSettings {
+                    info_overlay_auto_hide_delay_ms: i32_of(case, "info_delay_ms"),
+                    toolbar_auto_hide_delay_ms: i32_of(case, "toolbar_delay_ms"),
+                    ..AppSettings::default()
+                };
                 assert_eq!(
                     InfoOverlayAutoHidePolicy::delay_ms(&settings),
                     i32_of(case, "delay_ms"),
@@ -161,9 +163,11 @@ fn toolbar_autohide_golden_every_case() {
                 assert_eq!(actual, bool_of(case, "shown"), "{name}");
             }
             "delay" => {
-                let mut settings = AppSettings::default();
-                settings.info_overlay_auto_hide_delay_ms = i32_of(case, "info_delay_ms");
-                settings.toolbar_auto_hide_delay_ms = i32_of(case, "toolbar_delay_ms");
+                let settings = AppSettings {
+                    info_overlay_auto_hide_delay_ms: i32_of(case, "info_delay_ms"),
+                    toolbar_auto_hide_delay_ms: i32_of(case, "toolbar_delay_ms"),
+                    ..AppSettings::default()
+                };
                 assert_eq!(
                     ToolbarAutoHidePolicy::delay_ms(&settings),
                     i32_of(case, "delay_ms"),

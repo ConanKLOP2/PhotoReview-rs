@@ -42,10 +42,11 @@ fn placeholder_for(folder_name: &str) -> String {
 }
 
 fn overlay_settings() -> AppSettings {
-    let mut settings = AppSettings::default();
-    settings.show_info_overlay = true;
-    settings.show_folder_info = true;
-    settings
+    AppSettings {
+        show_info_overlay: true,
+        show_folder_info: true,
+        ..AppSettings::default()
+    }
 }
 
 // C#: InfoOverlayFaultTests.SiblingSearchFault_ShowsTheFolderWithoutSiblings_NotAStuckPlaceholder (5 InlineData rows:
@@ -80,8 +81,10 @@ fn complete_search_failed_shows_folder_without_siblings_not_stuck_placeholder() 
 #[test]
 fn font_size_reads_settings_exif_is_one_point_smaller() {
     for configured in [8.0, 12.0, 24.0] {
-        let mut settings = AppSettings::default();
-        settings.info_overlay_font_size = configured;
+        let settings = AppSettings {
+            info_overlay_font_size: configured,
+            ..AppSettings::default()
+        };
 
         assert_eq!(
             InfoOverlayViewModel::<EnglishLabels>::font_size(&settings),
@@ -100,8 +103,10 @@ fn font_size_reads_settings_exif_is_one_point_smaller() {
 // The bit set (`InfoOverlayChanges`) replaces the C# `PropertyChanged` event list (D-W8-1).
 #[test]
 fn refresh_notifies_font_size_and_exif_font_size() {
-    let mut settings = AppSettings::default();
-    settings.info_overlay_font_size = 12.0;
+    let mut settings = AppSettings {
+        info_overlay_font_size: 12.0,
+        ..AppSettings::default()
+    };
     let mut overlay = InfoOverlayViewModel::new(EnglishLabels);
 
     settings.info_overlay_font_size = 20.0;
@@ -116,8 +121,10 @@ fn refresh_notifies_font_size_and_exif_font_size() {
 // C#: InfoOverlayZoomIndicatorTests.IsZoomIndicatorVisible_False_WhenSettingOff_EvenWithImage
 #[test]
 fn is_zoom_indicator_visible_false_when_setting_off_even_with_image() {
-    let mut settings = AppSettings::default();
-    settings.show_zoom_indicator = false;
+    let settings = AppSettings {
+        show_zoom_indicator: false,
+        ..AppSettings::default()
+    };
     let inputs = ViewInputs {
         has_image: true,
         zoom_percent: 100,
@@ -131,8 +138,10 @@ fn is_zoom_indicator_visible_false_when_setting_off_even_with_image() {
 // C#: InfoOverlayZoomIndicatorTests.IsZoomIndicatorVisible_False_WhenNoImage_EvenWithSettingOn
 #[test]
 fn is_zoom_indicator_visible_false_when_no_image_even_with_setting_on() {
-    let mut settings = AppSettings::default();
-    settings.show_zoom_indicator = true;
+    let settings = AppSettings {
+        show_zoom_indicator: true,
+        ..AppSettings::default()
+    };
     let inputs = ViewInputs {
         has_image: false,
         zoom_percent: 100,
@@ -146,8 +155,10 @@ fn is_zoom_indicator_visible_false_when_no_image_even_with_setting_on() {
 // C#: InfoOverlayZoomIndicatorTests.IsZoomIndicatorVisible_True_WhenSettingOnAndImageShown
 #[test]
 fn is_zoom_indicator_visible_true_when_setting_on_and_image_shown() {
-    let mut settings = AppSettings::default();
-    settings.show_zoom_indicator = true;
+    let settings = AppSettings {
+        show_zoom_indicator: true,
+        ..AppSettings::default()
+    };
     let inputs = ViewInputs {
         has_image: true,
         zoom_percent: 100,
@@ -181,8 +192,10 @@ fn zoom_indicator_text_formats_whole_percent() {
 fn new_test_search_is_requested_only_when_needed() {
     let inputs = ViewInputs::default();
 
-    let mut hidden_settings = AppSettings::default();
-    hidden_settings.show_folder_info = false;
+    let hidden_settings = AppSettings {
+        show_folder_info: false,
+        ..AppSettings::default()
+    };
     let mut hidden = InfoOverlayViewModel::new(EnglishLabels);
     assert!(
         hidden
