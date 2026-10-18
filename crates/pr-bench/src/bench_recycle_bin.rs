@@ -107,20 +107,15 @@ impl RecycleBin for TempCopyDeleter {
     }
 }
 
-/// True for a single-component relative path whose stem is a Windows DOS device name (case-insensitive).
+/// True for a single-component relative path that .NET `File.Delete` refuses as a device: `CON`, `NUL` (trailing dots
+/// and spaces are ignored, as in `con.`), `NUL:`, `CONIN$`, `CONOUT$`; case-insensitive. Checked against the .NET 10
+/// oracle: names with an extension (`NUL.txt`) and `COM1`-`COM9`, `LPT1`-`LPT9`, `PRN`, `AUX` return OK (their
+/// outcome depends on installed devices, so no static rule is attempted for them).
 fn is_bare_reserved_device_name(path: &Path) -> bool {
     if !cfg!(windows) || path.components().count() != 1 || path.is_absolute() {
         return false;
     }
     let Some(name) = path.to_str() else { return false };
-    let stem = name.split('.').next().unwrap_or("").trim_end().to_ascii_uppercase();
-    match stem.as_str() {
-        "CON" | "PRN" | "AUX" | "NUL" => true,
-        other => {
-            (other.starts_with("COM") || other.starts_with("LPT"))
-                && other.len() == 4
-                && other.as_bytes()[3].is_ascii_digit()
-                && other.as_bytes()[3] != b'0'
-        }
-    }
+    let upper = name.trim_end_matches(['.', ' ']).to_ascii_uppercase();
+    matches!(upper.as_str(), "CON" | "NUL" | "NUL:" | "CONIN$" | "CONOUT$")
 }

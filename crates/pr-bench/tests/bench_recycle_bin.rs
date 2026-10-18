@@ -369,6 +369,26 @@ mod adv {
         assert_eq!(kind(del(Path::new("NUL"))), "PermissionDenied");
     }
     #[test]
+    fn device_names_denied_like_dotnet() {
+        for n in ["NUL", "nul", "CON", "con.", "NUL:", "CONIN$", "CONOUT$", "conin$"] {
+            assert_eq!(kind(del(Path::new(n))), "PermissionDenied", "{n}");
+        }
+    }
+    #[test]
+    fn non_denied_names_like_dotnet() {
+        // Relative names that are not (or not statically) devices: .NET returns OK (missing file, current folder).
+        for n in [
+            "NUL.txt", "COM1", "com9", "COM1.txt", "COM10", "COM0", "LPT0", "LPT1", "LPT2.x.y", "PRN", "AUX.a", "ABC1",
+            "XYZ9",
+        ] {
+            let res = del(Path::new(n));
+            // COM/LPT/PRN/AUX depend on installed devices; only the statically decided names are asserted.
+            if matches!(n, "NUL.txt" | "COM10" | "COM0" | "LPT0" | "ABC1" | "XYZ9") {
+                assert_eq!(kind(res), "ok", "{n}");
+            }
+        }
+    }
+    #[test]
     fn reserved_con_in_dir_ok() {
         let r = TempRoot::new("adv16");
         assert_eq!(kind(del(&r.join("CON"))), "ok");
