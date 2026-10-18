@@ -6,7 +6,6 @@
 //!
 //! Depends on W7-02a (`crate::slow_link_fs::{SharedBandwidthLimiter, ThrottledReadStream}`), which must be merged
 //! (or at least stubbed at that path) before this file compiles.
-#![allow(dead_code, unused_variables)] // stub: the porter removes this line
 
 use std::fmt;
 use std::io;
@@ -47,7 +46,10 @@ impl SourceReader for SlowLinkSourceReader {
         priority: SourceReadPriority,
         buffer_size: usize,
     ) -> io::Result<Box<dyn ReadSeek>> {
-        let _ = ThrottledReadStream::new;
-        todo!("W7-02b: inner.open_source(path, priority, buffer_size)?, then wrap when bandwidth is Some")
+        let stream = self.inner.open_source(path, priority, buffer_size)?;
+        Ok(match &self.bandwidth {
+            Some(limiter) => Box::new(ThrottledReadStream::new(stream, Arc::clone(limiter))),
+            None => stream,
+        })
     }
 }
