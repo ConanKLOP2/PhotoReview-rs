@@ -279,6 +279,15 @@ fn shutter_text_fractions_below_half_second_and_seconds_above() {
 }
 
 #[test]
+fn shutter_text_tenth_bound_is_inclusive_at_point_one() {
+    // new: trap T2 (`seconds >= 0.1` lower bound). 0.105 s is above 0.1, so it takes the decimal-seconds branch
+    // ("0.11 s" after half-away rounding of the decimals), not the fraction "1/10 s". Kills a bound drift to 0.11.
+    let env = en_env();
+    let text = shutter_text(Some(ExifRational::new(105, 1000)), &env.ctx());
+    assert_eq!(text.as_deref(), Some("0.11 s"));
+}
+
+#[test]
 fn camera_text_examples() {
     // C#: ExifFormatterTests.CameraText (6 InlineData rows)
     let rows: [(Option<&str>, Option<&str>, Option<&str>); 6] = [
