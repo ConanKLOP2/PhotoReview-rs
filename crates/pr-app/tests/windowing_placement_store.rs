@@ -125,7 +125,7 @@ fn golden_window_placement_json() {
                 assert_eq!(text, str_of(case, "json"), "serialize {name}");
                 assert!(text.contains("\r\n"), "serialize {name}: CRLF line ends");
                 assert!(
-                    !normalize(&text).contains('\n'),
+                    !text.replace("\r\n", "").contains('\n'),
                     "serialize {name}: a bare LF is never written"
                 );
             }
