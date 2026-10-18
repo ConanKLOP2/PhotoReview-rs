@@ -29,11 +29,11 @@ fn repeat_timing_follows_wpf_repeat_button_formulas() {
     }
 }
 
-// new: the C# `static` formula is a `const fn`; the const-context check (`const X: (i32, i32) = repeat_timing_for(0, 31);`)
-// is NOT written here: a const item is evaluated at compile time, and the stub's `todo!()` would then break the whole test
-// binary with a compile error instead of a test failure. The porter adds that const item when the body lands.
+// new: the C# `static` formula is a `const fn`; the const item below is evaluated at compile time (the body is filled now).
 #[test]
 fn repeat_timing_for_is_usable_in_const_context() {
+    const AT_DEFAULT_SPEED: (i32, i32) = repeat_timing_for(0, 31);
+    assert_eq!(AT_DEFAULT_SPEED, (250, 33));
     assert_eq!(repeat_timing_for(0, 31), (250, 33));
 }
 

@@ -44,7 +44,8 @@ fn layout(id: &str) -> ViewportLayout {
         // Policy Overlay, LayoutFor(1000, 600, 3000, 2000) with the overlay policy
         "overlay" => (1000.0, 600.0, 3000.0, 2000.0, true, true, 2000.0, 1400.0),
         // Policy Hidden, same extent
-        "hidden" => (1000.0, 600.0, 3000.0, 2000.0, false, false, 0.0, 0.0),
+        // The golden echo keeps the max offsets under the Hidden policy (2000 / 1400); the bars are off. Golden wins.
+        "hidden" => (1000.0, 600.0, 3000.0, 2000.0, false, false, 2000.0, 1400.0),
         // LayoutFor(14, 14, 100, 100)
         "tiny" => (4.0, 4.0, 100.0, 100.0, true, true, 96.0, 96.0),
         // LayoutFor(1000, 600, 3000, 1_000_000)
