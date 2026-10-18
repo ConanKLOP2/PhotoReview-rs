@@ -219,6 +219,20 @@ fn from_name_is_case_sensitive() {
 }
 
 #[test]
+fn from_name_comma_list_with_undefined_or_value_is_none() {
+    // C#: Enum.TryParse ORs the tokens, then Enum.IsDefined rejects an undefined result (172 | 1 = 173, 172 = DeadCharProcessed).
+    assert_eq!(KeyId::from_name("DeadCharProcessed,Cancel"), None);
+    assert_eq!(KeyId::from_name("Tab,DeadCharProcessed"), None);
+    assert_eq!(KeyId::from_name_ignore_case("deadcharprocessed,cancel"), None);
+    assert_eq!(KeyId::from_name_ignore_case("tab,DEADCHARPROCESSED"), None);
+    // A defined OR result still parses.
+    assert_eq!(
+        KeyId::from_name("Tab,Back"),
+        Some(KeyId::from_value(3).expect("3 is defined"))
+    );
+}
+
+#[test]
 fn from_name_ignore_case_uses_ordinal_casing() {
     // C#: OrdinalIgnoreCase. Kelvin sign, long s and dotless or dotted i fold to no ASCII letter; plain `k` matches `K`.
     assert_eq!(KeyId::from_name_ignore_case("\u{212a}"), None);
