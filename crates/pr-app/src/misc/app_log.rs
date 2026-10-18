@@ -51,39 +51,49 @@ impl AppLogTarget for FileLog {
 #[derive(Debug, Default, Clone, Copy)]
 pub struct DefaultFileLog;
 
+/// The `FileLog` that [`DefaultFileLog`] forwards to: the process-wide default or, in unit tests only, a per-thread
+/// stand-in so the forwarding can be observed without touching the real application data folder.
+fn default_target() -> &'static FileLog {
+    #[cfg(test)]
+    if let Some(target) = tests::TEST_TARGET.with(std::cell::Cell::get) {
+        return target;
+    }
+    FileLog::default_instance()
+}
+
 impl Log for DefaultFileLog {
     fn enabled(&self) -> bool {
-        FileLog::default_instance().enabled()
+        default_target().enabled()
     }
 
     fn info(&self, message: &str) {
-        FileLog::default_instance().info(message);
+        default_target().info(message);
     }
 
     fn warn(&self, message: &str) {
-        FileLog::default_instance().warn(message);
+        default_target().warn(message);
     }
 
     fn error(&self, message: &str, error: Option<&(dyn Error + 'static)>) {
-        FileLog::default_instance().error(message, error);
+        default_target().error(message, error);
     }
 }
 
 impl AppLogTarget for DefaultFileLog {
     fn set_enabled(&self, enabled: bool) {
-        FileLog::default_instance().set_enabled(enabled);
+        default_target().set_enabled(enabled);
     }
 
     fn flush(&self) {
-        FileLog::default_instance().flush();
+        default_target().flush();
     }
 
     fn shutdown(&self) {
-        FileLog::default_instance().shutdown();
+        default_target().shutdown();
     }
 
     fn file_path(&self) -> PathBuf {
-        FileLog::default_instance().file_path().to_path_buf()
+        default_target().file_path().to_path_buf()
     }
 }
 
@@ -268,5 +278,57 @@ impl Log for AppLog {
 impl std::fmt::Debug for AppLog {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("AppLog").finish_non_exhaustive()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use std::cell::Cell;
+    use std::time::Duration;
+
+    use pr_core::diagnostics::file_log::DEFAULT_MAX_LOG_BYTES;
+    use pr_test_support::TempRoot;
+
+    use super::*;
+
+    thread_local! {
+        /// Per-thread replacement for the default log (see `default_target`).
+        pub(super) static TEST_TARGET: Cell<Option<&'static FileLog>> = const { Cell::new(None) };
+    }
+
+    #[test]
+    fn default_file_log_forwards_every_call_to_its_target() {
+        let temp = TempRoot::new("app-log-default-forward");
+        let path = temp.join("default.log");
+        let target: &'static FileLog = Box::leak(Box::new(
+            FileLog::new(&path, DEFAULT_MAX_LOG_BYTES).expect("the test log path is absolute"),
+        ));
+        TEST_TARGET.with(|cell| cell.set(Some(target)));
+        let log = DefaultFileLog;
+
+        assert!(!Log::enabled(&log));
+        assert!(!path.exists());
+        AppLogTarget::set_enabled(&log, true);
+        assert!(Log::enabled(&log));
+        assert!(target.enabled());
+        assert_eq!(AppLogTarget::file_path(&log), target.file_path());
+
+        Log::info(&log, "fwd-info");
+        Log::warn(&log, "fwd-warn");
+        Log::error(&log, "fwd-error", None);
+        AppLogTarget::flush(&log);
+        assert_eq!(target.pending_count(), 0);
+        let text = std::fs::read_to_string(&path).unwrap_or_default();
+        assert!(text.contains("fwd-info"), "{text}");
+        assert!(text.contains("fwd-warn"), "{text}");
+        assert!(text.contains("fwd-error"), "{text}");
+
+        AppLogTarget::set_enabled(&log, false);
+        assert!(!Log::enabled(&log));
+        AppLogTarget::set_enabled(&log, true);
+        AppLogTarget::shutdown(&log);
+        assert!(!Log::enabled(&log));
+        assert!(target.wait_writer_exit(Duration::from_secs(60)));
+        TEST_TARGET.with(|cell| cell.set(None));
     }
 }

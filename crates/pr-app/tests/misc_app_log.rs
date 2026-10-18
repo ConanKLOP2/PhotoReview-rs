@@ -302,3 +302,36 @@ fn concurrent_entries_stay_line_delimited() {
         );
     }
 }
+
+#[test]
+fn app_log_works_through_dyn_log() {
+    // The `Log` impl of `AppLog` is what the pure W8 modules receive (`&dyn Log`).
+    let temp = TempRoot::new("app-log-dyn");
+    let (log, path) = facade_at(&temp, "app.log");
+    let dynamic: &dyn pr_core::abstractions::Log = &log;
+    let error = other("dyn-cause");
+
+    assert!(!dynamic.enabled());
+    log.set_enabled(true);
+    assert!(dynamic.enabled());
+    dynamic.info("dyn-info");
+    dynamic.warn("dyn-warn");
+    dynamic.error("dyn-error", Some(&error));
+    log.flush();
+
+    let text = read(&path);
+    assert!(text.contains("dyn-info"), "{text}");
+    assert!(text.contains("dyn-warn"), "{text}");
+    assert!(text.contains("dyn-error"), "{text}");
+    assert!(text.contains("dyn-cause"), "{text}");
+}
+
+#[test]
+fn debug_names_the_type() {
+    let temp = TempRoot::new("app-log-debug");
+    let (log, _) = facade_at(&temp, "app.log");
+
+    let text = format!("{log:?}");
+
+    assert!(text.contains("AppLog"), "{text}");
+}

@@ -190,13 +190,11 @@ pub fn describe_parts(
     if let Some(built) = parse_build_time(build_time) {
         let utc = built.utc_unix_seconds;
         let offset_minutes = offset.offset_minutes_at(utc);
-        // C# ToLocalTime throws outside 0001..9999; the Rust port omits the build part instead (DIVERGENCE).
-        if local_year_in_range(utc, offset_minutes) {
-            parts.push(localizer.format(
-                keys::SETTINGS_VERSION_BUILD,
-                &[LocArg::new("buildTime", format_local_minute(utc, offset_minutes))],
-            ));
-        }
+        // C# ToLocalTime clamps to DateTime.MinValue / MaxValue instead of throwing; format_local_minute clamps too.
+        parts.push(localizer.format(
+            keys::SETTINGS_VERSION_BUILD,
+            &[LocArg::new("buildTime", format_local_minute(utc, offset_minutes))],
+        ));
     }
 
     if let Some(commit) = commit.filter(|commit| !commit.is_empty()) {
@@ -210,20 +208,16 @@ pub fn describe_parts(
 /// of `utc_unix_seconds` shifted by `offset_minutes` (`"24/09/2026 07:15"`). Proleptic Gregorian calendar, two-digit
 /// day, month, hour and minute, four-digit year. Pure arithmetic (no `chrono`, no OS time zone).
 pub fn format_local_minute(utc_unix_seconds: i64, offset_minutes: i32) -> String {
-    let local = utc_unix_seconds + i64::from(offset_minutes) * 60;
+    // .NET `DateTime.ToLocalTime` clamps to 0001-01-01T00:00:00 .. 9999-12-31T23:59:59.9999999 (it never throws).
+    let min_local = days_from_civil(1, 1, 1) * 86_400;
+    let max_local = days_from_civil(9999, 12, 31) * 86_400 + 86_399;
+    let local = (utc_unix_seconds + i64::from(offset_minutes) * 60).clamp(min_local, max_local);
     let days = local.div_euclid(86_400);
     let seconds_of_day = local.rem_euclid(86_400);
     let (year, month, day) = civil_from_days(days);
     let hour = seconds_of_day / 3_600;
     let minute = (seconds_of_day % 3_600) / 60;
     format!("{day:02}/{month:02}/{year:04} {hour:02}:{minute:02}")
-}
-
-/// `true` when the wall-clock time of the instant (shifted by `offset_minutes`) is in .NET's year range 0001..9999.
-fn local_year_in_range(utc_unix_seconds: i64, offset_minutes: i32) -> bool {
-    let local = utc_unix_seconds + i64::from(offset_minutes) * 60;
-    let (year, _, _) = civil_from_days(local.div_euclid(86_400));
-    (1..=9999).contains(&year)
 }
 
 fn is_leap_year(year: i64) -> bool {

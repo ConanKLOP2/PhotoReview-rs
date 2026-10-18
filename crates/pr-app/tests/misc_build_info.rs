@@ -199,8 +199,8 @@ fn format_local_minute_handles_leap_day() {
 }
 
 #[test]
-fn describe_out_of_range_build_time_omits_the_build_part() {
-    // Trap 13 (DIVERGENCE): C# ToLocalTime throws for a local time before year 0001; Rust omits the build part.
+fn describe_local_time_before_year_one_is_clamped_like_to_local_time() {
+    // .NET (net10 oracle): DateTimeOffset.ToLocalTime clamps to DateTime.MinValue / MaxValue, it does not throw.
     // The written instant is 0001-01-01 00:30 UTC; FixedOffset(-60) moves it to 0000-12-31 23:30 (out of range).
     let loc = vi();
 
@@ -211,7 +211,7 @@ fn describe_out_of_range_build_time_omits_the_build_part() {
         &FixedOffset(-60),
     );
 
-    assert_eq!(text, "Phiên bản 2.0.41 · abc");
+    assert_eq!(text, "Phiên bản 2.0.41 · build 01/01/0001 00:00 · abc");
 }
 
 #[test]
@@ -247,4 +247,111 @@ fn utc_overflow_build_time_has_no_build_part() {
         with_build.chars().count() > text.chars().count(),
         "{text} / {with_build}"
     );
+}
+
+#[test]
+fn describe_local_time_after_year_9999_is_clamped_like_to_local_time() {
+    // .NET 10 oracle (local +07:00): 9999-12-31 23:59:59 +00:00 -> "31/12/9999 23:59".
+    let loc = vi();
+    let text = describe_parts(
+        &loc,
+        Some("2.0.1"),
+        Some("9999-12-31 23:59:59 +00:00"),
+        &FixedOffset(420),
+    );
+    assert_eq!(text, "Phiên bản 2.0.1 · build 31/12/9999 23:59");
+    assert_eq!(format_local_minute(i64::MAX / 4, 0), "31/12/9999 23:59");
+    assert_eq!(format_local_minute(i64::MIN / 4, 0), "01/01/0001 00:00");
+}
+
+#[test]
+fn build_stamp_version_and_describe() {
+    let loc = vi();
+    let stamp = BuildStamp {
+        informational_version: Some("2.0.41+1a2b3c4d".to_owned()),
+        build_time: Some("2026-09-24 07:15:30 +07:00".to_owned()),
+    };
+    assert_eq!(stamp.version(), Some("2.0.41+1a2b3c4d"));
+    assert_eq!(
+        stamp.describe(&loc, &FixedOffset(420)),
+        "Phiên bản 2.0.41 · build 24/09/2026 07:15 · 1a2b3c4d"
+    );
+    assert_eq!(BuildStamp::default().version(), None);
+    assert_eq!(
+        BuildStamp::default().describe(&loc, &FixedOffset(0)),
+        loc.get(keys::SETTINGS_VERSION_UNKNOWN)
+    );
+}
+
+#[test]
+fn parse_boundaries_each_field_on_its_own() {
+    let ok = |s: &str| parse_build_time(Some(s)).is_some();
+    // Offset limit is exactly +-14:00.
+    assert!(ok("2026-09-24 07:15:30 +14:00"));
+    assert!(ok("2026-09-24 07:15:30 -14:00"));
+    assert!(!ok("2026-09-24 07:15:30 +14:01"));
+    assert!(!ok("2026-09-24 07:15:30 +15:00"));
+    // Upper bounds, one field out of range at a time.
+    assert!(ok("2026-09-24 23:59:59 +00:00"));
+    assert!(!ok("2026-09-24 24:00:00 +00:00"));
+    assert!(!ok("2026-09-24 07:60:30 +00:00"));
+    assert!(!ok("2026-09-24 07:15:60 +00:00"));
+    assert!(!ok("2026-09-24 07:15:30 +07:60"));
+    assert!(ok("2026-09-24 07:15:30 +07:59"));
+    // Calendar.
+    assert!(ok("2024-02-29 12:00:00 +00:00"));
+    assert!(ok("2000-02-29 12:00:00 +00:00"));
+    assert!(!ok("1900-02-29 12:00:00 +00:00"));
+    assert!(!ok("2100-02-29 12:00:00 +00:00"));
+    assert!(!ok("2026-02-29 12:00:00 +00:00"));
+    assert!(ok("2026-02-28 12:00:00 +00:00"));
+    for (month, last) in [
+        (1, 31),
+        (3, 31),
+        (4, 30),
+        (5, 31),
+        (6, 30),
+        (7, 31),
+        (8, 31),
+        (9, 30),
+        (10, 31),
+        (11, 30),
+        (12, 31),
+    ] {
+        assert!(
+            ok(&format!("2026-{month:02}-{last:02} 12:00:00 +00:00")),
+            "{month}/{last}"
+        );
+        assert!(
+            !ok(&format!("2026-{month:02}-{:02} 12:00:00 +00:00", last + 1)),
+            "{month}/{}",
+            last + 1
+        );
+    }
+    assert!(!ok("2026-00-10 12:00:00 +00:00"));
+    assert!(!ok("2026-13-10 12:00:00 +00:00"));
+    assert!(!ok("2026-01-00 12:00:00 +00:00"));
+}
+
+#[test]
+fn format_local_minute_round_trips_dates_across_all_years() {
+    for year in 1..=9999i64 {
+        for (month, day) in [(1, 1), (2, 28), (3, 1), (12, 31)] {
+            let text = format!("{year:04}-{month:02}-{day:02} 13:07:09 +00:00");
+            let built = parse_build_time(Some(&text)).expect("a valid date");
+            assert_eq!(
+                format_local_minute(built.utc_unix_seconds, 0),
+                format!("{day:02}/{month:02}/{year:04} 13:07"),
+                "{text}"
+            );
+        }
+    }
+    for text_day in [(2000, 2, 29), (2024, 2, 29), (1972, 2, 29)] {
+        let text = format!("{:04}-{:02}-{:02} 00:00:00 +00:00", text_day.0, text_day.1, text_day.2);
+        let built = parse_build_time(Some(&text)).expect("a leap day");
+        assert_eq!(
+            format_local_minute(built.utc_unix_seconds, 0),
+            format!("{:02}/{:02}/{:04} 00:00", text_day.2, text_day.1, text_day.0)
+        );
+    }
 }

@@ -251,3 +251,18 @@ fn start_failure_logs_the_exception_itself_not_its_base() {
 
     assert!(recording.contains(LogLevel::Error, "outer-wrap"));
 }
+
+#[test]
+fn debug_text_of_task_end_and_start_fault() {
+    assert_eq!(format!("{:?}", TaskEnd::Completed), "Completed");
+    assert_eq!(format!("{:?}", TaskEnd::Canceled), "Canceled");
+    assert_eq!(
+        format!("{:?}", TaskEnd::Faulted(Box::new(Inner("boom")))),
+        "Faulted(\"boom\")"
+    );
+    assert_eq!(format!("{:?}", StartFault::Canceled), "Canceled");
+    assert_eq!(
+        format!("{:?}", StartFault::Failed(Box::new(Inner("bad start")))),
+        "Failed(\"bad start\")"
+    );
+}
