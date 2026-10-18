@@ -641,3 +641,29 @@ fn from_paths_has_no_sizes() {
     assert!(items.iter().all(|item| item.length.is_none()));
     assert_eq!(items[1].path, PathBuf::from("C:\\x\\b.jpg"));
 }
+
+#[test]
+fn click_zoom_accepts_trailing_nul_like_dotnet() {
+    let loc = built_in_english_localizer();
+    for (text, ok) in [
+        ("150\0", true),
+        ("150\0\0", true),
+        ("150 \0", true),
+        ("\x00150", false),
+        ("15\x000", false),
+        ("150\0 ", false),
+    ] {
+        let mut p = ClickZoomCustomPresenter::new(100);
+        assert_eq!(p.try_accept(&loc, Some(text)).is_ok(), ok, "{text:?}");
+    }
+}
+
+#[test]
+fn file_name_drive_relative_like_dotnet() {
+    use pr_app::presenters::secondary::file_name;
+    assert_eq!(file_name("C:x"), "x");
+    assert_eq!(file_name("C:"), "");
+    assert_eq!(file_name("C:\\a\\b.jpg"), "b.jpg");
+    assert_eq!(file_name("a:b:c"), "b:c");
+    assert_eq!(file_name("plain"), "plain");
+}

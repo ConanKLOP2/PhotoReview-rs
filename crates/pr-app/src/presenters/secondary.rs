@@ -83,7 +83,13 @@ impl ClickZoomCustomPresenter {
     /// from `MIN_CLICK_ZOOM_PERCENT` / `MAX_CLICK_ZOOM_PERCENT`. `None` (C# `null` text) is a refusal too.
     pub fn try_accept(&mut self, localizer: &Localizer, text: Option<&str>) -> Result<(), String> {
         let accepted = text
-            .map(|t| t.trim_matches(is_dotnet_white_space))
+            .map(|t| {
+                // .NET `int.TryParse` also accepts trailing NUL characters (before trailing white space is considered,
+                // so `"150 \0"` is accepted and `"150\0 "` is not); a leading or inner NUL is never accepted.
+                t.trim_start_matches(is_dotnet_white_space)
+                    .trim_end_matches('\0')
+                    .trim_end_matches(is_dotnet_white_space)
+            })
             .and_then(|t| t.parse::<i32>().ok())
             .filter(|v| (MIN_CLICK_ZOOM_PERCENT..=MAX_CLICK_ZOOM_PERCENT).contains(v));
         match accepted {
@@ -337,10 +343,17 @@ impl DiagnosticsPresenter {
 /// C# `Path.GetFileName(string)` for the paths the app shows: the text after the last `\` or `/`; a path without a
 /// separator is returned as it is; a path ending in a separator gives `""`. Never a `Path` method (see contract trap T5).
 pub fn file_name(path: &str) -> &str {
-    match path.rfind(['\\', '/']) {
-        // The separators are ASCII, so `index + 1` is a char boundary.
-        Some(index) => &path[index + 1..],
-        None => path,
+    // A drive prefix `X:` is the path root on Windows: `"C:x"` gives `"x"` and `"C:"` gives `""`.
+    let bytes = path.as_bytes();
+    let root = if bytes.len() >= 2 && bytes[0].is_ascii_alphabetic() && bytes[1] == b':' {
+        2
+    } else {
+        0
+    };
+    match path[root..].rfind(['\\', '/']) {
+        // The separators are ASCII, so `root + index + 1` is a char boundary.
+        Some(index) => &path[root + index + 1..],
+        None => &path[root..],
     }
 }
 
