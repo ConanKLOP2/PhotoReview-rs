@@ -46,3 +46,16 @@ impl fmt::Debug for PreviewStateContext {
             .finish()
     }
 }
+
+#[cfg(test)]
+mod debug_tests {
+    use super::*;
+
+    #[test]
+    fn debug_output_names_the_type_and_fields() {
+        let text = format!("{:?}", PreviewStateContext::new());
+        assert!(text.contains("PreviewStateContext"), "{text}");
+        assert!(text.contains("is_original_loading_mode"), "{text}");
+        assert!(text.contains("current_backend"), "{text}");
+    }
+}

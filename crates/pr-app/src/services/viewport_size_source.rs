@@ -127,3 +127,15 @@ mod tests {
         assert_eq!(unpack_box(0x0000_0000_FFFF_FFFB), DecodeBox::new(0, -5));
     }
 }
+
+#[cfg(test)]
+mod debug_tests {
+    use super::*;
+
+    #[test]
+    fn debug_output_names_the_type_and_fields() {
+        let text = format!("{:?}", ViewportSizeSource::new());
+        assert!(text.contains("ViewportSizeSource"), "{text}");
+        assert!(text.contains("startup_prediction"), "{text}");
+    }
+}

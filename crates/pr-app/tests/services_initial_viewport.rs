@@ -326,3 +326,60 @@ fn predict_decode_box_default_size_ties_to_even_is_observable() {
 
     assert_eq!(result, Some(DecodeBox::new(1280, 896)));
 }
+
+// Added in repair round 1 (kills the surviving mutants on the R-IV-6 bounds choice and the dip/pixel scaling): every case
+// below runs at 144 dpi or with a saved Normal placement on screen, where the default-size and saved-bounds paths differ.
+#[test]
+fn predict_decode_box_default_size_at_144_dpi_uses_default_dip_times_scale() {
+    // None placement, 144 dpi, default 1200x800 dip: bounds 1800x1200 px, client 1778x1144, box 1792x1152.
+    let work = rect(0, 0, 2880, 1620);
+    let probe = FakeProbe {
+        dpi: 144,
+        insets: Some(INSETS_144),
+        work_area: Some(work),
+        areas: vec![work],
+        ..FakeProbe::single_monitor()
+    };
+
+    let got = predict_decode_box(None, 1200.0, 800.0, 1.0, &probe);
+
+    assert_eq!(got, Some(DecodeBox::new(1792, 1152)));
+}
+
+#[test]
+fn predict_decode_box_visible_normal_placement_uses_saved_bounds_not_default() {
+    // On-screen Normal placement 1400x800 at 96 dpi, default 800x600 dip: client 1384x761 -> 1408x768.
+    let probe = FakeProbe::single_monitor();
+    let saved = placement(SHOW_NORMAL, 100, 100, 1500, 900);
+
+    let got = predict_decode_box(Some(&saved), 800.0, 600.0, 1.0, &probe);
+
+    assert_eq!(got, Some(DecodeBox::new(1408, 768)));
+}
+
+#[test]
+fn predict_decode_box_offscreen_normal_placement_uses_default_size() {
+    let probe = FakeProbe::single_monitor();
+    let saved = placement(SHOW_NORMAL, 5000, 5000, 6400, 5800);
+
+    let got = predict_decode_box(Some(&saved), 800.0, 600.0, 1.0, &probe);
+
+    assert_eq!(got, expected_box(784, 561, 1.0, 1.0));
+    assert_ne!(got, Some(DecodeBox::new(1408, 768)));
+}
+
+#[test]
+fn predict_decode_box_quality_multiplier_is_applied_at_150_percent() {
+    let work = rect(0, 0, 2880, 1620);
+    let probe = FakeProbe {
+        dpi: 144,
+        insets: Some(INSETS_144),
+        work_area: Some(work),
+        areas: vec![work],
+        ..FakeProbe::single_monitor()
+    };
+
+    let got = predict_decode_box(None, 1200.0, 800.0, 1.25, &probe);
+
+    assert_eq!(got, expected_box(1778, 1144, 1.5, 1.25));
+}
