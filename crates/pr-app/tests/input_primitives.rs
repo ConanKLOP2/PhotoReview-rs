@@ -101,3 +101,82 @@ fn pointer_button_and_key_modifier_values_match_wpf() {
         "BitOr combines the raw bits"
     );
 }
+
+// new: equality of the geometry structs (NaN equals NaN, +0.0 equals -0.0, every field matters).
+#[test]
+fn equality_nan_and_zero() {
+    use pr_app::input::primitives::SizeD;
+    assert_eq!(PointD { x: 1.0, y: 0.0 }, PointD { x: 1.0, y: 0.0 });
+    assert_ne!(PointD { x: 1.0, y: 0.0 }, PointD { x: 1.0, y: 1.0 });
+    assert_ne!(PointD { x: 0.0, y: 1.0 }, PointD { x: 1.0, y: 1.0 });
+    assert_eq!(PointD { x: f64::NAN, y: 0.0 }, PointD { x: f64::NAN, y: -0.0 });
+    assert_ne!(PointD { x: f64::NAN, y: 0.0 }, PointD { x: 0.0, y: 0.0 });
+
+    assert_eq!(
+        SizeD {
+            width: 2.0,
+            height: 3.0
+        },
+        SizeD {
+            width: 2.0,
+            height: 3.0
+        }
+    );
+    assert_ne!(
+        SizeD {
+            width: 2.0,
+            height: 3.0
+        },
+        SizeD {
+            width: 2.0,
+            height: 4.0
+        }
+    );
+    assert_ne!(
+        SizeD {
+            width: 2.0,
+            height: 3.0
+        },
+        SizeD {
+            width: 5.0,
+            height: 3.0
+        }
+    );
+    assert_eq!(
+        SizeD {
+            width: f64::NAN,
+            height: 1.0
+        },
+        SizeD {
+            width: f64::NAN,
+            height: 1.0
+        }
+    );
+
+    let r = RectD {
+        x: 1.0,
+        y: 2.0,
+        width: 3.0,
+        height: 4.0,
+    };
+    assert_eq!(r, r);
+    assert_ne!(r, RectD { x: 9.0, ..r });
+    assert_ne!(r, RectD { y: 9.0, ..r });
+    assert_ne!(r, RectD { width: 9.0, ..r });
+    assert_ne!(r, RectD { height: 9.0, ..r });
+    assert_eq!(RectD { x: f64::NAN, ..r }, RectD { x: f64::NAN, ..r });
+    assert_eq!(r.right(), 4.0);
+    assert_eq!(r.bottom(), 6.0);
+}
+
+// new: BitOr is a union (idempotent), not xor; contains needs every bit.
+#[test]
+fn bitor_is_union_not_xor() {
+    assert_eq!(KeyModifiers::CONTROL | KeyModifiers::CONTROL, KeyModifiers::CONTROL);
+    let both = KeyModifiers::CONTROL | KeyModifiers::SHIFT;
+    assert!(both.contains(KeyModifiers::CONTROL));
+    assert!(both.contains(KeyModifiers::SHIFT));
+    assert!(!both.contains(KeyModifiers::ALT));
+    assert!(!KeyModifiers::CONTROL.contains(both));
+    assert!(!KeyModifiers::NONE.contains(KeyModifiers::ALT));
+}

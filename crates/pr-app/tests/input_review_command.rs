@@ -156,4 +156,17 @@ fn constructors_use_action_index_minus_one_unless_it_is_an_action() {
     assert_eq!(copy.kind, ReviewCommandType::CopyToFolder);
     assert_eq!(copy.action_index, -1);
     assert!(!copy.force_picker);
+
+    let forced_copy = ReviewCommand::copy_to_folder(true);
+    assert_eq!(forced_copy.kind, ReviewCommandType::CopyToFolder);
+    assert!(forced_copy.force_picker);
+    assert_eq!(forced_copy.action_index, -1);
+}
+
+// new: kills a mutant that drops force_picker in copy_to_folder.
+#[test]
+fn review_command_constants_map_to_the_right_kind() {
+    assert!(ReviewCommand::copy_to_folder(true).force_picker);
+    assert!(ReviewCommand::move_to_folder(true).force_picker);
+    assert!(!ReviewCommand::move_to_folder(false).force_picker);
 }
