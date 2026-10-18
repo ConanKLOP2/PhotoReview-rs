@@ -285,7 +285,8 @@ fn remove_preloaded_keys_for_path_drops_the_warmed_key_of_that_path_only() {
     let removed = target.key_of(1);
     let kept = target.key_of(2);
 
-    adapter.remove_preloaded_keys_for_path(&entry_path(1));
+    // C# passes `removed.Path`: the key's own normalised (upper-invariant) path, not the raw catalog path.
+    adapter.remove_preloaded_keys_for_path(removed.path());
 
     assert!(!adapter.try_consume_preloaded_key(&removed));
     assert!(adapter.try_consume_preloaded_key(&kept));
