@@ -68,17 +68,22 @@ fn viewport_snapshot_to_string_lists_every_measurement_with_rounded_formats() {
     );
 }
 
-// New test: C# has no direct test of `format_fixed`; the rule is .NET `ToString("F<n>")` (contract trap T5):
-// exact binary value, rounded half away from zero on the decimal digits.
+// New test: C# has no direct test of `format_fixed`; the rule is .NET `ToString("F<n>")` (contract trap T5), checked
+// against the oracle golden `viewport-snapshot-text` ("exact halves" case). The oracle shows that an exact tie rounds to
+// EVEN (0.125 -> "0.12", 2.5 -> "2", 0.5 -> "0", 1.5 -> "2"), not away from zero as the contract text said (open question O4).
 #[test]
-fn format_fixed_rounds_halves_away_from_zero() {
-    assert_eq!(format_fixed(0.125, 2), "0.13");
-    assert_eq!(format_fixed(2.5, 0), "3");
-    assert_eq!(format_fixed(-2.5, 0), "-3");
-    assert_eq!(format_fixed(0.5, 0), "1");
-    assert_eq!(format_fixed(0.25, 1), "0.3");
-    // Rust `{:.2}` would print "0.12" for 0.125 (round half to even); .NET prints "0.13" (asserted above).
-    assert_eq!(format_fixed(-0.125, 2), "-0.13");
+fn format_fixed_rounds_exact_halves_to_even() {
+    assert_eq!(format_fixed(0.125, 2), "0.12");
+    assert_eq!(format_fixed(2.5, 0), "2");
+    assert_eq!(format_fixed(-2.5, 0), "-2");
+    assert_eq!(format_fixed(0.5, 0), "0");
+    assert_eq!(format_fixed(1.5, 0), "2");
+    assert_eq!(format_fixed(0.25, 1), "0.2");
+    assert_eq!(format_fixed(-0.125, 2), "-0.12");
+    // Not a tie: the binary value of 0.45 is slightly above 0.45, so it rounds up at F1.
+    assert_eq!(format_fixed(0.45, 1), "0.5");
+    // Not a tie: the binary value is just under one half, so it rounds down.
+    assert_eq!(format_fixed(0.49999999999999994, 0), "0");
 }
 
 // New test: a negative zero keeps its sign in `F` formats (contract trap T3 shows it in the snapshot text).

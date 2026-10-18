@@ -6,8 +6,6 @@
 //! (decision D-W8-01a-3); PARITY K-27 is `Different` until an ADR confirms it.
 //! Baseline `d92d6aae`. Threshold 0.5 DIP for "not scrollable" and "at edge", as in `KeyboardPan`.
 
-#![allow(unused_variables, dead_code)] // stub only: removed by the porter when the bodies are filled (contracts/README.md D11)
-
 use crate::viewport::types::ViewportLayout;
 
 /// `DefaultStepFraction` = 0.1 (`AppSettings.DefaultArrowPanStepPercent` = 10 percent).
@@ -24,10 +22,27 @@ pub enum ArrowPanOutcome {
     Panned = 2,
 }
 
+/// C# `Math.Min` for two doubles: a NaN operand propagates (`f64::min` would ignore it).
+fn min_propagating_nan(a: f64, b: f64) -> f64 {
+    if a.is_nan() || b.is_nan() {
+        f64::NAN
+    } else if a <= b {
+        a
+    } else {
+        b
+    }
+}
+
 /// C# `StepLength(viewportWidth, viewportHeight, stepFraction)`: `shorter = min(w, h)` (NaN propagates, as C# `Math.Min`
 /// does; Rust `f64::min` would not), `length = shorter * step_fraction`; returns `length` when it is finite and > 0, else 0.
 pub fn step_length(viewport_width: f64, viewport_height: f64, step_fraction: f64) -> f64 {
-    todo!()
+    let shorter = min_propagating_nan(viewport_width, viewport_height);
+    let length = shorter * step_fraction;
+    if length.is_finite() && length > 0.0 {
+        length
+    } else {
+        0.0
+    }
 }
 
 /// C# `Step(dx, dy, horizontal, vertical, in layout, stepFraction)`.
@@ -49,5 +64,35 @@ pub fn step(
     layout: &ViewportLayout,
     step_fraction: f64,
 ) -> (ArrowPanOutcome, f64, f64) {
-    todo!()
+    let horizontal_axis = dx != 0;
+    let (current, max) = if horizontal_axis {
+        (horizontal, layout.max_horizontal_offset)
+    } else {
+        (vertical, layout.max_vertical_offset)
+    };
+
+    if max <= EPSILON {
+        return (ArrowPanOutcome::NotScrollable, horizontal, vertical);
+    }
+
+    let length = step_length(layout.viewport_width, layout.viewport_height, step_fraction);
+    let moved = current + length * (f64::from(dx) + f64::from(dy));
+    // C# Math.Clamp(value, 0, max): lower bound first, then upper bound; a NaN max is never selected.
+    let target = if moved < 0.0 {
+        0.0
+    } else if moved > max {
+        max
+    } else {
+        moved
+    };
+
+    if (target - current).abs() < EPSILON {
+        return (ArrowPanOutcome::AtEdge, horizontal, vertical);
+    }
+
+    if horizontal_axis {
+        (ArrowPanOutcome::Panned, target, vertical)
+    } else {
+        (ArrowPanOutcome::Panned, horizontal, target)
+    }
 }
