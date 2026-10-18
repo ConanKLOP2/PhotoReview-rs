@@ -870,3 +870,114 @@ fn closure_is_a_progress_sink() {
     });
     assert_eq!(*seen.lock().unwrap_or_else(PoisonError::into_inner), 1);
 }
+
+// Repair round 1: tests killing mutants in SystemTimeSource, Debug, get_full_path and timestamp_frequency.
+struct Ms1000(AtomicI64);
+impl TimeSource for Ms1000 {
+    fn timestamp(&self) -> i64 {
+        self.0.load(Ordering::SeqCst)
+    }
+    fn timestamp_frequency(&self) -> i64 {
+        1000
+    }
+}
+
+#[derive(Default)]
+struct CaptureLog(Mutex<Vec<String>>);
+impl Log for CaptureLog {
+    fn enabled(&self) -> bool {
+        true
+    }
+    fn info(&self, m: &str) {
+        self.0.lock().unwrap().push(m.to_owned());
+    }
+    fn warn(&self, _: &str) {}
+    fn error(&self, _: &str, _: Option<&(dyn Error + 'static)>) {}
+}
+
+fn single_iteration_profile() -> BenchmarkProfile {
+    BenchmarkProfile {
+        iterations: 1,
+        warmup_count: 0,
+        ..profiles::find("action-move").expect("profile").clone()
+    }
+}
+
+// mutant: SystemTimeSource::timestamp -> 0 / 1 / -1
+#[test]
+fn system_time_source_advances_with_real_time() {
+    let s = SystemTimeSource;
+    let a = s.timestamp();
+    assert!(a >= 0);
+    std::thread::sleep(std::time::Duration::from_millis(30));
+    let b = s.timestamp();
+    assert!(
+        b - a >= 20_000_000,
+        "30 ms sleep must advance >= 20e6 ns, got {}",
+        b - a
+    );
+}
+
+// mutant: Debug for RunPreparedOptions -> Ok(Default)
+#[test]
+fn options_debug_names_the_type_and_pins() {
+    let token = CancelToken::new();
+    let mut o = RunPreparedOptions::new(&NullLog, &token);
+    o.run_id = Some("abc");
+    let text = format!("{o:?}");
+    assert!(text.contains("RunPreparedOptions") && text.contains("abc"), "{text}");
+}
+
+// mutant: report folder / start log use the folder as given instead of the full path (relative folder)
+#[test]
+fn relative_folder_is_reported_as_full_path() {
+    let log = CaptureLog::default();
+    let token = CancelToken::new();
+    let mut o = RunPreparedOptions::new(&log, &token);
+    o.run_id = Some("0123456789abcdef0123456789abcdef");
+    let mut exec = |_: &BenchmarkProfile,
+                    _: BenchmarkWorkload,
+                    _: i32,
+                    _: &CancelToken|
+     -> Result<PreparedMeasure, BenchmarkError> {
+        Ok(Box::new(|| {
+            Ok(MeasureOutcome {
+                correct: true,
+                metrics: None,
+            })
+        }))
+    };
+    let report = run_prepared(".", &single_iteration_profile(), &mut exec, &o).expect("run");
+    let full = get_full_path(".").expect("full");
+    assert_ne!(full, ".");
+    assert_eq!(report.folder, full);
+    let lines = log.0.lock().unwrap().clone();
+    assert!(lines[0].contains(&format!("folder={full} iterations=")), "{}", lines[0]);
+}
+
+// mutant: engine ignores timestamp_frequency() (hard-codes 10 MHz)
+#[test]
+fn non_default_frequency_scales_the_sample() {
+    let time = Arc::new(Ms1000(AtomicI64::new(0)));
+    let token = CancelToken::new();
+    let mut o = RunPreparedOptions::new(&NullLog, &token);
+    o.time = &*time;
+    let t2 = Arc::clone(&time);
+    let mut exec = move |_: &BenchmarkProfile,
+                         _: BenchmarkWorkload,
+                         _: i32,
+                         _: &CancelToken|
+          -> Result<PreparedMeasure, BenchmarkError> {
+        let t = Arc::clone(&t2);
+        Ok(Box::new(move || {
+            t.0.fetch_add(250, Ordering::SeqCst);
+            Ok(MeasureOutcome {
+                correct: true,
+                metrics: None,
+            })
+        }))
+    };
+    let folder = std::env::temp_dir().to_string_lossy().into_owned();
+    let report = run_prepared(&folder, &single_iteration_profile(), &mut exec, &o).expect("run");
+    assert_eq!(report.phases[0].samples(), &[250.0]);
+}
