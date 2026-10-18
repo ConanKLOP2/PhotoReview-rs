@@ -9,19 +9,21 @@
 //!
 //! Unit W7-03a. Contract: `contracts/W7-03a.md`. Depends on W7-01 (`crate::models`, `crate::metrics`).
 
-#![allow(unused_variables, unused_imports, dead_code)] // stub: remove when the bodies exist
-
 use std::error::Error;
 use std::fmt;
+use std::sync::OnceLock;
+use std::time::Instant;
 
 use pr_core::abstractions::{Clock, Log, SystemClock};
 use pr_core::diagnostics::metrics::ReviewMetricsSnapshot;
+use pr_core::io::physical::new_guid_n;
 use pr_core::sync::{CancelToken, Canceled};
+use pr_core::text::dotnet_path::get_full_path;
 
 use crate::metrics;
 use crate::models::{
     BenchmarkPhaseResult, BenchmarkProfile, BenchmarkProfileError, BenchmarkReport, BenchmarkResultStatus,
-    BenchmarkWorkload, validate_profile,
+    BenchmarkTimestamp, BenchmarkWorkload, validate_profile,
 };
 
 /// C# `BenchmarkEngine.ProgressOk`. Fixed English (Q-L4): also goes to the CLI.
@@ -49,7 +51,7 @@ pub trait BenchmarkProgressSink: Send + Sync {
 
 impl<F: Fn(BenchmarkProgress) + Send + Sync> BenchmarkProgressSink for F {
     fn report(&self, progress: BenchmarkProgress) {
-        todo!()
+        self(progress);
     }
 }
 
@@ -68,10 +70,13 @@ pub struct SystemTimeSource;
 
 impl TimeSource for SystemTimeSource {
     fn timestamp(&self) -> i64 {
-        todo!()
+        static ORIGIN: OnceLock<Instant> = OnceLock::new();
+        let origin = ORIGIN.get_or_init(Instant::now);
+        i64::try_from(origin.elapsed().as_nanos()).unwrap_or(i64::MAX)
     }
+
     fn timestamp_frequency(&self) -> i64 {
-        todo!()
+        1_000_000_000
     }
 }
 
@@ -79,19 +84,22 @@ impl TimeSource for SystemTimeSource {
 /// 100 ns `TimeSpan` ticks with `(long)((end - start) * (10_000_000.0 / frequency))` (truncating cast), then
 /// [`ticks_to_milliseconds`].
 pub fn elapsed_milliseconds(frequency: i64, start: i64, end: i64) -> f64 {
-    todo!()
+    // `as` truncates toward zero like the C# `(long)` cast (and saturates on overflow, which C# leaves unspecified).
+    let ticks = (end.wrapping_sub(start) as f64 * (10_000_000.0 / frequency as f64)) as i64;
+    ticks_to_milliseconds(ticks)
 }
 
 /// C# `TimeSpan.FromTicks(ticks).TotalMilliseconds`: `ticks as f64 / 10_000.0` clamped to
 /// `[i64::MIN / 10_000, i64::MAX / 10_000]` as whole numbers (`-922337203685477.0 ..= 922337203685477.0`, as .NET does).
 pub fn ticks_to_milliseconds(ticks: i64) -> f64 {
-    todo!()
+    const MAX_MILLISECONDS: f64 = 922_337_203_685_477.0;
+    (ticks as f64 / 10_000.0).clamp(-MAX_MILLISECONDS, MAX_MILLISECONDS)
 }
 
 /// C# private `Ms(double)`: `value.ToString("F1", InvariantCulture)`. Verified on .NET 10: ties round to even on the
 /// exact binary value, so it equals Rust `format!("{value:.1}")` (`0.25` -> `0.2`, `1.75` -> `1.8`).
 pub fn format_ms(value: f64) -> String {
-    todo!()
+    format!("{value:.1}")
 }
 
 /// What one measure step returns: C# `(bool Correct, ReviewMetricsSnapshot? Metrics)`. `metrics` is the executor's
@@ -130,13 +138,23 @@ pub enum BenchmarkError {
 
 impl fmt::Display for BenchmarkError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        todo!()
+        match self {
+            Self::FolderRequired => f.write_str("Folder is required (Parameter 'folder')"),
+            Self::DirectoryNotFound(path) => f.write_str(path),
+            Self::Profile(e) => fmt::Display::fmt(e, f),
+            Self::Canceled => f.write_str("The operation was canceled."),
+            Self::Operation(e) => fmt::Display::fmt(e, f),
+        }
     }
 }
 
 impl Error for BenchmarkError {
     fn source(&self) -> Option<&(dyn Error + 'static)> {
-        todo!()
+        match self {
+            Self::Profile(e) => Some(e),
+            Self::Operation(e) => Some(&**e),
+            Self::FolderRequired | Self::DirectoryNotFound(_) | Self::Canceled => None,
+        }
     }
 }
 
@@ -183,7 +201,17 @@ impl fmt::Debug for RunPreparedOptions<'_> {
 impl<'a> RunPreparedOptions<'a> {
     /// Production defaults: no progress, system time and clock, the given log and token.
     pub fn new(log: &'a dyn Log, cancel: &'a CancelToken) -> Self {
-        todo!()
+        static SYSTEM_TIME: SystemTimeSource = SystemTimeSource;
+        static SYSTEM_CLOCK: SystemClock = SystemClock;
+        Self {
+            progress: None,
+            time: &SYSTEM_TIME,
+            clock: &SYSTEM_CLOCK,
+            log,
+            cancel,
+            run_id: None,
+            machine: None,
+        }
     }
 }
 
@@ -198,5 +226,148 @@ pub fn run_prepared(
     operation: &mut PreparedWorkloadExecutor<'_>,
     options: &RunPreparedOptions<'_>,
 ) -> Result<BenchmarkReport, BenchmarkError> {
-    todo!()
+    let (log, cancel, time) = (options.log, options.cancel, options.time);
+    if folder.chars().all(char::is_whitespace) {
+        return Err(BenchmarkError::FolderRequired);
+    }
+    if !std::fs::metadata(folder).map(|m| m.is_dir()).unwrap_or(false) {
+        return Err(BenchmarkError::DirectoryNotFound(folder.to_owned()));
+    }
+    validate_profile(profile)?;
+
+    let started = options.clock.utc_now();
+    let run_id = options.run_id.map_or_else(new_guid_n, str::to_owned);
+    // DIVERGENCE: unreachable after the directory check except for paths beyond MAX_PATH; reported as not found.
+    let full = get_full_path(folder).map_err(|_| BenchmarkError::DirectoryNotFound(folder.to_owned()))?;
+    let id = profile.id.as_str();
+    let workload = profile.workload;
+    log.info(&format!(
+        "Benchmark start runId={run_id} profile={id} workload={} folder={full} iterations={} workers={}",
+        workload.name(),
+        profile.iterations,
+        profile.workers
+    ));
+
+    let mut samples: Vec<f64> = Vec::new();
+    let mut metrics: Option<ReviewMetricsSnapshot> = None;
+    let mut all_correct = true;
+    let total = profile.iterations;
+    // Executors report cumulative metrics; the last warm-up's snapshot is the baseline subtracted from the final one,
+    // so the report's reads/hits cover the measured iterations only.
+    let mut warmup_baseline: Option<ReviewMetricsSnapshot> = None;
+
+    for w in 0..profile.warmup_count {
+        // Outside the failure handling: a canceled token at the loop top returns without a log line.
+        cancel.check()?;
+        let attempt = operation(profile, workload, w, cancel).and_then(|measure| measure());
+        match attempt {
+            Ok(outcome) => warmup_baseline = outcome.metrics.or(warmup_baseline),
+            Err(BenchmarkError::Canceled) => {
+                log.info(&format!("Benchmark canceled runId={run_id} profile={id} warmup={w}"));
+                return Err(BenchmarkError::Canceled);
+            }
+            Err(error) => {
+                log.error(
+                    &format!("Benchmark warmup failed runId={run_id} profile={id} warmup={w}"),
+                    Some(&error),
+                );
+                return Err(error);
+            }
+        }
+    }
+
+    // `iterations` counts only timed samples; warm-ups are additional and excluded from the samples.
+    for i in 0..total {
+        cancel.check()?;
+        let attempt = operation(profile, workload, i, cancel).and_then(|measure| {
+            let t0 = time.timestamp();
+            let outcome = measure()?;
+            // The end timestamp is read right after the measure step returns, before anything else.
+            let elapsed = elapsed_milliseconds(time.timestamp_frequency(), t0, time.timestamp());
+            Ok((outcome, elapsed))
+        });
+        let (outcome, elapsed_ms) = match attempt {
+            Ok(done) => done,
+            Err(BenchmarkError::Canceled) => {
+                log.info(&format!("Benchmark canceled runId={run_id} profile={id} iteration={i}"));
+                return Err(BenchmarkError::Canceled);
+            }
+            Err(error) => {
+                log.error(
+                    &format!("Benchmark phase failed runId={run_id} profile={id} iteration={i}"),
+                    Some(&error),
+                );
+                return Err(error);
+            }
+        };
+        samples.push(elapsed_ms);
+        metrics = outcome.metrics.or(metrics);
+        all_correct &= outcome.correct;
+        log.info(&format!(
+            "Benchmark sample runId={run_id} profile={id} phase={} iteration={}/{total} elapsedMs={} correct={}",
+            workload.name(),
+            i + 1,
+            format_ms(elapsed_ms),
+            if outcome.correct { "True" } else { "False" }
+        ));
+        if let Some(sink) = options.progress {
+            sink.report(BenchmarkProgress {
+                profile_id: profile.id.clone(),
+                workload,
+                completed: i + 1,
+                total,
+                message: if outcome.correct {
+                    PROGRESS_OK
+                } else {
+                    PROGRESS_CORRECTNESS_FAILED
+                }
+                .to_owned(),
+            });
+        }
+    }
+
+    if let (Some(current), Some(baseline)) = (&metrics, &warmup_baseline) {
+        // A duplicate baseline key throws in C# (`ToDictionary`) and escapes unlogged.
+        let delta = metrics::since(current, baseline).map_err(|e| BenchmarkError::Operation(Box::new(e)))?;
+        metrics = Some(delta);
+    }
+    let correct = !samples.is_empty() && all_correct;
+    let status = if samples.is_empty() {
+        BenchmarkResultStatus::InsufficientData
+    } else if correct {
+        BenchmarkResultStatus::Pass
+    } else {
+        BenchmarkResultStatus::Fail
+    };
+    let phase = BenchmarkPhaseResult::new(
+        profile.id.clone(),
+        workload,
+        samples,
+        status,
+        if correct {
+            None
+        } else {
+            Some(RESULT_CORRECTNESS_FAILED.to_owned())
+        },
+        None,
+    );
+    log.info(&format!(
+        "Benchmark complete runId={run_id} profile={id} phase={} status={} p50Ms={} p95Ms={} maxMs={}",
+        workload.name(),
+        phase.status.name(),
+        format_ms(phase.p50()),
+        format_ms(phase.p95()),
+        format_ms(phase.max())
+    ));
+    Ok(BenchmarkReport {
+        run_id,
+        started_utc: BenchmarkTimestamp::new(started, 0).unwrap_or_else(BenchmarkTimestamp::now_utc),
+        folder: full,
+        phases: vec![phase],
+        metrics,
+        machine: options
+            .machine
+            .map(str::to_owned)
+            .or_else(|| std::env::var("COMPUTERNAME").ok()),
+    })
 }

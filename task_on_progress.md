@@ -253,3 +253,8 @@
 - Verified on the final head: `cargo fmt --all`, `cargo clippy --workspace --all-targets --locked -- -D warnings` clean, `cargo test --workspace --locked` exit 0 (5162 passed, 0 failed, 426 ignored).
 - NOT run: the `cli-process` golden (needs the baseline WPF-bound Benchmark.Cli exe; input dropped, see D70); no Rust test exercises the stubs (all bodies are `todo!()`); `cargo-mutants` (nothing ported yet); the native/real-clock behaviour of `slow-link-fs` is only pinned as lower-bound booleans; CI result pending at PR time.
 - Next: port W7-01a/01b/02a first (see the roster dependency order), then 02b, 03a, 03b, 03c, 03d; the lead writes `EngineBackend` (D69).
+
+## Wave 7 integration (2026-10-18, branch `integration/wave-7`)
+- Merged W7-01a, 01b, 02a, 02b, 03a, 03b, 03c, 03d (verdicts in `docs/PARITY.md`); one integration fix (`ed47436`, workload_runner test uses wired `BenchmarkProfile`).
+- Full gate (fmt, clippy -D warnings, test --workspace --locked --no-fail-fast) is run before the PR; results are in the PR body.
+- NOT run: `cli-process` golden; re-verification of `wu/W7-02a` fix `2d602dd`; cargo-mutants on the merged tree.

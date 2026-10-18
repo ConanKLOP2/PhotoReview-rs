@@ -18,4 +18,4 @@ pr-platform-win.workspace = true
 
 [dev-dependencies]
 pr-test-support.workspace = true
-serde_json.workspace = true
+serde_json = { workspace = true, features = ["float_roundtrip"] }

@@ -110,3 +110,7 @@ Goldens for the merged W4 units (W4-01a, 01c, 02a, 03a, 05a/b, 06a, 07a/b, 08a/b
 ## Wave 5 (RAW, TurboJPEG, LibRaw)
 
 45 commands, one oracle file per unit in `tools/oracle-cs/Commands/W5-*.cs` (names and case counts: `contracts/README.md` "Wave 5 roster"). The corpus commands (`cr2-container-corpus`, `raw-dng-corpus`, `rw2-corpus`, `raf-corpus`, `raw-exif-corpus`) and the corpus cases of `raw-arw-reader`, `raw-cr3-reader` and `libraw-decoder-native` were generated WITHOUT the RAW corpus (P-30): zero cases, `present: false` or `skipped: true`. `turbojpeg-fixtures` writes `tests/fixtures/turbojpeg/` (18 files, committed). `turbojpeg-native-decode`, `turbojpeg-decode`, `turbojpeg-read-info` and `libraw-decoder-native` record the `turbojpeg.dll`/`libraw.dll` found in the C# checkout's `native/x64` (SHA-256 in the first "environment" case). Inputs fixed while running the oracle are listed in `contracts/README.md` D56. No pre-existing golden changed.
+
+## Wave 7 (benchmarking)
+
+Goldens `bench-*`, `benchmark-*`, `slow-link-*`, `cli-arguments`, `cli-dataset-plan` and `cli-tool-path-guard` were merged with units W7-01a, 01b, 02a, 02b, 03a, 03b, 03c and 03d. The `cli-process` golden was not produced (needs the baseline WPF-bound Benchmark.Cli exe; D70). Units with FAIL verdicts or surviving mutants are Partial in `docs/PARITY.md`.

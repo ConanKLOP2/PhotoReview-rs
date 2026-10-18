@@ -3,70 +3,51 @@
 //! `WindowedPreloadTarget`. Contract: `contracts/W7-03b.md` (draft: `contracts/drafts-w7/W7-03b/contract.md`).
 //! PARITY: W-06 (BenchmarkWindow runs profiles through this executor), X-benchmark (new rows, see the contract).
 //!
-//! Target path: `crates/pr-bench/src/image_executor.rs` (lead adds `pub mod image_executor;` to `lib.rs`).
-//!
 //! Every decode goes through a REAL `PreviewImageService` / `PreloadScheduler` pair (same RAM cache, disk-cache
 //! probe/persist path and preload-priority scheduling as the viewer), with a private scratch disk-cache directory per
 //! executor. R0003: no async runtime. C# `Task`/`await` become blocking calls and handles
 //! (`PreviewHandle`, `RunHandle`, [`TeardownHandle`]); nothing here may be called from a UI thread.
-
-#![allow(unused_variables, dead_code)] // W7-03b stub: remove with the last `todo!()`.
+//!
+//! Intentional deviations from C# (the observable benchmark output is unchanged): (a) blocking handles instead of
+//! `Task`; (b) `dispose` is explicitly idempotent and there is no `Drop`; (c) the scratch parent is
+//! `PhotoReviewRs-Benchmark-Cache` (R0002) instead of `PhotoReview-Benchmark-Cache`; (d) `decoder: None` is an error
+//! (`NoDecoder`) because the WIC decoder lives in `pr_platform_win` and the host passes it; (e) the constructor takes
+//! the payload codec too; (f) `physical_memory_bytes` defaults to 0 (unknown), the production host must pass the real
+//! value; (g) `evict_for_cold_decode` could return `PreviewError::SourceBytes`, unreachable here.
 
 use std::collections::HashMap;
+use std::collections::hash_map::RandomState;
 use std::error::Error;
 use std::fmt;
+use std::hash::{BuildHasher, Hasher};
+use std::panic::{self, AssertUnwindSafe};
 use std::path::{Path, PathBuf};
-use std::sync::atomic::{AtomicBool, AtomicI32};
-use std::sync::{Arc, Condvar, Mutex};
-use std::time::Duration;
+use std::sync::atomic::{AtomicBool, AtomicI32, AtomicU64, Ordering};
+use std::sync::{Arc, Condvar, Mutex, MutexGuard, PoisonError};
+use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
 use pr_core::abstractions::{Log, MemoryProbe};
 use pr_core::catalog::types::CatalogEntry;
+use pr_core::diagnostics::file_log::FileLog;
 use pr_core::diagnostics::metrics::{ReviewMetrics, ReviewMetricsSnapshot};
 use pr_core::model::enums::LoadingMode;
+use pr_core::settings::perf_options;
 use pr_core::sync::CancelToken;
-use pr_core::text::dotnet_path::PathError;
+use pr_core::text::dotnet_path::{PathError, get_full_path};
+use pr_core::text::ignore_case_key;
 use pr_imaging::cache::preview_file::PreviewPayloadCodec;
 use pr_imaging::cache_key::{CacheKeyError, ImageCacheKey};
 use pr_imaging::decoder_traits::{DecodeError, ImageDecoder, PlatformImageCodec};
-use pr_imaging::preload::target::{KeyError, PreloadTarget};
-use pr_imaging::preload::{PreloadScheduler, RunHandle};
+use pr_imaging::preload::target::{DelegateMemoryProbe, KeyError, PreloadTarget};
+use pr_imaging::preload::{PreloadScheduler, PreloadSchedulerDeps, RunHandle};
+use pr_imaging::preload_order::{PreloadOptions, PreloadWindow};
 use pr_imaging::service::handle::PreviewHandle;
-use pr_imaging::service::{PreviewError, PreviewImageService, PreviewResult, PreviewServiceBuildError};
+use pr_imaging::service::{
+    PreviewError, PreviewImageService, PreviewResult, PreviewServiceBuildError, PreviewServiceConfig,
+};
+use pr_platform_win::memory_probe::WindowsMemoryProbe;
 
-// ---- W7-01 stand-in -----------------------------------------------------------------------------------------------
-// `BenchmarkProfile` is owned by W7-01 (`crate::models`, `BenchmarkModels.cs`). This private copy lets the stub compile
-// on its own; the lead replaces the whole block by `use crate::models::BenchmarkProfile;` at wiring. Only the fields
-// this unit reads are listed; the real record has more (id, name, description, workload, warmup_count, iterations,
-// correctness_only).
-
-#[doc(hidden)]
-#[derive(Debug, Clone, PartialEq)]
-pub struct BenchmarkProfile {
-    pub id: String,
-    pub loading_mode: LoadingMode,
-    pub workers: i32,
-    pub next_window: i32,
-    pub previous_window: i32,
-    pub full_folder: bool,
-    pub memory_reserve_bytes: i64,
-    pub disk_cache: bool,
-    pub detailed_logging: bool,
-}
-
-impl BenchmarkProfile {
-    /// C# extension `TargetWidth()`.
-    pub fn target_width(&self) -> i32 {
-        match self.id.as_str() {
-            "preview-light" => 960,
-            "preview-balanced" => 1600,
-            "preview-quality" => 2400,
-            "preview-high-quality" => 3200,
-            "original-correctness" => 0,
-            _ => 1920,
-        }
-    }
-}
+pub use crate::models::BenchmarkProfile;
 
 // ---- constants ----------------------------------------------------------------------------------------------------
 
@@ -177,34 +158,52 @@ impl fmt::Debug for TeardownHandle {
 impl TeardownHandle {
     /// C# `Task.CompletedTask`: nothing pending (before `dispose`, and what an executor reports until then).
     pub fn completed() -> Self {
-        todo!("W7-03b: a handle whose flag is already true")
+        Self {
+            state: Arc::new((Mutex::new(true), Condvar::new())),
+        }
     }
 
     /// A pending teardown; `finish` completes it.
     pub(crate) fn pending() -> Self {
-        todo!("W7-03b: a handle whose flag is false")
+        Self {
+            state: Arc::new((Mutex::new(false), Condvar::new())),
+        }
     }
 
     /// Marks the teardown finished and wakes every waiter.
     pub(crate) fn finish(&self) {
-        todo!("W7-03b")
+        let (flag, changed) = &*self.state;
+        *lock(flag) = true;
+        changed.notify_all();
     }
 
     /// Whether the teardown has finished.
     pub fn is_complete(&self) -> bool {
-        todo!("W7-03b")
+        *lock(&self.state.0)
     }
 
     /// Blocks until the teardown has finished. Tests use [`Self::wait_timeout`] (hang guard, AGENTS.md "Tests").
     pub fn wait(&self) {
-        todo!("W7-03b")
+        let (flag, changed) = &*self.state;
+        let _done = changed
+            .wait_while(lock(flag), |done| !*done)
+            .unwrap_or_else(PoisonError::into_inner);
     }
 
     /// Blocks up to `timeout`; `true` when the teardown finished (C# `WaitAsync(timeout)` that did not throw
     /// `TimeoutException`).
     pub fn wait_timeout(&self, timeout: Duration) -> bool {
-        todo!("W7-03b")
+        let (flag, changed) = &*self.state;
+        let (done, _) = changed
+            .wait_timeout_while(lock(flag), timeout, |done| !*done)
+            .unwrap_or_else(PoisonError::into_inner);
+        *done
     }
+}
+
+/// Locks a mutex; a poisoned lock still holds consistent data here (plain flags and handles).
+fn lock<T>(mutex: &Mutex<T>) -> MutexGuard<'_, T> {
+    mutex.lock().unwrap_or_else(PoisonError::into_inner)
 }
 
 // ---- BenchmarkProfileScope ----------------------------------------------------------------------------------------
@@ -228,7 +227,19 @@ impl BenchmarkProfileScope {
         set_enabled: impl Fn(bool) + 'a,
         get_write_count: Option<Box<dyn Fn() -> i32 + 'a>>,
     ) -> LoggingScope<'a> {
-        todo!("W7-03b")
+        let previous = get_enabled();
+        set_enabled(profile.detailed_logging);
+        let writes_after_apply = get_write_count.as_ref().map(|count| count());
+        let restore: Box<dyn FnOnce() + 'a> = Box::new(move || {
+            if let (Some(count), Some(after_apply)) = (&get_write_count, writes_after_apply) {
+                if count() != after_apply {
+                    // Someone else wrote the flag during the run: their choice wins.
+                    return;
+                }
+            }
+            set_enabled(previous);
+        });
+        LoggingScope { restore: Some(restore) }
     }
 }
 
@@ -248,7 +259,9 @@ impl fmt::Debug for LoggingScope<'_> {
 impl LoggingScope<'_> {
     /// Runs the restore once (idempotent).
     pub fn dispose(&mut self) {
-        todo!("W7-03b: take the closure out of `restore` and call it")
+        if let Some(restore) = self.restore.take() {
+            restore();
+        }
     }
 }
 
@@ -287,12 +300,24 @@ impl fmt::Debug for WindowedPreloadTarget {
 impl WindowedPreloadTarget {
     /// C# constructor. `Path.GetFullPath(files[i])` can throw => `Err(PathError)`.
     pub fn new(inner: Arc<dyn PreloadTarget>, files: &[String], profile: &BenchmarkProfile) -> Result<Self, PathError> {
-        todo!("W7-03b")
+        let mut index_by_path = HashMap::with_capacity(files.len());
+        for (position, file) in files.iter().enumerate() {
+            // A later duplicate (same path up to OrdinalIgnoreCase) overwrites the earlier one, like the C# indexer set.
+            index_by_path.insert(ignore_case_key(&get_full_path(file)?), position);
+        }
+        Ok(Self {
+            inner,
+            index_by_path,
+            full_folder: profile.full_folder,
+            next: profile.next_window,
+            previous: profile.previous_window,
+            center: AtomicI32::new(0),
+        })
     }
 
     /// C# `SetCenter` (`Volatile.Write`): release store.
     pub fn set_center(&self, center: i32) {
-        todo!("W7-03b")
+        self.center.store(center, Ordering::Release);
     }
 
     /// C# private `OutsideWindow(path)`. `false` when `full_folder` or `path` is not in the index (a path the profile
@@ -301,7 +326,16 @@ impl WindowedPreloadTarget {
     /// `window-center-int-min-wraps`). The lookup key is `ignore_case_key(path)` of the path AS GIVEN (no
     /// `get_full_path`): a non-normalized spelling is simply "not in the index" (golden `window-unnormalized-by-path`).
     fn outside_window(&self, path: &str) -> bool {
-        todo!("W7-03b")
+        if self.full_folder {
+            return false;
+        }
+        let Some(&position) = self.index_by_path.get(&ignore_case_key(path)) else {
+            return false;
+        };
+        // C# unchecked `int` arithmetic: wrap, never widen.
+        let position = i32::try_from(position).unwrap_or(i32::MAX);
+        let delta = position.wrapping_sub(self.center.load(Ordering::Acquire));
+        delta > self.next || delta.wrapping_neg() > self.previous
     }
 }
 
@@ -309,47 +343,47 @@ impl PreloadTarget for WindowedPreloadTarget {
     /// `outside_window(path) || inner.try_get_cached_preview_for_path(path)` (short-circuit: the inner is not asked
     /// for an out-of-window path).
     fn try_get_cached_preview_for_path(&self, path: &str) -> bool {
-        todo!("W7-03b")
+        self.outside_window(path) || self.inner.try_get_cached_preview_for_path(path)
     }
 
     /// `outside_window(key.path()) || inner.try_get_cached_preview(key)`.
     fn try_get_cached_preview(&self, key: &ImageCacheKey) -> bool {
-        todo!("W7-03b")
+        self.outside_window(key.path()) || self.inner.try_get_cached_preview(key)
     }
 
     /// Straight forward to the inner target (preloading is never windowed here; the scheduler's queue decides).
     fn preload(&self, path: &str, cancel: &CancelToken) -> Result<(), DecodeError> {
-        todo!("W7-03b")
+        self.inner.preload(path, cancel)
     }
 
     fn get_current_cache_key_for_path(&self, path: &str) -> Result<ImageCacheKey, KeyError> {
-        todo!("W7-03b")
+        self.inner.get_current_cache_key_for_path(path)
     }
 
     fn get_current_cache_key(&self, entry: &CatalogEntry) -> Result<ImageCacheKey, KeyError> {
-        todo!("W7-03b")
+        self.inner.get_current_cache_key(entry)
     }
 
     fn cache_count(&self) -> i32 {
-        todo!("W7-03b")
+        self.inner.cache_count()
     }
 
     fn cache_bytes(&self) -> i64 {
-        todo!("W7-03b")
+        self.inner.cache_bytes()
     }
 
     /// C# forwards the three default members too (`ActiveViewerDecodes`, `CachedPreviewBytes`, `HasDiskCachedPreview`):
     /// the trait defaults (0 / `None` / `false`) would silently disable the inner target's answers.
     fn active_viewer_decodes(&self) -> i32 {
-        todo!("W7-03b")
+        self.inner.active_viewer_decodes()
     }
 
     fn cached_preview_bytes(&self, key: &ImageCacheKey) -> Option<i64> {
-        todo!("W7-03b")
+        self.inner.cached_preview_bytes(key)
     }
 
     fn has_disk_cached_preview(&self, key: &ImageCacheKey) -> bool {
-        todo!("W7-03b")
+        self.inner.has_disk_cached_preview(key)
     }
 }
 
@@ -391,7 +425,21 @@ const _: fn() = || {
 /// A fresh 32-character lowercase hexadecimal name (C# `Guid.NewGuid().ToString("N")`). Unique per call within and
 /// across processes (process id + clock + counter + `RandomState`); no new crate (`uuid`/`getrandom` are lead-only).
 pub fn new_scratch_directory_name() -> String {
-    todo!("W7-03b")
+    static COUNTER: AtomicU64 = AtomicU64::new(0);
+    let nanos = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map_or(0, |elapsed| elapsed.as_nanos());
+    let counter = COUNTER.fetch_add(1, Ordering::Relaxed);
+    let process = std::process::id();
+    let part = |salt: u64| {
+        let mut hasher = RandomState::new().build_hasher();
+        hasher.write_u32(process);
+        hasher.write_u128(nanos);
+        hasher.write_u64(counter);
+        hasher.write_u64(salt);
+        hasher.finish()
+    };
+    format!("{:016x}{:016x}", part(0), part(1))
 }
 
 impl BenchmarkImageExecutor {
@@ -423,7 +471,94 @@ impl BenchmarkImageExecutor {
         payload_codec: Arc<dyn PreviewPayloadCodec>,
         options: BenchmarkExecutorOptions,
     ) -> Result<Self, ExecutorError> {
-        todo!("W7-03b")
+        let scratch_parent = options
+            .scratch_parent
+            .unwrap_or_else(|| std::env::temp_dir().join(SCRATCH_PARENT_NAME));
+        let disk_cache_directory = scratch_parent.join(new_scratch_directory_name());
+        let metrics = Arc::new(ReviewMetrics::new());
+        // Evaluated ONCE and captured by value (C# closes over the local, not the profile).
+        let is_original = profile.loading_mode == LoadingMode::Original;
+        let width_profile = profile.clone();
+
+        let mut config = PreviewServiceConfig::new(
+            Arc::clone(&metrics),
+            Arc::new(move || is_original),
+            PreviewServiceConfig::width_only(Arc::new(move || width_profile.target_width())),
+            platform_codec,
+            payload_codec,
+        );
+        config.capacity_bytes = perf_options::IMAGE_CACHE_CAPACITY_BYTES;
+        config.disk_cache_directory = Some(disk_cache_directory.clone());
+        // ALWAYS `Some`: the diagnostic variable must not turn the disk cache on or off in a benchmark.
+        config.disable_disk_cache_override = Some(!profile.disk_cache);
+        config.decoder = options.decoder;
+        config.physical_memory_bytes = options.physical_memory_bytes;
+        let preview_service = Arc::new(PreviewImageService::new(config)?);
+
+        match Self::build_preload(profile, files, &preview_service, &metrics, options.has_headroom) {
+            Ok((preload_target, preload_scheduler)) => Ok(Self {
+                metrics,
+                preview_service,
+                preload_scheduler,
+                disk_cache_directory,
+                preload_target,
+                last_preload: Mutex::new(None),
+                teardown: Mutex::new(TeardownHandle::completed()),
+                log: options.log.unwrap_or_else(|| Arc::new(DefaultFileLog) as Arc<dyn Log>),
+                prune_wait_timeout: options.prune_wait_timeout,
+                disposed: AtomicBool::new(false),
+            }),
+            Err(error) => {
+                // Do not leak the service's persist workers when the construction fails half way.
+                preview_service.shutdown_persist_workers();
+                Err(error)
+            }
+        }
+    }
+
+    /// Steps 4 to 6 of [`Self::new`]: the catalog snapshot, the windowed target and the scheduler.
+    fn build_preload(
+        profile: &BenchmarkProfile,
+        files: &[String],
+        preview_service: &Arc<PreviewImageService>,
+        metrics: &Arc<ReviewMetrics>,
+        has_headroom: Option<HasHeadroomFn>,
+    ) -> Result<(Arc<WindowedPreloadTarget>, PreloadScheduler), ExecutorError> {
+        let entries = files
+            .iter()
+            .map(CatalogEntry::new)
+            .collect::<Result<Vec<_>, _>>()
+            .map_err(|_| ExecutorError::InvalidPath(PathError::Argument))?;
+        let catalog_entries: Arc<[CatalogEntry]> = Arc::from(entries);
+
+        let inner: Arc<dyn PreloadTarget> = Arc::clone(preview_service) as Arc<dyn PreloadTarget>;
+        let preload_target = Arc::new(WindowedPreloadTarget::new(inner, files, profile)?);
+
+        let preload_options = PreloadOptions {
+            worker_count: profile.workers,
+            memory_load_limit: perf_options::PRELOAD_MEMORY_LOAD_LIMIT,
+            reserve_bytes: profile.memory_reserve_bytes,
+            // A profile without `full_folder` must never escalate to a whole-folder pass, however small the folder.
+            full_folder_threshold_bytes: if profile.full_folder {
+                preview_service.capacity_bytes()
+            } else {
+                0
+            },
+            window: PreloadWindow::DEFAULT,
+        };
+        let memory_probe = choose_memory_probe(has_headroom, Arc::new(DefaultFileLog));
+        let target: Arc<dyn PreloadTarget> = Arc::clone(&preload_target) as Arc<dyn PreloadTarget>;
+        let scheduler = PreloadScheduler::new(
+            target,
+            Arc::clone(metrics),
+            Arc::new(move || Ok(Arc::clone(&catalog_entries))),
+            memory_probe,
+            PreloadSchedulerDeps {
+                options: Some(preload_options),
+                ..PreloadSchedulerDeps::default()
+            },
+        );
+        Ok((preload_target, scheduler))
     }
 
     /// C# `EvictForColdDecode(path)`: `service.evict_cached_path(path, Some(&|normalized|
@@ -432,7 +567,12 @@ impl BenchmarkImageExecutor {
     /// (`PreviewError::InvalidPath`; `PreviewError::SourceBytes` is unreachable: no source-bytes cache is configured).
     /// `clear_disk` is not reached after an `Err` (C# threw before it).
     pub fn evict_for_cold_decode(&self, path: &str) -> Result<(), PreviewError> {
-        todo!("W7-03b")
+        self.preview_service.evict_cached_path(
+            path,
+            Some(&|normalized: &str| self.preload_scheduler.remove_preloaded_keys_for_path(normalized)),
+        )?;
+        self.preview_service.clear_disk();
+        Ok(())
     }
 
     /// C# `DecodeAsync(path, token)` minus the await: does everything C# does synchronously and returns the
@@ -447,35 +587,53 @@ impl BenchmarkImageExecutor {
     ///    only when the image really sits in RAM; a cold decode never counts a hit and never consumes.
     /// 4. `Ok(service.get_preview(path, &key))`.
     pub fn decode_async(&self, path: &str, token: &CancelToken) -> Result<PreviewHandle, PreviewError> {
-        todo!("W7-03b")
+        token.check().map_err(|_| PreviewError::Canceled)?;
+        let key = self
+            .preview_service
+            .get_current_cache_key(path)
+            .map_err(PreviewError::Key)?;
+        // Both conditions, in this order: the key is consumed only when the image really sits in RAM.
+        if self.preview_service.try_get_cached_preview(&key).is_some()
+            && self.preload_scheduler.try_consume_preloaded_key(&key)
+        {
+            self.metrics.record_preload_hit();
+        }
+        Ok(self.preview_service.get_preview(path, &key))
     }
 
     /// `decode_async(..)?.wait()`.
     pub fn decode(&self, path: &str, token: &CancelToken) -> PreviewResult {
-        todo!("W7-03b")
+        self.decode_async(path, token)?.wait()
     }
 
     /// C# `Metrics`: `metrics.snapshot()` (cumulative since the executor was built).
     pub fn metrics(&self) -> ReviewMetricsSnapshot {
-        todo!("W7-03b")
+        self.metrics.snapshot()
     }
 
     /// C# `WarmPreloadAround(center)`: `preload_target.set_center(center)` BEFORE the kick, then
     /// `*last_preload = Some(scheduler.preload_around(center))` (the previous handle is overwritten, not awaited).
     pub fn warm_preload_around(&self, center: i32) {
-        todo!("W7-03b")
+        // The windowed target must know the new centre before the scheduler asks it about candidates.
+        self.preload_target.set_center(center);
+        let run = self.preload_scheduler.preload_around(center);
+        *lock(&self.last_preload) = Some(run);
     }
 
     /// C# `IsPreviewCached(path)` test seam: `service.try_get_cached_preview(&service.get_current_cache_key(path)?)`
     /// `.is_some()`. `Err` for a missing file (C# threw).
     pub fn is_preview_cached(&self, path: &str) -> Result<bool, CacheKeyError> {
-        todo!("W7-03b")
+        let key = self.preview_service.get_current_cache_key(path)?;
+        Ok(self.preview_service.try_get_cached_preview(&key).is_some())
     }
 
     /// C# `WhenPreloadSettledAsync()`: waits for the run started by the last `warm_preload_around` (returns at once when
     /// there was none). Clone the handle out of the mutex BEFORE waiting.
     pub fn when_preload_settled(&self) {
-        todo!("W7-03b")
+        let run = lock(&self.last_preload).clone();
+        if let Some(run) = run {
+            run.wait();
+        }
     }
 
     /// C# `DiskCacheDirectory` test seam.
@@ -491,7 +649,7 @@ impl BenchmarkImageExecutor {
     /// C# `TeardownBackgroundTask`: [`TeardownHandle::completed`] until `dispose` has run, then the handle of the
     /// background pass.
     pub fn teardown_background_task(&self) -> TeardownHandle {
-        todo!("W7-03b")
+        lock(&self.teardown).clone()
     }
 
     /// C# `DisposeAsync()` (blocking). Idempotent (a second call returns at once; the C# second call re-ran harmless
@@ -511,7 +669,49 @@ impl BenchmarkImageExecutor {
     ///    failure logs `Benchmark scratch directory could not be removed: {dir}` with the `io::Error`, completes the
     ///    handle and returns.
     pub fn dispose(&self) {
-        todo!("W7-03b")
+        if self.disposed.swap(true, Ordering::AcqRel) {
+            return;
+        }
+        // 1. Cancel first so the fire-and-forget last preload unwinds instead of running against a disposed scheduler.
+        self.preload_scheduler.cancel();
+        // 2. A failed (or panicking) background preload must not fail the teardown.
+        let last = lock(&self.last_preload).clone();
+        if let Some(run) = last {
+            let _ = panic::catch_unwind(AssertUnwindSafe(|| run.wait()));
+        }
+        // 3.
+        self.preload_scheduler.dispose();
+        // 4. Only after every persist write has finished is it safe to delete the scratch directory.
+        if panic::catch_unwind(AssertUnwindSafe(|| self.preview_service.shutdown_persist_workers())).is_err() {
+            self.log
+                .error("Benchmark persist workers failed to shut down cleanly", None);
+        }
+        // 5. Prune wait and directory delete run on a background thread that this call does not await.
+        let handle = TeardownHandle::pending();
+        *lock(&self.teardown) = handle.clone();
+        let service = Arc::clone(&self.preview_service);
+        let dir = self.disk_cache_directory.clone();
+        let timeout = self.prune_wait_timeout;
+        let log = Arc::clone(&self.log);
+        let thread_handle = handle.clone();
+        let spawned = std::thread::Builder::new()
+            .name("benchmark-scratch-teardown".to_owned())
+            .spawn(move || {
+                let _ = panic::catch_unwind(AssertUnwindSafe(|| {
+                    delete_scratch_directory_after_prune(&service, &dir, timeout, log.as_ref());
+                }));
+                thread_handle.finish();
+            });
+        if let Err(error) = spawned {
+            self.log.error(
+                &format!(
+                    "Benchmark scratch directory could not be removed: {}",
+                    self.disk_cache_directory.display()
+                ),
+                Some(&error),
+            );
+            handle.finish();
+        }
     }
 }
 
@@ -528,10 +728,82 @@ pub(crate) fn delete_scratch_directory_after_prune(
     timeout: Duration,
     log: &dyn Log,
 ) {
-    todo!("W7-03b")
+    let outcome = panic::catch_unwind(AssertUnwindSafe(|| -> Result<(), std::io::Error> {
+        if !service.wait_for_prune(timeout) {
+            log.error(
+                &format!(
+                    "Benchmark disk cache prune did not finish in time; leaving scratch directory: {}",
+                    dir.display()
+                ),
+                None,
+            );
+            return Ok(());
+        }
+        if dir.exists() {
+            std::fs::remove_dir_all(dir)?;
+        }
+        Ok(())
+    }));
+    let failure: Option<Box<dyn Error + 'static>> = match outcome {
+        Ok(Ok(())) => None,
+        Ok(Err(error)) => Some(Box::new(error)),
+        Err(_) => Some("the teardown pass panicked".into()),
+    };
+    if let Some(error) = failure {
+        log.error(
+            &format!("Benchmark scratch directory could not be removed: {}", dir.display()),
+            Some(error.as_ref()),
+        );
+    }
 }
 
 /// Picks the memory probe: `Some(f)` => `DelegateMemoryProbe::new(f)`, `None` => `pr_platform_win::WindowsMemoryProbe`.
 pub(crate) fn choose_memory_probe(has_headroom: Option<HasHeadroomFn>, log: Arc<dyn Log>) -> Arc<dyn MemoryProbe> {
-    todo!("W7-03b")
+    match has_headroom {
+        Some(has_headroom) => Arc::new(DelegateMemoryProbe::new(move |load: f64| has_headroom(load))),
+        None => Arc::new(WindowsMemoryProbe::new(log)),
+    }
+}
+
+/// `Log` over the process-wide `FileLog::default_instance()` (C# `FileLog.Default`), resolved on every call.
+struct DefaultFileLog;
+
+impl Log for DefaultFileLog {
+    fn enabled(&self) -> bool {
+        FileLog::default_instance().enabled()
+    }
+
+    fn info(&self, message: &str) {
+        FileLog::default_instance().info(message);
+    }
+
+    fn warn(&self, message: &str) {
+        FileLog::default_instance().warn(message);
+    }
+
+    fn error(&self, message: &str, error: Option<&(dyn Error + 'static)>) {
+        FileLog::default_instance().error(message, error);
+    }
+}
+
+#[cfg(test)]
+mod default_file_log_tests {
+    use super::*;
+
+    /// `enabled` mirrors the process-wide log in both states (kills `-> true` / `-> false`). Only the flag is toggled and then
+    /// restored; no message is written, so the real app log is untouched. `info`/`warn`/`error` forward to the process-wide
+    /// log, which is not injectable without writing the real app log, so they are not asserted here.
+    #[test]
+    fn enabled_mirrors_the_process_wide_log() {
+        let global = FileLog::default_instance();
+        let original = global.enabled();
+        let log = DefaultFileLog;
+        global.set_enabled(true);
+        let when_on = log.enabled();
+        global.set_enabled(false);
+        let when_off = log.enabled();
+        global.set_enabled(original);
+        assert!(when_on, "enabled must follow the global log when on");
+        assert!(!when_off, "enabled must follow the global log when off");
+    }
 }
