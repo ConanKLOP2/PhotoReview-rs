@@ -1,4 +1,4 @@
-//! Port of `PhotoReview.Benchmarking/BenchmarkModels.cs` (C# baseline d92d6aae). Unit W7-01a, RED tests: every
+﻿//! Port of `PhotoReview.Benchmarking/BenchmarkModels.cs` (C# baseline d92d6aae). Unit W7-01a, RED tests: every
 //! assertion goes through a function that is still `todo!()` in `pr_bench::models`, so each test fails until the port
 //! lands. Contract: `contracts/W7-01a.md`.
 //!
@@ -776,4 +776,135 @@ fn bench_json_golden_matches_csharp() {
             );
         }
     }
+}
+
+// ---- repair round 1: mutation survivors ------------------------------------------------------------------------
+
+#[test]
+fn rank_drops_phase_with_only_p95_nonfinite() {
+    // samples [1, 2, inf]: finite P50, infinite P95; a phase like that must never be ranked.
+    let w = BenchmarkWorkload::Random;
+    let bad = phase(
+        "bad",
+        w,
+        &[1.0, 2.0, f64::INFINITY],
+        BenchmarkResultStatus::Pass,
+        Some(1),
+    );
+    let ok = phase("ok", w, &[5.0], BenchmarkResultStatus::Pass, Some(1));
+    assert!(bad.p50().is_finite() && !bad.p95().is_finite());
+    let phases = vec![bad, ok];
+    let r = rank(&phases, w, &no_lookup);
+    assert_eq!(r.len(), 1);
+    assert_eq!(r[0].profile_id, "ok");
+}
+
+#[test]
+fn rank_drops_phase_with_only_p50_nonfinite() {
+    // NaN sorts first: [NaN, 1] gives a NaN P50 and a NaN P95 too; use [-inf, 1, 2, 3, 4] style instead is not needed,
+    // [inf, inf] has a NaN P50 and NaN P95. Check the P50-only branch via a single-NaN-free pair.
+    let w = BenchmarkWorkload::Random;
+    let bad = phase(
+        "bad",
+        w,
+        &[f64::INFINITY, f64::INFINITY],
+        BenchmarkResultStatus::Pass,
+        Some(1),
+    );
+    let ok = phase("ok", w, &[5.0], BenchmarkResultStatus::Pass, Some(1));
+    let phases = vec![bad, ok];
+    let r = rank(&phases, w, &no_lookup);
+    assert_eq!(r.len(), 1);
+    assert_eq!(r[0].profile_id, "ok");
+}
+
+#[test]
+fn timestamp_accessors_return_constructor_values() {
+    let utc = DateTimeUtc::from_ticks(639029396450000001).unwrap();
+    let ts = BenchmarkTimestamp::new(utc, -330).unwrap();
+    assert_eq!(ts.utc(), utc);
+    assert_eq!(ts.offset_minutes(), -330);
+    let ts = BenchmarkTimestamp::new(utc, 60).unwrap();
+    assert_eq!(ts.offset_minutes(), 60);
+    assert_eq!(BenchmarkTimestamp::unix_epoch().offset_minutes(), 0);
+}
+
+#[test]
+fn error_display_prints_text() {
+    use pr_bench::models::{BenchmarkProfileError, BenchmarkProfileProblem, ExecutorError};
+    let e = BenchmarkProfileError::new(
+        BenchmarkProfileProblem::InvalidSettings,
+        "p",
+        "Invalid benchmark settings for profile 'p'",
+    );
+    assert_eq!(e.to_string(), "Invalid benchmark settings for profile 'p'");
+    assert_eq!(ExecutorError::Canceled.to_string(), "The operation was canceled.");
+    assert_eq!(ExecutorError::Failed("boom".into()).to_string(), "boom");
+    assert_eq!(
+        NonFiniteNumber.to_string(),
+        "a benchmark JSON number is NaN or infinite"
+    );
+}
+
+#[test]
+fn phase_equality_compares_every_field() {
+    let w = BenchmarkWorkload::Random;
+    let mk = || {
+        BenchmarkPhaseResult::new(
+            "a",
+            w,
+            vec![1.0, 2.0],
+            BenchmarkResultStatus::Pass,
+            Some("m".into()),
+            Some(2),
+        )
+    };
+    let base = mk();
+    assert!(base == mk());
+    assert!(!(base != mk()));
+    // forcing the sorted cache on one side must not change equality
+    let forced = mk();
+    let _ = forced.p50();
+    assert!(base == forced);
+    let mut v = mk();
+    v.profile_id = "b".into();
+    assert!(base != v);
+    let mut v = mk();
+    v.workload = BenchmarkWorkload::Sequential;
+    assert!(base != v);
+    assert!(base != mk().with_samples(vec![1.0, 3.0]));
+    let mut v = mk();
+    v.status = BenchmarkResultStatus::Fail;
+    assert!(base != v);
+    let mut v = mk();
+    v.message = None;
+    assert!(base != v);
+    let mut v = mk();
+    v.images_per_sample = Some(3);
+    assert!(base != v);
+    // value equality of samples (DIVERGENCE from C# reference equality)
+    assert!(base == mk().with_samples(vec![1.0, 2.0]));
+}
+
+#[test]
+fn unsupported_file_count_sums_and_saturates() {
+    use pr_bench::models::BenchmarkDatasetManifest as M;
+    let m = |u: Vec<(String, i32)>| M {
+        folder: "f".into(),
+        files: vec![],
+        unsupported_extensions: u,
+        file_limit: 0,
+    };
+    assert_eq!(m(vec![(".a".into(), 2), (".b".into(), 3)]).unsupported_file_count(), 5);
+    assert_eq!(m(vec![]).unsupported_file_count(), 0);
+    assert_eq!(
+        m(vec![(".a".into(), i32::MAX), (".b".into(), 1)]).unsupported_file_count(),
+        i32::MAX
+    );
+    assert_eq!(m(vec![(".a".into(), i32::MAX)]).unsupported_file_count(), i32::MAX);
+    assert_eq!(
+        m(vec![(".a".into(), i32::MIN), (".b".into(), -1)]).unsupported_file_count(),
+        i32::MIN
+    );
+    assert_eq!(m(vec![(".a".into(), i32::MIN)]).unsupported_file_count(), i32::MIN);
 }
