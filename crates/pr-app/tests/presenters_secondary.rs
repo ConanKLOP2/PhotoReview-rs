@@ -233,6 +233,20 @@ fn diagnostics_formats_with_current_culture() {
 }
 
 #[test]
+fn diagnostics_hit_rate_is_zero_percent_when_only_misses_exist() {
+    // new: T3 (the zero test uses hits + misses; zero hits with some misses is 0.0%, not N/A)
+    let snapshot = ReviewMetricsSnapshot {
+        cache_hits: 0,
+        cache_misses: 5,
+        ..Default::default()
+    };
+    assert_eq!(
+        DiagnosticsPresenter::build(&snapshot, None, &english(), &EnUs).hit_rate,
+        "0.0%"
+    );
+}
+
+#[test]
 fn diagnostics_explorer_snapshot() {
     // C#: SecondaryDialogPresenterTests.Diagnostics_ExplorerSnapshot (line 250)
     let l = english();
