@@ -214,14 +214,30 @@ pub fn profile_key(profile_id: &str, field: &str) -> String {
 /// The `.NET char.ToUpperInvariant` mapping for one char (trap T2): the one-char `to_uppercase` result, else the char
 /// itself (`ß` stays `ß`). `ı` (U+0131) stays `ı` as the invariant culture does (golden `key-dotless-i`).
 fn invariant_upper(c: char) -> char {
-    if c == '\u{0131}' {
+    // .NET works on UTF-16 code units, so a supplementary char (surrogate pair) is never case-mapped.
+    if u32::from(c) > 0xFFFF {
         return c;
+    }
+    match u32::from(c) {
+        // Chars the .NET 10 invariant table leaves alone but newer Unicode tables (Rust) map: `ı` (U+0131) and the
+        // later additions U+019B, U+0264, U+1C8A, U+A7CD, U+A7CF, U+A7D3, U+A7D5, U+A7DB.
+        0x0131 | 0x019B | 0x0264 | 0x1C8A | 0xA7CD | 0xA7CF | 0xA7D3 | 0xA7D5 | 0xA7DB => return c,
+        // Greek letters with iota subscript: .NET maps them to the titlecase letter (one char), where Rust's
+        // `to_uppercase` yields two chars (letter + `Ι`).
+        0x1F80..=0x1F87 | 0x1F90..=0x1F97 | 0x1FA0..=0x1FA7 => return shifted(c, 8),
+        0x1FB3 | 0x1FC3 | 0x1FF3 => return shifted(c, 9),
+        _ => {}
     }
     let mut mapped = c.to_uppercase();
     match (mapped.next(), mapped.next()) {
         (Some(upper), None) => upper,
         _ => c,
     }
+}
+
+/// `c` moved up by `delta` code points (only used for BMP Greek letters, so the result is always valid).
+fn shifted(c: char, delta: u32) -> char {
+    char::from_u32(u32::from(c) + delta).unwrap_or(c)
 }
 
 /// Catalog text of `key` when the localizer has it, else `fallback` (C# `Lookup`).

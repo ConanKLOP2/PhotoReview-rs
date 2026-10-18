@@ -565,3 +565,35 @@ fn progress_message_passes_unknown_text_through_unchanged() {
     assert_eq!(progress_message("ok", &en), "ok");
     assert_eq!(progress_message("", &en), "");
 }
+
+/// .NET 10 `char.ToUpperInvariant` after a `-`: iota-subscript Greek letters map to their titlecase form, chars
+/// that only newer Unicode tables map stay unchanged, supplementary chars (surrogate pairs in .NET) are untouched.
+/// Expected values come from a .NET 10 dump of all 65536 BMP chars.
+#[test]
+fn profile_key_upper_matches_dotnet_invariant_table() {
+    let key = |c: char| profile_key(&format!("a-{c}"), "n");
+    let expect = |c: char, upper: u32| {
+        assert_eq!(
+            key(c),
+            format!("benchmark.profile.a{}.n", char::from_u32(upper).unwrap()),
+            "U+{:04X}",
+            u32::from(c)
+        );
+    };
+    for base in [0x1F80_u32, 0x1F90, 0x1FA0] {
+        for i in 0..8 {
+            expect(char::from_u32(base + i).unwrap(), base + i + 8);
+        }
+    }
+    for (from, to) in [(0x1FB3_u32, 0x1FBC_u32), (0x1FC3, 0x1FCC), (0x1FF3, 0x1FFC)] {
+        expect(char::from_u32(from).unwrap(), to);
+    }
+    for same in [
+        0x019B_u32, 0x0264, 0x1C8A, 0xA7CD, 0xA7CF, 0xA7D3, 0xA7D5, 0xA7DB, 0x0131, 0x00DF, 0x1F88, 0x1E9E,
+    ] {
+        expect(char::from_u32(same).unwrap(), same);
+    }
+    expect('\u{E9}', 0xC9);
+    expect('\u{3B1}', 0x391);
+    expect('\u{10428}', 0x10428);
+}
