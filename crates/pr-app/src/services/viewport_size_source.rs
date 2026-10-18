@@ -5,16 +5,17 @@
 //! Each box is packed into ONE 64-bit atomic (width in the high 32 bits, height in the low 32 bits), so a reader never pairs the
 //! width of one box with the height of another (C# `Volatile` on one `long`). No `unsafe`: `AtomicI64` only.
 
-#![allow(unused_variables, dead_code)] // D11: stub bodies are todo!(); removed with the last todo!() of this file.
-
 use std::fmt;
-use std::sync::atomic::AtomicI64;
+use std::sync::atomic::{AtomicI64, Ordering};
 use std::sync::{Arc, RwLock};
 
 use pr_imaging::decode_types::DecodeBox;
 
 /// The viewport accessor: returns the client size `(width, height)` in device-independent units (C# `Func<(double, double)>`).
 pub type ViewportSizeFn = Arc<dyn Fn() -> (f64, f64) + Send + Sync>;
+
+/// Packed value of "no startup prediction" (R-VS-4): every negative packed value reads back as `None`.
+const NO_PREDICTION: i64 = -1;
 
 /// C# `ViewportSizeSource` (52 lines).
 pub struct ViewportSizeSource {
@@ -29,37 +30,53 @@ pub struct ViewportSizeSource {
 impl ViewportSizeSource {
     /// Default state: viewport `(0, 0)`, target box unbounded, no startup prediction (R-VS-1).
     pub fn new() -> Self {
-        todo!()
+        let get: ViewportSizeFn = Arc::new(|| (0.0, 0.0));
+        Self {
+            get: RwLock::new(get),
+            packed_target_decode_box: AtomicI64::new(pack_box(DecodeBox::UNBOUNDED)),
+            packed_startup_prediction: AtomicI64::new(NO_PREDICTION),
+        }
     }
 
     /// C# `Get()`: the current client size from the installed accessor (`(0, 0)` until the window installs one).
     pub fn viewport_size(&self) -> (f64, f64) {
-        todo!()
+        // The accessor is cloned out so the lock is not held while it runs (it may read the window).
+        let get = match self.get.read() {
+            Ok(guard) => Arc::clone(&guard),
+            Err(poisoned) => Arc::clone(&poisoned.into_inner()),
+        };
+        get()
     }
 
     /// C# `Get` setter: installs the window's accessor (R-VS-5). Takes `&self`: the source is shared with the window.
     pub fn set_viewport_size_fn(&self, get: ViewportSizeFn) {
-        todo!()
+        match self.get.write() {
+            Ok(mut guard) => *guard = get,
+            Err(poisoned) => *poisoned.into_inner() = get,
+        }
     }
 
     /// C# `TargetDecodeBox` getter: `DecodeBox` published with [`Self::set_target_decode_box`]; lock-free (R-VS-2).
     pub fn target_decode_box(&self) -> DecodeBox {
-        todo!()
+        unpack_box(self.packed_target_decode_box.load(Ordering::Acquire))
     }
 
     /// C# `TargetDecodeBox` setter: publishes width and height together (R-VS-2).
     pub fn set_target_decode_box(&self, value: DecodeBox) {
-        todo!()
+        self.packed_target_decode_box.store(pack_box(value), Ordering::Release);
     }
 
     /// C# `StartupPrediction` getter: `None` when the packed value is negative (R-VS-4).
     pub fn startup_prediction(&self) -> Option<DecodeBox> {
-        todo!()
+        let packed = self.packed_startup_prediction.load(Ordering::Acquire);
+        // R-VS-4: a negative packed value (including the -1 sentinel) reads back as no prediction.
+        (packed >= 0).then(|| unpack_box(packed))
     }
 
     /// C# `StartupPrediction` setter: `None` stores the `-1` sentinel (R-VS-4).
     pub fn set_startup_prediction(&self, value: Option<DecodeBox>) {
-        todo!()
+        let packed = value.map_or(NO_PREDICTION, pack_box);
+        self.packed_startup_prediction.store(packed, Ordering::Release);
     }
 }
 
@@ -71,19 +88,24 @@ impl Default for ViewportSizeSource {
 
 impl fmt::Debug for ViewportSizeSource {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        todo!()
+        f.debug_struct("ViewportSizeSource")
+            .field("target_decode_box", &self.target_decode_box())
+            .field("startup_prediction", &self.startup_prediction())
+            .finish_non_exhaustive()
     }
 }
 
 /// Packs a box as C# `((long)width << 32) | (uint)height` (R-VS-3). Private to the module; exposed to tests through the
 /// setters/getters only.
 fn pack_box(value: DecodeBox) -> i64 {
-    todo!()
+    // C# ((long)width << 32) | (uint)height. The shift never panics; the high word keeps the sign of the width.
+    (i64::from(value.width) << 32) | i64::from(value.height as u32)
 }
 
 /// Unpacks as C# `new DecodeBox((int)(packed >> 32), unchecked((int)packed))` (R-VS-3: arithmetic shift, low 32 bits).
 fn unpack_box(packed: i64) -> DecodeBox {
-    todo!()
+    // Arithmetic shift for the width, low 32 bits for the height (R-VS-3).
+    DecodeBox::new((packed >> 32) as i32, packed as i32)
 }
 
 #[cfg(test)]

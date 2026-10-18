@@ -303,3 +303,26 @@ fn pixel_rect_width_wraps_without_panic() {
     let wide = rect(i32::MIN, 0, i32::MAX, 0);
     assert_eq!(wide.width(), i32::MAX.wrapping_sub(i32::MIN));
 }
+
+// Added by the porter (mutation check M1, R-IV-4): a zero width with a positive height is not a prediction, in both forms.
+#[test]
+fn predict_client_size_zero_width_with_height_returns_none() {
+    let normal = predict_client_size(false, rect(0, 0, 16, 100), rect(0, 0, 1920, 1032), INSETS_96);
+    assert_eq!(normal, None, "normal: bounds width equals the frame width");
+    let maximized = predict_client_size(true, rect(0, 0, 0, 0), rect(0, 0, 0, 1032), INSETS_96);
+    assert_eq!(maximized, None, "maximized: work area width is zero");
+}
+
+// Added by the porter (mutation check M2, T-4): 1280.5 rounds to 1280 (half to even), not 1281. The quantum of 128 makes the two
+// results differ (1280 stays 1280, 1281 quantises to 1408), so the rounding rule is observable in the decode box.
+#[test]
+fn predict_decode_box_default_size_ties_to_even_is_observable() {
+    let probe = FakeProbe {
+        insets: Some(rect(0, 0, 0, 0)),
+        ..FakeProbe::single_monitor()
+    };
+
+    let result = predict_decode_box(None, 1280.5, 800.0, 1.0, &probe);
+
+    assert_eq!(result, Some(DecodeBox::new(1280, 896)));
+}
