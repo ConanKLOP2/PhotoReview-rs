@@ -452,3 +452,12 @@ unit. A failed unit blocks only its dependents.
 - **Equivalent mutants dominate:** bound checks and `|` to `^` on disjoint bits make up most survivors; record them with a one-line reason so verifiers stop re-deriving them.
 - **Native tests skip:** the corpus (P-30) is not on this machine and `#[ignore = native]` tests need the pinned DLLs staged; parity for those is unproven.
 - **Process:** unique `CARGO_TARGET_DIR` per agent; remove it when the unit is done. A background job started with a trailing `&` is killed when the tool call ends; use `run_in_background`.
+
+## 17. Lessons from Wave 7 (2026-10-18)
+
+- **Result:** 8 units merged on `integration/wave-7` (W7-01a, 01b, 02a, 02b, 03a, 03b, 03c, 03d). W7-01a/01b/03a passed; W7-02a, 02b, 03b and 03d had FAIL verdicts and were merged anyway because they build; W7-03c was blocked with no verdict.
+- **Integration breakage:** W7-03b re-exported `models::BenchmarkProfile`, breaking a field-by-field stand-in in `pr-bench/tests/workload_runner.rs` (E0063); fixed in the integration branch. Tests must not rebuild shared types by hand.
+- **Verifier probes stay behind:** the W7-03b worktree kept an untracked verifier probe and could not be removed without `--force`; probes belong in a scratch dir outside the worktree.
+- **Fix branches not re-verified:** `wu/W7-02a` got a fix after the FAIL verdict and was not merged or re-verified; the lead must re-run verification after repair commits.
+- **Data-safety finding:** `claim_cache_directory("")` writes a marker into the current directory (W7-03d); empty-path guards need a dedicated test from the contract stage.
+- **Unverified units merged:** a unit reported blocked with no verdict (W7-03c) still merged; PARITY marks it Partial.
