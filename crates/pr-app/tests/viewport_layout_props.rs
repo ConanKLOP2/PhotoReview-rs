@@ -113,11 +113,7 @@ fn random_inputs(seed: u64) -> Vec<ViewportInput> {
 /// `ViewportLayoutMath.SanitizeLength` (C# 133) as a reference model: finite and `> 0` keeps the value, else `+0.0`.
 /// The production function is private, so the property test restates it.
 fn sanitize_length_model(value: f64) -> f64 {
-    if value.is_finite() && value > 0.0 {
-        value
-    } else {
-        0.0
-    }
+    if value.is_finite() && value > 0.0 { value } else { 0.0 }
 }
 
 /// Port of `ClampedOffsets_AreAlwaysWithinZeroAndTheMaximum_AndClampingIsIdempotent` (seed 1; requests from seed 16).
