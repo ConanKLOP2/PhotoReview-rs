@@ -64,20 +64,9 @@ fn profile_for_id(id: &str) -> BenchmarkProfile {
     }
 }
 
-/// The executor's own profile type. `image_executor` carries a W7-01 stand-in until wiring, which makes it
-/// `models::BenchmarkProfile`; this conversion is the only place that knows about the stand-in.
+/// The executor's profile type is `models::BenchmarkProfile` (W7-03b wired it), so the conversion is a clone.
 fn executor_profile(profile: &BenchmarkProfile) -> ExecutorProfile {
-    ExecutorProfile {
-        id: profile.id.clone(),
-        loading_mode: profile.loading_mode,
-        workers: profile.workers,
-        next_window: profile.next_window,
-        previous_window: profile.previous_window,
-        full_folder: profile.full_folder,
-        memory_reserve_bytes: profile.memory_reserve_bytes,
-        disk_cache: profile.disk_cache,
-        detailed_logging: profile.detailed_logging,
-    }
+    profile.clone()
 }
 
 fn registry(id: &str) -> BenchmarkProfile {
