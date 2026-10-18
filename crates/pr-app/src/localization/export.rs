@@ -244,11 +244,20 @@ pub fn read_notes(path: &Path) -> BTreeMap<String, String> {
         return notes;
     };
     for (name, value) in members {
+        // C# reads the name of every root member and the string of every kept value; a lone surrogate throws there
+        // (unhandled in C#, an empty map here).
+        let Some(name) = name else {
+            return BTreeMap::new();
+        };
         if name.starts_with('_') {
             continue;
         }
-        if let Node::Str(text) = value {
-            notes.insert(name, text);
+        match value {
+            Node::Str(Some(text)) => {
+                notes.insert(name, text);
+            }
+            Node::Str(None) => return BTreeMap::new(),
+            _ => {}
         }
     }
     notes
@@ -352,10 +361,44 @@ fn write_new_file(path: &Path, bytes: &[u8]) -> io::Result<()> {
     file.write_all(bytes)
 }
 
-/// Text of file bytes as `File.ReadAllText` sees them for UTF-8: one BOM is removed, invalid bytes become U+FFFD.
+/// Text of file bytes as `File.ReadAllText` sees them: a UTF-32 LE/BE, UTF-16 LE/BE or UTF-8 BOM selects the encoding
+/// (and is removed); without a BOM the bytes are UTF-8. Invalid sequences become U+FFFD.
 fn decode_text(bytes: &[u8]) -> String {
+    // UTF-32 LE must be tested before UTF-16 LE (its BOM starts with FF FE).
+    if let Some(rest) = bytes.strip_prefix(&[0xFF, 0xFE, 0x00, 0x00]) {
+        return decode_utf32(rest, u32::from_le_bytes);
+    }
+    if let Some(rest) = bytes.strip_prefix(&[0x00, 0x00, 0xFE, 0xFF]) {
+        return decode_utf32(rest, u32::from_be_bytes);
+    }
+    if let Some(rest) = bytes.strip_prefix(&[0xFF, 0xFE]) {
+        return decode_utf16(rest, u16::from_le_bytes);
+    }
+    if let Some(rest) = bytes.strip_prefix(&[0xFE, 0xFF]) {
+        return decode_utf16(rest, u16::from_be_bytes);
+    }
     let bytes = bytes.strip_prefix(&[0xEF, 0xBB, 0xBF]).unwrap_or(bytes);
     String::from_utf8_lossy(bytes).into_owned()
+}
+
+fn decode_utf16(bytes: &[u8], unit: fn([u8; 2]) -> u16) -> String {
+    let units = bytes.chunks(2).map(|pair| match pair {
+        [a, b] => unit([*a, *b]),
+        _ => 0xFFFD, // a dangling odd byte
+    });
+    char::decode_utf16(units)
+        .map(|r| r.unwrap_or(char::REPLACEMENT_CHARACTER))
+        .collect()
+}
+
+fn decode_utf32(bytes: &[u8], unit: fn([u8; 4]) -> u32) -> String {
+    bytes
+        .chunks(4)
+        .map(|quad| match quad {
+            [a, b, c, d] => char::from_u32(unit([*a, *b, *c, *d])).unwrap_or(char::REPLACEMENT_CHARACTER),
+            _ => char::REPLACEMENT_CHARACTER,
+        })
+        .collect()
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -827,8 +870,9 @@ const MAX_NOTES_DEPTH: usize = 64;
 /// A parsed value. Only what [`read_notes`] needs is kept: strings and object members. Arrays, numbers and literals
 /// are checked for syntax and then dropped.
 enum Node {
-    Str(String),
-    Object(Vec<(String, Node)>),
+    /// `None`: the string holds an unpaired surrogate escape. .NET accepts the document and only `GetString` throws.
+    Str(Option<String>),
+    Object(Vec<(Option<String>, Node)>),
     Other,
 }
 
@@ -873,6 +917,10 @@ impl LenientParser<'_> {
                             self.pos += 1;
                             if c == '\n' || c == '\r' {
                                 break;
+                            }
+                            // .NET rejects a line or paragraph separator inside a line comment.
+                            if c == '\u{2028}' || c == '\u{2029}' {
+                                return Err(());
                             }
                         }
                     }
@@ -984,14 +1032,15 @@ impl LenientParser<'_> {
         Ok(())
     }
 
-    fn string(&mut self) -> ParseResult<String> {
+    fn string(&mut self) -> ParseResult<Option<String>> {
         self.pos += 1;
         let mut out = String::new();
+        let mut lone_surrogate = false;
         loop {
             let c = self.peek().ok_or(())?;
             self.pos += 1;
             match c {
-                '"' => return Ok(out),
+                '"' => return Ok(if lone_surrogate { None } else { Some(out) }),
                 '\\' => {
                     let escape = self.peek().ok_or(())?;
                     self.pos += 1;
@@ -1004,7 +1053,10 @@ impl LenientParser<'_> {
                         'n' => out.push('\n'),
                         'r' => out.push('\r'),
                         't' => out.push('\t'),
-                        'u' => out.push(self.unicode_escape()?),
+                        'u' => match self.unicode_escape()? {
+                            Some(ch) => out.push(ch),
+                            None => lone_surrogate = true,
+                        },
                         _ => return Err(()),
                     }
                 }
@@ -1014,26 +1066,28 @@ impl LenientParser<'_> {
         }
     }
 
-    /// The character of a `\uXXXX` escape (the `\u` is consumed). A surrogate must come as a pair; a lone one is an
-    /// error (the notes reader then gives no notes, as for any unreadable file).
-    fn unicode_escape(&mut self) -> ParseResult<char> {
+    /// The character of a `\uXXXX` escape (the `\u` is consumed). `None` is an unpaired surrogate: .NET's reader
+    /// accepts it, and only `GetString` of that value throws, so the caller records it instead of failing.
+    fn unicode_escape(&mut self) -> ParseResult<Option<char>> {
         let unit = self.hex4()?;
-        let scalar = if (0xD800..=0xDBFF).contains(&unit) {
-            if self.peek() != Some('\\') || self.chars.get(self.pos + 1) != Some(&'u') {
-                return Err(());
+        if (0xD800..=0xDBFF).contains(&unit) {
+            if self.peek() == Some('\\') && self.chars.get(self.pos + 1) == Some(&'u') {
+                let saved = self.pos;
+                self.pos += 2;
+                let low = self.hex4()?;
+                if (0xDC00..=0xDFFF).contains(&low) {
+                    let scalar = 0x10000 + ((unit - 0xD800) << 10) + (low - 0xDC00);
+                    return Ok(char::from_u32(scalar));
+                }
+                // not a pair: the high surrogate is alone; the next escape is read again
+                self.pos = saved;
             }
-            self.pos += 2;
-            let low = self.hex4()?;
-            if !(0xDC00..=0xDFFF).contains(&low) {
-                return Err(());
-            }
-            0x10000 + ((unit - 0xD800) << 10) + (low - 0xDC00)
-        } else if (0xDC00..=0xDFFF).contains(&unit) {
-            return Err(());
-        } else {
-            unit
-        };
-        char::from_u32(scalar).ok_or(())
+            return Ok(None);
+        }
+        if (0xDC00..=0xDFFF).contains(&unit) {
+            return Ok(None);
+        }
+        Ok(char::from_u32(unit))
     }
 
     fn hex4(&mut self) -> ParseResult<u32> {
@@ -1115,10 +1169,13 @@ mod tests {
     }
 
     #[test]
-    fn lenient_parser_rejects_trailing_garbage_and_lone_surrogate() {
+    fn lenient_parser_rejects_trailing_garbage_and_marks_lone_surrogate() {
         let garbage: Vec<char> = "{\"a\":\"1\"} x".chars().collect();
         assert!(parse_lenient_document(&garbage).is_err());
         let surrogate: Vec<char> = "{\"a\":\"\\ud800\"}".chars().collect();
-        assert!(parse_lenient_document(&surrogate).is_err());
+        assert!(matches!(
+            parse_lenient_document(&surrogate),
+            Ok(Node::Object(members)) if matches!(members[0].1, Node::Str(None))
+        ));
     }
 }
