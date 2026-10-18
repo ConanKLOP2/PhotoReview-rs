@@ -343,18 +343,8 @@ impl DiagnosticsPresenter {
 /// C# `Path.GetFileName(string)` for the paths the app shows: the text after the last `\` or `/`; a path without a
 /// separator is returned as it is; a path ending in a separator gives `""`. Never a `Path` method (see contract trap T5).
 pub fn file_name(path: &str) -> &str {
-    // A drive prefix `X:` is the path root on Windows: `"C:x"` gives `"x"` and `"C:"` gives `""`.
-    let bytes = path.as_bytes();
-    let root = if bytes.len() >= 2 && bytes[0].is_ascii_alphabetic() && bytes[1] == b':' {
-        2
-    } else {
-        0
-    };
-    match path[root..].rfind(['\\', '/']) {
-        // The separators are ASCII, so `root + index + 1` is a char boundary.
-        Some(index) => &path[root + index + 1..],
-        None => &path[root..],
-    }
+    // The whole root (drive, UNC server and share, extended-prefix drive or UNC) is excluded, as .NET does.
+    pr_core::text::dotnet_path::get_file_name(path)
 }
 
 /// C# `BatchReviewPresenter` (static class).

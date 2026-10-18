@@ -667,3 +667,20 @@ fn file_name_drive_relative_like_dotnet() {
     assert_eq!(file_name("a:b:c"), "b:c");
     assert_eq!(file_name("plain"), "plain");
 }
+
+#[test]
+fn unc_and_extended_roots_have_empty_file_name() {
+    use pr_app::presenters::secondary::file_name;
+    for p in [
+        "\\\\server\\share",
+        "\\\\server\\share\\",
+        "//s/sh",
+        "\\\\server",
+        "\\\\?\\C:",
+        "\\\\?\\UNC\\s\\sh",
+    ] {
+        assert_eq!(file_name(p), "", "{p:?}");
+    }
+    assert_eq!(file_name("\\\\server\\share\\a.jpg"), "a.jpg");
+    assert_eq!(file_name("\\\\?\\C:\\a\\b.jpg"), "b.jpg");
+}
