@@ -30,3 +30,16 @@ impl ViewportOperationVersion {
         todo!()
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::ViewportOperationVersion;
+
+    // new: C# `++Current` is unchecked `long` arithmetic. At i64::MAX the next value wraps to i64::MIN, and nothing panics.
+    #[test]
+    fn next_version_wraps_like_unchecked_long() {
+        let mut version = ViewportOperationVersion { current: i64::MAX };
+        assert_eq!(version.next_version(), i64::MIN);
+        assert_eq!(version.current(), i64::MIN);
+    }
+}
