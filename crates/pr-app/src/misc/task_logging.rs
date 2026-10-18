@@ -5,15 +5,16 @@
 //! job runs on a worker and reports one [`TaskEnd`] through a channel. This module logs that end the way the
 //! continuation did. The `AsyncVoidJustification` constant is WPF-only (scoped VSTHRD100 suppressions) and is NOT
 //! ported (see the contract).
-
-// D11: temporary allow, the stub bodies are todo!(); removed when the porter fills them.
-#![allow(unused_variables, dead_code)]
+//!
+//! DIVERGENCE: the C# `ArgumentNullException` checks (`ThrowIfNull`) cannot occur for Rust references, so they are not
+//! ported (the contract, trap 12).
 
 use std::error::Error;
+use std::fmt;
 use std::sync::Arc;
 use std::sync::mpsc::Receiver;
 
-use pr_core::abstractions::Log;
+use pr_core::abstractions::{Log, panic_message};
 
 /// How a fire-and-forget job ended, reported exactly once through its channel (C# terminal state of a `Task`).
 pub enum TaskEnd {
@@ -36,14 +37,21 @@ pub enum StartFault {
 /// C# `Exception.GetBaseException()`: the innermost error of the `source()` chain (the error itself when it has no
 /// source). `FireAndLog` logs this one, not the wrapper.
 pub fn base_error<'a>(err: &'a (dyn Error + 'static)) -> &'a (dyn Error + 'static) {
-    todo!()
+    let mut current = err;
+    while let Some(next) = current.source() {
+        current = next;
+    }
+    current
 }
 
 /// C# `FireAndLog(this Task task, string context)` continuation, synchronous core: `Faulted` logs
 /// `log.error(context, Some(base_error(e)))`; `Completed` and `Canceled` write nothing. Takes the end by reference, so
 /// the caller keeps the outcome (C# `FireAndLog_FaultedTask_StillReportsTheFaultToAwaiters`).
 pub fn observe_end(end: &TaskEnd, context: &str, log: &dyn Log) {
-    todo!()
+    if let TaskEnd::Faulted(error) = end {
+        let error: &(dyn Error + 'static) = error.as_ref();
+        log.error(context, Some(base_error(error)));
+    }
 }
 
 /// C# `FireAndLog(Func<Task?> start, string context)`: calls `start` inside `catch_unwind` (ADR R0003: a panic is a fault).
@@ -58,7 +66,24 @@ pub fn start_and_observe(
     context: &str,
     log: Arc<dyn Log>,
 ) {
-    todo!()
+    let result = match std::panic::catch_unwind(start) {
+        Ok(result) => result,
+        Err(payload) => Err(StartFault::Failed(Box::new(PanicFault(panic_message(&*payload))))),
+    };
+
+    match result {
+        Ok(None) | Err(StartFault::Canceled) => {}
+        Ok(Some(handle)) => {
+            if let Err(spawn_error) = observe_receiver(handle, context.to_owned(), Arc::clone(&log)) {
+                log.error(context, Some(&spawn_error));
+            }
+        }
+        Err(StartFault::Failed(error)) => {
+            // C# catch (Exception ex) { AppLog.Error(context, ex); }: the exception itself, not its base.
+            let error: &(dyn Error + 'static) = error.as_ref();
+            log.error(context, Some(error));
+        }
+    }
 }
 
 /// C# `FireAndLog(this Task task, string context)` continuation, asynchronous form: a background thread (named
@@ -66,8 +91,28 @@ pub fn start_and_observe(
 /// A sender dropped without sending is silent (the job vanished; C# has no fault to report). Returns the spawn result;
 /// the caller logs a spawn failure once with `context`.
 pub fn observe_receiver(handle: Receiver<TaskEnd>, context: String, log: Arc<dyn Log>) -> std::io::Result<()> {
-    todo!()
+    std::thread::Builder::new()
+        .name("PhotoReview.TaskObserver".to_owned())
+        .spawn(move || {
+            // A dropped sender makes `recv` fail: nothing to report, so the thread simply ends.
+            if let Ok(end) = handle.recv() {
+                observe_end(&end, &context, &*log);
+            }
+        })
+        .map(|_| ())
 }
+
+/// The fault recorded for a panic in the start closure: its payload text, as the error text.
+#[derive(Debug)]
+struct PanicFault(String);
+
+impl fmt::Display for PanicFault {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str(&self.0)
+    }
+}
+
+impl Error for PanicFault {}
 
 impl std::fmt::Debug for TaskEnd {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
