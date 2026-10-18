@@ -160,6 +160,29 @@ fn load_in_keys_mode_shows_each_texts_catalog_key() {
 }
 
 #[test]
+fn mode_getter_returns_what_set_mode_stored() {
+    // Repair round 1 (kills the `mode() -> Default::default()` mutant). No direct C# twin: `Mode` get/set property.
+    let disk = fake_disk();
+    let mut service = service(&disk, Arc::new(RecordingLog::new()));
+    assert_eq!(service.mode(), TranslatorMode::None);
+    service.set_mode(TranslatorMode::Pseudo);
+    assert_eq!(service.mode(), TranslatorMode::Pseudo);
+    service.set_mode(TranslatorMode::Keys);
+    assert_eq!(service.mode(), TranslatorMode::Keys);
+}
+
+#[test]
+fn debug_output_names_the_service_and_its_mode() {
+    // Repair round 1 (kills the `Debug::fmt -> Ok(())` mutant): diagnostic output must not be empty.
+    let disk = fake_disk();
+    let mut service = service(&disk, Arc::new(RecordingLog::new()));
+    service.set_mode(TranslatorMode::Keys);
+    let text = format!("{service:?}");
+    assert!(text.contains("LocalizationService"), "{text}");
+    assert!(text.contains("Keys"), "{text}");
+}
+
+#[test]
 fn load_in_pseudo_mode_accents_and_brackets_the_text_under_the_pseudo_code() {
     // C#: LocalizationServiceModeTests.Load_InPseudoMode_AccentsAndBracketsTheTextUnderThePseudoCode
     let disk = fake_disk();
