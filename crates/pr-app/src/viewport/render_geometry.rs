@@ -99,8 +99,26 @@ impl Matrix3x2 {
     }
 
     /// `Matrix3x2.CreateRotation(float radians)` (no centre). Used by the tests only.
+    ///
+    /// Mirrors .NET: reduce with IEEERemainder(radians, 2*pi), then snap to exact values within 0.001 degrees of 0, pi/2, pi, -pi/2.
     pub fn rotation(radians: f32) -> Self {
-        let (sin, cos) = radians.sin_cos();
+        use std::f32::consts::{FRAC_PI_2, PI};
+        let two_pi = PI * 2.0;
+        // IEEERemainder: x - y * round_half_even(x / y); f64 keeps the f32 product exact.
+        let n = (f64::from(radians) / f64::from(two_pi)).round_ties_even();
+        let radians = (f64::from(radians) - f64::from(two_pi) * n) as f32;
+        let epsilon: f32 = 0.001_f32 * PI / 180.0_f32;
+        let (sin, cos) = if radians > -epsilon && radians < epsilon {
+            (0.0, 1.0)
+        } else if radians > FRAC_PI_2 - epsilon && radians < FRAC_PI_2 + epsilon {
+            (1.0, 0.0)
+        } else if radians < -PI + epsilon || radians > PI - epsilon {
+            (0.0, -1.0)
+        } else if radians > -FRAC_PI_2 - epsilon && radians < -FRAC_PI_2 + epsilon {
+            (-1.0, 0.0)
+        } else {
+            radians.sin_cos()
+        };
         Self::new(cos, sin, -sin, cos, 0.0, 0.0)
     }
 
@@ -184,12 +202,12 @@ impl PixelRect {
 
     /// `X + Width`.
     pub fn right(self) -> i32 {
-        self.x + self.width
+        self.x.wrapping_add(self.width)
     }
 
     /// `Y + Height`.
     pub fn bottom(self) -> i32 {
-        self.y + self.height
+        self.y.wrapping_add(self.height)
     }
 
     /// `Width <= 0 || Height <= 0` (integers: no NaN case).
