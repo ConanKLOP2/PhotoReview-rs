@@ -9,12 +9,10 @@
 //! Time and sleeping go through [`TimeSource`] so tests can run on a fake clock; production code uses
 //! [`SystemTimeSource`].
 
-#![allow(unused_variables, dead_code)]
-
 use std::fmt;
 use std::io::{self, Read, Seek, SeekFrom};
 use std::path::{Path, PathBuf};
-use std::sync::{Arc, Mutex};
+use std::sync::{Arc, Mutex, PoisonError};
 use std::time::Duration;
 
 use pr_core::abstractions::{AppendStream, CopyCreationProof, FileStat, FileSystem, ReadSeek, SkippedEntry};
@@ -52,11 +50,11 @@ impl Default for SystemTimeSource {
 
 impl TimeSource for SystemTimeSource {
     fn now_ticks(&self) -> i64 {
-        todo!("origin.elapsed() in 100 ns ticks, saturating to i64")
+        i64::try_from(self.origin.elapsed().as_nanos() / 100).unwrap_or(i64::MAX)
     }
 
     fn sleep(&self, duration: Duration) {
-        todo!("std::thread::sleep(duration)")
+        std::thread::sleep(duration);
     }
 }
 
@@ -103,12 +101,23 @@ impl fmt::Debug for SharedBandwidthLimiter {
 impl SharedBandwidthLimiter {
     /// C# `new SharedBandwidthLimiter(bytesPerSecond)`: `Err` when `bytes_per_second <= 0`. Uses [`SystemTimeSource`].
     pub fn new(bytes_per_second: i64) -> Result<Self, InvalidBandwidth> {
-        todo!("Self::with_time_source(bytes_per_second, Arc::new(SystemTimeSource::new()))")
+        Self::with_time_source(bytes_per_second, Arc::new(SystemTimeSource::new()))
     }
 
     /// As [`new`](Self::new) with an injected clock (tests). `last_ticks` starts at `time.now_ticks()`, `available_bytes` at 0.
     pub fn with_time_source(bytes_per_second: i64, time: Arc<dyn TimeSource>) -> Result<Self, InvalidBandwidth> {
-        todo!()
+        if bytes_per_second <= 0 {
+            return Err(InvalidBandwidth { bytes_per_second });
+        }
+        let last_ticks = time.now_ticks();
+        Ok(Self {
+            bytes_per_second,
+            time,
+            bucket: Mutex::new(Bucket {
+                available_bytes: 0.0,
+                last_ticks,
+            }),
+        })
     }
 
     pub fn bytes_per_second(&self) -> i64 {
@@ -118,19 +127,50 @@ impl SharedBandwidthLimiter {
     /// Blocks until `bytes` worth of the shared budget is available. `bytes <= 0` returns at once. A request larger than
     /// one second's budget is metered in chunks of at most `bytes_per_second` (the bucket can never hold more).
     pub fn consume(&self, bytes: i32) {
-        todo!()
+        if bytes <= 0 {
+            return;
+        }
+        let mut remaining = i64::from(bytes);
+        while remaining > 0 {
+            let chunk = remaining.min(self.bytes_per_second);
+            // `chunk <= bytes`, which fits in i32.
+            let chunk = i32::try_from(chunk).unwrap_or(i32::MAX);
+            self.consume_chunk(chunk);
+            remaining -= i64::from(chunk);
+        }
     }
 
     /// One chunk (`bytes <= bytes_per_second`): loop { lock; refill; if available >= bytes { subtract; return }; compute
     /// wait = (bytes - available) / bytes_per_second seconds; unlock; sleep max(wait, 1 ms) } (sleep OUTSIDE the lock).
     fn consume_chunk(&self, bytes: i32) {
-        todo!()
+        let needed = f64::from(bytes);
+        loop {
+            let wait_secs = {
+                let mut bucket = self.bucket.lock().unwrap_or_else(PoisonError::into_inner);
+                self.refill(&mut bucket);
+                if bucket.available_bytes >= needed {
+                    bucket.available_bytes -= needed;
+                    return;
+                }
+                let missing = needed - bucket.available_bytes;
+                missing / self.bytes_per_second as f64
+            };
+            let floor = Duration::from_millis(1);
+            self.time.sleep(Duration::from_secs_f64(wait_secs).max(floor));
+        }
     }
 
     /// `elapsed = (now - last_ticks) / TICKS_PER_SECOND` as f64; `last_ticks = now` BEFORE the early return;
     /// `elapsed <= 0` returns; else `available = min(bytes_per_second, available + elapsed * bytes_per_second)`.
     fn refill(&self, bucket: &mut Bucket) {
-        todo!()
+        let now = self.time.now_ticks();
+        let elapsed = now.saturating_sub(bucket.last_ticks) as f64 / TICKS_PER_SECOND as f64;
+        bucket.last_ticks = now;
+        if elapsed <= 0.0 {
+            return;
+        }
+        let rate = self.bytes_per_second as f64;
+        bucket.available_bytes = rate.min(bucket.available_bytes + elapsed * rate);
     }
 }
 
@@ -158,14 +198,18 @@ impl Read for ThrottledReadStream {
     /// `read = inner.read(buf)?`; when `read > 0` call `limiter.consume(read)` (as `i32`, saturating) AFTER the inner read
     /// (so the bytes are paid for once read); return `read`. An inner error is returned without consuming.
     fn read(&mut self, buf: &mut [u8]) -> io::Result<usize> {
-        todo!()
+        let read = self.inner.read(buf)?;
+        if read > 0 {
+            self.limiter.consume(i32::try_from(read).unwrap_or(i32::MAX));
+        }
+        Ok(read)
     }
 }
 
 impl Seek for ThrottledReadStream {
     /// Forwarded untouched (C# `Seek`, `Position`, `Length`): seeking is free.
     fn seek(&mut self, pos: SeekFrom) -> io::Result<u64> {
-        todo!()
+        self.inner.seek(pos)
     }
 }
 
@@ -200,7 +244,7 @@ impl SlowLinkFileSystem {
         metadata_latency: Duration,
         bandwidth: Option<Arc<SharedBandwidthLimiter>>,
     ) -> Self {
-        todo!("Self::with_time_source(inner, metadata_latency, bandwidth, Arc::new(SystemTimeSource::new()))")
+        Self::with_time_source(inner, metadata_latency, bandwidth, Arc::new(SystemTimeSource::new()))
     }
 
     /// As [`new`](Self::new) with an injected sleeper (tests).
@@ -220,39 +264,53 @@ impl SlowLinkFileSystem {
 
     /// C# `DelayMetadata`: sleeps `metadata_latency` when it is greater than zero.
     fn delay_metadata(&self) {
-        todo!()
+        if self.metadata_latency > Duration::ZERO {
+            self.time.sleep(self.metadata_latency);
+        }
+    }
+
+    /// One latency charge per entry the inner listing returned (C# yields and sleeps per entry).
+    fn delay_per_entry(&self, listing: Vec<(PathBuf, Option<FileStat>)>) -> Vec<(PathBuf, Option<FileStat>)> {
+        for _ in &listing {
+            self.delay_metadata();
+        }
+        listing
     }
 }
 
 impl FileSystem for SlowLinkFileSystem {
     fn file_exists(&self, path: &Path) -> bool {
-        todo!("delay_metadata(); inner.file_exists")
+        self.delay_metadata();
+        self.inner.file_exists(path)
     }
 
     fn directory_exists(&self, path: &Path) -> bool {
-        todo!("delay_metadata(); inner.directory_exists")
+        self.delay_metadata();
+        self.inner.directory_exists(path)
     }
 
     fn get_file_stat(&self, path: &Path) -> Option<FileStat> {
-        todo!("delay_metadata(); inner.get_file_stat")
+        self.delay_metadata();
+        self.inner.get_file_stat(path)
     }
 
     /// P-12: not in the C# baseline; a metadata query like `get_file_stat` (delay once, then the INNER typed-error stat so
     /// a denied stat is never folded into `Ok(None)`).
     fn try_get_file_stat(&self, path: &Path) -> io::Result<Option<FileStat>> {
-        todo!("delay_metadata(); inner.try_get_file_stat")
+        self.delay_metadata();
+        self.inner.try_get_file_stat(path)
     }
 
     fn move_file(&self, source: &Path, destination: &Path) -> io::Result<()> {
-        todo!("forward")
+        self.inner.move_file(source, destination)
     }
 
     fn copy_file(&self, source: &Path, destination: &Path) -> io::Result<()> {
-        todo!("forward")
+        self.inner.copy_file(source, destination)
     }
 
     fn try_copy_new(&self, source: &Path, destination: &Path) -> io::Result<bool> {
-        todo!("forward to inner.try_copy_new (one inner call, no exists+copy emulation)")
+        self.inner.try_copy_new(source, destination)
     }
 
     fn try_copy_new_with_proof(
@@ -261,33 +319,35 @@ impl FileSystem for SlowLinkFileSystem {
         destination: &Path,
         proof: &CopyCreationProof,
     ) -> io::Result<bool> {
-        todo!("forward to inner.try_copy_new_with_proof with the SAME proof")
+        self.inner.try_copy_new_with_proof(source, destination, proof)
     }
 
     fn delete(&self, path: &Path) -> io::Result<()> {
-        todo!("forward")
+        self.inner.delete(path)
     }
 
     fn open_read_shared(&self, path: &Path, buffer_size: usize) -> io::Result<Box<dyn ReadSeek>> {
-        todo!(
-            "inner.open_read_shared(path, buffer_size)?; wrap in ThrottledReadStream when a limiter was given, else return it as is"
-        )
+        let stream = self.inner.open_read_shared(path, buffer_size)?;
+        match &self.bandwidth {
+            Some(limiter) => Ok(Box::new(ThrottledReadStream::new(stream, Arc::clone(limiter)))),
+            None => Ok(stream),
+        }
     }
 
     fn open_append(&self, path: &Path, durable: bool) -> io::Result<Box<dyn AppendStream>> {
-        todo!("forward")
+        self.inner.open_append(path, durable)
     }
 
     fn write_all_text_atomic(&self, path: &Path, text: &str, durable: bool) -> io::Result<()> {
-        todo!("forward")
+        self.inner.write_all_text_atomic(path, text, durable)
     }
 
     fn read_all_text(&self, path: &Path) -> io::Result<String> {
-        todo!("forward")
+        self.inner.read_all_text(path)
     }
 
     fn enumerate_files(&self, directory: &Path, pattern: &str) -> io::Result<Vec<PathBuf>> {
-        todo!("forward (no delay)")
+        self.inner.enumerate_files(directory, pattern)
     }
 
     fn enumerate_files_with_stat(
@@ -296,11 +356,13 @@ impl FileSystem for SlowLinkFileSystem {
         include: &dyn Fn(&Path) -> bool,
         on_skipped: &mut dyn FnMut(SkippedEntry),
     ) -> io::Result<Vec<(PathBuf, Option<FileStat>)>> {
-        todo!("inner.enumerate_files_with_stat(..)?, then delay_metadata() once per returned entry")
+        let listing = self.inner.enumerate_files_with_stat(directory, include, on_skipped)?;
+        Ok(self.delay_per_entry(listing))
     }
 
     fn try_probe_readable(&self, path: &Path) -> Result<(), String> {
-        todo!("delay_metadata(); inner.try_probe_readable")
+        self.delay_metadata();
+        self.inner.try_probe_readable(path)
     }
 
     fn enumerate_readable_files_with_stat(
@@ -309,24 +371,26 @@ impl FileSystem for SlowLinkFileSystem {
         include: &dyn Fn(&Path) -> bool,
         on_skipped: &mut dyn FnMut(SkippedEntry),
     ) -> io::Result<Vec<(PathBuf, Option<FileStat>)>> {
-        todo!(
-            "inner.enumerate_readable_files_with_stat(..)? (the INNER overload, not the trait default), then delay_metadata() once per returned entry"
-        )
+        let listing = self
+            .inner
+            .enumerate_readable_files_with_stat(directory, include, on_skipped)?;
+        Ok(self.delay_per_entry(listing))
     }
 
     fn enumerate_directories(&self, directory: &Path) -> io::Result<Vec<PathBuf>> {
-        todo!("forward (no delay)")
+        self.inner.enumerate_directories(directory)
     }
 
     fn create_directory(&self, path: &Path) -> io::Result<()> {
-        todo!("forward")
+        self.inner.create_directory(path)
     }
 
     fn try_delete_empty_directory(&self, path: &Path) -> bool {
-        todo!("forward")
+        self.inner.try_delete_empty_directory(path)
     }
 
     fn resolve_real_path(&self, path: &Path) -> io::Result<PathBuf> {
-        todo!("delay_metadata(); inner.resolve_real_path")
+        self.delay_metadata();
+        self.inner.resolve_real_path(path)
     }
 }
