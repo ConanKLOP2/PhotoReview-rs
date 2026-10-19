@@ -348,3 +348,13 @@ fn pan_offset_delta_zero_is_positive_zero() {
     assert_eq!(x.to_bits(), 0.0f64.to_bits());
     assert_eq!(y.to_bits(), 0.0f64.to_bits());
 }
+
+/// Kills the mutant that makes `WheelInput::with_hint` return `self` unchanged.
+#[test]
+fn wheel_input_hint_helpers() {
+    let w = WheelInput::new(1, true, false, 5);
+    assert_eq!(w.hint, WheelDeviceHint::Unknown);
+    assert_eq!(w.with_hint(WheelDeviceHint::Touchpad).hint, WheelDeviceHint::Touchpad);
+    assert_eq!(w.with_hint(WheelDeviceHint::Touchpad).delta, 1);
+    assert_eq!(WheelDeviceHint::default(), WheelDeviceHint::Unknown);
+}

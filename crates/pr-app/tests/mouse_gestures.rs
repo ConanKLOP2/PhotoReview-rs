@@ -385,3 +385,18 @@ fn wheel_handle_zero_delta_in_zoom_mode_is_none_without_touching_the_sum() {
         WheelOutcomeKind::Next
     );
 }
+
+/// Kills the mutant that empties `WheelGestureInterpreter::reset` (a partial notch must be dropped).
+#[test]
+fn interpreter_reset_drops_a_partial_notch() {
+    let mut a = WheelGestureInterpreter::new();
+    assert_eq!(
+        a.handle(-100, false, pr_core::model::enums::MouseWheelAction::Navigate),
+        WheelOutcomeKind::None
+    );
+    a.reset();
+    assert_eq!(
+        a.handle(-30, false, pr_core::model::enums::MouseWheelAction::Navigate),
+        WheelOutcomeKind::None
+    );
+}
