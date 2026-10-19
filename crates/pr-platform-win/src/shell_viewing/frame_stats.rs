@@ -131,13 +131,12 @@ impl FrameStats {
         percentile_of(&self.present_samples_ms, self.count, percentile)
     }
 
-    /// C# `MaxPresentMs()`: largest held present time; `0.0` when empty.
+    /// C# `MaxPresentMs()`: largest held present time, starting from `0.0` like `Math.Max` (so negatives give `0.0`).
     pub fn max_present_ms(&self) -> f64 {
         self.present_samples_ms[..self.count]
             .iter()
             .copied()
-            .reduce(f64::max)
-            .unwrap_or(0.0)
+            .fold(0.0, f64::max)
     }
 }
 

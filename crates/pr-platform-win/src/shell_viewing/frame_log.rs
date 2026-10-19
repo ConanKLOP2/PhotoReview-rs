@@ -31,7 +31,16 @@ pub struct FrameLog {
 impl FrameLog {
     /// C# `new FrameLog(path)`: opens for append, creating the file when missing (no BOM). `Err` when the file cannot be opened.
     pub fn open(path: &Path, ticks_per_second: i64) -> io::Result<Self> {
-        let file = OpenOptions::new().create(true).append(true).open(path)?;
+        let mut options = OpenOptions::new();
+        options.create(true).append(true);
+        // C# `StreamWriter(path, append: true)` opens with FileShare.Read: a second writer or a delete fails while the log is open.
+        #[cfg(windows)]
+        {
+            use std::os::windows::fs::OpenOptionsExt;
+            const FILE_SHARE_READ: u32 = 1;
+            options.share_mode(FILE_SHARE_READ);
+        }
+        let file = options.open(path)?;
         Ok(Self {
             file: Some(file),
             last_frame: 0,
