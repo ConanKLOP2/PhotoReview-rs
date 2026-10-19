@@ -11,8 +11,6 @@
 //!
 //! Lead-owned: `input/mod.rs` gets `pub mod touchpad_gestures;` (W8-05e merge).
 
-#![allow(unused_variables, unused_imports, dead_code)] // stub only: removed by the porter when the bodies are filled (contracts/README.md D11)
-
 use crate::input::mouse_gestures::{NOTCH_DELTA, WheelOutcomeKind};
 
 /// C# `TouchpadWheelClassifier.GestureGapMs`: messages closer than this belong to one gesture (a touchpad sends one every
@@ -84,17 +82,24 @@ pub struct TouchpadWheelClassifier {
 impl TouchpadWheelClassifier {
     /// C# `new TouchpadWheelClassifier()`: no gesture in progress.
     pub fn new() -> Self {
-        todo!()
+        Self::default()
     }
 
     /// C# `IsTouchpad(int delta, int timestamp, WheelDeviceHint hint)`: true when the message is a touchpad message.
     pub fn is_touchpad(&mut self, delta: i32, timestamp: i32, hint: WheelDeviceHint) -> bool {
-        todo!()
+        let touchpad = hint == WheelDeviceHint::Touchpad
+            || delta % NOTCH_DELTA != 0
+            || (self.in_gesture && is_within_gap(self.last_timestamp, timestamp));
+        self.in_gesture = touchpad;
+        if touchpad {
+            self.last_timestamp = timestamp;
+        }
+        touchpad
     }
 
     /// C# `Reset()`: the next message starts a new decision (no gesture in progress).
     pub fn reset(&mut self) {
-        todo!()
+        self.in_gesture = false;
     }
 }
 
@@ -102,7 +107,8 @@ impl TouchpadWheelClassifier {
 /// after `last`. Elapsed time is `now.wrapping_sub(last)` (C# `unchecked`), so a TickCount wrap counts as the true elapsed time;
 /// a negative elapsed time (timestamp went backwards) is false.
 pub fn is_within_gap(last: i32, now: i32) -> bool {
-    todo!()
+    let elapsed = now.wrapping_sub(last);
+    (0..=GESTURE_GAP_MS).contains(&elapsed)
 }
 
 /// C# `TouchpadSwipeNavigator` (`internal sealed class`): turns the vertical deltas of a touchpad swipe at Fit into image changes
@@ -129,7 +135,7 @@ pub struct TouchpadSwipeNavigator {
 impl TouchpadSwipeNavigator {
     /// C# `new TouchpadSwipeNavigator()`: no swipe in progress.
     pub fn new() -> Self {
-        todo!()
+        Self::default()
     }
 
     /// C# `Handle(int delta, int timestamp, int distancePerImage)`.
@@ -142,23 +148,67 @@ impl TouchpadSwipeNavigator {
     /// `accumulated = if |remainder| >= distance { 0 } else { remainder }`, `stepped = true`, `gesture_images += 1`, and return
     /// `Next` (down) or `Previous`.
     pub fn handle(&mut self, delta: i32, timestamp: i32, distance_per_image: i32) -> WheelOutcomeKind {
-        todo!()
+        let distance = distance_per_image.max(1);
+        let fresh = !self.active || !is_within_gap(self.last_timestamp, timestamp);
+        self.active = true;
+        self.last_timestamp = timestamp;
+        if delta == 0 {
+            return WheelOutcomeKind::None;
+        }
+        if fresh || (self.accumulated != 0 && self.accumulated.signum() != delta.signum()) {
+            self.accumulated = 0;
+            self.stepped = false;
+            self.gesture_total = 0;
+            self.gesture_images = 0;
+        }
+        self.accumulated = self.accumulated.wrapping_add(delta);
+        self.gesture_total = self.gesture_total.wrapping_add(delta);
+
+        let required = if self.stepped {
+            distance
+        } else {
+            // C# `Math.Round(double)` rounds half to even (distance 5 -> 2.5 -> 2, distance 7 -> 3.5 -> 4).
+            let first = (f64::from(distance) * FIRST_STEP_FRACTION).round_ties_even() as i32;
+            first.max(1)
+        };
+        if self.accumulated.unsigned_abs() < required.unsigned_abs() {
+            return WheelOutcomeKind::None;
+        }
+
+        let down = self.accumulated < 0;
+        let remainder = self
+            .accumulated
+            .wrapping_sub(self.accumulated.signum().wrapping_mul(required));
+        self.accumulated = if remainder.unsigned_abs() >= distance.unsigned_abs() {
+            0
+        } else {
+            remainder
+        };
+        self.stepped = true;
+        self.gesture_images = self.gesture_images.wrapping_add(1);
+        if down {
+            WheelOutcomeKind::Next
+        } else {
+            WheelOutcomeKind::Previous
+        }
     }
 
     /// C# `Reset()`: forget the swipe in progress (`active`, `accumulated`, `stepped` cleared; the totals are kept until the
     /// next fresh swipe, as in C#).
     pub fn reset(&mut self) {
-        todo!()
+        self.active = false;
+        self.accumulated = 0;
+        self.stepped = false;
     }
 
     /// C# `GestureTotal`: total delta of the swipe in progress.
     pub fn gesture_total(&self) -> i32 {
-        todo!()
+        self.gesture_total
     }
 
     /// C# `GestureImages`: images changed by the swipe in progress.
     pub fn gesture_images(&self) -> i32 {
-        todo!()
+        self.gesture_images
     }
 }
 
@@ -184,7 +234,20 @@ pub enum TouchpadWheelAction {
 /// otherwise (Ctrl pinch always keeps the mouse/zoom path). Else if `can_pan`, return `Pan`. Else `Ignore` for horizontal,
 /// `Navigate` for vertical.
 pub fn route(input: WheelInput, enabled: bool, is_touchpad: bool, can_pan: bool) -> TouchpadWheelAction {
-    todo!()
+    if input.ctrl || !enabled || !is_touchpad {
+        return if input.horizontal {
+            TouchpadWheelAction::Ignore
+        } else {
+            TouchpadWheelAction::MouseWheel
+        };
+    }
+    if can_pan {
+        TouchpadWheelAction::Pan
+    } else if input.horizontal {
+        TouchpadWheelAction::Ignore
+    } else {
+        TouchpadWheelAction::Navigate
+    }
 }
 
 /// C# `TouchpadGestureRules.PanOffsetDelta(WheelInput input)`: the scroll-offset change `(horizontal, vertical)` for a touchpad pan.
@@ -193,5 +256,9 @@ pub fn route(input: WheelInput, enabled: bool, is_touchpad: bool, can_pan: bool)
 /// upward swipe (`delta > 0`) scrolls towards the top (negative offset change). The vertical negation is done on the integer
 /// (`delta.wrapping_neg()`, C# unchecked), then converted, so a zero delta gives `+0.0`, never `-0.0`.
 pub fn pan_offset_delta(input: WheelInput) -> (f64, f64) {
-    todo!()
+    if input.horizontal {
+        (f64::from(input.delta) * PAN_DIP_PER_DELTA_UNIT, 0.0)
+    } else {
+        (0.0, f64::from(input.delta.wrapping_neg()) * PAN_DIP_PER_DELTA_UNIT)
+    }
 }

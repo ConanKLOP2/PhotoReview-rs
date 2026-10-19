@@ -71,6 +71,17 @@ fn names_of(case: &Value, key: &str) -> Vec<String> {
         .collect()
 }
 
+/// A golden integer array (per-step values, compared by value).
+fn ints_of(case: &Value, key: &str) -> Vec<i32> {
+    array_of(case, key)
+        .iter()
+        .map(|v| {
+            let n = v.as_i64().unwrap_or_else(|| panic!("not an integer in '{key}': {v}"));
+            i32::try_from(n).unwrap_or_else(|_| panic!("'{key}' does not fit in i32: {v}"))
+        })
+        .collect()
+}
+
 /// A golden string that may be JSON `null` (C# `string?`).
 fn opt_str(value: &Value) -> Option<&str> {
     match value {
@@ -278,7 +289,10 @@ fn check_touchpad_case(case: &Value) {
         "navigator_sequence" => {
             let mut navigator = TouchpadSwipeNavigator::new();
             let expected = names_of(case, "outcomes");
+            let totals = ints_of(case, "gesture_total");
+            let images = ints_of(case, "gesture_images");
             let mut expected = expected.iter();
+            let mut handled = 0usize;
             for (i, step) in array_of(case, "steps").iter().enumerate() {
                 match str_of(step, "op") {
                     "handle" => {
@@ -291,22 +305,18 @@ fn check_touchpad_case(case: &Value) {
                             .next()
                             .unwrap_or_else(|| panic!("step {i}: no expected outcome"));
                         assert_eq!(outcome_name(got), want, "step {i}");
+                        // The oracle records the swipe totals after every handle step (per-step arrays, same length as outcomes).
+                        assert_eq!(navigator.gesture_total(), totals[handled], "step {i}: gesture_total");
+                        assert_eq!(navigator.gesture_images(), images[handled], "step {i}: gesture_images");
+                        handled += 1;
                     }
                     "reset" => navigator.reset(),
                     other => panic!("unknown navigator op {other:?}"),
                 }
             }
             assert!(expected.next().is_none(), "more expected outcomes than handle steps");
-            assert_eq!(
-                navigator.gesture_total(),
-                i32_of(case, "gesture_total"),
-                "gesture_total"
-            );
-            assert_eq!(
-                navigator.gesture_images(),
-                i32_of(case, "gesture_images"),
-                "gesture_images"
-            );
+            assert_eq!(handled, totals.len(), "gesture_total entries per handle step");
+            assert_eq!(handled, images.len(), "gesture_images entries per handle step");
         }
         "route" => {
             let input = WheelInput::new(
