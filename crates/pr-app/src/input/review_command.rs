@@ -3,8 +3,6 @@
 //! The `ReviewCommandType` values are the C# enum's implicit values (0..=29, declaration order). Do not reorder.
 //! Baseline `d92d6aae`. The shortcut routing that produces these commands is `input::shortcut_router` (W8-05d).
 
-#![allow(unused_variables, dead_code)] // stub only: removed by the porter when the bodies are filled (contracts/README.md D11)
-
 /// C# `ReviewCommandType`. Variant order = C# declaration order = implicit values 0..=29.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 #[repr(u8)]
@@ -46,7 +44,23 @@ impl ReviewCommandType {
     /// Recycle, RunAction, Undo, MoveToFolder, CopyToFolder, ToggleInfoOverlay, Fullscreen, ToggleCompare, ClickZoom,
     /// ToggleKeepZoom, OpenFolder, CustomZoom, ToggleCaptureMember, Refresh. Every other kind is false.
     pub fn ignores_auto_repeat(self) -> bool {
-        todo!()
+        matches!(
+            self,
+            Self::Recycle
+                | Self::RunAction
+                | Self::Undo
+                | Self::MoveToFolder
+                | Self::CopyToFolder
+                | Self::ToggleInfoOverlay
+                | Self::Fullscreen
+                | Self::ToggleCompare
+                | Self::ClickZoom
+                | Self::ToggleKeepZoom
+                | Self::OpenFolder
+                | Self::CustomZoom
+                | Self::ToggleCaptureMember
+                | Self::Refresh
+        )
     }
 }
 
@@ -75,17 +89,27 @@ impl ReviewCommand {
 
     /// C# `ReviewCommand.Action(int index)`: `RunAction` with `action_index = index`.
     pub fn action(index: i32) -> Self {
-        todo!()
+        Self {
+            kind: ReviewCommandType::RunAction,
+            action_index: index,
+            force_picker: false,
+        }
     }
 
     /// C# `ReviewCommand.MoveToFolder(bool forcePicker)`.
     pub fn move_to_folder(force_picker: bool) -> Self {
-        todo!()
+        Self {
+            force_picker,
+            ..Self::new(ReviewCommandType::MoveToFolder)
+        }
     }
 
     /// C# `ReviewCommand.CopyToFolder(bool forcePicker)`.
     pub fn copy_to_folder(force_picker: bool) -> Self {
-        todo!()
+        Self {
+            force_picker,
+            ..Self::new(ReviewCommandType::CopyToFolder)
+        }
     }
 
     // The 27 C# static properties (`ReviewCommand.Fullscreen`, ...): each is `new(kind)`. Associated constants, not functions.

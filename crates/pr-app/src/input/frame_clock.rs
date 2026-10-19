@@ -3,9 +3,9 @@
 //! Only the pure part. The Win32 clocks (swap-chain waitable object, timer) are W8-13a/13b in `pr_platform_win::host`.
 //! Baseline `d92d6aae`. The C# `FrameTickEventArgs` wrapper is not ported: a subscriber receives `&FrameTick` directly.
 
-#![allow(unused_variables, dead_code)] // stub only: removed by the porter when the bodies are filled (contracts/README.md D11)
-
 use pr_core::abstractions::DisplayTiming;
+
+use crate::input::primitives::f64_same;
 
 /// `FrameTick` (C# `readonly record struct`, positional `(long Timestamp, double RenderingTimeMs, DisplayTiming? Timing)`).
 /// `timestamp` is in Stopwatch (QPC) ticks; `rendering_time_ms` keeps the C# name in snake_case.
@@ -20,7 +20,9 @@ pub struct FrameTick {
 impl PartialEq for FrameTick {
     /// C# record equality: `EqualityComparer<double>.Default` for `rendering_time_ms` (`primitives::f64_same`), field by field otherwise.
     fn eq(&self, other: &Self) -> bool {
-        todo!()
+        self.timestamp == other.timestamp
+            && f64_same(self.rendering_time_ms, other.rendering_time_ms)
+            && self.timing == other.timing
     }
 }
 
