@@ -95,3 +95,12 @@ fn step_keeps_a_negative_zero_offset_when_the_scroll_range_is_zero() {
     let (h, _v) = s.step(16.0, -0.0, 0.0, ScrollBounds::new(100.0, 1000.0, 100.0, 100.0));
     assert_eq!(h.to_bits(), NEG_ZERO_BITS);
 }
+
+// C#: Math.Max(0, ExtentWidth - ViewportWidth) clamps a negative slack to +0 (image smaller than the viewport).
+// Kills `||` -> `&&` and `>` -> `==` in dotnet_max.
+#[test]
+fn max_scroll_is_zero_when_the_extent_is_smaller_than_the_viewport() {
+    let b = ScrollBounds::new(50.0, 40.0, 100.0, 100.0);
+    assert_eq!(b.max_horizontal().to_bits(), 0);
+    assert_eq!(b.max_vertical().to_bits(), 0);
+}
