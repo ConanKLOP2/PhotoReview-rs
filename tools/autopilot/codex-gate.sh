@@ -3,7 +3,7 @@
 # Usage: codex-gate.sh <unit> <worktree> <crate> [fast|full]      (set CARGO_TARGET_DIR before calling)
 #   always: owned-files check, static review gates (unwrap/unsafe/todo/allow/.claude), red-test guard (if GATE_TEST_BASE is set)
 #   fast  : cargo fmt -p <crate> -- --check (lib/fmtcheck.sh, never the whole workspace: Windows os error 206), cargo check -p <crate> --all-targets, then ONLY the unit's own test binaries (repair loops)
-#   full  : the same fmt check, cargo clippy -p <crate> --all-targets -D warnings, then the whole crate test (once per unit before merge)
+#   full  : the same fmt check, cargo clippy -p <crate> --all-targets -D warnings, then the unit's own test binaries (the whole crate is tested by the final workspace gate, where other units' stubs may still be red)
 # Env: GATE_TEST_BASE=<rev> (commit holding the red tests), GATE_NEXTEST=auto|0|1 (use cargo-nextest when installed).
 set -u
 U="${1:?unit}"; WT="${2:?worktree}"; CRATE="${3:?crate}"; MODE="${4:-full}"
@@ -51,11 +51,12 @@ if [ "$MODE" = fast ]; then
     cargo test -p "$CRATE" $TA > "$T" 2>&1 || testfail "cargo test -p $CRATE $TA"
   fi
 else
+  TA="$($LIB testargs "$WT" "$CONTRACT" | tr -d '\r')"
   cargo clippy -p "$CRATE" --all-targets -- -D warnings > "$T" 2>&1 || { rm -f "$T.owned" "$T.changed"; fail "cargo clippy -p $CRATE" 3 "$T"; }
   if [ "$NX" = 1 ]; then
-    { cargo nextest run -p "$CRATE" --no-tests=pass && { [ ! -f "crates/$CRATE/src/lib.rs" ] || cargo test -p "$CRATE" --doc; }; } > "$T" 2>&1 || testfail "cargo nextest run -p $CRATE"
+    { cargo nextest run -p "$CRATE" --no-tests=pass $TA; } > "$T" 2>&1 || testfail "cargo nextest run -p $CRATE $TA"
   else
-    cargo test -p "$CRATE" > "$T" 2>&1 || testfail "cargo test -p $CRATE"
+    cargo test -p "$CRATE" $TA > "$T" 2>&1 || testfail "cargo test -p $CRATE $TA"
   fi
 fi
 rm -f "$T" "$T.owned" "$T.changed"; echo "gate ok ($MODE): $U"
