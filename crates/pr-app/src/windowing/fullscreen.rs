@@ -9,8 +9,6 @@
 //! `pr_platform_win` / `host::main_window::windowing`, W8-13k); this module has no `unsafe` and no `windows` crate.
 //! The monitor queries used on exit are the `MonitorLayout` seam of W8-03a (C# `IMonitorLayout`).
 
-#![allow(unused_variables, dead_code)] // stub: removed by the porter
-
 use super::contracts::WindowShowState;
 use super::monitor_layout::{MonitorLayout, ScreenRect};
 
@@ -78,7 +76,39 @@ pub trait WindowOps {
 /// position. An empty `works` list returns `saved` unchanged. `i32` arithmetic wraps like unchecked C# `int`, and the final
 /// clamp never panics.
 pub fn resolve_normal_exit_rect(saved: ScreenRect, works: &[ScreenRect]) -> ScreenRect {
-    todo!("W8-03b")
+    if works.is_empty() {
+        return saved;
+    }
+
+    let band_bottom = saved.bottom.min(saved.top.wrapping_add(CAPTION_BAND));
+    for w in works {
+        let iw = saved.right.min(w.right).wrapping_sub(saved.left.max(w.left));
+        let ih = band_bottom.min(w.bottom).wrapping_sub(saved.top.max(w.top));
+        if iw >= MIN_VISIBLE_WIDTH && ih >= MIN_VISIBLE_HEIGHT {
+            return saved;
+        }
+    }
+
+    let cx = saved.left.wrapping_add(saved.right) / 2;
+    let cy = saved.top.wrapping_add(saved.bottom) / 2;
+    let mut best = works[0];
+    let mut best_dist = i64::MAX;
+    for w in works {
+        let dx = w.left.wrapping_sub(cx).max(cx.wrapping_sub(w.right)).max(0) as i64;
+        let dy = w.top.wrapping_sub(cy).max(cy.wrapping_sub(w.bottom)).max(0) as i64;
+        let d = dx.wrapping_mul(dx).wrapping_add(dy.wrapping_mul(dy));
+        if d < best_dist {
+            best_dist = d;
+            best = *w;
+        }
+    }
+
+    let width = saved.width().min(best.width());
+    let height = saved.height().min(best.height());
+    // `value.max(lo).min(hi)`, never `i32::clamp` (panics when lo > hi).
+    let left = saved.left.max(best.left).min(best.right.wrapping_sub(width));
+    let top = saved.top.max(best.top).min(best.bottom.wrapping_sub(height));
+    ScreenRect::new(left, top, left.wrapping_add(width), top.wrapping_add(height))
 }
 
 /// F11 state machine over a window handle. Owns the saved restore data; the OS calls are made through the [`WindowOps`]
@@ -112,39 +142,109 @@ impl std::fmt::Debug for FullscreenController {
 impl FullscreenController {
     /// C# `new FullscreenController(IMonitorLayout)`. (The production Win32 layout is owned by W8-13k, lead decision D-W8B1-5.)
     pub fn new(layout: Box<dyn MonitorLayout>) -> Self {
-        todo!("W8-03b")
+        let zero = ScreenRect::new(0, 0, 0, 0);
+        Self {
+            layout,
+            state_before: WindowShowState::Normal,
+            normal_bounds: None,
+            window_rect_before: zero,
+            work_before: zero,
+            style_before: 0,
+            monitor_before: 0,
+            enter_needs_maximized_state: false,
+            exit_needs_state_restore: false,
+        }
     }
 
     /// The state the window had before fullscreen (a minimized window counts as Normal). Initially Normal.
     pub fn state_before(&self) -> WindowShowState {
-        todo!("W8-03b")
+        self.state_before
     }
 
     /// Restore bounds (`rcNormalPosition`, physical px) saved when fullscreen was entered, as `(left, top, right, bottom)`;
     /// `None` while not fullscreen or when none could be saved.
     pub fn normal_bounds(&self) -> Option<(i32, i32, i32, i32)> {
-        todo!("W8-03b")
+        self.normal_bounds.map(|r| (r.left, r.top, r.right, r.bottom))
     }
 
     /// After `enter`: true when the OS window was NOT moved onto the monitor (no handle yet, or no monitor info), so the
     /// caller must maximize the window itself to get a fullscreen-sized window.
     pub fn enter_needs_maximized_state(&self) -> bool {
-        todo!("W8-03b")
+        self.enter_needs_maximized_state
     }
 
     /// After `exit`: true when the controller did not restore the OS window itself (no handle, no saved bounds, or no
     /// monitor info), so the caller must put the window back into [`state_before`](Self::state_before).
     pub fn exit_needs_state_restore(&self) -> bool {
-        todo!("W8-03b")
+        self.exit_needs_state_restore
     }
 
     /// `current`: the window's state now; `Minimized` is remembered as `Normal`. `hwnd == 0`: not shown yet, nothing to flip.
     pub fn enter(&mut self, ops: &dyn WindowOps, hwnd: isize, current: WindowShowState) {
-        todo!("W8-03b")
+        self.state_before = if current == WindowShowState::Minimized {
+            WindowShowState::Normal
+        } else {
+            current
+        };
+        self.enter_needs_maximized_state = true;
+        if hwnd == 0 {
+            self.normal_bounds = None;
+            return;
+        }
+
+        if ops.is_iconic(hwnd) {
+            ops.show_normal(hwnd);
+        }
+        self.normal_bounds = ops.normal_position(hwnd);
+        self.window_rect_before = ops.window_rect(hwnd).unwrap_or(ScreenRect::new(0, 0, 0, 0));
+
+        match ops.nearest_monitor(hwnd) {
+            Some(m) => {
+                self.monitor_before = m.handle;
+                self.work_before = m.work;
+                self.style_before = ops.window_style(hwnd);
+                ops.set_window_style(hwnd, self.style_before & !WS_CHROME);
+                ops.set_window_pos(hwnd, m.monitor, SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
+                self.enter_needs_maximized_state = false;
+            }
+            None => {
+                self.monitor_before = 0;
+            }
+        }
     }
 
     /// Leaves fullscreen: restores the style and moves the window straight back (see the contract for the three branches).
     pub fn exit(&mut self, ops: &dyn WindowOps, hwnd: isize) {
-        todo!("W8-03b")
+        if hwnd == 0 || self.normal_bounds.is_none() {
+            self.exit_needs_state_restore = true;
+            return;
+        }
+        if self.monitor_before == 0 {
+            self.exit_needs_state_restore = true;
+            self.normal_bounds = None;
+            return;
+        }
+
+        self.exit_needs_state_restore = false;
+        let same_work = self.layout.monitor_of(hwnd) == self.monitor_before
+            && self.layout.try_get_work(self.monitor_before) == Some(self.work_before);
+
+        ops.set_window_style(hwnd, self.style_before);
+
+        if same_work || self.state_before != WindowShowState::Maximized {
+            let mut b = self.window_rect_before;
+            if !same_work {
+                b = resolve_normal_exit_rect(b, &self.layout.work_areas());
+            }
+            ops.set_window_pos(hwnd, b, SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
+        } else {
+            ops.set_window_pos(
+                hwnd,
+                ScreenRect::new(0, 0, 0, 0),
+                SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED,
+            );
+            ops.show_maximized(hwnd);
+        }
+        self.normal_bounds = None;
     }
 }
