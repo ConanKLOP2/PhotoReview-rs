@@ -12,19 +12,19 @@
 //! T2 the skipped warning keeps its own fixed size 13, never the model font size; T3 `apply` never touches the skipped
 //! warning style or the view-list button style; T4 `apply_localization` is the only writer of button text.
 
-#![allow(unused_variables, dead_code)] // stub only: removed by the porter when the bodies are filled (contracts/README.md D11)
-
 use pr_l10n::localizer::Localizer;
 
-use crate::input::primitives::{PointD, SizeD};
+use crate::input::primitives::{PointD, RectD, SizeD};
 use crate::overlay::button::ButtonElement;
+use crate::overlay::contracts::OverlayElement;
 use crate::overlay::contracts::OverlayLayoutContext;
-use crate::overlay::element::ElementNode;
+use crate::overlay::element::{ElementNode, OverlayHorizontalAlignment, OverlayThickness, OverlayVerticalAlignment};
 use crate::overlay::model::OverlayModel;
 use crate::overlay::panel::PanelElement;
 use crate::overlay::text::TextElement;
 use crate::services::render::DrawContext;
 use crate::services::render::text::TextStyle;
+use crate::services::render::text::TextTrimming;
 
 /// C# `StatusPanel.PanelId`.
 pub const PANEL_ID: &str = "StatusPanel";
@@ -73,32 +73,75 @@ impl StatusPanel {
     /// content and automation name come from `texts`). Does not apply a model: the fields keep their defaults until
     /// `apply` (C# default `IsVisible = true` for the panel, the children are `TextElement` / `ButtonElement` defaults).
     pub fn new(texts: &Localizer) -> Self {
-        todo!()
+        let mut panel = PanelElement::new(PANEL_ID);
+        panel.base_mut().horizontal_alignment = OverlayHorizontalAlignment::Left;
+        panel.base_mut().vertical_alignment = OverlayVerticalAlignment::Bottom;
+        panel.base_mut().margin = OverlayThickness::uniform(8.0);
+        panel.padding = OverlayThickness::symmetric(6.0, 4.0);
+        panel.corner_radius = 4.0;
+        let mut status = TextElement::new(STATUS_TEXT_ID).unwrap_or_else(|_| unreachable!("static id"));
+        status.set_trimming(TextTrimming::CharacterEllipsis);
+        let mut exif = TextElement::new(EXIF_TEXT_ID).unwrap_or_else(|_| unreachable!("static id"));
+        exif.set_trimming(TextTrimming::CharacterEllipsis);
+        exif.base_mut().margin = OverlayThickness::new(0.0, 2.0, 0.0, 0.0);
+        exif.color = crate::overlay::palette::text_secondary();
+        let mut warning = TextElement::new(SKIPPED_WARNING_ID).unwrap_or_else(|_| unreachable!("static id"));
+        warning.set_style(segoe_ui(13.0));
+        warning.color = crate::overlay::palette::warning();
+        warning.base_mut().vertical_alignment = OverlayVerticalAlignment::Center;
+        let mut view = ButtonElement::new(SKIPPED_VIEW_LIST_ID).unwrap_or_else(|_| unreachable!("static id"));
+        view.padding = OverlayThickness::symmetric(8.0, 2.0);
+        view.base_mut().margin = OverlayThickness::new(8.0, 0.0, 0.0, 0.0);
+        view.background = crate::overlay::palette::from_argb(0xFF25_2525);
+        view.border_color = crate::overlay::palette::from_argb(0xFF45_4545);
+        view.corner_radius = 0.0;
+        view.base_mut().vertical_alignment = OverlayVerticalAlignment::Center;
+        let mut row_panel = PanelElement::new(SKIPPED_ROW_ID);
+        row_panel.orientation = crate::overlay::panel::OverlayOrientation::Horizontal;
+        row_panel.base_mut().margin = OverlayThickness::new(0.0, 4.0, 0.0, 0.0);
+        row_panel.background = crate::viewport::render_geometry::ColorF {
+            r: 0.0,
+            g: 0.0,
+            b: 0.0,
+            a: 0.0,
+        };
+        let mut this = Self {
+            panel,
+            status,
+            exif,
+            skipped_row: SkippedRow {
+                panel: row_panel,
+                warning,
+                view_list: view,
+            },
+        };
+        this.apply_localization(texts);
+        this
     }
 
     /// C# `Status` (the status line; the shell reads `Bounds`).
     pub fn status(&self) -> &TextElement {
-        todo!()
+        &self.status
     }
 
     /// C# `Exif` (the EXIF line).
     pub fn exif(&self) -> &TextElement {
-        todo!()
+        &self.exif
     }
 
     /// C# `SkippedWarning` (through the row; the warning text is `skipped_row().warning()`).
     pub fn skipped_row(&self) -> &SkippedRow {
-        todo!()
+        &self.skipped_row
     }
 
     /// C# `ViewList` (the "View list" button). Read access for `Bounds`, `IsHot`, `IsPressed`.
     pub fn view_list(&self) -> &ButtonElement {
-        todo!()
+        &self.skipped_row.view_list
     }
 
     /// C# `ViewList` for the host that clicks it (`ButtonElement::click`) and sets `IsHot` / `IsPressed` / `IsFocused`.
     pub fn view_list_mut(&mut self) -> &mut ButtonElement {
-        todo!()
+        &mut self.skipped_row.view_list
     }
 
     /// C# `Apply(OverlayModel)`: `IsVisible = model.status_panel_visible`; status line `IsVisible = file_info_visible`,
@@ -106,31 +149,43 @@ impl StatusPanel {
     /// `Style = (Segoe UI, exif_font_size)`; `skipped_row` `IsVisible = has_skipped_entries`; warning
     /// `Text = skipped_warning_text`. Nothing else is written (trap T2, T3).
     pub fn apply(&mut self, model: &OverlayModel) {
-        todo!()
+        self.panel.base_mut().is_visible = model.status_panel_visible;
+        self.status.base_mut().is_visible = model.file_info_visible;
+        self.status.set_text(&model.status_text);
+        self.status.set_style(segoe_ui(model.font_size));
+        self.exif.base_mut().is_visible = model.exif_visible;
+        self.exif.set_text(&model.exif_text);
+        self.exif.set_style(segoe_ui(model.exif_font_size));
+        self.skipped_row.panel.base_mut().is_visible = model.has_skipped_entries;
+        self.skipped_row.warning.set_text(&model.skipped_warning_text);
     }
 
     /// C# `ApplyLocalization()`: `view_list.content = MainSkippedViewList`, `view_list.automation_name =
     /// MainSkippedViewListAutomationName` (keys `pr_l10n::keys::MAIN_SKIPPED_VIEW_LIST` and
     /// `MAIN_SKIPPED_VIEW_LIST_AUTOMATION_NAME`). Called by the constructor and on every language change.
     pub fn apply_localization(&mut self, texts: &Localizer) {
-        todo!()
+        use pr_l10n::keys::*;
+        self.skipped_row
+            .view_list
+            .set_content(&texts.get(MAIN_SKIPPED_VIEW_LIST));
+        self.skipped_row.view_list.automation_name = texts.get(MAIN_SKIPPED_VIEW_LIST_AUTOMATION_NAME);
     }
 }
 
 impl SkippedRow {
     /// The warning text (C# `SkippedWarning`).
     pub fn warning(&self) -> &TextElement {
-        todo!()
+        &self.warning
     }
 
     /// The "View list" button (C# `ViewList`, read side).
     pub fn view_list(&self) -> &ButtonElement {
-        todo!()
+        &self.view_list
     }
 
     /// The "View list" button (write side).
     pub fn view_list_mut(&mut self) -> &mut ButtonElement {
-        todo!()
+        &mut self.view_list
     }
 }
 
@@ -147,35 +202,92 @@ impl ElementNode for StatusPanel {
     }
 
     fn base(&self) -> &crate::overlay::element::ElementBase {
-        todo!()
+        self.panel.base()
     }
 
     fn base_mut(&mut self) -> &mut crate::overlay::element::ElementBase {
-        todo!()
+        self.panel.base_mut()
     }
 
     fn measure_core(&mut self, available: SizeD, context: &OverlayLayoutContext<'_>) -> SizeD {
-        todo!()
+        let a = self.status.measure(available, context);
+        let b = self.exif.measure(available, context);
+        let c = self.skipped_row.measure(available, context);
+        SizeD {
+            width: a.width.max(b.width).max(c.width) + self.panel.padding.horizontal(),
+            height: a.height + b.height + c.height + self.panel.padding.vertical(),
+        }
     }
 
     fn arrange_children(&mut self, context: &OverlayLayoutContext<'_>) {
-        todo!()
+        let b = self.base().bounds();
+        let x = b.x + self.panel.padding.left;
+        let mut y = b.y + self.panel.padding.top;
+        let w = (b.width - self.panel.padding.horizontal()).max(0.0);
+        for c in [
+            &mut self.status as &mut dyn ElementNode,
+            &mut self.exif,
+            &mut self.skipped_row,
+        ] {
+            let h = c.base().desired_size().height;
+            c.arrange_in(
+                RectD {
+                    x,
+                    y,
+                    width: w,
+                    height: h,
+                },
+                context,
+            );
+            y += h;
+        }
     }
 
     fn render_core(&self, dc: &mut dyn DrawContext) {
-        todo!()
+        if self.panel.background.a > 0.0 {
+            dc.fill_rounded_rectangle(self.base().bounds(), self.panel.corner_radius, self.panel.background);
+        }
+        self.status.render(dc);
+        self.exif.render(dc);
+        self.skipped_row.render(dc);
     }
 
     fn find_at(&self, point: PointD) -> Option<&dyn ElementNode> {
-        todo!()
+        if self.hit_test(point) {
+            if let Some(c) = [
+                self.skipped_row.find_at(point),
+                self.exif.find_at(point),
+                self.status.find_at(point),
+            ]
+            .into_iter()
+            .flatten()
+            .next()
+            {
+                Some(c)
+            } else {
+                Some(self)
+            }
+        } else {
+            None
+        }
     }
 
     fn find(&self, id: &str) -> Option<&dyn ElementNode> {
-        todo!()
+        if self.id() == id {
+            return Some(self);
+        }
+        for c in [&self.status as &dyn ElementNode, &self.exif, &self.skipped_row] {
+            if let Some(v) = c.find(id) {
+                return Some(v);
+            }
+        }
+        None
     }
 
     fn release_resources(&mut self) {
-        todo!()
+        self.status.release_resources();
+        self.exif.release_resources();
+        self.skipped_row.release_resources();
     }
 }
 
@@ -190,35 +302,69 @@ impl ElementNode for SkippedRow {
     }
 
     fn base(&self) -> &crate::overlay::element::ElementBase {
-        todo!()
+        self.panel.base()
     }
 
     fn base_mut(&mut self) -> &mut crate::overlay::element::ElementBase {
-        todo!()
+        self.panel.base_mut()
     }
 
     fn measure_core(&mut self, available: SizeD, context: &OverlayLayoutContext<'_>) -> SizeD {
-        todo!()
+        let a = self.warning.measure(available, context);
+        let b = self.view_list.measure(available, context);
+        SizeD {
+            width: a.width + b.width,
+            height: a.height.max(b.height),
+        }
     }
 
     fn arrange_children(&mut self, context: &OverlayLayoutContext<'_>) {
-        todo!()
+        let b = self.base().bounds();
+        let mut x = b.x;
+        for c in [&mut self.warning as &mut dyn ElementNode, &mut self.view_list] {
+            let d = c.base().desired_size();
+            c.arrange_in(
+                RectD {
+                    x,
+                    y: b.y,
+                    width: d.width,
+                    height: b.height,
+                },
+                context,
+            );
+            x += d.width;
+        }
     }
 
     fn render_core(&self, dc: &mut dyn DrawContext) {
-        todo!()
+        self.warning.render(dc);
+        self.view_list.render(dc)
     }
 
     fn find_at(&self, point: PointD) -> Option<&dyn ElementNode> {
-        todo!()
+        if self.hit_test(point) {
+            if let Some(v) = self.view_list.find_at(point) {
+                return Some(v);
+            }
+            if let Some(v) = self.warning.find_at(point) {
+                return Some(v);
+            }
+            Some(self)
+        } else {
+            None
+        }
     }
 
     fn find(&self, id: &str) -> Option<&dyn ElementNode> {
-        todo!()
+        if self.id() == id {
+            return Some(self);
+        }
+        self.warning.find(id).or_else(|| self.view_list.find(id))
     }
 
     fn release_resources(&mut self) {
-        todo!()
+        self.warning.release_resources();
+        self.view_list.release_resources();
     }
 }
 
@@ -227,5 +373,9 @@ const FAMILY: &str = "Segoe UI";
 
 /// `new TextStyle(Family, size)` with the C# default bold `false`.
 fn segoe_ui(size_dip: f64) -> TextStyle {
-    todo!()
+    TextStyle {
+        font_family: FAMILY.to_owned(),
+        font_size_dip: size_dip,
+        bold: false,
+    }
 }
