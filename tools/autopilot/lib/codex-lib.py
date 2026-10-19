@@ -399,6 +399,40 @@ def cmd_triage(out, uid, reason, errfile, wt, lastmsg):
     os.makedirs(os.path.dirname(out) or ".", exist_ok=True)
     with open(out, "w", encoding="utf-8", newline="\n") as f: f.write(txt)
 
+def cmd_members():
+    """Workspace members of the cwd: name<TAB>edition<TAB>manifest dir (from `cargo metadata --no-deps`)."""
+    out = subprocess.run(["cargo", "metadata", "--no-deps", "--format-version", "1"], stdout=subprocess.PIPE,
+                         stderr=subprocess.DEVNULL, check=True).stdout.decode("utf-8", "replace")
+    for pk in json.loads(out)["packages"]:
+        print("	".join([pk["name"], pk.get("edition", "2021"), os.path.dirname(pk["manifest_path"])]))
+
+def cmd_sreset(path, uid):
+    """Forget a unit's state and telemetry (rerun of a failed unit starts clean)."""
+    with state_lock(path):
+        s = state_load(path); s["units"].pop(uid, None); state_save(path, s)
+
+def cmd_redcheck(path):
+    """Red-test run check: every failing test must fail ONLY through todo!()/unimplemented!() of the stubs.
+    Exit 0 = ok; 1 = prints the offending tests (compile errors, assertion failures, other panics)."""
+    t = read(path)
+    bad = []
+    if re.search(r"^error\[E\d+\]|error: could not compile", t, re.M):
+        bad.append("compile error in the test output")
+    blocks = re.split(r"^---- (.+?) stdout ----$", t, flags=re.M)
+    seen = 0
+    for i in range(1, len(blocks) - 1, 2):
+        seen += 1
+        name, body = blocks[i], blocks[i + 1].split(chr(10) + "failures:")[0]
+        if not re.search(r"not yet implemented|not implemented", body):
+            first = next((l for l in body.splitlines() if l.strip() and "panicked at" not in l and "note:" not in l), "")
+            bad.append("%s fails but not through todo!(): %s" % (name, first.strip()[:160]))
+    nfail = len(re.findall(r"^test .* \.\.\. FAILED$", t, re.M))
+    if nfail > seen:
+        bad.append("%d failing test(s) without panic output (crash or timeout)" % (nfail - seen))
+    if bad:
+        print("RED TESTS ARE NOT VALID: they must compile and fail only because the stubs call todo!(). Problems:")
+        print(chr(10).join("- " + b for b in bad[:30])); sys.exit(1)
+
 def main(a):
     c = a[0]
     if c == "order": cmd_order(a[1], a[2], a[3] if len(a) > 3 else None)
@@ -428,6 +462,9 @@ def main(a):
     elif c == "mutregex": cmd_mutregex(a[1])
     elif c == "lint": cmd_lint(a[1], a[2])
     elif c == "testguard": cmd_testguard(a[1], a[2], a[3])
+    elif c == "members": cmd_members()
+    elif c == "sreset": cmd_sreset(a[1], a[2])
+    elif c == "redcheck": cmd_redcheck(a[1])
     elif c == "triage": cmd_triage(a[1], a[2], a[3], a[4], a[5], a[6] if len(a) > 6 else "")
     else:
         sys.exit("unknown command " + c)
