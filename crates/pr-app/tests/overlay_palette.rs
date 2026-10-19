@@ -6,8 +6,8 @@
 //! Every test here fails through `todo!()` until the porter fills the bodies of `overlay::palette`.
 
 use pr_app::overlay::palette::{
-    border_strong, button, button_hover, button_pressed, from_argb, get, overlay, text_bright, text_secondary, tooltip,
-    warning, TABLE,
+    TABLE, border_strong, button, button_hover, button_pressed, from_argb, get, overlay, text_bright, text_secondary,
+    tooltip, warning,
 };
 use pr_app::viewport::render_geometry::ColorF;
 use pr_test_support::golden::{self, bool_of, i64_of, str_of};

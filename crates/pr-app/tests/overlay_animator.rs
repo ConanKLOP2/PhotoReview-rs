@@ -10,7 +10,7 @@
 use std::collections::BTreeMap;
 
 use pr_app::input::frame_clock::FrameTick;
-use pr_app::overlay::animator::{ease, Animator, AnimatorEffect, AnimatorError, OpacityStore};
+use pr_app::overlay::animator::{Animator, AnimatorEffect, AnimatorError, OpacityStore, ease};
 use pr_app::overlay::contracts::Easing;
 use pr_test_support::golden::{self, bool_of, i64_of, str_of};
 use serde_json::Value;

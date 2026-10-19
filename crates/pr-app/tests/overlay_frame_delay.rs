@@ -193,6 +193,16 @@ fn run_script_case(case: &Value) {
                 if timer.on_frame(&tick(i64_of(op, "timestamp"))) {
                     fired += 1;
                     fired_now = true;
+                    // Golden `restart`: the elapsed action restarts the timer until `until_fired` firings (C# `CallbackMayRestartTheTimer`).
+                    if let Some(restart) = case.get("restart") {
+                        if fired < i64_of(restart, "until_fired") {
+                            let delay_ticks = i64_of(restart, "delay_ms") * TICKS_PER_MS;
+                            timer
+                                .start(i64_of(op, "now"), delay_ticks)
+                                .unwrap_or_else(|e| panic!("{step}: restart: {e}"));
+                            request_frame = true;
+                        }
+                    }
                 }
             }
             "stop" => timer.stop(),
