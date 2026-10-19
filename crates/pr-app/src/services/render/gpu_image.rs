@@ -56,7 +56,7 @@ pub trait GpuImageCache {
     /// `BudgetBytes` getter. Default of the real cache: 6 screen-sized images (not a second copy of the preload RAM on the GPU).
     fn budget_bytes(&self) -> i64;
 
-    /// `BudgetBytes` setter: negative is `Err(ArgumentOutOfRange { param: "value" })`; lowering the budget evicts at once.
+    /// `BudgetBytes` setter: negative is `Err(NegativeBudget { value })` (C# `ThrowIfNegative`); lowering the budget evicts at once.
     fn set_budget_bytes(&self, value: i64) -> Result<(), RenderError>;
 
     /// `Clear()`: release every image (also used when the device is recreated). Never fails, also after dispose.

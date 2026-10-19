@@ -61,7 +61,7 @@ pub trait TextLayout {
 /// interior mutability, as in the C# class which locks internally only for lease release from other threads).
 pub trait TextRenderer {
     /// `CreateLayout(string text, TextStyle style, double maxWidth, TextTrimming trimming)`.
-    /// `Err(ArgumentOutOfRange { param: "style" })` when `style.font_size_dip` is not a finite positive number;
+    /// `Err(InvalidFontSize { value_bits })` when `style.font_size_dip` is not a finite positive number;
     /// `Err(Disposed { object: "PhotoReview.Shell.Rendering.DWriteTextRenderer" })` after the renderer was dropped/disposed.
     fn create_layout(
         &self,

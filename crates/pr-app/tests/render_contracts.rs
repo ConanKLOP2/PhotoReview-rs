@@ -754,3 +754,47 @@ fn contract_traits_are_object_safe_and_their_signatures_hold() {
         PresentResult::Presented
     );
 }
+
+// new: the detailed ArgumentOutOfRange texts of the C# throw sites (GpuImageCache.BudgetBytes, DWriteTextRenderer.CreateLayout)
+#[test]
+fn argument_out_of_range_details_keep_the_csharp_messages() {
+    assert_eq!(
+        RenderError::NegativeBudget { value: -1 }.to_string(),
+        "value ('-1') must be a non-negative value. (Parameter 'value')\r\nActual value was -1."
+    );
+    assert_eq!(
+        RenderError::InvalidFontSize {
+            value_bits: 0.0_f64.to_bits()
+        }
+        .to_string(),
+        "FontSizeDip must be a finite positive number. (Parameter 'style')\r\nActual value was 0."
+    );
+    assert!(
+        RenderError::InvalidFontSize {
+            value_bits: (f64::NAN).to_bits()
+        }
+        .to_string()
+        .ends_with("Actual value was NaN.")
+    );
+    assert!(
+        RenderError::InvalidFontSize {
+            value_bits: f64::NEG_INFINITY.to_bits()
+        }
+        .to_string()
+        .ends_with("Actual value was -Infinity.")
+    );
+    assert!(
+        RenderError::InvalidFontSize {
+            value_bits: (f64::INFINITY).to_bits()
+        }
+        .to_string()
+        .ends_with("Actual value was Infinity.")
+    );
+    assert!(
+        RenderError::InvalidFontSize {
+            value_bits: (-2.5_f64).to_bits()
+        }
+        .to_string()
+        .ends_with("Actual value was -2.5.")
+    );
+}
