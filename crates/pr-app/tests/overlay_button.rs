@@ -436,3 +436,195 @@ fn button_debug_does_not_require_layout_debug() {
 
     assert!(text.contains("Debug-me"));
 }
+
+/// Context with an explicit renderer id (decision O2).
+fn context_with_id(text: &FakeTextRenderer, id: u64) -> OverlayLayoutContext<'_> {
+    OverlayLayoutContext::with_renderer_id(
+        SizeD {
+            width: 800.0,
+            height: 600.0,
+        },
+        1.0,
+        text,
+        id,
+    )
+}
+
+/// A 34 x 32 button with "OK" (10 x 15) placed at slot origin (10, 20), border `border`, corner radius `radius`.
+fn placed_button(border: f64, radius: f64) -> (ButtonElement, FakeTextRenderer) {
+    let fake = FakeTextRenderer::new();
+    let mut button = ButtonElement::new("B").expect("non-empty id");
+    button.set_content("OK");
+    button.set_style(style(10.0));
+    button.fixed_width = 34.0;
+    button.fixed_height = 32.0;
+    button.border_thickness = border;
+    button.corner_radius = radius;
+    align_top_left(&mut button);
+    button.measure(
+        SizeD {
+            width: 800.0,
+            height: 600.0,
+        },
+        &context(&fake),
+    );
+    button.arrange_in(
+        RectD {
+            x: 10.0,
+            y: 20.0,
+            width: 100.0,
+            height: 100.0,
+        },
+        &context(&fake),
+    );
+    (button, fake)
+}
+
+#[test]
+fn button_remeasure_follows_the_renderer_id_not_the_address() {
+    // new: O2 (INV-1). Layout reuse keys on the renderer id: the same renderer under a new id re-measures, and a different
+    // renderer (or a replacement at the same address) under the old id keeps the layout only if the ids are equal.
+    let fake = FakeTextRenderer::new();
+    let mut button = ButtonElement::new("B").expect("non-empty id");
+    button.set_content("x");
+    let size = SizeD {
+        width: 100.0,
+        height: 100.0,
+    };
+    button.measure(size, &context_with_id(&fake, 1));
+    button.measure(size, &context_with_id(&fake, 1));
+    assert_eq!(fake.request_count(), 1);
+    button.measure(size, &context_with_id(&fake, 2));
+    assert_eq!(fake.request_count(), 2);
+    assert_eq!(fake.live(), 1);
+}
+
+#[test]
+fn button_boxed_zero_sized_renderers_with_distinct_ids_remeasure() {
+    // new: O2. Two boxed zero-sized renderers share one dangling address; distinct ids still re-measure (C# ReferenceEquals).
+    struct ZstLayout;
+    impl pr_app::services::render::text::TextLayout for ZstLayout {
+        fn size(&self) -> SizeD {
+            SizeD {
+                width: 1.0,
+                height: 1.0,
+            }
+        }
+        fn text(&self) -> &str {
+            ""
+        }
+        fn as_any(&self) -> &dyn std::any::Any {
+            self
+        }
+    }
+    struct ZstRenderer;
+    thread_local! { static CALLS: std::cell::Cell<u32> = const { std::cell::Cell::new(0) }; }
+    impl pr_app::services::render::text::TextRenderer for ZstRenderer {
+        fn create_layout(
+            &self,
+            _text: &str,
+            _style: &TextStyle,
+            _max_width: f64,
+            _trimming: TextTrimming,
+        ) -> Result<Box<dyn pr_app::services::render::text::TextLayout>, pr_app::services::render::error::RenderError>
+        {
+            CALLS.with(|c| c.set(c.get() + 1));
+            Ok(Box::new(ZstLayout))
+        }
+    }
+    let size = SizeD {
+        width: 100.0,
+        height: 100.0,
+    };
+    let client = SizeD {
+        width: 800.0,
+        height: 600.0,
+    };
+    let a = Box::new(ZstRenderer);
+    let b = Box::new(ZstRenderer);
+    let mut button = ButtonElement::new("B").expect("non-empty id");
+    button.set_content("x");
+    button.measure(size, &OverlayLayoutContext::with_renderer_id(client, 1.0, &*a, 1));
+    button.measure(size, &OverlayLayoutContext::with_renderer_id(client, 1.0, &*b, 2));
+    assert_eq!(CALLS.with(std::cell::Cell::get), 2);
+}
+
+#[test]
+fn button_border_thickness_two_counts_twice_in_the_size() {
+    // new: kills `2.0 * border` -> `2.0 / border` (equal only at 1). "Fit" 15 x 15 + padding 16 x 8 + chrome 4.
+    let fake = FakeTextRenderer::new();
+    let mut button = ButtonElement::new("Fit").expect("non-empty id");
+    button.set_content("Fit");
+    button.set_style(style(10.0));
+    button.border_thickness = 2.0;
+    let desired = button.measure(
+        SizeD {
+            width: 800.0,
+            height: 600.0,
+        },
+        &context(&fake),
+    );
+    assert_eq!((desired.width, desired.height), (15.0 + 16.0 + 4.0, 15.0 + 8.0 + 4.0));
+}
+
+#[test]
+fn button_border_and_corner_gates_follow_the_sign() {
+    // new: kills `>` -> `<` / `>=` in the border and corner radius gates.
+    let (zero, fake) = placed_button(0.0, 0.0);
+    let mut dc = RecordingDrawContext::new();
+    zero.render(&mut dc);
+    assert!(dc.strokes.is_empty(), "no border at thickness 0");
+    assert!(!dc.fills[0].rounded, "plain fill at radius 0");
+    drop(fake);
+
+    let (some, _fake) = placed_button(1.0, 2.0);
+    let mut dc = RecordingDrawContext::new();
+    some.render(&mut dc);
+    assert_eq!(dc.strokes.len(), 1);
+    assert!(dc.fills[0].rounded);
+}
+
+#[test]
+fn button_stroke_rect_is_inset_by_half_the_border() {
+    // new: border 2 at bounds (10, 20, 34, 32): half = 1, stroke (11, 21, 32, 30), width 2.
+    let (button, _fake) = placed_button(2.0, 2.0);
+    let mut dc = RecordingDrawContext::new();
+    button.render(&mut dc);
+    let (rect, color, width) = dc.strokes[0];
+    assert_rect(rect, 11.0, 21.0, 32.0, 30.0);
+    assert_eq!(color, palette::border_strong());
+    assert_eq!(width, 2.0);
+
+    // Odd thickness 3: half = 1.5, stroke (11.5, 21.5, 31, 29).
+    let (odd, _fake) = placed_button(3.0, 2.0);
+    let mut dc = RecordingDrawContext::new();
+    odd.render(&mut dc);
+    assert_rect(dc.strokes[0].0, 11.5, 21.5, 31.0, 29.0);
+}
+
+#[test]
+fn button_text_is_centred_in_the_bounds() {
+    // new: "OK" is 10 x 15 in bounds (10, 20, 34, 32): origin (10 + 12, 20 + 8.5).
+    let (button, _fake) = placed_button(1.0, 2.0);
+    let mut dc = RecordingDrawContext::new();
+    button.render(&mut dc);
+    assert_eq!(dc.texts.len(), 1);
+    assert_eq!(dc.texts[0].1, PointD { x: 22.0, y: 28.5 });
+    assert_eq!(dc.clips[0], button.bounds());
+}
+
+#[test]
+fn button_getters_find_and_find_at_report_the_state() {
+    // new: kills the getter, find and find_at mutants.
+    let (mut button, _fake) = placed_button(1.0, 2.0);
+    assert_eq!(button.content(), "OK");
+    assert_eq!(button.style().font_size_dip, 10.0);
+    assert_eq!(button.style().font_family, "Segoe UI");
+    let found = button.find_at(PointD { x: 12.0, y: 22.0 }).expect("inside the button");
+    assert_eq!(found.base().id(), "B");
+    assert!(button.find_at(PointD { x: 500.0, y: 500.0 }).is_none());
+    assert_eq!(button.find("B").expect("same id").base().id(), "B");
+    assert!(button.find("other").is_none());
+    button.set_content("Different");
+    assert_eq!(button.content(), "Different");
+}

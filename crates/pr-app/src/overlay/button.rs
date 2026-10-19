@@ -12,7 +12,7 @@ use crate::overlay::element::{
     ElementBase, ElementError, ElementNode, OverlayLayoutContext, OverlayThickness, net_max,
 };
 use crate::overlay::palette;
-use crate::overlay::text::{renderer_identity, style_same};
+use crate::overlay::text::style_same;
 use crate::services::render::error::RenderError;
 use crate::services::render::surface::DrawContext;
 use crate::services::render::text::{TextLayout, TextStyle, TextTrimming};
@@ -35,7 +35,7 @@ pub struct ButtonElement {
     style: TextStyle,
     /// C# `_layout`: native layout lease, `None` until measured and after `drop_layout`.
     layout: Option<Box<dyn TextLayout>>,
-    /// C# `_layoutOwner`: identity of the renderer that made `layout` (see `renderer_identity`).
+    /// C# `_layoutOwner`: identity of the renderer that made `layout` (`OverlayLayoutContext::text_renderer_id`).
     layout_owner: Option<u64>,
     /// C# `Padding` (`OverlayThickness`), default `(8, 4)`.
     pub padding: OverlayThickness,
@@ -146,7 +146,7 @@ impl ButtonElement {
     /// `ctx.text.create_layout(content, style, f64::INFINITY, TextTrimming::None)` and record `layout_owner`. The width argument
     /// of C# is unused (the button is one line that never wraps or trims); the call happens even for an empty content.
     fn ensure_layout(&mut self, context: &OverlayLayoutContext<'_>) -> Result<(), RenderError> {
-        let owner = renderer_identity(context.text);
+        let owner = context.text_renderer_id;
         if self.layout.is_some() && self.layout_owner == Some(owner) {
             return Ok(());
         }

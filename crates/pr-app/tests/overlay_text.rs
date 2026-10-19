@@ -278,3 +278,75 @@ fn text_element_measure_nan_width_re_measures_every_time() {
 
     assert_eq!(fake.request_count(), 2);
 }
+
+fn context_with_id(text: &FakeTextRenderer, id: u64) -> OverlayLayoutContext<'_> {
+    OverlayLayoutContext::with_renderer_id(
+        SizeD {
+            width: 800.0,
+            height: 600.0,
+        },
+        1.0,
+        text,
+        id,
+    )
+}
+
+#[test]
+fn text_remeasure_follows_the_renderer_id_not_the_address() {
+    // new: O2 (INV-1). The same renderer under a new id re-measures and releases the old lease; the same id keeps the layout.
+    let fake = FakeTextRenderer::new();
+    let mut text = TextElement::new("t").expect("non-empty id");
+    text.set_text("x");
+    text.measure(offered(100.0), &context_with_id(&fake, 1));
+    text.measure(offered(100.0), &context_with_id(&fake, 1));
+    assert_eq!(fake.request_count(), 1);
+    text.measure(offered(100.0), &context_with_id(&fake, 2));
+    assert_eq!(fake.request_count(), 2);
+    assert_eq!(fake.live(), 1);
+}
+
+#[test]
+fn text_replacement_renderer_at_the_same_address_with_a_new_id_remeasures() {
+    // new: O2. 50 renderers allocated and dropped in turn (the allocator reuses addresses), each with a fresh id: every one is asked.
+    let mut text = TextElement::new("t").expect("non-empty id");
+    text.set_text("x");
+    let mut asked = 0;
+    for id in 0..50_u64 {
+        let renderer = Box::new(FakeTextRenderer::new());
+        text.measure(offered(100.0), &context_with_id(&renderer, id));
+        asked += renderer.request_count();
+    }
+    assert_eq!(asked, 50);
+}
+
+#[test]
+fn text_getters_find_and_find_at_report_the_state() {
+    // new: kills the getter, find and find_at mutants.
+    let fake = FakeTextRenderer::new();
+    let mut text = TextElement::new("t").expect("non-empty id");
+    text.set_text("hello");
+    text.set_style(style(10.0));
+    assert_eq!(text.text(), "hello");
+    assert_eq!(text.style().font_size_dip, 10.0);
+    assert_eq!(text.style().font_family, "Segoe UI");
+    assert_eq!(text.trimming(), TextTrimming::None);
+
+    ElementNode::base_mut(&mut text).is_hit_test_visible = true;
+    ElementNode::base_mut(&mut text).horizontal_alignment = OverlayHorizontalAlignment::Left;
+    ElementNode::base_mut(&mut text).vertical_alignment = OverlayVerticalAlignment::Top;
+    text.arrange(&context(&fake));
+    let found = text.find_at(PointD { x: 1.0, y: 1.0 }).expect("hit-testable text");
+    assert_eq!(found.base().id(), "t");
+    assert!(text.find_at(PointD { x: 700.0, y: 500.0 }).is_none());
+    assert_eq!(text.find("t").expect("same id").base().id(), "t");
+    assert!(text.find("other").is_none());
+}
+
+#[test]
+fn text_debug_names_the_element_and_its_text() {
+    // new: kills `Debug::fmt -> Ok(())`.
+    let text = TextElement::new("t").expect("non-empty id");
+    let shown = format!("{text:?}");
+    assert!(shown.contains("TextElement"), "{shown}");
+    assert!(shown.contains("has_layout"), "{shown}");
+}

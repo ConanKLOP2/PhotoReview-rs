@@ -11,7 +11,7 @@ use crate::overlay::contracts::OverlayElement;
 use crate::overlay::element::{ElementBase, ElementError, ElementNode, OverlayLayoutContext};
 use crate::overlay::palette;
 use crate::services::render::surface::DrawContext;
-use crate::services::render::text::{TextLayout, TextRenderer, TextStyle, TextTrimming};
+use crate::services::render::text::{TextLayout, TextStyle, TextTrimming};
 use crate::viewport::render_geometry::ColorF;
 
 /// `TextElement` (C# `public class TextElement : OverlayElement`).
@@ -26,7 +26,7 @@ pub struct TextElement {
     trimming: TextTrimming,
     /// C# `_layout`: the native layout lease, `None` before the first measure and after every invalidation.
     layout: Option<Box<dyn TextLayout>>,
-    /// C# `_layoutOwner`: identity of the renderer that created `layout` (see `renderer_identity`).
+    /// C# `_layoutOwner`: identity of the renderer that created `layout` (`OverlayLayoutContext::text_renderer_id`).
     layout_owner: Option<u64>,
     /// C# `_layoutWidth`: offered width of the current layout, `NaN` when there is none.
     layout_width: f64,
@@ -107,15 +107,6 @@ impl TextElement {
     }
 }
 
-/// Identity of a text renderer for layout reuse (C# `ReferenceEquals(_layoutOwner, renderer)`).
-///
-/// Uses the data address of the renderer. A renderer dropped and another one allocated at the same address would look the same
-/// (ABA, trap T1). W8-15a's `OverlayLayoutContext` has no `text_renderer_id` yet (open item in `contracts/W8-15c.md`, O2).
-pub(crate) fn renderer_identity(text: &dyn TextRenderer) -> u64 {
-    let address: *const dyn TextRenderer = text;
-    address.cast::<()>() as usize as u64
-}
-
 /// C# `TextStyle` record equality (`_style != value`): family ordinal, size with `double.Equals` (NaN equals NaN, `0.0` equals
 /// `-0.0`), bold. Shared with `ButtonElement` (`overlay::button`). Not a derived `PartialEq`: the derived one says NaN != NaN.
 pub(crate) fn style_same(a: &TextStyle, b: &TextStyle) -> bool {
@@ -167,7 +158,7 @@ impl ElementNode for TextElement {
     /// and asks `context.text` for a new one with `max_width = available.width`. Returns the layout size (the base clamps it to
     /// `MaxWidth`). A failed `create_layout` leaves no layout (trap T2); the size is then zero and the next measure retries.
     fn measure_core(&mut self, available: SizeD, context: &OverlayLayoutContext<'_>) -> SizeD {
-        let owner = renderer_identity(context.text);
+        let owner = context.text_renderer_id;
         #[allow(clippy::float_cmp)]
         // trap T5: IEEE `!=` on purpose; a NaN width must re-measure every time (C# `!=` on double).
         let width_unchanged = self.layout_width == available.width;
@@ -219,5 +210,66 @@ impl ElementNode for TextElement {
     /// C# `ReleaseResources() => Invalidate()`.
     fn release_resources(&mut self) {
         self.invalidate();
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::services::render::error::RenderError;
+    use crate::services::render::text::TextRenderer;
+
+    struct Layout(String);
+    impl TextLayout for Layout {
+        fn size(&self) -> SizeD {
+            SizeD {
+                width: 7.0,
+                height: 9.0,
+            }
+        }
+        fn text(&self) -> &str {
+            &self.0
+        }
+        fn as_any(&self) -> &dyn std::any::Any {
+            self
+        }
+    }
+    struct Renderer;
+    impl TextRenderer for Renderer {
+        fn create_layout(
+            &self,
+            text: &str,
+            _style: &TextStyle,
+            _max_width: f64,
+            _trimming: TextTrimming,
+        ) -> Result<Box<dyn TextLayout>, RenderError> {
+            Ok(Box::new(Layout(text.to_owned())))
+        }
+    }
+
+    #[test]
+    fn layout_is_none_before_measure_and_the_held_lease_after() {
+        let renderer = Renderer;
+        let context = OverlayLayoutContext::new(
+            SizeD {
+                width: 800.0,
+                height: 600.0,
+            },
+            1.0,
+            &renderer,
+        );
+        let mut element = TextElement::new("t").expect("non-empty id");
+        element.set_text("abc");
+        assert!(element.layout().is_none());
+        element.measure(
+            SizeD {
+                width: 100.0,
+                height: 100.0,
+            },
+            &context,
+        );
+        assert_eq!(element.layout().map(TextLayout::text), Some("abc"));
+        element.release_resources();
+        assert!(element.layout().is_none());
     }
 }

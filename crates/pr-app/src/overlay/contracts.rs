@@ -26,15 +26,28 @@ pub struct OverlayLayoutContext<'a> {
     pub dpi_scale: f64,
     /// Text measuring and layout service (C# `Text`).
     pub text: &'a dyn TextRenderer,
+    /// Identity of `text` for layout reuse (C# `ReferenceEquals(_layoutOwner, context.Text)`; decision O2 of `contracts/W8-15c.md`).
+    /// The composition root gives every renderer instance a fresh id (monotonic counter), so a dropped renderer and a new one at
+    /// the same address differ. `new` falls back to the data address of `text` (ABA risk), `with_renderer_id` is the exact form.
+    pub text_renderer_id: u64,
 }
 
 impl<'a> OverlayLayoutContext<'a> {
-    /// C# primary constructor.
+    /// C# primary constructor. `text_renderer_id` is the data address of `text`: stable for one live renderer, but a renderer
+    /// dropped and replaced at the same address (or two zero-sized renderers) look equal. Production code uses `with_renderer_id`.
     pub fn new(client: SizeD, dpi_scale: f64, text: &'a dyn TextRenderer) -> Self {
+        let address: *const dyn TextRenderer = text;
+        Self::with_renderer_id(client, dpi_scale, text, address.cast::<()>() as usize as u64)
+    }
+
+    /// Constructor with an explicit renderer identity (O2): equal ids mean the same renderer instance, different ids mean a
+    /// different one, whatever the addresses are.
+    pub fn with_renderer_id(client: SizeD, dpi_scale: f64, text: &'a dyn TextRenderer, text_renderer_id: u64) -> Self {
         Self {
             client,
             dpi_scale,
             text,
+            text_renderer_id,
         }
     }
 }
