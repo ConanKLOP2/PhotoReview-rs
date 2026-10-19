@@ -3,15 +3,16 @@
 //! member. C# `CapturePairBadge : PanelElement` is a composition here: the badge wraps a `PanelElement` and delegates the
 //! `OverlayElement` hooks to it (contract.md, decision D-15d-1). Stub: every body is `todo!()`.
 
-#![allow(unused_variables, dead_code)] // stub only: removed by the porter when the bodies are filled (contracts/README.md D11)
-
 use crate::input::primitives::{PointD, SizeD};
 use crate::overlay::contracts::OverlayLayoutContext;
-use crate::overlay::element::{ElementBase, ElementNode};
+use crate::overlay::element::{
+    ElementBase, ElementNode, OverlayHorizontalAlignment, OverlayThickness, OverlayVerticalAlignment,
+};
 use crate::overlay::model::OverlayModel;
 use crate::overlay::panel::PanelElement;
 use crate::overlay::text::TextElement;
 use crate::services::render::surface::DrawContext;
+use crate::services::render::text::TextStyle;
 
 /// C# `CapturePairBadge.PanelId`.
 pub const PANEL_ID: &str = "CapturePairBadge";
@@ -36,18 +37,28 @@ impl CapturePairBadge {
     /// C# ctor: `HorizontalAlignment = Center`, `VerticalAlignment = Top`, `Margin = (8, 44, 8, 8)`, `Padding = (6, 4)`
     /// (`OverlayThickness::hv(6, 4)`), `CornerRadius = 4`, child 0 = `TextElement(TEXT_ID)`, `ToolTip = ""`.
     pub fn new() -> Self {
-        todo!()
+        let mut panel = PanelElement::new(PANEL_ID);
+        panel.base_mut().horizontal_alignment = OverlayHorizontalAlignment::Center;
+        panel.base_mut().vertical_alignment = OverlayVerticalAlignment::Top;
+        panel.base_mut().margin = OverlayThickness::new(8.0, 44.0, 8.0, 8.0);
+        panel.padding = OverlayThickness::symmetric(6.0, 4.0);
+        panel.corner_radius = 4.0;
+        panel.add(Box::new(TextElement::new(TEXT_ID).expect("constant id is valid")));
+        Self {
+            panel,
+            tool_tip: String::new(),
+        }
     }
 
     /// C# `Text` property: the child text element (child 0 of the panel). `None` only if the child is not a `TextElement`.
     pub fn text(&self) -> Option<&TextElement> {
-        todo!()
+        self.panel.child(0)
     }
 
     /// C# `ToolTip`: the tooltip copied from the model by the last `apply`. The C# XML doc says "empty while hidden", but the code
     /// does not clear it: the model supplies an empty tooltip when the badge is hidden (contract.md, trap T6).
     pub fn tool_tip(&self) -> &str {
-        todo!()
+        &self.tool_tip
     }
 
     /// C# `internal void Apply(OverlayModel model)`, in this order: `IsVisible = model.CapturePairVisible`;
@@ -55,7 +66,16 @@ impl CapturePairBadge {
     /// (`TextStyle { font_family: "Segoe UI".to_owned(), font_size_dip: model.font_size, ..TextStyle::default() }`);
     /// `ToolTip = model.CapturePairToolTip`. Visible or not, every field is applied.
     pub fn apply(&mut self, model: &OverlayModel) {
-        todo!()
+        self.panel.base_mut().is_visible = model.capture_pair_visible;
+        if let Some(text) = self.panel.child_mut::<TextElement>(0) {
+            text.set_text(&model.capture_pair_text);
+            text.set_style(TextStyle {
+                font_family: "Segoe UI".to_owned(),
+                font_size_dip: model.font_size,
+                ..TextStyle::default()
+            });
+        }
+        self.tool_tip.clone_from(&model.capture_pair_tool_tip);
     }
 }
 
@@ -69,34 +89,34 @@ impl ElementNode for CapturePairBadge {
     }
 
     fn base(&self) -> &ElementBase {
-        todo!()
+        self.panel.base()
     }
 
     fn base_mut(&mut self) -> &mut ElementBase {
-        todo!()
+        self.panel.base_mut()
     }
 
     fn measure_core(&mut self, available: SizeD, ctx: &OverlayLayoutContext<'_>) -> SizeD {
-        todo!()
+        self.panel.measure_core(available, ctx)
     }
 
     fn arrange_children(&mut self, ctx: &OverlayLayoutContext<'_>) {
-        todo!()
+        self.panel.arrange_children(ctx)
     }
 
     fn render_core(&self, dc: &mut dyn DrawContext) {
-        todo!()
+        self.panel.render_core(dc)
     }
 
     fn find_at(&self, point: PointD) -> Option<&dyn ElementNode> {
-        todo!()
+        self.panel.find_at(point)
     }
 
     fn find(&self, id: &str) -> Option<&dyn ElementNode> {
-        todo!()
+        self.panel.find(id)
     }
 
     fn release_resources(&mut self) {
-        todo!()
+        self.panel.release_resources()
     }
 }
