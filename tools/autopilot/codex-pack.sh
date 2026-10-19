@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # Build <worktree>/.codex-pack.md for one unit so Codex needs no exploration:
 # contract + plan row + C# sources + pub signatures of Depends-on units' owned files + CODEX-RULES.md.
+# The pack is trimmed to save tokens: C# license headers, XML doc lines, blank runs and trailing spaces are stripped, each C# file
+# is capped at PACK_FILE_CAP bytes (default 24000), signatures are de-duplicated and the line-number prefixes dropped.
 # Usage: codex-pack.sh <unit e.g. W8-04a> <worktree-dir>     (warns on stderr when the pack is > ~60 KB)
 set -u
 U="${1:?unit}"; WT="${2:?worktree}"
@@ -26,7 +28,7 @@ LS="$(mktemp)"; csgit ls-tree -r --name-only "$BASE" > "$LS" 2>/dev/null
       b="$(basename "$t")"; p="$(grep -F "/$b" "$LS" | awk -F/ -v b="$b" '$NF==b' | head -1)"
     fi
     if [ -z "$p" ]; then echo; echo "### $t: NOT FOUND at $BASE (use the rules' git show command if you need it)"; continue; fi
-    echo; echo "### $p"; echo '```csharp'; csgit show "$BASE:$p" 2>/dev/null | tr -d '\r'; echo '```'
+    echo; echo "### $p"; echo '```csharp'; csgit show "$BASE:$p" 2>/dev/null | $LIB trimcs "${PACK_FILE_CAP:-24000}"; echo '```'
   done
   echo; echo "## Public signatures of the units this unit depends on (from this worktree)"
   for d in $($LIB deps "$PLAN" "$U" | tr -d '\r'); do
@@ -34,7 +36,7 @@ LS="$(mktemp)"; csgit ls-tree -r --name-only "$BASE" > "$LS" 2>/dev/null
     for f in $($LIB owned "$WT/contracts/$d.md" | tr -d '\r' | grep '/src/.*\.rs$'); do
       [ -f "$WT/$f" ] || continue
       echo; echo "### $d: $f"; echo '```rust'
-      grep -nE '^\s*(pub |impl\b|#\[derive)' "$WT/$f" | head -200; echo '```'
+      $LIB sigs "$WT/$f"; echo '```'
     done
   done
   echo; echo "## CODEX-RULES.md"; echo; tr -d '\r' < "$SELF/CODEX-RULES.md"
