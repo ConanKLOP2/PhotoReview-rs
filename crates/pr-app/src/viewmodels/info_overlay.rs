@@ -6,9 +6,6 @@
 //! blocking finder on the worker pool and calls [`InfoOverlayViewModel::complete_search`] on the UI thread.
 //! A request number (C# `_request`) drops a result for a folder the user already left.
 //! Notifications (C# `PropertyChanged`) become the [`InfoOverlayChanges`] bit set (D-W8-1).
-//! Stub: every body is `todo!()` (contract W8-06b).
-
-#![allow(unused_variables, dead_code)] // D11: removed in the same commit that removes the last todo!()
 
 use pr_core::settings::app_settings::AppSettings;
 
@@ -39,7 +36,10 @@ pub struct ViewInputs {
 impl Default for ViewInputs {
     /// C# constructor defaults: `hasImage` always `true`, `getZoomPercent` always `100`.
     fn default() -> Self {
-        todo!()
+        Self {
+            has_image: true,
+            zoom_percent: 100,
+        }
     }
 }
 
@@ -57,6 +57,17 @@ pub enum InfoOverlayProperty {
     FolderInfoText,
 }
 
+/// Every [`InfoOverlayProperty`], in enum (C# raise) order.
+const ALL_PROPERTIES: [InfoOverlayProperty; 7] = [
+    InfoOverlayProperty::IsFileInfoVisible,
+    InfoOverlayProperty::IsFolderInfoVisible,
+    InfoOverlayProperty::FontSize,
+    InfoOverlayProperty::ExifFontSize,
+    InfoOverlayProperty::IsZoomIndicatorVisible,
+    InfoOverlayProperty::ZoomIndicatorText,
+    InfoOverlayProperty::FolderInfoText,
+];
+
 /// Bit set of [`InfoOverlayProperty`] values (D-W8-1 `ChangeSet` shape). `iter` yields them in enum order.
 /// Open question O2: the shared `ChangeSet` type is decided by the 08a contract; this local bit set is replaced
 /// by it at merge without changing the semantics.
@@ -66,27 +77,36 @@ pub struct InfoOverlayChanges(u8);
 impl InfoOverlayChanges {
     /// No change.
     pub fn none() -> Self {
-        todo!()
+        Self(0)
+    }
+
+    /// The bit of `property` (one bit per discriminant, 0 to 6).
+    fn bit(property: InfoOverlayProperty) -> u8 {
+        1 << (property as u8)
     }
 
     /// Adds `property` to the set.
     pub fn insert(&mut self, property: InfoOverlayProperty) {
-        todo!()
+        self.0 |= Self::bit(property);
     }
 
     /// `true` when `property` is in the set.
     pub fn contains(self, property: InfoOverlayProperty) -> bool {
-        todo!()
+        self.0 & Self::bit(property) != 0
     }
 
     /// `true` when nothing is in the set.
     pub fn is_empty(self) -> bool {
-        todo!()
+        self.0 == 0
     }
 
-    /// The members, in [`InfoOverlayProperty`] order (a concrete `Vec` iterator: the stub's `todo!()` needs it).
+    /// The members, in [`InfoOverlayProperty`] order (a concrete `Vec` iterator, so the return type is nameable).
     pub fn iter(self) -> std::vec::IntoIter<InfoOverlayProperty> {
-        todo!()
+        ALL_PROPERTIES
+            .into_iter()
+            .filter(|property| self.contains(*property))
+            .collect::<Vec<_>>()
+            .into_iter()
     }
 }
 
@@ -151,45 +171,61 @@ pub struct InfoOverlayViewModel<L: FolderInfoLabels> {
     folder_info_text: String,
 }
 
+/// A refresh that changed nothing and starts no search.
+fn nothing_changed() -> InfoOverlayRefresh {
+    InfoOverlayRefresh {
+        changes: InfoOverlayChanges::none(),
+        search: None,
+    }
+}
+
 impl<L: FolderInfoLabels> InfoOverlayViewModel<L> {
     /// Fresh view model: no folder, empty text, no search.
     pub fn new(labels: L) -> Self {
-        todo!()
+        Self {
+            labels,
+            folder: None,
+            siblings_folder: None,
+            siblings: SiblingImageFolders::default(),
+            pending_folder: None,
+            request: 0,
+            folder_info_text: String::new(),
+        }
     }
 
     /// C# `IsFileInfoVisible`: `ShowInfoOverlay && ShowFileInfo`.
     pub fn is_file_info_visible(settings: &AppSettings) -> bool {
-        todo!()
+        settings.show_info_overlay && settings.show_file_info
     }
 
     /// C# `FontSize`: `settings.InfoOverlayFontSize` as stored (NOT clamped here; the settings layer clamps).
     pub fn font_size(settings: &AppSettings) -> f64 {
-        todo!()
+        settings.info_overlay_font_size
     }
 
     /// C# `ExifFontSize`: `FontSize - 1` (one point smaller).
     pub fn exif_font_size(settings: &AppSettings) -> f64 {
-        todo!()
+        Self::font_size(settings) - 1.0
     }
 
     /// C# `IsZoomIndicatorVisible`: `settings.ShowZoomIndicator && inputs.has_image`.
     pub fn is_zoom_indicator_visible(settings: &AppSettings, inputs: ViewInputs) -> bool {
-        todo!()
+        settings.show_zoom_indicator && inputs.has_image
     }
 
     /// C# `ZoomIndicatorText`: the integer percent in invariant form followed by `%` (`"100%"`, `"-5%"`).
     pub fn zoom_indicator_text(inputs: ViewInputs) -> String {
-        todo!()
+        format!("{}%", inputs.zoom_percent)
     }
 
     /// C# `IsFolderInfoVisible`: `ShowInfoOverlay && ShowFolderInfo && folder is not null`.
     pub fn is_folder_info_visible(&self, settings: &AppSettings) -> bool {
-        todo!()
+        settings.show_info_overlay && settings.show_folder_info && self.folder.is_some()
     }
 
     /// C# `FolderInfoText`: the current folder line (empty while hidden or with no folder).
     pub fn folder_info_text(&self) -> &str {
-        todo!()
+        &self.folder_info_text
     }
 
     /// C# `SetFolder(string? folder)`: cancels any search (request bump), stores the folder (`None` when it is
@@ -200,7 +236,12 @@ impl<L: FolderInfoLabels> InfoOverlayViewModel<L> {
         inputs: ViewInputs,
         folder: Option<&str>,
     ) -> InfoOverlayRefresh {
-        todo!()
+        self.bump_request();
+        self.pending_folder = None;
+        self.folder = folder.filter(|text| !text.trim().is_empty()).map(str::to_owned);
+        self.siblings_folder = None;
+        self.siblings = SiblingImageFolders::default();
+        self.refresh(settings, inputs)
     }
 
     /// C# `Refresh()`. Always raises the six notifications; then, in order:
@@ -211,8 +252,53 @@ impl<L: FolderInfoLabels> InfoOverlayViewModel<L> {
     ///
     /// The placeholder is written BEFORE a search is returned (C# comment: the continuation must not be
     /// overwritten by a late placeholder). `FolderInfoText` is added to the changes only when the text differs.
-    pub fn refresh(&mut self, settings: &AppSettings, inputs: ViewInputs) -> InfoOverlayRefresh {
-        todo!()
+    pub fn refresh(&mut self, settings: &AppSettings, _inputs: ViewInputs) -> InfoOverlayRefresh {
+        let mut changes = InfoOverlayChanges::none();
+        changes.insert(InfoOverlayProperty::IsFileInfoVisible);
+        changes.insert(InfoOverlayProperty::IsFolderInfoVisible);
+        changes.insert(InfoOverlayProperty::FontSize);
+        changes.insert(InfoOverlayProperty::ExifFontSize);
+        changes.insert(InfoOverlayProperty::IsZoomIndicatorVisible);
+        changes.insert(InfoOverlayProperty::ZoomIndicatorText);
+
+        let mut search = None;
+        let folder = self.folder.clone();
+        let new_text = match folder {
+            Some(folder) if self.is_folder_info_visible(settings) => {
+                if self.siblings_folder.as_deref() == Some(folder.as_str()) {
+                    self.format_folder_line(settings, &folder)
+                } else {
+                    // Placeholder first, so a caller that completes the search on this thread cannot be
+                    // overwritten by a late placeholder (contract trap T11).
+                    let text = format!(
+                        "{}{}{}",
+                        self.labels.current(&display_name(&folder)),
+                        PART_SEPARATOR,
+                        self.labels.pending()
+                    );
+                    if self.pending_folder.as_deref() != Some(folder.as_str()) {
+                        self.bump_request();
+                        self.pending_folder = Some(folder.clone());
+                        search = Some(SiblingSearch {
+                            folder,
+                            request: self.request,
+                        });
+                    }
+                    text
+                }
+            }
+            _ => {
+                self.bump_request();
+                self.pending_folder = None;
+                String::new()
+            }
+        };
+
+        if self.folder_info_text != new_text {
+            changes.insert(InfoOverlayProperty::FolderInfoText);
+        }
+        self.folder_info_text = new_text;
+        InfoOverlayRefresh { changes, search }
     }
 
     /// C# `SearchAsync` continuation, run on the UI thread after the finder returned.
@@ -227,8 +313,50 @@ impl<L: FolderInfoLabels> InfoOverlayViewModel<L> {
         search: &SiblingSearch,
         outcome: SearchOutcome,
     ) -> InfoOverlayRefresh {
-        todo!()
+        let siblings = match outcome {
+            SearchOutcome::Cancelled => return nothing_changed(),
+            SearchOutcome::Found(found) => found,
+            SearchOutcome::Failed => SiblingImageFolders::default(),
+        };
+        if search.request != self.request {
+            return nothing_changed();
+        }
+        self.pending_folder = None;
+        self.siblings = siblings;
+        self.siblings_folder = Some(search.folder.clone());
+        self.refresh(settings, inputs)
     }
+
+    /// C# `Format(folder, siblings)`: previous part (if the sibling exists and its key is not blank), the current
+    /// folder, next part (same rule), joined with [`PART_SEPARATOR`]. Keys are trimmed (contract semantic 8).
+    fn format_folder_line(&self, settings: &AppSettings, folder: &str) -> String {
+        let mut parts: Vec<String> = Vec::new();
+
+        let previous_key = settings.shortcuts.previous_folder.trim();
+        if let Some(previous) = self.siblings.previous.as_deref().filter(|_| !previous_key.is_empty()) {
+            parts.push(self.labels.previous(previous_key, &display_name(previous)));
+        }
+
+        parts.push(self.labels.current(&display_name(folder)));
+
+        let next_key = settings.shortcuts.next_folder.trim();
+        if let Some(next) = self.siblings.next.as_deref().filter(|_| !next_key.is_empty()) {
+            parts.push(self.labels.next(next_key, &display_name(next)));
+        }
+
+        parts.join(PART_SEPARATOR)
+    }
+
+    /// Bumps the request counter (C# `_request++`). Wrapping keeps the counter total; it cannot realistically wrap.
+    fn bump_request(&mut self) {
+        self.request = self.request.wrapping_add(1);
+    }
+}
+
+/// `\` or `/`: the two directory separators Windows paths accept (C# `Path.DirectorySeparatorChar` and
+/// `AltDirectorySeparatorChar`). Written out so the result does not depend on the host OS.
+fn is_separator(character: char) -> bool {
+    character == '\\' || character == '/'
 }
 
 /// C# `DisplayName(string folder)`: `Path.TrimEndingDirectorySeparator` (removes ONE trailing `\` or `/`, never from
@@ -237,5 +365,93 @@ impl<L: FolderInfoLabels> InfoOverlayViewModel<L> {
 /// Examples: `"C:\photos\trip"` gives `"trip"`; `"C:\photos\trip\"` gives `"trip"`;
 /// `"C:\photos\\"` (two trailing separators) gives `"C:\photos\\"`; `"C:\"` gives `"C:\"`; `"/home/user/pics/"` gives `"pics"`.
 pub fn display_name(folder: &str) -> String {
-    todo!()
+    let chars: Vec<char> = folder.chars().collect();
+    let trimmed = &chars[..trimmed_length(&chars)];
+    let root = root_length(trimmed);
+    // C# `Path.GetFileName`: scan back to the last separator, but never past the root ("C:foo" gives "foo",
+    // a UNC share root gives "").
+    let mut start = 0;
+    for index in (0..trimmed.len()).rev() {
+        if index < root || is_separator(trimmed[index]) {
+            start = index + 1;
+            break;
+        }
+    }
+    if start >= trimmed.len() {
+        folder.to_owned()
+    } else {
+        trimmed[start..].iter().collect()
+    }
+}
+
+/// `Path.TrimEndingDirectorySeparator`: drops ONE trailing separator unless the whole path is a root.
+fn trimmed_length(chars: &[char]) -> usize {
+    match chars.last() {
+        Some(&last) if is_separator(last) && root_length(chars) != chars.len() => chars.len() - 1,
+        _ => chars.len(),
+    }
+}
+
+/// .NET `PathInternal.IsDevice`: a `\\?\` prefix, or two separators + `.`/`?` + a separator.
+fn is_device(chars: &[char]) -> bool {
+    let extended = chars.len() >= 4
+        && chars[0] == '\\'
+        && (chars[1] == '\\' || chars[1] == '?')
+        && chars[2] == '?'
+        && chars[3] == '\\';
+    extended
+        || (chars.len() >= 4
+            && is_separator(chars[0])
+            && is_separator(chars[1])
+            && (chars[2] == '.' || chars[2] == '?')
+            && is_separator(chars[3]))
+}
+
+/// .NET `PathInternal.IsDeviceUNC`: a device prefix followed by `UNC` and a separator.
+fn is_device_unc(chars: &[char]) -> bool {
+    chars.len() >= 8
+        && is_device(chars)
+        && is_separator(chars[7])
+        && chars[4] == 'U'
+        && chars[5] == 'N'
+        && chars[6] == 'C'
+}
+
+/// .NET `PathInternal.GetRootLength` (Windows): UNC server and share, device roots, `C:` / `C:\`, and a rooted `\`.
+fn root_length(chars: &[char]) -> usize {
+    let len = chars.len();
+    let device = is_device(chars);
+    let device_unc = device && is_device_unc(chars);
+    let mut index = 0;
+    if (!device || device_unc) && len > 0 && is_separator(chars[0]) {
+        if device_unc || (len > 1 && is_separator(chars[1])) {
+            index = if device_unc { 8 } else { 2 };
+            let mut separators_left = 2;
+            while index < len {
+                if is_separator(chars[index]) {
+                    separators_left -= 1;
+                    if separators_left == 0 {
+                        break;
+                    }
+                }
+                index += 1;
+            }
+        } else {
+            index = 1;
+        }
+    } else if device {
+        index = 4;
+        while index < len && !is_separator(chars[index]) {
+            index += 1;
+        }
+        if index < len && index > 4 && is_separator(chars[index]) {
+            index += 1;
+        }
+    } else if len >= 2 && chars[1] == ':' && chars[0].is_ascii_alphabetic() {
+        index = 2;
+        if len > 2 && is_separator(chars[2]) {
+            index += 1;
+        }
+    }
+    index
 }
