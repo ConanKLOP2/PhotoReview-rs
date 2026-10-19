@@ -408,3 +408,14 @@ fn layer_release_resources_reaches_every_child() {
     assert_eq!(direct_releases.get(), 1);
     assert_eq!(nested_releases.get(), 1);
 }
+
+#[test]
+fn layer_max_propagates_nan_from_first_child() {
+    let text = NullText;
+    let ctx = OverlayLayoutContext::new(client(800.0, 600.0), 1.0, &text);
+    let mut layer = LayerElement::new("L");
+    layer.add(Box::new(FixedBox::new("n", f64::NAN, 5.0)));
+    layer.add(Box::new(FixedBox::new("b", 7.0, 5.0)));
+    let size = layer.measure(client(100.0, 100.0), &ctx);
+    assert!(size.width.is_nan());
+}

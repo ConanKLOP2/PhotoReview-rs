@@ -37,6 +37,7 @@ struct FixedBox {
     echo_width: bool,
     arranged: Rc<Cell<u32>>,
     releases: Rc<Cell<u32>>,
+    seen: Rc<Cell<(f64, f64)>>,
 }
 
 impl FixedBox {
@@ -47,6 +48,7 @@ impl FixedBox {
             echo_width: false,
             arranged: Rc::new(Cell::new(0)),
             releases: Rc::new(Cell::new(0)),
+            seen: Rc::new(Cell::new((-1.0, -1.0))),
         }
     }
 
@@ -76,6 +78,7 @@ impl ElementNode for FixedBox {
     }
 
     fn measure_core(&mut self, available: SizeD, _context: &OverlayLayoutContext<'_>) -> SizeD {
+        self.seen.set((available.width, available.height));
         let width = if self.echo_width {
             available.width
         } else {
@@ -581,4 +584,53 @@ fn layout_context_debug_hides_the_renderer() {
 fn easing_discriminants_match_csharp() {
     assert_eq!(Easing::Linear as i32, 0);
     assert_eq!(Easing::QuadraticOut as i32, 1);
+}
+
+#[test]
+fn measure_core_receives_available_minus_margin() {
+    let text = NullText;
+    let ctx = OverlayLayoutContext::new(client(800.0, 600.0), 1.0, &text);
+    let mut leaf = FixedBox::new("a", 10.0, 10.0);
+    let seen = leaf.seen.clone();
+    leaf.base_mut().margin = OverlayThickness::new(1.0, 2.0, 3.0, 4.0);
+    leaf.measure(client(100.0, 50.0), &ctx);
+    assert_eq!(seen.get(), (96.0, 44.0));
+}
+
+#[test]
+fn measure_height_clamps_at_zero() {
+    let text = NullText;
+    let ctx = OverlayLayoutContext::new(client(800.0, 600.0), 1.0, &text);
+    let mut leaf = FixedBox::new("a", 10.0, 10.0);
+    let seen = leaf.seen.clone();
+    leaf.base_mut().margin = OverlayThickness::uniform(30.0);
+    leaf.measure(client(20.0, 20.0), &ctx);
+    assert_eq!(seen.get(), (0.0, 0.0));
+}
+
+#[test]
+fn element_error_display() {
+    let msg = pr_app::overlay::element::ElementError::EmptyId.to_string();
+    assert!(!msg.is_empty());
+}
+
+#[test]
+fn arrange_non_stretch_uses_desired_minus_margin() {
+    let text = NullText;
+    let ctx = OverlayLayoutContext::new(client(800.0, 600.0), 1.0, &text);
+    let mut leaf = FixedBox::new("a", 40.0, 20.0);
+    leaf.base_mut().margin = OverlayThickness::new(5.0, 3.0, 5.0, 3.0);
+    leaf.base_mut().horizontal_alignment = OverlayHorizontalAlignment::Left;
+    leaf.base_mut().vertical_alignment = OverlayVerticalAlignment::Top;
+    leaf.measure(client(800.0, 600.0), &ctx);
+    leaf.arrange_in(rect(0.0, 0.0, 200.0, 100.0), &ctx);
+    assert_eq!(leaf.base().bounds(), rect(5.0, 3.0, 40.0, 20.0));
+}
+
+#[test]
+fn host_surface_is_visible_reflects_flag() {
+    let mut leaf = FixedBox::new("a", 1.0, 1.0);
+    assert!(OverlayElement::is_visible(&leaf));
+    leaf.base_mut().is_visible = false;
+    assert!(!OverlayElement::is_visible(&leaf));
 }
