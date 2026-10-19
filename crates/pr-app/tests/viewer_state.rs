@@ -750,6 +750,8 @@ fn is_fit_tolerance_is_strict() {
     assert!(inside.is_fit(), "1.0009 is within 0.001 of 1.0");
 
     let mut boundary = ViewerState::new();
-    boundary.set_zoom_raw(1.001);
-    assert!(!boundary.is_fit(), "1.001 is not strictly within 0.001");
+    // 1.001 - 1.0 is 0.00099999999999988987 in IEEE doubles (below 0.001), so C# also reports Fit for 1.001; use a value
+    // that is really outside the tolerance.
+    boundary.set_zoom_raw(1.0011);
+    assert!(!boundary.is_fit(), "1.0011 is outside 0.001");
 }
