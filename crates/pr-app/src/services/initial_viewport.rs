@@ -10,11 +10,12 @@
 //! `AdjustWindowRectExForDpi`, `GetDpiForMonitor`, `GetDpiForSystem`, `GetThreadDpiAwarenessContext`) lives in `pr-platform-win`
 //! (`shell_startup`, W8-17) with `LibraryImport`-style safe wrappers and SAFETY comments there. This module has no `unsafe`.
 
-#![allow(unused_variables, dead_code)] // D11: stub bodies are todo!(); removed with the last todo!() of this file.
-
+use pr_imaging::adaptive_preview::calculate_target_decode_box;
 use pr_imaging::decode_types::DecodeBox;
 
-use crate::windowing::contracts::WindowPlacementData; // W8-03a: fields `show_command`, `normal_left`, `normal_top`, `normal_right`, `normal_bottom`
+use crate::windowing::contracts::{WindowPlacementData, WindowShowState, plan_state_before_show};
+use crate::windowing::monitor_layout::ScreenRect;
+use crate::windowing::visibility::is_visible;
 
 /// `WS_OVERLAPPEDWINDOW` (0x00CF0000): the style the frame insets are measured with (R-IV-7).
 pub const WS_OVERLAPPED_WINDOW: u32 = 0x00CF_0000;
@@ -41,12 +42,12 @@ pub struct PixelRect {
 impl PixelRect {
     /// `Right - Left`, wrapping like C# unchecked arithmetic (R-IV-8).
     pub fn width(&self) -> i32 {
-        todo!()
+        self.right.wrapping_sub(self.left)
     }
 
     /// `Bottom - Top`, wrapping like C# unchecked arithmetic (R-IV-8).
     pub fn height(&self) -> i32 {
-        todo!()
+        self.bottom.wrapping_sub(self.top)
     }
 }
 
@@ -84,7 +85,19 @@ pub fn predict_client_size(
     work_area: PixelRect,
     frame_insets: PixelRect,
 ) -> Option<(i32, i32)> {
-    todo!()
+    let (width, height) = if maximized {
+        // R-IV-2: the literal C# caption formula (-Top - Right), wrapping like unchecked int arithmetic (R-IV-8).
+        let caption = frame_insets.top.wrapping_neg().wrapping_sub(frame_insets.right);
+        (work_area.width(), work_area.height().wrapping_sub(caption))
+    } else {
+        // R-IV-3: the saved bounds minus the frame.
+        (
+            normal_bounds.width().wrapping_sub(frame_insets.width()),
+            normal_bounds.height().wrapping_sub(frame_insets.height()),
+        )
+    };
+    // R-IV-4: only a positive client size is a prediction.
+    (width > 0 && height > 0).then_some((width, height))
 }
 
 /// C# `PredictDecodeBox(placement, defaultWidthDip, defaultHeightDip, qualityMultiplier)`: the decode box the window's first layout
@@ -104,5 +117,49 @@ pub fn predict_decode_box(
     quality_multiplier: f64,
     probe: &dyn MonitorProbe,
 ) -> Option<DecodeBox> {
-    todo!()
+    // R-IV-5: maximized = placement present and planned as maximized before the show.
+    let maximized =
+        placement.is_some_and(|saved| plan_state_before_show(saved.show_command) == WindowShowState::Maximized);
+    let normal = placement.map(|saved| PixelRect {
+        left: saved.normal_left,
+        top: saved.normal_top,
+        right: saved.normal_right,
+        bottom: saved.normal_bottom,
+    });
+    let on_screen = normal.is_some_and(|rect| {
+        let areas: Vec<ScreenRect> = probe
+            .work_areas()
+            .into_iter()
+            .map(|area| ScreenRect::new(area.left, area.top, area.right, area.bottom))
+            .collect();
+        is_visible(rect.left, rect.top, rect.right, rect.bottom, &areas)
+    });
+    let monitor = match (on_screen, normal) {
+        (true, Some(rect)) => probe.monitor_nearest_rect(rect),
+        _ => probe.monitor_primary(),
+    }?;
+    let work_area = probe.monitor_work_area(monitor)?;
+    let dpi = probe.dpi_for(monitor);
+    let insets = probe.frame_insets(dpi)?;
+    let scale = f64::from(dpi) / 96.0;
+
+    // R-IV-6: a visible normal placement keeps its bounds; otherwise the default size, rounded half to even (T-4), at (0, 0).
+    let bounds = match normal {
+        Some(rect) if on_screen && !maximized => rect,
+        _ => PixelRect {
+            left: 0,
+            top: 0,
+            right: (default_width_dip * scale).round_ties_even() as i32,
+            bottom: (default_height_dip * scale).round_ties_even() as i32,
+        },
+    };
+    let (client_width, client_height) = predict_client_size(maximized, bounds, work_area, insets)?;
+    // R-IV-9: a policy error (for example a quality multiplier of 0 or NaN) gives None.
+    calculate_target_decode_box(
+        f64::from(client_width) / scale,
+        f64::from(client_height) / scale,
+        scale,
+        quality_multiplier,
+    )
+    .ok()
 }

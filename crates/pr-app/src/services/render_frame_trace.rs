@@ -8,8 +8,6 @@
 //! first or second frame. No callback re-enters the trace, so the reentrancy of C# (a first-frame callback that calls `Start`)
 //! becomes "the host performs the steps, then calls `start` again".
 
-#![allow(unused_variables, dead_code)] // D11: stub bodies are todo!(); removed with the last todo!() of this file.
-
 /// Identity of one subscription on the host's frame-tick source (C# delegate identity). Never reused within one trace.
 pub type HandlerId = u64;
 
@@ -53,24 +51,62 @@ pub struct RenderFrameTrace {
 impl RenderFrameTrace {
     /// No pending trace, id counter at 0.
     pub fn new() -> Self {
-        todo!()
+        Self::default()
     }
 
     /// C# `Start(token, kind, assignedTimestamp)`. Cancels any pending trace first (its `Unsubscribe` comes first), then creates a
     /// new pending trace and `Subscribe`s it. Result: `[Unsubscribe(old)?, Subscribe(new)]` (R-RF-1, R-RF-2).
     pub fn start(&mut self, token: i64, kind: &str, assigned_timestamp: i64) -> Vec<FrameTraceStep> {
-        todo!()
+        // RV-A17 / R-RF-1: the superseded trace is unsubscribed first, then the new one is subscribed.
+        let mut steps = self.cancel();
+        let id = self.next_id;
+        self.next_id = self.next_id.wrapping_add(1);
+        self.pending = Some(PendingTrace {
+            id,
+            token,
+            kind: kind.to_owned(),
+            assigned_timestamp,
+            ticks: 0,
+        });
+        steps.push(FrameTraceStep::Subscribe(id));
+        steps
     }
 
     /// C# `Cancel()`: drops the pending trace without reporting it. `[Unsubscribe(pending)]`, or empty when nothing is pending (R-RF-3).
     pub fn cancel(&mut self) -> Vec<FrameTraceStep> {
-        todo!()
+        match self.pending.take() {
+            Some(pending) => vec![FrameTraceStep::Unsubscribe(pending.id)],
+            None => Vec::new(),
+        }
     }
 
     /// The host calls this for every tick it delivers to handler `id`. An id that is not the pending one (superseded or cancelled)
     /// yields nothing (R-RF-4). Tick 1: `[FirstFrame]`, the trace stays pending. Tick 2: `[Unsubscribe(id), SecondFrame]`, pending cleared
     /// (C# calls `Cancel()` before `onSecondFrame`, R-RF-5).
     pub fn on_frame_tick(&mut self, id: HandlerId) -> Vec<FrameTraceStep> {
-        todo!()
+        // R-RF-4: a tick of a superseded or cancelled handler changes nothing.
+        let Some(pending) = self.pending.as_mut().filter(|pending| pending.id == id) else {
+            return Vec::new();
+        };
+        if pending.ticks == 0 {
+            // R-RF-5: the first frame; the trace stays pending for the second one.
+            pending.ticks = 1;
+            return vec![FrameTraceStep::FirstFrame {
+                token: pending.token,
+                kind: pending.kind.clone(),
+                assigned_timestamp: pending.assigned_timestamp,
+            }];
+        }
+        // R-RF-5 / T-6: the second frame clears the pending trace (C# Cancel() runs before onSecondFrame).
+        match self.pending.take() {
+            Some(done) => vec![
+                FrameTraceStep::Unsubscribe(done.id),
+                FrameTraceStep::SecondFrame {
+                    token: done.token,
+                    assigned_timestamp: done.assigned_timestamp,
+                },
+            ],
+            None => Vec::new(),
+        }
     }
 }
