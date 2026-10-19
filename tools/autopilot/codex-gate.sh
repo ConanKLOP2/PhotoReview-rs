@@ -18,7 +18,7 @@ T="$(mktemp)"
 # 1. changed files must be inside the contract's owned files (tracked changes + untracked, ignoring .codex-* scratch)
 CONTRACT="$WT/contracts/$U.md"; [ -f "$CONTRACT" ] || CONTRACT="$SELF/../../contracts/$U.md"
 $LIB owned "$CONTRACT" | tr -d '\r' | sort -u > "$T.owned"
-git status --porcelain -uall | sed -e 's/^...//' -e 's/.* -> //' -e 's/^"//' -e 's/"$//' | grep -v '^\.codex-' | sort -u > "$T.changed"
+git status --porcelain -uall | sed -e 's/^...//' -e 's/.* -> //' -e 's/^"//' -e 's/"$//' | grep -v -E '^(\.codex-|target)' | sort -u > "$T.changed"
 comm -13 "$T.owned" "$T.changed" > "$T"
 if [ -s "$T" ]; then
   { echo "Files changed outside the contract's Owned files (revert them: git checkout -- <file> / delete untracked):"; cat "$T"; } > "$T.m"
