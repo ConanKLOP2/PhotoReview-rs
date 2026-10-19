@@ -623,3 +623,38 @@ logged as P-39 in `docs/PROPOSED-DECISIONS.md`.
   `NumberCulture` has no group separator (W8-02b/10c/10f carry a parameter or trait); `.NET Enum.TryParse` folding of non-ASCII key names (W8-04c Q9); the Windows implementations of
   `RecoveryTimeFormatter`, `DateText`, `UtcOffsetSource`, `MonitorProbe` and the production `CultureLookup` have no owner yet (assign in B3/B4); `ViewerChanges` is a temporary change-set type in
   `viewmodels::viewer_state` until D-W8-1's shared `ChangeSet` exists; the unresolved W8-12a render-trait details (`as_oriented` seam, `DeviceRecreated` subscribe).
+
+## Wave 8 batch B2 roster (coordinators, view models, presenters; `pr-app`, pure fakes-only units)
+
+Batch B2 of `docs/WAVE-8-PLAN.md` (P-38): 26 contracts (`contracts/W8-*.md`), stubs under `crates/pr-app/src/`. Test kind is F for every unit: no oracle command and no golden. The contracts were first drafted by a low-effort Codex model and then reviewed against the C# source at `d92d6aae` (every draft contained `async`/futures or invented API and was rewritten). Ports start per P-28 when the direct dependencies merge. Every stub body is `todo!()`.
+
+| WU | Unit | Rust | Porter |
+|---|---|---|---|
+| W8-05g | PointerInputController, wheel and zoom half | `input::pointer::{wheel, zoom}` | Sonnet |
+| W8-05h | PointerInputController, click zoom and pan half | `input::pointer::{click_zoom, pan}` | Sonnet |
+| W8-06c | CompareViewModel | `viewmodels::compare` | Sonnet |
+| W8-06e | FileActionGate (INV-4 caller side) | `coordinators::file_action_gate` | Sonnet + manual review |
+| W8-06f | SiblingFolderNavigator | `coordinators::sibling_navigator` | Sonnet |
+| W8-07a, 07b | FolderLoadCoordinator (load, reload/skipped) | `coordinators::folder_load::{state, load, reload, skipped}` | Sonnet |
+| W8-07c, 07d, 07e | FileActionController (recycle, actions/undo, move/copy) | `coordinators::file_actions::*` | Sonnet |
+| W8-07f | DuplicateCleanupController | `coordinators::duplicate_cleanup` | Sonnet |
+| W8-07g | ZoomDetailLoader | `coordinators::zoom_detail` | Sonnet |
+| W8-07h..07k | ImagePresenter (state/zoom, present_a, present_b, missing/compare_pair/photo_info) | `coordinators::presenter::*` | Sonnet |
+| W8-08a..08e | MainViewModel (state, navigation, commands, session, notify_move) | `viewmodels::main::*` | Sonnet |
+| W8-09a | Composition: decoder providers, service factories, contracts | `composition::{decoders, factories, contracts}` | Sonnet |
+| W8-10d, 10e | SettingsPresenter (load/validate, apply/shortcuts) | `presenters::settings::*` | Sonnet |
+| W8-10g | RecoveryWindowPresenter (INV-5 on screen) | `presenters::recovery_window` | Sonnet |
+| W8-10i | BenchmarkPresenter | `presenters::benchmark` | Sonnet |
+
+## Lead decisions (Wave 8 batch B2)
+
+The recommended option of each open question was taken (standing user instruction); logged as P-41 in `docs/PROPOSED-DECISIONS.md`.
+
+- **D-W8B2-1 No async:** C# `async Task` coordinators are explicit step/continuation state machines driven from the UI thread (`*Step`/`*Event` enums, `WorkerPort`, `CompletionInbox`, generation tokens checked on every completion, INV-9). No `async fn`, no futures, no runtime. Every draft that used `async` was rewritten.
+- **D-W8B2-2 Shared change set:** one `ChangeSet` in `viewmodels::main::state` (W8-08a); coordinators and the presenter return their own small change structs (`PresenterChanges`, `CompareChanges`). `PresentationBridge`/`ViewerHandle` (`Rc<RefCell>`) is the one allowed shared-ownership exception, scoped to the main view model.
+- **D-W8B2-3 Per-call context:** `FolderLoadCoordinator` and `FileActionController` take the catalog and the sinks per call (`*Cx`), not by ownership; the view model holds the `FileActionGate` (the controller never calls it).
+- **D-W8B2-4 Duplicate concepts (porters reconcile, decided in the first port PR):** `folder_load::state::WorkerPort` vs `zoom_detail::{BackgroundRunner, CompletionInbox}`; `TextSource` lives in `file_actions::recycle` but is used by 07f; `ZoomDetailRefreshResult` is declared in `viewport::fit` and `zoom_detail`.
+- **D-W8B2-5 Image payload type:** `CompareViewModel` and `IPresentationSink::set_current_image` use `Arc<DecodedImage>`; `ImagePresenter` holds `PlatformImage`. The 07h porter reconciles this and applies the B1 stub changes listed in W8-07h (`set_current_image(&ImageChange)`, `take_viewer_zoom_change`).
+- **D-W8B2-6 Proposed B1 stub changes (NOT applied here, listed in the contracts):** `IFileActionExecutor: Send + Sync`; completion callbacks `on_present_finished` / `on_reload_finished` on `IFileActionSink` / `IDuplicateCleanupSink`; drop the `handler` parameter of `hook_render_frame` / `yield_to_render` in `input::surface`; `LocalizationService::export_todo`; a UTC-to-local conversion helper (W8-08).
+- **D-W8B2-7 Missing plan edges and open items:** W8-05g also needs 05f, 04e and 06a. Unresolved: `SettingsTexts` over the Localizer, the `ShellIntegration` registry and the HTTP transport (10e), the time format "T" (10g), a compare size-pair formatter (06c).
+- **D-W8B2-8 Stub hygiene:** the stub-only allow lines additionally allow the clippy lints their doc text or boxed seams trigger (`doc_lazy_continuation`, `type_complexity`, `enum_variant_names`, `large_enum_variant`, `should_implement_trait`); the porter removes them. `Debug` is implemented on every public type. No `Cargo.toml` change.
