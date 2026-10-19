@@ -1,14 +1,12 @@
 //! Port of `PhotoReview.Shell.Rendering/Contracts/TextContracts.cs` (26 lines, C-11 text part, baseline d92d6aae): the DirectWrite
 //! text contract. The real renderer and the layout cache are W8-12i (`pr_platform_win::render::text`).
 //!
-//! No `windows` types (D-W8-3). Stub: the `Default` body is `todo!()`; traits need none.
-
-#![allow(unused_variables, dead_code)] // stub only: removed by the porter when the bodies are filled (contracts/README.md D11)
+//! No `windows` types (D-W8-3).
 
 use std::any::Any;
 
 use super::error::RenderError;
-use crate::input::primitives::SizeD;
+use crate::input::primitives::{SizeD, f64_same};
 
 /// `TextTrimming` (C# values 0 and 1).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -30,14 +28,20 @@ impl PartialEq for TextStyle {
     /// C# record equality: `font_family` ordinal (`string.Equals`, case-sensitive), `font_size_dip` with
     /// `EqualityComparer<double>.Default` (`input::primitives::f64_same`, `pub(crate)`, import it: NaN equals NaN, `0.0` equals `-0.0`), `bold`.
     fn eq(&self, other: &Self) -> bool {
-        todo!()
+        self.font_family == other.font_family
+            && f64_same(self.font_size_dip, other.font_size_dip)
+            && self.bold == other.bold
     }
 }
 
 impl Default for TextStyle {
     /// `font_family = "Segoe UI"`, `font_size_dip = 12.0`, `bold = false`.
     fn default() -> Self {
-        todo!()
+        Self {
+            font_family: "Segoe UI".to_string(),
+            font_size_dip: 12.0,
+            bold: false,
+        }
     }
 }
 

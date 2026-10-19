@@ -4,7 +4,6 @@
 //! Traits only, no `windows` types (D-W8-3). The real cache is `pr_platform_win::render::image_cache` (W8-12f policy, W8-12g upload).
 //! Everything here is UI-thread only: no `Send`/`Sync` bound (a Direct2D bitmap is not `Send`).
 //!
-//! Stub: traits have no bodies to fill; the file compiles as is. The `allow` stays out.
 
 use std::any::Any;
 use std::rc::Rc;

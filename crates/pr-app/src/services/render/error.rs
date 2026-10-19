@@ -4,10 +4,6 @@
 //! baseline d92d6aae. A COM failure of the implementation (C# `ComInterop.Check(hr)` -> `COMException`) is
 //! [`RenderError::Device`]. `ArgumentNullException` has no variant: a Rust reference cannot be null.
 //!
-//! Stub: the `Display` body is `todo!()` (the texts are part of the contract, see the contract's "Error texts").
-
-#![allow(unused_variables, dead_code)] // stub only: removed by the porter when the bodies are filled (contracts/README.md D11)
-
 use std::fmt;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -32,7 +28,23 @@ pub enum RenderError {
 
 impl fmt::Display for RenderError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        todo!()
+        // The texts are the C# messages verbatim (contract "Error texts"); the log reads them.
+        match self {
+            RenderError::Disposed { object } => {
+                write!(f, "Cannot access a disposed object.\r\nObject name: '{object}'.")
+            }
+            RenderError::InvalidOperation { message } => f.write_str(message),
+            RenderError::InvalidArgument { param, message } => {
+                write!(f, "{message} (Parameter '{param}')")
+            }
+            RenderError::ArgumentOutOfRange { param } => write!(
+                f,
+                "Specified argument was out of the range of valid values. (Parameter '{param}')"
+            ),
+            RenderError::Device { hresult, operation } => {
+                write!(f, "{operation} failed with HRESULT 0x{:08X}", *hresult as u32)
+            }
+        }
     }
 }
 
