@@ -8,7 +8,7 @@
 //! Traps (contract section "Traps"): T1 the record equality is NaN-aware on the two font sizes (manual `PartialEq`);
 //! T8 the defaults are not zeros: `font_size = 12`, `exif_font_size = 11`, and every flag is hidden (`false`).
 
-#![allow(unused_variables, dead_code)] // stub only: removed by the porter when the bodies are filled (contracts/README.md D11)
+use crate::input::primitives::f64_same;
 
 /// C# `OverlayModel` (`internal sealed record`, `init` properties). Strings are never null in Rust; the C# `?? string.Empty`
 /// mapping is the caller's job (and is `""` in the defaults).
@@ -57,7 +57,27 @@ pub struct OverlayModel {
 impl Default for OverlayModel {
     /// C# property initialisers: `FontSize = 12`, `ExifFontSize = 11`, every flag `false`, every string `""`.
     fn default() -> Self {
-        todo!()
+        Self {
+            has_images: false,
+            status_needs_attention: false,
+            compare_visible: false,
+            status_panel_visible: false,
+            file_info_visible: false,
+            status_text: String::new(),
+            font_size: 12.0,
+            exif_font_size: 11.0,
+            exif_visible: false,
+            exif_text: String::new(),
+            has_skipped_entries: false,
+            skipped_warning_text: String::new(),
+            folder_info_visible: false,
+            folder_info_text: String::new(),
+            zoom_indicator_visible: false,
+            zoom_indicator_text: String::new(),
+            capture_pair_visible: false,
+            capture_pair_text: String::new(),
+            capture_pair_tool_tip: String::new(),
+        }
     }
 }
 
@@ -65,6 +85,24 @@ impl PartialEq for OverlayModel {
     /// C# record equality: the two font sizes compare with `double.Equals` (NaN equals NaN, `0.0 == -0.0`, see
     /// `f64_same`); every other field compares normally.
     fn eq(&self, other: &Self) -> bool {
-        todo!()
+        self.has_images == other.has_images
+            && self.status_needs_attention == other.status_needs_attention
+            && self.compare_visible == other.compare_visible
+            && self.status_panel_visible == other.status_panel_visible
+            && self.file_info_visible == other.file_info_visible
+            && self.status_text == other.status_text
+            && f64_same(self.font_size, other.font_size)
+            && f64_same(self.exif_font_size, other.exif_font_size)
+            && self.exif_visible == other.exif_visible
+            && self.exif_text == other.exif_text
+            && self.has_skipped_entries == other.has_skipped_entries
+            && self.skipped_warning_text == other.skipped_warning_text
+            && self.folder_info_visible == other.folder_info_visible
+            && self.folder_info_text == other.folder_info_text
+            && self.zoom_indicator_visible == other.zoom_indicator_visible
+            && self.zoom_indicator_text == other.zoom_indicator_text
+            && self.capture_pair_visible == other.capture_pair_visible
+            && self.capture_pair_text == other.capture_pair_text
+            && self.capture_pair_tool_tip == other.capture_pair_tool_tip
     }
 }

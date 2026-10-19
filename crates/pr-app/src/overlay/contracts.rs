@@ -7,8 +7,6 @@
 //! - `IOpacityTarget` -> trait [`OpacityTarget`], supertrait of `OverlayElement` (the C# `IOverlayElement.Opacity`).
 //! - `OverlayLayoutContext` (C# `readonly record struct`) and `Easing`.
 
-#![allow(unused_variables, dead_code)] // stub only: removed by the porter when the bodies are filled (contracts/README.md D11)
-
 use std::fmt;
 use std::time::Duration;
 
@@ -33,14 +31,22 @@ pub struct OverlayLayoutContext<'a> {
 impl<'a> OverlayLayoutContext<'a> {
     /// C# primary constructor.
     pub fn new(client: SizeD, dpi_scale: f64, text: &'a dyn TextRenderer) -> Self {
-        todo!()
+        Self {
+            client,
+            dpi_scale,
+            text,
+        }
     }
 }
 
 impl fmt::Debug for OverlayLayoutContext<'_> {
     /// Prints `client` and `dpi_scale`; the renderer is shown as `"<text renderer>"` (a `dyn` has no Debug).
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        todo!()
+        f.debug_struct("OverlayLayoutContext")
+            .field("client", &self.client)
+            .field("dpi_scale", &self.dpi_scale)
+            .field("text", &"<text renderer>")
+            .finish()
     }
 }
 
