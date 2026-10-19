@@ -1,0 +1,293 @@
+//! Port of `PhotoReview.App.Shared/Presenters/SettingsPresenter.cs` (C# baseline `d92d6aae`), W8-10d, first half: the class
+//! header (lines 1 to 122 and 231 to 328): fields, constructor, page list, `LoadFields`, the RAM-cache slider arithmetic, the
+//! hint texts, the WebP/HEIC status line, the TurboJPEG check and `ApplyDefaults`. Contract: `contracts/W8-10d.md`.
+//!
+//! The struct is defined HERE for the whole class. `validate.rs` (W8-10d) and `apply.rs` / `shortcuts.rs` (W8-10e) add
+//! `impl SettingsPresenter` blocks in their own files; the fields they use are `pub(super)`. Nothing in this file touches
+//! the OS except the process-wide "last page" memory.
+//!
+//! Texts (D-W8-4): the C# `Tr.*` accessors read the ambient localizer. Every function that produces UI text takes the
+//! [`FieldContext`] of `presenters::settings_field_map` (`texts: &Localizer`, `numbers: &NumberCulture`), so tests choose the
+//! language and the culture. Message keys are the dotted camelCase form of the C# accessor (`Tr.SettingsRamCacheHint` is
+//! `settings.ramCache.hint`).
+// Stub only: the porter removes this allow line once every body is real.
+#![allow(unused_variables, unused_imports, dead_code)]
+
+use std::fmt;
+use std::sync::{Arc, Mutex};
+
+use pr_core::abstractions::ShellIntegration;
+use pr_core::settings::app_settings::{AppSettings, SettingsTexts};
+use pr_core::settings::normalizer::SettingsValidator;
+use pr_core::settings::shortcuts::ReviewAction;
+use pr_core::settings::store::SettingsStore;
+use pr_core::sync::CancelToken;
+use pr_core::updates::checker::UpdateCheck;
+use pr_imaging::decoder_traits::ImageDecoderFactory;
+use pr_imaging::webp_heic::WicCodecSupport;
+
+use crate::localization::service::LocalizationService;
+use crate::presenters::settings_field_map::FieldContext;
+use crate::presenters::settings_form_state::SettingsFormState;
+
+/// C# `SettingsPageInfo(Key, TitleKey)`: one page of the dialog (left navigation).
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct SettingsPageInfo {
+    /// What the view tags its navigation items with.
+    pub key: &'static str,
+    /// The `pr_l10n` key of the heading (`Tr.SettingsNav*`).
+    pub title_key: &'static str,
+}
+
+/// C# `Pages`: the seven pages in navigation order.
+pub const PAGES: [SettingsPageInfo; 7] = [
+    SettingsPageInfo {
+        key: "General",
+        title_key: "settings.nav.general",
+    },
+    SettingsPageInfo {
+        key: "Display",
+        title_key: "settings.nav.display",
+    },
+    SettingsPageInfo {
+        key: "Mouse",
+        title_key: "settings.nav.mouse",
+    },
+    SettingsPageInfo {
+        key: "Performance",
+        title_key: "settings.nav.performance",
+    },
+    SettingsPageInfo {
+        key: "Shortcuts",
+        title_key: "settings.nav.shortcuts",
+    },
+    SettingsPageInfo {
+        key: "Files",
+        title_key: "settings.nav.files",
+    },
+    SettingsPageInfo {
+        key: "Diagnostics",
+        title_key: "settings.nav.diagnostics",
+    },
+];
+
+/// The localization service as the presenter shares it with the app. `LocalizationService` is owned by the UI thread and its
+/// `switch` / `reload` take `&mut self`, so the shared handle is a mutex (never held across a call into the view).
+pub type SharedLocalization = Arc<Mutex<LocalizationService>>;
+
+/// The constructor arguments of C# `SettingsPresenter(current, store, localization, updateChecker, physicalMemoryBytes)` plus the
+/// two public C# properties `ShellIntegration` and `ExecutablePath` and the texts the C# code reads from the ambient `Tr`.
+pub struct SettingsPresenterOptions {
+    /// `None` = a dialog built without a store (tests): nothing is persisted, shortcut validation uses a fallback validator.
+    pub store: Option<SettingsStoreHandle>,
+    /// `None` = no language group.
+    pub localization: Option<SharedLocalization>,
+    /// `None` = no checker configured: a check ends as `UpdateFailure::BadResponse` (no HTTP transport exists in Rust yet,
+    /// see the contract, open question O5).
+    pub update_checker: Option<Arc<dyn UpdateCheck>>,
+    /// C# defaults a missing value to `RamBudgetPolicy.GetPhysicalMemoryBytes()`; the caller does that (tests pass 32 GiB).
+    pub physical_memory_bytes: i64,
+    /// Texts of `pr_core::settings` (fallback `SettingsValidator`, `SettingsStore::parse_text`, `AppSettings::new`).
+    pub settings_texts: Arc<dyn SettingsTexts>,
+    /// C# `ShellIntegration` property (default `WindowsShellIntegration`, the registry).
+    pub shell_integration: Arc<dyn ShellIntegration>,
+    /// C# `ExecutablePath` property (default `Environment.ProcessPath`); `None` = unavailable.
+    pub executable_path: Option<String>,
+}
+
+/// The store handle: `SettingsStore` is `Send + Sync` and shared in an `Arc`.
+pub type SettingsStoreHandle = Arc<SettingsStore>;
+
+impl fmt::Debug for SettingsPresenterOptions {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.debug_struct("SettingsPresenterOptions")
+            .field("has_store", &self.store.is_some())
+            .field("has_localization", &self.localization.is_some())
+            .field("physical_memory_bytes", &self.physical_memory_bytes)
+            .field("executable_path", &self.executable_path)
+            .finish_non_exhaustive()
+    }
+}
+
+impl SettingsPresenterOptions {
+    /// The required parts; store, localization and update checker start as `None`, `executable_path` as
+    /// `std::env::current_exe()` (lossy string, `None` when unavailable).
+    pub fn new(
+        physical_memory_bytes: i64,
+        settings_texts: Arc<dyn SettingsTexts>,
+        shell_integration: Arc<dyn ShellIntegration>,
+    ) -> Self {
+        todo!()
+    }
+}
+
+/// C# `SettingsPresenter`. UI-thread object (the dialog's), except [`UpdateCheckJob`] which runs on a worker.
+pub struct SettingsPresenter {
+    /// C# `Settings`: the working copy the dialog edits.
+    pub(super) settings: AppSettings,
+    pub(super) store: Option<SettingsStoreHandle>,
+    pub(super) localization: Option<SharedLocalization>,
+    pub(super) update_checker: Option<Arc<dyn UpdateCheck>>,
+    pub(super) physical_memory_bytes: i64,
+    pub(super) settings_texts: Arc<dyn SettingsTexts>,
+    /// C# `ShellIntegration` / `ExecutablePath` (W8-10e).
+    pub(super) shell_integration: Arc<dyn ShellIntegration>,
+    pub(super) executable_path: Option<String>,
+    /// C# `_updateCts` / `_updateUrl` (W8-10e).
+    pub(super) update_cancel: Option<CancelToken>,
+    pub(super) update_url: Option<String>,
+    /// C# `_fallbackValidator` (W8-10d, `validate.rs`).
+    pub(super) fallback_validator: Option<SettingsValidator>,
+    /// C# `_cachedProbeActionsJson` / `_cachedProbeActions` (W8-10d, `validate.rs`).
+    pub(super) cached_probe_actions_json: Option<String>,
+    pub(super) cached_probe_actions: Vec<ReviewAction>,
+}
+
+impl fmt::Debug for SettingsPresenter {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.debug_struct("SettingsPresenter")
+            .field("has_store", &self.store.is_some())
+            .field("has_localization", &self.localization.is_some())
+            .field("physical_memory_bytes", &self.physical_memory_bytes)
+            .finish_non_exhaustive()
+    }
+}
+
+impl SettingsPresenter {
+    /// C# constructor. `settings` = `current.clone()` (C# clones through the config.json JSON contract so every property
+    /// survives; a derived `Clone` copies every field, which is the same thing). Starts with no update URL, no cached probe.
+    pub fn new(current: &AppSettings, options: SettingsPresenterOptions) -> Self {
+        todo!()
+    }
+
+    /// C# `Settings { get; }`: the working copy (the caller reads it after a successful save).
+    pub fn settings(&self) -> &AppSettings {
+        &self.settings
+    }
+
+    /// C# `HasLocalization`.
+    pub fn has_localization(&self) -> bool {
+        self.localization.is_some()
+    }
+
+    // ---- Pages ----
+
+    /// C# `InitialPageKey`: the last page remembered in this process when it is one of [`PAGES`], else `"General"`.
+    pub fn initial_page_key() -> String {
+        todo!()
+    }
+
+    /// C# `RememberPage(key)`: session-only memory (a process-wide `Mutex<String>`, initial value `"General"`), any text is
+    /// stored (an unknown key is ignored later by `initial_page_key`).
+    pub fn remember_page(key: &str) {
+        todo!()
+    }
+
+    /// C# `RememberedPageKey`: the stored text as it is.
+    pub fn remembered_page_key() -> String {
+        todo!()
+    }
+
+    /// C# `NextPageIndex(current, count, forward)`: `((current + (forward ? 1 : -1)) % count + count) % count` with C#
+    /// (truncating) `%`. `count` is 7 in production; the caller never passes 0.
+    pub fn next_page_index(current: i32, count: i32, forward: bool) -> i32 {
+        todo!()
+    }
+
+    /// C# `PageTitle(key)`: `ctx.texts.get(title_key)`, or `""` for an unknown key.
+    pub fn page_title(key: &str, ctx: &FieldContext<'_>) -> String {
+        todo!()
+    }
+
+    // ---- Load ----
+
+    /// C# `LoadFields()`: a fresh `SettingsFormState::default()`, every row of `settings_field_map::bindings()` loaded in table
+    /// order, then `ram_cache_percent = f64::from(clamp(settings.image_cache_ram_percent, min, max))` where `(min, max)` is
+    /// `ram_cache_range(state.preload_forward_text, state.preload_backward_text)` (so the slider range follows the TEXT the rows
+    /// just wrote). The working copy is NOT modified (the clamped value is not written back). `Math.Clamp(v, min, max)` order:
+    /// `v < min` gives `min`, then `v > max` gives `max`.
+    pub fn load_fields(&self) -> SettingsFormState {
+        todo!()
+    }
+
+    // ---- RAM cache slider ----
+
+    /// C# `RamCacheRange(forwardText, backwardText)`: `forward = parse_or_fallback(forward_text, settings.preload_forward_count,
+    /// MIN_PRELOAD_FORWARD_COUNT, MAX_PRELOAD_COUNT)`, `backward` likewise with `MIN_PRELOAD_BACKWARD_COUNT`; the pair is a
+    /// `PreloadWindow::new(forward, backward)`; result `(ram_budget::minimum_cache_percent(self.physical_memory_bytes, window),
+    /// MAX_IMAGE_CACHE_RAM_PERCENT)`. Each box falls back on its own.
+    pub fn ram_cache_range(&self, forward_text: Option<&str>, backward_text: Option<&str>) -> (i32, i32) {
+        todo!()
+    }
+
+    /// C# `RamCacheHintText(min, max)`: `ctx.texts.format_with("settings.ramCache.hint", {total: format_gb(physical), min, max})`.
+    pub fn ram_cache_hint_text(&self, min: i32, max: i32, ctx: &FieldContext<'_>) -> String {
+        todo!()
+    }
+
+    /// C# `RamCacheValueText(percent)`: `settings.ramCache.value` with `{percent}` and `{size}` =
+    /// `format_gb(ram_budget::bytes_for_percent(percent, physical))`.
+    pub fn ram_cache_value_text(&self, percent: i32, ctx: &FieldContext<'_>) -> String {
+        todo!()
+    }
+
+    // ---- Hints ----
+
+    /// C# static `PreloadWindowHint()`: `settings.preloadWindow.hint` with `{min}` = `MIN_PRELOAD_BACKWARD_COUNT`, `{max}` = `MAX_PRELOAD_COUNT`.
+    pub fn preload_window_hint(ctx: &FieldContext<'_>) -> String {
+        todo!()
+    }
+
+    /// C# static `ToolbarOpacityHint()`: `settings.toolbarOpacity.hint` with `{min}` = `MIN_TOOLBAR_OPACITY_PERCENT`.
+    pub fn toolbar_opacity_hint(ctx: &FieldContext<'_>) -> String {
+        todo!()
+    }
+
+    /// C# static `KeyboardZoomStepPercentHint()`: `settings.keyboardZoomStepPercent.hint` with `{min}` and `{max}` (the two
+    /// `*_KEYBOARD_ZOOM_STEP_PERCENT` constants).
+    pub fn keyboard_zoom_step_percent_hint(ctx: &FieldContext<'_>) -> String {
+        todo!()
+    }
+
+    /// C# static `ToolbarOpacityValueText(sliderValue)`: `"{round} %"` where `round` is `Math.Round` (ties to EVEN,
+    /// `f64::round_ties_even`) cast to `int` and written with the culture's negative sign.
+    pub fn toolbar_opacity_value_text(slider_value: f64, ctx: &FieldContext<'_>) -> String {
+        todo!()
+    }
+
+    /// C# static `FormatWebpHeicCodecStatus(codecs)` (Q-FMT-WEBP-HEIC): `webp` = `settings.webpHeicSupportEnabled.codecAvailable` or
+    /// `.webpMissing`; `heif` = `.codecAvailable` when `codecs.heif()`, `.hevcMissing` when only `heif_container`, else
+    /// `.heifMissing`; the result is `settings.webpHeicSupportEnabled.status` with `{webp}` and `{heif}`.
+    pub fn format_webp_heic_codec_status(codecs: &WicCodecSupport, ctx: &FieldContext<'_>) -> String {
+        todo!()
+    }
+
+    /// C# static `IsTurboJpegAvailable(decoderFactory)`: `true` for `None` (no factory to ask), else
+    /// `factory.is_registered(DecoderBackend::TurboJpeg)`.
+    pub fn is_turbo_jpeg_available(decoder_factory: Option<&dyn ImageDecoderFactory>) -> bool {
+        todo!()
+    }
+
+    // ---- Defaults ----
+
+    /// C# `ApplyDefaults()`: resets the listed properties of the working copy to their built-in values (everything not listed
+    /// keeps its value: language, actions, window and other settings the dialog has no "default" for) and returns `load_fields()`.
+    /// The porter reproduces the 65 assignments `s.X = ...` of C# lines 293 to 326 one by one, in order (counted with grep; `s.Shortcuts` is `ShortcutMappings::default()`). "new AppSettings().X" is
+    /// `AppSettings::new(&*self.settings_texts).x`; constants come from `pr_core::settings::{perf_options, app_settings}`;
+    /// `HiddenContextMenuItems = null` is `None`.
+    pub fn apply_defaults(&mut self) -> SettingsFormState {
+        todo!()
+    }
+}
+
+/// C# private `ParseOrFallback(text, fallback, min, max)`: `settings_field_map::try_int(text, min, max)` when `text` is `Some`
+/// and valid and in range, else `fallback.clamp(min, max)` (`Math.Clamp`: a bound is never NaN, so `i32::clamp` is safe here).
+fn parse_or_fallback(text: Option<&str>, fallback: i32, min: i32, max: i32) -> i32 {
+    todo!()
+}
+
+/// C# private `FormatGb(bytes)`: `bytes > 0` => `bytes / 1 GiB` written with ONE decimal in the current culture ("0.0":
+/// `viewport::types::format_fixed(value, 1)` with the culture's decimal separator), else `"?"`. GiB are shown as "GB", as Windows does.
+pub(crate) fn format_gb(bytes: i64, ctx: &FieldContext<'_>) -> String {
+    todo!()
+}

@@ -1,0 +1,165 @@
+//! Port of `PhotoReview.App.Shared/Coordinators/ImagePresenter.cs` lines 839 to 863, 895 to 925 and 927 to 949
+//! (baseline d92d6aae): `StatOutcome`, `StatResult`, `StatNow`, `TryGetOriginalDimensionsAsync` (blocking form) and the
+//! `PhotoInfo` record with `PhotoInfo.From`. Contract: `contracts/W8-07k.md`. Target:
+//! `crates/pr-app/src/coordinators/presenter/photo_info.rs` (`coordinators::presenter::photo_info`).
+//!
+//! Pure module: no `unsafe`, no `windows` crate. Everything here is a plain function or value; the presenter calls the two
+//! blocking functions from worker jobs (never on the UI thread, Q-R29 option C).
+// Stub only: the porter removes this allow line once every body is real.
+#![allow(unused_variables, unused_imports, dead_code)]
+// Stub only (contract text in doc comments, boxed seams): the porter fixes the doc layout / introduces type aliases and removes this line.
+#![allow(clippy::doc_lazy_continuation)]
+
+use std::io;
+use std::path::Path;
+
+use pr_core::abstractions::{FileStat, FileSystem};
+use pr_core::sync::CancelToken;
+use pr_imaging::cache_key::ImageCacheKey;
+use pr_imaging::decode_types::DecodedImageView;
+use pr_imaging::exif_summary::ExifSummary;
+use pr_imaging::service::{PreviewError, PreviewImageService};
+
+use super::state::{ImagePresenter, StatPurpose};
+
+/// C# `private enum StatOutcome { Found, Missing, Error }` (made visible to the presenter's other files).
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum StatOutcome {
+    /// The file exists; `StatResult::stat` is set.
+    Found,
+    /// Not there, or a path that can never name a file: the catalog drops the item.
+    Missing,
+    /// Any other failure (share hiccup, access denied, I/O error): the item stays in the catalog; `StatResult::error` is set.
+    Error,
+}
+
+/// C# `private readonly record struct StatResult(StatOutcome Outcome, FileStat? Stat, Exception? Error)`.
+#[derive(Debug)]
+pub struct StatResult {
+    pub outcome: StatOutcome,
+    /// Set for `Found` only.
+    pub stat: Option<FileStat>,
+    /// Set for `Error` only (C# `Exception?`); `Display` is the C# `Exception.Message`.
+    pub error: Option<io::Error>,
+}
+
+impl StatResult {
+    /// `new StatResult(Found, stat, null)`.
+    pub fn found(stat: FileStat) -> Self {
+        Self {
+            outcome: StatOutcome::Found,
+            stat: Some(stat),
+            error: None,
+        }
+    }
+
+    /// `new StatResult(Missing, null, null)`.
+    pub fn missing() -> Self {
+        Self {
+            outcome: StatOutcome::Missing,
+            stat: None,
+            error: None,
+        }
+    }
+
+    /// `new StatResult(Error, null, ex)`.
+    pub fn failed(error: io::Error) -> Self {
+        Self {
+            outcome: StatOutcome::Error,
+            stat: None,
+            error: Some(error),
+        }
+    }
+}
+
+/// C# `StatNow(path)` (lines 901 to 925): ONE stat through `file_system.try_get_file_stat` (the Rust image of C#
+/// `IFileSystem.GetFileStat` that may throw; the caller passes `PhysicalFileSystem` when the presenter has no injected file
+/// system, C# `new FileInfo(path)`). `Ok(Some)` -> `Found`; `Ok(None)` -> `Missing` (also a directory, as `FileInfo.Exists`);
+/// `Err(e)` -> `Missing` when [`stat_error_means_missing`] is true, else `Error` carrying `e`. Never panics, never throws.
+/// Blocking: call it only on a worker.
+pub fn stat_now(file_system: &dyn FileSystem, path: &str) -> StatResult {
+    todo!()
+}
+
+/// The `catch (Exception ex) when (ex is FileNotFoundException or DirectoryNotFoundException or ArgumentException or
+/// NotSupportedException or PathTooLongException)` filter of `StatNow`: a path that can never name a file is as good as missing.
+/// Rust form: `ErrorKind::NotFound`, `ErrorKind::InvalidInput` (blank / malformed path, C# `ArgumentException`),
+/// `ErrorKind::Unsupported` (C# `NotSupportedException`), `ErrorKind::InvalidFilename` and raw OS error 206
+/// (`ERROR_FILENAME_EXCED_RANGE`, C# `PathTooLongException`, see `pr_core::io::physical`). Access denied, sharing violations and
+/// every other kind are `Error`.
+pub fn stat_error_means_missing(error: &io::Error) -> bool {
+    todo!()
+}
+
+impl ImagePresenter {
+    /// C# `StatOffUiThreadAsync(path, cancellationToken)` (lines 886 to 893): `stat_now(file_system, path)` on `self.stat_worker` (the dedicated FIFO stat thread of
+    /// `pr_core::io::navigation_stat`), NEVER on the calling (UI) thread. The job sends `PresenterEvent::Stat { token, purpose, result }` into the presenter inbox. A
+    /// `cancel` that fires before the job starts drops it without touching the disk and without any event (the navigation was superseded while it waited), which
+    /// is the C# "cancelled task, caller returns because the token is no longer current". `purpose` tells `pump` which continuation resumes.
+    pub(super) fn submit_stat(&self, token: i64, path: &str, purpose: StatPurpose, cancel: &CancelToken) {
+        todo!()
+    }
+}
+
+/// C# `TryGetOriginalDimensionsAsync(path, currentKey)` (lines 848 to 863), blocking: `service.get_original_dimensions(path, key)`.
+/// `Ok(Some((w, h)))` on success. An EXPECTED header-read failure ([`is_expected_dimension_failure`]) is `Ok(None)` and is logged
+/// with `AppLog` (`ShowImage original dimensions unknown path=..: <kind>: <message>`) when logging is enabled. Any other error is
+/// returned (`Err`): the C# code lets a bug such as a `NullReferenceException` or an `ArgumentException` surface, and the presenter
+/// turns it into the generic failure branch (the status is NOT reported as ready).
+pub fn try_get_original_dimensions(
+    service: &PreviewImageService,
+    path: &str,
+    key: &ImageCacheKey,
+) -> Result<Option<(i32, i32)>, PreviewError> {
+    todo!()
+}
+
+/// The C# filter `ex is IOException or UnauthorizedAccessException or NotSupportedException or FormatException or
+/// InvalidOperationException or InvalidDataException or ExternalException or DecoderBusyException`, applied to the Rust error:
+/// - `PreviewError::is_io_exception()` (covers `SourceChanged`, `Io`, `SourceBytes(Io)`, `Key(SourceNoLongerExists)`, `Decode(e)` with `e.is_io_exception()`);
+/// - `PreviewError::is_busy()`;
+/// - `Decode(e)` where `e.kind()` is `NotSupported`, `MissingCodec`, `Format`, `InvalidData`, `Com`, `InvalidOperation`
+///   (`UnauthorizedAccess` has no Rust variant: it arrives as `Io` with `ErrorKind::PermissionDenied`, already covered by the first rule).
+/// NOT expected (they must propagate): `Canceled`, `Decode(InvalidArgument | InvalidCast | Overflow | OutOfMemory | Disposed | DllNotFound | BadImageFormat | EntryPointNotFound | Other | Canceled)`,
+/// `Panicked`, `RawFullDecodeKey`, `Key(InvalidPath)`, `Spawn`.
+pub fn is_expected_dimension_failure(error: &PreviewError) -> bool {
+    todo!()
+}
+
+/// C# `public sealed record PhotoInfo(string FileName, int Width, int Height, ExifSummary? Exif, int RawPreviewWidth = 0,
+/// int RawPreviewHeight = 0)`: the input of the photo information line. `raw_preview_*` (Q-RAW-03) is the pixel size of the
+/// embedded RAW JPEG while THAT is the displayed image; 0 = none (non-RAW, a cache-restored image that cannot tell, or the full
+/// decode is shown). Value equality (C# record).
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct PhotoInfo {
+    pub file_name: String,
+    pub width: i32,
+    pub height: i32,
+    pub exif: Option<ExifSummary>,
+    pub raw_preview_width: i32,
+    pub raw_preview_height: i32,
+}
+
+impl PhotoInfo {
+    /// C# `PhotoInfo.From(path, image)`: `file_name = Path.GetFileName(path)` (`pr_core::text::dotnet_path::get_file_name`),
+    /// `width/height = image.original_width()/original_height()`, `exif = image.exif().cloned()`,
+    /// `raw_preview_* = image.embedded_preview_size()` or `(0, 0)` when it is `None`.
+    pub fn from_image(path: &str, image: &dyn DecodedImageView) -> PhotoInfo {
+        todo!()
+    }
+
+    /// C# `info with { RawPreviewWidth = 0, RawPreviewHeight = 0 }`.
+    #[must_use]
+    pub fn without_raw_preview(&self) -> PhotoInfo {
+        PhotoInfo {
+            raw_preview_width: 0,
+            raw_preview_height: 0,
+            ..self.clone()
+        }
+    }
+
+    /// C# pattern `{ RawPreviewWidth: > 0 }`.
+    pub fn has_raw_preview(&self) -> bool {
+        self.raw_preview_width > 0
+    }
+}

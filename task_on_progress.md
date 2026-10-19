@@ -268,3 +268,9 @@
 - Verified on the final head: `cargo fmt --all`, `cargo clippy --workspace --all-targets --locked -- -D warnings` clean, `cargo test --workspace --locked` exit 0 (5465 passed, 0 failed, 431 ignored).
 - NOT run: any Rust test of the new units (all stub bodies are `todo!()`; no golden test is written yet, porters add them); `cargo-mutants`; the hand-derived tables in the contracts (for example W8-16e layouts) were not compared with the goldens; the layering PR of D-W8B1-1 (needed before W8-12b); CI result pending at PR time.
 - Next: port per P-28 once the direct dependencies merge (start with W8-01a, 05b, 04d, 10c, 16a; then 01b, 01c, 05a, 05c, 02b); add the missing plan edges of D-W8B1-9; do the layering PR before B3 contracts.
+
+## Wave 8 batch B2 contracts PR (2026-10-19, branch `wave8/b2-contracts`, based on master `724394f`)
+- Wired: 26 contracts (`contracts/W8-05g.md` .. `W8-10i.md`), stubs in `crates/pr-app/src/` (`input/pointer`, `viewmodels/{compare,main}`, `coordinators/{file_action_gate,sibling_navigator,folder_load,file_actions,duplicate_cleanup,zoom_detail,presenter}`, `composition`, `presenters/{settings,recovery_window,benchmark}`), roster and decisions D-W8B2-1..8 in `contracts/README.md`, PARITY rows, proposal P-41. All Codex drafts were rewritten (async or invented API); `contracts/drafts-w8b2` removed.
+- Verified on the final head: `cargo fmt --all`, `cargo clippy --workspace --all-targets --locked -- -D warnings`, `cargo test --workspace --locked --no-fail-fast` (results in the PR body).
+- NOT run: any Rust test of the new units (all stub bodies are `todo!()`); `cargo-mutants`; the C# claims in the contracts were checked by sub-agents reading the baseline source, not by running the C# tests; CI result pending at PR time.
+- Open: B1 stub changes of D-W8B2-6, duplicate concepts and image payload type (D-W8B2-4/5).

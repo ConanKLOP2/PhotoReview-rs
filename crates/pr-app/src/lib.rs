@@ -5,6 +5,7 @@
 pub mod spike;
 
 // Wave 8 batch B1 modules (contract stubs, lead-owned wiring; contracts/README.md D-W8B1-*).
+pub mod composition;
 pub mod coordinators;
 pub mod input;
 pub mod localization;

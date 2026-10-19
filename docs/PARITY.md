@@ -524,3 +524,17 @@ Other notes:
 | X-overlay-animator, X-overlay-frame-delay, X-overlay-palette | Contract (W8-15b) | `pr_app::overlay::{animator, frame_delay, palette}` | goldens `overlay-animator` 27, `overlay-frame-delay` 10, `overlay-palette` 17 | Durations are `i64` ticks; palette colours are functions in the stub |
 | X-viewing-pure | Contract (W8-16a) | `pr_app::viewing::{scaling_policy, image_layer}`, `pr_platform_win::shell_viewing::{frame_stats, pacer, frame_log}` | goldens `scaling-policy` 17, `frame-stats` 12, `frame-pacer` 13, `frame-log` 10 | Env var `PHOTOREVIEW_RS_FRAME_LOG` (Different); ImageLayer is F |
 | X-scrollbar | Contract (W8-16e) | `pr_app::viewing::scrollbar_geometry`, `pr_platform_win::shell_viewing::scrollbar_native` | goldens `scrollbar-geometry` 133, `scrollbar-repeat-timing` 145 | Window handles are `isize` |
+| X-pointer-input (K-33..K-36, K-27 pan) | Contract (W8-05g, W8-05h) | `pr_app::input::pointer::*` | hand-written (F) | Continuations (`PointerContinuation`) replace `await`; version token per operation |
+| X-compare-view-model | Contract (W8-06c) | `pr_app::viewmodels::compare` | hand-written (F) | `new(ctx)` replaces the parameterless constructor; no formatter for the size pair yet |
+| X-file-action-gate (INV-4 caller side) | Contract (W8-06e) | `pr_app::coordinators::file_action_gate` | hand-written (F) | `GateTurn` handle, scheduler-injected so "never inline" is observable |
+| X-sibling-navigator | Contract (W8-06f) | `pr_app::coordinators::sibling_navigator` | hand-written (F) | Listing happens before the first cancellation check |
+| X-folder-load (INV-9, INV-7) | Contract (W8-07a, W8-07b) | `pr_app::coordinators::folder_load::*` | hand-written (F) | Worker lanes and events instead of `Task`; catalog passed per call |
+| X-file-action-controller (INV-3..6 caller side, F-21) | Contract (W8-07c, 07d, 07e) | `pr_app::coordinators::file_actions::*` | hand-written (F) | The view model owns the gate |
+| X-duplicate-cleanup (C-06 App side) | Contract (W8-07f) | `pr_app::coordinators::duplicate_cleanup` | hand-written (F) | Recycling is the App's job |
+| X-zoom-detail | Contract (W8-07g) | `pr_app::coordinators::zoom_detail` | hand-written (F) | Cancel and late-result drop by generation |
+| X-image-presenter (INV-1, INV-9) | Contract (W8-07h, 07i, 07j, 07k) | `pr_app::coordinators::presenter::*` | hand-written (F) | Phase state machine replaces `PresentCoreAsync`; image payload type open (D-W8B2-5) |
+| X-main-view-model | Contract (W8-08a..08e) | `pr_app::viewmodels::main::*` | hand-written (F) | `ChangeSet` replaces `PropertyChanged` (D-W8-1); sinks recorded and replayed |
+| X-composition-factories | Contract (W8-09a) | `pr_app::composition::{decoders, factories, contracts}` | hand-written (F) | No DI container |
+| X-settings-presenter | Contract (W8-10d, W8-10e) | `pr_app::presenters::settings::*` | hand-written (F) | `SettingsTexts`, `ShellIntegration` registry and HTTP transport seams open |
+| X-recovery-window-presenter (INV-5) | Contract (W8-10g) | `pr_app::presenters::recovery_window` | hand-written (F) | Restore/Dismiss decisions on screen |
+| X-benchmark-presenter | Contract (W8-10i) | `pr_app::presenters::benchmark` | hand-written (F) | Progress posted through the scheduler |
