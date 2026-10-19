@@ -6,9 +6,7 @@
 //! Pure module: no `unsafe`, no `windows` crate. Every function is total: a non-finite or unusable input gives the C# fallback value,
 //! never a panic (the C# `double` arithmetic never throws).
 
-#![allow(unused_variables, dead_code)] // stub only: removed by the porter when the bodies are filled (contracts/README.md D11)
-
-use crate::input::primitives::{PointD, RectD, SizeD};
+use crate::input::primitives::{PointD, RectD, SizeD, f64_same};
 use pr_core::model::enums::FitWidthAnchor;
 use pr_core::settings::app_settings::AppSettings;
 
@@ -22,7 +20,7 @@ pub struct ZoomViewportOffsets {
 
 impl PartialEq for ZoomViewportOffsets {
     fn eq(&self, other: &Self) -> bool {
-        todo!()
+        f64_same(self.horizontal, other.horizontal) && f64_same(self.vertical, other.vertical)
     }
 }
 
@@ -36,7 +34,7 @@ pub struct ZoomImagePoint {
 
 impl PartialEq for ZoomImagePoint {
     fn eq(&self, other: &Self) -> bool {
-        todo!()
+        f64_same(self.x, other.x) && f64_same(self.y, other.y)
     }
 }
 
@@ -54,7 +52,23 @@ pub const IMAGE_CENTRE: ZoomImagePoint = ZoomImagePoint { x: 0.5, y: 0.5 };
 /// The image is scaled by `min(elementWidth / sourceWidth, elementHeight / sourceHeight)` and centred. Each coordinate is
 /// clamped to `[0, source size]`, and a NaN coordinate (from a denormal scale) becomes 0.
 pub fn calculate_uniform_image_point(element: SizeD, source: SizeD, pointer: PointD) -> ZoomImagePoint {
-    todo!()
+    let positive = |v: f64| v > 0.0 && v.is_finite();
+    if !positive(element.width)
+        || !positive(element.height)
+        || !positive(source.width)
+        || !positive(source.height)
+        || !pointer.x.is_finite()
+        || !pointer.y.is_finite()
+    {
+        return ZoomImagePoint { x: 0.0, y: 0.0 };
+    }
+    let scale = (element.width / source.width).min(element.height / source.height);
+    let left = (element.width - source.width * scale) / 2.0;
+    let top = (element.height - source.height * scale) / 2.0;
+    ZoomImagePoint {
+        x: clamp_to_source((pointer.x - left) / scale, source.width),
+        y: clamp_to_source((pointer.y - top) / scale, source.height),
+    }
 }
 
 /// C# `NormalizeImagePoint(x, y, width, height)`: expresses a point on the image as a fraction of its size, so the wheel anchor
@@ -62,7 +76,15 @@ pub fn calculate_uniform_image_point(element: SizeD, source: SizeD, pointer: Poi
 /// smaller-than-viewport image keeps its old behaviour. Returns `(0.5, 0.5)` when `width` or `height` is not positive and finite,
 /// or when `x / width` or `y / height` is not finite.
 pub fn normalize_image_point(point: PointD, size: SizeD) -> ZoomImagePoint {
-    todo!()
+    let positive = |v: f64| v > 0.0 && v.is_finite();
+    if positive(size.width) && positive(size.height) {
+        let x = point.x / size.width;
+        let y = point.y / size.height;
+        if x.is_finite() && y.is_finite() {
+            return ZoomImagePoint { x, y };
+        }
+    }
+    IMAGE_CENTRE
 }
 
 /// C# `CalculateOffsetsFromAnchorDelta(current H/V offset, anchor before X/Y, anchor after X/Y, new extent W/H, viewport W/H)`:
@@ -74,7 +96,18 @@ pub fn calculate_offsets_from_anchor_delta(
     new_extent: SizeD,
     viewport: SizeD,
 ) -> ZoomViewportOffsets {
-    todo!()
+    ZoomViewportOffsets {
+        horizontal: clamp_offset(
+            current.x + anchor_after.x - anchor_before.x,
+            new_extent.width,
+            viewport.width,
+        ),
+        vertical: clamp_offset(
+            current.y + anchor_after.y - anchor_before.y,
+            new_extent.height,
+            viewport.height,
+        ),
+    }
 }
 
 /// C# `CalculateZoomToPointOffsets`: the scroll offsets that put the image point `anchor` (a fraction, see
@@ -92,13 +125,21 @@ pub fn calculate_zoom_to_point_offsets(
     extent: SizeD,
     viewport: SizeD,
 ) -> ZoomViewportOffsets {
-    todo!()
+    let anchor_after = PointD {
+        x: image.x + anchor.x * image.width,
+        y: image.y + anchor.y * image.height,
+    };
+    calculate_offsets_from_anchor_delta(current, cursor, anchor_after, extent, viewport)
 }
 
 /// C# `CalculateFitWidthAnchorPoint(FitWidthAnchor)`: `TopThird` -> [`FIT_WIDTH_TOP_THIRD`], `BottomThird` ->
 /// [`FIT_WIDTH_BOTTOM_THIRD`], `Centre` (and any other value) -> [`IMAGE_CENTRE`].
 pub fn calculate_fit_width_anchor_point(anchor: FitWidthAnchor) -> ZoomImagePoint {
-    todo!()
+    match anchor {
+        FitWidthAnchor::TopThird => FIT_WIDTH_TOP_THIRD,
+        FitWidthAnchor::BottomThird => FIT_WIDTH_BOTTOM_THIRD,
+        _ => IMAGE_CENTRE,
+    }
 }
 
 /// C# `FitWidthAnchorFor(settings, type)`: the anchor a Fit width command uses. `second_command` is true for the command
@@ -106,13 +147,20 @@ pub fn calculate_fit_width_anchor_point(anchor: FitWidthAnchor) -> ZoomImagePoin
 /// `FitWidthAnchor2` (read with `AppSettings::fit_width_anchor2_or_default`, C# default `BottomThird` when undefined); every
 /// other Fit width command uses `FitWidthAnchor`. Never `KeyboardZoomAnchor`, which does not affect Fit width.
 pub fn fit_width_anchor_for(settings: &AppSettings, second_command: bool) -> FitWidthAnchor {
-    todo!()
+    if second_command {
+        settings.fit_width_anchor2_or_default()
+    } else {
+        settings.fit_width_anchor
+    }
 }
 
 /// C# `CalculatePanOffsets(current H/V offset, deltaX, deltaY, extent, viewport)`: the pointer moved by `delta`, so the offset
 /// moves by `-delta` (opposite to the drag), each axis clamped by [`clamp_offset`].
 pub fn calculate_pan_offsets(current: PointD, delta: PointD, extent: SizeD, viewport: SizeD) -> ZoomViewportOffsets {
-    todo!()
+    ZoomViewportOffsets {
+        horizontal: clamp_offset(current.x - delta.x, extent.width, viewport.width),
+        vertical: clamp_offset(current.y - delta.y, extent.height, viewport.height),
+    }
 }
 
 /// C# `IsBeyondDragThreshold(totalDeltaX, totalDeltaY, minimumHorizontal, minimumVertical)`: true when
@@ -123,11 +171,20 @@ pub fn is_beyond_drag_threshold(
     minimum_horizontal: f64,
     minimum_vertical: f64,
 ) -> bool {
-    todo!()
+    total_delta_x.abs() >= minimum_horizontal || total_delta_y.abs() >= minimum_vertical
 }
 
 /// C# `ClampOffset(value, extent, viewport)`, private. `room = extent - viewport`; `maximum = room` when finite (clamped to
 /// at least 0), else 0; a non-finite `value` becomes 0; the result is `value` clamped to `[0, maximum]`.
 fn clamp_offset(value: f64, extent: f64, viewport: f64) -> f64 {
-    todo!()
+    let room = extent - viewport;
+    let maximum = if room.is_finite() { room.max(0.0) } else { 0.0 };
+    let value = if value.is_finite() { value } else { 0.0 };
+    value.clamp(0.0, maximum)
+}
+
+/// C# `ClampToSource(value, max)`: NaN becomes 0 (a denormal scale makes `Infinity - Infinity` or `0 * Infinity`), else the
+/// value is clamped to `[0, max]`. `max` is positive and finite here (the caller's guard), so `clamp` cannot panic.
+fn clamp_to_source(value: f64, max: f64) -> f64 {
+    if value.is_nan() { 0.0 } else { value.clamp(0.0, max) }
 }
