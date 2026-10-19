@@ -5,17 +5,19 @@
 //! Traps (contract section "Traps"): T1 the text is never trimmed (C# sets no trimming, unlike the status line);
 //! T2 `automation_name` is read by the host for the accessibility tree and set only by `apply_localization`.
 
-#![allow(unused_variables, dead_code)] // stub only: removed by the porter when the bodies are filled (contracts/README.md D11)
-
 use pr_l10n::localizer::Localizer;
 
-use crate::input::primitives::{PointD, SizeD};
+use crate::input::primitives::{PointD, RectD, SizeD};
+use crate::overlay::contracts::OverlayElement;
 use crate::overlay::contracts::OverlayLayoutContext;
-use crate::overlay::element::{ElementBase, ElementNode};
+use crate::overlay::element::{
+    ElementBase, ElementNode, OverlayHorizontalAlignment, OverlayThickness, OverlayVerticalAlignment,
+};
 use crate::overlay::model::OverlayModel;
 use crate::overlay::panel::PanelElement;
 use crate::overlay::text::TextElement;
 use crate::services::render::DrawContext;
+use crate::services::render::text::TextStyle;
 
 /// C# `ZoomIndicatorPanel.PanelId`.
 pub const PANEL_ID: &str = "ZoomIndicatorPanel";
@@ -37,29 +39,47 @@ pub struct ZoomIndicatorPanel {
 impl ZoomIndicatorPanel {
     /// C# constructor `ZoomIndicatorPanel()`: builds the tree, then `ApplyLocalization()` with `texts`.
     pub fn new(texts: &Localizer) -> Self {
-        todo!()
+        let mut panel = PanelElement::new(PANEL_ID);
+        panel.base_mut().horizontal_alignment = OverlayHorizontalAlignment::Right;
+        panel.base_mut().vertical_alignment = OverlayVerticalAlignment::Top;
+        panel.base_mut().margin = OverlayThickness::uniform(8.0);
+        panel.padding = OverlayThickness::symmetric(6.0, 4.0);
+        panel.corner_radius = 4.0;
+        let mut this = Self {
+            panel,
+            text: TextElement::new(TEXT_ID).unwrap_or_else(|_| unreachable!("static id")),
+            automation_name: String::new(),
+        };
+        this.apply_localization(texts);
+        this
     }
 
     /// C# `Text` (the percentage text; the shell reads `Bounds`).
     pub fn text(&self) -> &TextElement {
-        todo!()
+        &self.text
     }
 
     /// C# `AutomationName`.
     pub fn automation_name(&self) -> &str {
-        todo!()
+        &self.automation_name
     }
 
     /// C# `Apply(OverlayModel)`: `IsVisible = model.zoom_indicator_visible`; `Text.Text = model.zoom_indicator_text`;
     /// `Text.Style = (Segoe UI, model.font_size)`. Nothing else is written.
     pub fn apply(&mut self, model: &OverlayModel) {
-        todo!()
+        self.panel.base_mut().is_visible = model.zoom_indicator_visible;
+        self.text.set_text(&model.zoom_indicator_text);
+        self.text.set_style(TextStyle {
+            font_family: "Segoe UI".to_owned(),
+            font_size_dip: model.font_size,
+            bold: false,
+        });
     }
 
     /// C# `ApplyLocalization()`: `automation_name = MainZoomIndicatorAutomationName` (key
     /// `pr_l10n::keys::MAIN_ZOOM_INDICATOR_AUTOMATION_NAME`). Called by the constructor and on language change.
     pub fn apply_localization(&mut self, texts: &Localizer) {
-        todo!()
+        self.automation_name = texts.get(pr_l10n::keys::MAIN_ZOOM_INDICATOR_AUTOMATION_NAME)
     }
 }
 
@@ -75,34 +95,58 @@ impl ElementNode for ZoomIndicatorPanel {
     }
 
     fn base(&self) -> &ElementBase {
-        todo!()
+        self.panel.base()
     }
 
     fn base_mut(&mut self) -> &mut ElementBase {
-        todo!()
+        self.panel.base_mut()
     }
 
     fn measure_core(&mut self, available: SizeD, context: &OverlayLayoutContext<'_>) -> SizeD {
-        todo!()
+        let s = self.text.measure(available, context);
+        SizeD {
+            width: s.width + self.panel.padding.horizontal(),
+            height: s.height + self.panel.padding.vertical(),
+        }
     }
 
     fn arrange_children(&mut self, context: &OverlayLayoutContext<'_>) {
-        todo!()
+        let b = self.base().bounds();
+        self.text.arrange_in(
+            RectD {
+                x: b.x + self.panel.padding.left,
+                y: b.y + self.panel.padding.top,
+                width: (b.width - self.panel.padding.horizontal()).max(0.0),
+                height: (b.height - self.panel.padding.vertical()).max(0.0),
+            },
+            context,
+        )
     }
 
     fn render_core(&self, dc: &mut dyn DrawContext) {
-        todo!()
+        if self.panel.background.a > 0.0 {
+            dc.fill_rounded_rectangle(self.base().bounds(), self.panel.corner_radius, self.panel.background)
+        }
+        self.text.render(dc)
     }
 
     fn find_at(&self, point: PointD) -> Option<&dyn ElementNode> {
-        todo!()
+        if self.hit_test(point) {
+            self.text.find_at(point).or(Some(self))
+        } else {
+            None
+        }
     }
 
     fn find(&self, id: &str) -> Option<&dyn ElementNode> {
-        todo!()
+        if self.id() == id {
+            Some(self)
+        } else {
+            self.text.find(id)
+        }
     }
 
     fn release_resources(&mut self) {
-        todo!()
+        self.text.release_resources()
     }
 }

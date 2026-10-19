@@ -11,14 +11,16 @@
 //! T3 `move_focus` wraps to "no button" (`false`) past either end, it never wraps around; T4 `focused_index` and each
 //! button's `is_focused` are kept in step on every focus change (C# `SetFocus`).
 
-#![allow(unused_variables, dead_code)] // stub only: removed by the porter when the bodies are filled (contracts/README.md D11)
-
 use pr_l10n::localizer::Localizer;
 
+use crate::input::primitives::RectD;
 use crate::input::primitives::{PointD, SizeD};
 use crate::overlay::button::ButtonElement;
+use crate::overlay::contracts::OverlayElement;
 use crate::overlay::contracts::OverlayLayoutContext;
-use crate::overlay::element::{ElementBase, ElementNode};
+use crate::overlay::element::{
+    ElementBase, ElementNode, OverlayHorizontalAlignment, OverlayThickness, OverlayVerticalAlignment,
+};
 use crate::overlay::panel::PanelElement;
 use crate::services::render::DrawContext;
 use crate::services::render::text::TextStyle;
@@ -68,52 +70,99 @@ impl ToolbarPanel {
     /// `Dark.BorderToolbar`, corner radius 0, `Style = (Segoe UI, size)`), adds them in Tab order, then
     /// `ApplyLocalization()` with `texts`.
     pub fn new(texts: &Localizer) -> Self {
-        todo!()
+        let mut panel = PanelElement::new(PANEL_ID);
+        panel.base_mut().horizontal_alignment = OverlayHorizontalAlignment::Left;
+        panel.base_mut().vertical_alignment = OverlayVerticalAlignment::Top;
+        panel.base_mut().margin = OverlayThickness::uniform(8.0);
+        panel.padding = OverlayThickness::symmetric(6.0, 4.0);
+        panel.corner_radius = 4.0;
+        panel.orientation = crate::overlay::panel::OverlayOrientation::Horizontal;
+        let mut this = Self {
+            panel,
+            open_folder: create_button(
+                OPEN_FOLDER_ID,
+                OPEN_FOLDER_GLYPH,
+                16.0,
+                OverlayThickness::symmetric(8.0, 2.0),
+                OverlayThickness::ZERO,
+            ),
+            settings: create_button(
+                SETTINGS_ID,
+                SETTINGS_GLYPH,
+                12.0,
+                OverlayThickness::symmetric(8.0, 4.0),
+                OverlayThickness::new(5.0, 0.0, 0.0, 0.0),
+            ),
+            fit: create_button(
+                FIT_ID,
+                "",
+                12.0,
+                OverlayThickness::symmetric(8.0, 4.0),
+                OverlayThickness::new(5.0, 0.0, 0.0, 0.0),
+            ),
+            tools: create_button(
+                TOOLS_ID,
+                TOOLS_GLYPH,
+                18.0,
+                OverlayThickness::ZERO,
+                OverlayThickness::new(5.0, 0.0, 0.0, 0.0),
+            ),
+            focused_index: None,
+        };
+        this.tools.fixed_width = 34.0;
+        this.tools.fixed_height = 32.0;
+        this.apply_localization(texts);
+        this
     }
 
     /// C# `OpenFolder`.
     pub fn open_folder(&self) -> &ButtonElement {
-        todo!()
+        &self.open_folder
     }
 
     /// C# `Settings`.
     pub fn settings(&self) -> &ButtonElement {
-        todo!()
+        &self.settings
     }
 
     /// C# `Fit`.
     pub fn fit(&self) -> &ButtonElement {
-        todo!()
+        &self.fit
     }
 
     /// C# `Tools`.
     pub fn tools(&self) -> &ButtonElement {
-        todo!()
+        &self.tools
     }
 
     /// C# `Buttons` (`IReadOnlyList<ButtonElement>`, Tab order): `[open_folder, settings, fit, tools]`.
     pub fn buttons(&self) -> [&ButtonElement; 4] {
-        todo!()
+        [&self.open_folder, &self.settings, &self.fit, &self.tools]
     }
 
     /// Mutable view of the four buttons in Tab order, for the host to click or set hot/pressed state.
     pub fn buttons_mut(&mut self) -> [&mut ButtonElement; 4] {
-        todo!()
+        [
+            &mut self.open_folder,
+            &mut self.settings,
+            &mut self.fit,
+            &mut self.tools,
+        ]
     }
 
     /// C# `FocusedIndex`: index in `buttons()`, `None` when no button holds the keyboard (C# `-1`).
     pub fn focused_index(&self) -> Option<usize> {
-        todo!()
+        self.focused_index
     }
 
     /// C# `HasKeyboardFocus` (`_focusedIndex >= 0`): the toolbar holds the keyboard (C# `IsKeyboardFocusWithin`).
     pub fn has_keyboard_focus(&self) -> bool {
-        todo!()
+        self.focused_index.is_some()
     }
 
     /// C# `FocusedButton`: the button at `focused_index`, `None` when there is none.
     pub fn focused_button(&self) -> Option<&ButtonElement> {
-        todo!()
+        self.focused_index.and_then(|i| self.buttons().get(i).copied())
     }
 
     /// C# `ApplyLocalization()`: sets content, tooltip and automation name of the buttons from `texts`
@@ -121,25 +170,50 @@ impl ToolbarPanel {
     /// Called by the constructor and on every language change. Does not touch the glyph contents of the
     /// open-folder, settings and tools buttons (fixed glyphs).
     pub fn apply_localization(&mut self, texts: &Localizer) {
-        todo!()
+        use pr_l10n::keys::*;
+        self.open_folder.tool_tip = texts.get(MAIN_TOOLBAR_OPEN_FOLDER_TOOL_TIP);
+        self.open_folder.automation_name = texts.get(MAIN_TOOLBAR_OPEN_FOLDER_AUTOMATION_NAME);
+        self.settings.tool_tip = texts.get(MAIN_TOOLBAR_SETTINGS_TOOL_TIP);
+        self.settings.automation_name = texts.get(MAIN_TOOLBAR_SETTINGS_AUTOMATION_NAME);
+        self.fit.set_content(&texts.get(MAIN_TOOLBAR_FIT));
+        self.fit.tool_tip = texts.get(MAIN_TOOLBAR_FIT_TOOL_TIP);
+        self.fit.automation_name = texts.get(MAIN_TOOLBAR_FIT_AUTOMATION_NAME);
+        self.tools.tool_tip = texts.get(MAIN_TOOLBAR_TOOLS_TOOL_TIP);
+        self.tools.automation_name = texts.get(MAIN_TOOLBAR_TOOLS_AUTOMATION_NAME);
     }
 
     /// C# `MoveFocus(bool forward)` (Tab / Shift+Tab): from no focus, forward goes to index 0 and backward to the last
     /// index; otherwise `index + 1` or `index - 1`; an index outside `0..4` means "no button" (trap T3). Calls
     /// `set_focus` with the result. Returns `true` when a button still holds the keyboard.
     pub fn move_focus(&mut self, forward: bool) -> bool {
-        todo!()
+        let next = match self.focused_index {
+            None => {
+                if forward {
+                    Some(0)
+                } else {
+                    Some(3)
+                }
+            }
+            Some(i) if forward && i < 3 => Some(i + 1),
+            Some(i) if !forward && i > 0 => Some(i - 1),
+            _ => None,
+        };
+        self.set_focus(next);
+        self.focused_index.is_some()
     }
 
     /// C# `ClearFocus()`: `set_focus(None)`.
     pub fn clear_focus(&mut self) {
-        todo!()
+        self.set_focus(None)
     }
 
     /// C# `SetFocus(int index)` (private): stores `focused_index` and sets `is_focused` on each button to
     /// `i == index` (trap T4).
     fn set_focus(&mut self, index: Option<usize>) {
-        todo!()
+        self.focused_index = index;
+        for (i, button) in self.buttons_mut().into_iter().enumerate() {
+            button.is_focused = Some(i) == index;
+        }
     }
 }
 
@@ -155,35 +229,82 @@ impl ElementNode for ToolbarPanel {
     }
 
     fn base(&self) -> &ElementBase {
-        todo!()
+        self.panel.base()
     }
 
     fn base_mut(&mut self) -> &mut ElementBase {
-        todo!()
+        self.panel.base_mut()
     }
 
     fn measure_core(&mut self, available: SizeD, context: &OverlayLayoutContext<'_>) -> SizeD {
-        todo!()
+        let mut w = self.panel.padding.horizontal();
+        let mut h: f64 = 0.0;
+        for b in self.buttons_mut() {
+            let s = b.measure(available, context);
+            w += s.width;
+            h = h.max(s.height);
+        }
+        SizeD {
+            width: w,
+            height: h + self.panel.padding.vertical(),
+        }
     }
 
     fn arrange_children(&mut self, context: &OverlayLayoutContext<'_>) {
-        todo!()
+        let bounds = self.base().bounds();
+        let mut x = bounds.x + self.panel.padding.left;
+        let y = bounds.y + self.panel.padding.top;
+        let inner_height = (bounds.height - self.panel.padding.vertical()).max(0.0);
+        for b in self.buttons_mut() {
+            let d = b.base().desired_size();
+            b.arrange_in(
+                RectD {
+                    x,
+                    y,
+                    width: d.width,
+                    height: inner_height,
+                },
+                context,
+            );
+            x += d.width;
+        }
     }
 
     fn render_core(&self, dc: &mut dyn DrawContext) {
-        todo!()
+        use crate::overlay::contracts::OverlayElement;
+        if self.panel.background.a > 0.0 {
+            dc.fill_rounded_rectangle(self.base().bounds(), self.panel.corner_radius, self.panel.background);
+        }
+        for b in self.buttons() {
+            b.render(dc);
+        }
     }
 
     fn find_at(&self, point: PointD) -> Option<&dyn ElementNode> {
-        todo!()
+        for b in self.buttons().into_iter().rev() {
+            if let Some(v) = b.find_at(point) {
+                return Some(v);
+            }
+        }
+        if self.hit_test(point) { Some(self) } else { None }
     }
 
     fn find(&self, id: &str) -> Option<&dyn ElementNode> {
-        todo!()
+        if self.id() == id {
+            return Some(self);
+        }
+        for b in self.buttons() {
+            if let Some(v) = b.find(id) {
+                return Some(v);
+            }
+        }
+        None
     }
 
     fn release_resources(&mut self) {
-        todo!()
+        for b in self.buttons_mut() {
+            b.release_resources();
+        }
     }
 }
 
@@ -192,7 +313,11 @@ const FAMILY: &str = "Segoe UI";
 
 /// `new TextStyle(Family, size)` with the C# default bold `false`.
 fn segoe_ui(size_dip: f64) -> TextStyle {
-    todo!()
+    TextStyle {
+        font_family: FAMILY.to_owned(),
+        font_size_dip: size_dip,
+        bold: false,
+    }
 }
 
 /// C# `CreateButton(id, content, size, padding, margin)`: the shared button style (`Style`, `Padding`, `Margin`,
@@ -204,5 +329,13 @@ fn create_button(
     padding: crate::overlay::element::OverlayThickness,
     margin: crate::overlay::element::OverlayThickness,
 ) -> ButtonElement {
-    todo!()
+    let mut b = ButtonElement::new(id).unwrap_or_else(|_| unreachable!("static ids are nonempty"));
+    b.set_content(content);
+    b.set_style(segoe_ui(size_dip));
+    b.padding = padding;
+    b.base_mut().margin = margin;
+    b.background = crate::overlay::palette::from_argb(0xFF25_2525);
+    b.border_color = crate::overlay::palette::from_argb(0xFF45_4545);
+    b.corner_radius = 0.0;
+    b
 }
