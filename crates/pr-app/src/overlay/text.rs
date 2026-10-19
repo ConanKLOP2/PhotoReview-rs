@@ -3,19 +3,15 @@
 //! `TextBlock`: one string, one style, one colour. `TextTrimming::CharacterEllipsis` cuts with an ellipsis when the text is wider
 //! than the offered width. The layout lease is kept until the text, the style, the trimming or the offered width changes, or until
 //! `release_resources` runs (C# `Invalidate`). Never reads the clock, the file system or the window.
-//!
-//! Stub: every body is `todo!()`. Signatures are final (contract "Public API"). The `allow` line goes away with the last `todo!()`
-//! (contracts/README.md D11).
-
-#![allow(unused_variables, dead_code, unused_imports)] // stub only: removed by the porter when the bodies are filled
 
 use std::fmt;
 
-use crate::input::primitives::{PointD, SizeD};
+use crate::input::primitives::{PointD, SizeD, f64_same};
+use crate::overlay::contracts::OverlayElement;
 use crate::overlay::element::{ElementBase, ElementError, ElementNode, OverlayLayoutContext};
-use crate::services::render::error::RenderError;
+use crate::overlay::palette;
 use crate::services::render::surface::DrawContext;
-use crate::services::render::text::{TextLayout, TextStyle, TextTrimming};
+use crate::services::render::text::{TextLayout, TextRenderer, TextStyle, TextTrimming};
 use crate::viewport::render_geometry::ColorF;
 
 /// `TextElement` (C# `public class TextElement : OverlayElement`).
@@ -30,7 +26,7 @@ pub struct TextElement {
     trimming: TextTrimming,
     /// C# `_layout`: the native layout lease, `None` before the first measure and after every invalidation.
     layout: Option<Box<dyn TextLayout>>,
-    /// C# `_layoutOwner`: identity of the renderer that created `layout` (see `OverlayLayoutContext::text_renderer_id`).
+    /// C# `_layoutOwner`: identity of the renderer that created `layout` (see `renderer_identity`).
     layout_owner: Option<u64>,
     /// C# `_layoutWidth`: offered width of the current layout, `NaN` when there is none.
     layout_width: f64,
@@ -41,74 +37,113 @@ pub struct TextElement {
 impl TextElement {
     /// C# `new TextElement(id)`. `Err(ElementError::EmptyId)` for an empty id (C# `ArgumentException`).
     pub fn new(id: &str) -> Result<Self, ElementError> {
-        todo!()
+        if id.is_empty() {
+            return Err(ElementError::EmptyId);
+        }
+        Ok(Self {
+            base: ElementBase::new(id, false),
+            text: String::new(),
+            style: TextStyle::default(),
+            trimming: TextTrimming::None,
+            layout: None,
+            layout_owner: None,
+            layout_width: f64::NAN,
+            color: palette::text_bright(),
+        })
     }
 
     /// C# `Text` getter.
     pub fn text(&self) -> &str {
-        todo!()
+        &self.text
     }
 
     /// C# `Text` setter. Ordinal equality (`string.Equals(_text, value, Ordinal)`): an equal string changes nothing;
     /// a changed one drops the layout at once (C# `Invalidate`).
     pub fn set_text(&mut self, value: &str) {
-        todo!()
+        if self.text != value {
+            value.clone_into(&mut self.text);
+            self.invalidate();
+        }
     }
 
     /// C# `Style` getter.
     pub fn style(&self) -> &TextStyle {
-        todo!()
+        &self.style
     }
 
     /// C# `Style` setter. Equal style (`style_same`, NaN-aware) changes nothing; otherwise `invalidate`.
     pub fn set_style(&mut self, value: TextStyle) {
-        todo!()
+        if !style_same(&self.style, &value) {
+            self.style = value;
+            self.invalidate();
+        }
     }
 
     /// C# `Trimming` getter.
     pub fn trimming(&self) -> TextTrimming {
-        todo!()
+        self.trimming
     }
 
     /// C# `Trimming` setter: a different value calls `invalidate`.
     pub fn set_trimming(&mut self, value: TextTrimming) {
-        todo!()
+        if self.trimming != value {
+            self.trimming = value;
+            self.invalidate();
+        }
     }
 
     /// C# `internal ITextLayout? Layout` (the layout held after Measure, `None` before it). Used by the parts' tests and the
     /// render path; `pub(crate)` only.
+    #[allow(dead_code)] // C# `Layout` accessor; its first caller (parts tests, render path) lands with W8-15d/15e.
     pub(crate) fn layout(&self) -> Option<&dyn TextLayout> {
-        todo!()
+        self.layout.as_deref()
     }
 
     /// C# `Invalidate()`: drop the lease, forget the owner and the width (`layout_width = NaN`).
     fn invalidate(&mut self) {
-        todo!()
+        self.layout = None;
+        self.layout_owner = None;
+        self.layout_width = f64::NAN;
     }
+}
+
+/// Identity of a text renderer for layout reuse (C# `ReferenceEquals(_layoutOwner, renderer)`).
+///
+/// Uses the data address of the renderer. A renderer dropped and another one allocated at the same address would look the same
+/// (ABA, trap T1). W8-15a's `OverlayLayoutContext` has no `text_renderer_id` yet (open item in `contracts/W8-15c.md`, O2).
+pub(crate) fn renderer_identity(text: &dyn TextRenderer) -> u64 {
+    let address: *const dyn TextRenderer = text;
+    address.cast::<()>() as usize as u64
 }
 
 /// C# `TextStyle` record equality (`_style != value`): family ordinal, size with `double.Equals` (NaN equals NaN, `0.0` equals
 /// `-0.0`), bold. Shared with `ButtonElement` (`overlay::button`). Not a derived `PartialEq`: the derived one says NaN != NaN.
 pub(crate) fn style_same(a: &TextStyle, b: &TextStyle) -> bool {
-    todo!()
+    a.font_family == b.font_family && f64_same(a.font_size_dip, b.font_size_dip) && a.bold == b.bold
 }
 
 impl fmt::Debug for TextElement {
     /// Manual: `Box<dyn TextLayout>` has no `Debug`. Prints the id, text, style, trimming and whether a layout is held.
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        todo!()
+        f.debug_struct("TextElement")
+            .field("id", &self.base.id())
+            .field("text", &self.text)
+            .field("style", &self.style)
+            .field("trimming", &self.trimming)
+            .field("has_layout", &self.layout.is_some())
+            .finish()
     }
 }
 
 impl ElementNode for TextElement {
     /// Leaf `FindAt` (inherited from C# `OverlayElement`): `Some(self)` when `hit_test(point)`, else `None`.
     fn find_at(&self, point: PointD) -> Option<&dyn ElementNode> {
-        todo!()
+        if self.hit_test(point) { Some(self) } else { None }
     }
 
     /// Leaf `Find`: `Some(self)` when the id matches (ordinal), else `None`.
     fn find(&self, id: &str) -> Option<&dyn ElementNode> {
-        todo!()
+        if self.base.id() == id { Some(self) } else { None }
     }
 
     fn as_any(&self) -> &dyn std::any::Any {
@@ -120,29 +155,69 @@ impl ElementNode for TextElement {
     }
 
     fn base(&self) -> &ElementBase {
-        todo!()
+        &self.base
     }
 
     fn base_mut(&mut self) -> &mut ElementBase {
-        todo!()
+        &mut self.base
     }
 
     /// C# `MeasureCore(available, context)`. Reuses the layout while the renderer identity, the offered width (IEEE `!=`, so a
     /// NaN width re-measures every time, as C# does) and the text/style/trimming are unchanged; otherwise drops the old lease
     /// and asks `context.text` for a new one with `max_width = available.width`. Returns the layout size (the base clamps it to
-    /// `MaxWidth`).
+    /// `MaxWidth`). A failed `create_layout` leaves no layout (trap T2); the size is then zero and the next measure retries.
     fn measure_core(&mut self, available: SizeD, context: &OverlayLayoutContext<'_>) -> SizeD {
-        todo!()
+        let owner = renderer_identity(context.text);
+        #[allow(clippy::float_cmp)]
+        // trap T5: IEEE `!=` on purpose; a NaN width must re-measure every time (C# `!=` on double).
+        let width_unchanged = self.layout_width == available.width;
+        let reusable = self.layout.is_some() && self.layout_owner == Some(owner) && width_unchanged;
+        if !reusable {
+            // C# disposes the old lease before `CreateLayout`; a failure keeps no lease (trap T2).
+            self.layout = None;
+            self.layout_owner = None;
+            match context
+                .text
+                .create_layout(&self.text, &self.style, available.width, self.trimming)
+            {
+                Ok(layout) => {
+                    self.layout = Some(layout);
+                    self.layout_owner = Some(owner);
+                    self.layout_width = available.width;
+                }
+                Err(_) => {
+                    self.layout_width = f64::NAN;
+                }
+            }
+        }
+        self.layout.as_ref().map_or(SizeD::default(), |layout| layout.size())
     }
 
     /// C# `RenderCore(dc)`: nothing when there is no layout or the text is empty; otherwise `PushClip(Bounds)`, `DrawText` at
     /// `(Bounds.X, Bounds.Y)` with `color`, `PopClip`.
     fn render_core(&self, dc: &mut dyn DrawContext) {
-        todo!()
+        let Some(layout) = self.layout.as_deref() else {
+            return;
+        };
+        if self.text.is_empty() {
+            return;
+        }
+        let bounds = self.base.bounds();
+        dc.push_clip(bounds);
+        let _ = dc.draw_text(
+            layout,
+            PointD {
+                x: bounds.x,
+                y: bounds.y,
+            },
+            self.color,
+        );
+        let popped = dc.pop_clip();
+        debug_assert!(popped.is_ok(), "pop_clip must follow push_clip");
     }
 
     /// C# `ReleaseResources() => Invalidate()`.
     fn release_resources(&mut self) {
-        todo!()
+        self.invalidate();
     }
 }
