@@ -7,6 +7,9 @@
 //!
 //! Every test calls `OverlayModel::default()` or `==`, both of which reach a `todo!()` in the stub.
 
+// The equality test sets one font size on a default model on purpose (the default is the base of each case).
+#![allow(clippy::field_reassign_with_default)]
+
 use pr_app::overlay::model::OverlayModel;
 
 // C#: OverlayPartsTests.Model_DefaultsAreHidden
