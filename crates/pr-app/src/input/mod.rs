@@ -6,6 +6,7 @@ pub mod key_mapping;
 pub mod kinetic_pan;
 pub mod mouse_gestures;
 pub mod operation_version;
+pub mod pointer;
 pub mod primitives;
 pub mod review_command;
 pub mod shortcut_router;
