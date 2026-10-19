@@ -31,10 +31,11 @@ name = "demo"
 version = "0.1.0"
 edition = "2021"
 X
-printf 'pub mod u90a;\npub mod u90b;\npub mod u90c;\npub mod u90e;\npub mod u90f;\n' > crates/demo/src/lib.rs
+printf 'pub mod u90a;\npub mod u90b;\npub mod u90c;\npub mod u90e;\npub mod u90f;\npub mod u90g;\npub mod u90h;\npub mod u90i;\npub mod u90j;\n' > crates/demo/src/lib.rs
 printf 'pub fn run(_x: i32) -> i32 {\n    todo!()\n}\n' > crates/demo/src/u90a.rs
 printf 'pub fn run(_a: i32, _b: i32) -> i32 {\n    todo!()\n}\n' > crates/demo/src/u90b.rs
-for n in 90c 90e 90f; do printf 'pub fn run(_a: i32) -> i32 {\n    todo!()\n}\n' > crates/demo/src/u$n.rs; done
+for n in 90c 90e 90f 90g 90h 90i; do printf 'pub fn run(_a: i32) -> i32 {\n    todo!()\n}\n' > crates/demo/src/u$n.rs; done
+printf 'pub fn run(_a: i32) -> i32 {\n    0\n}\n' > crates/demo/src/u90j.rs   # stub that does NOT call todo!()
 printf 'target/\n.claude/worktrees/\n/target-wave-*/\ntools/autopilot/state/\n.codex-*\n' > .gitignore
 mkc() { # id title
   cat > "contracts/$1.md" <<X
@@ -47,7 +48,7 @@ mkc() { # id title
 - Lead-owned: crates/demo/src/lib.rs
 X
 }
-mkc W8-90a sign; mkc W8-90b sub; mkc W8-90c double; mkc W8-90d never; mkc W8-90e inc; mkc W8-90f triple
+mkc W8-90g merged; mkc W8-90h preexisting; mkc W8-90i redfix; mkc W8-90j redbad; mkc W8-90a sign; mkc W8-90b sub; mkc W8-90c double; mkc W8-90d never; mkc W8-90e inc; mkc W8-90f triple
 sed -i 's#/\(90.\)\.rs#/u\1.rs#' contracts/W8-90?.md
 cat > docs/WAVE-8-PLAN.md <<'X'
 | WU | C# files (lines) | Rust | Col | Model | Test | Depends on | Batch |
@@ -58,6 +59,10 @@ cat > docs/WAVE-8-PLAN.md <<'X'
 | W8-90d | d | d | yellow | Sonnet | F | 90c | B9 |
 | W8-90e | e | e | green | Haiku | G | none | B9 |
 | W8-90f | f | f | green | Haiku | G | none | B8 |
+| W8-90g | g | g | green | Haiku | G | none | B7 |
+| W8-90h | h | h | green | Haiku | G | none | B7 |
+| W8-90i | i | i | green | Haiku | G | none | B6 |
+| W8-90j | j | j | green | Haiku | G | none | B6 |
 X
 cp "$SRC/../../rust-toolchain.toml" . 2>/dev/null
 cp -r "$SRC"/CODEX-RULES.md "$SRC"/codex-*.sh "$SRC"/lib tools/autopilot/
@@ -144,6 +149,25 @@ fn inc() {
   implement:90e) src 90e 'pub fn run(a: i32) -> i32 {
     a + 1
 }';;
+  red-tests:90i) tst 90i '#[test]
+fn needs_arity() {
+    assert_eq!(demo::u90i::run(1, 2), 5);
+}';;   # does not compile: run takes one argument
+  red-repair:90i) tst 90i '#[test]
+fn needs_arity() {
+    assert_eq!(demo::u90i::run(1), 5);
+}';;
+  implement:90i) src 90i 'pub fn run(a: i32) -> i32 {
+    a + 4
+}';;
+  red-tests:90j) tst 90j '#[test]
+fn wrong_value() {
+    assert_eq!(demo::u90j::run(1), 2);
+}';;   # compiles, but fails by assertion (stub returns 0), not through todo!()
+  red-repair:90j) :;;
+  implement:90h) src 90h 'pub fn run(a: i32) -> i32 {
+    a + 10
+}';;
   red-tests:90f) tst 90f '#[test]
 fn triple() {
     assert_eq!(demo::u90f::run(2), 6);
@@ -185,6 +209,30 @@ MIN_DISK_GB=99999999 $P --only W8-90a > "$T/pf3.out" 2>&1; rc=$?
 check "low disk space aborts early" '[ $rc = 4 ] && grep -q "free on the repo drive" "$T/pf3.out"'
 check "preflight failures started nothing" '[ ! -d .claude/worktrees ] && [ ! -d tools/autopilot/state/pipeline.lock ]'
 
+echo "== format check (per crate, never the whole workspace on one command line)"
+bash tools/autopilot/lib/fmtcheck.sh --all > "$T/fmt1.out" 2>&1; rc=$?
+check "fmtcheck --all passes on a formatted workspace" '[ $rc = 0 ]'
+cp crates/demo/src/u90a.rs "$T/u90a.bak"; printf 'pub fn   run( _x:i32 )->i32 { todo!() }\n' > crates/demo/src/u90a.rs
+bash tools/autopilot/lib/fmtcheck.sh -p demo > "$T/fmt2.out" 2>&1; rc=$?
+check "fmtcheck -p <crate> reports an unformatted file (exit 1, names the crate and the file)" '[ $rc = 1 ] && grep -q "== fmt: demo" "$T/fmt2.out" && grep -q "u90a" "$T/fmt2.out"'
+FMT_FORCE_BATCH=1 bash tools/autopilot/lib/fmtcheck.sh --all > "$T/fmt3.out" 2>&1; rc=$?
+check "the batch fallback (command line too long) also catches it" '[ $rc = 1 ] && grep -q "u90a" "$T/fmt3.out"'
+cp "$T/u90a.bak" crates/demo/src/u90a.rs; FMT_FORCE_BATCH=1 bash tools/autopilot/lib/fmtcheck.sh --all > "$T/fmt4.out" 2>&1; rc=$?
+check "the batch fallback passes on formatted code" '[ $rc = 0 ]'
+check "no codex-pipeline/gate script calls a bare workspace-wide cargo fmt" '! grep -nE "cargo fmt( --all)? *(--check|-- --check)|cargo fmt --check" tools/autopilot/codex-pipeline.sh tools/autopilot/codex-gate.sh | grep -v "^[^:]*:[0-9]*:#" | grep -v "cargo fmt -p"'
+git status --short | grep -q . && bad "selftest left the work clone dirty" || ok "work clone clean after the fmt checks"
+
+echo "== red-test output check (helper)"
+RC_OK=$'running 2 tests\ntest a ... FAILED\ntest b ... ok\n\nfailures:\n\n---- a stdout ----\n\nthread \'a\' panicked at crates/x/tests/t.rs:3:5:\nnot yet implemented\nnote: run with RUST_BACKTRACE=1\n\n\nfailures:\n    a\n\ntest result: FAILED. 1 passed; 1 failed\n'
+printf '%s' "$RC_OK" > "$T/rc1.txt"; python $LIBPY redcheck "$T/rc1.txt" > /dev/null; rc=$?
+check "redcheck: failure through todo!() is accepted" '[ $rc = 0 ]'
+printf '%s' "${RC_OK//not yet implemented/assertion \`left == right\` failed}" > "$T/rc2.txt"; python $LIBPY redcheck "$T/rc2.txt" > "$T/rc2.out"; rc=$?
+check "redcheck: failure by assertion is rejected and named" '[ $rc = 1 ] && grep -q "a fails but not through todo" "$T/rc2.out"'
+printf 'error[E0425]: cannot find value `x` in this scope\nerror: could not compile `demo` (test "t") due to 1 previous error\n' > "$T/rc3.txt"; python $LIBPY redcheck "$T/rc3.txt" > /dev/null; rc=$?
+check "redcheck: compile error is rejected" '[ $rc = 1 ]'
+printf 'test c ... FAILED\n\nfailures:\n    c\n' > "$T/rc4.txt"; python $LIBPY redcheck "$T/rc4.txt" > /dev/null; rc=$?
+check "redcheck: failure without any panic output (crash/timeout) is rejected" '[ $rc = 1 ]'
+
 echo "== run 1: only W8-90a, --jobs 1 (success, quota wait, session reuse, mutants, telemetry)"
 $P --only W8-90a --jobs 1 > "$T/run1.out" 2>&1; rc=$?
 check "exit 0" '[ $rc = 0 ]'
@@ -224,6 +272,49 @@ check "workspace gate passed on the integration branch" 'grep -q "workspace gate
 check "state file is valid JSON with 5 units" '[ "$(python $LIBPY slist $STATE | wc -l)" = 5 ]'
 check "per-unit table in the final output has all units" 'grep -q "| W8-90c | failed" "$T/run2.out" && grep -q "| W8-90e | done" "$T/run2.out"'
 check "all target dirs removed at the end" '[ -z "$(ls -d target-wave-pipe-* 2>/dev/null)" ]'
+
+echo "== rerun of a failed unit whose worktree was moved (used to die with 'worktree add failed')"
+git -C "$W" worktree move "$W/.claude/worktrees/wu-w8-90c" "$W/.claude/worktrees/elsewhere" 2>/dev/null
+check "precondition: wu/W8-90c is checked out in a worktree at another path" 'git worktree list --porcelain | tr -d "\r" | grep -q "branch refs/heads/wu/W8-90c" && [ -d .claude/worktrees/elsewhere ]'
+$P --only W8-90c --jobs 1 > "$T/run2b.out" 2>&1; rc=$?
+check "rerun reset the unit instead of failing on the worktree" '! grep -q "worktree add failed" tools/autopilot/state/test-b9.json && [ ! -d .claude/worktrees/elsewhere ]'
+check "rerun really started the unit again (Codex red/implement calls, fresh telemetry: rounds < 10)" '[ "$(grep -c "^implement 90c" $FS/calls)" = 2 ] && [ "$($SF W8-90c rounds)" -lt 10 ]'
+check "the unit's old unmerged tip was kept under refs/pipeline-old" 'git show-ref --verify -q refs/pipeline-old/W8-90c'
+check "the stale triage note was replaced by the new one" '[ -f tools/autopilot/state/needs-claude/W8-90c.md ]'
+check "the rerun left other units untouched" '[ "$($SG W8-90b)" = done ] && [ "$($SG W8-90a)" = done ]'
+
+echo "== target dir locked by a stray process (Access is denied on .cargo-build-lock)"
+sed -n '/^tdir_free()/,/^}/p' tools/autopilot/codex-pipeline.sh > "$T/tdir.sh"; . "$T/tdir.sh"
+check "tdir_free: a dir without a build lock is free" 'tdir_free "$T/td-none"'
+if uname -s | grep -qiE 'mingw|msys|cygwin'; then
+  mkdir -p "$T/td/debug"; : > "$T/td/debug/.cargo-build-lock"
+  python - "$T/td/debug/.cargo-build-lock" <<'PY' &
+import ctypes, sys, time
+k = ctypes.windll.kernel32
+k.CreateFileW.restype = ctypes.c_void_p
+h = k.CreateFileW(sys.argv[1], 0xC0000000, 0, None, 3, 0x80, None)   # read+write, share mode 0: nobody else may open it
+open(sys.argv[1] + ".held", "w").close()
+time.sleep(120)
+PY
+  HP=$!; for i in 1 2 3 4 5 6 7 8 9 10; do [ -e "$T/td/debug/.cargo-build-lock.held" ] && break; sleep 1; done
+  check "tdir_free: a dir whose build lock is held by a stray process is reported busy" '! tdir_free "$T/td"'
+  kill $HP 2>/dev/null; wait $HP 2>/dev/null; sleep 1
+  check "tdir_free: free again once the stray process is gone" 'tdir_free "$T/td"'
+else ok "tdir_free lock-held case skipped (not Windows)"; fi
+check "each parallel slot gets its own target dir (-s<slot>) and mutants its own -mut" 'grep -q "TDB-s\$slot" tools/autopilot/codex-pipeline.sh && grep -q "CARGO_TARGET_DIR}-mut" tools/autopilot/codex-pipeline.sh'
+
+echo "== red tests: compile gate with repair rounds, pre-existing red tests, units already merged on the integration branch"
+git branch side master && git checkout -q side && printf '#[test]\nfn pre_existing() {\n    assert_eq!(demo::u90h::run(1), 11);\n}\n' > crates/demo/tests/u90h.rs && git add crates/demo/tests/u90h.rs && git commit -q -m 'test(W8-90h): red tests (pre-existing)' && git checkout -q -b integration/test-b7 master && git merge -q --no-ff side -m 'merge(W8-90g)' && git checkout -q master
+bash tools/autopilot/codex-pipeline.sh test-b7 --jobs 1 > "$T/run5.out" 2>&1; rc=$?
+check "unit merged on the integration branch (merge commit) is marked done without a state file" 'grep -q "W8-90g: found merged on integration/test-b7" "$T/run5.out" && [ "$(python $LIBPY sget tools/autopilot/state/test-b7.json W8-90g)" = done ] && ! grep -q " 90g" $FS/calls'
+check "red tests already on the integration branch: no Codex red step, the unit is implemented and merged" '! grep -q "^red-tests 90h" $FS/calls && grep -q "^implement 90h" $FS/calls && [ "$(python $LIBPY sget tools/autopilot/state/test-b7.json W8-90h)" = done ]'
+bash tools/autopilot/codex-pipeline.sh test-b6 --jobs 1 > "$T/run6.out" 2>&1; rc=$?
+check "red tests that do not compile get a repair round and then pass the gate" 'grep -q "^red-tests 90i" $FS/calls && [ "$(grep -c "^red-repair 90i" $FS/calls)" = 1 ] && [ "$(python $LIBPY sget tools/autopilot/state/test-b6.json W8-90i)" = done ]'
+check "the repair prompt carried the compiler error" 'grep -q "RED TESTS DO NOT COMPILE" $LOGS/W8-90i.redrepair1.prompt.md && grep -q "TASK: red-repair" $LOGS/W8-90i.redrepair1.prompt.md'
+check "red tests are committed on their own after the gate" 'git log integration/test-b6 --format=%s | grep -q "test(W8-90i): red tests"'
+check "red tests that fail by assertion (not todo!()) fail the unit after 3 repair rounds" '[ "$(python $LIBPY sget tools/autopilot/state/test-b6.json W8-90j)" = failed ] && [ "$(grep -c "^red-repair 90j" $FS/calls)" = 3 ] && ! grep -q "^implement 90j" $FS/calls'
+check "triage note for the invalid red tests exists and explains why" 'grep -q "not through todo" tools/autopilot/state/needs-claude/W8-90j.md'
+check "the red-test guard was not applied during the red phase (no 'red-test guard' failure)" '! grep -q "red-test guard" $LOGS/W8-90i.log $LOGS/W8-90j.log'
 
 echo "== quota estimate: do not start a unit that may not fit"
 git -C "$W" fetch -q origin 2>/dev/null

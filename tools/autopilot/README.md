@@ -49,7 +49,13 @@ bash tools/autopilot/codex-pipeline.sh wave8-b2 --jobs 2           # real run; -
 Per unit: worktree `wu/<id>` from `integration/<tag>`, pack (built once), Codex "red tests" if the test files are missing (committed as
 its own commit; later gates verify the tests are only extended), Codex "implement", fast gate with up to 3 repair rounds, mutation
 (by tier), up to 2 kill-mutant rounds, one full gate (clippy + whole crate test), commit (trailer `Co-Authored-By: Codex gpt-6-luna`),
-`merge --no-ff` under one lock per integration branch. At the end: workspace gate, telemetry table, push, PR,
+`merge --no-ff` under one lock per integration branch.
+
+Pipeline hardening:
+- **Red-test compile gate**: after the Codex red step the owned test files must pass `cargo test --no-run` and every failing test must fail only through `todo!()` (`codex-lib.py redcheck`); up to 3 `red-repair` Codex rounds, the red-test guard is not applied in this phase; invalid after 3 rounds = failed unit with triage note. If the red tests already exist on the integration branch (written by Claude) the Codex red step is skipped.
+- **Rerun of a failed unit**: the unit is reset first (any worktree holding `wu/<id>`, the branch, triage note and state/telemetry removed; an unmerged old tip is kept under `refs/pipeline-old/<id>`), no more `worktree add failed`.
+- **Merged units**: at start, units with a merge commit on `integration/<tag>` (since `origin/master`) are marked done, no seeded state file.
+- **Target dirs**: one per slot (`-s<slot>`), mutants `-mut`; a dir whose `.cargo-build-lock` is held by a stray process (`Access is denied`) is skipped for an alternate `-x<n>` dir. At the end: workspace gate, telemetry table, push, PR,
 `gh pr merge --auto --squash` (only if the workspace gate passed). Never falls back to Claude.
 
 Savings built in:
@@ -58,7 +64,7 @@ Savings built in:
   (C# license headers, `///` doc lines, blank runs, per-file cap `PACK_FILE_CAP`=24000 B, de-duplicated signatures); its size is in the state file.
 - **Build reuse**: one `CARGO_TARGET_DIR` per integration tag (`target-wave-pipe-<tag>`) shared by all units run sequentially, one per slot
   (`-s1`..`-s4`) with `--jobs > 1`, plus a dedicated `-mut` dir for cargo-mutants (never the unit's own). Deleted only when the pipeline ends.
-  Repair loops run `cargo fmt --check`, `cargo check -p <crate> --all-targets` and only the unit's own test binaries (`--test <name>`, `--lib`
+  Repair loops run `cargo fmt -p <crate> -- --check` (`lib/fmtcheck.sh`; never the whole workspace on one command line, that fails with Windows os error 206 in deep worktree paths; the workspace gate loops over the members, with a rustfmt batch fallback), `cargo check -p <crate> --all-targets` and only the unit's own test binaries (`--test <name>`, `--lib`
   if the src has `#[cfg(test)]`); clippy + the full crate test run once per unit before the merge. `cargo-nextest` is used when installed (`GATE_NEXTEST=0` disables).
 - **Mutation by risk tier** (plan row): green or golden-covered (Test column `G`) = skipped; yellow = 15 min budget; red = 30 min
   (`MUT_BUDGET_YELLOW`/`MUT_BUDGET_RED`/`MUTANTS_TIMEOUT`). `cargo mutants --in-diff` on the owned src files only, `--baseline skip`,

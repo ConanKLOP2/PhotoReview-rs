@@ -118,8 +118,8 @@ fi
 echo $$ > "$LOCK/pid"
 MAINPID=$$
 cleanup_targets() { # target dirs of THIS pipeline only (explicit names), at the very end
-  local d s
-  for s in "" -s1 -s2 -s3 -s4; do for d in "$TDB$s" "$TDB$s-mut"; do [ -d "$d" ] && rm -rf "$d"; done; done
+  local d
+  for d in "$TDB" "$TDB"-*; do [ -d "$d" ] && rm -rf "$d"; done   # explicit prefix of THIS pipeline: -s<slot>, -mut, -x<n> alternates
 }
 on_exit() { [ "$BASHPID" = "$MAINPID" ] || return 0; cleanup_targets; rm -rf "$LOCK"; }
 trap on_exit EXIT; trap 'say "interrupted"; exit 130' INT TERM
@@ -265,20 +265,90 @@ with_merge_lock() { # one lock per integration branch
   echo "$BASHPID" > "$l/pid"; "$@"; local rc=$?; rm -rf "$l"; return $rc
 }
 
+# ---------------------------------------------------------------- per-slot target dirs, rerun cleanup, red-test gate
+# tdir_free <dir>: 0 when no live cargo/rustc holds the dir's build lock. A leftover process of a killed earlier run (or a Codex cargo that
+# outlived its timeout) keeps .cargo-build-lock open: the next cargo then dies with "Access is denied" on that file.
+tdir_free() {
+  local f
+  for f in "$1/debug/.cargo-build-lock" "$1/release/.cargo-build-lock" "$1/.cargo-lock"; do
+    [ -e "$f" ] || continue
+    { : >> "$f"; } 2>/dev/null || return 1
+  done
+  return 0
+}
+# pick_target_dir <slot>: one dir per slot (never one dir for two concurrently running units); if the slot's dir is locked by a stray
+# process, a fresh alternate (-x<n>) is used instead of failing. Sets CARGO_TARGET_DIR.
+pick_target_dir() {
+  local slot="$1" base n=0 d
+  if [ "$JOBS" -gt 1 ]; then base="$TDB-s$slot"; else base="$TDB"; fi
+  d="$base"
+  while ! tdir_free "$d" || ! tdir_free "$d-mut"; do n=$((n+1)); say "target dir $d is locked by another process; using $base-x$n"; d="$base-x$n"; done
+  export CARGO_TARGET_DIR="$d"
+}
+
+# reset_unit <unit> <wt> <branch>: makes a failed/stale unit rerunnable. Removes ANY worktree (wherever it lives) that has the unit's own
+# branch checked out, the leftover directory (only under .claude/worktrees/wu-*), the branch (its old tip is kept under
+# refs/pipeline-old/<unit> when it held unmerged commits), the stale triage note and the unit's old state/telemetry.
+reset_unit() {
+  local u="$1" wt="$2" br="$3" p tip
+  while IFS= read -r p; do
+    [ -n "$p" ] && [ "$p" != "$INT" ] && git -C "$REPO" worktree remove --force --force "$p" >>"$LOGDIR/$u.log" 2>&1
+  done < <(git -C "$REPO" worktree list --porcelain | tr -d '\r' | awk -v b="refs/heads/$br" '/^worktree /{w=substr($0,10)} $1=="branch" && $2==b {print w}')
+  case "$wt" in "$REPO"/.claude/worktrees/wu-*) [ -d "$wt" ] && rm -rf "$wt";; esac
+  git -C "$REPO" worktree prune
+  if git -C "$REPO" show-ref --verify --quiet "refs/heads/$br"; then
+    tip="$(git -C "$REPO" rev-parse "$br")"
+    git -C "$REPO" merge-base --is-ancestor "$tip" "$IBR" 2>/dev/null || git -C "$REPO" update-ref "refs/pipeline-old/$u" "$tip"
+    git -C "$REPO" branch -D "$br" >>"$LOGDIR/$u.log" 2>&1
+  fi
+  rm -f "$NEEDS/$u.md"
+  $LIB sreset "$STATE" "$u" >/dev/null
+}
+
+# red_check <unit> <wt> <crate>: 0 = the owned test files exist, only they changed, compile (`cargo test --no-run`) and every failing
+# test fails ONLY through todo!(). Otherwise prints a short error tail. The red-test guard (GATE_TEST_BASE) is NOT used here.
+red_check() {
+  local u="$1" wt="$2" crate="$3" f bad="" ta out T
+  T="$LOGDIR/$u.red.out"
+  while IFS= read -r f; do
+    [ -n "$f" ] || continue
+    case "$f" in .codex-*) continue;; esac
+    printf '%s\n' "${OWN[@]}" | grep -qxF "$f" || bad="$bad$f"$'\n'
+    case "$f" in */tests/*) ;; *) bad="$bad$f (not a test file: red tests must not touch src)"$'\n';; esac
+  done < <(cd "$wt" && git status --porcelain -uall | sed -e 's/^...//' -e 's/.* -> //' -e 's/^"//' -e 's/"$//')
+  if [ -n "$bad" ]; then printf 'Files changed that are not owned test files (revert them):\n%s' "$bad"; return 1; fi
+  ta="$($LIB testargs "$wt" "$wt/contracts/$u.md" | tr -d '\r')"
+  [ -n "$ta" ] || { echo "No owned test file exists yet: create the owned files under tests/."; return 1; }
+  ( cd "$wt" && cargo test -p "$crate" $ta --no-run ) > "$T" 2>&1 </dev/null || { echo "RED TESTS DO NOT COMPILE (cargo test -p $crate $ta --no-run):"; grep -vE '^\s*(Compiling|Finished|Blocking|Fresh|Downloaded)' "$T" | tail -n 55; return 1; }
+  ( cd "$wt" && timeout "${RED_RUN_TIMEOUT:-900}" cargo test -p "$crate" $ta --no-fail-fast ) > "$T" 2>&1 </dev/null
+  out="$($LIB redcheck "$T" 2>&1)" || { printf '%s\n' "$out" | tail -n 40; return 1; }
+  return 0
+}
+# red_loop <unit> <wt> <crate>: red_check with up to 3 Codex repair rounds on the same session. Sets RED_ERR when it gives up.
+red_loop() {
+  local u="$1" wt="$2" crate="$3" round=0 out pf
+  while :; do
+    out="$(red_check "$u" "$wt" "$crate")" && return 0
+    if [ "$round" -ge 3 ]; then say "$u red tests still invalid after 3 repair rounds"; RED_ERR="$out"; return 1; fi
+    round=$((round+1)); say "$u red tests invalid, repair round $round/3"
+    pf="$LOGDIR/$u.redrepair$round.prompt.md"
+    { printf 'TASK: red-repair. The red tests are not valid yet. Edit ONLY the owned test files under tests/ (never src). They must compile and fail only because the stubs call todo!(); use only items that really exist (read the stub and the dependency signatures in the pack, do not invent APIs). Tail (<= 60 lines):\n\n```\n'; printf '%s\n' "$out" | tail -n 60; printf '```\n'; } > "$pf"
+    codex_call "$wt" "$pf" "$u" "red-repair$round"
+  done
+}
+
 # ---------------------------------------------------------------- one unit
 # run_unit <unit> <slot> : state done/partial = merged, failed otherwise. Runs in a subshell (its variables are private).
 run_unit() {
   local u="$1" slot="$2" lcu wt br crate c pf has_t=0 f round tier pct0 pct1 packout pb
   UNIT_T0=$(now); SID=""; CUR_CRATE=""; REDBASE=""
   lcu="$(echo "$u" | tr A-Z a-z)"; wt="$REPO/.claude/worktrees/wu-$lcu"; br="wu/$u"
-  # one target dir per integration tag, shared by all units run sequentially (deps compile once); one per slot when jobs > 1
-  if [ "$JOBS" -gt 1 ]; then export CARGO_TARGET_DIR="$TDB-s$slot"; else export CARGO_TARGET_DIR="$TDB"; fi
+  # one target dir per integration tag, shared by units run one after another (deps compile once); one per slot when jobs > 1
+  pick_target_dir "$slot"
   export CARGO_PROFILE_DEV_DEBUG=line-tables-only CARGO_INCREMENTAL=0
   : > "$LOGDIR/$u.log"
   usage_call fresh; quota_used; pct0="$QUSED"
-  [ -d "$wt" ] && git -C "$REPO" worktree remove --force "$wt" >/dev/null 2>&1
-  git -C "$REPO" worktree prune
-  git -C "$REPO" show-ref --verify --quiet "refs/heads/$br" && git -C "$REPO" branch -D "$br" >/dev/null 2>&1
+  reset_unit "$u" "$wt" "$br"
   git -C "$REPO" worktree add -q -b "$br" "$wt" "$IBR" >>"$LOGDIR/$u.log" 2>&1 || { fail_unit "$u" "$wt" "worktree add failed"; return 1; }
   c="$wt/contracts/$u.md"; [ -f "$c" ] || { fail_unit "$u" "$wt" "no contract $c"; return 1; }
   mapfile -t OWN < <($LIB owned "$c" | tr -d '\r')
@@ -292,10 +362,16 @@ run_unit() {
   say "$u: pack ${pb:-?} bytes, mutation tier $tier"
 
   for f in "${OWN[@]}"; do case "$f" in */tests/*) [ -f "$wt/$f" ] && has_t=1;; esac; done
+  # red tests already on the integration branch (e.g. written by Claude): the Codex red step is skipped entirely
   if [ "$has_t" = 0 ]; then
     pf="$LOGDIR/$u.red.prompt.md"
     printf 'TASK: red-tests. Write ONLY the owned test files under tests/ (they do not exist yet), porting the C# tests named in the contract. Do not edit any file under src/. The tests must compile against the stubs and fail only because the stubs are not implemented (todo!() or wrong values), never because of compile errors. Confirm with `cargo test -p %s --no-run`.\n' "$crate" > "$pf"
     codex_call "$wt" "$pf" "$u" red-tests
+    # compile gate: the red tests must compile and fail only through todo!() (up to 3 repair rounds; no red-test guard in this phase)
+    RED_ERR=""
+    if ! red_loop "$u" "$wt" "$crate"; then
+      printf '%s\n' "$RED_ERR" > "$LOGDIR/$u.gate-error.txt"; fail_unit "$u" "$wt" "red tests invalid after 3 repair rounds" "$LOGDIR/$u.gate-error.txt"; return 1
+    fi
     # freeze the red tests in their own commit: later gates verify they are only ever extended, never weakened
     ( cd "$wt" && git add -A -- . ':!.codex-*' && git commit -q --allow-empty -m "test($u): red tests (Codex pipeline)" ) >>"$LOGDIR/$u.log" 2>&1
   fi
@@ -358,6 +434,14 @@ fi
 PLAN="$INT/$PLAN_REL"
 mapfile -t ORDER < <($LIB order "$PLAN" "$BATCH" "$ONLY" | tr -d '\r')
 say "pipeline $TAG: ${#ORDER[@]} units, integration $IBR, jobs $JOBS"
+# units already merged on the integration branch (merge commits since origin/master, e.g. "Merge W8-04a (Codex pipeline)" or
+# "merge(W8-15c)") are marked done, so no seeded state file is needed after a restart or a manual merge
+MERGED_ON_IBR="$(git -C "$REPO" log --merges --format=%s origin/master.."$IBR" 2>/dev/null | grep -oE 'W[0-9]+-[0-9]+[a-z]+' | sort -u)"
+for l in "${ORDER[@]}"; do
+  u="${l%%$'\t'*}"
+  case "$($LIB sget "$STATE" "$u")" in done|partial) continue;; esac
+  if printf '%s\n' "$MERGED_ON_IBR" | grep -qxF "$u"; then $LIB sset "$STATE" "$u" done "already merged on $IBR" 0 >/dev/null; say "$u: found merged on $IBR, marked done"; fi
+done
 
 # ---------------------------------------------------------------- scheduler (independent units concurrently, <= JOBS)
 declare -A LIVE=(); SLOTPID=(); SLOTU=()
@@ -409,7 +493,7 @@ say "telemetry:"; $LIB table "$STATE"
 export CARGO_TARGET_DIR="$TDB" CARGO_PROFILE_DEV_DEBUG=line-tables-only CARGO_INCREMENTAL=0
 WG="$LOGDIR/workspace-gate-$TAG.log"; WGOK=1
 say "workspace gate on $IBR"
-( cd "$INT" && cargo fmt --check && cargo clippy --workspace --all-targets --locked -- -D warnings && cargo test --workspace --locked ) > "$WG" 2>&1 </dev/null || WGOK=0
+( cd "$INT" && bash "$SELF/lib/fmtcheck.sh" --all && cargo clippy --workspace --all-targets --locked -- -D warnings && cargo test --workspace --locked ) > "$WG" 2>&1 </dev/null || WGOK=0
 say "workspace gate: $([ $WGOK = 1 ] && echo OK || echo FAILED)"
 if [ "${PIPELINE_NO_PR:-0}" = 1 ]; then say "PIPELINE_NO_PR=1: not pushing"; exit $((1-WGOK)); fi
 

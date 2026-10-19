@@ -2,8 +2,8 @@
 # Machine checks for one unit. Exit 0 = pass; non-zero = short error tail (<= 60 lines) on stdout. No LLM is involved.
 # Usage: codex-gate.sh <unit> <worktree> <crate> [fast|full]      (set CARGO_TARGET_DIR before calling)
 #   always: owned-files check, static review gates (unwrap/unsafe/todo/allow/.claude), red-test guard (if GATE_TEST_BASE is set)
-#   fast  : cargo fmt --check, cargo check -p <crate> --all-targets, then ONLY the unit's own test binaries (repair loops)
-#   full  : cargo fmt --check, cargo clippy -p <crate> --all-targets -D warnings, then the whole crate test (once per unit before merge)
+#   fast  : cargo fmt -p <crate> -- --check (lib/fmtcheck.sh, never the whole workspace: Windows os error 206), cargo check -p <crate> --all-targets, then ONLY the unit's own test binaries (repair loops)
+#   full  : the same fmt check, cargo clippy -p <crate> --all-targets -D warnings, then the whole crate test (once per unit before merge)
 # Env: GATE_TEST_BASE=<rev> (commit holding the red tests), GATE_NEXTEST=auto|0|1 (use cargo-nextest when installed).
 set -u
 U="${1:?unit}"; WT="${2:?worktree}"; CRATE="${3:?crate}"; MODE="${4:-full}"
@@ -32,7 +32,7 @@ if [ -n "${GATE_TEST_BASE:-}" ]; then
 fi
 rm -f "$T.l"
 
-cargo fmt --check > "$T" 2>&1 || { rm -f "$T.owned" "$T.changed"; fail "cargo fmt --check (run cargo fmt on the owned files)" 2 "$T"; }
+bash "$SELF/lib/fmtcheck.sh" -p "$CRATE" > "$T" 2>&1 || { rm -f "$T.owned" "$T.changed"; fail "cargo fmt -p $CRATE -- --check (run cargo fmt -p $CRATE)" 2 "$T"; }
 
 NX=0
 if [ "${GATE_NEXTEST:-auto}" != 0 ] && cargo nextest --version >/dev/null 2>&1; then NX=1; fi
