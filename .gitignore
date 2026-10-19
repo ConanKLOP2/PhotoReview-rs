@@ -15,3 +15,7 @@ tools/oracle-cs/obj/
 
 # Wave 5: RAW sample corpus (fetched by a ported tools/fetch-raw-samples.ps1, never committed; P-29)
 /tests/fixtures/raw-corpus/
+
+# Claude-free Codex pipeline: per-run state, logs and scratch files
+tools/autopilot/state/
+.codex-*
