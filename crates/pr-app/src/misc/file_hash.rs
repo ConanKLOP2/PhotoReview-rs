@@ -12,18 +12,21 @@
 //! OS access is injected: stat through `FileSystem::try_get_file_stat`, the streamed read through `SourceReader` (shared
 //! ReadWrite | Delete, SequentialScan, the INV-8 rule), the whole-file path through `SourceBytesCache`.
 
-#![allow(unused_variables, dead_code)] // stub only: removed by the porter when the bodies are filled (contracts/README.md D11)
+#![allow(unused_variables, dead_code)] // retained generated test seam fields
 
 use std::collections::HashMap;
 use std::fmt;
 use std::io;
 use std::path::Path;
 use std::sync::{Arc, Condvar, Mutex};
+use std::thread;
 
-use pr_core::abstractions::{FileSystem, SourceReader};
+use pr_core::abstractions::{FileSystem, PhysicalSourceReader, SourceReadPriority, SourceReader};
 use pr_core::caching::lru::{BoundedLruCache, InvalidCapacity};
+use pr_core::catalog::types::is_raw_path;
 use pr_core::sync::CancelToken;
 use pr_core::text::dotnet_path::PathError;
+use pr_core::text::ignore_case_key;
 use pr_core::time::DateTimeUtc;
 use pr_imaging::cache::source_bytes::{SourceBytesCache, SourceBytesError};
 use pr_imaging::decoder_traits::UserText;
@@ -55,7 +58,7 @@ pub struct EnglishFileHashTexts;
 
 impl FileHashTexts for EnglishFileHashTexts {
     fn file_changed_while_hashing(&self, path: &str) -> String {
-        todo!()
+        format!("The file changed while its hash was being computed: {path}")
     }
 }
 
@@ -78,14 +81,22 @@ pub enum FileHashError {
 
 impl fmt::Debug for FileHashError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        todo!()
+        match self {
+            Self::Canceled => f.write_str("operation canceled"),
+            Self::Path(e) => write!(f, "{e}"),
+            Self::Io(e) => write!(f, "{e}"),
+            Self::Source(e) => write!(f, "{e}"),
+            Self::ChangedWhileHashing { path, .. } => {
+                write!(f, "The file changed while its hash was being computed: {path}")
+            }
+        }
     }
 }
 
 impl fmt::Display for FileHashError {
     /// English text for logs. The UI uses [`FileHashError::describe`].
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        todo!()
+        fmt::Debug::fmt(self, f)
     }
 }
 
@@ -95,17 +106,28 @@ impl FileHashError {
     /// C# `UserFacingError.IsLocalized(ex)`: true for [`FileHashError::ChangedWhileHashing`] and for a [`FileHashError::Source`] that
     /// carries UI text.
     pub fn is_localized(&self) -> bool {
-        todo!()
+        match self {
+            Self::ChangedWhileHashing { .. } => true,
+            Self::Source(e) => e.is_localized(),
+            _ => false,
+        }
     }
 
     /// The UI sentence for this error when it has one (see [`FileHashError::is_localized`]); `None` otherwise.
     pub fn user_text(&self) -> Option<UserText> {
-        todo!()
+        match self {
+            Self::ChangedWhileHashing { user_text, .. } => Some(user_text.clone()),
+            Self::Source(e) => e.user_text(),
+            _ => None,
+        }
     }
 
     /// C# `UserFacingError.Describe(ex)`: the localized sentence when there is one, else the English [`Display`](fmt::Display) text.
     pub fn describe(&self) -> String {
-        todo!()
+        match self.user_text() {
+            Some(t) => t(),
+            None => self.to_string(),
+        }
     }
 }
 
@@ -131,6 +153,8 @@ struct InFlight {
 struct InFlightState {
     /// C# `Waiters` (`Interlocked` counter): callers currently waiting on this computation.
     waiters: usize,
+    /// The owner thread has started its computation, so a test waiter count cannot race thread startup.
+    started: bool,
     /// `None` while the computation runs. Set once, when the computation finishes (ok, error or canceled).
     result: Option<Result<String, FileHashError>>,
 }
@@ -142,18 +166,18 @@ pub struct FileHashService {
     source_bytes: Option<Arc<SourceBytesCache>>,
     texts: Arc<dyn FileHashTexts>,
     /// Keyed by `ignore_case_key(full path)` (C# `StringComparer.OrdinalIgnoreCase`); weight = UTF-16 length * 2 + 64 (C# `Length`).
-    cache: BoundedLruCache<String, HashEntry>,
+    cache: Arc<BoundedLruCache<String, HashEntry>>,
     /// Keyed by `ignore_case_key(full path)`. An entry is removed by identity (`Arc::ptr_eq`) when its computation finishes.
-    in_flight: Mutex<HashMap<String, Arc<InFlight>>>,
+    in_flight: Arc<Mutex<HashMap<String, Arc<InFlight>>>>,
     /// C# `_generation`: [`FileHashService::clear`] increments it; a computation that started before a clear is not cached.
-    generation: Mutex<u64>,
+    generation: Arc<Mutex<u64>>,
 }
 
 impl fmt::Debug for FileHashService {
     /// Required by the workspace lint `missing_debug_implementations`. The porter writes
     /// `f.debug_struct("FileHashService").finish_non_exhaustive()` (the trait objects have no Debug).
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        todo!()
+        f.debug_struct("FileHashService").finish_non_exhaustive()
     }
 }
 
@@ -162,7 +186,12 @@ impl FileHashService {
     /// `source_bytes` is the optional whole-file cache (C# `SourceBytesCache?`). `Err` is `InvalidCapacity` and cannot happen for
     /// [`HASH_CACHE_CAPACITY_BYTES`]; it is returned, not unwrapped (AGENTS.md: no `expect` on user-data paths).
     pub fn new(source_bytes: Option<Arc<SourceBytesCache>>) -> Result<Self, InvalidCapacity> {
-        todo!()
+        Self::with_seams(
+            source_bytes,
+            Arc::new(pr_core::io::physical::PhysicalFileSystem),
+            Arc::new(PhysicalSourceReader),
+            Arc::new(EnglishFileHashTexts),
+        )
     }
 
     /// The same service with every OS seam supplied: tests pass fakes (`FileSystem`, `SourceReader`) and their own texts.
@@ -172,24 +201,45 @@ impl FileHashService {
         reader: Arc<dyn SourceReader>,
         texts: Arc<dyn FileHashTexts>,
     ) -> Result<Self, InvalidCapacity> {
-        todo!()
+        Ok(Self {
+            fs,
+            reader,
+            source_bytes,
+            texts,
+            cache: Arc::new(BoundedLruCache::new(HASH_CACHE_CAPACITY_BYTES, |e: &HashEntry| {
+                (e.path.encode_utf16().count() as i64)
+                    .saturating_mul(2)
+                    .saturating_add(64)
+            })?),
+            in_flight: Arc::new(Mutex::new(HashMap::new())),
+            generation: Arc::new(Mutex::new(0)),
+        })
     }
 
     /// C# `Clear()`: bumps the generation and empties the cache. A computation already in flight still returns its hash but does
     /// not publish it (C# `generation == Volatile.Read(ref _generation)` check in `CompleteIfUnchanged`).
     pub fn clear(&self) {
-        todo!()
+        *self.generation.lock().unwrap_or_else(|p| p.into_inner()) += 1;
+        self.cache.clear();
     }
 
     /// Test seam (C# `HashCacheCount` reflection): the number of cached paths.
     pub fn cache_count_for_tests(&self) -> usize {
-        todo!()
+        self.cache.count()
     }
 
     /// Test seam: how many callers are waiting on the in-flight computation for `path` (`None` when there is none). Lets a test
     /// know a second caller has joined before it releases the computation.
     pub fn in_flight_waiters_for_tests(&self, path: &Path) -> Option<usize> {
-        todo!()
+        let key = ignore_case_key(&path.to_string_lossy());
+        self.in_flight
+            .lock()
+            .unwrap_or_else(|p| p.into_inner())
+            .get(&key)
+            .and_then(|v| {
+                let state = v.state.lock().unwrap_or_else(|p| p.into_inner());
+                state.started.then_some(state.waiters)
+            })
     }
 
     /// C# `ComputeAndCacheAsync(path, length, lastWriteUtc, generation, token)`, run on the worker of a shared computation.
@@ -204,12 +254,31 @@ impl FileHashService {
         generation: u64,
         cancel: &CancelToken,
     ) -> Result<String, FileHashError> {
-        todo!()
+        let path_obj = Path::new(path);
+        if cancel.is_canceled() {
+            return Err(FileHashError::Canceled);
+        }
+        let hash = if let Some(cache) = &self.source_bytes {
+            if length <= i64::MAX as u64 && !is_raw_path(path) && cache.can_cache(length as i64) {
+                sha256_hex(&cache.get_or_read(path_obj).map_err(FileHashError::Source)?)
+            } else {
+                let mut r = self
+                    .reader
+                    .open_source(path_obj, SourceReadPriority::Viewer, HASH_STREAM_BUFFER_BYTES)
+                    .map_err(|e| FileHashError::Io(Arc::new(e)))?;
+                Self::hash_stream(&mut *r, cancel)?
+            }
+        } else {
+            let mut r = self
+                .reader
+                .open_source(path_obj, SourceReadPriority::Viewer, HASH_STREAM_BUFFER_BYTES)
+                .map_err(|e| FileHashError::Io(Arc::new(e)))?;
+            Self::hash_stream(&mut *r, cancel)?
+        };
+        self.complete_if_unchanged(path, length, last_write_utc, generation, hash)
     }
 
-    /// C# `CompleteIfUnchanged(path, length, lastWriteUtc, generation, hash)`: re-stats the file. A different length or last write
-    /// time is [`FileHashError::ChangedWhileHashing`] (nothing cached). Otherwise the entry is published only when `generation` is
-    /// still current, and the hash is returned either way.
+    /// C# `CompleteIfUnchanged(path, length, lastWriteUtc, generation, hash)`.
     fn complete_if_unchanged(
         &self,
         path: &str,
@@ -218,14 +287,60 @@ impl FileHashService {
         generation: u64,
         hash: String,
     ) -> Result<String, FileHashError> {
-        todo!()
+        let stat = self
+            .fs
+            .try_get_file_stat(Path::new(path))
+            .map_err(|e| FileHashError::Io(Arc::new(e)))?
+            .ok_or_else(|| FileHashError::Io(Arc::new(io::Error::new(io::ErrorKind::NotFound, "file not found"))))?;
+        if stat.length != length || stat.last_write_utc != last_write_utc {
+            let p = path.to_owned();
+            let t = self.texts.clone();
+            return Err(FileHashError::ChangedWhileHashing {
+                path: p.clone(),
+                user_text: Arc::new(move || t.file_changed_while_hashing(&p)),
+            });
+        }
+        if *self.generation.lock().unwrap_or_else(|p| p.into_inner()) == generation {
+            self.cache.set(
+                ignore_case_key(path),
+                HashEntry {
+                    path: path.to_owned(),
+                    length,
+                    last_write_utc,
+                    hash: hash.clone(),
+                },
+            );
+        }
+        Ok(hash)
     }
 
     /// Streams `reader` through the incremental SHA-256 in [`HASH_STREAM_BUFFER_BYTES`] chunks and returns the upper-case hex digest.
     /// `cancel` is checked before every chunk (C# `SHA256.HashDataAsync(stream, token)`).
     fn hash_stream(reader: &mut dyn io::Read, cancel: &CancelToken) -> Result<String, FileHashError> {
-        todo!()
+        let mut data = Vec::new();
+        let mut buf = vec![0; HASH_STREAM_BUFFER_BYTES];
+        loop {
+            if cancel.is_canceled() {
+                return Err(FileHashError::Canceled);
+            }
+            let n = reader.read(&mut buf).map_err(|e| FileHashError::Io(Arc::new(e)))?;
+            if n == 0 {
+                break;
+            }
+            data.extend_from_slice(&buf[..n]);
+        }
+        if cancel.is_canceled() {
+            return Err(FileHashError::Canceled);
+        }
+        Ok(sha256_hex(&data))
     }
+}
+
+fn sha256_hex(data: &[u8]) -> String {
+    pr_core::session::store::sha256(data)
+        .iter()
+        .map(|b| format!("{b:02X}"))
+        .collect()
 }
 
 impl FileHasher for FileHashService {
@@ -240,6 +355,198 @@ impl FileHasher for FileHashService {
     /// one (the entry is never returned as a result). A cancelled caller always gets [`FileHashError::Canceled`]; it never sees
     /// another caller's cancellation.
     fn get(&self, path: &Path, cancel: &CancelToken) -> Result<String, FileHashError> {
-        todo!()
+        if cancel.is_canceled() {
+            return Err(FileHashError::Canceled);
+        }
+        let full = pr_core::text::dotnet_path::get_full_path(&path.to_string_lossy()).map_err(FileHashError::Path)?;
+        let stat = self
+            .fs
+            .try_get_file_stat(Path::new(&full))
+            .map_err(|e| FileHashError::Io(Arc::new(e)))?
+            .ok_or_else(|| FileHashError::Io(Arc::new(io::Error::new(io::ErrorKind::NotFound, "file not found"))))?;
+        let key = ignore_case_key(&full);
+        if let Some(entry) = self.cache.try_get(&key) {
+            if entry.length == stat.length && entry.last_write_utc == stat.last_write_utc {
+                return Ok(entry.hash);
+            }
+            // A fingerprint mismatch invalidates the old entry before a replacement is computed.
+            self.cache.remove(&key);
+        }
+        cancel.check().map_err(|_| FileHashError::Canceled)?;
+        loop {
+            let (flight, owner) = {
+                let mut map = self.in_flight.lock().unwrap_or_else(|p| p.into_inner());
+                if let Some(existing) = map.get(&key) {
+                    let existing = existing.clone();
+                    let mut state = existing.state.lock().unwrap_or_else(|p| p.into_inner());
+                    if existing.cancel.is_canceled() && state.result.is_some() {
+                        drop(state);
+                        if map.get(&key).is_some_and(|f| Arc::ptr_eq(f, &existing)) {
+                            map.remove(&key);
+                        }
+                        continue;
+                    }
+                    state.waiters += 1;
+                    drop(state);
+                    (existing, false)
+                } else {
+                    let flight = Arc::new(InFlight {
+                        state: Mutex::new(InFlightState {
+                            waiters: 1,
+                            started: false,
+                            result: None,
+                        }),
+                        done: Condvar::new(),
+                        cancel: CancelToken::new(),
+                    });
+                    map.insert(key.clone(), flight.clone());
+                    (flight, true)
+                }
+            };
+            if owner {
+                let generation = *self.generation.lock().unwrap_or_else(|p| p.into_inner());
+                let fs = self.fs.clone();
+                let reader = self.reader.clone();
+                let source_bytes = self.source_bytes.clone();
+                let texts = self.texts.clone();
+                let cache = self.cache.clone();
+                let generation_counter = self.generation.clone();
+                let worker_key = key.clone();
+                let worker_map = self.in_flight.clone();
+                let worker_path = full.clone();
+                let worker_flight = flight.clone();
+                thread::spawn(move || {
+                    {
+                        let mut state = worker_flight.state.lock().unwrap_or_else(|p| p.into_inner());
+                        state.started = true;
+                        worker_flight.done.notify_all();
+                    }
+                    let result = compute_and_cache_parts(
+                        ComputeContext {
+                            fs: fs.as_ref(),
+                            reader: reader.as_ref(),
+                            source_bytes: source_bytes.as_deref(),
+                            texts: texts.clone(),
+                            cache: cache.as_ref(),
+                            generation_counter: generation_counter.as_ref(),
+                        },
+                        &worker_path,
+                        stat.length,
+                        stat.last_write_utc,
+                        generation,
+                        &worker_flight.cancel,
+                    );
+                    let result = if worker_flight.cancel.is_canceled() {
+                        Err(FileHashError::Canceled)
+                    } else {
+                        result
+                    };
+                    let mut state = worker_flight.state.lock().unwrap_or_else(|p| p.into_inner());
+                    if worker_flight.cancel.is_canceled() {
+                        state.result = Some(Err(FileHashError::Canceled));
+                    } else {
+                        state.result = Some(result);
+                    }
+                    worker_flight.done.notify_all();
+                    drop(state);
+                    let mut map = worker_map.lock().unwrap_or_else(|p| p.into_inner());
+                    if !worker_flight.cancel.is_canceled()
+                        && map.get(&worker_key).is_some_and(|f| Arc::ptr_eq(f, &worker_flight))
+                    {
+                        map.remove(&worker_key);
+                    }
+                });
+            }
+            let mut state = flight.state.lock().unwrap_or_else(|p| p.into_inner());
+            while state.result.is_none() && !cancel.is_canceled() {
+                state = flight.done.wait(state).unwrap_or_else(|p| p.into_inner());
+            }
+            state.waiters = state.waiters.saturating_sub(1);
+            if cancel.is_canceled() {
+                if state.waiters == 0 {
+                    flight.cancel.cancel();
+                }
+                return Err(FileHashError::Canceled);
+            }
+            let result = state.result.clone().unwrap_or(Err(FileHashError::Canceled));
+            drop(state);
+            if matches!(result, Err(FileHashError::Canceled)) {
+                self.cache.remove(&key);
+                continue;
+            }
+            return result;
+        }
     }
+}
+
+struct ComputeContext<'a> {
+    fs: &'a dyn FileSystem,
+    reader: &'a dyn SourceReader,
+    source_bytes: Option<&'a SourceBytesCache>,
+    texts: Arc<dyn FileHashTexts>,
+    cache: &'a BoundedLruCache<String, HashEntry>,
+    generation_counter: &'a Mutex<u64>,
+}
+
+fn compute_and_cache_parts(
+    context: ComputeContext<'_>,
+    path: &str,
+    length: u64,
+    last_write_utc: DateTimeUtc,
+    generation: u64,
+    cancel: &CancelToken,
+) -> Result<String, FileHashError> {
+    let ComputeContext {
+        fs,
+        reader,
+        source_bytes,
+        texts,
+        cache,
+        generation_counter,
+    } = context;
+    if cancel.is_canceled() {
+        return Err(FileHashError::Canceled);
+    }
+    let path_obj = Path::new(path);
+    let hash = if let Some(bytes_cache) = source_bytes {
+        if length <= i64::MAX as u64 && !is_raw_path(path) && bytes_cache.can_cache(length as i64) {
+            sha256_hex(&bytes_cache.get_or_read(path_obj).map_err(FileHashError::Source)?)
+        } else {
+            let mut stream = reader
+                .open_source(path_obj, SourceReadPriority::Viewer, HASH_STREAM_BUFFER_BYTES)
+                .map_err(|e| FileHashError::Io(Arc::new(e)))?;
+            FileHashService::hash_stream(&mut *stream, cancel)?
+        }
+    } else {
+        let mut stream = reader
+            .open_source(path_obj, SourceReadPriority::Viewer, HASH_STREAM_BUFFER_BYTES)
+            .map_err(|e| FileHashError::Io(Arc::new(e)))?;
+        FileHashService::hash_stream(&mut *stream, cancel)?
+    };
+    let stat = fs
+        .try_get_file_stat(path_obj)
+        .map_err(|e| FileHashError::Io(Arc::new(e)))?
+        .ok_or_else(|| FileHashError::Io(Arc::new(io::Error::new(io::ErrorKind::NotFound, "file not found"))))?;
+    if stat.length != length || stat.last_write_utc != last_write_utc {
+        let path = path.to_owned();
+        return Err(FileHashError::ChangedWhileHashing {
+            path: path.clone(),
+            user_text: Arc::new(move || texts.file_changed_while_hashing(&path)),
+        });
+    }
+    if cancel.is_canceled() {
+        return Err(FileHashError::Canceled);
+    }
+    if *generation_counter.lock().unwrap_or_else(|p| p.into_inner()) == generation {
+        cache.set(
+            ignore_case_key(path),
+            HashEntry {
+                path: path.to_owned(),
+                length,
+                last_write_utc,
+                hash: hash.clone(),
+            },
+        );
+    }
+    Ok(hash)
 }
