@@ -2,8 +2,8 @@
 //! thumbnail-vs-preview race, present the preview, preload kick (C# `ImagePresenter.cs` lines 222 to 511, baseline d92d6aae). Contract: `contracts/W8-07i.md`,
 //! kind F (fakes, no oracle, no golden).
 //!
-//! Tests marked `#[ignore = "needs W8-07j"]` / `"needs W8-07k"` wait for the rest of the chain (the tail of a present, the missing-item removal); the unit that
-//! delivers it removes the ignore. The C# `async` waits become `pump` calls on the UI thread; every wait is bounded and gate-driven, no fixed sleeps.
+//! The C# `async` waits become `pump` calls on the UI thread; every wait is bounded and gate-driven, no fixed sleeps. The tests that need the tail of a present
+//! (W8-07j) or the missing-item removal (W8-07k) carried an `#[ignore]` until those units landed; none is left.
 
 mod support {
     pub mod present_helpers;
@@ -797,7 +797,6 @@ fn present_file_rewritten_while_stat_pending_never_shows_the_stale_ram_preview()
 
 // C#: StatOffUiThread.PresentAsync_FileDeletedWhileStatPending_SkipsItWithoutShowingItsCachedPreview
 #[test]
-#[ignore = "needs W8-07k"]
 fn present_file_deleted_while_stat_pending_skips_it_without_showing_its_cached_preview() {
     let fs = ScriptedFs::new();
     let decoder = SizedDecoder::new();

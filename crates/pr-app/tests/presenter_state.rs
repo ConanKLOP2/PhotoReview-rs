@@ -1,8 +1,8 @@
 //! Tests of the `ImagePresenter` state slice (W8-07h): constructor, properties, `ClearPresentation`, `EvictCachedPath`, the zoom-detail glue
 //! (C# `ImagePresenter.cs` lines 1 to 232, baseline d92d6aae). Contract: `contracts/W8-07h.md`, kind F (fakes, no oracle, no golden).
 //!
-//! The C# tests that need a successful `PresentAsync` are only complete after W8-07j; they are written here with `#[ignore = "needs W8-07j"]`
-//! (the 07j porter removes the ignores). The zoom swap itself (`show_zoom_detail_image`) is exercised by in-crate tests in `presenter/zoom.rs`.
+//! The C# tests that need a successful `PresentAsync` were written with `#[ignore = "needs W8-07j"]` and un-ignored by W8-07j.
+//! The zoom swap itself (`show_zoom_detail_image`) is exercised by in-crate tests in `presenter/zoom.rs`.
 
 mod support {
     pub mod presenter_fakes;

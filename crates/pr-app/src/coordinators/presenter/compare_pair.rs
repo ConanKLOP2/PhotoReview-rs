@@ -116,10 +116,10 @@ impl ImagePresenter {
 
 /// C# `LoadComparePreviewAsync(path, cancellationToken)`, blocking (runs on a worker): the compare member's preview at VIEWER priority
 /// (`service.get_viewer_preview(path, &service.get_current_cache_key(path)?, cancel, Duration::ZERO)` then `.wait()`), returning the
-/// preview's platform image. A `PreviewError::is_busy()` result on attempt 0 is retried ONCE after `delay(BUSY_RETRY_DELAY, cancel)`
+/// preview wrapped as a `DecodedImage` (the compare view model keeps those). A `PreviewError::is_busy()` result on attempt 0 is retried ONCE after `delay(BUSY_RETRY_DELAY, cancel)`
 /// (when the delay reports cancelled: `Err(PreviewError::Canceled)`); a second busy result and every other error are returned.
 /// A key failure (`get_current_cache_key` is `Err`) is returned as `PreviewError::Key`.
-pub(super) fn load_compare_preview_blocking(
+pub fn load_compare_preview_blocking(
     service: &PreviewImageService,
     path: &str,
     cancel: &CancelToken,

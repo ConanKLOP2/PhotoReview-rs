@@ -12,8 +12,6 @@
 //! - The presenter OWNS the sink (`Box<dyn IPresentationSink>`), the compare view model and the zoom-detail loader. It does NOT own the
 //!   catalog, the settings, the session or the format context: those are lent for one call in [`PresenterEnv`].
 //! - Mutators return [`PresenterChanges`] (a bit set); the shell and the main view model repaint / raise their notifications from it.
-// The navigation record, the event enum and the status helper are consumed by present_a/present_b/missing/compare_pair (W8-07i..k, still stubs); the LAST of them removes this line.
-#![allow(dead_code)]
 
 use std::fmt;
 use std::ops::{BitOr, BitOrAssign};
