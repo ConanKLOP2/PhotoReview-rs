@@ -459,3 +459,67 @@ fn take_viewer_update_unions_and_resets() {
     let second = f.controller.take_viewer_update();
     assert!(second.changes.is_empty());
 }
+
+// New test: kills LayoutMetrics::eq -> true.
+#[test]
+fn changed_viewport_after_render_requires_second_scroll_placement() {
+    let mut f = Fixture::new();
+    let step = f.call(|c, ctx| c.on_wheel_vertical(ctx, 120, false, point(100.0, 450.0)));
+    assert!(matches!(step, PointerStep::AwaitRender(_)));
+    assert_eq!(f.surface.scrolls.len(), 1);
+    f.surface.viewport_width = 700.0;
+    f.drive(step);
+    assert_eq!(f.surface.scrolls.len(), 2);
+}
+
+// New test: kills PointerContinuation::version -> 0, 1, or -1.
+#[test]
+fn continuation_version_matches_each_operation_and_swap() {
+    let mut f = Fixture::new();
+    for expected in [1, 2, 3] {
+        let step = f.call(|c, ctx| c.zoom_in(ctx));
+        let PointerStep::AwaitRender(continuation) = step else {
+            panic!("zoom must await render")
+        };
+        assert_eq!(f.versions.current(), expected);
+        assert_eq!(continuation.version(), expected);
+        f.drive(PointerStep::AwaitRender(continuation));
+    }
+    f.zoomed_with_source(2000, 1000);
+    pending_swap(&mut f, 2002, 1001);
+    let swap = f.controller.take_pending_continuation().expect("swap must re-anchor");
+    assert_eq!(swap.version(), 3);
+    f.drive(PointerStep::AwaitRender(swap));
+}
+
+fn wheel_scroll_with_source(source_width: f64, source_height: f64) -> (f64, f64) {
+    let mut f = Fixture::new();
+    f.surface.extent_width = 1200.0;
+    f.surface.extent_height = 900.0;
+    f.surface.source = Some(pr_app::input::primitives::SizeD {
+        width: source_width,
+        height: source_height,
+    });
+    f.run(|c, ctx| c.on_wheel_vertical(ctx, 120, false, point(100.0, 500.0)));
+    f.surface.scrolls[0]
+}
+
+// New test: kills > with == or < in capture_zoom_anchor for source width and height.
+#[test]
+fn fitted_zoom_uses_positive_source_dimensions_for_uniform_anchor() {
+    let valid = wheel_scroll_with_source(1600.0, 800.0);
+    assert!(valid.0.abs() < 1e-9, "{valid:?}");
+    assert!((valid.1 - 25.0).abs() < 1e-9, "{valid:?}");
+}
+
+// New test: kills > with >= in capture_zoom_anchor for source width and height.
+#[test]
+fn zero_or_negative_source_dimension_uses_element_anchor() {
+    for (width, height) in [(0.0, 800.0), (-1.0, 800.0), (1600.0, 0.0), (1600.0, -1.0)] {
+        assert_eq!(
+            wheel_scroll_with_source(width, height),
+            (0.0, 0.0),
+            "source=({width}, {height})"
+        );
+    }
+}
