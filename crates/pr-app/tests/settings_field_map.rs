@@ -1157,3 +1157,29 @@ fn parse_r(text: &str) -> f64 {
         .parse::<f64>()
         .unwrap_or_else(|e| panic!("bad double {text:?}: {e}"))
 }
+
+// New test: C# `LenientEnumConverter` reads a JSON number for `Operation` (0 Move, 1 Copy, 2 Recycle); the C# tests
+// `Save_ActionsJson_IsValidated` / `Save_ActionDestinationProblem_IsRefused` use `"Operation":0`.
+#[test]
+fn actions_row_accepts_numeric_operation() {
+    use pr_core::model::enums::FileOperationType;
+    let env = Env::new();
+    let row = bindings()
+        .iter()
+        .position(|b| b.properties == ["Actions"])
+        .expect("Actions row");
+    for (json, want) in [
+        ("0", FileOperationType::Move),
+        ("1", FileOperationType::Copy),
+        ("2", FileOperationType::Recycle),
+        ("\"Copy\"", FileOperationType::Copy),
+    ] {
+        let mut form = load_all(&default_settings());
+        form.actions_json =
+            format!("[{{\"Name\":\"A\",\"Shortcut\":\"F6\",\"Operation\":{json},\"Destination\":\"D\"}}]");
+        let mut target = default_settings();
+        assert_eq!((bindings()[row].apply)(&form, &mut target, &env.ctx()), None, "{json}");
+        assert_eq!(target.actions.len(), 1, "{json}");
+        assert_eq!(target.actions[0].operation, want, "{json}");
+    }
+}

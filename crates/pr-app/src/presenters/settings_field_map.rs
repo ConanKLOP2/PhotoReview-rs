@@ -635,15 +635,21 @@ fn apply_actions(f: &SettingsFormState, s: &mut AppSettings, c: &FieldContext<'_
                             }
                         }
                         "Operation" => {
-                            if let J::String(Some(x)) = v {
-                                a.operation = match x.as_str() {
+                            // C# `LenientEnumConverter`: a name or alias, or the defined numbers 0/1/2.
+                            a.operation = match v {
+                                J::String(Some(x)) => match x.as_str() {
                                     "Move" => FileOperationType::Move,
                                     "Copy" => FileOperationType::Copy,
                                     "Recycle" | "Delete" => FileOperationType::Recycle,
                                     _ => return None,
-                                }
-                            } else {
-                                return None;
+                                },
+                                J::Number(n) => match n.as_str() {
+                                    "0" => FileOperationType::Move,
+                                    "1" => FileOperationType::Copy,
+                                    "2" => FileOperationType::Recycle,
+                                    _ => return None,
+                                },
+                                _ => return None,
                             }
                         }
                         _ => {}
