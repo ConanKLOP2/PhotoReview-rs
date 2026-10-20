@@ -235,14 +235,31 @@ impl IPresentationSink for BridgeSink {
 
 // ---- format -----------------------------------------------------------------------------------------------------------------
 
-/// English texts for the view model; local time = UTC (the tests compare invariant text).
+/// The texts for the view model (English unless the test starts in Vietnamese or switches); local time = UTC (the tests compare
+/// invariant text). The language can be switched while the view model lives (ADR 0006).
 pub struct TestFormat {
-    fixture: FormatFixture,
+    fixture: std::sync::RwLock<FormatFixture>,
+}
+
+impl TestFormat {
+    /// The live language switch of the tests.
+    pub fn use_language(&self, vietnamese: bool) {
+        let fixture = if vietnamese {
+            FormatFixture::vietnamese()
+        } else {
+            FormatFixture::new()
+        };
+        *self.fixture.write().unwrap_or_else(std::sync::PoisonError::into_inner) = fixture;
+    }
 }
 
 impl FormatContextSource for TestFormat {
     fn with_context(&self, run: &mut dyn FnMut(&FormatContext<'_>)) {
-        run(&self.fixture.ctx());
+        run(&self
+            .fixture
+            .read()
+            .unwrap_or_else(std::sync::PoisonError::into_inner)
+            .ctx());
     }
 
     fn to_local_time(&self, utc: DateTimeUtc) -> DateTimeUtc {
@@ -446,6 +463,9 @@ pub struct RecordingOwnership {
     decisions: Mutex<HashMap<String, FolderOpenDecision>>,
     pub before_opens: Mutex<Vec<String>>,
     pub before_threads: Mutex<Vec<ThreadId>>,
+    pub initial_paths: Mutex<Vec<Option<String>>>,
+    /// When set, `before_open` fails with this error (the negotiation broke).
+    pub fail_with: Mutex<Option<FolderOwnershipError>>,
     pub shown: Mutex<Vec<String>>,
     pub after_opens: Mutex<Vec<(String, Option<String>)>>,
 }
@@ -476,11 +496,15 @@ impl FolderOwnership for RecordingOwnership {
     fn before_open(
         &self,
         folder: &str,
-        _initial_path: Option<&str>,
+        initial_path: Option<&str>,
         _cancel: &CancelToken,
     ) -> Result<FolderOpenDecision, FolderOwnershipError> {
         lock(&self.before_opens).push(folder.to_owned());
+        lock(&self.initial_paths).push(initial_path.map(str::to_owned));
         lock(&self.before_threads).push(std::thread::current().id());
+        if let Some(error) = *lock(&self.fail_with) {
+            return Err(error);
+        }
         Ok(lock(&self.decisions)
             .get(folder)
             .copied()
@@ -741,6 +765,10 @@ pub struct EnvOptions {
     pub reset_caches: Option<Box<dyn FnMut()>>,
     pub picker: Option<TestPicker>,
     pub session_debounce: Option<Duration>,
+    /// Start with the Vietnamese texts.
+    pub vietnamese: bool,
+    /// The RAW full decoder of the preview service (its use follows the live `raw_full_decode` setting).
+    pub raw_full_decoder: Option<Arc<dyn ImageDecoder>>,
 }
 
 impl Default for EnvOptions {
@@ -756,6 +784,8 @@ impl Default for EnvOptions {
             reset_caches: None,
             picker: None,
             session_debounce: None,
+            vietnamese: false,
+            raw_full_decoder: None,
         }
     }
 }
@@ -783,6 +813,7 @@ pub struct MainEnv {
     pub gate: FileActionGate,
     pub sink_seen: Arc<Mutex<SinkSeen>>,
     pub viewer: ViewerHandle,
+    pub format: Arc<TestFormat>,
     pub bridge: PresentationBridge,
     pub resets: Arc<AtomicUsize>,
     pub picker: TestPicker,
@@ -802,11 +833,15 @@ impl std::fmt::Debug for MainEnv {
     }
 }
 
+/// The RAW full decoder of the service and the live "is it enabled" check.
+type RawFullDecode = (Option<Arc<dyn ImageDecoder>>, Arc<dyn Fn() -> bool + Send + Sync>);
+
 /// A preview service whose "original loading mode" follows the live settings (C# `() => _settings.LoadingMode == Original`).
 fn build_live_service(
     dir: &Path,
     decoder: Arc<dyn ImageDecoder>,
     original_mode: Arc<dyn Fn() -> bool + Send + Sync>,
+    raw_full: RawFullDecode,
     metrics: Arc<ReviewMetrics>,
 ) -> Arc<PreviewImageService> {
     let mut config = PreviewServiceConfig::new(
@@ -821,6 +856,8 @@ fn build_live_service(
     config.disable_disk_cache_override = Some(true);
     config.decoder = Some(decoder);
     config.physical_memory_bytes = 32 * GIB;
+    config.raw_full_decoder = raw_full.0;
+    config.is_raw_full_decode_enabled = Some(raw_full.1);
     match PreviewImageService::new(config) {
         Ok(service) => Arc::new(service),
         Err(error) => panic!("the preview service did not build: {error}"),
@@ -917,6 +954,13 @@ impl MainEnv {
         let clock = Arc::new(GenerationClock::default());
         let metrics = Arc::new(ReviewMetrics::new());
         let format = FormatFixture::new();
+        let test_format = Arc::new(TestFormat {
+            fixture: std::sync::RwLock::new(if options.vietnamese {
+                FormatFixture::vietnamese()
+            } else {
+                FormatFixture::new()
+            }),
+        });
         let preload = EventPreload::new();
         let preload_dyn: Arc<dyn IPreloadController> = preload.clone();
         let viewer = ViewerHandle::new(ViewerState::new());
@@ -926,10 +970,15 @@ impl MainEnv {
         let hasher: Arc<dyn FileHasher> = fake_hasher.clone();
 
         let original_mode_settings = settings.clone();
+        let raw_full_settings = settings.clone();
         let preview_service = build_live_service(
             &root.join("cache"),
             options.decoder,
             Arc::new(move || original_mode_settings.current().loading_mode_or_default() == LoadingMode::Original),
+            (
+                options.raw_full_decoder,
+                Arc::new(move || raw_full_settings.current().raw_full_decode == pr_core::model::RawFullDecode::OnZoom),
+            ),
             Arc::clone(&metrics),
         );
         let thumbnails = build_thumbnail_cache(&root.join("thumbs"));
@@ -1092,7 +1141,7 @@ impl MainEnv {
             clipboard: None,
             external_editor: None,
             texts,
-            format: Arc::new(TestFormat { fixture: format }),
+            format: Arc::clone(&test_format) as Arc<dyn FormatContextSource>,
             inbox: inbox.clone(),
             runner: runner.clone(),
             log: log_dyn,
@@ -1120,6 +1169,7 @@ impl MainEnv {
             gate,
             sink_seen,
             viewer,
+            format: test_format,
             bridge,
             resets,
             picker,
