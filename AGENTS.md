@@ -63,6 +63,12 @@ the C# code at the baseline in [`docs/SYNC-LEDGER.md`](docs/SYNC-LEDGER.md) deci
 - Open ONE PR per wave/change (base `master`, never stacked) with `gh pr create`, then immediately call
   `ccd_pr get_status` (bind with `bind_pr` if it is not bound). Auto-fix must be on (`set_monitor auto_fix=true`);
   never poll CI yourself, the app sends `<ci-monitor-event>`; fix, verify, commit, push on each event.
+- Every PR, however small, gets auto-fix AND auto-merge in the same step that creates it (`gh pr create`, then
+  `set_auto_merge` straight away): do not wait for the user to ask or to remind you. When the user asks for several
+  small PRs (one per unit or dependency group), each one follows these rules and branches from `master`; a PR that
+  needs another one first is opened only after that one has merged.
+- Keep a PR's own CI evidence honest: if a check fails on a test that is not yours (flaky or a stale local path), fix the
+  cause in its own PR (root cause first, see "Flaky tests" in docs/AGENT-HYGIENE of the C# repo), do not re-run until it passes.
 - Auto-merge: the user's standing request is "auto-fix + auto-merge" for PRs of this repo. Call `set_auto_merge
   enabled=true merge_method=squash` as soon as the PR is bound. If GitHub answers "clean status" (all checks already
   green, nothing to wait for), merge it with `gh pr merge <n> --squash`. If the permission classifier blocks either,
