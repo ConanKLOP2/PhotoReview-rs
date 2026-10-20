@@ -147,8 +147,12 @@ pub(super) fn run_scan(input: ScanJobInput) -> Result<ScanOutput, ScanFailure> {
 }
 
 impl FolderLoadCoordinator {
-    fn perf_mark(&self, generation: i64, phase: &str, value: Option<i64>) {
+    pub(super) fn perf_mark(&self, generation: i64, phase: &str, value: Option<i64>) {
         mark(&self.deps.perf, generation, phase, value);
+    }
+
+    pub(super) fn perf_mark_value(&self, generation: i64, phase: &str, value: usize) {
+        mark(&self.deps.perf, generation, phase, i64::try_from(value).ok());
     }
 
     /// C# `LoadAsync(folder, initialPath)`, synchronous prefix (UI thread). Order of effects:

@@ -233,14 +233,10 @@ pub(super) enum ExplorerSlot {
     /// Query completed with a snapshot (any status).
     Done(Arc<ExplorerViewSnapshot>),
     /// Query failed or was canceled.
-    // Built only by W8-07b (reload.rs `on_explorer_finished`); remove this allow when 07b lands.
-    #[allow(dead_code)]
     Failed,
 }
 
 /// State of the readability probe of the active load (W8-07b).
-// Built and read only by W8-07b (skipped.rs); remove this allow when 07b lands.
-#[allow(dead_code)]
 #[derive(Debug)]
 pub(super) enum ProbeState {
     /// Not started (no image in the folder, or the load ended before the first image was requested).
@@ -272,8 +268,6 @@ pub(super) struct ActiveLoad {
     pub presentation_generation: i64,
     /// This load owns the pending-order gate (file open whose snapshot was not in at catalog time).
     pub owns_order_gate: bool,
-    // Read only by W8-07b (skipped.rs); remove this allow when 07b lands.
-    #[allow(dead_code)]
     pub probe: ProbeState,
 }
 
