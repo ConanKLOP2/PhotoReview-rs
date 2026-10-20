@@ -4,10 +4,6 @@
 //! The C# tests ran on a temp folder and a fake Recycle Bin. Here the executor is a fake (`FakeExecutor`), so "the file was
 //! deleted permanently" becomes "the request handed to the executor has `allow_permanent_delete` set", and nothing touches a disk.
 //!
-//! Two groups of tests:
-//! - Refusal paths end inside `prepare_core`/`recycle` and run today.
-//! - Tests that reach the executor need `execute_core` of W8-07d (still `todo!()` on master); they are `#[ignore]`d with that reason
-//!   and must be un-ignored by the unit that implements it.
 //!
 //! The C# tests `Recycle_ConfirmThenPhotoRemovedFromCatalogMeanwhile_*`, `Recycle_PermanentDeletePromptThenPhotoRemoved*`,
 //! `Recycle_GroupPromptThenCaptureRemoved*` and `GroupRecycle_EntryDegradedToStandalone*` mutate the catalog from inside the open
@@ -84,7 +80,6 @@ fn assert_nothing_changed(env: &Env, before: &[String], folder_before: i64) {
 
 // C#: FileActionControllerConfirmDeleteTests.ConfirmBeforeDelete_Off_RecyclesWithoutPrompt
 #[test]
-#[ignore = "needs W8-07d execute_core"]
 fn confirm_before_delete_off_recycles_without_prompt() {
     let mut env = Env::new(settings(false, false));
     env.load(&["a.jpg"]);
@@ -105,7 +100,6 @@ fn confirm_before_delete_off_recycles_without_prompt() {
 
 // C#: FileActionControllerConfirmDeleteTests.ConfirmBeforeDelete_On_Confirmed_Recycles
 #[test]
-#[ignore = "needs W8-07d execute_core"]
 fn confirm_before_delete_on_confirmed_recycles() {
     let mut env = Env::new(settings(true, false));
     env.load(&["a.jpg"]);
@@ -145,7 +139,6 @@ fn confirm_before_delete_on_declined_does_nothing() {
 
 // C#: FileActionControllerConfirmDeleteTests.ConfirmBeforeDelete_On_WithPermanentDeletePrompt_AsksOnlyOnce
 #[test]
-#[ignore = "needs W8-07d execute_core"]
 fn confirm_before_delete_on_with_permanent_delete_prompt_asks_only_once() {
     let mut env = Env::new(settings(true, true));
     env.load(&["a.jpg"]);
@@ -168,7 +161,6 @@ fn confirm_before_delete_on_with_permanent_delete_prompt_asks_only_once() {
 
 // C#: FileActionControllerConfirmDeleteTests.ConfirmBeforeDelete_GroupWithPermanentMembers_AsksOnceAndCountsPermanentMembers
 #[test]
-#[ignore = "needs W8-07d execute_core"]
 fn confirm_before_delete_group_with_permanent_members_asks_once_and_counts_permanent_members() {
     let mut env = Env::new(settings(true, true));
     env.load(&["pair.jpg", "pair.cr2"]);
@@ -192,7 +184,6 @@ fn confirm_before_delete_group_with_permanent_members_asks_once_and_counts_perma
 
 // C#: FileActionControllerConfirmGapTests.Recycle_ConfirmBeforeDeleteWithCompareSelectionOnDriveWithoutBin_AsksOnlyThePermanentDeletePrompt
 #[test]
-#[ignore = "needs W8-07d execute_core"]
 fn recycle_confirm_before_delete_with_compare_selection_on_drive_without_bin_asks_only_the_permanent_delete_prompt() {
     let mut env = Env::new(settings(true, true));
     env.load(&["a.jpg", "b.jpg"]);
@@ -323,7 +314,6 @@ fn recycle_group_prompt_then_another_action_became_busy_returns_silently() {
 
 // C#: FileActionControllerRecycleSafetyGapTests.GroupRecycle_RaceAfterTheUpFrontCheckWithSettingOff_NeverAsksPermanentDeleteNorDeletes
 #[test]
-#[ignore = "needs W8-07d execute_core"]
 fn group_recycle_race_after_the_up_front_check_with_setting_off_never_asks_permanent_delete_nor_deletes() {
     let mut env = Env::new(settings(false, false));
     env.load(&["pair.jpg", "pair.cr2"]);
@@ -341,7 +331,6 @@ fn group_recycle_race_after_the_up_front_check_with_setting_off_never_asks_perma
 
 // C#: FileActionControllerRecycleSafetyGapTests.GroupRecycle_RaceAfterTheUpFrontCheckAfterTheGenericGroupPrompt_StaysNonPermanent
 #[test]
-#[ignore = "needs W8-07d execute_core"]
 fn group_recycle_race_after_the_up_front_check_after_the_generic_group_prompt_stays_non_permanent() {
     let mut env = Env::new(settings(true, false));
     env.load(&["pair.jpg", "pair.cr2"]);
@@ -361,7 +350,6 @@ fn group_recycle_race_after_the_up_front_check_after_the_generic_group_prompt_st
 
 // C#: FileActionControllerRecycleSafetyGapTests.GroupRecycle_RaceWithSettingOnButNoPromptedMember_DoesNotGrantPermanentDelete
 #[test]
-#[ignore = "needs W8-07d execute_core"]
 fn group_recycle_race_with_setting_on_but_no_prompted_member_does_not_grant_permanent_delete() {
     let mut env = Env::new(settings(false, true));
     env.load(&["pair.jpg", "pair.cr2"]);
@@ -379,7 +367,6 @@ fn group_recycle_race_with_setting_on_but_no_prompted_member_does_not_grant_perm
 
 // C#: FileActionControllerRecycleSafetyGapTests.SingleRecycle_RaceAfterTheUpFrontCheckWithSettingOff_NeverDeletesPermanently
 #[test]
-#[ignore = "needs W8-07d execute_core"]
 fn single_recycle_race_after_the_up_front_check_with_setting_off_never_deletes_permanently() {
     let mut env = Env::new(settings(false, false));
     env.load(&["solo.jpg"]);
@@ -423,7 +410,6 @@ fn group_recycle_only_a_non_selected_member_lacks_a_bin_refuses_up_front_naming_
 
 // C#: FileActionControllerGroupTests.GroupRecycle_FromCompareSelection_AlwaysAsksAndNamesBothFiles_EvenWithConfirmBeforeDeleteOff
 #[test]
-#[ignore = "needs W8-07d execute_core"]
 fn group_recycle_from_compare_selection_always_asks_and_names_both_files_even_with_confirm_before_delete_off() {
     let mut env = Env::new(settings(false, false));
     env.load_pair_between_two_photos(false);
@@ -464,7 +450,6 @@ fn group_recycle_from_compare_selection_declined_deletes_nothing_and_keeps_the_e
 
 // C#: FileActionControllerGroupTests.GroupRecycle_WithoutCompare_StillNeedsNoPromptWhenConfirmBeforeDeleteIsOff
 #[test]
-#[ignore = "needs W8-07d execute_core"]
 fn group_recycle_without_compare_still_needs_no_prompt_when_confirm_before_delete_is_off() {
     let mut env = Env::new(settings(false, false));
     env.load_pair_between_two_photos(false);
@@ -479,7 +464,6 @@ fn group_recycle_without_compare_still_needs_no_prompt_when_confirm_before_delet
 
 // C#: FileActionControllerGroupTests.GroupRecycle_GroupUnchangedWhileTheConfirmationIsOpen_StillRecyclesBothMembers
 #[test]
-#[ignore = "needs W8-07d execute_core"]
 fn group_recycle_group_unchanged_while_the_confirmation_is_open_still_recycles_both_members() {
     let mut env = Env::new(settings(true, false));
     env.load_pair_between_two_photos(false);
@@ -544,7 +528,6 @@ fn group_recycle_permanent_delete_setting_off_with_confirm_before_delete_refuses
 
 // C#: FileActionControllerGroupTests.GroupRecycle_PermanentDeleteSettingOn_PromptsPermanentlyAndDeletesAllMembers
 #[test]
-#[ignore = "needs W8-07d execute_core"]
 fn group_recycle_permanent_delete_setting_on_prompts_permanently_and_deletes_all_members() {
     let mut env = Env::new(settings(false, true));
     env.load_pair_between_two_photos(true);
@@ -734,7 +717,6 @@ fn group_permanent_prompt_declined_uses_permanent_title_and_argument_order() {
 
 // New test: Ready path hands the job to the file-action lane (07d queues it; checked here because 07c owns the entry point)
 #[test]
-#[ignore = "needs W8-07d execute_core"]
 fn recycle_ready_path_queues_one_job_on_the_file_action_lane() {
     let mut env = Env::new(settings(false, false));
     env.load(&["a.jpg", "b.jpg"]);

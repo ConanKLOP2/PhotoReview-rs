@@ -10,9 +10,6 @@
 //!
 //! The file-action GATE (`FileActionGate`, W8-06e) is held by the CALLER (the view model), not by this controller: the C# class
 //! never mentions it. `IFileActionExecutor::is_busy` is the service's own gate (INV-4).
-// Fields and helpers here (`report_recycle_failure`, `will_ask_group_confirmation`, `present`, `move_positions`, ...) are read only by
-// the sibling files of W8-07d/07e, which are still stubs on this branch; remove this allow when they land.
-#![allow(dead_code)]
 
 use std::collections::HashMap;
 use std::fmt;
@@ -240,7 +237,7 @@ impl FileActionController {
 
     /// True while an action or an undo is between its start and its `Done` (the caller's gate normally prevents a second one).
     pub fn is_in_flight(&self) -> bool {
-        self.in_flight.is_some() || self.undo_in_flight.is_some()
+        self.in_flight.is_some() || self.undo_in_flight.is_some() || self.parked.is_some()
     }
 
     /// C# `RecycleAsync(compareSelectedPath, currentPath)`. Order: `refuse_recycle_without_bin(source)` first; then, when the

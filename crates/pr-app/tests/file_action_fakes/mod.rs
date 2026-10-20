@@ -12,23 +12,29 @@ use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
 use std::sync::{Arc, Mutex};
 
 use pr_app::coordinators::file_actions::recycle::{
-    FileActionController, FileActionCx, FileActionDeps, FileActionEvent, TextSource,
+    FileActionController, FileActionCx, FileActionDeps, FileActionEvent, FileActionStep, TextSource,
 };
 use pr_app::coordinators::folder_load::state::{WorkerLane, WorkerPort};
-use pr_app::coordinators::traits::{IFileActionExecutor, IFileActionSink};
-use pr_core::abstractions::{BatchReviewItem, DialogService, NullLog, SkippedEntry};
+use pr_app::coordinators::traits::{IFileActionExecutor, IFileActionSink, IPreloadController};
+use pr_core::abstractions::{BatchReviewItem, DialogService, Log, RecycleBin, SkippedEntry, SystemClock};
+use pr_core::app_paths::AppPaths;
 use pr_core::catalog::generation::GenerationClock;
 use pr_core::catalog::natural_cmp::ManagedNaturalComparer;
 use pr_core::catalog::review_catalog::ReviewCatalog;
 use pr_core::catalog::types::CatalogEntry;
+use pr_core::file_actions::journal::OperationJournal;
 use pr_core::file_actions::types::{
     CaptureGroupActionRequest, CaptureGroupActionResult, FileActionRequest, FileActionResult,
 };
+use pr_core::file_actions::undo::{EnglishUndoTexts, UndoService};
 use pr_core::io::physical::PhysicalFileSystem;
-use pr_core::model::RawPairMode;
+use pr_core::model::{FileOperationType, RawPairMode};
 use pr_core::settings::app_settings::AppSettings;
+use pr_core::settings::shortcuts::ReviewAction;
 use pr_core::sync::CancelToken;
 use pr_core::time::DateTimeUtc;
+use pr_imaging::cache_key::ImageCacheKey;
+use pr_imaging::preload::scheduler::RunHandle;
 use pr_l10n::localizer::{Localizer, built_in_english_localizer};
 use pr_l10n::template::NumberCulture;
 
@@ -153,6 +159,8 @@ pub struct RecordingSink {
     pub presented: Vec<i32>,
     pub sessions: Vec<String>,
     pub navigation_changes: usize,
+    /// Makes `update_session_path` panic (C# "the bookkeeping after a successful action threw").
+    pub panic_on_session: bool,
 }
 
 impl RecordingSink {
@@ -194,6 +202,7 @@ impl IFileActionSink for RecordingSink {
     }
 
     fn update_session_path(&mut self, current_path: &str) {
+        assert!(!self.panic_on_session, "session write failed");
         self.sessions.push(current_path.to_string());
     }
 
@@ -209,6 +218,15 @@ pub enum ExecutorCall {
     Group(CaptureGroupActionRequest),
 }
 
+/// What the next executor call does instead of succeeding (C# fake bins that fail, a service that throws).
+#[derive(Debug, Clone)]
+pub enum Scripted {
+    Single(FileActionResult),
+    Group(CaptureGroupActionResult),
+    /// The executor panics (C# "unexpected exception").
+    Panic(String),
+}
+
 /// C# `FakeBin` + `VanishingBin` folded into an `IFileActionExecutor`: nothing touches a disk or the real Recycle Bin.
 /// `lacks_recycle_bin` answers from a script; every call is counted.
 #[derive(Default)]
@@ -222,6 +240,7 @@ pub struct FakeExecutor {
     pub bin_answers: Mutex<Option<usize>>,
     pub lacks_calls: AtomicUsize,
     pub calls: Mutex<Vec<ExecutorCall>>,
+    pub script: Mutex<VecDeque<Scripted>>,
 }
 
 impl FakeExecutor {
@@ -245,6 +264,10 @@ impl FakeExecutor {
         *self.bin_answers.lock().unwrap() = Some(bin_answers);
     }
 
+    pub fn script(&self, next: Scripted) {
+        self.script.lock().unwrap().push_back(next);
+    }
+
     pub fn recorded(&self) -> Vec<ExecutorCall> {
         self.calls.lock().unwrap().clone()
     }
@@ -265,6 +288,11 @@ impl IFileActionExecutor for FakeExecutor {
 
     fn execute(&self, request: &FileActionRequest, _cancel: &CancelToken) -> FileActionResult {
         self.calls.lock().unwrap().push(ExecutorCall::Single(request.clone()));
+        match self.script.lock().unwrap().pop_front() {
+            Some(Scripted::Single(result)) => return result,
+            Some(Scripted::Panic(text)) => panic!("{text}"),
+            _ => {}
+        }
         FileActionResult::new(
             true,
             request.operation,
@@ -278,6 +306,11 @@ impl IFileActionExecutor for FakeExecutor {
 
     fn execute_group(&self, request: &CaptureGroupActionRequest, _cancel: &CancelToken) -> CaptureGroupActionResult {
         self.calls.lock().unwrap().push(ExecutorCall::Group(request.clone()));
+        match self.script.lock().unwrap().pop_front() {
+            Some(Scripted::Group(result)) => return result,
+            Some(Scripted::Panic(text)) => panic!("{text}"),
+            _ => {}
+        }
         CaptureGroupActionResult::new(true, false, request.operation, "group", None, Vec::new(), None)
     }
 }
@@ -319,9 +352,92 @@ impl WorkerPort<FileActionEvent> for ManualPort {
     }
 }
 
+/// A review action profile (C# harness `MoveAction` / `RecycleAction`).
+pub fn action(name: &str, operation: FileOperationType, destination: &str, confirm: bool) -> ReviewAction {
+    ReviewAction {
+        name: name.to_string(),
+        shortcut: "Enter".to_string(),
+        operation,
+        destination: destination.to_string(),
+        confirm,
+    }
+}
+
 /// Test paths: relative, never on a disk. `Path::file_name` gives the C# `Path.GetFileName` result.
 pub fn p(name: &str) -> String {
     format!("photos/{name}")
+}
+
+/// Records `error` lines (the C# `AppLog.Error` calls the tests look for).
+#[derive(Default)]
+pub struct RecordingLog {
+    pub errors: Mutex<Vec<String>>,
+}
+
+impl Log for RecordingLog {
+    fn enabled(&self) -> bool {
+        true
+    }
+
+    fn info(&self, _message: &str) {}
+
+    fn warn(&self, _message: &str) {}
+
+    fn error(&self, message: &str, _error: Option<&(dyn std::error::Error + 'static)>) {
+        self.errors.lock().unwrap().push(message.to_string());
+    }
+}
+
+/// Counts the calls the controller makes on the preload seam (C# `preloadController: null` tests never see them).
+#[derive(Default)]
+pub struct RecordingPreload {
+    pub cancels: AtomicUsize,
+    pub preload_centers: Mutex<Vec<i32>>,
+}
+
+impl IPreloadController for RecordingPreload {
+    fn preload_around(&self, center: i32) -> RunHandle {
+        self.preload_centers.lock().unwrap().push(center);
+        RunHandle::completed()
+    }
+
+    fn try_consume_preloaded_key(&self, _key: &ImageCacheKey) -> bool {
+        false
+    }
+
+    fn cancel(&self) {
+        self.cancels.fetch_add(1, Ordering::SeqCst);
+    }
+
+    fn remove_preloaded_keys_for_path(&self, _normalized_path: &str) {}
+
+    fn clear_preloaded_keys(&self) {}
+}
+
+/// A Recycle Bin that never touches anything (nothing in these tests reaches the real one).
+struct InertBin;
+
+impl RecycleBin for InertBin {
+    fn send_to_recycle_bin(&self, _path: &Path) -> std::io::Result<()> {
+        Ok(())
+    }
+
+    fn try_restore(&self, _path: &Path, _size: u64, _last_write: DateTimeUtc) -> std::io::Result<bool> {
+        Ok(false)
+    }
+}
+
+/// A real `UndoService` over a journal that is never written (nothing here executes a file action for real).
+pub fn new_undo_service() -> Arc<Mutex<UndoService>> {
+    let fs: Arc<dyn pr_core::abstractions::FileSystem> = Arc::new(PhysicalFileSystem);
+    let paths = AppPaths::new(&std::env::temp_dir().join("pr-file-action-fakes"), None, false);
+    let journal = Arc::new(OperationJournal::new(&paths, fs.clone(), Arc::new(SystemClock)));
+    Arc::new(Mutex::new(UndoService::new(
+        journal,
+        fs,
+        Arc::new(InertBin),
+        Arc::new(EnglishUndoTexts),
+    )))
 }
 
 /// One controller with all its fakes. The catalog and the sink are owned here and borrowed per call (`FileActionCx`).
@@ -332,6 +448,9 @@ pub struct Env {
     pub dialog: Arc<RecordingDialog>,
     pub exec: Arc<FakeExecutor>,
     pub port: Arc<ManualPort>,
+    pub preload: Arc<RecordingPreload>,
+    pub log: Arc<RecordingLog>,
+    pub undo: Option<Arc<Mutex<UndoService>>>,
     pub settings: Arc<Mutex<Arc<AppSettings>>>,
     pub controller: FileActionController,
 }
@@ -341,6 +460,7 @@ pub struct EnvOptions {
     pub dialog_answer: bool,
     pub file_system: bool,
     pub executor: bool,
+    pub undo: bool,
 }
 
 impl Default for EnvOptions {
@@ -350,6 +470,7 @@ impl Default for EnvOptions {
             dialog_answer: true,
             file_system: true,
             executor: true,
+            undo: true,
         }
     }
 }
@@ -364,6 +485,9 @@ impl Env {
         let dialog = RecordingDialog::new(options.dialog_answer);
         let exec = FakeExecutor::new();
         let port = ManualPort::new();
+        let preload = Arc::new(RecordingPreload::default());
+        let log = Arc::new(RecordingLog::default());
+        let undo = options.undo.then(new_undo_service);
         let settings = Arc::new(Mutex::new(Arc::new(settings)));
         let settings_for_controller = settings.clone();
         let controller = FileActionController::new(FileActionDeps {
@@ -371,9 +495,9 @@ impl Env {
             file_actions: options
                 .executor
                 .then(|| exec.clone() as Arc<dyn IFileActionExecutor + Send + Sync>),
-            undo_service: None,
+            undo_service: undo.clone(),
             dialog_service: options.dialog.then(|| dialog.clone() as Arc<dyn DialogService>),
-            preload_controller: None,
+            preload_controller: Some(preload.clone()),
             natural_comparer: Arc::new(ManagedNaturalComparer),
             get_settings: Box::new(move || settings_for_controller.lock().unwrap().clone()),
             file_system: options
@@ -382,7 +506,7 @@ impl Env {
             remember_folder: None,
             worker: port.clone(),
             texts: Arc::new(EnglishTexts::new()),
-            log: Arc::new(NullLog),
+            log: log.clone(),
         });
         Self {
             catalog: ReviewCatalog::new(),
@@ -391,6 +515,9 @@ impl Env {
             dialog,
             exec,
             port,
+            preload,
+            log,
+            undo,
             settings,
             controller,
         }
@@ -436,8 +563,64 @@ impl Env {
         self.controller.recycle(&mut cx, compare_selected, current)
     }
 
+    /// The controller's `run_action`.
+    pub fn run_action(&mut self, index: i32, compare_selected: Option<&str>, current: Option<&str>) -> FileActionStep {
+        let mut cx = FileActionCx {
+            catalog: &mut self.catalog,
+            sink: &mut self.sink,
+        };
+        self.controller.run_action(&mut cx, index, compare_selected, current)
+    }
+
+    /// Delivers one event to the controller.
+    pub fn handle(&mut self, event: FileActionEvent) -> FileActionStep {
+        let mut cx = FileActionCx {
+            catalog: &mut self.catalog,
+            sink: &mut self.sink,
+        };
+        self.controller.handle_event(&mut cx, event)
+    }
+
+    /// Runs every queued worker job and delivers its event; returns the last step (the one that ends the operation).
+    pub fn run_worker(&mut self) -> FileActionStep {
+        let mut last = FileActionStep::Pending;
+        for event in self.port.run_all() {
+            last = self.handle(event);
+        }
+        last
+    }
+
+    /// The test presenter reports that the present the controller requested finished.
+    pub fn present_finished(&mut self, faulted: bool) -> FileActionStep {
+        let mut cx = FileActionCx {
+            catalog: &mut self.catalog,
+            sink: &mut self.sink,
+        };
+        self.controller.on_present_finished(&mut cx, faulted)
+    }
+
+    /// Settings with the given action profiles.
+    pub fn set_actions(&self, settings: AppSettings, actions: Vec<ReviewAction>) {
+        self.set_settings(AppSettings { actions, ..settings });
+    }
+
     /// Everything the catalog shows, in order.
     pub fn catalog_paths(&self) -> Vec<String> {
         self.catalog.paths().to_vec()
     }
+}
+
+/// English text of a key with arguments (what the C# tests compute with `Tr.*`).
+pub fn en(key: &str, args: &[pr_l10n::template::LocArg]) -> String {
+    built_in_english_localizer().format(key, args)
+}
+
+/// English text of an argument-less key.
+pub fn text(key: &str) -> String {
+    built_in_english_localizer().get(key)
+}
+
+/// A string argument.
+pub fn arg(name: &str, value: &str) -> pr_l10n::template::LocArg {
+    pr_l10n::template::LocArg::new(name, value.to_string())
 }
