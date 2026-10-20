@@ -5,8 +5,6 @@
 //! Colours are straight alpha (C# `#AARRGGBB`): `from_argb` maps each 8-bit channel `c` to `c as f32 / 255.0`.
 //! `ColorF` is the Shell.Rendering colour (W8-12a, `pr_app::services::render::ColorF`, `Copy`, four f32 channels).
 
-#![allow(unused_variables, dead_code)] // stub only: removed by the porter when the bodies are filled (contracts/README.md D11)
-
 use crate::services::render::ColorF;
 
 /// C# `Table`: every `Dark.*` key with its ARGB value, in C# declaration order (35 rows, keys unique).
@@ -52,14 +50,22 @@ pub const TABLE: &[(&str, u32)] = &[
 /// C# `FromArgb(uint argb)`: straight alpha. `a = (argb >> 24) / 255`, then `r`, `g`, `b` from bits 16, 8, 0. Each channel is
 /// `((argb >> shift) & 0xFF) as f32 / 255.0` (one f32 division, bit-exact with C# `int / 255f`).
 pub const fn from_argb(argb: u32) -> ColorF {
-    todo!()
+    ColorF {
+        a: ((argb >> 24) & 0xFF) as f32 / 255.0,
+        r: ((argb >> 16) & 0xFF) as f32 / 255.0,
+        g: ((argb >> 8) & 0xFF) as f32 / 255.0,
+        b: (argb & 0xFF) as f32 / 255.0,
+    }
 }
 
 /// C# `Get(key)` with the C# exception turned into `None`: exact, ordinal, case-sensitive match on [`TABLE`]. No trimming, no
 /// case folding. C# throws `KeyNotFoundException` for an unknown key; the port returns `None` and the caller decides (the
 /// callers in the overlay pass constant keys, so `None` is a programming error there).
 pub fn get(key: &str) -> Option<ColorF> {
-    todo!()
+    TABLE
+        .iter()
+        .find(|(name, _)| *name == key)
+        .map(|(_, argb)| from_argb(*argb))
 }
 
 /// C# `Overlay` (`Dark.Overlay`, `#B0181818`).

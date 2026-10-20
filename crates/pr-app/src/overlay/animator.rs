@@ -7,8 +7,6 @@
 //! The host subscribes when [`Animator::is_animating`] becomes true, unsubscribes when it becomes false, and calls
 //! `request_frame` when [`AnimatorEffect::request_frame`] is set. C# `Changed` is returned as [`AnimatorEffect::changed`].
 
-#![allow(unused_variables, dead_code)] // stub only: removed by the porter when the bodies are filled (contracts/README.md D11)
-
 use crate::input::frame_clock::FrameTick;
 use crate::overlay::contracts::Easing;
 
@@ -42,7 +40,10 @@ pub enum AnimatorError {
 
 impl std::fmt::Display for AnimatorError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        todo!()
+        match self {
+            Self::InvalidTicksPerSecond(value) => write!(f, "ticks_per_second must be positive, got {value}"),
+            Self::Disposed => write!(f, "animator is disposed"),
+        }
     }
 }
 
@@ -74,17 +75,24 @@ impl Animator {
     /// C# `Animator(IFrameClock, resolve, long ticksPerSecond)`. Errors with `InvalidTicksPerSecond` when `ticks_per_second <= 0`.
     /// The C# default (`Stopwatch.Frequency`) is NOT a default here: the host passes the frequency it uses for timestamps.
     pub fn new(ticks_per_second: i64) -> Result<Self, AnimatorError> {
-        todo!()
+        if ticks_per_second <= 0 {
+            return Err(AnimatorError::InvalidTicksPerSecond(ticks_per_second));
+        }
+        Ok(Self {
+            ticks_per_second,
+            tweens: Vec::new(),
+            disposed: false,
+        })
     }
 
     /// C# `IsAnimating`: at least one tween is running.
     pub fn is_animating(&self) -> bool {
-        todo!()
+        !self.tweens.is_empty()
     }
 
     /// C# `ActiveCount`: number of running tweens.
     pub fn active_count(&self) -> usize {
-        todo!()
+        self.tweens.len()
     }
 
     /// C# `FadeTo(elementId, target, duration, easing)`. `duration_ticks` is a .NET `TimeSpan` tick count (100 ns units; callers
@@ -104,12 +112,63 @@ impl Animator {
         duration_ticks: i64,
         easing: Easing,
     ) -> Result<AnimatorEffect, AnimatorError> {
-        todo!()
+        // Step 1: disposed check comes first (T10).
+        if self.disposed {
+            return Err(AnimatorError::Disposed);
+        }
+        // Step 2: NaN becomes 0 before clamping (T3, f32::clamp alone would keep NaN).
+        let target = if target.is_nan() { 0.0 } else { target.clamp(0.0, 1.0) };
+        // Step 3: element gone, drop its tween and do nothing else.
+        let Some(current) = store.opacity(element_id) else {
+            self.remove(element_id);
+            return Ok(AnimatorEffect::default());
+        };
+        // Step 4: a running tween to the same target is left alone (duration is ignored, no restart).
+        if self
+            .tweens
+            .iter()
+            .any(|(id, tween)| id == element_id && tween.target == target)
+        {
+            return Ok(AnimatorEffect::default());
+        }
+        // Step 5: remove any old tween before the equality check (T2).
+        self.remove(element_id);
+        if duration_ticks <= 0 || current == target {
+            let changed = current != target;
+            if changed {
+                store.set_opacity(element_id, target);
+            }
+            return Ok(AnimatorEffect {
+                changed,
+                request_frame: false,
+            });
+        }
+        // Step 6: a new tween from the current opacity; the start is set on the first frame (semantic 1).
+        self.tweens.push((
+            element_id.to_owned(),
+            Tween {
+                from: current,
+                target,
+                // TimeSpan.TotalSeconds: 100 ns ticks per second is 1e7.
+                duration_seconds: duration_ticks as f64 / 1e7,
+                easing,
+                start: None,
+            },
+        ));
+        Ok(AnimatorEffect {
+            changed: false,
+            request_frame: true,
+        })
     }
 
     /// C# `Cancel(elementId)`: removes the tween; opacity keeps its current value. No `changed`, no frame request.
     pub fn cancel(&mut self, element_id: &str) {
-        todo!()
+        self.remove(element_id);
+    }
+
+    /// Removes the tween of `element_id`, if any (C# `_tweens.Remove`).
+    fn remove(&mut self, element_id: &str) {
+        self.tweens.retain(|(id, _)| id != element_id);
     }
 
     /// C# `OnFrame(sender, e)` for one frame. For each tween in order: an element that `store` no longer has ends its tween
@@ -118,17 +177,50 @@ impl Animator {
     /// when `progress >= 1`, else `from + (target - from) * ease(easing, progress)` cast to f32. A value is written only when it
     /// differs from the current opacity (`changed`). Tweens with `progress >= 1` end after writing. `request_frame` is never set.
     pub fn on_frame(&mut self, store: &mut dyn OpacityStore, tick: &FrameTick) -> AnimatorEffect {
-        todo!()
+        let ticks_per_second = self.ticks_per_second as f64;
+        let mut changed = false;
+        self.tweens.retain_mut(|(element_id, tween)| {
+            // An element that is gone ends its tween without a write (T4 keeps `from` for a restored element).
+            let Some(current) = store.opacity(element_id) else {
+                return false;
+            };
+            // The first frame after `fade_to` is the start (semantic 1). Wrapping subtraction (T6), as C# unchecked.
+            let start = *tween.start.get_or_insert(tick.timestamp);
+            let elapsed = (tick.timestamp.wrapping_sub(start) as f64 / ticks_per_second).max(0.0);
+            let progress = (elapsed / tween.duration_seconds).min(1.0);
+            let value = if progress >= 1.0 {
+                tween.target
+            } else {
+                // Semantic 4: the subtraction is f32, the rest is f64, the result is cast back to f32.
+                let delta = tween.target - tween.from;
+                (f64::from(tween.from) + f64::from(delta) * ease(tween.easing, progress)) as f32
+            };
+            // Write only on a real change (T5).
+            if value != current {
+                store.set_opacity(element_id, value);
+                changed = true;
+            }
+            // A finished tween is removed after its last write.
+            progress < 1.0
+        });
+        AnimatorEffect {
+            changed,
+            request_frame: false,
+        }
     }
 
     /// C# `Dispose()`: clears all tweens (no writes, no `changed`) and makes later `fade_to` calls return `Disposed`. Idempotent.
     pub fn dispose(&mut self) {
-        todo!()
+        self.tweens.clear();
+        self.disposed = true;
     }
 }
 
 /// C# `Animator.Ease` (`internal static`, exposed for the golden): 0..1 -> 0..1.
 /// `Linear` is `t`; `QuadraticOut` is `1 - (1 - t) * (1 - t)`, computed in f64 in that operation order.
 pub fn ease(easing: Easing, t: f64) -> f64 {
-    todo!()
+    match easing {
+        Easing::Linear => t,
+        Easing::QuadraticOut => 1.0 - ((1.0 - t) * (1.0 - t)),
+    }
 }
