@@ -200,6 +200,8 @@ impl ImagePresenter {
             perf_thumb_start: 0,
             perf_assigned: 0,
             perf_compare_start: 0,
+            perf_dims_start: 0,
+            pending_failure: None,
         });
         Ok(())
     }

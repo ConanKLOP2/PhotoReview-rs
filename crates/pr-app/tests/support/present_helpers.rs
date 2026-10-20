@@ -16,6 +16,7 @@ use std::sync::{Arc, Condvar, Mutex, OnceLock, PoisonError};
 use std::thread::ThreadId;
 
 use pr_app::coordinators::presenter::state::{PresentError, PresentRequest, PresenterChanges, PresenterEnv};
+use pr_app::coordinators::zoom_detail::{BackgroundJob, BackgroundRunner};
 use pr_app::misc::app_log::{AppLog, AppLogTarget};
 use pr_core::abstractions::{AppendStream, FileStat, FileSystem, Log, ReadSeek};
 use pr_core::io::physical::PhysicalFileSystem;
@@ -25,10 +26,19 @@ use pr_imaging::service::PreviewImage;
 
 use super::presenter_fakes::PresenterFixture;
 use super::preview_fakes::{Gate, TIMEOUT, lock, sized_image};
+use pr_core::session::writer::{DebounceTimer, RunningTimer, TimerError, TimerOutcome};
+use pr_imaging::service::{DecodeThreadKind, DecodeThreadSpawner, StdThreadSpawner};
 
 /// The ordinal-ignore-case key of a path in the maps below (the test paths are ASCII).
 fn key_of(path: &str) -> String {
     path.to_lowercase()
+}
+
+/// The ordinal-ignore-case key of a path's file name (the decoders below are told a file NAME: the temp folder is not known before the fixture exists).
+fn file_name_key(path: &Path) -> String {
+    path.file_name()
+        .map(|name| name.to_string_lossy().to_lowercase())
+        .unwrap_or_default()
 }
 
 // ---- driving the presenter -----------------------------------------------------------------------------------------------
@@ -236,18 +246,21 @@ impl ImageDecoder for RecordingDecoder {
 }
 
 /// C# `RewritingDecoder`: appends one byte to the source file during the decode (a deterministic stand-in for another program rewriting it).
-#[derive(Debug)]
+/// The path is set once the fixture (and so its temp folder) exists.
+#[derive(Debug, Default)]
 pub struct RewritingDecoder {
-    path: PathBuf,
+    path: Mutex<Option<PathBuf>>,
     calls: AtomicUsize,
 }
 
 impl RewritingDecoder {
-    pub fn new(path: &str) -> Arc<Self> {
-        Arc::new(Self {
-            path: PathBuf::from(path),
-            calls: AtomicUsize::new(0),
-        })
+    pub fn new() -> Arc<Self> {
+        Arc::new(Self::default())
+    }
+
+    /// The file to rewrite on every decode.
+    pub fn set_path(&self, path: &str) {
+        *lock(&self.path) = Some(PathBuf::from(path));
     }
 
     pub fn decode_calls(&self) -> usize {
@@ -259,11 +272,14 @@ impl ImageDecoder for RewritingDecoder {
     fn decode(&self, _request: &DecodeRequest) -> Result<Arc<dyn DecodedImageView>, DecodeError> {
         use std::io::Write;
         self.calls.fetch_add(1, Ordering::SeqCst);
-        let mut file = std::fs::OpenOptions::new()
-            .append(true)
-            .open(&self.path)
-            .map_err(DecodeError::Io)?;
-        file.write_all(&[0]).map_err(DecodeError::Io)?;
+        let path = lock(&self.path).clone();
+        if let Some(path) = path {
+            let mut file = std::fs::OpenOptions::new()
+                .append(true)
+                .open(&path)
+                .map_err(DecodeError::Io)?;
+            file.write_all(&[0]).map_err(DecodeError::Io)?;
+        }
         Ok(sized_image(1, 1, 1, 1, false))
     }
 
@@ -332,19 +348,36 @@ impl ImageDecoder for PerPathGatedDecoder {
 }
 
 /// C# `FaultingGatedDecoder`: blocks until [`Self::release_and_throw`], signals [`Self::wait_threw`] just before it fails with `marker`.
-#[derive(Debug)]
 pub struct FaultingGatedDecoder {
     pub marker: String,
     gate: Arc<Gate>,
     threw: Arc<Gate>,
+    failure: Box<dyn Fn(&str) -> DecodeError + Send + Sync>,
+}
+
+impl std::fmt::Debug for FaultingGatedDecoder {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("FaultingGatedDecoder")
+            .field("marker", &self.marker)
+            .finish_non_exhaustive()
+    }
 }
 
 impl FaultingGatedDecoder {
+    /// Fails with `InvalidOperation { marker }`.
     pub fn new(marker: &str) -> Arc<Self> {
+        Self::with_failure(marker, |marker| DecodeError::InvalidOperation {
+            message: marker.to_owned(),
+        })
+    }
+
+    /// Fails with `failure(marker)`.
+    pub fn with_failure(marker: &str, failure: impl Fn(&str) -> DecodeError + Send + Sync + 'static) -> Arc<Self> {
         Arc::new(Self {
             marker: marker.to_owned(),
             gate: Gate::new(),
             threw: Gate::new(),
+            failure: Box::new(failure),
         })
     }
 
@@ -362,9 +395,7 @@ impl ImageDecoder for FaultingGatedDecoder {
     fn decode(&self, _request: &DecodeRequest) -> Result<Arc<dyn DecodedImageView>, DecodeError> {
         self.gate.wait();
         self.threw.open();
-        Err(DecodeError::InvalidOperation {
-            message: self.marker.clone(),
-        })
+        Err((self.failure)(&self.marker))
     }
 
     fn read_info(&self, _path: &str) -> Result<ImageInfo, DecodeError> {
@@ -399,7 +430,7 @@ impl OnDecodeDecoder {
 
 impl ImageDecoder for OnDecodeDecoder {
     fn decode(&self, request: &DecodeRequest) -> Result<Arc<dyn DecodedImageView>, DecodeError> {
-        if key_of(&request.path.to_string_lossy()) == self.watched {
+        if file_name_key(&request.path) == self.watched {
             (self.on_decode)();
         }
         Ok(Arc::clone(&self.image))
@@ -679,4 +710,338 @@ pub fn captured_log() -> Arc<CapturedLog> {
         AppLog::global().set_instance(Some(Arc::clone(&log) as Arc<dyn AppLogTarget>));
         log
     }))
+}
+
+// ---- scripted members, the in-flight failure, the spawner, the timer -----------------------------------------------------------
+
+/// A decoder that answers `image` for every file except the file named `member`: the call number `n` (1-based) of the member's decode is answered by `script(n)`
+/// (`Ok(())` = the image, `Err` = that failure). Counts the member's decodes.
+pub struct MemberScriptDecoder {
+    member: String,
+    image: PreviewImage,
+    calls: AtomicUsize,
+    script: Box<dyn Fn(usize) -> Result<(), DecodeError> + Send + Sync>,
+}
+
+impl std::fmt::Debug for MemberScriptDecoder {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("MemberScriptDecoder")
+            .field("member", &self.member)
+            .finish_non_exhaustive()
+    }
+}
+
+impl MemberScriptDecoder {
+    pub fn new(
+        member: &str,
+        image: PreviewImage,
+        script: impl Fn(usize) -> Result<(), DecodeError> + Send + Sync + 'static,
+    ) -> Arc<Self> {
+        Arc::new(Self {
+            member: key_of(member),
+            image,
+            calls: AtomicUsize::new(0),
+            script: Box::new(script),
+        })
+    }
+
+    /// How many decodes of the member entered the decoder.
+    pub fn member_calls(&self) -> usize {
+        self.calls.load(Ordering::SeqCst)
+    }
+}
+
+impl ImageDecoder for MemberScriptDecoder {
+    fn decode(&self, request: &DecodeRequest) -> Result<Arc<dyn DecodedImageView>, DecodeError> {
+        if file_name_key(&request.path) == self.member {
+            let call = self.calls.fetch_add(1, Ordering::SeqCst) + 1;
+            (self.script)(call)?;
+        }
+        Ok(Arc::clone(&self.image))
+    }
+
+    fn read_info(&self, _path: &str) -> Result<ImageInfo, DecodeError> {
+        Ok(ImageInfo::new(self.image.pixel_width(), self.image.pixel_height()))
+    }
+}
+
+/// C# `HoldFirstFailureDecoder`: the decode of `watched` fails with `FileNotFound` while the file is not on disk; the FIRST such failure is held back
+/// (`wait_failed` returns, then the error is only returned once `release` ran): the stand-in for "the decode is slow to report that the file was not there".
+pub struct HoldFirstFailureDecoder {
+    watched: String,
+    image: PreviewImage,
+    held: AtomicUsize,
+    failed: Arc<Gate>,
+    release: Arc<Gate>,
+}
+
+impl std::fmt::Debug for HoldFirstFailureDecoder {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("HoldFirstFailureDecoder").finish_non_exhaustive()
+    }
+}
+
+impl HoldFirstFailureDecoder {
+    pub fn new(watched: &str, image: PreviewImage) -> Arc<Self> {
+        Arc::new(Self {
+            watched: key_of(watched),
+            image,
+            held: AtomicUsize::new(0),
+            failed: Gate::new(),
+            release: Gate::new(),
+        })
+    }
+
+    /// Waits until the held decode found the file missing; `false` when [`TIMEOUT`] passes first.
+    pub fn wait_failed(&self) -> bool {
+        self.failed.wait()
+    }
+
+    /// Lets the held failure be reported.
+    pub fn release(&self) {
+        self.release.open();
+    }
+}
+
+impl ImageDecoder for HoldFirstFailureDecoder {
+    fn decode(&self, request: &DecodeRequest) -> Result<Arc<dyn DecodedImageView>, DecodeError> {
+        if request.path.exists() {
+            return Ok(Arc::clone(&self.image));
+        }
+        let error = DecodeError::FileNotFound {
+            message: format!("Could not find file '{}'.", request.path.display()),
+        };
+        if file_name_key(&request.path) == self.watched && self.held.fetch_add(1, Ordering::SeqCst) == 0 {
+            self.failed.open();
+            self.release.wait();
+        }
+        Err(error)
+    }
+
+    fn read_info(&self, _path: &str) -> Result<ImageInfo, DecodeError> {
+        Ok(ImageInfo::new(self.image.pixel_width(), self.image.pixel_height()))
+    }
+}
+
+/// A spawner that records the kind of every decode thread it starts, then starts it like the standard one.
+#[derive(Debug, Default)]
+pub struct RecordingSpawner {
+    kinds: Mutex<Vec<DecodeThreadKind>>,
+}
+
+impl RecordingSpawner {
+    pub fn new() -> Arc<Self> {
+        Arc::new(Self::default())
+    }
+
+    pub fn kinds(&self) -> Vec<DecodeThreadKind> {
+        lock(&self.kinds).clone()
+    }
+
+    pub fn count(&self, kind: DecodeThreadKind) -> usize {
+        lock(&self.kinds).iter().filter(|recorded| **recorded == kind).count()
+    }
+}
+
+impl DecodeThreadSpawner for RecordingSpawner {
+    fn spawn(&self, kind: DecodeThreadKind, job: Box<dyn FnOnce() + Send + 'static>) -> io::Result<()> {
+        lock(&self.kinds).push(kind);
+        StdThreadSpawner.spawn(kind, job)
+    }
+}
+
+/// A debounce timer that never fires: a started timer ends only when it is cancelled (by `flush` or `dispose`).
+#[derive(Debug, Default)]
+pub struct NeverFiringTimer;
+
+struct WaitForCancel {
+    cancel: pr_core::sync::CancelToken,
+}
+
+impl RunningTimer for WaitForCancel {
+    fn wait(self: Box<Self>) -> Result<TimerOutcome, TimerError> {
+        loop {
+            if self.cancel.is_canceled() {
+                return Ok(TimerOutcome::Canceled);
+            }
+            std::thread::sleep(std::time::Duration::from_millis(5));
+        }
+    }
+}
+
+impl DebounceTimer for NeverFiringTimer {
+    fn start(
+        &self,
+        _span: std::time::Duration,
+        cancel: &pr_core::sync::CancelToken,
+    ) -> Result<Box<dyn RunningTimer>, TimerError> {
+        Ok(Box::new(WaitForCancel { cancel: cancel.clone() }))
+    }
+}
+
+/// The script of a [`NamedScriptDecoder`]: `(file name in lower case, 1-based call number of that file)` to the outcome of the decode.
+type NameScript = Box<dyn Fn(&str, usize) -> Result<(), DecodeError> + Send + Sync>;
+
+/// A decoder that answers `image` unless `script(file name in lower case, call number of that file)` says otherwise (call numbers are 1-based per file).
+pub struct NamedScriptDecoder {
+    image: PreviewImage,
+    calls: Mutex<HashMap<String, usize>>,
+    script: NameScript,
+}
+
+impl std::fmt::Debug for NamedScriptDecoder {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("NamedScriptDecoder").finish_non_exhaustive()
+    }
+}
+
+impl NamedScriptDecoder {
+    pub fn new(
+        image: PreviewImage,
+        script: impl Fn(&str, usize) -> Result<(), DecodeError> + Send + Sync + 'static,
+    ) -> Arc<Self> {
+        Arc::new(Self {
+            image,
+            calls: Mutex::new(HashMap::new()),
+            script: Box::new(script),
+        })
+    }
+
+    /// How many decodes of the file named `name` (lower case) entered the decoder.
+    pub fn calls_of(&self, name: &str) -> usize {
+        lock(&self.calls).get(name).copied().unwrap_or(0)
+    }
+}
+
+impl ImageDecoder for NamedScriptDecoder {
+    fn decode(&self, request: &DecodeRequest) -> Result<Arc<dyn DecodedImageView>, DecodeError> {
+        let name = file_name_key(&request.path);
+        let call = {
+            let mut calls = lock(&self.calls);
+            let count = calls.entry(name.clone()).or_insert(0);
+            *count += 1;
+            *count
+        };
+        (self.script)(&name, call)?;
+        Ok(Arc::clone(&self.image))
+    }
+
+    fn read_info(&self, _path: &str) -> Result<ImageInfo, DecodeError> {
+        Ok(ImageInfo::new(self.image.pixel_width(), self.image.pixel_height()))
+    }
+}
+
+/// A background runner that holds the jobs of the named threads until the test releases them (every other job starts a thread at once): the test decides
+/// WHEN a worker result may arrive, so "superseded while the sizes / hashes are computed" needs no timing.
+#[derive(Default)]
+pub struct HoldRunner {
+    hold: Vec<&'static str>,
+    held: Mutex<Vec<(&'static str, BackgroundJob)>>,
+}
+
+impl std::fmt::Debug for HoldRunner {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("HoldRunner")
+            .field("hold", &self.hold)
+            .finish_non_exhaustive()
+    }
+}
+
+impl HoldRunner {
+    /// Holds the jobs started with one of `names`.
+    pub fn new(names: &[&'static str]) -> Arc<Self> {
+        Arc::new(Self {
+            hold: names.to_vec(),
+            held: Mutex::new(Vec::new()),
+        })
+    }
+
+    /// How many jobs of `name` are held right now.
+    pub fn held_count(&self, name: &str) -> usize {
+        lock(&self.held).iter().filter(|(held, _)| *held == name).count()
+    }
+
+    /// Starts every held job of `name` on its own thread; returns how many.
+    pub fn release(&self, name: &str) -> usize {
+        let jobs: Vec<(&'static str, BackgroundJob)> = {
+            let mut held = lock(&self.held);
+            let (matching, rest): (Vec<_>, Vec<_>) = std::mem::take(&mut *held)
+                .into_iter()
+                .partition(|(held, _)| *held == name);
+            *held = rest;
+            matching
+        };
+        let count = jobs.len();
+        for (job_name, job) in jobs {
+            spawn_job(job_name, job);
+        }
+        count
+    }
+}
+
+fn spawn_job(name: &'static str, job: BackgroundJob) {
+    if let Err(error) = std::thread::Builder::new().name(name.to_owned()).spawn(job) {
+        panic!("could not start {name}: {error}");
+    }
+}
+
+impl BackgroundRunner for HoldRunner {
+    fn run(&self, name: &'static str, job: BackgroundJob) {
+        if self.hold.contains(&name) {
+            lock(&self.held).push((name, job));
+        } else {
+            spawn_job(name, job);
+        }
+    }
+}
+
+/// A decoder whose header read (`read_info`, the original-dimension lookup) signals `wait_info_started` and then blocks until `release_info`.
+pub struct GatedInfoDecoder {
+    image: PreviewImage,
+    started: Arc<Gate>,
+    started_flag: std::sync::atomic::AtomicBool,
+    release: Arc<Gate>,
+}
+
+impl std::fmt::Debug for GatedInfoDecoder {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("GatedInfoDecoder").finish_non_exhaustive()
+    }
+}
+
+impl GatedInfoDecoder {
+    pub fn new(image: PreviewImage) -> Arc<Self> {
+        Arc::new(Self {
+            image,
+            started: Gate::new(),
+            started_flag: std::sync::atomic::AtomicBool::new(false),
+            release: Gate::new(),
+        })
+    }
+
+    pub fn wait_info_started(&self) -> bool {
+        self.started.wait()
+    }
+
+    /// True once a header read entered the decoder (non-blocking).
+    pub fn info_started(&self) -> bool {
+        self.started_flag.load(Ordering::SeqCst)
+    }
+
+    pub fn release_info(&self) {
+        self.release.open();
+    }
+}
+
+impl ImageDecoder for GatedInfoDecoder {
+    fn decode(&self, _request: &DecodeRequest) -> Result<Arc<dyn DecodedImageView>, DecodeError> {
+        Ok(Arc::clone(&self.image))
+    }
+
+    fn read_info(&self, _path: &str) -> Result<ImageInfo, DecodeError> {
+        self.started_flag.store(true, Ordering::SeqCst);
+        self.started.open();
+        self.release.wait();
+        Ok(ImageInfo::new(self.image.pixel_width(), self.image.pixel_height()))
+    }
 }

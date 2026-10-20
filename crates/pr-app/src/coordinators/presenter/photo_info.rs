@@ -5,10 +5,6 @@
 //!
 //! Pure module: no `unsafe`, no `windows` crate. Everything here is a plain function or value; the presenter calls the two
 //! blocking functions from worker jobs (never on the UI thread, Q-R29 option C).
-// Stub only: the porter removes this allow line once every body is real.
-#![allow(unused_variables, unused_imports, dead_code)]
-// Stub only (contract text in doc comments, boxed seams): the porter fixes the doc layout / introduces type aliases and removes this line.
-#![allow(clippy::doc_lazy_continuation)]
 
 use std::io;
 use std::path::Path;
@@ -19,8 +15,11 @@ use pr_core::sync::CancelToken;
 use pr_core::text::dotnet_path::get_file_name;
 use pr_imaging::cache_key::ImageCacheKey;
 use pr_imaging::decode_types::DecodedImageView;
+use pr_imaging::decoder_traits::DecodeError;
 use pr_imaging::exif_summary::ExifSummary;
 use pr_imaging::service::{PreviewError, PreviewImageService};
+
+use crate::misc::app_log::AppLog;
 
 use super::state::{ImagePresenter, PresenterEvent, StatPurpose};
 
@@ -137,7 +136,35 @@ pub fn try_get_original_dimensions(
     path: &str,
     key: &ImageCacheKey,
 ) -> Result<Option<(i32, i32)>, PreviewError> {
-    todo!()
+    match service.get_original_dimensions(path, key) {
+        Ok(dimensions) => Ok(Some(dimensions)),
+        // The expected header-read failures only (I/O, unsupported/corrupt/undecodable file, busy decoder); a bug must surface instead of
+        // being turned into "dimensions unknown".
+        Err(error) if is_expected_dimension_failure(&error) => {
+            let log = AppLog::global();
+            if log.enabled() {
+                log.info(&format!(
+                    "ShowImage original dimensions unknown path={path}: {}: {error}",
+                    error_kind_name(&error)
+                ));
+            }
+            Ok(None)
+        }
+        Err(error) => Err(error),
+    }
+}
+
+/// The C# `ex.GetType().Name` of a log line: the `io::ErrorKind` or the variant name.
+fn error_kind_name(error: &PreviewError) -> String {
+    let debug = match error {
+        PreviewError::Io(error) => format!("{:?}", error.kind()),
+        PreviewError::Decode(error) => match error.kind() {
+            DecodeError::Io(error) => format!("{:?}", error.kind()),
+            other => format!("{other:?}"),
+        },
+        other => format!("{other:?}"),
+    };
+    debug.chars().take_while(|c| c.is_alphanumeric()).collect()
 }
 
 /// The C# filter `ex is IOException or UnauthorizedAccessException or NotSupportedException or FormatException or
@@ -146,10 +173,26 @@ pub fn try_get_original_dimensions(
 /// - `PreviewError::is_busy()`;
 /// - `Decode(e)` where `e.kind()` is `NotSupported`, `MissingCodec`, `Format`, `InvalidData`, `Com`, `InvalidOperation`
 ///   (`UnauthorizedAccess` has no Rust variant: it arrives as `Io` with `ErrorKind::PermissionDenied`, already covered by the first rule).
+///
 /// NOT expected (they must propagate): `Canceled`, `Decode(InvalidArgument | InvalidCast | Overflow | OutOfMemory | Disposed | DllNotFound | BadImageFormat | EntryPointNotFound | Other | Canceled)`,
 /// `Panicked`, `RawFullDecodeKey`, `Key(InvalidPath)`, `Spawn`.
 pub fn is_expected_dimension_failure(error: &PreviewError) -> bool {
-    todo!()
+    if error.is_io_exception() || error.is_busy() {
+        return true;
+    }
+    match error {
+        PreviewError::Decode(decode) => {
+            decode.is_not_supported()
+                || matches!(
+                    decode.kind(),
+                    DecodeError::Format { .. }
+                        | DecodeError::InvalidData { .. }
+                        | DecodeError::Com { .. }
+                        | DecodeError::InvalidOperation { .. }
+                )
+        }
+        _ => false,
+    }
 }
 
 /// C# `public sealed record PhotoInfo(string FileName, int Width, int Height, ExifSummary? Exif, int RawPreviewWidth = 0,

@@ -200,6 +200,11 @@ impl RecordingPreload {
         lock(&self.log).removed_for_path.clone()
     }
 
+    /// The keys `try_consume_preloaded_key` answered `true` for.
+    pub fn consumed(&self) -> Vec<ImageCacheKey> {
+        lock(&self.log).consumed.clone()
+    }
+
     pub fn total_calls(&self) -> usize {
         let log = lock(&self.log);
         log.notified.len() + log.preload_around.len() + log.removed_for_path.len() + log.cancels + log.clears
@@ -390,13 +395,18 @@ impl std::fmt::Debug for FormatFixture {
 
 impl FormatFixture {
     pub fn new() -> Self {
+        Self::from_catalog(include_str!("../../../../assets/languages/en.json"), "en.json")
+    }
+
+    /// The Vietnamese texts (`vi.json`), for the tests that pin a localized sentence.
+    pub fn vietnamese() -> Self {
+        Self::from_catalog(include_str!("../../../../assets/languages/vi.json"), "vi.json")
+    }
+
+    fn from_catalog(json: &str, name: &str) -> Self {
         let mut warnings = Vec::new();
-        let catalog = LanguageCatalog::try_parse(
-            include_str!("../../../../assets/languages/en.json"),
-            "en.json",
-            &mut warnings,
-        )
-        .unwrap_or_else(|| panic!("en.json did not parse: {warnings:?}"));
+        let catalog = LanguageCatalog::try_parse(json, name, &mut warnings)
+            .unwrap_or_else(|| panic!("{name} did not parse: {warnings:?}"));
         Self {
             texts: Localizer::create(&catalog, &[], &warnings),
             numbers: NumberCulture::invariant(),
@@ -555,6 +565,8 @@ pub struct FixtureOptions {
     pub session_writer: Option<Arc<SessionWriter>>,
     /// C# `busyRetryDelay`; default = instant (returns `true`).
     pub busy_retry_delay: Option<BusyRetryDelay>,
+    /// A preview service the test built itself (its own decoder, metrics or thread spawner); `service` and the decoder argument are then ignored.
+    pub prebuilt_service: Option<Arc<PreviewImageService>>,
 }
 
 impl PresenterFixture {
@@ -566,7 +578,9 @@ impl PresenterFixture {
     pub fn with_options(decoder: Arc<dyn ImageDecoder>, names: &[&str], options: FixtureOptions) -> Self {
         let root = TempRoot::new("presenter");
         let metrics = Arc::new(ReviewMetrics::new());
-        let service = build_service_with_metrics(&root.join("cache"), decoder, options.service, Arc::clone(&metrics));
+        let service = options.prebuilt_service.unwrap_or_else(|| {
+            build_service_with_metrics(&root.join("cache"), decoder, options.service, Arc::clone(&metrics))
+        });
         let thumbnails = options
             .thumbnails
             .unwrap_or_else(|| build_thumbnail_cache(&root.join("thumbs")));

@@ -287,6 +287,8 @@ fn present_token_superseded_shows_nothing_from_the_stale_navigation() {
 fn present_token_superseded_after_the_decode_started_shows_nothing_from_the_stale_navigation() {
     let decoder = GatedDecoder::new(image(100, 100));
     let mut f = PresenterFixture::new(Arc::clone(&decoder) as _, &["stale.png"]);
+    // Fast mode: no thumbnail event, so the PREVIEW event is the one that meets the superseded token.
+    f.settings.loading_mode = Some(LoadingMode::Fast);
 
     start(&mut f, 0);
     pump_one(&mut f); // the stat came back: the loading status shows and the viewer decode is requested
@@ -368,8 +370,8 @@ fn present_cancels_the_previous_viewer_decode_when_the_next_navigation_starts() 
     assert!(f.service.has_inflight_preview(&key));
 
     start(&mut f, 1); // cancels the first present's viewer token
-    f.pump_until(|f| !f.service.has_inflight_preview(&key)); // the dropped decode ends without ever starting
-    assert!(decoder.wait_started(1), "the second present's decode did start");
+    // The dropped decode ends without ever starting, and the second present's stat comes back and starts its own decode (both need the pump).
+    f.pump_until(|f| !f.service.has_inflight_preview(&key) && decoder.started() >= 1);
     assert_eq!(decoder.started(), 1, "the superseded decode must not start");
 
     f.clock.next_navigation();
@@ -426,7 +428,6 @@ fn present_stat_io_error_clears_the_previously_shown_image() {
 
 // C#: ImagePresenterTests.StatErrors.PresentAsync_WhenStatFailsWithIoError_ClearsThePreviouslyShownComparePair
 #[test]
-#[ignore = "needs W8-07j"]
 fn present_stat_io_error_clears_the_previously_shown_compare_pair() {
     let fs = ScriptedFs::new();
     let mut f = fixture_with_fs(&["photo.jpg", "photo (1).jpg", "flaky.png"], &fs);
@@ -545,6 +546,83 @@ fn present_cold_start_shows_the_loading_status_with_attention() {
     f.pump_until_idle();
 }
 
+// New test (contract note 5, RAM-only accounting): a warmed preload key is consumed and counted ONLY on a RAM hit; a cold start leaves it alone.
+#[test]
+fn present_cold_start_does_not_consume_a_warmed_preload_key() {
+    let decoder = GatedDecoder::new(image(100, 100));
+    let mut f = PresenterFixture::new(Arc::clone(&decoder) as _, &["warm.png"]);
+    let path = f.path("warm.png");
+    let key = f
+        .service
+        .get_current_cache_key(&path)
+        .unwrap_or_else(|error| panic!("key: {error}"));
+    f.preload.warm(key);
+
+    start(&mut f, 0);
+    pump_one(&mut f); // the stat: nothing in RAM
+
+    assert!(f.preload.consumed().is_empty());
+    assert_eq!(f.metrics.snapshot().preload_hits, 0);
+
+    f.clock.next_navigation();
+    decoder.release();
+    f.pump_until_idle();
+}
+
+// New test (contract note 2, T6): `last_present_started_from_ram` is reset at the START of every accepted present, so it is false while the stat is pending,
+// not only after the lookup.
+#[test]
+fn present_resets_last_present_started_from_ram_before_the_stat() {
+    let fs = ScriptedFs::new();
+    let mut f = fixture_with_fs(&["warm.png", "cold.png"], &fs);
+    let (warm, cold) = (f.path("warm.png"), f.path("cold.png"));
+    f.service
+        .get_preview_path(&warm)
+        .wait()
+        .unwrap_or_else(|error| panic!("pre-warm: {error}"));
+    present(&mut f, 0);
+    assert!(f.presenter.last_present_started_from_ram());
+
+    fs.hold(&cold);
+    start(&mut f, 1);
+
+    assert!(fs.wait_started(&cold));
+    assert!(
+        !f.presenter.last_present_started_from_ram(),
+        "the previous present's true must not outlive the start of the next one"
+    );
+    f.clock.next_navigation();
+    fs.release_all();
+    f.pump_until_idle();
+}
+
+// New test (contract note 6): a thumbnail that ends CANCELLED while its navigation is current is a failure of the present, not "no thumbnail".
+#[test]
+fn present_thumbnail_cancellation_while_current_is_a_failure() {
+    let decoder = GatedDecoder::new(image(100, 100));
+    let reader: EmbeddedThumbnailReaderFn =
+        Arc::new(|_path: &str, _cancel: &CancelToken| Err(ThumbnailError::Canceled));
+    let mut f = fixture_with_reader(Arc::clone(&decoder) as _, &["thumb-cancel.png"], reader);
+
+    start(&mut f, 0);
+    pump_one(&mut f); // the stat
+    pump_one(&mut f); // the cancelled thumbnail (the preview is gated)
+
+    assert!(f.presenter.status_needs_attention());
+    assert!(
+        statuses(&f)
+            .last()
+            .is_some_and(|status| status.contains("thumb-cancel.png"))
+    );
+    assert!(presented_paths(&f).is_empty());
+    decoder.release();
+    f.pump_until_idle();
+    assert!(
+        presented_paths(&f).is_empty(),
+        "the failed present ended; the late preview is dropped"
+    );
+}
+
 // New test (contract note 6, I-09): the thumbnail wins, so it is shown as a placeholder (sized by its own original size when no decode told us the size), the initial view
 // mode is applied, and the status becomes "loading full resolution" with attention; the crossfade flag is false for the first image of a folder.
 #[test]
@@ -619,7 +697,6 @@ fn present_asks_for_a_thumbnail_in_preview_mode_only() {
 // C#: ReentrantSupersede.PresentAsync_SupersededByReentrantPresentBeforeViewerDecodeStarts_ReadsTheCapturedTokenNotTheDisposedSource
 // Rust cannot re-enter from the sink: the second present is called AFTER the first stat event is queued and BEFORE pump.
 #[test]
-#[ignore = "needs W8-07j"]
 fn present_superseded_between_stat_and_viewer_decode_uses_the_captured_token() {
     let log = captured_log();
     let mut f = fixture(&["first.png", "second.png"]);
@@ -644,7 +721,6 @@ fn present_superseded_between_stat_and_viewer_decode_uses_the_captured_token() {
 
 // C#: StatOffUiThread.PresentAsync_WhileStatIsHeld_DoesNotBlockTheCallingThread
 #[test]
-#[ignore = "needs W8-07j"]
 fn present_returns_while_the_stat_is_held_and_the_stat_never_runs_on_the_calling_thread() {
     let fs = ScriptedFs::new();
     let mut f = fixture_with_fs(&["slow-share.png"], &fs);
@@ -675,7 +751,6 @@ fn present_returns_while_the_stat_is_held_and_the_stat_never_runs_on_the_calling
 
 // C#: StatOffUiThread.PresentAsync_FileRewrittenWhileStatPending_NeverShowsTheStaleRamPreview
 #[test]
-#[ignore = "needs W8-07j"]
 fn present_file_rewritten_while_stat_pending_never_shows_the_stale_ram_preview() {
     let fs = ScriptedFs::new();
     let decoder = SizedDecoder::new();
@@ -764,7 +839,6 @@ fn present_file_deleted_while_stat_pending_skips_it_without_showing_its_cached_p
 
 // C#: StatOffUiThread.PresentAsync_SupersededWhileStatPending_StaleStatErrorIsIgnored
 #[test]
-#[ignore = "needs W8-07j"]
 fn present_superseded_while_stat_pending_stale_stat_error_is_ignored() {
     let fs = ScriptedFs::new();
     let mut f = fixture_with_fs(&["flaky-share.png", "next.png"], &fs);
@@ -788,7 +862,6 @@ fn present_superseded_while_stat_pending_stale_stat_error_is_ignored() {
 
 // C#: StatOffUiThread.PresentAsync_SupersededWhileStatPending_SuccessfulStatResumesWithoutTouchingDisposedSource
 #[test]
-#[ignore = "needs W8-07j"]
 fn present_superseded_while_stat_pending_successful_stat_resumes_quietly() {
     let fs = ScriptedFs::new();
     let mut f = fixture_with_fs(&["first.png", "second.png"], &fs);
@@ -813,7 +886,6 @@ fn present_superseded_while_stat_pending_successful_stat_resumes_quietly() {
 
 // C#: StatOffUiThread.PresentAsync_BurstBehindSlowStat_SkipsTheSupersededStats
 #[test]
-#[ignore = "needs W8-07j"]
 fn present_burst_behind_slow_stat_skips_the_superseded_stats() {
     let fs = ScriptedFs::new();
     let mut f = fixture_with_fs(&["slow.png", "skipped.png", "last.png"], &fs);
@@ -837,7 +909,6 @@ fn present_burst_behind_slow_stat_skips_the_superseded_stats() {
 // C#: DeferredPreloadKick.PresentAsync_DeferNextPreloadKick_KicksAfterTheYieldOnceThenGoesBackToSynchronous
 // The scheduler's actions are released by index: 0 = the deferred kick, 1 = the post-frame yield of the single-image branch.
 #[test]
-#[ignore = "needs W8-07j"]
 fn present_defer_next_preload_kick_kicks_after_the_yield_once_then_goes_back_to_synchronous() {
     let scheduler = GatedScheduler::new();
     let mut f = PresenterFixture::with_options(
@@ -874,7 +945,6 @@ fn present_defer_next_preload_kick_kicks_after_the_yield_once_then_goes_back_to_
 
 // C#: DeferredPreloadKick.PresentAsync_DeferNextPreloadKick_NavigationSupersededBeforeTheYield_DropsTheKick
 #[test]
-#[ignore = "needs W8-07j"]
 fn present_defer_next_preload_kick_navigation_superseded_before_the_yield_drops_the_kick() {
     let scheduler = GatedScheduler::new();
     let mut f = PresenterFixture::with_options(
@@ -900,7 +970,6 @@ fn present_defer_next_preload_kick_navigation_superseded_before_the_yield_drops_
 
 // C#: DeferredPreloadKick.PresentAsync_WithoutDeferFlag_KicksBeforeAnyYield
 #[test]
-#[ignore = "needs W8-07j"]
 fn present_without_defer_flag_kicks_before_any_yield() {
     let scheduler = GatedScheduler::new();
     let mut f = PresenterFixture::with_options(
@@ -923,7 +992,6 @@ fn present_without_defer_flag_kicks_before_any_yield() {
 
 // C#: DeferredPreloadKick.PresentAsync_DeferFlagWithoutScheduler_KicksSynchronously
 #[test]
-#[ignore = "needs W8-07j"]
 fn present_defer_flag_without_scheduler_kicks_synchronously() {
     let mut f = fixture(&["noscheduler.png"]);
     f.presenter.set_defer_next_preload_kick(true);
@@ -941,7 +1009,6 @@ fn present_defer_flag_without_scheduler_kicks_synchronously() {
 
 // C#: ImagePresenterTests.PresentAsync_WhenFileRewrittenAfterScan_PresentsNewContentAndRefreshesCatalog (R7-1)
 #[test]
-#[ignore = "needs W8-07j"]
 fn present_file_rewritten_after_scan_presents_new_content_and_refreshes_catalog() {
     let decoder = SizedDecoder::new();
     decoder.set_original(1, 1);
@@ -972,7 +1039,6 @@ fn present_file_rewritten_after_scan_presents_new_content_and_refreshes_catalog(
 
 // C#: ImagePresenterTests.PresentAsync_WhenRamHit_DirectlyPresentsCachedImageAndConsumesPreloadedKey
 #[test]
-#[ignore = "needs W8-07j"]
 fn present_when_ram_hit_directly_presents_cached_image_and_consumes_preloaded_key() {
     let mut f = fixture(&["ram1.jpg"]);
     let path = f.path("ram1.jpg");
@@ -990,6 +1056,12 @@ fn present_when_ram_hit_directly_presents_cached_image_and_consumes_preloaded_ke
     present(&mut f, 0);
 
     assert_eq!(f.metrics.snapshot().preload_hits, 1);
+    assert_eq!(f.preload.consumed().len(), 1);
+    assert_eq!(
+        f.metrics.snapshot().cache_hits,
+        1,
+        "the RAM hit is counted once, by the presenter"
+    );
     assert!(presented_paths(&f).contains(&path));
     assert!(f.presenter.current_image().is_some());
     assert!(f.presenter.last_present_started_from_ram());
@@ -997,7 +1069,6 @@ fn present_when_ram_hit_directly_presents_cached_image_and_consumes_preloaded_ke
 
 // C#: ImagePresenterTests.PresentAsync_LastPresentStartedFromRam_TracksRamHit
 #[test]
-#[ignore = "needs W8-07j"]
 fn present_last_present_started_from_ram_tracks_ram_hit() {
     let mut f = fixture(&["state1.jpg", "state2.jpg"]);
     let (p1, p2) = (f.path("state1.jpg"), f.path("state2.jpg"));
@@ -1021,7 +1092,6 @@ fn present_last_present_started_from_ram_tracks_ram_hit() {
 
 // C#: ImagePresenterTests.PresentAsync_PreloadController_PreloadAroundTriggered
 #[test]
-#[ignore = "needs W8-07j"]
 fn present_preload_controller_preload_around_triggered() {
     let mut f = fixture(&["img1.jpg", "img2.jpg"]);
 
@@ -1032,7 +1102,6 @@ fn present_preload_controller_preload_around_triggered() {
 
 // C#: ImagePresenterTests.PresentAsync_NotifiesPreloadOfEachNavigation
 #[test]
-#[ignore = "needs W8-07j"]
 fn present_notifies_preload_of_each_navigation() {
     let mut f = fixture(&["nav1.jpg", "nav2.jpg"]);
 
@@ -1047,7 +1116,6 @@ fn present_notifies_preload_of_each_navigation() {
 
 // C#: ImagePresenterTests.PresentAsync_WhenPreviewFasterThanThumbnail_ShowsPreviewDirectlyAndSkipsThumbnail
 #[test]
-#[ignore = "needs W8-07j"]
 fn present_when_preview_faster_than_thumbnail_shows_preview_directly_and_skips_thumbnail() {
     let preview = image(1920, 1080);
     // A thumbnail reader that never completes during this test: it cannot possibly win, so if the preview is ever shown it is because the race logic picked it.
@@ -1069,7 +1137,6 @@ fn present_when_preview_faster_than_thumbnail_shows_preview_directly_and_skips_t
 
 // C#: ImagePresenterTests.PresentAsync_WhenThumbnailFasterThanPreview_ShowsThumbnailThenReplacesWithPreview
 #[test]
-#[ignore = "needs W8-07j"]
 fn present_when_thumbnail_faster_than_preview_shows_thumbnail_then_replaces_with_preview() {
     let thumbnail = image(160, 160);
     let preview = image(1920, 1080);
@@ -1093,7 +1160,6 @@ fn present_when_thumbnail_faster_than_preview_shows_thumbnail_then_replaces_with
 
 // C#: ImagePresenterTests.PresentAsync_ThumbnailReplacedByPreview_SinkNeverRequestsTransitionForTheUpgrade
 #[test]
-#[ignore = "needs W8-07j"]
 fn present_thumbnail_replaced_by_preview_sink_never_requests_transition_for_the_upgrade() {
     let thumbnail = image(160, 160);
     let preview = image(1920, 1080);
@@ -1119,7 +1185,6 @@ fn present_thumbnail_replaced_by_preview_sink_never_requests_transition_for_the_
 
 // C#: ImagePresenterTests.PresentAsync_NavigatingToADifferentFile_RequestsTransitionOnlyOnceForTheFirstBitmap
 #[test]
-#[ignore = "needs W8-07j"]
 fn present_navigating_to_a_different_file_requests_transition_only_once_for_the_first_bitmap() {
     let mut f = fixture(&["crossfade-first.jpg", "crossfade-second.jpg"]);
 
@@ -1135,7 +1200,6 @@ fn present_navigating_to_a_different_file_requests_transition_only_once_for_the_
 
 // C#: ImagePresenterTests.PresentAsync_WhenThumbnailFaultsBeforePreview_StillPresentsThePreview
 #[test]
-#[ignore = "needs W8-07j"]
 fn present_when_thumbnail_faults_before_preview_still_presents_the_preview() {
     let preview = image(1920, 1080);
     let decoder = GatedDecoder::new(Arc::clone(&preview)); // the preview cannot win the race before the thumbnail faults
@@ -1167,7 +1231,6 @@ fn present_when_thumbnail_faults_before_preview_still_presents_the_preview() {
 
 // C#: ImagePresenterTests.PresentAsync_SupersededNavigation_DropsPendingViewerDecode
 #[test]
-#[ignore = "needs W8-07j"]
 fn present_superseded_navigation_drops_pending_viewer_decode() {
     let decoder = RecordingDecoder::new();
     let mut f = PresenterFixture::new(Arc::clone(&decoder) as _, &["superseded.jpg", "current.jpg"]);
@@ -1194,7 +1257,6 @@ fn present_superseded_navigation_drops_pending_viewer_decode() {
 
 // C#: ImagePresenterTests.PresentAsync_CatalogPrunedDuringDecode_PreloadUsesTheCurrentIndex (AR16)
 #[test]
-#[ignore = "needs W8-07j"]
 fn present_catalog_pruned_during_decode_preload_uses_the_current_index() {
     let decoder = GatedDecoder::new(image(100, 100));
     let mut f = PresenterFixture::new(
@@ -1259,31 +1321,26 @@ fn burst_completing_in_random_order(seed: u64) {
 }
 
 #[test]
-#[ignore = "needs W8-07j"]
 fn present_burst_completing_in_random_order_shows_only_the_last_navigation_seed_1() {
     burst_completing_in_random_order(1);
 }
 
 #[test]
-#[ignore = "needs W8-07j"]
 fn present_burst_completing_in_random_order_shows_only_the_last_navigation_seed_2() {
     burst_completing_in_random_order(2);
 }
 
 #[test]
-#[ignore = "needs W8-07j"]
 fn present_burst_completing_in_random_order_shows_only_the_last_navigation_seed_3() {
     burst_completing_in_random_order(3);
 }
 
 #[test]
-#[ignore = "needs W8-07j"]
 fn present_burst_completing_in_random_order_shows_only_the_last_navigation_seed_4() {
     burst_completing_in_random_order(4);
 }
 
 #[test]
-#[ignore = "needs W8-07j"]
 fn present_burst_completing_in_random_order_shows_only_the_last_navigation_seed_5() {
     burst_completing_in_random_order(5);
 }
@@ -1292,7 +1349,6 @@ fn present_burst_completing_in_random_order_shows_only_the_last_navigation_seed_
 
 // C#: MutationGaps.PresentAsync_CaptureMemberOverride_DoesNotOverwriteTheRepresentativeMetadata
 #[test]
-#[ignore = "needs W8-07j"]
 fn present_capture_member_override_does_not_overwrite_the_representative_metadata() {
     let decoder = SizedDecoder::new();
     decoder.set_original(5, 4);
@@ -1325,7 +1381,6 @@ fn present_capture_member_override_does_not_overwrite_the_representative_metadat
 
 // C#: ImagePresenterTests.PresentAsync_CaptureGroupMemberOverride_DoesNotOverwriteRepresentativeMetadata
 #[test]
-#[ignore = "needs W8-07j"]
 fn present_capture_group_member_override_does_not_overwrite_representative_metadata() {
     let mut f = fixture(&["capture-rep.jpg", "capture-member.png"]);
     let (jpeg, member) = (f.path("capture-rep.jpg"), f.path("capture-member.png"));
