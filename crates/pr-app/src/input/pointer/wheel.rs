@@ -79,8 +79,6 @@ impl fmt::Debug for PointerContext<'_> {
 
 /// C# `PointerInputController`: wheel (zoom / navigate), zoom at a point, click-to-zoom, drag-pan with kinetic glide, mouse
 /// capture. All fields are `pub(super)`: the `impl` blocks of `zoom.rs`, `click_zoom.rs` and `pan.rs` use them.
-// W8-05h will read the press, pan, and glide fields when its stub methods are implemented.
-#[expect(dead_code, reason = "W8-05h pointer press and kinetic pan methods are still stubs")]
 #[derive(Debug)]
 pub struct PointerInputController {
     /// C# `_isPanning`: a press is tracked (pan or click).
