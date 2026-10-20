@@ -796,6 +796,9 @@ pub struct MainViewModel {
     pub(super) controller_present_outstanding: bool,
     /// Settings-triggered reloads that wait for the gate (`session`); each one opens the folder when the gate is free.
     pub(super) settings_reloads_waiting: u32,
+    /// Worker jobs of this view model whose result event has not been applied yet: the ownership negotiation, the PageUp / PageDown
+    /// search and the info-overlay sibling search (they run on `runner`, so nothing else says they are outstanding).
+    pub(super) pending_worker_jobs: u32,
     /// The turn of a running duplicate cleanup (`remove_duplicates`), released when the controller reports `Done` / `Canceled`.
     pub(super) duplicate_gate_turn: Option<GateTurn>,
     /// Set while an undo runs (its turn is `active_gate_turn`).
@@ -880,6 +883,7 @@ impl MainViewModel {
             active_gate_turn: None,
             controller_present_outstanding: false,
             settings_reloads_waiting: 0,
+            pending_worker_jobs: 0,
             duplicate_gate_turn: None,
             undo_context: None,
         }
@@ -1183,6 +1187,7 @@ impl MainViewModel {
             && self.active_gate_turn.is_none()
             && self.duplicate_gate_turn.is_none()
             && self.settings_reloads_waiting == 0
+            && self.pending_worker_jobs == 0
             && !self.controller_present_outstanding
             && self.presenter.is_idle()
             && self.inbox.is_empty()
@@ -1339,6 +1344,7 @@ impl MainViewModel {
         if let Some(search) = refresh.search {
             let navigator = Arc::clone(&self.sibling_navigator);
             let inbox = self.inbox.clone();
+            self.pending_worker_jobs += 1;
             self.runner.run(
                 "overlay-siblings",
                 Box::new(move || {
@@ -1374,6 +1380,7 @@ impl MainViewModel {
 
     /// Completion of an overlay sibling search (`MainEvent::OverlaySiblings`).
     pub(super) fn on_overlay_siblings(&mut self, search: OverlaySiblingSearch, outcome: SearchOutcome) -> ChangeSet {
+        self.pending_worker_jobs = self.pending_worker_jobs.saturating_sub(1);
         let inputs = self.view_inputs();
         let settings = self.settings.current();
         let refresh = self.info_overlay.complete_search(&settings, inputs, &search, outcome);
@@ -1382,8 +1389,6 @@ impl MainViewModel {
 
     /// C# `PersistSession(session)` (line 976, hoisted from the 08d range because 08b and 08e call it): `session_writer.update(&session)`.
     /// The C# fallback `_sessionStore.Save` is unreachable (the writer is a required constructor argument) and not ported.
-    // W8-08b and W8-08e will call this shared helper after their stubs are ported.
-    #[allow(dead_code)]
     pub(super) fn persist_session(&self) {
         if let Some(session) = &self.current_session {
             let _ = self.session_writer.update(session);
@@ -1403,8 +1408,6 @@ impl MainViewModel {
 
     /// Starts a presentation: `presenter.present(env, request)` and `finish_presenter_call`. A `PresentError::PathNotInEntry`
     /// (the C# `ArgumentException`) is logged and changes nothing (callers pre-validate the override).
-    // W8-08b and W8-08e will call this shared helper after their stubs are ported.
-    #[allow(dead_code)]
     pub(super) fn present_request(
         &mut self,
         request: crate::coordinators::presenter::state::PresentRequest,
