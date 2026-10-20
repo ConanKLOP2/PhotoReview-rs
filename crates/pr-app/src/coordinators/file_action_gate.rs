@@ -19,11 +19,6 @@
 //! NOT the `pr_core::file_actions::undo::FileActionGate` trait (the service-level CAS gate `try_begin/end/is_busy`
 //! that `FileActionService` implements): that is a different gate, owned by pr-core.
 
-// Stub only: the porter removes this allow line once every body is real.
-#![allow(unused_variables, unused_imports, dead_code)]
-// Stub only (contract text in doc comments, boxed seams): the porter fixes the doc layout / introduces type aliases and removes this line.
-#![allow(clippy::doc_lazy_continuation)]
-
 use std::collections::VecDeque;
 use std::fmt;
 use std::sync::{Arc, Mutex};
@@ -49,7 +44,7 @@ pub enum QueuedOutcome {
 impl QueuedOutcome {
     /// True for `StartedNow` and `Queued` (the C# task would complete with `true`).
     pub fn accepted(self) -> bool {
-        todo!()
+        self != Self::Rejected
     }
 }
 
@@ -76,15 +71,22 @@ pub struct GateTurn {
 
 impl GateTurn {
     /// Ends the turn now (same effect as dropping it).
-    pub fn finish(self) {
-        todo!()
+    pub fn finish(mut self) {
+        self.release();
+    }
+
+    fn release(&mut self) {
+        if !self.finished {
+            self.finished = true;
+            self.inner.release(self.kind);
+        }
     }
 }
 
 impl Drop for GateTurn {
     /// Releases the gate if `finish` was not called (idempotent with it).
     fn drop(&mut self) {
-        todo!()
+        self.release();
     }
 }
 
@@ -117,6 +119,53 @@ struct GateInner {
     scheduler: Arc<dyn UiScheduler>,
 }
 
+impl GateInner {
+    fn post_waiters(&self, waiters: Vec<UiAction>) {
+        for waiter in waiters {
+            self.scheduler.post(waiter);
+        }
+    }
+
+    fn release(self: &Arc<Self>, kind: TurnKind) {
+        let (next, waiters) = {
+            let mut state = self.state.lock().unwrap_or_else(|error| error.into_inner());
+            let next = match kind {
+                TurnKind::Exclusive => {
+                    state.held = false;
+                    None
+                }
+                TurnKind::Queued => {
+                    state.queue_length -= 1;
+                    state.running = false;
+                    let next = state.pending.pop_front();
+                    if next.is_some() {
+                        state.running = true;
+                    }
+                    next
+                }
+            };
+            let waiters = if !state.held && state.queue_length == 0 {
+                std::mem::take(&mut state.released_waiters)
+            } else {
+                Vec::new()
+            };
+            (next, waiters)
+        };
+
+        if let Some(job) = next {
+            let inner = Arc::clone(self);
+            self.scheduler.post(Box::new(move || {
+                job(GateTurn {
+                    inner,
+                    kind: TurnKind::Queued,
+                    finished: false,
+                });
+            }));
+        }
+        self.post_waiters(waiters);
+    }
+}
+
 /// C# `FileActionGate`. Cheap to clone (all clones share one gate); `Send + Sync`; every method may be called from any thread
 /// and never blocks behind user work.
 #[derive(Clone)]
@@ -128,24 +177,51 @@ impl FileActionGate {
     /// C# `new FileActionGate()`, plus the scheduler that runs deferred continuations (the UI dispatcher in the app, a
     /// recording fake in tests). The scheduler must run every posted action eventually, or queued actions stall.
     pub fn new(scheduler: Arc<dyn UiScheduler>) -> Self {
-        todo!()
+        Self {
+            inner: Arc::new(GateInner {
+                state: Mutex::new(GateState {
+                    held: false,
+                    queue_length: 0,
+                    running: false,
+                    pending: VecDeque::new(),
+                    released_waiters: Vec::new(),
+                }),
+                scheduler,
+            }),
+        }
     }
 
     /// C# `IsHeld`: an exclusive holder exists, or a queued action is pending or running. Never blocks behind user work.
     pub fn is_held(&self) -> bool {
-        todo!()
+        let state = self.inner.state.lock().unwrap_or_else(|error| error.into_inner());
+        state.held || state.queue_length != 0
     }
 
     /// C# `TryEnter()`: takes the gate exclusively. `false` when it is held by either mechanism (exclusive holder, or any
     /// queued action pending or running). Exactly one of N simultaneous callers wins.
     pub fn try_enter(&self) -> bool {
-        todo!()
+        let mut state = self.inner.state.lock().unwrap_or_else(|error| error.into_inner());
+        if state.held || state.queue_length != 0 {
+            false
+        } else {
+            state.held = true;
+            true
+        }
     }
 
     /// C# `Exit()`: releases the exclusive hold (sets it to free, unconditionally; harmless when nothing is held) and, if the
     /// gate is now completely free (no exclusive holder, empty queue), posts every `when_released` waiter through the scheduler.
     pub fn exit(&self) {
-        todo!()
+        let waiters = {
+            let mut state = self.inner.state.lock().unwrap_or_else(|error| error.into_inner());
+            state.held = false;
+            if state.queue_length == 0 {
+                std::mem::take(&mut state.released_waiters)
+            } else {
+                Vec::new()
+            }
+        };
+        self.inner.post_waiters(waiters);
     }
 
     /// C# `WhenReleasedAsync()` (R7-7). When the gate is completely free (`!held && queue_length == 0`) the waiter runs NOW,
@@ -155,7 +231,15 @@ impl FileActionGate {
     /// check happen under the same lock as the release. A caller that needs the C# `while (IsHeld) await WhenReleasedAsync()`
     /// loop re-checks `is_held` in the waiter.
     pub fn when_released(&self, waiter: UiAction) -> bool {
-        todo!()
+        {
+            let mut state = self.inner.state.lock().unwrap_or_else(|error| error.into_inner());
+            if state.held || state.queue_length != 0 {
+                state.released_waiters.push(waiter);
+                return false;
+            }
+        }
+        waiter();
+        true
     }
 
     /// C# `RunExclusiveAsync(work)` (Undo, duplicate cleanup). `false` and `work` NOT called when the gate is held by either
@@ -166,7 +250,15 @@ impl FileActionGate {
     where
         F: FnOnce(GateTurn),
     {
-        todo!()
+        if !self.try_enter() {
+            return false;
+        }
+        work(GateTurn {
+            inner: Arc::clone(&self.inner),
+            kind: TurnKind::Exclusive,
+            finished: false,
+        });
+        true
     }
 
     /// C# `RunQueuedAsync(work)` (Q-T1, RV-A01).
@@ -175,13 +267,32 @@ impl FileActionGate {
     /// - the gate idle (no running action, nothing pending): `StartedNow`, `work(turn)` is called synchronously, OUTSIDE the lock;
     /// - otherwise `Queued`: stored in `pending`; when the predecessor's turn ends, the next job is POSTED through the
     ///   scheduler (never started inline on the finishing stack) and then receives its own turn.
+    ///
     /// A failure of one action never stops the queue: its turn ends (also on panic), the next is posted. The work reports its
     /// own result through its own channel; the gate does not carry results.
     pub fn run_queued<F>(&self, work: F) -> QueuedOutcome
     where
         F: FnOnce(GateTurn) + Send + 'static,
     {
-        todo!()
+        {
+            let mut state = self.inner.state.lock().unwrap_or_else(|error| error.into_inner());
+            if state.held {
+                return QueuedOutcome::Rejected;
+            }
+            state.queue_length += 1;
+            if state.running || !state.pending.is_empty() {
+                state.pending.push_back(Box::new(work));
+                return QueuedOutcome::Queued;
+            }
+            state.running = true;
+        }
+
+        work(GateTurn {
+            inner: Arc::clone(&self.inner),
+            kind: TurnKind::Queued,
+            finished: false,
+        });
+        QueuedOutcome::StartedNow
     }
 }
 
