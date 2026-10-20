@@ -7,9 +7,6 @@
 //!
 //! Threading: the callbacks and the sink run on the UI thread only (no `Send`/`Sync` bounds), like every sink of
 //! `coordinators::traits`.
-// Stub only: the porter removes this allow line once every body is real.
-#![allow(unused_variables, unused_imports, dead_code)]
-
 use std::fmt;
 use std::sync::Arc;
 
