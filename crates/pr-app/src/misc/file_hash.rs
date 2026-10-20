@@ -379,7 +379,9 @@ impl FileHasher for FileHashService {
                 if let Some(existing) = map.get(&key) {
                     let existing = existing.clone();
                     let mut state = existing.state.lock().unwrap_or_else(|p| p.into_inner());
-                    if existing.cancel.is_canceled() && state.result.is_some() {
+                    // A finished flight is never joined: its worker may not have unregistered it yet, and its result
+                    // belongs to the file as it was then (the cache already holds it when it is still valid).
+                    if state.result.is_some() {
                         drop(state);
                         if map.get(&key).is_some_and(|f| Arc::ptr_eq(f, &existing)) {
                             map.remove(&key);
