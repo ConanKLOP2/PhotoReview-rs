@@ -438,6 +438,9 @@ impl DialogService for TestDialog {
     }
 }
 
+/// What runs while the picker is "open".
+pub type PickerHook = Box<dyn FnMut() + Send>;
+
 /// `(title, initial folder)` of one picker call.
 pub type PickerCall = (String, Option<String>);
 
@@ -446,11 +449,16 @@ pub type PickerCall = (String, Option<String>);
 pub struct TestPicker {
     pub answer: Arc<Mutex<Option<String>>>,
     pub calls: Arc<Mutex<Vec<PickerCall>>>,
+    /// Runs while the dialog is "open" (C# `WhileOpen`: stands in for the nested message loop of the modal dialog).
+    pub while_open: Arc<Mutex<Option<PickerHook>>>,
 }
 
 impl IFolderPicker for TestPicker {
     fn pick_folder(&mut self, title: &str, initial_folder: Option<&str>) -> Option<String> {
         lock(&self.calls).push((title.to_owned(), initial_folder.map(str::to_owned)));
+        if let Some(hook) = lock(&self.while_open).as_mut() {
+            hook();
+        }
         lock(&self.answer).clone()
     }
 }
@@ -746,6 +754,38 @@ impl RecycleBin for TestBin {
 
 // ---- the environment --------------------------------------------------------------------------------------------------------
 
+/// The controllers' texts when the window starts in Vietnamese (the shipped `vi.json`).
+struct VietnameseTexts {
+    localizer: Arc<pr_l10n::localizer::Localizer>,
+    numbers: Arc<pr_l10n::template::NumberCulture>,
+}
+
+impl VietnameseTexts {
+    fn new() -> Self {
+        let mut warnings = Vec::new();
+        let catalog = pr_l10n::catalog::LanguageCatalog::try_parse(
+            include_str!("../../../../assets/languages/vi.json"),
+            "vi.json",
+            &mut warnings,
+        )
+        .unwrap_or_else(|| panic!("vi.json did not parse: {warnings:?}"));
+        Self {
+            localizer: Arc::new(pr_l10n::localizer::Localizer::create(&catalog, &[], &warnings)),
+            numbers: Arc::new(pr_l10n::template::NumberCulture::invariant()),
+        }
+    }
+}
+
+impl TextSource for VietnameseTexts {
+    fn localizer(&self) -> Arc<pr_l10n::localizer::Localizer> {
+        Arc::clone(&self.localizer)
+    }
+
+    fn numbers(&self) -> Arc<pr_l10n::template::NumberCulture> {
+        Arc::clone(&self.numbers)
+    }
+}
+
 /// Builds a catalog from the photos folder of the environment.
 pub type CatalogBuilder = Box<dyn FnOnce(&Path) -> ReviewCatalog>;
 
@@ -1022,7 +1062,11 @@ impl MainEnv {
             perf: None,
         });
 
-        let texts: Arc<dyn TextSource> = Arc::new(EnglishTexts::new());
+        let texts: Arc<dyn TextSource> = if options.vietnamese {
+            Arc::new(VietnameseTexts::new())
+        } else {
+            Arc::new(EnglishTexts::new())
+        };
         let dialog = TestDialog::new();
         let dialog_dyn: Arc<dyn DialogService> = dialog.clone();
         let bin = TestBin::new(root.join("bin"));

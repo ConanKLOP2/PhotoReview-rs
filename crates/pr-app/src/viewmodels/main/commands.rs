@@ -90,8 +90,6 @@ pub(super) enum QueuedKind {
     /// `FileActionController::recycle(compare_selected, current)`.
     Recycle,
     /// `FileActionController::move_or_copy_to_folder(picker, operation, force_picker, get_source)` (W8-08e submits it).
-    // Constructed by `move_to_folder` / `copy_to_folder` (W8-08e, same branch); that unit removes this allow.
-    #[allow(dead_code)]
     MoveCopy {
         operation: FileOperationType,
         force_picker: bool,

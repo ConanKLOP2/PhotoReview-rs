@@ -10,8 +10,6 @@
 //! view model replays the log in order with `apply_sink_actions`, with full access to the catalog, the presenter and the settings.
 //! The order of the calls is kept; what changes is that a replayed action sees the catalog AFTER the whole coordinator step (see the
 //! contract, trap T3).
-// Stub only: the Move/Copy bodies are still `todo!()` (W8-08e).
-#![allow(unused_variables, unused_imports, dead_code)]
 
 use pr_core::abstractions::{Log, SkippedEntry};
 use pr_core::file_actions::journal_line::JournalDateTime;
@@ -19,9 +17,10 @@ use pr_core::model::FileOperationType;
 use pr_core::session::store::SessionState;
 use pr_core::time::DateTimeUtc;
 
+use super::commands::QueuedKind;
 use super::navigation::OpenPurpose;
 use super::state::{ChangeSet, MainProperty, MainViewModel, SettingsSource};
-use crate::coordinators::file_actions::recycle::{FileActionCx, FileActionStep};
+use crate::coordinators::file_actions::recycle::{FileActionCx, FileActionDone, FileActionStep};
 use crate::coordinators::presenter::state::PresentRequest;
 use crate::coordinators::traits::{IDuplicateCleanupSink, IFileActionSink, IFolderLoadSink, ISiblingNavigatorSink};
 use crate::viewmodels::format::exif::{ExifLine, format_exif};
@@ -608,12 +607,18 @@ impl MainViewModel {
     /// C# `MoveToFolderAsync(forcePicker = false)` (line 1316): submits `QueuedKind::MoveCopy { Move, force_picker }` (same gate and pipeline
     /// as an action profile).
     pub fn move_to_folder(&mut self, force_picker: bool) -> ChangeSet {
-        todo!()
+        self.submit_queued(QueuedKind::MoveCopy {
+            operation: FileOperationType::Move,
+            force_picker,
+        })
     }
 
     /// C# `CopyToFolderAsync(forcePicker = false)` (line 1319): as `move_to_folder` with `Copy`.
     pub fn copy_to_folder(&mut self, force_picker: bool) -> ChangeSet {
-        todo!()
+        self.submit_queued(QueuedKind::MoveCopy {
+            operation: FileOperationType::Copy,
+            force_picker,
+        })
     }
 
     /// The body of a `MoveCopy` command once its turn came (C# lambda of `MoveOrCopyToFolderAsync`, line 1326):
@@ -622,7 +627,26 @@ impl MainViewModel {
     /// state of a view model that is mutably borrowed by this call, so the C# "read again after the picker" cannot differ). An `Err(operation)`
     /// (C# `ArgumentOutOfRangeException`, impossible here) is treated as `Done(Finished { succeeded: false })`.
     pub(super) fn begin_move_copy(&mut self, operation: FileOperationType, force_picker: bool) -> FileActionStep {
-        todo!()
+        // The snapshot the controller reads (and "reads again after the picker": a view model borrowed by this call cannot change meanwhile).
+        let compare_selected = self.presenter.compare().selected_path().map(str::to_owned);
+        let current = self.catalog.current().map(|entry| entry.path().to_owned());
+        let get_source = move || (compare_selected.clone(), current.clone());
+        let mut cx = FileActionCx {
+            catalog: &mut self.catalog,
+            sink: &mut self.sink,
+        };
+        let picker = self
+            .folder_picker
+            .as_mut()
+            .map(|picker| picker.as_mut() as &mut dyn crate::coordinators::traits::IFolderPicker);
+        match self
+            .file_action_controller
+            .move_or_copy_to_folder(&mut cx, picker, operation, force_picker, &get_source)
+        {
+            Ok(step) => step,
+            // C# `ArgumentOutOfRangeException`: unreachable here (only Move and Copy are ever queued).
+            Err(_) => FileActionStep::Done(FileActionDone::Finished { succeeded: false }),
+        }
     }
 
     // ---- photo information (EXIF) line ----
@@ -688,5 +712,34 @@ impl MainViewModel {
             result.main.insert(property);
         }
         result
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn sink_log_take_empties_the_log() {
+        // New test (D-08e-1: `take` hands out the recorded calls in call order and leaves the recorder empty)
+        let mut log = SinkLog::new();
+        assert!(log.is_empty());
+        IFileActionSink::set_status_text(&mut log, "a");
+        IFileActionSink::on_catalog_changed(&mut log, Some("p"));
+        assert!(!log.is_empty());
+
+        let taken = log.take();
+
+        assert_eq!(
+            taken,
+            vec![
+                SinkAction::SetStatus("a".to_owned()),
+                SinkAction::CatalogChanged {
+                    removed_path: Some("p".to_owned())
+                }
+            ]
+        );
+        assert!(log.is_empty());
+        assert!(log.take().is_empty());
     }
 }

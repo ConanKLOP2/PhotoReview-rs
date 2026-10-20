@@ -1389,8 +1389,6 @@ impl MainViewModel {
 
     /// C# `PersistSession(session)` (line 976, hoisted from the 08d range because 08b and 08e call it): `session_writer.update(&session)`.
     /// The C# fallback `_sessionStore.Save` is unreachable (the writer is a required constructor argument) and not ported.
-    // W8-08b and W8-08e will call this shared helper after their stubs are ported.
-    #[allow(dead_code)]
     pub(super) fn persist_session(&self) {
         if let Some(session) = &self.current_session {
             let _ = self.session_writer.update(session);
@@ -1410,8 +1408,6 @@ impl MainViewModel {
 
     /// Starts a presentation: `presenter.present(env, request)` and `finish_presenter_call`. A `PresentError::PathNotInEntry`
     /// (the C# `ArgumentException`) is logged and changes nothing (callers pre-validate the override).
-    // W8-08b and W8-08e will call this shared helper after their stubs are ported.
-    #[allow(dead_code)]
     pub(super) fn present_request(
         &mut self,
         request: crate::coordinators::presenter::state::PresentRequest,
