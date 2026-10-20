@@ -280,6 +280,9 @@ fn get_second_caller_joining_cancelled_entry_retries_and_returns_real_hash() {
     wait_until("the first caller to register", || {
         service.in_flight_waiters_for_tests(&fx.path) == Some(1)
     });
+    // The worker checks its cancel token before it opens the file, so cancelling too early would skip the first
+    // open. Wait until the first read is held at its gate.
+    wait_until("the first read to be held at the gate", || reader.opens() == 1);
 
     first_cancel.cancel(); // the only waiter leaves: the shared computation is cancelled
     assert!(matches!(first.join().unwrap(), Err(FileHashError::Canceled)));
