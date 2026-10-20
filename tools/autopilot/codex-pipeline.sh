@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 # Claude-free pipeline: port the units of one Wave 8 batch with Codex CLI (gpt-6-luna, effort low) under deterministic
 # bash orchestration. No Claude tokens are spent. See README.md ("Claude-free pipeline").
-# Usage: tools/autopilot/codex-pipeline.sh <wave-tag e.g. wave8-b2> [--dry-run] [--only W8-04a,W8-04b] [--jobs N (1..4, default 2)]
+# Usage: tools/autopilot/codex-pipeline.sh <wave-tag e.g. wave8-b2> [--dry-run] [--only W8-04a,W8-04b] [--redo W8-04e,W8-06c] [--jobs N (1..4, default 2)]
 #        tools/autopilot/codex-pipeline.sh --smoke        (env checks + one cheap real Codex call + one gate on a throwaway unit)
 # Env: CODEX_BIN, CODEX_USAGE_SH, PLAN_REL, CODEX_TIMEOUT (s per Codex call, default 2400), SKIP_MUTANTS=1, PIPELINE_NO_PR=1,
-#      MUT_JOBS (cargo-mutants --jobs, default 3), MUT_BUDGET_YELLOW (s, default 900), MUT_BUDGET_RED (s, default 1800),
+#      MUT_JOBS (cargo-mutants --jobs, default 4), MUT_BUDGET_YELLOW (s, default 900), MUT_BUDGET_RED (s, default 1800),
 #      MUTANTS_TIMEOUT (s; overrides both budgets), MUT_TEST_TIMEOUT (s per mutant test run, default 90),
 #      MIN_DISK_GB (default 20), QUOTA_MAX (percent of the 5 h window never exceeded, default 99), QUOTA_MARGIN (default 1.2),
 #      CS_REPO (C# checkout), GATE_NEXTEST=0 (never use cargo-nextest).
@@ -13,10 +13,10 @@ export PATH="$HOME/.cargo/bin:$PATH"
 SELF="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 export PYTHONUTF8=1
 LIB="python $SELF/lib/codex-lib.py"
-TAG=""; DRY=0; ONLY=""; JOBS=2; SMOKE=0
+TAG=""; DRY=0; ONLY=""; JOBS=2; SMOKE=0; REDO=""
 while [ $# -gt 0 ]; do
   case "$1" in
-    --dry-run) DRY=1;; --only) shift; ONLY="${1:-}";; --jobs) shift; JOBS="${1:-2}";; --smoke) SMOKE=1;;
+    --dry-run) DRY=1;; --only) shift; ONLY="${1:-}";; --redo) shift; REDO=",${1:-},";; --jobs) shift; JOBS="${1:-2}";; --smoke) SMOKE=1;;
     -*) echo "unknown arg $1" >&2; exit 2;;
     *) [ -z "$TAG" ] && TAG="$1" || { echo "unexpected arg $1" >&2; exit 2; };;
   esac; shift
@@ -33,7 +33,7 @@ STATE_DIR="$SELF/state"; STATE="$STATE_DIR/$TAG.json"; LOGDIR="$STATE_DIR/logs";
 UCACHE="$STATE_DIR/usage.cache"
 IBR="integration/$TAG"; INT="$REPO/.claude/worktrees/int-$TAG"
 TDB="$REPO/target-wave-pipe-$TAG"
-CODEX_TIMEOUT="${CODEX_TIMEOUT:-2400}"; MUT_JOBS="${MUT_JOBS:-3}"
+CODEX_TIMEOUT="${CODEX_TIMEOUT:-2400}"; MUT_JOBS="${MUT_JOBS:-4}"
 QUOTA_MAX="${QUOTA_MAX:-99}"; QUOTA_MARGIN="${QUOTA_MARGIN:-1.2}"
 PLAN="$SELF/../../$PLAN_REL"; [ -f "$INT/$PLAN_REL" ] && PLAN="$INT/$PLAN_REL"
 say() { local m; m="[$(date +%H:%M:%S)] $*"; echo "$m"; mkdir -p "$LOGDIR"; echo "$m" >> "$LOGDIR/pipeline-${TAG:-smoke}.log"; }
@@ -235,7 +235,7 @@ run_mutants() {
   fi
   rm -rf "$d"; t0=$(now)
   # Dedicated mutants target dir (never the unit's own: mutant builds must not leak into the real worktree's artifacts), reused across units.
-  ( cd "$wt" && CARGO_TARGET_DIR="${CARGO_TARGET_DIR}-mut" timeout "$left" cargo mutants -p "$crate" --in-diff "$LOGDIR/$u.diff" --baseline skip \
+  ( cd "$wt" && CARGO_TARGET_DIR="${CARGO_TARGET_DIR}-mut" CARGO_PROFILE_DEV_DEBUG=0 timeout "$left" cargo mutants -p "$crate" --in-diff "$LOGDIR/$u.diff" --baseline skip \
       --timeout "${MUT_TEST_TIMEOUT:-90}" -j "$MUT_JOBS" --no-shuffle --output "$d" "${MUT_EXCLUDE[@]}" "${CTA[@]}" "${FARG[@]}" ) > "$LOGDIR/$u.mutants.log" 2>&1 </dev/null
   rc=$?; MUT_USED=$((MUT_USED + $(now) - t0))
   case "$rc" in 0|2|3) ;; 124) BUDGET_HIT=1; MUT_NOTE="mutants budget (${budget}s) exhausted, partial result";; *) MUT_NOTE="mutants exit $rc"; SURV=-1; return;; esac
@@ -385,6 +385,13 @@ run_unit() {
     printf '%s\n' "$GATE_ERR" > "$LOGDIR/$u.gate-error.txt"; fail_unit "$u" "$wt" "gate failed after 3 repair rounds" "$LOGDIR/$u.gate-error.txt"; return 1
   fi
 
+  # full gate (clippy + the unit's own test binaries) BEFORE mutants: when it fails, the ~15 min mutants run is not wasted on code
+  # that is about to change. It runs again after the mutant rounds only if those rounds changed the tests.
+  GATE_ERR=""
+  if ! gate_loop "$u" "$wt" "$crate" full full; then
+    printf '%s\n' "$GATE_ERR" > "$LOGDIR/$u.gate-error.txt"; fail_unit "$u" "$wt" "gate (clippy + crate tests) failed after 3 repair rounds" "$LOGDIR/$u.gate-error.txt"; return 1
+  fi
+
   run_mutants "$u" "$wt" "$crate" "$tier"; round=0
   while [ "$SURV" -gt 0 ] && [ "$round" -lt 2 ] && [ "$BUDGET_HIT" = 0 ]; do
     round=$((round+1)); say "$u: $SURV surviving mutants, test round $round/2"
@@ -401,9 +408,12 @@ run_unit() {
   done
   [ "$SURV" -lt 0 ] && SURV=0
 
-  # full gate (clippy + whole-crate test) exactly once per unit, right before the merge
-  if ! gate_loop "$u" "$wt" "$crate" full full; then
-    printf '%s\n' "$GATE_ERR" > "$LOGDIR/$u.gate-error.txt"; fail_unit "$u" "$wt" "final gate (clippy + crate tests) failed after 3 repair rounds" "$LOGDIR/$u.gate-error.txt"; return 1
+  # final full gate only when the mutant rounds added or changed tests (otherwise the gate above already covers this exact tree)
+  if [ "$round" -gt 0 ]; then
+    GATE_ERR=""
+    if ! gate_loop "$u" "$wt" "$crate" full full; then
+      printf '%s\n' "$GATE_ERR" > "$LOGDIR/$u.gate-error.txt"; fail_unit "$u" "$wt" "final gate (clippy + crate tests) failed after 3 repair rounds" "$LOGDIR/$u.gate-error.txt"; return 1
+    fi
   fi
 
   ( cd "$wt" && git add -A -- . ':!.codex-*' && git commit -q -m "feat($u): port $u via Codex pipeline" -m "Co-Authored-By: Codex gpt-6-luna <noreply@openai.com>" ) >>"$LOGDIR/$u.log" 2>&1 \
@@ -439,6 +449,7 @@ say "pipeline $TAG: ${#ORDER[@]} units, integration $IBR, jobs $JOBS"
 MERGED_ON_IBR="$(git -C "$REPO" log --merges --format=%s origin/master.."$IBR" 2>/dev/null | grep -oE 'W[0-9]+-[0-9]+[a-z]+' | sort -u)"
 for l in "${ORDER[@]}"; do
   u="${l%%$'\t'*}"
+  if [ -n "$REDO" ] && case "$REDO" in *",$u,"*) true;; *) false;; esac; then $LIB sset "$STATE" "$u" failed "redo requested" 0 >/dev/null; say "$u: redo requested, state reset"; continue; fi
   case "$($LIB sget "$STATE" "$u")" in done|partial) continue;; esac
   if printf '%s\n' "$MERGED_ON_IBR" | grep -qxF "$u"; then $LIB sset "$STATE" "$u" done "already merged on $IBR" 0 >/dev/null; say "$u: found merged on $IBR, marked done"; fi
 done

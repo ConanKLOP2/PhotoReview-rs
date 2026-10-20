@@ -277,6 +277,6 @@
 
 ## Codex pipeline status (2026-10-21)
 - Wave 8 B1 and B2 are ported on `master` (26/26 B2 units, PRs #46-#77) through `tools/autopilot/codex-pipeline.sh` (Codex gpt-6-sol medium) with Claude fallback; W8-04e and W8-10b were finished by Claude.
-- This branch adds `codex-pipeline.sh --redo U1,U2` (rerun a unit that already has state). The earlier handoff text (running pipeline, W8-04e/W8-10b open) is obsolete.
+- `codex-pipeline.sh --redo U1,U2` (rerun a unit that already has state) and `unit-pr.sh` are on `master` (#56).
 - Open: mutant-kill debt for W8-08a (Codex on `codex/mut-w808a`), PR #78 (W8-05g mutant tests); remaining `todo!()` stubs are the overlay units (`panel`, `folder_info`, `capture_badge`, `toolbar`, `status`, `zoom_indicator`, `tools_menu`) and native/WIC test stubs.
 - Check the state with `bash tools/autopilot/status.sh`. Do not run two pipelines at once (lock: `tools/autopilot/state/pipeline.lock`).
