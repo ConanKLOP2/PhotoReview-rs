@@ -27,7 +27,9 @@ use pr_app::coordinators::file_actions::recycle::{FileActionController, FileActi
 use pr_app::coordinators::folder_load::state::{FolderLoadCoordinator, FolderLoadDeps, WorkerLane, WorkerPort};
 use pr_app::coordinators::presenter::state::{ImageChange, ImagePresenter, ImagePresenterDeps};
 use pr_app::coordinators::sibling_navigator::SiblingFolderNavigator;
-use pr_app::coordinators::traits::{IFileActionExecutor, IFolderPicker, IPreloadController, IPresentationSink};
+use pr_app::coordinators::traits::{
+    FileActionServiceExecutor, IFileActionExecutor, IFolderPicker, IPreloadController, IPresentationSink,
+};
 use pr_app::coordinators::zoom_detail::{BackgroundJob, BackgroundRunner, CompletionInbox};
 use pr_app::misc::file_hash::FileHasher;
 use pr_app::viewmodels::compare::CompareViewModel;
@@ -50,7 +52,8 @@ use pr_core::catalog::natural_cmp::ManagedNaturalComparer;
 use pr_core::catalog::review_catalog::ReviewCatalog;
 use pr_core::diagnostics::metrics::ReviewMetrics;
 use pr_core::file_actions::journal::OperationJournal;
-use pr_core::file_actions::undo::{EnglishUndoTexts, UndoService};
+use pr_core::file_actions::service::FileActionService;
+use pr_core::file_actions::undo::{EnglishUndoTexts, FileActionGate as ServiceGate, MoveOverride, UndoService};
 use pr_core::instance::ownership::{FolderOpenDecision, FolderOwnership, FolderOwnershipError};
 use pr_core::io::navigation_stat::NavigationStatWorker;
 use pr_core::io::physical::PhysicalFileSystem;
@@ -58,17 +61,20 @@ use pr_core::model::{FileOperationType, ImageSortMode, LoadingMode};
 use pr_core::session::store::SessionStore;
 use pr_core::session::writer::{Completion, DebounceTimer, RunningTimer, SessionWriter, TimerError, TimerOutcome};
 use pr_core::settings::app_settings::{AppSettings, EnglishSettingsTexts};
+use pr_core::settings::shortcuts::ReviewAction;
 use pr_core::settings::store::SettingsStore;
 use pr_core::sync::CancelToken;
 use pr_core::time::DateTimeUtc;
+use pr_imaging::cache_key::ImageCacheKey;
 use pr_imaging::decode_types::{DecodeBox, PlatformImage};
 use pr_imaging::decoder_traits::ImageDecoder;
+use pr_imaging::preload::scheduler::RunHandle;
 use pr_imaging::service::{PreviewImageService, PreviewServiceConfig};
 use pr_test_support::{QueuedUiScheduler, RecordingLog, TempRoot};
 
-use crate::file_action_fakes::{EnglishTexts, FakeExecutor};
+use crate::file_action_fakes::EnglishTexts;
 
-use super::presenter_fakes::{FakeHasher, FormatFixture, RecordingPreload, build_thumbnail_cache};
+use super::presenter_fakes::{FakeHasher, FormatFixture, build_thumbnail_cache};
 use super::preview_fakes::{FakePayloadCodec, GIB, MIB, PixelsCodec, SizedDecoder, TIMEOUT, lock};
 
 // ---- worker queue -----------------------------------------------------------------------------------------------------------
@@ -303,6 +309,8 @@ type SettingsHook = Box<dyn FnMut(SettingsTarget) -> bool + Send>;
 /// A scripted [`DialogService`] that records every call.
 pub struct TestDialog {
     pub confirm_answer: AtomicBool,
+    /// Runs while a confirmation is "open" (the nested loop of the C# dialog): it may change what the shared clock says.
+    pub on_confirm: Mutex<Option<Box<dyn FnMut() + Send>>>,
     pub confirmations: Mutex<Vec<(String, String)>>,
     pub errors: Mutex<Vec<(String, String)>>,
     pub messages: Mutex<Vec<(String, String)>>,
@@ -311,6 +319,8 @@ pub struct TestDialog {
     pub on_settings: Mutex<Option<SettingsHook>>,
     pub settings_targets: Mutex<Vec<SettingsTarget>>,
     pub batch_review_answer: AtomicBool,
+    /// Runs while the batch review is open (the nested loop of the C# dialog).
+    pub on_batch_review: Mutex<Option<Box<dyn FnMut() + Send>>>,
     pub batch_reviews: Mutex<Vec<Vec<BatchReviewItem>>>,
     pub benchmark_folders: Mutex<Vec<Option<PathBuf>>>,
     pub skipped_shown: Mutex<Vec<Vec<SkippedEntry>>>,
@@ -328,6 +338,7 @@ impl TestDialog {
     pub fn new() -> Arc<Self> {
         Arc::new(Self {
             confirm_answer: AtomicBool::new(true),
+            on_confirm: Mutex::new(None),
             confirmations: Mutex::new(Vec::new()),
             errors: Mutex::new(Vec::new()),
             messages: Mutex::new(Vec::new()),
@@ -336,6 +347,7 @@ impl TestDialog {
             on_settings: Mutex::new(None),
             settings_targets: Mutex::new(Vec::new()),
             batch_review_answer: AtomicBool::new(true),
+            on_batch_review: Mutex::new(None),
             batch_reviews: Mutex::new(Vec::new()),
             benchmark_folders: Mutex::new(Vec::new()),
             skipped_shown: Mutex::new(Vec::new()),
@@ -353,6 +365,9 @@ impl TestDialog {
 impl DialogService for TestDialog {
     fn show_confirmation(&self, title: &str, message: &str) -> bool {
         lock(&self.confirmations).push((title.to_owned(), message.to_owned()));
+        if let Some(hook) = lock(&self.on_confirm).as_mut() {
+            hook();
+        }
         self.confirm_answer.load(Ordering::SeqCst)
     }
 
@@ -371,6 +386,9 @@ impl DialogService for TestDialog {
 
     fn show_batch_review(&self, items: &[BatchReviewItem]) -> bool {
         lock(&self.batch_reviews).push(items.to_vec());
+        if let Some(hook) = lock(&self.on_batch_review).as_mut() {
+            hook();
+        }
         self.batch_review_answer.load(Ordering::SeqCst)
     }
 
@@ -502,20 +520,210 @@ impl DebounceTimer for NeverFiringTimer {
     }
 }
 
-/// A Recycle Bin that never touches anything (AGENTS.md: no real Recycle Bin in tests).
-struct InertBin;
+// ---- preload controller -----------------------------------------------------------------------------------------------------
 
-impl RecycleBin for InertBin {
-    fn send_to_recycle_bin(&self, _path: &Path) -> std::io::Result<()> {
+/// The preload seam with an ORDERED event log (`cancel`, `preload:<i>`, `clear`, `evict:<path>`): the tests assert that `cancel` comes
+/// before `preload_around` (R2-F-01). `notify_navigation` goes to its own list (the presenter calls it on every navigation).
+#[derive(Default)]
+pub struct EventPreload {
+    events: Mutex<Vec<String>>,
+    notified: Mutex<Vec<i32>>,
+}
+
+impl std::fmt::Debug for EventPreload {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("EventPreload").finish_non_exhaustive()
+    }
+}
+
+impl EventPreload {
+    pub fn new() -> Arc<Self> {
+        Arc::new(Self::default())
+    }
+
+    pub fn events(&self) -> Vec<String> {
+        lock(&self.events).clone()
+    }
+
+    pub fn clear_events(&self) {
+        lock(&self.events).clear();
+    }
+
+    pub fn notified(&self) -> Vec<i32> {
+        lock(&self.notified).clone()
+    }
+
+    pub fn count_of(&self, event: &str) -> usize {
+        lock(&self.events).iter().filter(|recorded| *recorded == event).count()
+    }
+
+    pub fn preload_centers(&self) -> Vec<i32> {
+        lock(&self.events)
+            .iter()
+            .filter_map(|event| event.strip_prefix("preload:").and_then(|center| center.parse().ok()))
+            .collect()
+    }
+}
+
+impl IPreloadController for EventPreload {
+    fn preload_around(&self, center: i32) -> RunHandle {
+        lock(&self.events).push(format!("preload:{center}"));
+        RunHandle::completed()
+    }
+
+    fn try_consume_preloaded_key(&self, _key: &ImageCacheKey) -> bool {
+        false
+    }
+
+    fn cancel(&self) {
+        lock(&self.events).push("cancel".to_owned());
+    }
+
+    fn remove_preloaded_keys_for_path(&self, normalized_path: &str) {
+        lock(&self.events).push(format!("evict:{normalized_path}"));
+    }
+
+    fn clear_preloaded_keys(&self) {
+        lock(&self.events).push("clear".to_owned());
+    }
+
+    fn notify_navigation(&self, index: i32) {
+        lock(&self.notified).push(index);
+    }
+}
+
+// ---- recycle bin ------------------------------------------------------------------------------------------------------------
+
+/// C# `FakeRecycleBin`: "recycling" moves the file into a folder of the test root (nothing outside it is touched, AGENTS.md);
+/// `no_bin` simulates a removable / network drive, `fail_send` a locked file.
+pub struct TestBin {
+    dir: PathBuf,
+    pub no_bin: AtomicBool,
+    pub fail_send: AtomicBool,
+    pub recycled: Mutex<Vec<String>>,
+    /// Paths whose recycling fails (a locked file), compared ignoring case.
+    failing: Mutex<std::collections::HashSet<String>>,
+    /// Paths on a "drive without a Recycle Bin" (the others keep their bin), compared ignoring case.
+    no_bin_paths: Mutex<std::collections::HashSet<String>>,
+    pub permanently_deleted: Mutex<Vec<String>>,
+    pub restore_calls: AtomicUsize,
+    stored: Mutex<HashMap<String, PathBuf>>,
+    counter: AtomicUsize,
+}
+
+impl std::fmt::Debug for TestBin {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("TestBin").finish_non_exhaustive()
+    }
+}
+
+impl TestBin {
+    pub fn new(dir: PathBuf) -> Arc<Self> {
+        Arc::new(Self {
+            dir,
+            no_bin: AtomicBool::new(false),
+            fail_send: AtomicBool::new(false),
+            recycled: Mutex::new(Vec::new()),
+            failing: Mutex::new(std::collections::HashSet::new()),
+            no_bin_paths: Mutex::new(std::collections::HashSet::new()),
+            permanently_deleted: Mutex::new(Vec::new()),
+            restore_calls: AtomicUsize::new(0),
+            stored: Mutex::new(HashMap::new()),
+            counter: AtomicUsize::new(0),
+        })
+    }
+
+    /// Makes `path` count as lying on a drive without a Recycle Bin.
+    pub fn no_bin_for(&self, path: &str) {
+        lock(&self.no_bin_paths).insert(path.to_lowercase());
+    }
+
+    fn lacks_bin(&self, path: &Path) -> bool {
+        self.no_bin.load(Ordering::SeqCst) || lock(&self.no_bin_paths).contains(&Self::key(path))
+    }
+
+    /// Makes the recycling of `path` fail with an I/O error.
+    pub fn fail_for(&self, path: &str) {
+        lock(&self.failing).insert(path.to_lowercase());
+    }
+
+    pub fn recycled(&self) -> Vec<String> {
+        lock(&self.recycled).clone()
+    }
+
+    pub fn permanently_deleted(&self) -> Vec<String> {
+        lock(&self.permanently_deleted).clone()
+    }
+
+    pub fn restore_calls(&self) -> usize {
+        self.restore_calls.load(Ordering::SeqCst)
+    }
+
+    fn key(path: &Path) -> String {
+        path.to_string_lossy().to_lowercase()
+    }
+}
+
+impl RecycleBin for TestBin {
+    fn send_to_recycle_bin(&self, path: &Path) -> std::io::Result<()> {
+        if self.lacks_bin(path) {
+            return Err(std::io::Error::other("no recycle bin"));
+        }
+        if self.fail_send.load(Ordering::SeqCst) {
+            return Err(std::io::Error::other("locked by another process"));
+        }
+        if lock(&self.failing).contains(&Self::key(path)) {
+            return Err(std::io::Error::other("locked by another process"));
+        }
+        std::fs::create_dir_all(&self.dir)?;
+        let number = self.counter.fetch_add(1, Ordering::SeqCst);
+        let name = path
+            .file_name()
+            .map(|n| n.to_string_lossy().into_owned())
+            .unwrap_or_default();
+        let target = self.dir.join(format!("{number}_{name}"));
+        std::fs::rename(path, &target)?;
+        lock(&self.recycled).push(path.to_string_lossy().into_owned());
+        lock(&self.stored).insert(Self::key(path), target);
         Ok(())
     }
 
-    fn try_restore(&self, _path: &Path, _size: u64, _last_write: DateTimeUtc) -> std::io::Result<bool> {
-        Ok(false)
+    fn can_recycle(&self, path: &Path) -> bool {
+        !self.lacks_bin(path)
+    }
+
+    fn delete_permanently(&self, path: &Path) -> std::io::Result<()> {
+        if !self.lacks_bin(path) {
+            return Err(std::io::Error::other(
+                "a drive with a Recycle Bin must never be deleted from permanently",
+            ));
+        }
+        lock(&self.permanently_deleted).push(path.to_string_lossy().into_owned());
+        std::fs::remove_file(path)
+    }
+
+    fn try_restore(
+        &self,
+        original_path: &Path,
+        _expected_size: u64,
+        _expected_last_write_utc: DateTimeUtc,
+    ) -> std::io::Result<bool> {
+        self.restore_calls.fetch_add(1, Ordering::SeqCst);
+        let stored = lock(&self.stored).remove(&Self::key(original_path));
+        match stored {
+            Some(target) => {
+                std::fs::rename(target, original_path)?;
+                Ok(true)
+            }
+            None => Ok(false),
+        }
     }
 }
 
 // ---- the environment --------------------------------------------------------------------------------------------------------
+
+/// Builds a catalog from the photos folder of the environment.
+pub type CatalogBuilder = Box<dyn FnOnce(&Path) -> ReviewCatalog>;
 
 /// Optional parts of a [`MainEnv`].
 pub struct EnvOptions {
@@ -524,7 +732,12 @@ pub struct EnvOptions {
     pub settings: Box<dyn FnOnce(&mut AppSettings)>,
     /// A catalog filled before the view model exists (the C# tests call `_catalog.Reset` on the object they pass in).
     pub catalog: Option<ReviewCatalog>,
-    pub executor: Option<Arc<FakeExecutor>>,
+    /// Builds the catalog from the photos folder of the environment (the files must exist under it, so the folder is given).
+    pub catalog_builder: Option<CatalogBuilder>,
+    /// A scripted executor instead of the real `FileActionService` over the test root.
+    pub executor: Option<Arc<dyn IFileActionExecutor + Send + Sync>>,
+    /// C# `moveOverride`: replaces the physical move of the service AND of the undo service (fail / observe a move).
+    pub move_override: Option<MoveOverride>,
     pub reset_caches: Option<Box<dyn FnMut()>>,
     pub picker: Option<TestPicker>,
     pub session_debounce: Option<Duration>,
@@ -537,7 +750,9 @@ impl Default for EnvOptions {
             explorer: Arc::new(FakeExplorer::default()),
             settings: Box::new(|_| {}),
             catalog: None,
+            catalog_builder: None,
             executor: None,
+            move_override: None,
             reset_caches: None,
             picker: None,
             session_debounce: None,
@@ -558,10 +773,12 @@ pub struct MainEnv {
     pub store: Arc<SettingsStore>,
     pub sessions: Arc<SessionStore>,
     pub session_writer: Arc<SessionWriter>,
-    pub preload: Arc<RecordingPreload>,
+    pub preload: Arc<EventPreload>,
+    pub hasher: Arc<FakeHasher>,
     pub dialog: Arc<TestDialog>,
     pub explorer: Arc<FakeExplorer>,
-    pub executor: Arc<FakeExecutor>,
+    pub service: Arc<FileActionService>,
+    pub bin: Arc<TestBin>,
     pub log: Arc<RecordingLog>,
     pub gate: FileActionGate,
     pub sink_seen: Arc<Mutex<SinkSeen>>,
@@ -617,6 +834,22 @@ pub fn en_with(key: &str, args: &[pr_l10n::template::LocArg]) -> String {
     ctx.texts.format_with(key, args, ctx.numbers)
 }
 
+/// The three profiles of the C# file-action fixtures: Move to `Sorted`, Copy to `Backup`, Recycle with confirmation.
+pub fn default_actions() -> Vec<ReviewAction> {
+    let action = |name: &str, operation: FileOperationType, destination: &str, confirm: bool| ReviewAction {
+        name: name.to_owned(),
+        operation,
+        destination: destination.to_owned(),
+        confirm,
+        ..ReviewAction::new(name)
+    };
+    vec![
+        action("MoveToSub", FileOperationType::Move, "Sorted", false),
+        action("CopyToBackup", FileOperationType::Copy, "Backup", false),
+        action("ConfirmRecycle", FileOperationType::Recycle, "", true),
+    ]
+}
+
 /// Writes the settings through the store (`SettingsStore::save`), like the Settings dialog does.
 pub fn update_settings(store: &SettingsStore, change: impl FnOnce(&mut AppSettings)) {
     let mut settings = (*store.current()).clone();
@@ -652,6 +885,7 @@ impl MainEnv {
         update_settings(&store, |settings| {
             settings.loading_mode = Some(LoadingMode::Preview);
             settings.image_sort_mode = Some(ImageSortMode::Name);
+            settings.actions = default_actions();
         });
         update_settings(&store, options.settings);
         let settings = SettingsSource::new(Arc::clone(&store));
@@ -683,12 +917,13 @@ impl MainEnv {
         let clock = Arc::new(GenerationClock::default());
         let metrics = Arc::new(ReviewMetrics::new());
         let format = FormatFixture::new();
-        let preload = RecordingPreload::new();
+        let preload = EventPreload::new();
         let preload_dyn: Arc<dyn IPreloadController> = preload.clone();
         let viewer = ViewerHandle::new(ViewerState::new());
         let bridge = PresentationBridge::new(viewer.clone());
         let sink_seen = Arc::new(Mutex::new(SinkSeen::default()));
-        let hasher: Arc<dyn FileHasher> = FakeHasher::new("HASH");
+        let fake_hasher = FakeHasher::new("HASH");
+        let hasher: Arc<dyn FileHasher> = fake_hasher.clone();
 
         let original_mode_settings = settings.clone();
         let preview_service = build_live_service(
@@ -741,22 +976,43 @@ impl MainEnv {
         let texts: Arc<dyn TextSource> = Arc::new(EnglishTexts::new());
         let dialog = TestDialog::new();
         let dialog_dyn: Arc<dyn DialogService> = dialog.clone();
-        let executor = options.executor.unwrap_or_default();
-        let undo = {
-            let journal = Arc::new(OperationJournal::new(&paths, Arc::clone(&fs), Arc::new(SystemClock)));
-            Arc::new(Mutex::new(UndoService::new(
-                journal,
+        let bin = TestBin::new(root.join("bin"));
+        let journal = Arc::new(OperationJournal::new(&paths, Arc::clone(&fs), Arc::new(SystemClock)));
+        let service = {
+            let mut service = FileActionService::new(
+                Arc::clone(&journal),
                 Arc::clone(&fs),
-                Arc::new(InertBin),
+                Arc::new(SystemClock),
+                bin.clone() as Arc<dyn RecycleBin>,
+            );
+            if let Some(over) = options.move_override.clone() {
+                service = service.with_move_override(over);
+            }
+            Arc::new(service)
+        };
+        let executor: Arc<dyn IFileActionExecutor + Send + Sync> = options
+            .executor
+            .clone()
+            .unwrap_or_else(|| Arc::new(FileActionServiceExecutor::new(Arc::clone(&service))));
+        let undo = {
+            let mut undo = UndoService::new(
+                Arc::clone(&journal),
+                Arc::clone(&fs),
+                bin.clone() as Arc<dyn RecycleBin>,
                 Arc::new(EnglishUndoTexts),
-            )))
+            )
+            .with_gate(Arc::clone(&service) as Arc<dyn ServiceGate>);
+            if let Some(over) = options.move_override.clone() {
+                undo = undo.with_move_override(over);
+            }
+            Arc::new(Mutex::new(undo))
         };
         let settings_for_controller = settings.clone();
         let settings_for_remember = settings.clone();
         let log_for_remember = Arc::clone(&log_dyn);
         let file_action_controller = FileActionController::new(FileActionDeps {
             clock: Arc::clone(&clock),
-            file_actions: Some(executor.clone() as Arc<dyn IFileActionExecutor + Send + Sync>),
+            file_actions: Some(Arc::clone(&executor)),
             undo_service: Some(Arc::clone(&undo)),
             dialog_service: Some(Arc::clone(&dialog_dyn)),
             preload_controller: Some(Arc::clone(&preload_dyn)),
@@ -772,7 +1028,7 @@ impl MainEnv {
         });
         let duplicate_controller = DuplicateCleanupController::new(DuplicateCleanupDeps {
             clock: Arc::clone(&clock),
-            file_actions: Some(executor.clone() as Arc<dyn IFileActionExecutor + Send + Sync>),
+            file_actions: Some(Arc::clone(&executor)),
             hash_service: Some(Arc::clone(&hasher)),
             file_system: Arc::clone(&fs),
             dialog_service: Some(Arc::clone(&dialog_dyn)),
@@ -805,7 +1061,10 @@ impl MainEnv {
         let picker = options.picker.unwrap_or_default();
 
         let vm = MainViewModel::new(MainViewModelDeps {
-            catalog: options.catalog.unwrap_or_default(),
+            catalog: match options.catalog_builder {
+                Some(builder) => builder(&photos),
+                None => options.catalog.unwrap_or_default(),
+            },
             clock: Arc::clone(&clock),
             folder_coordinator,
             presenter,
@@ -852,9 +1111,11 @@ impl MainEnv {
             sessions,
             session_writer,
             preload,
+            hasher: fake_hasher,
             dialog,
             explorer,
-            executor,
+            service,
+            bin,
             log,
             gate,
             sink_seen,

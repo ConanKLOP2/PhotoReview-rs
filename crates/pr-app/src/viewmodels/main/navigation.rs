@@ -95,8 +95,6 @@ pub(super) enum Deferred {
     Skip,
     /// A queued file command (`commands`) whose gate turn arrived while the order was pending; the record is in
     /// `queued_file_commands[ticket]`.
-    // Constructed by `commands::on_gate_turn` (W8-08c, same branch); that unit removes this allow.
-    #[allow(dead_code)]
     FileTurn {
         ticket: u64,
     },
@@ -663,5 +661,12 @@ impl MainViewModel {
     #[doc(hidden)]
     pub fn catalog_mut_for_tests(&mut self) -> &mut pr_core::catalog::review_catalog::ReviewCatalog {
         &mut self.catalog
+    }
+
+    /// Test seam: the C# tests drive the compare view model directly (`vm.Compare.Select(path)`); here it lives inside the presenter.
+    /// Never called by production code (the shell selects through the presenter's own commands).
+    #[doc(hidden)]
+    pub fn compare_mut_for_tests(&mut self) -> &mut crate::viewmodels::compare::CompareViewModel {
+        self.presenter.compare_mut()
     }
 }

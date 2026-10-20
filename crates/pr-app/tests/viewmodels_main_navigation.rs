@@ -1439,3 +1439,186 @@ fn folder_ownership_accessors_round_trip() {
     assert!(env.vm.shown_folder().is_none());
     let _ = Arc::strong_count(&ownership);
 }
+
+// ---- zoom swap through the view model (needs the presenter units and the zoom commands of W8-08c) ---------------------------------
+
+/// `(original width, original height, decoded width, decoded height)` of one file.
+type SwapSizes = (i32, i32, i32, i32);
+
+/// C# `SizedDecoder` of `MainViewModelZoomSwapTests`: a bounded decode is the 600 px preview of the file's original size, an unbounded one is the full decode
+/// (the file's own decoded size) held on the gate of its file.
+struct SwapDecoder {
+    sizes: std::collections::HashMap<String, SwapSizes>,
+    original_gate: Arc<support::preview_fakes::Gate>,
+    next_gate: Arc<support::preview_fakes::Gate>,
+}
+
+impl SwapDecoder {
+    fn new(sizes: &[(&str, SwapSizes)]) -> Arc<Self> {
+        Arc::new(Self {
+            sizes: sizes.iter().map(|(name, size)| ((*name).to_owned(), *size)).collect(),
+            original_gate: support::preview_fakes::Gate::new(),
+            next_gate: support::preview_fakes::Gate::new(),
+        })
+    }
+
+    fn size_of(&self, path: &str) -> SwapSizes {
+        let name = Path::new(path)
+            .file_name()
+            .map(|name| name.to_string_lossy().into_owned())
+            .unwrap_or_default();
+        self.sizes.get(&name).copied().unwrap_or((6000, 4000, 6000, 4000))
+    }
+}
+
+impl pr_imaging::decoder_traits::ImageDecoder for SwapDecoder {
+    fn decode(
+        &self,
+        request: &pr_imaging::decode_types::DecodeRequest,
+    ) -> Result<Arc<dyn pr_imaging::decode_types::DecodedImageView>, pr_imaging::decoder_traits::DecodeError> {
+        let path = request.path.to_string_lossy();
+        let (original_width, original_height, decoded_width, decoded_height) = self.size_of(&path);
+        if request.decode_box().is_unbounded() {
+            let gate = if path.ends_with("a.jpg") {
+                &self.original_gate
+            } else {
+                &self.next_gate
+            };
+            gate.wait();
+            return Ok(support::preview_fakes::sized_image(
+                decoded_width,
+                decoded_height,
+                decoded_width,
+                decoded_height,
+                false,
+            ));
+        }
+        Ok(support::preview_fakes::sized_image(
+            600,
+            600 * original_height / original_width,
+            original_width,
+            original_height,
+            true,
+        ))
+    }
+
+    fn read_info(
+        &self,
+        path: &str,
+    ) -> Result<pr_imaging::decode_types::ImageInfo, pr_imaging::decoder_traits::DecodeError> {
+        let (width, height, _, _) = self.size_of(path);
+        Ok(pr_imaging::decode_types::ImageInfo::new(width, height))
+    }
+}
+
+/// A window whose catalog holds `a.jpg` and `b.jpg` (no folder opened) and the first photo presented.
+fn zoom_swap_env(decoder: Arc<SwapDecoder>, zoom_step_percent: i32) -> MainEnv {
+    let mut env = MainEnv::with_options(EnvOptions {
+        decoder,
+        settings: Box::new(move |settings| settings.keyboard_zoom_step_percent = zoom_step_percent),
+        catalog_builder: Some(Box::new(|photos: &Path| {
+            let folder = photos.join("zoom_swap");
+            std::fs::create_dir_all(&folder).unwrap_or_else(|error| panic!("create: {error}"));
+            let mut entries = Vec::new();
+            for name in ["a.jpg", "b.jpg"] {
+                let path = folder.join(name);
+                std::fs::write(&path, [0xFF, 0xD8, 0xFF, 0xD9]).unwrap_or_else(|error| panic!("write: {error}"));
+                entries.push(
+                    pr_core::catalog::types::CatalogEntry::new(path.to_string_lossy().into_owned())
+                        .unwrap_or_else(|error| panic!("{error:?}")),
+                );
+            }
+            let mut catalog = pr_core::catalog::review_catalog::ReviewCatalog::new();
+            catalog.reset(entries, RawPairMode::Separate, None);
+            catalog
+        })),
+        ..EnvOptions::default()
+    });
+    env.vm.first();
+    env.settle();
+    env
+}
+
+fn decoded_original_arriving_while_zoomed(decoded_width: i32, decoded_height: i32, zoom: f64) {
+    let decoder = SwapDecoder::new(&[
+        ("a.jpg", (6720, 4480, decoded_width, decoded_height)),
+        ("b.jpg", (6000, 4000, 6000, 4000)),
+    ]);
+    // A step of 100 % makes one `zoom_in` from Fit land on 2.0; `zoom_actual_size` lands on 1.0.
+    let mut env = zoom_swap_env(Arc::clone(&decoder), 100);
+    let source = |env: &MainEnv| {
+        (
+            env.viewer.borrow().source_pixel_width(),
+            env.viewer.borrow().source_pixel_height(),
+        )
+    };
+    assert_eq!(source(&env), (6720, 4480));
+    let swapping_seen = std::rc::Rc::new(std::cell::RefCell::new(Vec::new()));
+    let seen = std::rc::Rc::clone(&swapping_seen);
+    env.bridge.set_source_size_swapping_hook(Some(Box::new(move |before| {
+        seen.borrow_mut().push(before.source_pixel_width());
+    })));
+
+    if zoom == 1.0 {
+        env.vm.zoom_actual_size(); // leaves Fit: the view model asks the presenter for the full-resolution decode
+    } else {
+        env.vm.zoom_in();
+    }
+    assert!(env.vm.presenter().zoom_detail().pending_load());
+    assert!(swapping_seen.borrow().is_empty());
+
+    decoder.original_gate.open();
+    env.settle();
+
+    // (1) raised exactly once, while the layout still had the preview size
+    assert_eq!(*swapping_seen.borrow(), vec![6720]);
+    // (2) the decoded original's own size is now the source size; the user zoom factor is untouched
+    assert_eq!(source(&env), (decoded_width, decoded_height));
+    assert_eq!(env.viewer.borrow().zoom(), zoom);
+    assert!(!env.viewer.borrow().is_fit());
+
+    // (3) the next image is a new image: the set-source-size path, no swapping event
+    decoder.next_gate.open();
+    env.vm.next();
+    env.settle();
+    assert_eq!(source(&env), (6000, 4000));
+    assert_eq!(swapping_seen.borrow().len(), 1);
+}
+
+#[test]
+fn decoded_original_arriving_while_zoomed_swaps_the_source_size_and_the_next_image_does_not_larger_original() {
+    // C#: ZoomSwapTests.DecodedOriginalArriving_WhileZoomed_SwapsTheSourceSizeThroughTheViewModel_AndTheNextImageDoesNot (6744x4502 at 2.0)
+    decoded_original_arriving_while_zoomed(6744, 4502, 2.0);
+}
+
+#[test]
+fn decoded_original_arriving_while_zoomed_swaps_the_source_size_and_the_next_image_does_not_smaller_original() {
+    // C#: ZoomSwapTests.DecodedOriginalArriving_WhileZoomed_SwapsTheSourceSizeThroughTheViewModel_AndTheNextImageDoesNot (6719x4479 at 1.0)
+    decoded_original_arriving_while_zoomed(6719, 4479, 1.0);
+}
+
+#[test]
+fn navigating_after_fit_width_with_keep_zoom_forgets_the_previous_images_fit_axis() {
+    // C#: ZoomSwapTests.Navigating_AfterFitWidthWithKeepZoom_ForgetsThePreviousImagesFitAxis
+    let decoder = SwapDecoder::new(&[("a.jpg", (6000, 4000, 6000, 4000)), ("b.jpg", (6000, 4000, 6000, 4000))]);
+    let mut env = zoom_swap_env(Arc::clone(&decoder), 10);
+    env.viewer.borrow_mut().set_dpi_scale(1.0);
+    env.viewer.borrow_mut().apply_initial_view_mode(
+        pr_core::model::enums::InitialViewMode::FitWidth,
+        1200.0,
+        800.0,
+        100,
+        false,
+    );
+    let fit_width_zoom = env.viewer.borrow().zoom();
+    assert!((fit_width_zoom - 1200.0 / 6000.0).abs() < 1e-6);
+
+    env.vm.next(); // KeepZoomAcrossImages: the zoom is kept, no apply_initial_view_mode
+    env.settle();
+    env.viewer.borrow_mut().swap_source_size(6016, 4016, &mut |_| {}); // B's original arrives
+
+    assert!(
+        (env.viewer.borrow().zoom() - fit_width_zoom).abs() < 1e-9,
+        "not refitted against A's viewport"
+    );
+}

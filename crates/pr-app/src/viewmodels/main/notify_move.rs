@@ -318,6 +318,15 @@ impl MainViewModel {
 
     // ---- replay of the recorded sink calls ----
 
+    /// Test seam: the C# tests call the sink members of the view model directly (`((IFolderLoadSink)vm).OnOrderApplied(..)`). The sink
+    /// here is the recorder: `record` makes the calls on it, then they are replayed like after a coordinator step. Never called by
+    /// production code.
+    #[doc(hidden)]
+    pub fn replay_sink_calls_for_tests(&mut self, record: impl FnOnce(&mut SinkLog)) -> ChangeSet {
+        record(&mut self.sink);
+        self.apply_sink_actions()
+    }
+
     /// Replays `sink.take()` in order until the log stays empty (a replayed action may call a coordinator again, which records more), then,
     /// when `controller_present_outstanding` and the presenter is idle, tells the file-action controller `on_present_finished(cx, false)`
     /// and replays what that records. Returns the combined changes.
