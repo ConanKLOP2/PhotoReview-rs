@@ -185,6 +185,25 @@ impl MainViewModel {
         todo!()
     }
 
+    /// The follow-up of `OpenPurpose::UndoReopen` (C# lines 659 to 661, run when the reopen finished or was dropped): when `epoch ==
+    /// Some(folder_load_epoch)` and the undo's `error_message` is non-empty it becomes the event status (the reload wrote its own);
+    /// then the undo's gate turn is released (the gate stayed held until the reopen finished).
+    pub(super) fn on_undo_reopen_finished(&mut self, epoch: Option<i64>, error_message: Option<String>) -> ChangeSet {
+        todo!()
+    }
+
+    /// The follow-up of `OpenPurpose::DuplicateReload` (C# `ReloadFolderAsync` result): `duplicate_controller.on_reload_finished(cx,
+    /// still_current)`, the recorded sink calls are replayed and the gate turn of the batch is released when the step is over.
+    pub(super) fn on_duplicate_reload_finished(&mut self, still_current: bool) -> ChangeSet {
+        todo!()
+    }
+
+    /// A queued file command parked behind the Explorer order (`Deferred::FileTurn`) is resumed: the epoch is compared AGAIN
+    /// (C# `WaitForQueuedTurnAsync` after the wait), then `run_queued_command`.
+    pub(super) fn resume_file_turn(&mut self, ticket: u64) -> ChangeSet {
+        todo!()
+    }
+
     // ---- viewer commands ----
 
     /// C# `ToggleFit()` (line 666): `viewer.reset_fit(0.0, 0.0)` (C# defaults), then `apply_viewer_update`.
