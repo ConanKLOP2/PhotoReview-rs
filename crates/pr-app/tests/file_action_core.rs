@@ -5,9 +5,8 @@
 //! (`FakeExecutor::script`), the worker is a manual queue and the presenter is a test that calls `on_present_finished` when it says
 //! so (this replaces the C# `HoldPresenter` / `ReleasePresenter`). Nothing touches a disk or the real Recycle Bin.
 //!
-//! Not ported here (see the report): the undo tests (`UndoLast_*`, `UndoGroup*`, move positions) need `restores_outside_folder`,
-//! `reload_path_after_undo` and `is_in_folder` of W8-07e, which are still `todo!()`; the C# tests that mutate the catalog from inside
-//! an open dialog cannot be written (the catalog is `&mut` for the whole call); `RunAction_UndefinedOperation_*` is N/A (the Rust
+//! The undo tests (`UndoLast_*`, `UndoGroup*`, move positions) are in `file_action_undo.rs`. Not ported here: the C# tests that mutate
+//! the catalog from inside an open dialog cannot be written (the catalog is `&mut` for the whole call); `RunAction_UndefinedOperation_*` is N/A (the Rust
 //! `FileOperationType` is a closed enum, contract O1); the real-disk twins (growing file, bin that cannot hold a capture, unreadable
 //! member state) belong to `pr_core::file_actions::service`, which the executor fake replaces.
 
