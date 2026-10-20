@@ -50,6 +50,12 @@ impl ImagePresenter {
         todo!()
     }
 
+    /// The start of [`remove_missing_catalog_item`](Self::remove_missing_catalog_item) for callers that are already inside a `pump` / `present` call
+    /// (the changes stay accumulated in `self.changes` for that call to return, instead of being taken here).
+    pub(super) fn begin_missing_run(&mut self, env: &mut PresenterEnv<'_>, path: &str, token: i64) {
+        todo!()
+    }
+
     /// One round of the C# loop up to its `await`:
     /// 1. `!clock.is_navigation_current(run.token)`: the run ends (nothing touched).
     /// 2. `next_index = remove_or_degrade(env.catalog, &run.path)`.

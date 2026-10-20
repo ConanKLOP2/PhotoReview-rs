@@ -453,10 +453,20 @@ pub struct ServiceOptions {
 /// A preview service over `decoder` with the C# test defaults: 64 MiB RAM budget, the disk cache disabled, 32 GiB of RAM,
 /// a fixed `1920 x 1080` decode box, the `pixels` codec and the fake payload codec. `dir` is the (unused) disk folder.
 pub fn build_service(dir: &Path, decoder: Arc<dyn ImageDecoder>, options: ServiceOptions) -> Arc<PreviewImageService> {
+    build_service_with_metrics(dir, decoder, options, Arc::new(ReviewMetrics::new()))
+}
+
+/// [`build_service`] over metrics the test shares with the presenter (C# passes one `ReviewMetrics` to both).
+pub fn build_service_with_metrics(
+    dir: &Path,
+    decoder: Arc<dyn ImageDecoder>,
+    options: ServiceOptions,
+    metrics: Arc<ReviewMetrics>,
+) -> Arc<PreviewImageService> {
     let original_mode = options.original_loading_mode;
     let raw_enabled = options.raw_full_decode_enabled;
     let mut config = PreviewServiceConfig::new(
-        Arc::new(ReviewMetrics::new()),
+        metrics,
         Arc::new(move || original_mode),
         Arc::new(|| DecodeBox::new(1920, 1080)),
         Arc::new(PixelsCodec),

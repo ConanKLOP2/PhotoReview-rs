@@ -12,15 +12,17 @@
 
 use std::io;
 use std::path::Path;
+use std::sync::Arc;
 
 use pr_core::abstractions::{FileStat, FileSystem};
 use pr_core::sync::CancelToken;
+use pr_core::text::dotnet_path::get_file_name;
 use pr_imaging::cache_key::ImageCacheKey;
 use pr_imaging::decode_types::DecodedImageView;
 use pr_imaging::exif_summary::ExifSummary;
 use pr_imaging::service::{PreviewError, PreviewImageService};
 
-use super::state::{ImagePresenter, StatPurpose};
+use super::state::{ImagePresenter, PresenterEvent, StatPurpose};
 
 /// C# `private enum StatOutcome { Found, Missing, Error }` (made visible to the presenter's other files).
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -78,7 +80,12 @@ impl StatResult {
 /// `Err(e)` -> `Missing` when [`stat_error_means_missing`] is true, else `Error` carrying `e`. Never panics, never throws.
 /// Blocking: call it only on a worker.
 pub fn stat_now(file_system: &dyn FileSystem, path: &str) -> StatResult {
-    todo!()
+    match file_system.try_get_file_stat(Path::new(path)) {
+        Ok(Some(stat)) => StatResult::found(stat),
+        Ok(None) => StatResult::missing(),
+        Err(error) if stat_error_means_missing(&error) => StatResult::missing(),
+        Err(error) => StatResult::failed(error),
+    }
 }
 
 /// The `catch (Exception ex) when (ex is FileNotFoundException or DirectoryNotFoundException or ArgumentException or
@@ -88,7 +95,15 @@ pub fn stat_now(file_system: &dyn FileSystem, path: &str) -> StatResult {
 /// (`ERROR_FILENAME_EXCED_RANGE`, C# `PathTooLongException`, see `pr_core::io::physical`). Access denied, sharing violations and
 /// every other kind are `Error`.
 pub fn stat_error_means_missing(error: &io::Error) -> bool {
-    todo!()
+    /// `ERROR_FILENAME_EXCED_RANGE`: the C# `PathTooLongException`.
+    const ERROR_FILENAME_EXCED_RANGE: i32 = 206;
+    matches!(
+        error.kind(),
+        io::ErrorKind::NotFound
+            | io::ErrorKind::InvalidInput
+            | io::ErrorKind::Unsupported
+            | io::ErrorKind::InvalidFilename
+    ) || error.raw_os_error() == Some(ERROR_FILENAME_EXCED_RANGE)
 }
 
 impl ImagePresenter {
@@ -97,7 +112,18 @@ impl ImagePresenter {
     /// `cancel` that fires before the job starts drops it without touching the disk and without any event (the navigation was superseded while it waited), which
     /// is the C# "cancelled task, caller returns because the token is no longer current". `purpose` tells `pump` which continuation resumes.
     pub(super) fn submit_stat(&self, token: i64, path: &str, purpose: StatPurpose, cancel: &CancelToken) {
-        todo!()
+        let file_system = Arc::clone(&self.file_system);
+        let inbox = self.inbox.clone();
+        let path = path.to_owned();
+        // The worker runs the job itself and sends the event from its own thread; the task handle is not waited on (a cancelled
+        // or panicked job produces no event, so the presenter stays at its phase until a newer navigation replaces it).
+        drop(self.stat_worker.run(
+            move || {
+                let result = stat_now(file_system.as_ref(), &path);
+                inbox.send(PresenterEvent::Stat { token, purpose, result });
+            },
+            cancel,
+        ));
     }
 }
 
@@ -145,7 +171,15 @@ impl PhotoInfo {
     /// `width/height = image.original_width()/original_height()`, `exif = image.exif().cloned()`,
     /// `raw_preview_* = image.embedded_preview_size()` or `(0, 0)` when it is `None`.
     pub fn from_image(path: &str, image: &dyn DecodedImageView) -> PhotoInfo {
-        todo!()
+        let (raw_preview_width, raw_preview_height) = image.embedded_preview_size().unwrap_or((0, 0));
+        PhotoInfo {
+            file_name: get_file_name(path).to_owned(),
+            width: image.original_width(),
+            height: image.original_height(),
+            exif: image.exif().cloned(),
+            raw_preview_width,
+            raw_preview_height,
+        }
     }
 
     /// C# `info with { RawPreviewWidth = 0, RawPreviewHeight = 0 }`.

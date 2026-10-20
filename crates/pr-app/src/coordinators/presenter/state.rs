@@ -279,6 +279,18 @@ pub(super) struct Navigation {
     pub(super) image: Option<PreviewImage>,
     /// The original dimensions for the status line (`None` = unknown).
     pub(super) original_dimensions: Option<(i32, i32)>,
+    /// C# `!ramReady && HasInflightPreview(key)` at the RAM lookup (the thumbnail is requested only when no preview is in flight).
+    pub(super) has_inflight: bool,
+    /// C# `perfPathId` (`PhotoReviewPerf.PathId(path)`, empty unless `perf`).
+    pub(super) perf_path_id: String,
+    /// C# `perfStat`: `Stopwatch.GetTimestamp()` before the initial stat (0 unless `perf`).
+    pub(super) perf_stat_start: i64,
+    /// C# `perfThumb`: timestamp when the thumbnail was requested (0 unless `perf`).
+    pub(super) perf_thumb_start: i64,
+    /// C# `perfAssigned`: timestamp right after the preview was assigned (0 unless `perf`).
+    pub(super) perf_assigned: i64,
+    /// C# `perfCompare`: timestamp when the compare branch started (0 unless `perf`).
+    pub(super) perf_compare_start: i64,
 }
 
 /// Which continuation a stat event resumes.
