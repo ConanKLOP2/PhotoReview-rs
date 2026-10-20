@@ -159,18 +159,13 @@ pub struct SettingsPresenter {
     pub(super) settings: AppSettings,
     pub(super) store: Option<SettingsStoreHandle>,
     pub(super) localization: Option<SharedLocalization>,
-    // The four fields below are read by W8-10e (`apply.rs`); until it lands they are write-only.
-    #[allow(dead_code)]
     pub(super) update_checker: Option<Arc<dyn UpdateCheck>>,
     pub(super) physical_memory_bytes: i64,
     pub(super) settings_texts: Arc<dyn SettingsTexts>,
     /// C# `ShellIntegration` / `ExecutablePath` (W8-10e).
-    #[allow(dead_code)]
     pub(super) shell_integration: Arc<dyn ShellIntegration>,
-    #[allow(dead_code)]
     pub(super) executable_path: Option<String>,
     /// C# `_updateCts` / `_updateUrl` (W8-10e).
-    #[allow(dead_code)]
     pub(super) update_cancel: Option<CancelToken>,
     pub(super) update_url: Option<String>,
     /// C# `_fallbackValidator` (W8-10d, `validate.rs`).
