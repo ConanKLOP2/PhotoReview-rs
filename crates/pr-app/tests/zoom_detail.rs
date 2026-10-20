@@ -11,7 +11,7 @@ mod support {
 }
 
 use std::sync::atomic::{AtomicUsize, Ordering};
-use std::sync::{Arc, mpsc};
+use std::sync::{Arc, Condvar, Mutex, PoisonError, mpsc};
 use std::time::Duration;
 
 use pr_app::coordinators::zoom_detail::{
@@ -31,6 +31,32 @@ use support::preview_fakes::{
 
 // ---- fixture --------------------------------------------------------------------------------------------------------
 
+/// Counts the loader's wake calls and lets a test wait for a count. The wake runs AFTER the completion was queued, so the
+/// UI thread can already have drained that completion while the count still lags; waiting on the queue for the count to
+/// catch up would then hang. This waits on the count itself (a condition wait bounded by `TIMEOUT`).
+#[derive(Default)]
+struct WakeCounter {
+    count: Mutex<usize>,
+    changed: Condvar,
+}
+
+impl WakeCounter {
+    fn wake(&self) {
+        *self.count.lock().unwrap_or_else(PoisonError::into_inner) += 1;
+        self.changed.notify_all();
+    }
+
+    /// Waits until at least `count` wakes happened; false when `TIMEOUT` passes first.
+    fn wait_for(&self, count: usize) -> bool {
+        let guard = self.count.lock().unwrap_or_else(PoisonError::into_inner);
+        let (guard, _) = self
+            .changed
+            .wait_timeout_while(guard, TIMEOUT, |wakes| *wakes < count)
+            .unwrap_or_else(PoisonError::into_inner);
+        *guard >= count
+    }
+}
+
 /// One loader over a real `PreviewImageService` with fake decoders, a navigation clock and a wake counter. Every effect any
 /// call returned is kept in `effects` (what the presenter would have applied, in order).
 struct Fixture {
@@ -39,7 +65,7 @@ struct Fixture {
     decoder: Arc<SizedDecoder>,
     service: Arc<PreviewImageService>,
     loader: ZoomDetailLoader,
-    wakes: Arc<AtomicUsize>,
+    wakes: Arc<WakeCounter>,
     effects: Vec<ZoomDetailEffect>,
 }
 
@@ -63,15 +89,13 @@ impl Fixture {
         let root = TempRoot::new("zoom-detail");
         let service = build_service(&root.join("cache"), service_decoder, options);
         let clock = Arc::new(GenerationClock::default());
-        let wakes = Arc::new(AtomicUsize::new(0));
+        let wakes = Arc::new(WakeCounter::default());
         let counter = Arc::clone(&wakes);
         let mut loader = ZoomDetailLoader::new(
             Arc::clone(&service),
             Arc::clone(&clock),
             Arc::new(ThreadRunner),
-            Arc::new(move || {
-                counter.fetch_add(1, Ordering::SeqCst);
-            }),
+            Arc::new(move || counter.wake()),
         );
         if let Some(delay) = delay {
             loader = loader.with_indicator_delay(delay);
@@ -163,11 +187,12 @@ impl Fixture {
         self.pump_until(|loader| !loader.pending_load());
     }
 
-    /// Applies completions until `count` worker messages were sent in all (decodes and indicator delays), then drains.
+    /// Waits until `count` worker messages were sent in all (decodes and indicator delays), then applies what is queued.
     fn settle(&mut self, count: usize) {
-        while self.wakes.load(Ordering::SeqCst) < count {
-            self.pump_next();
-        }
+        assert!(
+            self.wakes.wait_for(count),
+            "fewer than {count} worker messages arrived within {TIMEOUT:?}"
+        );
         self.pump();
     }
 
@@ -511,6 +536,12 @@ fn raw_on_zoom_superseded_load_finishing_late_does_not_clear_the_newer_loads_ind
     assert!(
         raw_decoder.wait_started("a.cr2"),
         "A must be inside the decoder before B supersedes it"
+    );
+    // The delays run on unordered worker threads: B may only start once A's delay is registered, so that call 0 is A's
+    // and call 1 is B's.
+    assert!(
+        delays.wait_calls(1),
+        "A's indicator delay must have started before B supersedes it"
     );
 
     fixture.present("b.cr2"); // supersedes A while its RAW decode is still running
