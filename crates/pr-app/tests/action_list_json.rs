@@ -5,7 +5,7 @@
 mod presenters_support;
 
 use pr_app::presenters::action_list_json::{
-    deserialize, deserialize_or_null, serialize, serialize_for_export, throw_if_invalid, ActionListJsonError,
+    ActionListJsonError, deserialize, deserialize_or_null, serialize, serialize_for_export, throw_if_invalid,
 };
 use pr_core::model::enums::FileOperationType;
 use pr_core::settings::shortcuts::ReviewAction;

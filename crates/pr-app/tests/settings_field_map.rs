@@ -9,21 +9,21 @@ use std::collections::{BTreeMap, BTreeSet, HashSet};
 
 use pr_app::presenters::action_list_json;
 use pr_app::presenters::settings_field_map::{
-    anchor_to_index, bindings, canonicalize_shortcuts, covered_properties, dotnet_double_text, index_to_anchor,
-    index_to_view_mode, load_shortcuts, not_edited_in_dialog, read_shortcuts, shortcut_get, shortcut_properties,
-    shortcut_set, shortcut_text, try_double, try_int, view_mode_to_index, FieldContext,
+    FieldContext, anchor_to_index, bindings, canonicalize_shortcuts, covered_properties, dotnet_double_text,
+    index_to_anchor, index_to_view_mode, load_shortcuts, not_edited_in_dialog, read_shortcuts, shortcut_get,
+    shortcut_properties, shortcut_set, shortcut_text, try_double, try_int, view_mode_to_index,
 };
 use pr_app::presenters::settings_form_state::{SettingsFieldError, SettingsFocusField, SettingsFormState};
 use pr_core::model::enums::{FitWidthAnchor, InitialViewMode};
 use pr_core::model::fields::{ExifInfoFields, TitleBarFields};
 use pr_core::model::serde_ext::LenientEnum;
-use pr_core::settings::app_settings::{json, AppSettings, EnglishSettingsTexts};
-use pr_core::settings::context_menu::{effective_hidden, ContextMenuItemId};
+use pr_core::settings::app_settings::{AppSettings, EnglishSettingsTexts, json};
+use pr_core::settings::context_menu::{ContextMenuItemId, effective_hidden};
 use pr_core::settings::shortcuts::ShortcutMappings;
-use pr_l10n::localizer::{built_in_english_localizer, Localizer};
+use pr_l10n::localizer::{Localizer, built_in_english_localizer};
 use pr_l10n::template::NumberCulture;
 use pr_test_support::golden;
-use serde_json::{json, Map, Value};
+use serde_json::{Map, Value, json};
 use std::sync::Arc;
 
 // ---------------------------------------------------------------------------------------------------------------------

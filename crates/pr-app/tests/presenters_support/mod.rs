@@ -3,13 +3,13 @@
 #![allow(dead_code)]
 
 use std::path::{Path, PathBuf};
-use std::sync::atomic::{AtomicU32, Ordering};
 use std::sync::Arc;
+use std::sync::atomic::{AtomicU32, Ordering};
 
 use pr_core::model::enums::FileOperationType;
 use pr_core::settings::shortcuts::ReviewAction;
 use pr_l10n::catalog::LanguageCatalog;
-use pr_l10n::localizer::{built_in_english, built_in_english_localizer, Localizer};
+use pr_l10n::localizer::{Localizer, built_in_english, built_in_english_localizer};
 use pr_test_support::golden::{load, repo_root};
 use serde_json::Value;
 

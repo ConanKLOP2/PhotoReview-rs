@@ -10,7 +10,7 @@ use pr_app::misc::app_log::AppLog;
 use pr_app::presenters::action_profiles::{try_export, try_import};
 use pr_core::model::enums::FileOperationType;
 use pr_l10n::keys;
-use presenters_support::{act, actions_of, english, golden_pairs, lf, localizer, mv, rows, TempDir};
+use presenters_support::{TempDir, act, actions_of, english, golden_pairs, lf, localizer, mv, rows};
 
 /// The failure path logs to `AppLog`; keep the user's real log file out of the tests.
 fn quiet_log() {

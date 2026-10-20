@@ -5,11 +5,11 @@ mod presenters_support;
 
 use pr_app::presenters::action_list_json::throw_if_invalid;
 use pr_app::presenters::action_profiles::{
-    find_destination_problem, has_invalid_actions, index_to_operation, next_free_shortcut, operation_to_index,
-    parse_shortcut, ActionProfileForm, ActionProfilesPresenter, RowId,
+    ActionProfileForm, ActionProfilesPresenter, RowId, find_destination_problem, has_invalid_actions,
+    index_to_operation, next_free_shortcut, operation_to_index, parse_shortcut,
 };
 use pr_core::model::enums::FileOperationType;
-use pr_core::settings::shortcuts::{canonicalize, ReviewAction};
+use pr_core::settings::shortcuts::{ReviewAction, canonicalize};
 use pr_l10n::keys;
 use pr_l10n::template::LocArg;
 use presenters_support::{act, actions_of, english, golden_pairs, localizer, mv, rows, vietnamese};
@@ -459,9 +459,11 @@ fn run_script(texts: &pr_l10n::localizer::Localizer, input: &Value, out: &Value)
             "remove" => {
                 let row = index_of(&presenter).unwrap().expect("row to remove");
                 let selected = usize::try_from(op["selected"].as_i64().unwrap()).unwrap();
-                serde_json::json!(presenter
-                    .remove(row, selected)
-                    .map_or(-1, |n| i64::try_from(n).unwrap()))
+                serde_json::json!(
+                    presenter
+                        .remove(row, selected)
+                        .map_or(-1, |n| i64::try_from(n).unwrap())
+                )
             }
             "add" => {
                 let id = presenter.add(texts);

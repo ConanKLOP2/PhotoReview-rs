@@ -13,7 +13,7 @@ use std::path::Path;
 use pr_core::model::enums::FileOperationType;
 use pr_core::settings::shortcuts::ReviewAction;
 use pr_l10n::localizer::Localizer;
-use pr_l10n::template::{describe, LocArg};
+use pr_l10n::template::{LocArg, describe};
 
 use crate::input::key_id::KeyId;
 
