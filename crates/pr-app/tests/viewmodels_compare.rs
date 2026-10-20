@@ -856,6 +856,138 @@ fn hash_outcome_maps_cancel_failure_and_success() {
     assert_eq!(log.messages(), vec![format!("Compare hash failed path={LEFT}")]);
 }
 
+#[test]
+// New test: kills replace CompareProperty::csharp_name with "" or "xyzzy".
+fn property_names_match_csharp_notifications_in_clear_order() {
+    let names = [
+        "IsVisible",
+        "LeftPath",
+        "RightPath",
+        "LeftImage",
+        "RightImage",
+        "SelectedPath",
+        "IsLeftSelected",
+        "IsRightSelected",
+        "LeftSizeText",
+        "RightSizeText",
+        "SizeText",
+        "HashText",
+        "StatusText",
+    ];
+    assert_eq!(P::ALL.map(P::csharp_name), names);
+}
+
+#[test]
+// New test: kills replace CompareChanges::all with Default::default(), insert with (),
+// |= with &=, << with >>, contains with true/false, != with ==, & with |/^,
+// is_empty with true/false, == with !=, union with Default::default(), | with &/^.
+fn change_set_operations_preserve_exact_membership_and_empty_state() {
+    let empty = CompareChanges::EMPTY;
+    assert!(empty.is_empty());
+    assert!(empty.iter().next().is_none());
+    for property in P::ALL {
+        assert!(!empty.contains(property));
+    }
+
+    let mut first = CompareChanges::EMPTY;
+    first.insert(P::LeftPath);
+    assert!(!first.is_empty());
+    assert_eq!(first.iter().collect::<Vec<_>>(), vec![P::LeftPath]);
+    for property in P::ALL {
+        assert_eq!(first.contains(property), property == P::LeftPath);
+    }
+
+    let mut last = CompareChanges::EMPTY;
+    last.insert(P::StatusText);
+    assert_eq!(last.iter().collect::<Vec<_>>(), vec![P::StatusText]);
+    let both = first.union(last);
+    assert_eq!(both.iter().collect::<Vec<_>>(), vec![P::LeftPath, P::StatusText]);
+    assert_eq!(first.union(first).iter().collect::<Vec<_>>(), vec![P::LeftPath]);
+    assert_eq!(first.union(empty).iter().collect::<Vec<_>>(), vec![P::LeftPath]);
+    assert_eq!(CompareChanges::all().iter().collect::<Vec<_>>(), P::ALL);
+}
+
+#[test]
+// New test: kills replace change -> CompareChanges with Default::default().
+fn single_property_mutation_reports_its_notification_without_a_test_helper() {
+    with_ctx(|ctx| {
+        let mut vm = CompareViewModel::new(ctx);
+        let reported = vm.toggle();
+        assert_eq!(reported.iter().collect::<Vec<_>>(), vec![P::IsVisible]);
+        assert!(vm.is_visible());
+    });
+}
+
+#[test]
+// New test: kills delete match arm (None, None) or (Some(left), Some(right)) in same_image.
+fn image_setters_distinguish_empty_same_reference_and_new_reference() {
+    with_ctx(|ctx| {
+        let mut vm = CompareViewModel::new(ctx);
+        assert!(vm.set_left_image(None).is_empty());
+        assert!(vm.set_right_image(None).is_empty());
+        let shared = image();
+        assert_eq!(
+            vm.set_left_image(Some(shared.clone())).iter().collect::<Vec<_>>(),
+            vec![P::LeftImage]
+        );
+        assert!(vm.set_left_image(Some(shared.clone())).is_empty());
+        assert_eq!(
+            vm.set_right_image(Some(shared.clone())).iter().collect::<Vec<_>>(),
+            vec![P::RightImage]
+        );
+        assert!(vm.set_right_image(Some(shared)).is_empty());
+        assert_eq!(
+            vm.set_left_image(Some(image())).iter().collect::<Vec<_>>(),
+            vec![P::LeftImage]
+        );
+        assert_eq!(vm.set_right_image(None).iter().collect::<Vec<_>>(), vec![P::RightImage]);
+    });
+}
+
+#[test]
+// New test: kills replace CompareLoad::token with 0, 1, or -1.
+fn continuation_retains_non_sentinel_tokens_at_each_worker_stage() {
+    with_ctx(|ctx| {
+        for token in [42, -7] {
+            let mut vm = CompareViewModel::new(ctx);
+            let mut opts = options();
+            opts.compare_size_enabled = true;
+            opts.compare_hash_enabled = true;
+            opts.hash_source_available = true;
+            let current = |seen: i64| {
+                assert_eq!(seen, token);
+                true
+            };
+            let preview = next_work(vm.begin_load(pair(), token, &current, opts, ctx));
+            assert_eq!(preview.token(), token);
+            assert!(matches!(preview.work(), CompareWork::LoadImages { .. }));
+            let sizes = next_work(vm.resume_load(preview, images(None, None), &current, ctx));
+            assert_eq!(sizes.token(), token);
+            assert!(matches!(sizes.work(), CompareWork::StatSizes { .. }));
+            let hash_load = next_work(vm.resume_load(
+                sizes,
+                CompareWorkResult::Sizes {
+                    left: None,
+                    right: None,
+                },
+                &current,
+                ctx,
+            ));
+            assert_eq!(hash_load.token(), token);
+            assert!(matches!(hash_load.work(), CompareWork::ComputeHashes { .. }));
+            assert_eq!(
+                done(vm.resume_load(
+                    hash_load,
+                    hashes(HashOutcome::Hash("A".into()), HashOutcome::Hash("A".into())),
+                    &current,
+                    ctx,
+                )),
+                CompareOutcome::Completed
+            );
+        }
+    });
+}
+
 #[derive(Default)]
 struct RecordingLog(Mutex<Vec<String>>);
 impl RecordingLog {
