@@ -15,10 +15,6 @@
 //!   that the view model replays after each call (it needs the catalog, which the coordinator holds `&mut` during the call).
 //! - The presenter owns its sink; the sink callbacks cannot reach the view model, so they go through [`PresentationBridge`]
 //!   (one shared handle: the viewer plus the "last notified image" state), the single sanctioned shared-state exception.
-// Stub only: the porter removes this allow line once every body is real.
-#![allow(unused_variables, unused_imports, dead_code)]
-// Stub only (contract text in doc comments, boxed seams): the porter fixes the doc layout / introduces type aliases and removes this line.
-#![allow(clippy::type_complexity)]
 
 use std::cell::{Ref, RefCell, RefMut};
 use std::collections::{HashMap, VecDeque};
@@ -39,6 +35,7 @@ use pr_core::settings::store::{SettingsSaveError, SettingsStore};
 use pr_core::time::DateTimeUtc;
 use pr_imaging::decode_types::PlatformImage;
 use pr_imaging::service::PreviewImageService;
+use pr_l10n::template::LocArg;
 
 use super::commands::{ExternalEditorLauncher, QueuedFileCommand, UndoContext};
 use super::navigation::{Deferred, OwnershipRequest, PendingOpen};
@@ -121,7 +118,29 @@ impl MainProperty {
 
     /// The C# `nameof(MainViewModel.X)` text (tests and logs).
     pub fn csharp_name(self) -> &'static str {
-        todo!()
+        match self {
+            Self::StatusText => "StatusText",
+            Self::StatusNeedsAttention => "StatusNeedsAttention",
+            Self::SkippedEntries => "SkippedEntries",
+            Self::HasSkippedEntries => "HasSkippedEntries",
+            Self::SkippedWarningText => "SkippedWarningText",
+            Self::IsStatusPanelVisible => "IsStatusPanelVisible",
+            Self::FolderTitle => "FolderTitle",
+            Self::FolderText => "FolderText",
+            Self::IsExplorerOrderApplied => "IsExplorerOrderApplied",
+            Self::CurrentImage => "CurrentImage",
+            Self::CurrentIndex => "CurrentIndex",
+            Self::TotalFiles => "TotalFiles",
+            Self::HasImages => "HasImages",
+            Self::CanNavigateNext => "CanNavigateNext",
+            Self::CanNavigatePrevious => "CanNavigatePrevious",
+            Self::CurrentHasCapturePair => "CurrentHasCapturePair",
+            Self::CapturePairBadge => "CapturePairBadge",
+            Self::CapturePairBadgeToolTip => "CapturePairBadgeToolTip",
+            Self::ExifText => "ExifText",
+            Self::IsExifLineVisible => "IsExifLineVisible",
+            Self::ExifAutomationName => "ExifAutomationName",
+        }
     }
 }
 
@@ -136,27 +155,31 @@ impl MainChanges {
 
     /// Adds `property`.
     pub fn insert(&mut self, property: MainProperty) {
-        todo!()
+        self.0 |= 1_u32 << (property as u32);
     }
 
     /// True when `property` is in the set.
     pub fn contains(self, property: MainProperty) -> bool {
-        todo!()
+        self.0 & (1_u32 << (property as u32)) != 0
     }
 
     /// True when the set is empty.
     pub fn is_empty(self) -> bool {
-        todo!()
+        self.0 == 0
     }
 
     /// Set union.
     pub fn union(self, other: MainChanges) -> MainChanges {
-        todo!()
+        MainChanges(self.0 | other.0)
     }
 
     /// The members in [`MainProperty`] declaration order.
     pub fn iter(self) -> std::vec::IntoIter<MainProperty> {
-        todo!()
+        MainProperty::ALL
+            .into_iter()
+            .filter(|property| self.contains(*property))
+            .collect::<Vec<_>>()
+            .into_iter()
     }
 }
 
@@ -191,17 +214,35 @@ pub struct ChangeSet {
 impl ChangeSet {
     /// True when nothing changed and no event was raised.
     pub fn is_empty(&self) -> bool {
-        todo!()
+        self.main.is_empty()
+            && self.viewer.is_empty()
+            && self.overlay.is_empty()
+            && self.compare.is_empty()
+            && self.presenter.is_empty()
+            && self.image_changing.is_none()
+            && !self.catalog_changed
     }
 
     /// Adds `other` to `self` (set unions; `image_changing` keeps the first `Some`; `catalog_changed` is or-ed).
     pub fn merge(&mut self, other: ChangeSet) {
-        todo!()
+        self.main = self.main.union(other.main);
+        self.viewer = self.viewer.union(other.viewer);
+        for property in other.overlay.iter() {
+            self.overlay.insert(property);
+        }
+        self.compare = self.compare.union(other.compare);
+        self.presenter.0 |= other.presenter.0;
+        if self.image_changing.is_none() {
+            self.image_changing = other.image_changing;
+        }
+        self.catalog_changed |= other.catalog_changed;
     }
 
     /// A change set holding only `property`.
     pub fn of(property: MainProperty) -> ChangeSet {
-        todo!()
+        let mut result = Self::default();
+        result.main.insert(property);
+        result
     }
 }
 
@@ -214,57 +255,114 @@ impl ChangeSet {
 pub struct SettingsSource {
     store: Arc<SettingsStore>,
     override_settings: Arc<Mutex<Option<Arc<AppSettings>>>>,
+    provisional: Arc<Mutex<bool>>,
 }
 
 impl SettingsSource {
     /// A source over `store` with no override.
     pub fn new(store: Arc<SettingsStore>) -> Self {
-        todo!()
+        Self {
+            store,
+            override_settings: Arc::new(Mutex::new(None)),
+            provisional: Arc::new(Mutex::new(false)),
+        }
     }
 
     /// C# `Settings` getter: the override when set, else `store.current()`. A poisoned lock is recovered (R0003).
     pub fn current(&self) -> Arc<AppSettings> {
-        todo!()
+        self.override_settings
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner)
+            .as_ref()
+            .cloned()
+            .unwrap_or_else(|| self.store.current())
     }
 
     /// C# `_settingsStore.Current`, ignoring the override (used by `ShowSettings` and the prewarm).
     pub fn store_current(&self) -> Arc<AppSettings> {
-        todo!()
+        self.store.current()
     }
 
     /// The store (key-name validator, `save`).
     pub fn store(&self) -> &Arc<SettingsStore> {
-        todo!()
+        &self.store
     }
 
     /// C# `Settings` setter / test seam: `Some` replaces the reads until cleared; `None` clears the override (and a provisional one).
     pub fn set_override(&self, value: Option<Arc<AppSettings>>) {
-        todo!()
+        *self
+            .override_settings
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner) = value;
+        *self
+            .provisional
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner) = false;
     }
 
     /// True while an override is installed.
     pub fn has_override(&self) -> bool {
-        todo!()
+        self.override_settings
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner)
+            .is_some()
     }
 
     /// Starts an in-memory edit of the current settings. C# mutates the live `AppSettings` object in place (`settings.ShowInfoOverlay = ..`,
     /// `settings.LastMoveToFolder = ..`) and saves it afterwards; readers see the new value before the save. Rust settings are shared
     /// immutable values, so: clone `current()`, apply `mutate`, install the copy as the override NOW, and return the edit.
     pub fn begin_edit(&self, mutate: impl FnOnce(&mut AppSettings)) -> SettingsEdit {
-        todo!()
+        let had_override = self.has_override();
+        let mut new = (*self.current()).clone();
+        mutate(&mut new);
+        let new = Arc::new(new);
+        *self
+            .override_settings
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner) = Some(Arc::clone(&new));
+        SettingsEdit { new, had_override }
     }
 
     /// Saves the edited copy with `store.save`. `Ok`: the store holds the value, so the override is removed again unless one was installed
     /// before the edit (then it is replaced by the saved value). `Err`: the override STAYS and is marked provisional ("the overlay still
     /// toggles for this session", "the folder is kept in memory"); the error is returned for the caller's log line.
     pub fn commit_edit(&self, edit: SettingsEdit) -> Result<(), SettingsSaveError> {
-        todo!()
+        match self.store.save((*edit.new).clone()) {
+            Ok(saved) => {
+                *self
+                    .override_settings
+                    .lock()
+                    .unwrap_or_else(std::sync::PoisonError::into_inner) = edit.had_override.then_some(saved);
+                *self
+                    .provisional
+                    .lock()
+                    .unwrap_or_else(std::sync::PoisonError::into_inner) = false;
+                Ok(())
+            }
+            Err(error) => {
+                *self
+                    .provisional
+                    .lock()
+                    .unwrap_or_else(std::sync::PoisonError::into_inner) = true;
+                Err(error)
+            }
+        }
     }
 
     /// Removes a provisional override left by a failed `commit_edit` (called when the Settings dialog reports a change: the store then holds
     /// the user's values, as the C# `Current` replaced by the dialog's save). An explicit `set_override` is not touched.
     pub fn clear_provisional_override(&self) {
-        todo!()
+        let mut provisional = self
+            .provisional
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
+        if *provisional {
+            *self
+                .override_settings
+                .lock()
+                .unwrap_or_else(std::sync::PoisonError::into_inner) = None;
+            *provisional = false;
+        }
     }
 }
 
@@ -329,8 +427,10 @@ struct BridgeState {
     /// The zoom the viewer asked the loader for during the last sink call (pull channel of contract W8-07h note 7).
     zoom_change: Option<Option<f64>>,
     /// Test/shell hook for C# `ViewerState.SourceSizeSwapping`.
-    on_source_size_swapping: Option<Box<dyn FnMut(&ViewerState)>>,
+    on_source_size_swapping: Option<SourceSizeSwappingHook>,
 }
+
+type SourceSizeSwappingHook = Box<dyn FnMut(&ViewerState)>;
 
 /// The four C# `MainViewModelSinkCallbacks` as methods on a shared handle. The composition root (W8-09b) builds the closures of
 /// `composition::contracts::MainViewModelSinkCallbacks` around a clone of this handle; the view model holds another clone and drains
@@ -343,17 +443,27 @@ pub struct PresentationBridge {
 impl PresentationBridge {
     /// A bridge over the shared viewer; no image notified yet.
     pub fn new(viewer: ViewerHandle) -> Self {
-        todo!()
+        Self {
+            inner: Rc::new(RefCell::new(BridgeState {
+                viewer,
+                last_notified_image_path: None,
+                pending: BridgePending::default(),
+                zoom_change: None,
+                on_source_size_swapping: None,
+            })),
+        }
     }
 
     /// The shared viewer.
     pub fn viewer(&self) -> ViewerHandle {
-        todo!()
+        self.inner.borrow().viewer.clone()
     }
 
     /// Installs the C# `SourceSizeSwapping` subscriber (called with the viewer state BEFORE the size is swapped).
+    // The public callback type is fixed by the W8-08a contract.
+    #[allow(clippy::type_complexity)]
     pub fn set_source_size_swapping_hook(&self, hook: Option<Box<dyn FnMut(&ViewerState)>>) {
-        todo!()
+        self.inner.borrow_mut().on_source_size_swapping = hook;
     }
 
     /// C# `MainViewModel.NotifyCurrentImageChanged(isFileChange)` (lines 140 to 160), run synchronously inside the presenter's
@@ -364,29 +474,77 @@ impl PresentationBridge {
     /// `Some(viewer.effective_zoom())` for [`take_viewer_zoom_change`](Self::take_viewer_zoom_change); (5) the viewer changes are
     /// accumulated; (6) `navigation_dirty = true` (the view model runs `NotifyNavigationStateChanged` after the call).
     pub fn on_set_current_image(&self, change: &ImageChange<'_>, is_file_change: bool) {
-        todo!()
+        let mut state = self.inner.borrow_mut();
+        if is_file_change && state.pending.changes.image_changing.is_none() {
+            state.pending.changes.image_changing = Some(ImageChangingEventArgs { is_file_change });
+        }
+        let new_image = match (change.presented_path, state.last_notified_image_path.as_deref()) {
+            (None, None) => false,
+            (Some(a), Some(b)) => !pr_core::text::eq_ignore_case(a, b),
+            _ => true,
+        };
+        state.last_notified_image_path = change.presented_path.map(str::to_owned);
+        let viewer = state.viewer.clone();
+        let update = {
+            let mut viewer = viewer.borrow_mut();
+            if new_image {
+                let changes = viewer.set_force_high_quality_scaling(false);
+                state.pending.changes.viewer = state.pending.changes.viewer.union(changes);
+            }
+            if change.is_same_source_swap {
+                viewer.swap_source_size(change.original_width, change.original_height, &mut |before| {
+                    if let Some(hook) = state.on_source_size_swapping.as_mut() {
+                        hook(before);
+                    }
+                })
+            } else {
+                viewer.set_source_size(change.original_width, change.original_height, new_image)
+            }
+        };
+        state.pending.changes.viewer = state.pending.changes.viewer.union(update.changes);
+        if update.zoom_mode_changed {
+            state.zoom_change = Some(viewer.borrow().effective_zoom());
+        }
+        state.pending.navigation_dirty = true;
     }
 
     /// C# `SetStatusText: _ => vm?.NotifyPresentationChanged()`: marks `navigation_dirty`.
     pub fn on_set_status_text(&self) {
-        todo!()
+        self.inner.borrow_mut().pending.navigation_dirty = true;
     }
 
     /// C# `MainViewModelCompositionRoot.ApplyInitialView(vm, viewport, settingsStore)`: `viewer.apply_initial_view_mode(
     /// settings.initial_view_mode, w, h, settings.click_zoom_percent, settings.keep_zoom_across_images)`; true when it applied.
     /// A `zoom_mode_changed` update stores the pull-channel value; the viewer changes are accumulated.
     pub fn apply_initial_view(&self, viewport: (f64, f64), settings: &AppSettings) -> bool {
-        todo!()
+        let mut state = self.inner.borrow_mut();
+        let viewer = state.viewer.clone();
+        let update = viewer.borrow_mut().apply_initial_view_mode(
+            settings.initial_view_mode,
+            viewport.0,
+            viewport.1,
+            settings.click_zoom_percent,
+            settings.keep_zoom_across_images,
+        );
+        if let Some(update) = update {
+            state.pending.changes.viewer = state.pending.changes.viewer.union(update.changes);
+            if update.zoom_mode_changed {
+                state.zoom_change = Some(viewer.borrow().effective_zoom());
+            }
+            true
+        } else {
+            false
+        }
     }
 
     /// Pull side of `IPresentationSink::take_viewer_zoom_change`: returns and clears the stored zoom (`Some(None)` = Fit).
     pub fn take_viewer_zoom_change(&self) -> Option<Option<f64>> {
-        todo!()
+        self.inner.borrow_mut().zoom_change.take()
     }
 
     /// Returns and clears the accumulated changes.
     pub(super) fn take_pending(&self) -> BridgePending {
-        todo!()
+        std::mem::take(&mut self.inner.borrow_mut().pending)
     }
 }
 
@@ -430,19 +588,26 @@ impl fmt::Debug for MainFolderInfoLabels {
 
 impl FolderInfoLabels for MainFolderInfoLabels {
     fn current(&self, folder_name: &str) -> String {
-        todo!()
+        self.texts
+            .format("main.folderInfo.current", &[LocArg::new("folderName", folder_name)])
     }
 
     fn previous(&self, key: &str, folder_name: &str) -> String {
-        todo!()
+        self.texts.format(
+            "main.folderInfo.previous",
+            &[LocArg::new("key", key), LocArg::new("folderName", folder_name)],
+        )
     }
 
     fn next(&self, key: &str, folder_name: &str) -> String {
-        todo!()
+        self.texts.format(
+            "main.folderInfo.next",
+            &[LocArg::new("key", key), LocArg::new("folderName", folder_name)],
+        )
     }
 
     fn pending(&self) -> String {
-        todo!()
+        self.texts.get("main.folderInfo.pending")
     }
 }
 
@@ -501,7 +666,11 @@ impl<E> fmt::Debug for MainWorkerPort<E> {
 
 impl<E: Send + 'static> crate::coordinators::folder_load::state::WorkerPort<E> for MainWorkerPort<E> {
     fn submit(&self, lane: crate::coordinators::folder_load::state::WorkerLane, job: Box<dyn FnOnce() -> E + Send>) {
-        todo!()
+        let _ = lane;
+        let inbox = self.inbox.clone();
+        let wrap = self.wrap;
+        self.runner
+            .run("main-view-model-worker", Box::new(move || inbox.send(wrap(job()))));
     }
 }
 
@@ -562,6 +731,8 @@ impl fmt::Debug for MainViewModelDeps {
 }
 
 /// C# `MainViewModel`. Owned by the UI thread; not `Send`.
+// Several fields are consumed by the W8-08b..08e slices, which are still stubs in this wave.
+#[allow(dead_code)]
 pub struct MainViewModel {
     pub(super) catalog: ReviewCatalog,
     pub(super) clock: Arc<GenerationClock>,
@@ -646,88 +817,155 @@ impl MainViewModel {
     /// (2) `viewer.set_zoom_step(settings.keyboard_zoom_step_percent as f64 / 100.0)` (Q-R41), (3) `presenter.set_viewer_zoom(viewer.effective_zoom())`.
     /// Starts no work, reads no file, makes no sink call. `folder_title` starts as the localized app title (`app.title`).
     pub fn new(deps: MainViewModelDeps) -> Self {
-        todo!()
+        let settings = deps.settings.current();
+        {
+            let mut viewer = deps.viewer.borrow_mut();
+            viewer.set_scaling_quality(settings.scaling_quality_or_default());
+            viewer.set_zoom_step(f64::from(settings.keyboard_zoom_step_percent) / 100.0);
+        }
+        let mut presenter = deps.presenter;
+        presenter.set_viewer_zoom(deps.viewer.borrow().effective_zoom());
+        let title = deps.texts.get("app.title");
+        let info_overlay = InfoOverlayViewModel::new(MainFolderInfoLabels::new(Arc::clone(&deps.texts)));
+        Self {
+            catalog: deps.catalog,
+            clock: deps.clock,
+            folder_coordinator: deps.folder_coordinator,
+            presenter,
+            viewer: deps.viewer,
+            bridge: deps.bridge,
+            info_overlay,
+            settings: deps.settings,
+            file_system: deps.file_system,
+            file_action_controller: deps.file_action_controller,
+            file_action_gate: deps.file_action_gate,
+            sibling_navigator: deps.sibling_navigator,
+            duplicate_controller: deps.duplicate_controller,
+            dialog_service: deps.dialog_service,
+            session_writer: deps.session_writer,
+            undo_service: deps.undo_service,
+            preview_service: deps.preview_service,
+            preload_controller: deps.preload_controller,
+            reset_caches_action: deps.reset_caches_action,
+            metrics: deps.metrics,
+            folder_picker: deps.folder_picker,
+            clipboard: deps
+                .clipboard
+                .unwrap_or_else(|| Box::new(crate::services::contracts::UnavailableClipboardService)),
+            external_editor: deps
+                .external_editor
+                .unwrap_or_else(|| Box::new(super::commands::ProcessEditorLauncher)),
+            format: deps.format,
+            inbox: deps.inbox,
+            runner: deps.runner,
+            log: deps.log,
+            sink: SinkLog::new(),
+            folder_title: title,
+            folder_text: String::new(),
+            folder_text_folder: None,
+            folder_text_count: 0,
+            explorer_order_applied: false,
+            status_text: String::new(),
+            current_session: None,
+            is_closed: false,
+            skipped_entries: Vec::new(),
+            instance_label: None,
+            folder_load_epoch: 0,
+            shown_folder: None,
+            folder_ownership: None,
+            pending_open: None,
+            deferred: VecDeque::new(),
+            queued_file_commands: HashMap::new(),
+            next_ticket: 0,
+            active_gate_turn: None,
+            controller_present_outstanding: false,
+            settings_reloads_waiting: 0,
+            duplicate_gate_turn: None,
+            undo_context: None,
+        }
     }
 
     // ---- accessors (C# lines 174 to 296) ----
 
     /// C# `Metrics`.
     pub fn metrics(&self) -> &Arc<ReviewMetrics> {
-        todo!()
+        &self.metrics
     }
 
     /// C# `Presenter` (read-only; mutations go through the view model so the environment is lent).
     pub fn presenter(&self) -> &ImagePresenter {
-        todo!()
+        &self.presenter
     }
 
     /// C# `Presenter.DeferNextPreloadKick = value` (P-1 startup).
     pub fn set_defer_next_preload_kick(&mut self, value: bool) {
-        todo!()
+        self.presenter.set_defer_next_preload_kick(value);
     }
 
     /// C# `Compare` (the instance lives in the presenter).
     pub fn compare(&self) -> &CompareViewModel {
-        todo!()
+        self.presenter.compare()
     }
 
     /// C# `Viewer`.
     pub fn viewer(&self) -> &ViewerHandle {
-        todo!()
+        &self.viewer
     }
 
     /// The bridge the sink callbacks use (for the composition root).
     pub fn bridge(&self) -> &PresentationBridge {
-        todo!()
+        &self.bridge
     }
 
     /// C# `Catalog` (read-only).
     pub fn catalog(&self) -> &ReviewCatalog {
-        todo!()
+        &self.catalog
     }
 
     /// C# `Session`.
     pub fn session(&self) -> Option<&SessionState> {
-        todo!()
+        self.current_session.as_ref()
     }
 
     /// C# `PreloadController`.
     pub fn preload_controller(&self) -> Option<&Arc<dyn IPreloadController>> {
-        todo!()
+        self.preload_controller.as_ref()
     }
 
     /// C# `PreviewService`.
     pub fn preview_service(&self) -> &Arc<PreviewImageService> {
-        todo!()
+        &self.preview_service
     }
 
     /// C# `UndoService`.
     pub fn undo_service(&self) -> &Arc<Mutex<UndoService>> {
-        todo!()
+        &self.undo_service
     }
 
     /// C# `PrewarmInitialImage(path)` (line 183): `services::prewarm::start(Some(preview_service), &settings.store_current(), Some(path), None)`
     /// (the STORE value, not the override). Returns `None` when nothing was started.
     pub fn prewarm_initial_image(&self, path: &str) -> Option<PrewarmTask> {
-        todo!()
+        let previews: Arc<dyn PrewarmPreviews> = self.preview_service.clone();
+        crate::services::prewarm::start(Some(previews), &self.settings.store_current(), Some(path), None)
     }
 
     // ---- settings ----
 
     /// C# `Settings` getter.
     pub fn settings(&self) -> Arc<AppSettings> {
-        todo!()
+        self.settings.current()
     }
 
     /// C# `Settings` setter: installs the override, then `InfoOverlay.Refresh()` (the overlay changes and a possible sibling search
     /// are applied through `apply_overlay_refresh`).
     pub fn set_settings(&mut self, value: Arc<AppSettings>) -> ChangeSet {
-        todo!()
+        self.settings.set_override(Some(value));
+        self.refresh_overlay()
     }
 
     /// C# `InfoOverlay`.
     pub fn info_overlay(&self) -> &InfoOverlayViewModel<MainFolderInfoLabels> {
-        todo!()
+        &self.info_overlay
     }
 
     // ---- status ----
@@ -735,134 +973,220 @@ impl MainViewModel {
     /// C# `IsStatusPanelVisible` = `InfoOverlay.IsFileInfoVisible || IsExifLineVisible || HasSkippedEntries`
     /// (`is_exif_line_visible` is W8-08e).
     pub fn is_status_panel_visible(&self) -> bool {
-        todo!()
+        self.has_skipped_entries()
+            || InfoOverlayViewModel::<MainFolderInfoLabels>::is_file_info_visible(&self.settings.current())
+            || self.is_exif_line_visible()
     }
 
     /// C# `FolderTitle`.
     pub fn folder_title(&self) -> &str {
-        todo!()
+        &self.folder_title
     }
 
     /// C# `FolderText`.
     pub fn folder_text(&self) -> &str {
-        todo!()
+        &self.folder_text
     }
 
     /// C# `IsExplorerOrderApplied`.
     pub fn is_explorer_order_applied(&self) -> bool {
-        todo!()
+        self.explorer_order_applied
     }
 
     /// C# `StatusText` getter. Precedence: non-empty event text; else, while the RAW-decode indicator is visible
     /// (`presenter.zoom_detail().is_raw_decode_indicator_visible()`) and the presenter does not need attention, the localized
     /// "decoding RAW" line (`status::decoding_raw`); else the presenter's line.
     pub fn status_text(&self) -> String {
-        todo!()
+        if !self.status_text.is_empty() {
+            return self.status_text.clone();
+        }
+        if self.presenter.zoom_detail().is_raw_decode_indicator_visible() && !self.presenter.status_needs_attention() {
+            return self.with_ctx(crate::viewmodels::format::status::decoding_raw);
+        }
+        self.presenter.status_text().to_owned()
     }
 
     /// C# `StatusText` setter (`SetProperty`): stores the event text; `main.StatusText` is in the result only when the stored
     /// text differs (ordinal). `StatusNeedsAttention` is NOT raised by the setter (as in C#).
     pub fn set_status_text(&mut self, value: &str) -> ChangeSet {
-        todo!()
+        if self.status_text == value {
+            return ChangeSet::default();
+        }
+        self.status_text = value.to_owned();
+        ChangeSet::of(MainProperty::StatusText)
     }
 
     /// C# `StatusNeedsAttention` (Q-R34): RAW indicator visible, or non-empty event text, or the presenter needs attention, or
     /// skipped entries exist.
     pub fn status_needs_attention(&self) -> bool {
-        todo!()
+        self.presenter.zoom_detail().is_raw_decode_indicator_visible()
+            || !self.status_text.is_empty()
+            || self.presenter.status_needs_attention()
+            || self.has_skipped_entries()
     }
 
     // ---- skipped entries (IO05) ----
 
     /// C# `SkippedEntries`.
     pub fn skipped_entries(&self) -> &[SkippedEntry] {
-        todo!()
+        &self.skipped_entries
     }
 
     /// C# `HasSkippedEntries`.
     pub fn has_skipped_entries(&self) -> bool {
-        todo!()
+        !self.skipped_entries.is_empty()
     }
 
     /// C# `SkippedWarningText`: empty without entries, else the plural catalog text `main.skipped.warning` with the count.
     pub fn skipped_warning_text(&self) -> String {
-        todo!()
+        if self.skipped_entries.is_empty() {
+            return String::new();
+        }
+        let count = i64::try_from(self.skipped_entries.len()).unwrap_or(i64::MAX);
+        let args = [LocArg::new("count", count)];
+        self.with_ctx(|ctx| {
+            ctx.texts
+                .format_plural_with("main.skipped.warning", count, &args, ctx.numbers)
+        })
     }
 
     /// C# `SetSkippedEntries` (private): stores the list and reports `SkippedEntries`, `HasSkippedEntries`, `SkippedWarningText`,
     /// `IsStatusPanelVisible` (always, even for an equal list).
+    // W8-08e's files-skipped sink will call this once its stub is ported.
+    #[allow(dead_code)]
     pub(super) fn set_skipped_entries(&mut self, entries: Vec<SkippedEntry>) -> ChangeSet {
-        todo!()
+        self.skipped_entries = entries;
+        let mut result = ChangeSet::default();
+        for property in [
+            MainProperty::SkippedEntries,
+            MainProperty::HasSkippedEntries,
+            MainProperty::SkippedWarningText,
+            MainProperty::IsStatusPanelVisible,
+        ] {
+            result.main.insert(property);
+        }
+        result
     }
 
     // ---- catalog-derived state ----
 
     /// C# `CurrentImage` (the presenter's bitmap).
     pub fn current_image(&self) -> Option<&PlatformImage> {
-        todo!()
+        self.presenter.current_image()
     }
 
     /// C# `CurrentIndex`.
     pub fn current_index(&self) -> i32 {
-        todo!()
+        self.catalog.current_index()
     }
 
     /// C# `TotalFiles`.
     pub fn total_files(&self) -> usize {
-        todo!()
+        self.catalog.count()
     }
 
     /// C# `HasImages`.
     pub fn has_images(&self) -> bool {
-        todo!()
+        self.catalog.count() > 0
     }
 
     /// C# `CanNavigateNext`.
     pub fn can_navigate_next(&self) -> bool {
-        todo!()
+        self.catalog.count() > 0
+            && usize::try_from(self.catalog.current_index()).is_ok_and(|index| index < self.catalog.count() - 1)
     }
 
     /// C# `CanNavigatePrevious`.
     pub fn can_navigate_previous(&self) -> bool {
-        todo!()
+        self.catalog.count() > 0 && self.catalog.current_index() > 0
     }
 
     /// C# `CurrentHasComparePair`: `current_index` in range and `presenter.has_compare_pair(catalog, path_at(current_index))`.
     /// `&mut self` because the presenter caches its compare index. A path error (C#: exception) logs and returns false.
     pub fn current_has_compare_pair(&mut self) -> bool {
-        todo!()
+        let Ok(index) = usize::try_from(self.catalog.current_index()) else {
+            return false;
+        };
+        if index >= self.catalog.count() {
+            return false;
+        }
+        match self
+            .presenter
+            .has_compare_pair(&self.catalog, self.catalog.path_at(index))
+        {
+            Ok(found) => found,
+            Err(error) => {
+                self.log.error("Could not inspect the compare pair", Some(&error));
+                false
+            }
+        }
     }
 
     /// C# `CurrentHasCapturePair`.
     pub fn current_has_capture_pair(&self) -> bool {
-        todo!()
+        self.catalog
+            .current()
+            .is_some_and(|entry| entry.capture_group.is_some())
     }
 
     /// C# `CapturePairBadge`: empty without a capture group; else `main.capturePair.badge.raw` when the presented path equals the
     /// group's RAW path (OrdinalIgnoreCase), otherwise `main.capturePair.badge.jpeg`.
     pub fn capture_pair_badge(&self) -> String {
-        todo!()
+        let Some(group) = self.catalog.current().and_then(|entry| entry.capture_group.as_ref()) else {
+            return String::new();
+        };
+        let is_raw = self
+            .presenter
+            .current_presented_path()
+            .is_some_and(|path| pr_core::text::eq_ignore_case(path, group.raw_path()));
+        self.with_ctx(|ctx| {
+            ctx.texts.get(if is_raw {
+                "main.capturePair.badge.raw"
+            } else {
+                "main.capturePair.badge.jpeg"
+            })
+        })
     }
 
     /// C# `CapturePairBadgeToolTip`: `main.capturePair.badge.tooltipBound` with the TRIMMED key when `settings.shortcuts.toggle_capture_member`
     /// is not blank and `settings.store().key_names().is_valid_key_name(configured)` (the untrimmed text is validated);
     /// else `main.capturePair.badge.tooltipUnbound`.
     pub fn capture_pair_badge_tool_tip(&self) -> String {
-        todo!()
+        let settings = self.settings.current();
+        let configured = settings.shortcuts.toggle_capture_member.as_str();
+        if !configured.trim().is_empty() && self.settings.store().key_names().is_valid_key_name(configured) {
+            return self.with_ctx(|ctx| {
+                ctx.texts.format_with(
+                    "main.capturePair.badge.tooltipBound",
+                    &[LocArg::new("key", configured.trim())],
+                    ctx.numbers,
+                )
+            });
+        }
+        self.with_ctx(|ctx| ctx.texts.get("main.capturePair.badge.tooltipUnbound"))
     }
 
     // ---- lifetime ----
 
     /// True after `close_session` (W8-08d).
     pub fn is_closed(&self) -> bool {
-        todo!()
+        self.is_closed
     }
 
     /// True when nothing is outstanding: no folder load or ownership negotiation, no queued or running file command, no deferred
     /// command, no presenter work, no inbox event. Tests loop `while !vm.is_idle() { inbox.wait_ready(..); vm.pump(); }` (replaces the
     /// C# `FolderLoadTask`, `CompareToggleTask`, `SettingsRefreshTask` seams).
     pub fn is_idle(&self) -> bool {
-        todo!()
+        self.pending_open.is_none()
+            && self.deferred.is_empty()
+            && self.queued_file_commands.is_empty()
+            && self.active_gate_turn.is_none()
+            && self.duplicate_gate_turn.is_none()
+            && self.settings_reloads_waiting == 0
+            && !self.controller_present_outstanding
+            && self.presenter.is_idle()
+            && self.inbox.is_empty()
+            && self.sink.is_empty()
     }
 
     // ---- the event pump ----
@@ -871,7 +1195,22 @@ impl MainViewModel {
     /// inbox (in arrival order, `dispatch`), then `presenter.pump(env)`, then the debts that follow (`on_present_finished` to the
     /// file-action controller, release of the deferred commands). Returns the union of all changes.
     pub fn pump(&mut self) -> ChangeSet {
-        todo!()
+        let mut result = ChangeSet::default();
+        loop {
+            let events = self.inbox.drain();
+            if events.is_empty() {
+                break;
+            }
+            for event in events {
+                result.merge(self.dispatch(event));
+            }
+        }
+        let presenter = self.with_presenter(|presenter, env| presenter.pump(env));
+        result.merge(self.finish_presenter_call(presenter));
+        if !self.sink.is_empty() || self.controller_present_outstanding {
+            result.merge(self.apply_sink_actions());
+        }
+        result
     }
 
     /// Routes one [`MainEvent`] to its handler: `FolderLoad` -> `navigation::handle_folder_event`, `FileAction` ->
@@ -879,7 +1218,16 @@ impl MainViewModel {
     /// `navigation::on_sibling_found`, `OverlaySiblings` -> `on_overlay_siblings` (this file), `Ownership` ->
     /// `navigation::on_ownership_decided`, `GateTurn` -> `commands::on_gate_turn`, `GateReleased` -> `commands::on_gate_released`.
     pub(super) fn dispatch(&mut self, event: MainEvent) -> ChangeSet {
-        todo!()
+        match event {
+            MainEvent::FolderLoad(event) => self.handle_folder_event(event),
+            MainEvent::FileAction(event) => self.handle_file_action_event(event),
+            MainEvent::Duplicate(event) => self.handle_duplicate_event(event),
+            MainEvent::SiblingFound { search, result } => self.on_sibling_found(search, result),
+            MainEvent::OverlaySiblings { search, outcome } => self.on_overlay_siblings(search, outcome),
+            MainEvent::Ownership { request, result } => self.on_ownership_decided(request, result),
+            MainEvent::GateTurn { ticket, turn } => self.on_gate_turn(ticket, turn),
+            MainEvent::GateReleased => self.on_gate_released(),
+        }
     }
 
     // ---- helpers shared by the five slices ----
@@ -890,12 +1238,34 @@ impl MainViewModel {
         &mut self,
         f: impl FnOnce(&mut ImagePresenter, &mut crate::coordinators::presenter::state::PresenterEnv<'_>) -> R,
     ) -> R {
-        todo!()
+        let format = Arc::clone(&self.format);
+        let settings = self.settings.current();
+        let mut run = Some(f);
+        let mut result = None;
+        format.with_context(&mut |ctx| {
+            if let Some(f) = run.take() {
+                let mut env = crate::coordinators::presenter::state::PresenterEnv {
+                    catalog: &mut self.catalog,
+                    settings: &settings,
+                    session: self.current_session.as_mut(),
+                    format: *ctx,
+                };
+                result = Some(f(&mut self.presenter, &mut env));
+            }
+        });
+        result.unwrap_or_else(|| unreachable!("format source must call its callback"))
     }
 
     /// Runs `f` with the format context (D-W8-4).
     pub(super) fn with_ctx<R>(&self, f: impl FnOnce(&FormatContext<'_>) -> R) -> R {
-        todo!()
+        let mut run = Some(f);
+        let mut result = None;
+        self.format.with_context(&mut |ctx| {
+            if let Some(f) = run.take() {
+                result = Some(f(ctx));
+            }
+        });
+        result.unwrap_or_else(|| unreachable!("format source must call its callback"))
     }
 
     /// Turns what a presenter call reported into a [`ChangeSet`]: drains the bridge (viewer changes, `image_changing`), runs
@@ -903,56 +1273,149 @@ impl MainViewModel {
     /// maps `RAW_DECODE_INDICATOR` to `StatusText` + `StatusNeedsAttention`, forwards `COMPARE`, and refreshes the overlay when the
     /// viewer's `DisplayZoomPercent` changed (C# `_viewerState.PropertyChanged` hook, line 126).
     pub(super) fn finish_presenter_call(&mut self, changes: PresenterChanges) -> ChangeSet {
-        todo!()
+        let pending = self.bridge.take_pending();
+        let mut result = pending.changes;
+        result.presenter = changes;
+        if changes.contains(PresenterChanges::RAW_DECODE_INDICATOR) {
+            result.main.insert(MainProperty::StatusText);
+            result.main.insert(MainProperty::StatusNeedsAttention);
+        }
+        if changes.contains(PresenterChanges::COMPARE) {
+            result.compare = crate::viewmodels::compare::CompareChanges::all();
+        }
+        if pending.navigation_dirty
+            || changes.contains(PresenterChanges::PHOTO_INFO)
+            || changes.contains(PresenterChanges::STATUS)
+            || changes.contains(PresenterChanges::CURRENT_IMAGE)
+        {
+            result.merge(self.notify_navigation_state_changed());
+        }
+        if result
+            .viewer
+            .contains(crate::viewmodels::viewer_state::ViewerProperty::DisplayZoomPercent)
+        {
+            result.merge(self.refresh_overlay());
+        }
+        result
     }
 
     /// The two C# viewer hooks (lines 117 to 129) for a change made by the view model: `zoom_mode_changed` ->
     /// `presenter.set_viewer_zoom(viewer.effective_zoom())` (lines 117/118); `DisplayZoomPercent` in the changes ->
     /// `InfoOverlay.Refresh()` (line 127). Returns the combined set.
+    // W8-08c's zoom commands will call this once their stubs are ported.
+    #[allow(dead_code)]
     pub(super) fn apply_viewer_update(&mut self, update: ViewerUpdate) -> ChangeSet {
-        todo!()
+        let mut result = ChangeSet {
+            viewer: update.changes,
+            ..ChangeSet::default()
+        };
+        if update.zoom_mode_changed {
+            let zoom = self.viewer.borrow().effective_zoom();
+            let changes = self.presenter.set_viewer_zoom(zoom);
+            result.merge(self.finish_presenter_call(changes));
+        }
+        if update
+            .changes
+            .contains(crate::viewmodels::viewer_state::ViewerProperty::DisplayZoomPercent)
+        {
+            result.merge(self.refresh_overlay());
+        }
+        result
     }
 
     /// Applies an overlay refresh: `IsFileInfoVisible` in the changes adds `main.IsStatusPanelVisible` (C# line 112); a requested
     /// sibling search is submitted to the runner (`find_sibling_image_folders` -> `MainEvent::OverlaySiblings`).
     pub(super) fn apply_overlay_refresh(&mut self, refresh: InfoOverlayRefresh) -> ChangeSet {
-        todo!()
+        let mut result = ChangeSet {
+            overlay: refresh.changes,
+            ..ChangeSet::default()
+        };
+        if refresh
+            .changes
+            .contains(crate::viewmodels::info_overlay::InfoOverlayProperty::IsFileInfoVisible)
+        {
+            result.main.insert(MainProperty::IsStatusPanelVisible);
+        }
+        if let Some(search) = refresh.search {
+            let navigator = Arc::clone(&self.sibling_navigator);
+            let inbox = self.inbox.clone();
+            self.runner.run(
+                "overlay-siblings",
+                Box::new(move || {
+                    let outcome = match navigator
+                        .find_sibling_image_folders(&search.folder, &pr_core::sync::CancelToken::none())
+                    {
+                        Ok(found) => SearchOutcome::Found(found),
+                        Err(SiblingNavError::Cancelled) => SearchOutcome::Cancelled,
+                        Err(_) => SearchOutcome::Failed,
+                    };
+                    inbox.send(MainEvent::OverlaySiblings { search, outcome });
+                }),
+            );
+        }
+        result
     }
 
     /// The overlay's inputs now (`has_image`, `viewer.display_zoom_percent()`), C# `() => HasImages`, `() => DisplayZoomPercent`.
     pub(super) fn view_inputs(&self) -> ViewInputs {
-        todo!()
+        ViewInputs {
+            has_image: self.has_images(),
+            zoom_percent: self.viewer.borrow().display_zoom_percent(),
+        }
     }
 
     /// `InfoOverlay.Refresh()` with the current settings and inputs, applied.
     pub(super) fn refresh_overlay(&mut self) -> ChangeSet {
-        todo!()
+        let inputs = self.view_inputs();
+        let settings = self.settings.current();
+        let refresh = self.info_overlay.refresh(&settings, inputs);
+        self.apply_overlay_refresh(refresh)
     }
 
     /// Completion of an overlay sibling search (`MainEvent::OverlaySiblings`).
     pub(super) fn on_overlay_siblings(&mut self, search: OverlaySiblingSearch, outcome: SearchOutcome) -> ChangeSet {
-        todo!()
+        let inputs = self.view_inputs();
+        let settings = self.settings.current();
+        let refresh = self.info_overlay.complete_search(&settings, inputs, &search, outcome);
+        self.apply_overlay_refresh(refresh)
     }
 
     /// C# `PersistSession(session)` (line 976, hoisted from the 08d range because 08b and 08e call it): `session_writer.update(&session)`.
     /// The C# fallback `_sessionStore.Save` is unreachable (the writer is a required constructor argument) and not ported.
+    // W8-08b and W8-08e will call this shared helper after their stubs are ported.
+    #[allow(dead_code)]
     pub(super) fn persist_session(&self) {
-        todo!()
+        if let Some(session) = &self.current_session {
+            let _ = self.session_writer.update(session);
+        }
     }
 
     /// C# `PresentedPathOfCurrentEntry()` (line 944, hoisted from the 08d range because 08b and 08d call it): the presenter's
     /// current path when the current entry has a capture group, a presented path exists and `catalog.index_of(presented) ==
     /// current_index`; else `None` (stale after a catalog change, or no pair).
+    // W8-08b and W8-08d will call this shared helper after their stubs are ported.
+    #[allow(dead_code)]
     pub(super) fn presented_path_of_current_entry(&self) -> Option<String> {
-        todo!()
+        self.catalog.current()?.capture_group.as_ref()?;
+        let path = self.presenter.current_presented_path()?;
+        (self.catalog.index_of(path) == self.catalog.current_index()).then(|| path.to_owned())
     }
 
     /// Starts a presentation: `presenter.present(env, request)` and `finish_presenter_call`. A `PresentError::PathNotInEntry`
     /// (the C# `ArgumentException`) is logged and changes nothing (callers pre-validate the override).
+    // W8-08b and W8-08e will call this shared helper after their stubs are ported.
+    #[allow(dead_code)]
     pub(super) fn present_request(
         &mut self,
         request: crate::coordinators::presenter::state::PresentRequest,
     ) -> ChangeSet {
-        todo!()
+        let changes = self.with_presenter(|presenter, env| presenter.present(env, request));
+        match changes {
+            Ok(changes) => self.finish_presenter_call(changes),
+            Err(error) => {
+                self.log.error("Could not present the selected path", Some(&error));
+                ChangeSet::default()
+            }
+        }
     }
 }
