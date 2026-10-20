@@ -10,13 +10,13 @@
 //!
 //! The file-action GATE (`FileActionGate`, W8-06e) is held by the CALLER (the view model), not by this controller: the C# class
 //! never mentions it. `IFileActionExecutor::is_busy` is the service's own gate (INV-4).
-// Stub only: the porter removes this allow line once every body is real.
-#![allow(unused_variables, unused_imports, dead_code)]
-// Stub only (contract text in doc comments, boxed seams): the porter fixes the doc layout / introduces type aliases and removes this line.
-#![allow(clippy::type_complexity)]
+// Fields and helpers here (`report_recycle_failure`, `will_ask_group_confirmation`, `present`, `move_positions`, ...) are read only by
+// the sibling files of W8-07d/07e, which are still stubs on this branch; remove this allow when they land.
+#![allow(dead_code)]
 
 use std::collections::HashMap;
 use std::fmt;
+use std::path::Path;
 use std::sync::{Arc, Mutex};
 
 use pr_core::abstractions::{DialogService, FileSystem, Log, NaturalComparer};
@@ -27,12 +27,13 @@ use pr_core::file_actions::types::{CaptureGroupActionResult, FileActionResult, U
 use pr_core::file_actions::undo::UndoService;
 use pr_core::model::FileOperationType;
 use pr_core::settings::app_settings::AppSettings;
+use pr_l10n::keys;
 use pr_l10n::localizer::Localizer;
 use pr_l10n::template::{LocArg, NumberCulture};
 
-use super::actions::{InFlightAction, ParkedTail};
+use super::actions::{AfterCore, InFlightAction, ParkedTail};
 use super::undo::{InFlightUndo, MovePosition};
-use crate::coordinators::folder_load::state::{WorkerLane, WorkerPort};
+use crate::coordinators::folder_load::state::WorkerPort;
 use crate::coordinators::traits::{IFileActionExecutor, IFileActionSink, IPreloadController};
 
 /// Where user-visible sentences come from (D-W8-4). The production implementation reads the CURRENT localizer on each call
@@ -43,12 +44,12 @@ pub trait TextSource: Send + Sync {
 
     /// `localizer().format_with(key, args, &numbers())`; keys are the `pr_l10n::keys` of the C# `Tr.*` members.
     fn format(&self, key: &str, args: &[LocArg]) -> String {
-        todo!()
+        self.localizer().format_with(key, args, &self.numbers())
     }
 
     /// `localizer().get(key)`.
     fn get(&self, key: &str) -> String {
-        todo!()
+        self.localizer().get(key)
     }
 }
 
@@ -125,6 +126,9 @@ pub enum PresentState {
     Finished { faulted: bool },
 }
 
+type SettingsFn = Box<dyn Fn() -> Arc<AppSettings>>;
+type RememberFolderFn = Box<dyn FnMut(FileOperationType, &str)>;
+
 /// The collaborators of the C# constructor. `catalog` and `sink` arrive per call (see [`FileActionCx`]).
 pub struct FileActionDeps {
     pub clock: Arc<GenerationClock>,
@@ -136,11 +140,11 @@ pub struct FileActionDeps {
     pub preload_controller: Option<Arc<dyn IPreloadController>>,
     pub natural_comparer: Arc<dyn NaturalComparer>,
     /// C# `Func<AppSettings> getSettings`, read at USE time (Settings > Save replaces the instance, R2-F-03).
-    pub get_settings: Box<dyn Fn() -> Arc<AppSettings>>,
+    pub get_settings: SettingsFn,
     /// C# `IFileSystem? fileSystem`: used to check a picked/remembered folder and required to act on a capture group.
     pub file_system: Option<Arc<dyn FileSystem>>,
     /// C# `Action<FileOperationType, string>? rememberFolder`.
-    pub remember_folder: Option<Box<dyn FnMut(FileOperationType, &str)>>,
+    pub remember_folder: Option<RememberFolderFn>,
     pub worker: Arc<dyn WorkerPort<FileActionEvent>>,
     pub texts: Arc<dyn TextSource>,
     pub log: Arc<dyn Log>,
@@ -203,22 +207,40 @@ impl fmt::Debug for FileActionController {
     }
 }
 
+/// C# `Path.GetFileName`: the last path component (empty when the path ends in a separator).
+fn file_name_of(path: &str) -> String {
+    Path::new(path)
+        .file_name()
+        .map(|n| n.to_string_lossy().into_owned())
+        .unwrap_or_default()
+}
+
 impl FileActionController {
     /// C# constructor. Stores the collaborators; starts nothing. Both `fileSystem` and the `Directory.Exists` fallback are
     /// folded into `deps.file_system` (the fallback is `std::path::Path::is_dir`, used only when `file_system` is `None`).
     pub fn new(deps: FileActionDeps) -> Self {
-        todo!()
+        Self {
+            deps,
+            last_partner_missing_warning: None,
+            present: PresentState::None,
+            last_action_folder_gen: 0,
+            move_positions: HashMap::new(),
+            in_flight: None,
+            undo_in_flight: None,
+            parked: None,
+            next_ticket: 1,
+        }
     }
 
     /// C# `FileActionsOverride` test seam (`internal`): replaces the executor. `#[doc(hidden)]`.
     #[doc(hidden)]
     pub fn set_file_actions_override(&mut self, executor: Option<Arc<dyn IFileActionExecutor + Send + Sync>>) {
-        todo!()
+        self.deps.file_actions = executor;
     }
 
     /// True while an action or an undo is between its start and its `Done` (the caller's gate normally prevents a second one).
     pub fn is_in_flight(&self) -> bool {
-        todo!()
+        self.in_flight.is_some() || self.undo_in_flight.is_some()
     }
 
     /// C# `RecycleAsync(compareSelectedPath, currentPath)`. Order: `refuse_recycle_without_bin(source)` first; then, when the
@@ -232,7 +254,54 @@ impl FileActionController {
         compare_selected_path: Option<&str>,
         current_path: Option<&str>,
     ) -> FileActionStep {
-        todo!()
+        let refused = FileActionStep::Done(FileActionDone::Finished { succeeded: false });
+        // Q-R44: general "confirm before delete", off by default. Skipped when the permanent-delete prompt (Q-R8) will already ask.
+        let source = compare_selected_path.or(current_path);
+        if self.refuse_recycle_without_bin(cx, source) {
+            return refused; // before "confirm before delete": the answer would not matter
+        }
+        let selected_group = source
+            .and_then(|s| cx.catalog.find(s))
+            .and_then(|e| e.capture_group.clone());
+        let permanent_prompt = selected_group.is_none() && self.will_ask_permanent_delete(source);
+        if selected_group.is_none()
+            && (self.deps.get_settings)().confirm_before_delete
+            && !permanent_prompt
+            && let Some(dialog) = self.deps.dialog_service.clone()
+        {
+            let folder_before = self.deps.clock.current_folder();
+            let recycle_name = self.deps.texts.get(keys::ACTION_RECYCLE_NAME);
+            let ok = dialog.show_confirmation(
+                &self.deps.texts.get(keys::DIALOG_CONFIRM_ACTION_TITLE),
+                &self.deps.texts.format(
+                    keys::DIALOG_CONFIRM_ACTION_MESSAGE,
+                    &[LocArg::new("actionName", recycle_name)],
+                ),
+            );
+            if !ok {
+                return refused;
+            }
+            // R7-4: the dialog ran a nested loop; the folder may have changed, another action may have started.
+            if self.deps.clock.current_folder() != folder_before
+                || self.deps.file_actions.as_ref().is_some_and(|f| f.is_busy())
+                || source.is_some_and(|s| cx.catalog.index_of(s) < 0)
+            {
+                return refused;
+            }
+        }
+
+        let action_name = self.deps.texts.get(keys::ACTION_RECYCLE_NAME);
+        match self.prepare_core(
+            cx,
+            &action_name,
+            FileOperationType::Recycle,
+            None,
+            compare_selected_path,
+            current_path,
+        ) {
+            CorePrep::Refused => refused,
+            CorePrep::Ready(prepared) => self.execute_core(cx, prepared, AfterCore::Nothing),
+        }
     }
 
     /// C# `WillAskGroupConfirmation(operation, compareSelectedPath, source)`. Mirror the prompt condition of the core: keep in step.
@@ -243,25 +312,107 @@ impl FileActionController {
         compare_selected_path: Option<&str>,
         source: Option<&str>,
     ) -> bool {
-        todo!()
+        let Some(source) = source.filter(|s| !s.is_empty()) else {
+            return false;
+        };
+        let Some(executor) = self.deps.file_actions.as_ref() else {
+            return false;
+        };
+        if self.deps.file_system.is_none() {
+            return false;
+        }
+        let Some(group) = cx.catalog.find(source).and_then(|e| e.capture_group.as_ref()) else {
+            return false;
+        };
+        // C# `compareSelectedPath is not null && operation is Recycle or Move` is `is (Recycle or Move)`.
+        if compare_selected_path.is_some() && matches!(operation, FileOperationType::Recycle | FileOperationType::Move)
+        {
+            return true;
+        }
+        if operation != FileOperationType::Recycle {
+            return false;
+        }
+        let settings = (self.deps.get_settings)();
+        settings.confirm_before_delete
+            || (settings.allow_permanent_delete_without_recycle_bin
+                && group.paths().iter().any(|p| executor.lacks_recycle_bin(p)))
     }
 
     /// C# `RefuseRecycleWithoutBin(source)`: true when the Delete was refused (status `CoreRecycleUnsupportedDrive(fileName)`,
     /// error dialog `DialogRecycleNoBin*`, `sink.notify_navigation_state_changed()`); nothing else changed. Checks EVERY member
     /// of a capture (`catalog.find(source).capture_group.paths()`), names the first member without a bin.
     pub(super) fn refuse_recycle_without_bin(&self, cx: &mut FileActionCx<'_>, source: Option<&str>) -> bool {
-        todo!()
+        let Some(source) = source.filter(|s| !s.is_empty()) else {
+            return false;
+        };
+        let Some(executor) = self.deps.file_actions.as_ref() else {
+            return false;
+        };
+        if cx.catalog.count() == 0 {
+            return false;
+        }
+        if (self.deps.get_settings)().allow_permanent_delete_without_recycle_bin {
+            return false; // the permanent-delete prompt handles it
+        }
+        let paths: Vec<String> = match cx.catalog.find(source).and_then(|e| e.capture_group.as_ref()) {
+            Some(group) => group.paths().to_vec(),
+            None => vec![source.to_string()],
+        };
+        let Some(without_bin) = paths.iter().find(|p| executor.lacks_recycle_bin(p)) else {
+            return false;
+        };
+
+        let file_name = file_name_of(without_bin);
+        let texts = &self.deps.texts;
+        cx.sink.set_status_text(&texts.format(
+            keys::CORE_RECYCLE_UNSUPPORTED_DRIVE,
+            &[LocArg::new("name", file_name.clone())],
+        ));
+        if let Some(dialog) = &self.deps.dialog_service {
+            dialog.show_error(
+                &texts.get(keys::DIALOG_RECYCLE_NO_BIN_TITLE),
+                &texts.format(
+                    keys::DIALOG_RECYCLE_NO_BIN_MESSAGE,
+                    &[
+                        LocArg::new("fileName", file_name),
+                        LocArg::new("settingName", texts.get(keys::SETTINGS_ALLOW_PERMANENT_DELETE_LABEL)),
+                        LocArg::new("settingsPage", texts.get(keys::SETTINGS_NAV_FILES)),
+                    ],
+                ),
+            );
+        }
+        cx.sink.notify_navigation_state_changed();
+        true
     }
 
     /// C# `ReportRecycleFailure(source, reason)`: error dialog `DialogRecycleFailed*` (reason `""` when `None`).
     pub(super) fn report_recycle_failure(&self, source: &str, reason: Option<&str>) {
-        todo!()
+        if let Some(dialog) = &self.deps.dialog_service {
+            dialog.show_error(
+                &self.deps.texts.get(keys::DIALOG_RECYCLE_FAILED_TITLE),
+                &self.deps.texts.format(
+                    keys::DIALOG_RECYCLE_FAILED_MESSAGE,
+                    &[
+                        LocArg::new("fileName", file_name_of(source)),
+                        LocArg::new("message", reason.unwrap_or_default()),
+                    ],
+                ),
+            );
+        }
     }
 
     /// C# `WillAskPermanentDelete(source)`: non-empty source, `allow_permanent_delete_without_recycle_bin` on, executor present,
     /// `lacks_recycle_bin(source)`.
     pub(super) fn will_ask_permanent_delete(&self, source: Option<&str>) -> bool {
-        todo!()
+        let Some(source) = source.filter(|s| !s.is_empty()) else {
+            return false;
+        };
+        (self.deps.get_settings)().allow_permanent_delete_without_recycle_bin
+            && self
+                .deps
+                .file_actions
+                .as_ref()
+                .is_some_and(|f| f.lacks_recycle_bin(source))
     }
 
     /// C# `ExecuteFileActionCoreAsync` lines 207 to 276 (everything before `sourceIndex`): resets
@@ -278,6 +429,159 @@ impl FileActionController {
         compare_selected_path: Option<&str>,
         current_path: Option<&str>,
     ) -> CorePrep {
-        todo!()
+        self.last_partner_missing_warning = None;
+        self.present = PresentState::None;
+        if cx.catalog.count() == 0 {
+            return CorePrep::Refused;
+        }
+        let Some(executor) = self.deps.file_actions.clone() else {
+            return CorePrep::Refused;
+        };
+        // INV-4: the service's own gate is busy.
+        if executor.is_busy() {
+            return CorePrep::Refused;
+        }
+        let Some(source) = compare_selected_path.or(current_path).filter(|s| !s.is_empty()) else {
+            return CorePrep::Refused;
+        };
+        let selected_group = cx.catalog.find(source).and_then(|e| e.capture_group.clone());
+        if selected_group.is_some() && self.deps.file_system.is_none() {
+            return CorePrep::Refused;
+        }
+        let texts = self.deps.texts.clone();
+        let source_name = file_name_of(source);
+
+        // After a dialog (nested loop): the folder may have changed, another action may have started, the photo may be gone.
+        let state_changed = |this: &Self, cx: &FileActionCx<'_>, folder_before: i64| {
+            this.deps.clock.current_folder() != folder_before || executor.is_busy() || cx.catalog.index_of(source) < 0
+        };
+
+        // Q-R8: permanent delete only with the setting ON and an explicit confirmation every time. Without a dialog
+        // service nothing can be confirmed, so nothing is deleted.
+        let mut allow_permanent = false;
+        if operation == FileOperationType::Recycle
+            && selected_group.is_none()
+            && self.will_ask_permanent_delete(Some(source))
+        {
+            let folder_before = self.deps.clock.current_folder();
+            let Some(dialog) = self.deps.dialog_service.clone() else {
+                return CorePrep::Refused;
+            };
+            if !dialog.show_confirmation(
+                &texts.get(keys::DIALOG_CONFIRM_PERMANENT_DELETE_TITLE),
+                &texts.format(
+                    keys::DIALOG_CONFIRM_PERMANENT_DELETE_MESSAGE,
+                    &[LocArg::new("fileName", source_name.clone())],
+                ),
+            ) {
+                return CorePrep::Refused;
+            }
+            if state_changed(self, cx, folder_before) {
+                return CorePrep::Refused;
+            }
+            allow_permanent = true;
+        }
+
+        // Same semantics as the single-file path: the permanent prompt, and with it `allow_permanent`, exist only when the
+        // setting is ON and a member really lacks a Recycle Bin (read at use time, R2-F-03).
+        let permanent_group_paths: Vec<String> = match &selected_group {
+            Some(group)
+                if operation == FileOperationType::Recycle
+                    && (self.deps.get_settings)().allow_permanent_delete_without_recycle_bin =>
+            {
+                group
+                    .paths()
+                    .iter()
+                    .filter(|p| executor.lacks_recycle_bin(p))
+                    .cloned()
+                    .collect()
+            }
+            _ => Vec::new(),
+        };
+        // Q-RAW-COMPARE-GROUP: Delete/Move act on the WHOLE capture, so the user is always asked.
+        let from_compare_group = compare_selected_path.is_some()
+            && selected_group.is_some()
+            && matches!(operation, FileOperationType::Recycle | FileOperationType::Move);
+        if let Some(group) = &selected_group
+            && ((operation == FileOperationType::Recycle
+                && ((self.deps.get_settings)().confirm_before_delete || !permanent_group_paths.is_empty()))
+                || from_compare_group)
+        {
+            let folder_before = self.deps.clock.current_folder();
+            let member_names = group
+                .paths()
+                .iter()
+                .map(|p| file_name_of(p))
+                .collect::<Vec<_>>()
+                .join(", ");
+            let permanent_members = operation == FileOperationType::Recycle && !permanent_group_paths.is_empty();
+            let prompt = if permanent_members {
+                texts.format(
+                    keys::DIALOG_CONFIRM_GROUP_PERMANENT_DELETE_MESSAGE,
+                    &[
+                        LocArg::new("permanentCount", permanent_group_paths.len() as i64),
+                        LocArg::new("count", group.paths().len() as i64),
+                        LocArg::new("fileName", source_name.clone()),
+                    ],
+                )
+            } else if from_compare_group {
+                let key = if operation == FileOperationType::Move {
+                    keys::DIALOG_CONFIRM_COMPARE_GROUP_MOVE_MESSAGE
+                } else {
+                    keys::DIALOG_CONFIRM_COMPARE_GROUP_RECYCLE_MESSAGE
+                };
+                texts.format(
+                    key,
+                    &[
+                        LocArg::new("fileName", source_name.clone()),
+                        LocArg::new("files", member_names),
+                    ],
+                )
+            } else {
+                texts.format(
+                    keys::DIALOG_CONFIRM_GROUP_RECYCLE_MESSAGE,
+                    &[
+                        LocArg::new("count", group.paths().len() as i64),
+                        LocArg::new("fileName", source_name.clone()),
+                    ],
+                )
+            };
+            let title = texts.get(if permanent_members {
+                keys::DIALOG_CONFIRM_PERMANENT_DELETE_TITLE
+            } else {
+                keys::DIALOG_CONFIRM_ACTION_TITLE
+            });
+            let Some(dialog) = self.deps.dialog_service.clone() else {
+                return CorePrep::Refused;
+            };
+            if !dialog.show_confirmation(&title, &prompt) {
+                return CorePrep::Refused;
+            }
+            if state_changed(self, cx, folder_before) {
+                return CorePrep::Refused;
+            }
+            // Only a prompt that NAMED permanent members grants permanent delete; a generic group prompt never does.
+            allow_permanent = permanent_members;
+        }
+
+        // The confirmations ran nested loops: the entry may have been degraded to a standalone survivor or regrouped.
+        // Never act on files that are no longer shown together.
+        let group = cx.catalog.find(source).and_then(|e| e.capture_group.clone());
+        if group != selected_group {
+            cx.sink.set_status_text(&texts.format(
+                keys::STATUS_GROUP_CHANGED_DURING_CONFIRM,
+                &[LocArg::new("fileName", source_name)],
+            ));
+            return CorePrep::Refused;
+        }
+
+        CorePrep::Ready(PreparedAction {
+            action_name: action_name.to_string(),
+            operation,
+            destination: destination.map(str::to_string),
+            source: source.to_string(),
+            group,
+            allow_permanent,
+        })
     }
 }
