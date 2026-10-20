@@ -17,23 +17,21 @@
 //!
 //! Pure module: no `unsafe`, no `windows` crate. UI thread only.
 
-// Stub only: the porter removes this allow line once every body is real.
-#![allow(unused_variables, unused_imports, dead_code)]
-// Stub only (contract text in doc comments, boxed seams): the porter fixes the doc layout / introduces type aliases and removes this line.
-#![allow(clippy::doc_lazy_continuation)]
-
 use std::fmt;
 
 use pr_core::abstractions::Log;
 use pr_core::settings::app_settings::AppSettings;
 
 use crate::input::kinetic_pan::{GlideFrameClock, KineticScroller, PanVelocityTracker};
-use crate::input::mouse_gestures::WheelGestureInterpreter;
+use crate::input::mouse_gestures::{WheelGestureInterpreter, WheelOutcomeKind};
 use crate::input::operation_version::ViewportOperationVersion;
-use crate::input::pointer::zoom::{PointerContinuation, PointerStep};
-use crate::input::primitives::PointD;
+use crate::input::pointer::zoom::{PointerContinuation, PointerStep, ZoomAction};
+use crate::input::primitives::{PointD, SizeD};
 use crate::input::surface::{ImageSurface, RenderHookId};
-use crate::input::touchpad_gestures::{TouchpadSwipeNavigator, TouchpadWheelClassifier, WheelInput};
+use crate::input::touchpad_gestures::{
+    self, TouchpadSwipeNavigator, TouchpadWheelAction, TouchpadWheelClassifier, WheelInput,
+};
+use crate::misc::window_helpers::calculate_pan_offsets;
 use crate::viewmodels::viewer_state::{ViewerState, ViewerUpdate};
 
 /// C# `PointerCommands(HasImages, NextAsync, PreviousAsync, ZoomActualSize, ApplyFitAsync)`: what the gestures do outside the
@@ -81,6 +79,8 @@ impl fmt::Debug for PointerContext<'_> {
 
 /// C# `PointerInputController`: wheel (zoom / navigate), zoom at a point, click-to-zoom, drag-pan with kinetic glide, mouse
 /// capture. All fields are `pub(super)`: the `impl` blocks of `zoom.rs`, `click_zoom.rs` and `pan.rs` use them.
+// W8-05h will read the press, pan, and glide fields when its stub methods are implemented.
+#[expect(dead_code, reason = "W8-05h pointer press and kinetic pan methods are still stubs")]
 #[derive(Debug)]
 pub struct PointerInputController {
     /// C# `_isPanning`: a press is tracked (pan or click).
@@ -132,31 +132,57 @@ impl PointerInputController {
     /// (the shell passes `PointerInputController::on_source_size_swapping` to `ViewerState::swap_source_size`).
     /// State: nothing tracked, `last_seen_index = -1`, no glide, no hook, no pending continuation, no pending viewer update.
     pub fn new(ticks_per_ms: f64) -> Self {
-        todo!()
+        Self {
+            is_panning: false,
+            pan_moved: false,
+            pan_start_point: PointD::default(),
+            pan_last_point: PointD::default(),
+            press_can_pan: false,
+            press_consumed: false,
+            press_stopped_glide: false,
+            press_timestamp: 0,
+            last_seen_index: -1,
+            wheel_gestures: WheelGestureInterpreter::new(),
+            touchpad_classifier: TouchpadWheelClassifier::new(),
+            swipe_navigator: TouchpadSwipeNavigator::new(),
+            pan_velocity: PanVelocityTracker::new(),
+            kinetic: KineticScroller::default(),
+            kinetic_hook: None,
+            glide_clock: GlideFrameClock::new(),
+            zooms_awaiting_layout: 0,
+            ticks_per_ms,
+            pending_continuation: None,
+            viewer_update: ViewerUpdate::default(),
+        }
     }
 
     /// Everything the controller changed on the viewer since the last call (the property set of every `ViewerState` mutator it
     /// called, unioned, and `zoom_mode_changed` OR-ed), then resets the accumulator. The shell repaints from it and stops
     /// the glide on `zoom_mode_changed` (C# `ShellInput.OnZoomModeChanged`).
     pub fn take_viewer_update(&mut self) -> ViewerUpdate {
-        todo!()
+        std::mem::take(&mut self.viewer_update)
     }
 
     /// The continuation created by [`PointerInputController::on_source_size_swapping`], if any. The shell calls it right after
     /// `ViewerState::swap_source_size` returns and, when `Some`, posts the resume at Render priority.
     pub fn take_pending_continuation(&mut self) -> Option<PointerContinuation> {
-        todo!()
+        self.pending_continuation.take()
     }
 
     /// Adds one viewer mutator result to the accumulator (`changes` union, `zoom_mode_changed` OR).
     pub(super) fn record_viewer_update(&mut self, update: ViewerUpdate) {
-        todo!()
+        self.viewer_update.changes = self.viewer_update.changes.union(update.changes);
+        self.viewer_update.zoom_mode_changed |= update.zoom_mode_changed;
     }
 
     /// C# `OnCurrentIndexChanged(currentIndex)`: navigation stops a glide; a full-resolution swap of the same image
     /// (same index) does not. A changed index: remember it, `stop_kinetic`, `wheel_gestures.reset()`. The same index: nothing.
     pub fn on_current_index_changed(&mut self, surface: &mut dyn ImageSurface, current_index: i32) {
-        todo!()
+        if current_index != self.last_seen_index {
+            self.last_seen_index = current_index;
+            self.stop_kinetic(surface);
+            self.wheel_gestures.reset();
+        }
     }
 
     /// C# `OnWheelAsync(int delta, bool ctrl, PointD position)`: a vertical wheel message with timestamp 0 and no device hint:
@@ -168,7 +194,7 @@ impl PointerInputController {
         ctrl: bool,
         position: PointD,
     ) -> PointerStep {
-        todo!()
+        self.on_wheel(ctx, WheelInput::new(delta, false, ctrl, 0), position)
     }
 
     /// C# `OnWheelAsync(WheelInput input, PointD position)` (ImageScroll PreviewMouseWheel and the WM_MOUSEHWHEEL hook; the caller
@@ -182,42 +208,127 @@ impl PointerInputController {
     ///    the diagnostics line when `swipe != None` and `ctx.log.enabled()`, `navigate(swipe)`, `Done`; `MouseWheel` falls through.
     /// 4. Mouse wheel: `swipe_navigator.reset()`, `outcome = wheel_gestures.handle(delta, ctrl, settings.mouse_wheel_action)`;
     ///    `Zoom` gives `zoom_at_point(position, ZoomAction::WheelZoom(delta))`, any other outcome `navigate(outcome)` and `Done`.
+    ///
     /// The diagnostics line (invariant culture): `Touchpad swipe: {swipe:?} after delta={gesture_total} images={gesture_images}
     /// distancePerImage={distance} hint={hint:?}` (`WheelOutcomeKind` and `WheelDeviceHint` print their variant names, which are
     /// the C# enum names).
     pub fn on_wheel(&mut self, ctx: &mut PointerContext<'_>, input: WheelInput, position: PointD) -> PointerStep {
-        todo!()
+        self.stop_kinetic(ctx.surface);
+        let is_touchpad = ctx.settings.touchpad_swipe_enabled
+            && !input.ctrl
+            && self
+                .touchpad_classifier
+                .is_touchpad(input.delta, input.timestamp, input.hint);
+        match touchpad_gestures::route(
+            input,
+            ctx.settings.touchpad_swipe_enabled,
+            is_touchpad,
+            Self::can_pan(ctx.viewer, ctx.surface),
+        ) {
+            TouchpadWheelAction::Ignore => return PointerStep::Done,
+            TouchpadWheelAction::Pan => {
+                self.wheel_gestures.reset();
+                self.swipe_navigator.reset();
+                self.pan_by_touchpad(ctx, input);
+                return PointerStep::Done;
+            }
+            TouchpadWheelAction::Navigate => {
+                self.wheel_gestures.reset();
+                let swipe = self.swipe_navigator.handle(
+                    input.delta,
+                    input.timestamp,
+                    ctx.settings.touchpad_swipe_distance_per_image,
+                );
+                if swipe != WheelOutcomeKind::None && ctx.log.enabled() {
+                    ctx.log.info(&format!(
+                        "Touchpad swipe: {swipe:?} after delta={} images={} distancePerImage={} hint={:?}",
+                        self.swipe_navigator.gesture_total(),
+                        self.swipe_navigator.gesture_images(),
+                        ctx.settings.touchpad_swipe_distance_per_image,
+                        input.hint
+                    ));
+                }
+                self.navigate(ctx, swipe);
+                return PointerStep::Done;
+            }
+            TouchpadWheelAction::MouseWheel => {}
+        }
+        self.swipe_navigator.reset();
+        let outcome = self
+            .wheel_gestures
+            .handle(input.delta, input.ctrl, ctx.settings.mouse_wheel_action);
+        if outcome == WheelOutcomeKind::Zoom {
+            self.zoom_at_point(ctx, position, ZoomAction::WheelZoom(input.delta))
+        } else {
+            self.navigate(ctx, outcome);
+            PointerStep::Done
+        }
     }
 
     /// C# `NavigateAsync(outcome)`: `Next` calls `commands.next()` and `Previous` calls `commands.previous()`, each only when
     /// `commands.has_images()`; every other outcome does nothing. Same path as the Next/Previous keys.
     fn navigate(&mut self, ctx: &mut PointerContext<'_>, outcome: crate::input::mouse_gestures::WheelOutcomeKind) {
-        todo!()
+        match outcome {
+            WheelOutcomeKind::Next if ctx.commands.has_images() => ctx.commands.next(),
+            WheelOutcomeKind::Previous if ctx.commands.has_images() => ctx.commands.previous(),
+            _ => {}
+        }
     }
 
     /// C# `PanByTouchpad(input)`: `(h, v) = touchpad_gestures::pan_offset_delta(input)`, then
     /// `window_helpers::calculate_pan_offsets(current offsets, delta = (-h, -v), extent, viewport)` (the helper takes a POINTER
     /// movement, so the OFFSET change is passed negated, `-0.0` included) and one `surface.scroll_to(offsets)`.
     fn pan_by_touchpad(&mut self, ctx: &mut PointerContext<'_>, input: WheelInput) {
-        todo!()
+        let (horizontal, vertical) = touchpad_gestures::pan_offset_delta(input);
+        let offsets = calculate_pan_offsets(
+            PointD {
+                x: ctx.surface.horizontal_offset(),
+                y: ctx.surface.vertical_offset(),
+            },
+            PointD {
+                x: -horizontal,
+                y: -vertical,
+            },
+            SizeD {
+                width: ctx.surface.extent_width(),
+                height: ctx.surface.extent_height(),
+            },
+            SizeD {
+                width: ctx.surface.viewport_width(),
+                height: ctx.surface.viewport_height(),
+            },
+        );
+        ctx.surface.scroll_to(offsets.horizontal, offsets.vertical);
     }
 
     /// C# `CanPan()`: `!viewer.is_fit() && (extent_width > viewport_width + 0.5 || extent_height > viewport_height + 0.5)`.
     /// NaN extents give false. Shared by the wheel (here) and the press (`pan.rs`).
     pub(super) fn can_pan(viewer: &ViewerState, surface: &dyn ImageSurface) -> bool {
-        todo!()
+        !viewer.is_fit()
+            && (surface.extent_width() > surface.viewport_width() + 0.5
+                || surface.extent_height() > surface.viewport_height() + 0.5)
     }
 
     /// C# `CancelPan()`, public because the Fit driver calls it first: `is_panning`, `pan_moved`, `press_can_pan` and
     /// `press_consumed` become false, `surface.release_mouse_capture()`, `surface.set_pan_cursor(false)`. Always runs both
     /// surface calls, even when nothing was tracked.
     pub fn cancel_pan(&mut self, surface: &mut dyn ImageSurface) {
-        todo!()
+        self.is_panning = false;
+        self.pan_moved = false;
+        self.press_can_pan = false;
+        self.press_consumed = false;
+        surface.release_mouse_capture();
+        surface.set_pan_cursor(false);
     }
 
     /// C# `StopKinetic()`: `was_active = kinetic.is_active()`, `kinetic.stop()`, and when hooked `surface.unhook_render_frame(id)`
     /// with the stored id and `kinetic_hook = None`. Returns `was_active`. Safe to call when idle.
     pub fn stop_kinetic(&mut self, surface: &mut dyn ImageSurface) -> bool {
-        todo!()
+        let active = self.kinetic.is_active();
+        self.kinetic.stop();
+        if let Some(id) = self.kinetic_hook.take() {
+            surface.unhook_render_frame(id);
+        }
+        active
     }
 }
