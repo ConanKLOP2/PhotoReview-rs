@@ -275,10 +275,8 @@
 - NOT run: any Rust test of the new units (all stub bodies are `todo!()`); `cargo-mutants`; the C# claims in the contracts were checked by sub-agents reading the baseline source, not by running the C# tests; CI result pending at PR time.
 - Open: B1 stub changes of D-W8B2-6, duplicate concepts and image payload type (D-W8B2-4/5).
 
-## Codex pipeline status (2026-10-19, handoff)
-- Working directory is on branch `pipeline/force-redo` (unmerged: adds `codex-pipeline.sh --redo U1,U2`). Master has PR #44 (gate scopes to unit's own test binaries) and #45 (gate ignores target* dirs).
-- Integration branch `integration/wave8-b1` (local, not pushed) holds: B1 Claude-ported units (29 done), red-test commits for 6 units, serde_json move for W8-10a (70a411f), Codex-merged units W8-10a, W8-02a, W8-10f, W8-15d (merges 77e2d2f...).
-- Running at handoff: `wave8-b1` pipeline (`--jobs 2 --redo W8-04e --only W8-04e,W8-02a,W8-10f,W8-15d,W8-15e`, log `tools/autopilot/state/logs/run-b1-continuous.log`). Last events: W8-04e in repair round 3/3 (gate rc 4); W8-15e started 21:57.
-- Still open: W8-04e (`file_hash.rs` still todo!() on the integration branch; the workspace gate fails on its 9 tests until it is implemented); W8-10b (real implementation failures in settings_field_map, needs Claude); then the workspace gate, then PR for B1.
-- Check the state with `bash tools/autopilot/status.sh` and the log above. Resume by re-running the same command after the pipeline ends (done units are skipped).
-- Do not run two pipelines at once (lock: tools/autopilot/state/pipeline.lock).
+## Codex pipeline status (2026-10-21)
+- Wave 8 B1 and B2 are ported on `master` (26/26 B2 units, PRs #46-#77) through `tools/autopilot/codex-pipeline.sh` (Codex gpt-6-sol medium) with Claude fallback; W8-04e and W8-10b were finished by Claude.
+- This branch adds `codex-pipeline.sh --redo U1,U2` (rerun a unit that already has state). The earlier handoff text (running pipeline, W8-04e/W8-10b open) is obsolete.
+- Open: mutant-kill debt for W8-08a (Codex on `codex/mut-w808a`), PR #78 (W8-05g mutant tests); remaining `todo!()` stubs are the overlay units (`panel`, `folder_info`, `capture_badge`, `toolbar`, `status`, `zoom_indicator`, `tools_menu`) and native/WIC test stubs.
+- Check the state with `bash tools/autopilot/status.sh`. Do not run two pipelines at once (lock: `tools/autopilot/state/pipeline.lock`).
