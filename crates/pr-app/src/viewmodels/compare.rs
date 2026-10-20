@@ -15,18 +15,19 @@
 //!
 //! Pure module: no `unsafe`, no `windows` crate.
 
-// Stub only: the porter removes this allow line once every body is real.
-#![allow(unused_variables, unused_imports, dead_code)]
-
 use std::fmt;
 use std::sync::Arc;
 
 use pr_core::abstractions::{FileSystem, Log};
+use pr_core::catalog::types::is_raw_path;
 use pr_core::sync::CancelToken;
+use pr_core::text::{dotnet_path::get_file_name, eq_ignore_case};
 use pr_imaging::decode_types::DecodedImage;
+use pr_l10n::template::LocArg;
 
 use crate::misc::file_hash::FileHasher;
 use crate::viewmodels::format::context::FormatContext;
+use crate::viewmodels::format::status::{self, CompareStatus};
 
 /// The properties C# raises `PropertyChanged` for, in the order `CompareViewModel.Clear()` raises them (which is also the
 /// declaration order). The derived `Ord` is this order.
@@ -71,7 +72,21 @@ impl CompareProperty {
 
     /// The C# property name (`nameof(CompareViewModel.X)`), e.g. `"IsLeftSelected"`.
     pub fn csharp_name(self) -> &'static str {
-        todo!()
+        match self {
+            Self::IsVisible => "IsVisible",
+            Self::LeftPath => "LeftPath",
+            Self::RightPath => "RightPath",
+            Self::LeftImage => "LeftImage",
+            Self::RightImage => "RightImage",
+            Self::SelectedPath => "SelectedPath",
+            Self::IsLeftSelected => "IsLeftSelected",
+            Self::IsRightSelected => "IsRightSelected",
+            Self::LeftSizeText => "LeftSizeText",
+            Self::RightSizeText => "RightSizeText",
+            Self::SizeText => "SizeText",
+            Self::HashText => "HashText",
+            Self::StatusText => "StatusText",
+        }
     }
 }
 
@@ -81,38 +96,64 @@ impl CompareProperty {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub struct CompareChanges(u16);
 
+fn change(property: CompareProperty) -> CompareChanges {
+    let mut set = CompareChanges::EMPTY;
+    set.insert(property);
+    set
+}
+
+fn changes(properties: &[CompareProperty]) -> CompareChanges {
+    let mut set = CompareChanges::EMPTY;
+    for &property in properties {
+        set.insert(property);
+    }
+    set
+}
+
+fn same_image(left: &Option<Arc<DecodedImage>>, right: &Option<Arc<DecodedImage>>) -> bool {
+    match (left, right) {
+        (None, None) => true,
+        (Some(left), Some(right)) => Arc::ptr_eq(left, right),
+        _ => false,
+    }
+}
+
 impl CompareChanges {
     /// The empty set.
     pub const EMPTY: CompareChanges = CompareChanges(0);
 
     /// The set holding every property (what `clear` returns).
     pub fn all() -> Self {
-        todo!()
+        Self((1 << CompareProperty::ALL.len()) - 1)
     }
 
     /// Adds one property.
     pub fn insert(&mut self, property: CompareProperty) {
-        todo!()
+        self.0 |= 1 << (property as u8);
     }
 
     /// True when `property` is in the set.
     pub fn contains(self, property: CompareProperty) -> bool {
-        todo!()
+        self.0 & (1 << (property as u8)) != 0
     }
 
     /// True when nothing changed.
     pub fn is_empty(self) -> bool {
-        todo!()
+        self.0 == 0
     }
 
     /// Set union.
     pub fn union(self, other: CompareChanges) -> CompareChanges {
-        todo!()
+        Self(self.0 | other.0)
     }
 
     /// The members in [`CompareProperty`] order.
     pub fn iter(self) -> std::vec::IntoIter<CompareProperty> {
-        todo!()
+        CompareProperty::ALL
+            .into_iter()
+            .filter(|property| self.contains(*property))
+            .collect::<Vec<_>>()
+            .into_iter()
     }
 }
 
@@ -127,7 +168,10 @@ pub enum CompareError {
 
 impl fmt::Display for CompareError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        todo!()
+        match self {
+            Self::Cancelled => f.write_str("operation cancelled"),
+            Self::Failed(message) => f.write_str(message),
+        }
     }
 }
 
@@ -159,7 +203,15 @@ pub struct CompareLoadOptions {
 
 impl fmt::Debug for CompareLoadOptions {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        todo!()
+        f.debug_struct("CompareLoadOptions")
+            .field("compare_size_enabled", &self.compare_size_enabled)
+            .field("compare_hash_enabled", &self.compare_hash_enabled)
+            .field("hash_source_available", &self.hash_source_available)
+            .field("get_file_size", &self.get_file_size.is_some())
+            .field("current_index", &self.current_index)
+            .field("total_files", &self.total_files)
+            .field("initial_selected_path", &self.initial_selected_path)
+            .finish()
     }
 }
 
@@ -225,12 +277,26 @@ enum CompareStage {
 impl CompareLoad {
     /// The work the caller must run next.
     pub fn work(&self) -> CompareWork {
-        todo!()
+        let (left, right) = (&self.pair.0, &self.pair.1);
+        match self.stage {
+            CompareStage::Images => CompareWork::LoadImages {
+                left: left.clone(),
+                right: right.clone(),
+            },
+            CompareStage::Sizes => CompareWork::StatSizes {
+                left: left.clone(),
+                right: right.clone(),
+            },
+            CompareStage::Hashes => CompareWork::ComputeHashes {
+                left: left.clone(),
+                right: right.clone(),
+            },
+        }
     }
 
     /// The token this load was started with.
     pub fn token(&self) -> i64 {
-        todo!()
+        self.token
     }
 }
 
@@ -269,14 +335,28 @@ pub struct CompareLoadStep {
 /// `UnauthorizedAccessException`, `NotSupportedException`, `ArgumentException` and logs them; a NUL in the path is the
 /// `InvalidInput` case). A length above `i64::MAX` is not representable and gives `None`. Blocking: call it off the UI thread.
 pub fn try_get_file_size(path: &str, file_system: &dyn FileSystem, log: &dyn Log) -> Option<i64> {
-    todo!()
+    match file_system.try_get_file_stat(std::path::Path::new(path)) {
+        Ok(Some(stat)) => i64::try_from(stat.length).ok(),
+        Ok(None) => None,
+        Err(error) => {
+            log.error(&format!("Compare file size unavailable path={path}"), Some(&error));
+            None
+        }
+    }
 }
 
 /// C# `TryGetHashAsync(getHashAsync, path)` over the blocking hasher: `FileHasher::get(Path::new(path), cancel)`.
 /// `Ok(hash)` gives [`HashOutcome::Hash`]; `FileHashError::Canceled` gives [`HashOutcome::Cancelled`]; every other error is
 /// logged as `log.error("Compare hash failed path={path}", Some(&err))` and gives [`HashOutcome::Failed`]. Blocking.
 pub fn hash_outcome(hasher: &dyn FileHasher, path: &str, cancel: &CancelToken, log: &dyn Log) -> HashOutcome {
-    todo!()
+    match hasher.get(std::path::Path::new(path), cancel) {
+        Ok(hash) => HashOutcome::Hash(hash),
+        Err(crate::misc::file_hash::FileHashError::Canceled) => HashOutcome::Cancelled,
+        Err(error) => {
+            log.error(&format!("Compare hash failed path={path}"), Some(&error));
+            HashOutcome::Failed
+        }
+    }
 }
 
 /// C# `CompareViewModel` (`sealed partial class : ObservableObject`). One instance per main window, UI thread only.
@@ -298,146 +378,221 @@ impl CompareViewModel {
     /// C# field initialisers: hidden, no paths, no images, empty size and status texts, and
     /// `hash_text = status::compare_hash_text(None, ctx)` (the "hash off" text of the language current NOW).
     pub fn new(ctx: &FormatContext<'_>) -> Self {
-        todo!()
+        Self {
+            is_visible: false,
+            left_path: None,
+            right_path: None,
+            left_image: None,
+            right_image: None,
+            selected_path: None,
+            left_size_text: String::new(),
+            right_size_text: String::new(),
+            hash_text: status::compare_hash_text(None, ctx),
+            status_text: String::new(),
+        }
     }
 
     // ---- getters (C# properties) ----
 
     pub fn is_visible(&self) -> bool {
-        todo!()
+        self.is_visible
     }
 
     pub fn left_path(&self) -> Option<&str> {
-        todo!()
+        self.left_path.as_deref()
     }
 
     pub fn right_path(&self) -> Option<&str> {
-        todo!()
+        self.right_path.as_deref()
     }
 
     pub fn left_image(&self) -> Option<&Arc<DecodedImage>> {
-        todo!()
+        self.left_image.as_ref()
     }
 
     pub fn right_image(&self) -> Option<&Arc<DecodedImage>> {
-        todo!()
+        self.right_image.as_ref()
     }
 
     pub fn selected_path(&self) -> Option<&str> {
-        todo!()
+        self.selected_path.as_deref()
     }
 
     /// C# `IsLeftSelected`: `LeftPath` is non-empty and equals `SelectedPath` ordinally ignoring case (`pr_core::text::eq_ignore_case`).
     pub fn is_left_selected(&self) -> bool {
-        todo!()
+        self.left_path.as_deref().is_some_and(|path| {
+            !path.is_empty()
+                && self
+                    .selected_path
+                    .as_deref()
+                    .is_some_and(|selected| eq_ignore_case(selected, path))
+        })
     }
 
     /// C# `IsRightSelected`.
     pub fn is_right_selected(&self) -> bool {
-        todo!()
+        self.right_path.as_deref().is_some_and(|path| {
+            !path.is_empty()
+                && self
+                    .selected_path
+                    .as_deref()
+                    .is_some_and(|selected| eq_ignore_case(selected, path))
+        })
     }
 
     pub fn left_size_text(&self) -> &str {
-        todo!()
+        &self.left_size_text
     }
 
     pub fn right_size_text(&self) -> &str {
-        todo!()
+        &self.right_size_text
     }
 
     /// C# `SizeText => Tr.CompareSizePair(LeftSizeText, RightSizeText)`: key `compare.sizePair`, arguments `left` and `right`
     /// (`ctx.texts.format_with("compare.sizePair", .., ctx.numbers)`). English: `"{left} \u{2194} {right}"`.
     pub fn size_text(&self, ctx: &FormatContext<'_>) -> String {
-        todo!()
+        ctx.texts.format_with(
+            "compare.sizePair",
+            &[
+                LocArg::new("left", self.left_size_text.as_str()),
+                LocArg::new("right", self.right_size_text.as_str()),
+            ],
+            ctx.numbers,
+        )
     }
 
     pub fn hash_text(&self) -> &str {
-        todo!()
+        &self.hash_text
     }
 
     pub fn status_text(&self) -> &str {
-        todo!()
+        &self.status_text
     }
 
     // ---- setters (C# `SetProperty`: an equal value changes nothing and raises nothing) ----
 
     /// Changes: `IsVisible`.
     pub fn set_visible(&mut self, value: bool) -> CompareChanges {
-        todo!()
+        if self.is_visible == value {
+            return CompareChanges::EMPTY;
+        }
+        self.is_visible = value;
+        change(CompareProperty::IsVisible)
     }
 
     /// Changes: `LeftPath` and `IsLeftSelected` (only when the path text really changes; ordinal, case-sensitive equality).
     pub fn set_left_path(&mut self, value: Option<String>) -> CompareChanges {
-        todo!()
+        if self.left_path == value {
+            return CompareChanges::EMPTY;
+        }
+        self.left_path = value;
+        changes(&[CompareProperty::LeftPath, CompareProperty::IsLeftSelected])
     }
 
     /// Changes: `RightPath` and `IsRightSelected`.
     pub fn set_right_path(&mut self, value: Option<String>) -> CompareChanges {
-        todo!()
+        if self.right_path == value {
+            return CompareChanges::EMPTY;
+        }
+        self.right_path = value;
+        changes(&[CompareProperty::RightPath, CompareProperty::IsRightSelected])
     }
 
     /// Changes: `LeftImage` (reference equality, `Arc::ptr_eq`; `None == None`).
     pub fn set_left_image(&mut self, value: Option<Arc<DecodedImage>>) -> CompareChanges {
-        todo!()
+        if same_image(&self.left_image, &value) {
+            return CompareChanges::EMPTY;
+        }
+        self.left_image = value;
+        change(CompareProperty::LeftImage)
     }
 
     /// Changes: `RightImage`.
     pub fn set_right_image(&mut self, value: Option<Arc<DecodedImage>>) -> CompareChanges {
-        todo!()
+        if same_image(&self.right_image, &value) {
+            return CompareChanges::EMPTY;
+        }
+        self.right_image = value;
+        change(CompareProperty::RightImage)
     }
 
     /// Changes: `SelectedPath`, `IsLeftSelected`, `IsRightSelected` (both flags are notified whenever the path text changes,
     /// even if a flag keeps its value).
     pub fn set_selected_path(&mut self, value: Option<String>) -> CompareChanges {
-        todo!()
+        if self.selected_path == value {
+            return CompareChanges::EMPTY;
+        }
+        self.selected_path = value;
+        changes(&[
+            CompareProperty::SelectedPath,
+            CompareProperty::IsLeftSelected,
+            CompareProperty::IsRightSelected,
+        ])
     }
 
     /// Changes: `LeftSizeText` and `SizeText`.
     pub fn set_left_size_text(&mut self, value: String) -> CompareChanges {
-        todo!()
+        if self.left_size_text == value {
+            return CompareChanges::EMPTY;
+        }
+        self.left_size_text = value;
+        changes(&[CompareProperty::LeftSizeText, CompareProperty::SizeText])
     }
 
     /// Changes: `RightSizeText` and `SizeText`.
     pub fn set_right_size_text(&mut self, value: String) -> CompareChanges {
-        todo!()
+        if self.right_size_text == value {
+            return CompareChanges::EMPTY;
+        }
+        self.right_size_text = value;
+        changes(&[CompareProperty::RightSizeText, CompareProperty::SizeText])
     }
 
     /// Changes: `HashText`.
     pub fn set_hash_text(&mut self, value: String) -> CompareChanges {
-        todo!()
+        if self.hash_text == value {
+            return CompareChanges::EMPTY;
+        }
+        self.hash_text = value;
+        change(CompareProperty::HashText)
     }
 
     /// Changes: `StatusText`.
     pub fn set_status_text(&mut self, value: String) -> CompareChanges {
-        todo!()
+        if self.status_text == value {
+            return CompareChanges::EMPTY;
+        }
+        self.status_text = value;
+        change(CompareProperty::StatusText)
     }
 
     // ---- commands ----
 
     /// C# `SelectLeft()`: `SelectedPath = LeftPath`.
     pub fn select_left(&mut self) -> CompareChanges {
-        todo!()
+        self.set_selected_path(self.left_path.clone())
     }
 
     /// C# `SelectRight()`: `SelectedPath = RightPath`.
     pub fn select_right(&mut self) -> CompareChanges {
-        todo!()
+        self.set_selected_path(self.right_path.clone())
     }
 
     /// C# `Select(path)`: `SelectedPath = path`.
     pub fn select(&mut self, path: Option<String>) -> CompareChanges {
-        todo!()
+        self.set_selected_path(path)
     }
 
     /// C# `Toggle()`: `IsVisible = !IsVisible`.
     pub fn toggle(&mut self) -> CompareChanges {
-        todo!()
+        self.set_visible(!self.is_visible)
     }
 
     /// C# `Clear()`: resets every field (`hash_text` to `status::compare_hash_text(None, ctx)`) and notifies ALL thirteen
     /// properties unconditionally, even those already at their default: returns [`CompareChanges::all`].
     pub fn clear(&mut self, ctx: &FormatContext<'_>) -> CompareChanges {
-        todo!()
+        *self = Self::new(ctx);
+        CompareChanges::all()
     }
 
     // ---- staged load (C# `LoadAsync`) ----
@@ -454,9 +609,33 @@ impl CompareViewModel {
         token: i64,
         is_token_current: &dyn Fn(i64) -> bool,
         options: CompareLoadOptions,
-        ctx: &FormatContext<'_>,
+        _ctx: &FormatContext<'_>,
     ) -> CompareLoadStep {
-        todo!()
+        if !is_token_current(token) {
+            return CompareLoadStep {
+                changes: CompareChanges::EMPTY,
+                next: CompareNext::Done(CompareOutcome::Superseded),
+            };
+        }
+        let mut changes = self.set_left_path(Some(pair.0.clone()));
+        changes = changes.union(self.set_right_path(Some(pair.1.clone())));
+        changes = changes.union(self.set_selected_path(Some(
+            options.initial_selected_path.clone().unwrap_or_else(|| pair.0.clone()),
+        )));
+        changes = changes.union(self.set_visible(true));
+        changes = changes.union(self.set_left_image(None));
+        changes = changes.union(self.set_right_image(None));
+        CompareLoadStep {
+            changes,
+            next: CompareNext::Await(CompareLoad {
+                pair,
+                token,
+                options,
+                stage: CompareStage::Images,
+                left_size: String::new(),
+                right_size: String::new(),
+            }),
+        }
     }
 
     /// The C# code after the `await` the load is parked at, up to the next `await` or the end.
@@ -492,6 +671,148 @@ impl CompareViewModel {
         is_token_current: &dyn Fn(i64) -> bool,
         ctx: &FormatContext<'_>,
     ) -> CompareLoadStep {
-        todo!()
+        match (load.stage, result) {
+            (CompareStage::Images, CompareWorkResult::Images { left, right }) => {
+                let left = match left {
+                    Ok(image) => image,
+                    Err(error) => return done_error(error),
+                };
+                let right = match right {
+                    Ok(image) => image,
+                    Err(error) => return done_error(error),
+                };
+                if !is_token_current(load.token) {
+                    return done_superseded();
+                }
+                let mut changes = self.set_left_image(left);
+                changes = changes.union(self.set_right_image(right));
+                if load.options.compare_size_enabled {
+                    if let Some(get_size) = &load.options.get_file_size {
+                        let left = get_size(&load.pair.0)
+                            .map(|bytes| status::compare_size_suffix(bytes, ctx))
+                            .unwrap_or_default();
+                        let right = get_size(&load.pair.1)
+                            .map(|bytes| status::compare_size_suffix(bytes, ctx))
+                            .unwrap_or_default();
+                        return self.after_sizes(load, left, right, changes, ctx);
+                    }
+                    let mut load = load;
+                    load.stage = CompareStage::Sizes;
+                    return CompareLoadStep {
+                        changes,
+                        next: CompareNext::Await(load),
+                    };
+                }
+                self.after_sizes(load, String::new(), String::new(), changes, ctx)
+            }
+            (CompareStage::Sizes, CompareWorkResult::Sizes { left, right }) => {
+                if !is_token_current(load.token) {
+                    return done_superseded();
+                }
+                let left = left
+                    .map(|bytes| status::compare_size_suffix(bytes, ctx))
+                    .unwrap_or_default();
+                let right = right
+                    .map(|bytes| status::compare_size_suffix(bytes, ctx))
+                    .unwrap_or_default();
+                self.after_sizes(load, left, right, CompareChanges::EMPTY, ctx)
+            }
+            (CompareStage::Hashes, CompareWorkResult::Hashes { left, right }) => {
+                if matches!(left, HashOutcome::Cancelled) || matches!(right, HashOutcome::Cancelled) {
+                    return CompareLoadStep {
+                        changes: CompareChanges::EMPTY,
+                        next: CompareNext::Done(CompareOutcome::Cancelled),
+                    };
+                }
+                if !is_token_current(load.token) {
+                    return done_superseded();
+                }
+                let text = match (left, right) {
+                    (HashOutcome::Hash(left), HashOutcome::Hash(right)) => {
+                        status::compare_hash_text(Some(eq_ignore_case(&left, &right)), ctx)
+                    }
+                    _ => status::compare_hash_unknown(ctx),
+                };
+                self.finish_load(load, text, CompareChanges::EMPTY, ctx)
+            }
+            _ => {
+                debug_assert!(false, "compare work result does not match stage");
+                done_error(CompareError::Failed(
+                    "compare work result does not match stage".to_owned(),
+                ))
+            }
+        }
+    }
+
+    fn after_sizes(
+        &mut self,
+        mut load: CompareLoad,
+        left: String,
+        right: String,
+        mut changes: CompareChanges,
+        ctx: &FormatContext<'_>,
+    ) -> CompareLoadStep {
+        changes = changes.union(self.set_left_size_text(left.clone()));
+        changes = changes.union(self.set_right_size_text(right.clone()));
+        load.left_size = left;
+        load.right_size = right;
+        let hash_enabled = load.options.compare_hash_enabled && load.options.hash_source_available;
+        if hash_enabled {
+            if is_raw_path(&load.pair.0) != is_raw_path(&load.pair.1) {
+                return self.finish_load(load, status::compare_hash_text(Some(false), ctx), changes, ctx);
+            }
+            load.stage = CompareStage::Hashes;
+            return CompareLoadStep {
+                changes,
+                next: CompareNext::Await(load),
+            };
+        }
+        self.finish_load(load, status::compare_hash_text(None, ctx), changes, ctx)
+    }
+
+    fn finish_load(
+        &mut self,
+        load: CompareLoad,
+        hash_text: String,
+        mut changes: CompareChanges,
+        ctx: &FormatContext<'_>,
+    ) -> CompareLoadStep {
+        changes = changes.union(self.set_hash_text(hash_text));
+        let status_text = status::compare(
+            &CompareStatus {
+                index: load.options.current_index,
+                count: load.options.total_files,
+                left_name: get_file_name(&load.pair.0),
+                left_size: &load.left_size,
+                right_name: get_file_name(&load.pair.1),
+                right_size: &load.right_size,
+                hash_text: &self.hash_text,
+            },
+            ctx,
+        );
+        changes = changes.union(self.set_status_text(status_text));
+        CompareLoadStep {
+            changes,
+            next: CompareNext::Done(CompareOutcome::Completed),
+        }
+    }
+}
+
+fn done_superseded() -> CompareLoadStep {
+    CompareLoadStep {
+        changes: CompareChanges::EMPTY,
+        next: CompareNext::Done(CompareOutcome::Superseded),
+    }
+}
+
+fn done_error(error: CompareError) -> CompareLoadStep {
+    let outcome = if error == CompareError::Cancelled {
+        CompareOutcome::Cancelled
+    } else {
+        CompareOutcome::Failed(error)
+    };
+    CompareLoadStep {
+        changes: CompareChanges::EMPTY,
+        next: CompareNext::Done(outcome),
     }
 }
