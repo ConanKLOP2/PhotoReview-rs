@@ -12,17 +12,13 @@
 //! [`PointerInputController::resume`] at Render priority and passes the continuation back. The surface's own
 //! `ImageSurface::yield_to_render` is NOT used by this controller (the shell performs the yield, as for `FitStep`).
 
-// Stub only: the porter removes this allow line once every body is real.
-#![allow(unused_variables, unused_imports, dead_code)]
-// Stub only (contract text in doc comments, boxed seams): the porter fixes the doc layout / introduces type aliases and removes this line.
-#![allow(clippy::doc_lazy_continuation)]
-
 use pr_core::model::enums::{FitWidthAnchor, InitialViewMode};
 
+use crate::input::mouse_gestures::resolve_keyboard_zoom_anchor;
 use crate::input::pointer::wheel::{PointerContext, PointerInputController};
-use crate::input::primitives::{PointD, f64_same};
+use crate::input::primitives::{PointD, RectD, SizeD, f64_same};
 use crate::input::surface::ImageSurface;
-use crate::misc::window_helpers::ZoomImagePoint;
+use crate::misc::window_helpers::{self, IMAGE_CENTRE, ZoomImagePoint};
 use crate::viewmodels::viewer_state::ViewerState;
 
 /// What the controller asks the shell to do after a call that contains a C# `await`.
@@ -73,7 +69,12 @@ pub(super) struct LayoutMetrics {
 
 impl PartialEq for LayoutMetrics {
     fn eq(&self, other: &Self) -> bool {
-        todo!()
+        f64_same(self.image_width, other.image_width)
+            && f64_same(self.image_height, other.image_height)
+            && f64_same(self.extent_width, other.extent_width)
+            && f64_same(self.extent_height, other.extent_height)
+            && f64_same(self.viewport_width, other.viewport_width)
+            && f64_same(self.viewport_height, other.viewport_height)
     }
 }
 
@@ -122,7 +123,10 @@ enum ContinuationKind {
 impl PointerContinuation {
     /// The operation version this continuation belongs to.
     pub fn version(&self) -> i64 {
-        todo!()
+        match &self.kind {
+            ContinuationKind::Zoom(pass) => pass.version,
+            ContinuationKind::Reanchor(pass) => pass.version,
+        }
     }
 }
 
@@ -133,12 +137,34 @@ impl PointerContinuation {
 /// `normalize_image_point(element, SizeD(image_actual_width, image_actual_height))`. `to_image_element` is called exactly once
 /// per capture (a test pins the call list).
 pub(super) fn capture_zoom_anchor(is_fit: bool, surface: &dyn ImageSurface, mouse: PointD) -> ZoomImagePoint {
-    todo!()
+    let element = surface.to_image_element(mouse);
+    let actual = SizeD {
+        width: surface.image_actual_width(),
+        height: surface.image_actual_height(),
+    };
+    if is_fit
+        && let Some(source) = surface.source_size()
+        && source.width > 0.0
+        && source.height > 0.0
+    {
+        let source_point = window_helpers::calculate_uniform_image_point(actual, source, element);
+        return window_helpers::normalize_image_point(
+            PointD {
+                x: source_point.x,
+                y: source_point.y,
+            },
+            source,
+        );
+    }
+    window_helpers::normalize_image_point(element, actual)
 }
 
 /// C# `ViewportCentre`: `(viewport_width / 2, viewport_height / 2)`.
 pub(super) fn viewport_centre(surface: &dyn ImageSurface) -> PointD {
-    todo!()
+    PointD {
+        x: surface.viewport_width() / 2.0,
+        y: surface.viewport_height() / 2.0,
+    }
 }
 
 impl PointerInputController {
@@ -147,24 +173,47 @@ impl PointerInputController {
     /// C# `ZoomActualSizeAsync()`: no images gives `Done` with nothing touched; else `cancel_pan`, `stop_kinetic`, then
     /// `zoom_at_point(resolve_keyboard_anchor(), ZoomAction::ActualSize)`.
     pub fn zoom_actual_size(&mut self, ctx: &mut PointerContext<'_>) -> PointerStep {
-        todo!()
+        if !ctx.commands.has_images() {
+            return PointerStep::Done;
+        }
+        self.cancel_pan(ctx.surface);
+        self.stop_kinetic(ctx.surface);
+        let point = self.resolve_keyboard_anchor(ctx);
+        self.zoom_at_point(ctx, point, ZoomAction::ActualSize)
     }
 
     /// C# `ZoomInAsync()`: as `zoom_actual_size` with `ZoomAction::ZoomIn`.
     pub fn zoom_in(&mut self, ctx: &mut PointerContext<'_>) -> PointerStep {
-        todo!()
+        if !ctx.commands.has_images() {
+            return PointerStep::Done;
+        }
+        self.cancel_pan(ctx.surface);
+        self.stop_kinetic(ctx.surface);
+        let point = self.resolve_keyboard_anchor(ctx);
+        self.zoom_at_point(ctx, point, ZoomAction::ZoomIn)
     }
 
     /// C# `ZoomOutAsync()`: as `zoom_actual_size` with `ZoomAction::ZoomOut`.
     pub fn zoom_out(&mut self, ctx: &mut PointerContext<'_>) -> PointerStep {
-        todo!()
+        if !ctx.commands.has_images() {
+            return PointerStep::Done;
+        }
+        self.cancel_pan(ctx.surface);
+        self.stop_kinetic(ctx.surface);
+        let point = self.resolve_keyboard_anchor(ctx);
+        self.zoom_at_point(ctx, point, ZoomAction::ZoomOut)
     }
 
     /// C# `ResolveKeyboardAnchor()`: `mouse_gestures::resolve_keyboard_zoom_anchor(settings.keyboard_zoom_anchor_or_default(),
     /// surface.pointer_position(), viewport_width, viewport_height)`. Used by keyboard / menu zoom and by the click-zoom key
     /// (`click_zoom.rs`); never by the wheel or the mouse click, which anchor at the cursor.
     pub(super) fn resolve_keyboard_anchor(&self, ctx: &PointerContext<'_>) -> PointD {
-        todo!()
+        resolve_keyboard_zoom_anchor(
+            ctx.settings.keyboard_zoom_anchor_or_default(),
+            ctx.surface.pointer_position(),
+            ctx.surface.viewport_width(),
+            ctx.surface.viewport_height(),
+        )
     }
 
     // ---- zoom at a point ----
@@ -177,7 +226,8 @@ impl PointerInputController {
         mouse: PointD,
         action: ZoomAction,
     ) -> PointerStep {
-        todo!()
+        let anchor = capture_zoom_anchor(ctx.viewer.is_fit(), ctx.surface, mouse);
+        self.zoom_to_image_point(ctx, anchor, mouse, action, AfterZoom::Nothing)
     }
 
     /// C# `ZoomToImagePointAsync(anchor, viewportPoint, applyZoom)` up to its render yield. In this order:
@@ -194,7 +244,24 @@ impl PointerInputController {
         action: ZoomAction,
         then: AfterZoom,
     ) -> PointerStep {
-        todo!()
+        let version = ctx.versions.next_version();
+        self.zooms_awaiting_layout += 1;
+        self.apply_zoom(ctx, action);
+        let placed = if ctx.surface.is_loaded() {
+            self.scroll_anchor_to(ctx.surface, anchor, viewport_point);
+            Some(Self::capture_layout_metrics(ctx.surface))
+        } else {
+            None
+        };
+        PointerStep::AwaitRender(PointerContinuation {
+            kind: ContinuationKind::Zoom(ZoomPass {
+                version,
+                anchor,
+                viewport_point,
+                placed,
+                then,
+            }),
+        })
     }
 
     /// Resumes a continuation after the render pass (UI thread, Render priority).
@@ -206,16 +273,62 @@ impl PointerInputController {
     ///    viewport_point)` again; then `zooms_awaiting_layout -= 1` (the C# `finally`);
     /// 3. `then`: `Nothing` gives `Done`; `CorrectSideScrollbar` gives `correct_for_side_scrollbar`, which may return a second
     ///    `AwaitRender`.
+    ///
     /// `Reanchor` pass: superseded or not loaded gives `Done`; else `scroll_anchor_to(anchor, viewport_point)`, `Done`.
     pub fn resume(&mut self, ctx: &mut PointerContext<'_>, continuation: PointerContinuation) -> PointerStep {
-        todo!()
+        match continuation.kind {
+            ContinuationKind::Reanchor(pass) => {
+                if pass.version == ctx.versions.current() && ctx.surface.is_loaded() {
+                    self.scroll_anchor_to(ctx.surface, pass.anchor, pass.viewport_point);
+                }
+                PointerStep::Done
+            }
+            ContinuationKind::Zoom(pass) => {
+                self.zooms_awaiting_layout = self.zooms_awaiting_layout.saturating_sub(1);
+                if pass.version != ctx.versions.current() || !ctx.surface.is_loaded() {
+                    return PointerStep::Done;
+                }
+                if pass.placed != Some(Self::capture_layout_metrics(ctx.surface)) {
+                    self.scroll_anchor_to(ctx.surface, pass.anchor, pass.viewport_point);
+                }
+                match pass.then {
+                    AfterZoom::Nothing => PointerStep::Done,
+                    AfterZoom::CorrectSideScrollbar { reapply, width_only } => {
+                        self.correct_for_side_scrollbar(ctx, pass.anchor, reapply, width_only)
+                    }
+                }
+            }
+        }
     }
 
     /// C# `ApplyFitWidth` / `ApplyFitHeight` and the closures of `applyZoom`: runs `action` against `ctx.viewer` and records
     /// the resulting `ViewerUpdate`. `Fit*` first call `viewer.update_viewport(surface.viewport_width(), surface.viewport_height(),
     /// true)`; `ActualSize` is `viewer.zoom_to_actual_size()`; `Nothing` does nothing.
     pub(super) fn apply_zoom(&mut self, ctx: &mut PointerContext<'_>, action: ZoomAction) {
-        todo!()
+        match action {
+            ZoomAction::Nothing => {}
+            ZoomAction::WheelZoom(delta) => self.record_viewer_update(ctx.viewer.wheel_zoom(delta)),
+            ZoomAction::ZoomIn => self.record_viewer_update(ctx.viewer.zoom_in()),
+            ZoomAction::ZoomOut => self.record_viewer_update(ctx.viewer.zoom_out()),
+            ZoomAction::ActualSize => self.record_viewer_update(ctx.viewer.zoom_to_actual_size()),
+            ZoomAction::SetZoom(value) => self.record_viewer_update(ctx.viewer.set_zoom(value)),
+            ZoomAction::FitWidth => {
+                self.record_viewer_update(ctx.viewer.update_viewport(
+                    ctx.surface.viewport_width(),
+                    ctx.surface.viewport_height(),
+                    true,
+                ));
+                self.record_viewer_update(ctx.viewer.zoom_to_fit_width());
+            }
+            ZoomAction::FitHeight => {
+                self.record_viewer_update(ctx.viewer.update_viewport(
+                    ctx.surface.viewport_width(),
+                    ctx.surface.viewport_height(),
+                    true,
+                ));
+                self.record_viewer_update(ctx.viewer.zoom_to_fit_height());
+            }
+        }
     }
 
     /// C# `ScrollAnchorTo(anchor, viewportPoint)`: `surface.update_layout()`, then
@@ -227,12 +340,43 @@ impl PointerInputController {
         anchor: ZoomImagePoint,
         viewport_point: PointD,
     ) {
-        todo!()
+        surface.update_layout();
+        let origin = surface.image_origin();
+        let offsets = window_helpers::calculate_zoom_to_point_offsets(
+            anchor,
+            RectD {
+                x: origin.x,
+                y: origin.y,
+                width: surface.image_actual_width(),
+                height: surface.image_actual_height(),
+            },
+            viewport_point,
+            PointD {
+                x: surface.horizontal_offset(),
+                y: surface.vertical_offset(),
+            },
+            SizeD {
+                width: surface.extent_width(),
+                height: surface.extent_height(),
+            },
+            SizeD {
+                width: surface.viewport_width(),
+                height: surface.viewport_height(),
+            },
+        );
+        surface.scroll_to(offsets.horizontal, offsets.vertical);
     }
 
     /// C# `CaptureLayoutMetrics()`: image actual size, extent and viewport size from the surface.
     pub(super) fn capture_layout_metrics(surface: &dyn ImageSurface) -> LayoutMetrics {
-        todo!()
+        LayoutMetrics {
+            image_width: surface.image_actual_width(),
+            image_height: surface.image_actual_height(),
+            extent_width: surface.extent_width(),
+            extent_height: surface.extent_height(),
+            viewport_width: surface.viewport_width(),
+            viewport_height: surface.viewport_height(),
+        }
     }
 
     // ---- bitmap swap (ADR 0008 amendment R4) ----
@@ -249,7 +393,22 @@ impl PointerInputController {
         surface: &dyn ImageSurface,
         versions: &crate::input::operation_version::ViewportOperationVersion,
     ) {
-        todo!()
+        if self.zooms_awaiting_layout > 0
+            || !surface.is_loaded()
+            || surface.image_actual_width() <= 0.0
+            || surface.image_actual_height() <= 0.0
+        {
+            return;
+        }
+        let centre = viewport_centre(surface);
+        let anchor = capture_zoom_anchor(viewer.is_fit(), surface, centre);
+        self.pending_continuation = Some(PointerContinuation {
+            kind: ContinuationKind::Reanchor(ReanchorPass {
+                version: versions.current(),
+                anchor,
+                viewport_point: centre,
+            }),
+        });
     }
 
     // ---- Fit width / Fit height / initial view ----
@@ -259,12 +418,43 @@ impl PointerInputController {
     /// `zoom_to_image_point(anchor, viewport_centre, ZoomAction::FitWidth, CorrectSideScrollbar { FitWidth, width_only: true })`.
     /// The anchor is the CALLER's choice (`window_helpers::fit_width_anchor_for`), never the keyboard zoom anchor setting.
     pub fn fit_width(&mut self, ctx: &mut PointerContext<'_>, fit_width_anchor: FitWidthAnchor) -> PointerStep {
-        todo!()
+        if !ctx.commands.has_images() {
+            return PointerStep::Done;
+        }
+        self.cancel_pan(ctx.surface);
+        self.stop_kinetic(ctx.surface);
+        let anchor = window_helpers::calculate_fit_width_anchor_point(fit_width_anchor);
+        let centre = viewport_centre(ctx.surface);
+        self.zoom_to_image_point(
+            ctx,
+            anchor,
+            centre,
+            ZoomAction::FitWidth,
+            AfterZoom::CorrectSideScrollbar {
+                reapply: ZoomAction::FitWidth,
+                width_only: true,
+            },
+        )
     }
 
     /// C# `FitHeightAsync()`: as `fit_width` with `IMAGE_CENTRE` (0.5, 0.5), `ZoomAction::FitHeight`, `width_only: false`.
     pub fn fit_height(&mut self, ctx: &mut PointerContext<'_>) -> PointerStep {
-        todo!()
+        if !ctx.commands.has_images() {
+            return PointerStep::Done;
+        }
+        self.cancel_pan(ctx.surface);
+        self.stop_kinetic(ctx.surface);
+        let centre = viewport_centre(ctx.surface);
+        self.zoom_to_image_point(
+            ctx,
+            IMAGE_CENTRE,
+            centre,
+            ZoomAction::FitHeight,
+            AfterZoom::CorrectSideScrollbar {
+                reapply: ZoomAction::FitHeight,
+                width_only: false,
+            },
+        )
     }
 
     /// C# `ApplyInitialViewAsync(mode, clickZoomPercent)`. No images gives `Done`. Else
@@ -280,7 +470,37 @@ impl PointerInputController {
         mode: InitialViewMode,
         click_zoom_percent: i32,
     ) -> PointerStep {
-        todo!()
+        if !ctx.commands.has_images() {
+            return PointerStep::Done;
+        }
+        let applied = ctx.viewer.apply_initial_view_mode(
+            mode,
+            ctx.surface.viewport_width(),
+            ctx.surface.viewport_height(),
+            click_zoom_percent,
+            ctx.settings.keep_zoom_across_images,
+        );
+        let Some(update) = applied else {
+            return PointerStep::Done;
+        };
+        self.record_viewer_update(update);
+        let (anchor, reapply, width_only) = match mode {
+            InitialViewMode::FitWidth => (
+                window_helpers::calculate_fit_width_anchor_point(ctx.settings.fit_width_anchor),
+                ZoomAction::FitWidth,
+                true,
+            ),
+            InitialViewMode::FitHeight => (IMAGE_CENTRE, ZoomAction::FitHeight, false),
+            _ => return PointerStep::Done,
+        };
+        let centre = viewport_centre(ctx.surface);
+        self.zoom_to_image_point(
+            ctx,
+            anchor,
+            centre,
+            ZoomAction::Nothing,
+            AfterZoom::CorrectSideScrollbar { reapply, width_only },
+        )
     }
 
     /// C# `CorrectForSideScrollbarAsync(anchor, reapply, widthOnly)`: `overflowed = extent_width > viewport_width + 0.5` (width
@@ -294,6 +514,16 @@ impl PointerInputController {
         reapply: ZoomAction,
         width_only: bool,
     ) -> PointerStep {
-        todo!()
+        let overflowed = if width_only {
+            ctx.surface.extent_width() > ctx.surface.viewport_width() + 0.5
+        } else {
+            ctx.surface.extent_height() > ctx.surface.viewport_height() + 0.5
+        };
+        if overflowed {
+            let centre = viewport_centre(ctx.surface);
+            self.zoom_to_image_point(ctx, anchor, centre, reapply, AfterZoom::Nothing)
+        } else {
+            PointerStep::Done
+        }
     }
 }
