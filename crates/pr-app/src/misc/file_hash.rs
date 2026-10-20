@@ -20,6 +20,7 @@ use std::io;
 use std::path::Path;
 use std::sync::{Arc, Condvar, Mutex};
 use std::thread;
+use std::time::Duration;
 
 use pr_core::abstractions::{FileSystem, PhysicalSourceReader, SourceReadPriority, SourceReader};
 use pr_core::caching::lru::{BoundedLruCache, InvalidCapacity};
@@ -36,6 +37,9 @@ pub const HASH_CACHE_CAPACITY_BYTES: i64 = 16 * 1024 * 1024;
 
 /// C# `new FileStream(path, ..., 1024 * 1024, ...)`: the streamed read buffer, also the chunk size for cancellation checks.
 pub const HASH_STREAM_BUFFER_BYTES: usize = 1024 * 1024;
+
+/// How often a caller waiting for a shared computation looks at its own cancel token (`CancelToken` has no callback).
+const CANCEL_POLL_INTERVAL: Duration = Duration::from_millis(10);
 
 /// C# `IFileHasher`: the seam the duplicate check uses so tests can block or cancel a hash deterministically.
 /// Blocking (see the module doc); the consumers in B2 (`DuplicateCleanupController`, `CompareViewModel`) take `&dyn FileHasher`.
@@ -461,7 +465,12 @@ impl FileHasher for FileHashService {
             }
             let mut state = flight.state.lock().unwrap_or_else(|p| p.into_inner());
             while state.result.is_none() && !cancel.is_canceled() {
-                state = flight.done.wait(state).unwrap_or_else(|p| p.into_inner());
+                // `CancelToken` has no callback, so a cancel does not wake this waiter by itself: wake periodically and look.
+                state = flight
+                    .done
+                    .wait_timeout(state, CANCEL_POLL_INTERVAL)
+                    .unwrap_or_else(|p| p.into_inner())
+                    .0;
             }
             state.waiters = state.waiters.saturating_sub(1);
             if cancel.is_canceled() {
