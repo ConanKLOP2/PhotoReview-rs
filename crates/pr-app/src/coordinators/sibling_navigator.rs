@@ -18,19 +18,22 @@
 //! Pure module: no `unsafe`, no `windows` crate. `find_next_image_folder` and `find_sibling_image_folders` BLOCK on directory
 //! I/O: never call them on the UI thread.
 
-// Stub only: the porter removes this allow line once every body is real.
-#![allow(unused_variables, unused_imports, dead_code)]
-
 use std::fmt;
 use std::sync::Arc;
 
+use std::path::Path;
+
 use pr_core::abstractions::FileSystem;
 use pr_core::catalog::generation::GenerationClock;
+use pr_core::catalog::sorting::get_sorted_siblings;
+use pr_core::catalog::types::is_supported_with;
 use pr_core::sync::CancelToken;
-use pr_core::text::dotnet_path::PathError;
+use pr_core::text::dotnet_path::{PathError, get_directory_name, get_full_path, trim_ending_directory_separator};
+use pr_core::text::eq_ignore_case;
 
 use crate::coordinators::traits::ISiblingNavigatorSink;
 use crate::viewmodels::format::context::FormatContext;
+use crate::viewmodels::format::status::sibling_folder_boundary;
 use crate::viewmodels::info_overlay::SiblingImageFolders;
 
 /// C# `Func<bool>` setting getter (`getRawEnabled`, `getWebpHeicEnabled`). Read inside the search, on whichever thread runs it,
@@ -52,7 +55,12 @@ pub enum SiblingNavError {
 
 impl fmt::Display for SiblingNavError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        todo!()
+        match self {
+            Self::InvalidDirection(d) => write!(f, "direction must be -1 or 1, got {d}"),
+            Self::BlankFolder => f.write_str("the folder must not be empty or blank"),
+            Self::InvalidPath(e) => write!(f, "invalid folder path: {e:?}"),
+            Self::Cancelled => f.write_str("the sibling folder search was cancelled"),
+        }
     }
 }
 
@@ -98,7 +106,12 @@ impl SiblingFolderNavigator {
         get_raw_enabled: Option<SettingGetter>,
         get_webp_heic_enabled: Option<SettingGetter>,
     ) -> Self {
-        todo!()
+        Self {
+            clock,
+            file_system,
+            get_raw_enabled,
+            get_webp_heic_enabled,
+        }
     }
 
     /// C# `NavigateSiblingFolderAsync` up to `Task.Run`, UI thread. In this order:
@@ -114,7 +127,25 @@ impl SiblingFolderNavigator {
         session_folder: Option<&str>,
         catalog_current_path: Option<&str>,
     ) -> Result<Option<SiblingSearch>, SiblingNavError> {
-        todo!()
+        if direction != -1 && direction != 1 {
+            return Err(SiblingNavError::InvalidDirection(direction));
+        }
+        let folder: Option<String> = match session_folder {
+            Some(f) => Some(f.to_owned()),
+            None => catalog_current_path.and_then(get_directory_name),
+        };
+        let Some(folder) = folder else {
+            return Ok(None);
+        };
+        if folder.trim().is_empty() {
+            return Ok(None);
+        }
+        let current_folder = get_full_path(&folder).map_err(SiblingNavError::InvalidPath)?;
+        Ok(Some(SiblingSearch {
+            current_folder,
+            direction,
+            folder_generation: self.clock.current_folder(),
+        }))
     }
 
     /// C# `FindNextImageFolder`, WORKER thread, blocking: `get_sorted_siblings(current_folder, None)`, the index of the current
@@ -122,7 +153,12 @@ impl SiblingFolderNavigator {
     /// empty (a root folder or an unreadable parent), when the current folder is not in it, or when no sibling qualifies.
     /// `Err(InvalidPath)` for a bad path, `Err(InvalidDirection)` for a direction other than +-1.
     pub fn find_next_image_folder(&self, search: &SiblingSearch) -> Result<Option<String>, SiblingNavError> {
-        todo!()
+        let folders = get_sorted_siblings(&search.current_folder, None).map_err(SiblingNavError::InvalidPath)?;
+        let index = Self::index_of_folder(&folders, &search.current_folder).map_err(SiblingNavError::InvalidPath)?;
+        match index {
+            None => Ok(None),
+            Some(index) => self.find_image_folder(&folders, index, search.direction, &CancelToken::none()),
+        }
     }
 
     /// The code after `await Task.Run(..)`, UI thread:
@@ -136,7 +172,19 @@ impl SiblingFolderNavigator {
         sink: &mut dyn ISiblingNavigatorSink,
         ctx: &FormatContext<'_>,
     ) -> SiblingNavOutcome {
-        todo!()
+        if !self.clock.is_folder_current(search.folder_generation) {
+            return SiblingNavOutcome::Stale;
+        }
+        match target {
+            None => {
+                sink.set_status_text(&sibling_folder_boundary(search.direction, ctx));
+                SiblingNavOutcome::Boundary
+            }
+            Some(target) => {
+                sink.open_folder(target, None);
+                SiblingNavOutcome::Opened
+            }
+        }
     }
 
     /// C# `FindSiblingImageFolders(currentFolder, cancellationToken)`, blocking: the folders `begin_navigate` would reach with
@@ -151,14 +199,33 @@ impl SiblingFolderNavigator {
         current_folder: &str,
         cancel: &CancelToken,
     ) -> Result<SiblingImageFolders, SiblingNavError> {
-        todo!()
+        if current_folder.trim().is_empty() {
+            return Err(SiblingNavError::BlankFolder);
+        }
+        let full = get_full_path(current_folder).map_err(SiblingNavError::InvalidPath)?;
+        let folders = get_sorted_siblings(&full, None).map_err(SiblingNavError::InvalidPath)?;
+        cancel.check().map_err(|_| SiblingNavError::Cancelled)?;
+        let Some(index) = Self::index_of_folder(&folders, &full).map_err(SiblingNavError::InvalidPath)? else {
+            return Ok(SiblingImageFolders::default());
+        };
+        let previous = self.find_image_folder(&folders, index, -1, cancel)?;
+        let next = self.find_image_folder(&folders, index, 1, cancel)?;
+        Ok(SiblingImageFolders { previous, next })
     }
 
     /// C# private `IndexOfFolder(folders, currentFolder)`: the first entry equal to `current_folder` ordinally ignoring case,
     /// after `get_full_path` and `trim_ending_directory_separator` on BOTH sides (a caller's trailing separator must not make
     /// the folder "not found"). `Ok(None)` is C#'s -1.
     fn index_of_folder(folders: &[String], current_folder: &str) -> Result<Option<usize>, PathError> {
-        todo!()
+        let full = get_full_path(current_folder)?;
+        let target = trim_ending_directory_separator(&full);
+        for (i, folder) in folders.iter().enumerate() {
+            let full_folder = get_full_path(folder)?;
+            if eq_ignore_case(trim_ending_directory_separator(&full_folder), target) {
+                return Ok(Some(i));
+            }
+        }
+        Ok(None)
     }
 
     /// C# private `FindImageFolder(folders, index, direction, cancellationToken)`. `direction` not +-1: `Err(InvalidDirection)`.
@@ -174,12 +241,34 @@ impl SiblingFolderNavigator {
         direction: i32,
         cancel: &CancelToken,
     ) -> Result<Option<String>, SiblingNavError> {
-        todo!()
+        if direction != -1 && direction != 1 {
+            return Err(SiblingNavError::InvalidDirection(direction));
+        }
+        let raw_enabled = self.get_raw_enabled.as_ref().is_some_and(|g| g());
+        let webp_heic_enabled = self.get_webp_heic_enabled.as_ref().is_some_and(|g| g());
+        let mut i = index as i64 + i64::from(direction);
+        while i >= 0 && (i as usize) < folders.len() {
+            cancel.check().map_err(|_| SiblingNavError::Cancelled)?;
+            let folder = &folders[i as usize];
+            // Any listing error skips the sibling (contract O2).
+            if let Ok(files) = self.file_system.enumerate_files(Path::new(folder), "*")
+                && files
+                    .iter()
+                    .any(|p| is_supported_with(&p.to_string_lossy(), raw_enabled, webp_heic_enabled))
+            {
+                return Ok(Some(folder.clone()));
+            }
+            i += i64::from(direction);
+        }
+        Ok(None)
     }
 }
 
 impl fmt::Debug for SiblingFolderNavigator {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        todo!()
+        f.debug_struct("SiblingFolderNavigator")
+            .field("has_raw_getter", &self.get_raw_enabled.is_some())
+            .field("has_webp_heic_getter", &self.get_webp_heic_enabled.is_some())
+            .finish_non_exhaustive()
     }
 }
