@@ -1,5 +1,9 @@
 //! Port target: `PhotoReview.App` (composition root, windows, view models). UI framework: docs/adr/R0001.
 
+// The in-crate presenter tests include the shared fakes of `tests/support`, which name the crate as an outside user does.
+#[cfg(test)]
+extern crate self as pr_app;
+
 /// Phase 0 UI spike (docs/adr/R0001): Win32 window + Direct2D viewer used to measure switch time.
 #[cfg(all(windows, feature = "ui-spike"))]
 pub mod spike;
