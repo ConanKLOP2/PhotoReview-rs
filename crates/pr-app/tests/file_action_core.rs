@@ -13,16 +13,14 @@
 
 mod file_action_fakes;
 
-use file_action_fakes::{Env, ExecutorCall, Scripted, action, arg, en, p, text};
+use file_action_fakes::{
+    Env, ExecutorCall, Scripted, action, arg, en, group_failed, group_ok, member, p, single_fail, single_ok, text,
+};
 use pr_app::coordinators::file_actions::recycle::{ExecOutcome, FileActionDone, FileActionEvent, FileActionStep};
 use pr_app::coordinators::folder_load::state::WorkerLane;
-use pr_core::file_actions::journal_line::{JournalDateTime, JournalEntry, JournalGroupMember};
-use pr_core::file_actions::types::{
-    CaptureGroupActionRequest, CaptureGroupActionResult, CaptureGroupMemberResult, FileActionRequest, FileActionResult,
-};
-use pr_core::model::{FileOperationType, JournalState};
+use pr_core::file_actions::types::{CaptureGroupActionRequest, FileActionRequest};
+use pr_core::model::FileOperationType;
 use pr_core::settings::app_settings::AppSettings;
-use pr_core::time::DateTimeUtc;
 use pr_l10n::template::LocArg;
 
 use FileOperationType::{Copy, Move, Recycle};
@@ -33,75 +31,6 @@ const DONE_FALSE: FileActionStep = FileActionStep::Done(FileActionDone::Finished
 // ---------------------------------------------------------------------------------------------------------------
 // builders
 // ---------------------------------------------------------------------------------------------------------------
-
-fn single_ok(op: FileOperationType, source: &str, destination: Option<&str>) -> FileActionResult {
-    FileActionResult::new(
-        true,
-        op,
-        source,
-        destination.map(str::to_string),
-        4,
-        DateTimeUtc::MIN,
-        None,
-    )
-}
-
-fn single_fail(op: FileOperationType, source: &str, error: &str) -> FileActionResult {
-    FileActionResult::new(false, op, source, None, 4, DateTimeUtc::MIN, Some(error.to_string()))
-}
-
-fn member(source: &str, destination: Option<&str>, completed: bool, permanent: bool) -> CaptureGroupMemberResult {
-    let stamp = JournalDateTime::utc(DateTimeUtc::MIN);
-    let mut result = CaptureGroupMemberResult::new(
-        JournalGroupMember {
-            source: source.to_string(),
-            destination: destination.map(str::to_string),
-            size: 4,
-            last_write_utc: stamp,
-            permanent,
-        },
-        completed,
-        false,
-    );
-    result.source_exists = !completed;
-    result
-}
-
-fn entry(op: FileOperationType, destination: Option<&str>) -> Box<JournalEntry> {
-    let stamp = JournalDateTime::utc(DateTimeUtc::MIN);
-    Box::new(JournalEntry {
-        id: "g".to_string(),
-        op_type: op,
-        state: JournalState::Committed,
-        source: p("pair.jpg"),
-        destination: destination.map(str::to_string),
-        size: 4,
-        last_write_utc: stamp,
-        timestamp_utc: stamp,
-        error: None,
-        error_code: None,
-        permanent: None,
-        undo: None,
-        group_id: Some("g".to_string()),
-        group_members: None,
-    })
-}
-
-fn group_ok(
-    op: FileOperationType,
-    members: Vec<CaptureGroupMemberResult>,
-    destination: Option<&str>,
-) -> CaptureGroupActionResult {
-    CaptureGroupActionResult::new(true, false, op, "g", Some(entry(op, destination)), members, None)
-}
-
-fn group_failed(
-    op: FileOperationType,
-    members: Vec<CaptureGroupMemberResult>,
-    error: &str,
-) -> CaptureGroupActionResult {
-    CaptureGroupActionResult::new(false, false, op, "g", None, members, Some(error.to_string()))
-}
 
 fn move_env(names: &[&str]) -> Env {
     let mut env = Env::new(AppSettings::default());
@@ -1454,4 +1383,81 @@ fn failed_recycle_with_nothing_deleted_shows_the_recycle_failed_dialog() {
     let (title, message) = env.dialog.only_error();
     assert_eq!(title, text("dialog.recycleFailed.title"));
     assert!(message.contains("a.jpg") && message.contains("locked"), "{message}");
+}
+
+// C#: FileActionControllerGroupTests.GroupMoveRefused_KeepsCurrentIndexOnTheDisplayedPhoto
+#[test]
+fn group_move_refused_keeps_current_index_on_the_displayed_photo() {
+    let mut env = pair_env(AppSettings::default(), false);
+    assert!(env.catalog.set_current(env.catalog.index_of(&p("pair.jpg"))));
+    env.exec
+        .script(Scripted::Group(group_failed(Move, Vec::new(), "destination exists")));
+
+    env.run_action(0, None, Some(&p("pair.jpg")));
+    env.run_worker();
+    env.present_finished(false);
+
+    // After the removal the catalog points at the photo after the pair, which the presenter shows. The restore must not yank the
+    // selection back to the restored capture.
+    assert_eq!(
+        env.catalog.current().map(|e| e.path().to_string()),
+        Some(p("aafter.jpg"))
+    );
+    assert_eq!(env.catalog.current_index(), 2);
+}
+
+// C#: FileActionControllerGroupTests.GroupMovePartialFailure_RollsBackSoTheWholeGroupReturnsAsOneEntry
+// C#: FileActionControllerOrderingTests.GroupMovePartialFailure_RollsBackAndRestoresTheWholeGroupWithoutARecoveryEntry
+#[test]
+fn group_move_partial_failure_rolls_back_so_the_whole_group_returns_as_one_entry() {
+    let mut env = pair_env(AppSettings::default(), false);
+    let before = env.catalog_paths();
+    // the RAW could not be moved; the JPEG moved first and was rolled back: both are on disk, none completed
+    let mut jpeg = member(&p("pair.jpg"), Some("Sorted/pair.jpg"), false, false);
+    jpeg.source_exists = true;
+    let mut raw = member(&p("pair.cr2"), Some("Sorted/pair.cr2"), false, false);
+    raw.source_exists = true;
+    env.exec.script(Scripted::Group(group_failed(
+        Move,
+        vec![jpeg, raw],
+        "cannot move the RAW",
+    )));
+
+    env.run_action(0, None, Some(&p("pair.jpg")));
+    env.run_worker();
+    env.present_finished(false);
+
+    assert_eq!(env.catalog_paths(), before);
+    assert!(
+        env.catalog
+            .find(&p("pair.jpg"))
+            .is_some_and(|e| e.capture_group.is_some())
+    );
+    assert!(!has_undo_action(&env), "a fully rolled back Move has nothing to undo");
+}
+
+// C#: FileActionControllerGroupTests.GroupRecycle_BinCannotHoldTheWholeCapture_RestoresGroupedEntryAndDeletesNothing
+#[test]
+fn group_recycle_bin_cannot_hold_the_whole_capture_restores_grouped_entry_and_deletes_nothing() {
+    let mut env = Env::new(AppSettings::default());
+    env.load_pair_between_two_photos(true);
+    env.set_actions(AppSettings::default(), vec![action("DeleteIt", Recycle, "", false)]);
+    let before = env.catalog_paths();
+    let mut rejected = group_failed(Recycle, Vec::new(), "the Recycle Bin cannot hold the capture");
+    rejected.rejected = true;
+    env.exec.script(Scripted::Group(rejected));
+
+    env.run_action(0, None, Some(&p("pair.jpg")));
+    env.run_worker();
+    env.present_finished(false);
+
+    assert_eq!(env.catalog_paths(), before);
+    assert!(
+        env.catalog
+            .find(&p("pair.jpg"))
+            .is_some_and(|e| e.capture_group.is_some())
+    );
+    assert!(!has_undo_action(&env));
+    // nothing was deleted, so the failure is also shown as a dialog
+    assert_eq!(env.dialog.errors.lock().unwrap().len(), 1);
 }

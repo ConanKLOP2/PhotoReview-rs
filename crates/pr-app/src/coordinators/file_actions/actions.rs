@@ -6,10 +6,6 @@
 //! executor call (INV-3: the next photo is requested BEFORE the I/O), the worker runs the executor, `handle_event` runs the
 //! result handling, and the `await presentTask` points become a parked continuation ([`ParkedTail`]) that
 //! `on_present_finished` resumes (RV-A09, R08).
-// `InFlightAction::{destination, after}`, `AfterCore::MoveCopyTo` and `CoreTail::MoveCopyFinal` are written and read by
-// `move_or_copy_to_folder` (W8-07e, still a stub); remove this allow when it lands.
-#![allow(dead_code)]
-
 use std::any::Any;
 use std::panic::{AssertUnwindSafe, catch_unwind};
 
@@ -38,7 +34,6 @@ pub(super) struct InFlightAction {
     pub ticket: u64,
     pub action_name: String,
     pub operation: FileOperationType,
-    pub destination: Option<String>,
     pub source: String,
     /// C# `sourceIndex` (catalog index of `source` before the removal; -1 when it was not listed).
     pub source_index: i32,
@@ -75,6 +70,8 @@ pub(super) enum CoreTail {
         file_name: String,
         missing: String,
         is_remove: bool,
+        /// Move-to / Copy-to: what runs after this tail ended the core (C# code after `ExecuteFileActionCoreAsync` returned true).
+        then: Option<MoveCopyTail>,
     },
     /// Lines 420 to 428: Move failed verification after the source was removed: if still current, `update_session_path`
     /// then status `StatusMoveUnverified(fileName)`. Result `Finished{false}`.
@@ -120,6 +117,12 @@ pub(super) fn describe_panic(payload: &(dyn Any + Send)) -> String {
 
 fn done(succeeded: bool) -> FileActionStep {
     FileActionStep::Done(FileActionDone::Finished { succeeded })
+}
+
+/// How the success branch ended: synchronously (the core returned true) or with the step of a tail.
+enum SuccessEnd {
+    Sync,
+    Step(FileActionStep),
 }
 
 /// The result of the executor in the shape the post-I/O code needs.
@@ -322,7 +325,6 @@ impl FileActionController {
             ticket,
             action_name,
             operation,
-            destination: destination.clone(),
             source: source.clone(),
             source_index,
             previous_path,
@@ -448,7 +450,12 @@ impl FileActionController {
             // A throw in the bookkeeping must not be treated as a failed action: the file operation is already real.
             let attempt = catch_unwind(AssertUnwindSafe(|| self.finish_success(cx, &flight, &result)));
             return match attempt {
-                Ok(step) => step,
+                Ok(SuccessEnd::Step(step)) => step,
+                // The core returned true: Move-to / Copy-to continues with its own final steps (outside the `try`, like C#).
+                Ok(SuccessEnd::Sync) => match flight.after {
+                    AfterCore::MoveCopyTo(tail) => self.move_copy_after_core(cx, tail),
+                    AfterCore::Nothing => done(true),
+                },
                 Err(payload) => self.executor_threw(cx, flight, &describe_panic(payload.as_ref()), true),
             };
         }
@@ -600,13 +607,8 @@ impl FileActionController {
         }
     }
 
-    /// The success branch (lines 386 to 410). Returns the step (a tail may park).
-    fn finish_success(
-        &mut self,
-        cx: &mut FileActionCx<'_>,
-        flight: &InFlightAction,
-        result: &IoResult,
-    ) -> FileActionStep {
+    /// The success branch (lines 386 to 410). A tail may park (`SuccessEnd::Step`).
+    fn finish_success(&mut self, cx: &mut FileActionCx<'_>, flight: &InFlightAction, result: &IoResult) -> SuccessEnd {
         match result {
             IoResult::Group(g) => {
                 self.with_undo(|u| u.register_group(g));
@@ -633,15 +635,20 @@ impl FileActionController {
             // A partner file vanished outside the app: the action covered the remaining files. Say so after the presenter
             // (which writes its own status when it finishes), only while this folder is still the open one.
             let missing = skipped.iter().map(|p| get_file_name(p)).collect::<Vec<_>>().join(", ");
-            return self.await_present(
+            let then = match &flight.after {
+                AfterCore::MoveCopyTo(tail) => Some(tail.clone()),
+                AfterCore::Nothing => None,
+            };
+            return SuccessEnd::Step(self.await_present(
                 cx,
                 CoreTail::PartnerMissing {
                     folder_gen: flight.folder_gen,
                     file_name: get_file_name(&flight.source).to_string(),
                     missing,
                     is_remove: flight.is_remove,
+                    then,
                 },
-            );
+            ));
         }
         if cx.catalog.count() == 0 {
             let text = if flight.is_remove {
@@ -664,9 +671,8 @@ impl FileActionController {
                 &[LocArg::new("fileName", get_file_name(&destination).to_string())],
             ));
         }
-        // W8-07e: `flight.after == AfterCore::MoveCopyTo(..)` adds remember_folder and the final-status tail here.
         cx.sink.notify_navigation_state_changed();
-        done(true)
+        SuccessEnd::Sync
     }
 
     /// The `catch` of the C# core: the executor threw (`bookkeeping == false`) or the bookkeeping after a success threw.
@@ -743,13 +749,21 @@ impl FileActionController {
     /// `clock.is_folder_current(folder_gen)` (R08) before it writes a session path or a status into the (maybe new) folder.
     /// The `finally` of the C# core (`notify_navigation_state_changed`) runs when the tail ends.
     pub(super) fn run_core_tail(&mut self, cx: &mut FileActionCx<'_>, tail: CoreTail) -> FileActionStep {
+        // The final status of Move-to / Copy-to runs after the core's own `finally`, which already happened.
+        let tail = match tail {
+            CoreTail::MoveCopyFinal(move_copy) => return self.run_move_copy_final(cx, &move_copy, true),
+            other => other,
+        };
+        let mut follow_up: Option<MoveCopyTail> = None;
         let step = match tail {
             CoreTail::PartnerMissing {
                 folder_gen,
                 file_name,
                 missing,
                 is_remove,
+                then,
             } => {
+                follow_up = then;
                 if self.deps.clock.is_folder_current(folder_gen) {
                     let missing_text = self.status_of(
                         keys::STATUS_GROUP_PARTNER_MISSING,
@@ -809,11 +823,13 @@ impl FileActionController {
                     done(false)
                 }
             }
-            // Written and consumed by W8-07e (`move_or_copy_to_folder`); nothing in this unit creates it.
-            CoreTail::MoveCopyFinal(_) => done(true),
+            CoreTail::MoveCopyFinal(_) => done(true), // handled before the match
         };
         cx.sink.notify_navigation_state_changed();
-        step
+        match follow_up {
+            Some(tail) if step == done(true) => self.move_copy_after_core(cx, tail),
+            _ => step,
+        }
     }
 
     /// C# `ReportLateCompletion(result)` (lines 599 to 617): a single-file Move/Recycle that finished after the folder changed.

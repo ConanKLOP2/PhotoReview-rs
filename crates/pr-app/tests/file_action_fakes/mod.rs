@@ -15,14 +15,18 @@ use pr_app::coordinators::file_actions::recycle::{
     FileActionController, FileActionCx, FileActionDeps, FileActionEvent, FileActionStep, TextSource,
 };
 use pr_app::coordinators::folder_load::state::{WorkerLane, WorkerPort};
-use pr_app::coordinators::traits::{IFileActionExecutor, IFileActionSink, IPreloadController};
-use pr_core::abstractions::{BatchReviewItem, DialogService, Log, RecycleBin, SkippedEntry, SystemClock};
+use pr_app::coordinators::traits::{IFileActionExecutor, IFileActionSink, IFolderPicker, IPreloadController};
+use pr_core::abstractions::{
+    AppendStream, BatchReviewItem, DialogService, FileStat, FileSystem, Log, ReadSeek, RecycleBin, SkippedEntry,
+    SystemClock,
+};
 use pr_core::app_paths::AppPaths;
 use pr_core::catalog::generation::GenerationClock;
 use pr_core::catalog::natural_cmp::ManagedNaturalComparer;
 use pr_core::catalog::review_catalog::ReviewCatalog;
 use pr_core::catalog::types::CatalogEntry;
 use pr_core::file_actions::journal::OperationJournal;
+use pr_core::file_actions::types::UndoResult;
 use pr_core::file_actions::types::{
     CaptureGroupActionRequest, CaptureGroupActionResult, FileActionRequest, FileActionResult,
 };
@@ -450,6 +454,7 @@ pub struct Env {
     pub port: Arc<ManualPort>,
     pub preload: Arc<RecordingPreload>,
     pub log: Arc<RecordingLog>,
+    pub remembered: Arc<Mutex<Vec<(FileOperationType, String)>>>,
     pub undo: Option<Arc<Mutex<UndoService>>>,
     pub settings: Arc<Mutex<Arc<AppSettings>>>,
     pub controller: FileActionController,
@@ -461,6 +466,8 @@ pub struct EnvOptions {
     pub file_system: bool,
     pub executor: bool,
     pub undo: bool,
+    /// Replaces the physical file system (C# `HookFileSystem`).
+    pub file_system_override: Option<Arc<dyn FileSystem>>,
 }
 
 impl Default for EnvOptions {
@@ -471,6 +478,7 @@ impl Default for EnvOptions {
             file_system: true,
             executor: true,
             undo: true,
+            file_system_override: None,
         }
     }
 }
@@ -487,6 +495,8 @@ impl Env {
         let port = ManualPort::new();
         let preload = Arc::new(RecordingPreload::default());
         let log = Arc::new(RecordingLog::default());
+        let remembered: Arc<Mutex<Vec<(FileOperationType, String)>>> = Arc::new(Mutex::new(Vec::new()));
+        let remembered_for_controller = remembered.clone();
         let undo = options.undo.then(new_undo_service);
         let settings = Arc::new(Mutex::new(Arc::new(settings)));
         let settings_for_controller = settings.clone();
@@ -500,10 +510,18 @@ impl Env {
             preload_controller: Some(preload.clone()),
             natural_comparer: Arc::new(ManagedNaturalComparer),
             get_settings: Box::new(move || settings_for_controller.lock().unwrap().clone()),
-            file_system: options
-                .file_system
-                .then(|| Arc::new(PhysicalFileSystem) as Arc<dyn pr_core::abstractions::FileSystem>),
-            remember_folder: None,
+            file_system: options.file_system.then(|| {
+                options
+                    .file_system_override
+                    .clone()
+                    .unwrap_or_else(|| Arc::new(PhysicalFileSystem) as Arc<dyn FileSystem>)
+            }),
+            remember_folder: Some(Box::new(move |operation, folder| {
+                remembered_for_controller
+                    .lock()
+                    .unwrap()
+                    .push((operation, folder.to_string()));
+            })),
             worker: port.clone(),
             texts: Arc::new(EnglishTexts::new()),
             log: log.clone(),
@@ -517,6 +535,7 @@ impl Env {
             port,
             preload,
             log,
+            remembered,
             undo,
             settings,
             controller,
@@ -539,6 +558,11 @@ impl Env {
 
     /// `[before.jpg, pair.jpg + pair.cr2 (+ pair.xmp) as one capture, after.jpg]` (C# `LoadPairBetweenTwoPhotos`).
     pub fn load_pair_between_two_photos(&mut self, with_xmp: bool) {
+        self.load_pair_with_mode(RawPairMode::PreferJpeg, with_xmp);
+    }
+
+    /// Same catalog in the given pair mode (the representative of the capture differs).
+    pub fn load_pair_with_mode(&mut self, mode: RawPairMode, with_xmp: bool) {
         let entries = vec![
             CatalogEntry::new(p("zbefore.jpg")).expect("path"),
             CatalogEntry::new(p("pair.jpg")).expect("path"),
@@ -547,7 +571,7 @@ impl Env {
         ];
         let sidecars = [p("pair.xmp")];
         let sidecar_paths: Option<&[String]> = if with_xmp { Some(&sidecars) } else { None };
-        self.catalog.reset(entries, RawPairMode::PreferJpeg, sidecar_paths);
+        self.catalog.reset(entries, mode, sidecar_paths);
     }
 
     /// The controller's `recycle` with the catalog and the sink of this environment.
@@ -561,6 +585,62 @@ impl Env {
             sink: &mut self.sink,
         };
         self.controller.recycle(&mut cx, compare_selected, current)
+    }
+
+    /// Plain photos at the given (already full) paths.
+    pub fn load_paths(&mut self, paths: &[String]) {
+        let entries = paths
+            .iter()
+            .map(|n| CatalogEntry::new(n.clone()).expect("path"))
+            .collect();
+        self.catalog.reset(entries, RawPairMode::PreferJpeg, None);
+    }
+
+    /// The controller's `move_or_copy_to_folder`.
+    pub fn move_to_folder(
+        &mut self,
+        picker: Option<&mut dyn IFolderPicker>,
+        operation: FileOperationType,
+        force_picker: bool,
+        get_source: &dyn Fn() -> (Option<String>, Option<String>),
+    ) -> Result<FileActionStep, FileOperationType> {
+        let mut cx = FileActionCx {
+            catalog: &mut self.catalog,
+            sink: &mut self.sink,
+        };
+        self.controller
+            .move_or_copy_to_folder(&mut cx, picker, operation, force_picker, get_source)
+    }
+
+    /// The controller's `undo_last`; the undo service runs for real on an empty history and its result is replaced by `result`
+    /// (the worker event carries the scripted outcome), so the controller logic is exercised without a disk.
+    pub fn undo_with(&mut self, result: UndoResult, current_folder: Option<&str>) -> FileActionStep {
+        let ticket = self.undo_begin(current_folder);
+        self.undo_deliver(ticket, result)
+    }
+
+    /// Starts an undo and runs its worker job; returns the ticket of the event that is still to be delivered.
+    pub fn undo_begin(&mut self, current_folder: Option<&str>) -> u64 {
+        let started = {
+            let mut cx = FileActionCx {
+                catalog: &mut self.catalog,
+                sink: &mut self.sink,
+            };
+            self.controller.undo_last(&mut cx, current_folder)
+        };
+        assert_eq!(started, FileActionStep::Pending);
+        match self.port.run_all().into_iter().next() {
+            Some(FileActionEvent::Undone { ticket, .. }) => ticket,
+            other => panic!("expected one Undone event, got {other:?}"),
+        }
+    }
+
+    /// Delivers the (scripted) result of the undo started by `undo_begin`.
+    pub fn undo_deliver(&mut self, ticket: u64, result: UndoResult) -> FileActionStep {
+        self.handle(FileActionEvent::Undone {
+            ticket,
+            outcome: pr_app::coordinators::file_actions::recycle::UndoOutcome::Result(result),
+        })
     }
 
     /// The controller's `run_action`.
@@ -623,4 +703,176 @@ pub fn text(key: &str) -> String {
 /// A string argument.
 pub fn arg(name: &str, value: &str) -> pr_l10n::template::LocArg {
     pr_l10n::template::LocArg::new(name, value.to_string())
+}
+
+/// C# `FixedPicker`: returns a scripted folder and can run a hook "while the dialog is open".
+pub struct FixedPicker {
+    pub result: Option<String>,
+    pub on_pick: Option<Box<dyn FnMut()>>,
+    pub picked: Vec<(String, Option<String>)>,
+}
+
+impl FixedPicker {
+    pub fn new(result: Option<&str>) -> Self {
+        Self {
+            result: result.map(str::to_string),
+            on_pick: None,
+            picked: Vec::new(),
+        }
+    }
+}
+
+impl IFolderPicker for FixedPicker {
+    fn pick_folder(&mut self, title: &str, initial_folder: Option<&str>) -> Option<String> {
+        self.picked
+            .push((title.to_string(), initial_folder.map(str::to_string)));
+        if let Some(hook) = self.on_pick.as_mut() {
+            hook();
+        }
+        self.result.clone()
+    }
+}
+
+/// C# `HookFileSystem.HideDirectory`: the physical file system, except that one directory "does not exist".
+pub struct HidingFs {
+    pub hidden: Mutex<Option<String>>,
+}
+
+impl HidingFs {
+    pub fn hiding(directory: &str) -> Arc<Self> {
+        Arc::new(Self {
+            hidden: Mutex::new(Some(directory.to_string())),
+        })
+    }
+}
+
+impl FileSystem for HidingFs {
+    fn file_exists(&self, path: &Path) -> bool {
+        PhysicalFileSystem.file_exists(path)
+    }
+
+    fn directory_exists(&self, path: &Path) -> bool {
+        let hidden = self.hidden.lock().unwrap().clone();
+        let is_hidden = hidden.is_some_and(|h| pr_core::text::eq_ignore_case(&h, &path.to_string_lossy()));
+        !is_hidden && PhysicalFileSystem.directory_exists(path)
+    }
+
+    fn get_file_stat(&self, path: &Path) -> Option<FileStat> {
+        PhysicalFileSystem.get_file_stat(path)
+    }
+
+    fn move_file(&self, source: &Path, destination: &Path) -> std::io::Result<()> {
+        PhysicalFileSystem.move_file(source, destination)
+    }
+
+    fn copy_file(&self, source: &Path, destination: &Path) -> std::io::Result<()> {
+        PhysicalFileSystem.copy_file(source, destination)
+    }
+
+    fn delete(&self, path: &Path) -> std::io::Result<()> {
+        PhysicalFileSystem.delete(path)
+    }
+
+    fn open_read_shared(&self, path: &Path, buffer_size: usize) -> std::io::Result<Box<dyn ReadSeek>> {
+        PhysicalFileSystem.open_read_shared(path, buffer_size)
+    }
+
+    fn open_append(&self, path: &Path, durable: bool) -> std::io::Result<Box<dyn AppendStream>> {
+        PhysicalFileSystem.open_append(path, durable)
+    }
+
+    fn write_all_text_atomic(&self, path: &Path, text: &str, durable: bool) -> std::io::Result<()> {
+        PhysicalFileSystem.write_all_text_atomic(path, text, durable)
+    }
+
+    fn read_all_text(&self, path: &Path) -> std::io::Result<String> {
+        PhysicalFileSystem.read_all_text(path)
+    }
+
+    fn enumerate_files(&self, directory: &Path, pattern: &str) -> std::io::Result<Vec<PathBuf>> {
+        PhysicalFileSystem.enumerate_files(directory, pattern)
+    }
+
+    fn enumerate_directories(&self, directory: &Path) -> std::io::Result<Vec<PathBuf>> {
+        PhysicalFileSystem.enumerate_directories(directory)
+    }
+
+    fn create_directory(&self, path: &Path) -> std::io::Result<()> {
+        PhysicalFileSystem.create_directory(path)
+    }
+}
+
+// ---- result builders shared by the core, undo and move-copy tests ----
+
+use pr_core::file_actions::journal_line::{JournalDateTime, JournalEntry, JournalGroupMember};
+use pr_core::file_actions::types::CaptureGroupMemberResult;
+use pr_core::model::JournalState;
+
+pub fn single_ok(op: FileOperationType, source: &str, destination: Option<&str>) -> FileActionResult {
+    FileActionResult::new(
+        true,
+        op,
+        source,
+        destination.map(str::to_string),
+        4,
+        DateTimeUtc::MIN,
+        None,
+    )
+}
+
+pub fn single_fail(op: FileOperationType, source: &str, error: &str) -> FileActionResult {
+    FileActionResult::new(false, op, source, None, 4, DateTimeUtc::MIN, Some(error.to_string()))
+}
+
+pub fn member(source: &str, destination: Option<&str>, completed: bool, permanent: bool) -> CaptureGroupMemberResult {
+    let stamp = JournalDateTime::utc(DateTimeUtc::MIN);
+    let mut result = CaptureGroupMemberResult::new(
+        JournalGroupMember {
+            source: source.to_string(),
+            destination: destination.map(str::to_string),
+            size: 4,
+            last_write_utc: stamp,
+            permanent,
+        },
+        completed,
+        false,
+    );
+    result.source_exists = !completed;
+    result
+}
+
+pub fn entry(op: FileOperationType, destination: Option<&str>) -> Box<JournalEntry> {
+    let stamp = JournalDateTime::utc(DateTimeUtc::MIN);
+    Box::new(JournalEntry {
+        id: "g".to_string(),
+        op_type: op,
+        state: JournalState::Committed,
+        source: p("pair.jpg"),
+        destination: destination.map(str::to_string),
+        size: 4,
+        last_write_utc: stamp,
+        timestamp_utc: stamp,
+        error: None,
+        error_code: None,
+        permanent: None,
+        undo: None,
+        group_id: Some("g".to_string()),
+        group_members: None,
+    })
+}
+
+pub fn group_ok(
+    op: FileOperationType,
+    members: Vec<CaptureGroupMemberResult>,
+    destination: Option<&str>,
+) -> CaptureGroupActionResult {
+    CaptureGroupActionResult::new(true, false, op, "g", Some(entry(op, destination)), members, None)
+}
+
+pub fn group_failed(
+    op: FileOperationType,
+    members: Vec<CaptureGroupMemberResult>,
+    error: &str,
+) -> CaptureGroupActionResult {
+    CaptureGroupActionResult::new(false, false, op, "g", None, members, Some(error.to_string()))
 }
