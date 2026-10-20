@@ -6,8 +6,6 @@
 //! Async becomes a continuation (D-W8-2): `apply_fit_start` runs the C# code up to the render-priority yield and returns
 //! `FitStep::AwaitRender(continuation)`. The shell posts `apply_fit_resume` to the UI dispatcher at Render priority (13d) and
 //! passes the continuation back. No async runtime, no `Rc<RefCell>`, no controller field (D-01d-5).
-#![allow(unused_variables, unused_imports, dead_code)]
-
 use crate::viewport::types::ViewportSnapshot;
 
 /// C# `ZoomDetailRefreshResult` (ZoomDetailLoader.cs:294). Discriminants equal the C# enum values.
@@ -97,7 +95,7 @@ pub struct FitContinuation {
 impl FitContinuation {
     /// The operation version this continuation belongs to.
     pub fn version(&self) -> u64 {
-        todo!()
+        self.version
     }
 }
 
@@ -112,7 +110,39 @@ pub fn apply_fit_start(
     cancel_pan: &mut dyn FnMut(),
     stable: StabilityRule,
 ) -> FitStep {
-    todo!()
+    let _ = stable;
+    cancel_pan();
+    let version = versions.next();
+    let (width, height) = surface.viewport_size();
+    viewer.reset_fit(width, height);
+    start_pass(surface, versions, version, 0, None)
+}
+
+/// One pass of the convergence loop, up to its render yield (C# loop body before `await`). The version and loaded check
+/// comes first; when it fails the Fit ends without any layout call. `pass` is the index of the pass that will wait.
+fn start_pass(
+    surface: &mut dyn FitSurface,
+    versions: &mut dyn OperationVersion,
+    version: u64,
+    pass: u8,
+    last: Option<ViewportSnapshot>,
+) -> FitStep {
+    if versions.current() != version || !surface.is_loaded() {
+        return FitStep::Finished;
+    }
+    surface.update_layout();
+    surface.update_fit_size();
+    FitStep::AwaitRender(FitContinuation { version, pass, last })
+}
+
+/// C# final section: version and loaded check, `UpdateLayout`, `ScrollHome`.
+fn finish(surface: &mut dyn FitSurface, versions: &mut dyn OperationVersion, version: u64) -> FitStep {
+    if versions.current() != version || !surface.is_loaded() {
+        return FitStep::Finished;
+    }
+    surface.update_layout();
+    surface.scroll_home();
+    FitStep::Finished
 }
 
 /// The code after `await surface.YieldToRenderAsync()` in C#, followed by the next passes and the final section.
@@ -126,5 +156,18 @@ pub fn apply_fit_resume(
     versions: &mut dyn OperationVersion,
     stable: StabilityRule,
 ) -> FitStep {
-    todo!()
+    // No version or loaded check before the capture: C# captures even when superseded (D-01d-5).
+    let FitContinuation { version, pass, last } = continuation;
+    let current = surface.capture();
+    if let Some(previous) = last {
+        if stable(&previous, &current) {
+            // C# `break`: the loop ends and the final section runs.
+            return finish(surface, versions, version);
+        }
+    }
+    let next_pass = pass + 1;
+    if next_pass < 3 {
+        return start_pass(surface, versions, version, next_pass, Some(current));
+    }
+    finish(surface, versions, version)
 }

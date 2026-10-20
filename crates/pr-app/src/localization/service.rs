@@ -12,15 +12,14 @@
 //! - `ShippedLanguagesDir` (`AppContext.BaseDirectory`) and `UserLanguagesDir` (`<config dir>\Languages`) are values
 //!   in [`LocalizationPaths`] supplied by the App.
 
-#![allow(unused_variables, dead_code)] // D11: todo!() bodies; the porter removes this line with the last todo!()
-
 use std::fmt;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
 use pr_core::abstractions::{FileSystem, Log};
-use pr_l10n::loader::{LanguageInfo, LanguageLoader, UiCulture};
-use pr_l10n::localizer::Localizer;
+use pr_core::text::eq_ignore_case;
+use pr_l10n::loader::{AUTO_CODE, LanguageInfo, LanguageLoader, UiCulture, set_current_ui_culture};
+use pr_l10n::localizer::{ENGLISH_CODE, Localizer, create_pseudo, create_show_keys};
 
 /// C# `TranslatorMode`: translator aids applied on top of the chosen language (command line `--i18n-pseudo` /
 /// `--i18n-keys`, I18N L09).
@@ -84,45 +83,66 @@ impl LocalizationService {
         cultures: Arc<dyn CultureLookup>,
         log: Arc<dyn Log>,
     ) -> Self {
-        todo!()
+        let loader = LanguageLoader::new(file_system, paths.shipped_dir, Some(paths.user_languages_dir.clone()));
+        Self {
+            loader,
+            user_languages_dir: paths.user_languages_dir,
+            installed_ui_culture,
+            cultures,
+            log,
+            mode: TranslatorMode::None,
+            requested_language: AUTO_CODE.to_owned(),
+        }
     }
 
     /// C# `UserLanguagesDir`.
     pub fn user_languages_dir(&self) -> &Path {
-        todo!()
+        self.user_languages_dir.as_path()
     }
 
     /// C# `Mode` (get).
     pub fn mode(&self) -> TranslatorMode {
-        todo!()
+        self.mode
     }
 
     /// C# `Mode` (set): takes effect at the next `load`.
     pub fn set_mode(&mut self, mode: TranslatorMode) {
-        todo!()
+        self.mode = mode;
     }
 
     /// C# `RequestedLanguage`: the setting value last applied (`auto` or a code, as given; blank becomes `auto`).
     pub fn requested_language(&self) -> &str {
-        todo!()
+        self.requested_language.as_str()
     }
 
     /// C# `DiscoverLanguages()` (delegates to `LanguageLoader::discover_languages`).
     pub fn discover_languages(&self) -> Vec<LanguageInfo> {
-        todo!()
+        self.loader.discover_languages()
     }
 
     /// C# `Load(language)`: `loader.load(language, Some(installed_ui_culture))` (never the ambient culture), then
     /// `Pseudo` -> `create_pseudo`, `Keys` -> `create_show_keys`, `None` -> unchanged. Reads files, touches no global
     /// state (the `Localizer` is returned, not published).
     pub fn load(&self, language: Option<&str>) -> Localizer {
-        todo!()
+        let localizer = self.loader.load(language, Some(&self.installed_ui_culture));
+        match self.mode {
+            TranslatorMode::None => localizer,
+            TranslatorMode::Pseudo => create_pseudo(&localizer),
+            TranslatorMode::Keys => create_show_keys(&localizer),
+        }
     }
 
     /// C# `LocalizationService.ParseMode(args)`: `--i18n-keys` wins over `--i18n-pseudo`; both are matched element by
     /// element with `OrdinalIgnoreCase`; near misses (`--i18n`, `i18n-keys`) do not match.
     pub fn parse_mode<S: AsRef<str>>(args: &[S]) -> TranslatorMode {
-        todo!()
+        let has_flag = |flag: &str| args.iter().any(|arg| eq_ignore_case(arg.as_ref(), flag));
+        if has_flag("--i18n-keys") {
+            TranslatorMode::Keys
+        } else if has_flag("--i18n-pseudo") {
+            TranslatorMode::Pseudo
+        } else {
+            TranslatorMode::None
+        }
     }
 
     /// C# `Apply(language, localizer)`. In this order:
@@ -135,22 +155,46 @@ impl LocalizationService {
     ///
     /// Must run on the UI thread.
     pub fn apply(&mut self, language: Option<&str>, localizer: Arc<Localizer>) {
-        todo!()
+        self.requested_language = match language {
+            Some(value) if !value.trim().is_empty() => value.to_owned(),
+            _ => AUTO_CODE.to_owned(),
+        };
+
+        for warning in localizer.warnings() {
+            self.log.warn(&format!("i18n: {warning}"));
+        }
+
+        // Pseudo text is English text with accents: the UI culture stays English (C# Apply, pseudo branch).
+        let culture_code = if self.mode == TranslatorMode::Pseudo {
+            ENGLISH_CODE.to_owned()
+        } else {
+            localizer.code().to_owned()
+        };
+        // DIVERGENCE: .NET throws CultureNotFoundException for unknown names; an unknown culture keeps the current one.
+        if let Some(culture) = self.cultures.lookup(&culture_code) {
+            set_current_ui_culture(culture);
+        }
+
+        Localizer::set_current(localizer);
     }
 
     /// C# `Switch(language)` = `Apply(language, Load(language))`.
     pub fn switch(&mut self, language: Option<&str>) {
-        todo!()
+        let localizer = Arc::new(self.load(language));
+        self.apply(language, localizer);
     }
 
     /// C# `Reload()`: re-reads `requested_language`, applies it, returns the warnings of the new localizer
     /// (skipped files, entries that fall back to English).
     pub fn reload(&mut self) -> Vec<String> {
-        todo!()
+        let language = self.requested_language.clone();
+        let localizer = Arc::new(self.load(Some(&language)));
+        self.apply(Some(&language), Arc::clone(&localizer));
+        localizer.warnings().to_vec()
     }
 
     /// C# `ResolveCode(language)`: `loader.resolve(language, Some(installed_ui_culture))`; unknown codes give `en`.
     pub fn resolve_code(&self, language: Option<&str>) -> String {
-        todo!()
+        self.loader.resolve(language, Some(&self.installed_ui_culture))
     }
 }

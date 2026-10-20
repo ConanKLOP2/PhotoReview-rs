@@ -9,9 +9,8 @@
 //!
 //! Lead-owned: `input/mod.rs` gets `pub mod mouse_gestures;` (W8-05e merge).
 
-#![allow(unused_variables, dead_code)] // stub only: removed by the porter when the bodies are filled (contracts/README.md D11)
-
 use pr_core::model::enums::{KeyboardZoomAnchor, MiddleClickAction, MouseWheelAction};
+use pr_core::settings::app_settings::{MAX_CLICK_ZOOM_PERCENT, MIN_CLICK_ZOOM_PERCENT};
 
 use crate::input::primitives::PointD;
 use crate::input::review_command::ReviewCommand;
@@ -52,7 +51,7 @@ pub struct WheelGestureInterpreter {
 impl WheelGestureInterpreter {
     /// C# `new WheelGestureInterpreter()`: no partial notch.
     pub fn new() -> Self {
-        todo!()
+        Self::default()
     }
 
     /// C# `Handle(int delta, bool ctrlPressed, MouseWheelAction mode)`.
@@ -62,12 +61,36 @@ impl WheelGestureInterpreter {
     /// delta is added and, once `|sum| >= NOTCH_DELTA`, the sum is cleared and `Next` (sum < 0, wheel down) or `Previous` is
     /// returned. At most ONE image per event: the excess is dropped (no queued burst).
     pub fn handle(&mut self, delta: i32, ctrl_pressed: bool, mode: MouseWheelAction) -> WheelOutcomeKind {
-        todo!()
+        if ctrl_pressed || mode != MouseWheelAction::Navigate {
+            self.accumulated = 0;
+            return if delta == 0 {
+                WheelOutcomeKind::None
+            } else {
+                WheelOutcomeKind::Zoom
+            };
+        }
+        if delta == 0 {
+            return WheelOutcomeKind::None;
+        }
+        if self.accumulated != 0 && self.accumulated.signum() != delta.signum() {
+            self.accumulated = 0;
+        }
+        self.accumulated = self.accumulated.wrapping_add(delta);
+        if self.accumulated.unsigned_abs() < NOTCH_DELTA.unsigned_abs() {
+            return WheelOutcomeKind::None;
+        }
+        let down = self.accumulated < 0;
+        self.accumulated = 0;
+        if down {
+            WheelOutcomeKind::Next
+        } else {
+            WheelOutcomeKind::Previous
+        }
     }
 
     /// C# `Reset()`: forget a partial notch (navigation by other means, mode change).
     pub fn reset(&mut self) {
-        todo!()
+        self.accumulated = 0;
     }
 }
 
@@ -96,7 +119,7 @@ pub enum ClickZoomTarget {
 /// C# `PointerGestures.IsFitDoubleClick(int clickCount)`: a second (or later) press of a multi-click always means Fit (DF03).
 /// True exactly when `click_count >= 2`.
 pub fn is_fit_double_click(click_count: i32) -> bool {
-    todo!()
+    click_count >= 2
 }
 
 /// C# `PointerGestures.ClassifyRelease(dragged, panned, pressWasConsumed, clickToZoomEnabled, kineticPanEnabled)`.
@@ -112,7 +135,18 @@ pub fn classify_release(
     click_to_zoom_enabled: bool,
     kinetic_pan_enabled: bool,
 ) -> PointerReleaseAction {
-    todo!()
+    if dragged {
+        return if panned && kinetic_pan_enabled {
+            PointerReleaseAction::StartKinetic
+        } else {
+            PointerReleaseAction::None
+        };
+    }
+    if press_was_consumed || !click_to_zoom_enabled {
+        PointerReleaseAction::None
+    } else {
+        PointerReleaseAction::ClickZoom
+    }
 }
 
 /// C# `PointerGestures.DecideClickZoom(bool isFit, double currentZoom, double clickZoom)`.
@@ -120,7 +154,11 @@ pub fn classify_release(
 /// `Fit` only when `!is_fit && |current_zoom - click_zoom| < SAME_ZOOM_TOLERANCE` (strict); otherwise `ClickZoom`.
 /// NaN in either zoom makes the comparison false, so the result is `ClickZoom` (as C# `Math.Abs(NaN) < tol` is false).
 pub fn decide_click_zoom(is_fit: bool, current_zoom: f64, click_zoom: f64) -> ClickZoomTarget {
-    todo!()
+    if !is_fit && (current_zoom - click_zoom).abs() < SAME_ZOOM_TOLERANCE {
+        ClickZoomTarget::Fit
+    } else {
+        ClickZoomTarget::ClickZoom
+    }
 }
 
 /// C# `PointerGestures.ClickZoomFactor(int percent)`: the `ClickZoomPercent` setting as an original-relative factor (ADR 0008).
@@ -128,7 +166,7 @@ pub fn decide_click_zoom(is_fit: bool, current_zoom: f64, click_zoom: f64) -> Cl
 /// `percent.clamp(MIN_CLICK_ZOOM_PERCENT, MAX_CLICK_ZOOM_PERCENT) as f64 / 100.0`, the clamp in the integer domain first
 /// (C# `Math.Clamp(int, int, int)` then `/ 100.0`). Bounds: `pr_core::settings::app_settings::{MIN,MAX}_CLICK_ZOOM_PERCENT` (10, 800).
 pub fn click_zoom_factor(percent: i32) -> f64 {
-    todo!()
+    f64::from(percent.clamp(MIN_CLICK_ZOOM_PERCENT, MAX_CLICK_ZOOM_PERCENT)) / 100.0
 }
 
 /// C# `PointerGestures.ResolveKeyboardZoomAnchor(KeyboardZoomAnchor mode, PointD? pointer, double viewportWidth, double viewportHeight)`
@@ -142,7 +180,13 @@ pub fn resolve_keyboard_zoom_anchor(
     viewport_width: f64,
     viewport_height: f64,
 ) -> PointD {
-    todo!()
+    match (mode, pointer) {
+        (KeyboardZoomAnchor::Pointer, Some(p)) => p,
+        _ => PointD {
+            x: viewport_width / 2.0,
+            y: viewport_height / 2.0,
+        },
+    }
 }
 
 /// C# `MiddleClickResolver.Resolve(MiddleClickAction action)` (`internal static class`): maps the middle-click action to the
@@ -153,5 +197,17 @@ pub fn resolve_keyboard_zoom_anchor(
 /// `NextFolder -> NEXT_FOLDER`, `OpenFolder -> OPEN_FOLDER`. `None` maps to `None`. (C# also maps undefined values to `null`:
 /// a Rust enum is closed, so that case is not representable here; see contract "Traps".)
 pub fn resolve_middle_click(action: MiddleClickAction) -> Option<ReviewCommand> {
-    todo!()
+    match action {
+        MiddleClickAction::None => None,
+        MiddleClickAction::ClickZoom => Some(ReviewCommand::CLICK_ZOOM),
+        MiddleClickAction::ActualSize => Some(ReviewCommand::ZOOM_ACTUAL_SIZE),
+        MiddleClickAction::Fit => Some(ReviewCommand::TOGGLE_FIT),
+        MiddleClickAction::FitWidth => Some(ReviewCommand::FIT_WIDTH),
+        MiddleClickAction::FitWidth2 => Some(ReviewCommand::FIT_WIDTH2),
+        MiddleClickAction::PreviousImage => Some(ReviewCommand::PREVIOUS),
+        MiddleClickAction::NextImage => Some(ReviewCommand::NEXT),
+        MiddleClickAction::PreviousFolder => Some(ReviewCommand::PREVIOUS_FOLDER),
+        MiddleClickAction::NextFolder => Some(ReviewCommand::NEXT_FOLDER),
+        MiddleClickAction::OpenFolder => Some(ReviewCommand::OPEN_FOLDER),
+    }
 }

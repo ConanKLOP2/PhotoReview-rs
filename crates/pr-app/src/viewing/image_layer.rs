@@ -6,10 +6,6 @@
 //! Orientation: the C# test `context is D2DDrawContext oriented` is `DrawContext::as_oriented()` (W8-12a, D-W8-12a-5): `Some`
 //! for the real draw context, `None` for a fake that cannot orient. The Rust twin of `DrawImageOriented` is
 //! `OrientedDrawContext::draw_image_oriented` (W8-12a). No change to `DrawContext` is needed here.
-//!
-//! Stub: body is `todo!()`; signature is final (contract W8-16a, Public API).
-
-#![allow(unused_variables, dead_code)] // stub only: removed by the porter when the body is filled (contracts/README.md D11)
 
 use crate::input::primitives::RectD;
 use crate::services::render::error::RenderError;
@@ -37,5 +33,28 @@ pub fn try_draw(
     opacity: f32,
     exif_orientation: i32,
 ) -> Result<bool, RenderError> {
-    todo!()
+    if pixels.is_disposed() {
+        return Ok(false);
+    }
+    let has_nan =
+        destination.x.is_nan() || destination.y.is_nan() || destination.width.is_nan() || destination.height.is_nan();
+    if has_nan || destination.width <= 0.0 || destination.height <= 0.0 {
+        return Ok(false);
+    }
+
+    let gpu = match cache.get_or_upload(pixels) {
+        Ok(gpu) => gpu,
+        Err(RenderError::Disposed { .. }) => return Ok(false),
+        Err(other) => return Err(other),
+    };
+    let image: &dyn crate::services::render::gpu_image::GpuImage = &*gpu;
+
+    if (2..=8).contains(&exif_orientation)
+        && let Some(oriented) = context.as_oriented()
+    {
+        oriented.draw_image_oriented(image, destination, exif_orientation, None, interpolation, opacity);
+        return Ok(true);
+    }
+    context.draw_image(image, destination, None, interpolation, opacity);
+    Ok(true)
 }

@@ -10,10 +10,6 @@
 //! UI thread only. The cache and the holders of an image share it through `Rc`, so the mutable state (`uploaded_rows`,
 //! `is_released`, a tile's bitmap) sits in `Cell`/`RefCell` (the C# object is mutated through shared references too).
 //!
-//! Stub: `new`, `is_complete`, `is_drawable` and the `GpuImage` impl are `todo!()`; plain accessors are real.
-
-#![allow(unused_variables, dead_code)] // stub only: removed by the porter when the bodies are filled (contracts/README.md D11)
-
 use std::any::Any;
 use std::cell::{Cell, RefCell};
 
@@ -85,7 +81,26 @@ impl<B> TiledGpuImage<B> {
     /// `gpu_bytes` = sum over tiles of `texture.width as i64 * texture.height as i64 * 4` (the 4 is bytes per pixel; the texture
     /// rect includes the overlap gutter; 0 for an empty tile list). Use `wrapping_add` (C# unchecked `long +=`).
     pub fn new(pixels: &PixelBuffer, tiles: Vec<GpuTile<B>>, generation: i64) -> Self {
-        todo!()
+        // C# `long` arithmetic is unchecked: wrap on overflow instead of panicking in debug builds.
+        let gpu_bytes = tiles.iter().fold(0i64, |sum, tile| {
+            let texture = tile.spec().texture;
+            sum.wrapping_add(
+                (texture.width as i64)
+                    .wrapping_mul(texture.height as i64)
+                    .wrapping_mul(4),
+            )
+        });
+        Self {
+            pixel_buffer_id: pixels.id(),
+            pixel_width: pixels.width(),
+            pixel_height: pixels.height(),
+            layout: pixels.layout(),
+            tiles,
+            generation,
+            gpu_bytes,
+            uploaded_rows: Cell::new(0),
+            is_released: Cell::new(false),
+        }
     }
 
     /// C# `Layout`.
@@ -125,33 +140,33 @@ impl<B> TiledGpuImage<B> {
 
     /// C# `IsComplete` = `UploadedRows >= PixelHeight`.
     pub fn is_complete(&self) -> bool {
-        todo!()
+        self.uploaded_rows.get() >= self.pixel_height
     }
 
     /// C# `IsDrawable(currentGeneration)` = `!IsReleased && IsComplete && Generation == currentGeneration`.
     pub fn is_drawable(&self, current_generation: i64) -> bool {
-        todo!()
+        !self.is_released.get() && self.is_complete() && self.generation == current_generation
     }
 }
 
 impl<B: 'static> GpuImage for TiledGpuImage<B> {
     fn pixel_buffer_id(&self) -> i64 {
-        todo!()
+        self.pixel_buffer_id
     }
 
     fn pixel_width(&self) -> i32 {
-        todo!()
+        self.pixel_width
     }
 
     fn pixel_height(&self) -> i32 {
-        todo!()
+        self.pixel_height
     }
 
     fn gpu_bytes(&self) -> i64 {
-        todo!()
+        self.gpu_bytes
     }
 
     fn as_any(&self) -> &dyn Any {
-        todo!()
+        self
     }
 }

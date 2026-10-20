@@ -4,8 +4,6 @@
 //! `Win32MonitorLayout` (`MonitorFromWindow`, `GetMonitorInfo`, `EnumDisplayMonitors`) is native code and is NOT in this crate
 //! section: it lives in `pr_platform_win` (contract `W8-03a.md`, "Native implementation"). Contract: `contracts/W8-03a.md`.
 
-#![allow(unused_variables, dead_code)] // D11: remove with the last `todo!()`.
-
 use super::contracts::{MonitorHandle, WindowHandle};
 
 /// A screen rectangle in physical pixels, right and bottom exclusive (a Win32 `RECT`). Field order as in C#.
@@ -29,12 +27,12 @@ impl ScreenRect {
 
     /// `Right - Left` in C# `unchecked` `int` arithmetic: wraps instead of panicking (`i32::MAX - i32::MIN` is `-1`).
     pub fn width(&self) -> i32 {
-        todo!()
+        self.right.wrapping_sub(self.left)
     }
 
     /// `Bottom - Top`, wrapping like [`width`](ScreenRect::width).
     pub fn height(&self) -> i32 {
-        todo!()
+        self.bottom.wrapping_sub(self.top)
     }
 }
 
@@ -60,20 +58,20 @@ pub struct FixedMonitorLayout {
 
 impl FixedMonitorLayout {
     pub fn new(works: Vec<ScreenRect>) -> Self {
-        todo!()
+        Self { works }
     }
 }
 
 impl MonitorLayout for FixedMonitorLayout {
-    fn monitor_of(&self, hwnd: WindowHandle) -> MonitorHandle {
-        todo!()
+    fn monitor_of(&self, _hwnd: WindowHandle) -> MonitorHandle {
+        1
     }
 
-    fn try_get_work(&self, monitor: MonitorHandle) -> Option<ScreenRect> {
-        todo!()
+    fn try_get_work(&self, _monitor: MonitorHandle) -> Option<ScreenRect> {
+        self.works.first().copied()
     }
 
     fn work_areas(&self) -> Vec<ScreenRect> {
-        todo!()
+        self.works.clone()
     }
 }

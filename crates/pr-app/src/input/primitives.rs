@@ -4,11 +4,9 @@
 //! `W8-05a` depends on W8-01a. W8-05a adds tests only, no code in this file.
 //! Baseline `d92d6aae`. `f64` equality follows C# `double.Equals` (NaN equals NaN, `0.0 == -0.0`): see `f64_same`.
 
-#![allow(unused_variables, dead_code)] // stub only: removed by the porter when the bodies are filled (contracts/README.md D11)
-
 /// C# `double.Equals` for one field: `NaN` equals `NaN`; `0.0` equals `-0.0`. Used by every manual `PartialEq` of this crate.
 pub(crate) fn f64_same(a: f64, b: f64) -> bool {
-    todo!()
+    a == b || (a.is_nan() && b.is_nan())
 }
 
 /// `PointD` (DIP): replaces `System.Windows.Point` at the Input boundary (`X`, `Y` become `x`, `y`).
@@ -20,7 +18,7 @@ pub struct PointD {
 
 impl PartialEq for PointD {
     fn eq(&self, other: &Self) -> bool {
-        todo!()
+        f64_same(self.x, other.x) && f64_same(self.y, other.y)
     }
 }
 
@@ -33,7 +31,7 @@ pub struct SizeD {
 
 impl PartialEq for SizeD {
     fn eq(&self, other: &Self) -> bool {
-        todo!()
+        f64_same(self.width, other.width) && f64_same(self.height, other.height)
     }
 }
 
@@ -48,26 +46,29 @@ pub struct RectD {
 
 impl PartialEq for RectD {
     fn eq(&self, other: &Self) -> bool {
-        todo!()
+        f64_same(self.x, other.x)
+            && f64_same(self.y, other.y)
+            && f64_same(self.width, other.width)
+            && f64_same(self.height, other.height)
     }
 }
 
 impl RectD {
     /// C# `Right` = `X + Width`.
     pub fn right(&self) -> f64 {
-        todo!()
+        self.x + self.width
     }
 
     /// C# `Bottom` = `Y + Height`.
     pub fn bottom(&self) -> f64 {
-        todo!()
+        self.y + self.height
     }
 
     /// C# `Contains(PointD)`, closed on all four sides, with the C# formula exactly:
     /// `p.x >= x && p.x - width <= x && p.y >= y && p.y - height <= y` (NOT `p.x <= x + width`: the rounding differs).
     /// A negative width or height contains no point.
     pub fn contains(&self, p: PointD) -> bool {
-        todo!()
+        p.x >= self.x && p.x - self.width <= self.x && p.y >= self.y && p.y - self.height <= self.y
     }
 }
 
@@ -94,7 +95,7 @@ impl KeyModifiers {
 
     /// C# `HasFlag(other)`: `(self & other) == other`. `contains(NONE)` is always true (C# `HasFlag(None)`).
     pub fn contains(self, other: Self) -> bool {
-        todo!()
+        (self.0 & other.0) == other.0
     }
 }
 
@@ -102,6 +103,6 @@ impl std::ops::BitOr for KeyModifiers {
     type Output = Self;
 
     fn bitor(self, rhs: Self) -> Self {
-        todo!()
+        Self(self.0 | rhs.0)
     }
 }

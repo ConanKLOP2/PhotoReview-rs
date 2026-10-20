@@ -15,14 +15,39 @@
 //! propagate NaN, so do not use `f64::min`/`max` here; T3 `Opacity` setter maps NaN to 0; T4 a collapsed element's `Bounds`
 //! is a zero-size box at the slot origin, not `RectD::default()`, and it does not arrange children.
 
-#![allow(unused_variables, dead_code)] // stub only: removed by the porter when the bodies are filled (contracts/README.md D11)
-
 use std::fmt::Debug;
 
-use crate::input::primitives::{PointD, RectD, SizeD};
+use crate::input::primitives::{PointD, RectD, SizeD, f64_same};
 use crate::services::render::DrawContext;
 
 pub use super::contracts::{OpacityTarget, OverlayElement, OverlayLayoutContext};
+
+/// .NET `Math.Min(a, b)` for doubles: NaN in either operand gives NaN; for equal values (`0.0` and `-0.0`) the negative
+/// zero wins (trap T2; `f64::min` would ignore a NaN).
+pub(crate) fn net_min(a: f64, b: f64) -> f64 {
+    if a.is_nan() || b.is_nan() {
+        f64::NAN
+    } else if a == b {
+        if a.is_sign_negative() { a } else { b }
+    } else if a < b {
+        a
+    } else {
+        b
+    }
+}
+
+/// .NET `Math.Max(a, b)` for doubles: NaN in either operand gives NaN; for equal values the positive zero wins.
+pub(crate) fn net_max(a: f64, b: f64) -> f64 {
+    if a.is_nan() || b.is_nan() {
+        f64::NAN
+    } else if a == b {
+        if a.is_sign_negative() { b } else { a }
+    } else if a > b {
+        a
+    } else {
+        b
+    }
+}
 
 /// Construction failure of an element (lead decision D-W8B1-2: W8-15c takes `Result`, W8-15a proposed a panic).
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -82,18 +107,22 @@ impl OverlayThickness {
 
     /// C# `Horizontal` = `Left + Right`.
     pub fn horizontal(&self) -> f64 {
-        todo!()
+        self.left + self.right
     }
 
     /// C# `Vertical` = `Top + Bottom`.
     pub fn vertical(&self) -> f64 {
-        todo!()
+        self.top + self.bottom
     }
 }
 
 impl PartialEq for OverlayThickness {
+    /// C# record equality: `double.Equals` on each field (NaN equals NaN, `-0.0` equals `0.0`).
     fn eq(&self, other: &Self) -> bool {
-        todo!()
+        f64_same(self.left, other.left)
+            && f64_same(self.top, other.top)
+            && f64_same(self.right, other.right)
+            && f64_same(self.bottom, other.bottom)
     }
 }
 
@@ -146,42 +175,56 @@ impl ElementBase {
     /// this panics on `""`; a programming error, not a user-data error). Defaults: visible, opacity `1.0`, zero margin,
     /// `Stretch` alignments, `MaxWidth = +infinity`, zero `Bounds` and `DesiredSize`.
     pub fn new(id: &str, is_hit_test_visible: bool) -> Self {
-        todo!()
+        assert!(!id.is_empty(), "overlay element id must not be empty");
+        Self {
+            id: id.to_owned(),
+            is_visible: true,
+            opacity: 1.0,
+            margin: OverlayThickness::ZERO,
+            horizontal_alignment: OverlayHorizontalAlignment::Stretch,
+            vertical_alignment: OverlayVerticalAlignment::Stretch,
+            max_width: f64::INFINITY,
+            is_hit_test_visible,
+            bounds: RectD::default(),
+            desired_size: SizeD::default(),
+        }
     }
 
     /// C# `Id`.
     pub fn id(&self) -> &str {
-        todo!()
+        &self.id
     }
 
     /// C# `Opacity` getter.
     pub fn opacity(&self) -> f32 {
-        todo!()
+        self.opacity
     }
 
     /// C# `Opacity` setter: NaN becomes `0.0`, otherwise clamp to `0.0..=1.0` (`Math.Clamp` order, see trap T3).
     pub fn set_opacity(&mut self, value: f32) {
-        todo!()
+        // NaN is tested first (C# `float.IsNaN`): `clamp` would keep it. `f32::clamp` only replaces values strictly below 0
+        // or above 1, so `-0.0` stays `-0.0`, as in C# `Math.Clamp`.
+        self.opacity = if value.is_nan() { 0.0 } else { value.clamp(0.0, 1.0) };
     }
 
     /// C# `Bounds`: the box after the last arrange, margin excluded.
     pub fn bounds(&self) -> RectD {
-        todo!()
+        self.bounds
     }
 
     /// C# `DesiredSize`: the size from the last `measure` (margin included); zero after a measure while collapsed.
     pub fn desired_size(&self) -> SizeD {
-        todo!()
+        self.desired_size
     }
 
     /// Written by `ElementNode::arrange_in` only.
     pub(crate) fn set_bounds(&mut self, bounds: RectD) {
-        todo!()
+        self.bounds = bounds;
     }
 
     /// Written by `ElementNode::measure` only.
     pub(crate) fn set_desired_size(&mut self, size: SizeD) {
-        todo!()
+        self.desired_size = size;
     }
 }
 
@@ -208,7 +251,7 @@ pub trait ElementNode: Debug {
     fn measure_core(&mut self, available: SizeD, context: &OverlayLayoutContext<'_>) -> SizeD;
 
     /// C# `ArrangeChildren(context)` (virtual). Called by `arrange_in` after `Bounds` is set. Default: no children.
-    fn arrange_children(&mut self, context: &OverlayLayoutContext<'_>) {}
+    fn arrange_children(&mut self, _context: &OverlayLayoutContext<'_>) {}
 
     /// C# `RenderCore(IDrawContext)` (abstract). Called by the blanket `OverlayElement::render` between the opacity push
     /// and pop. Children are drawn here (in order), not by the template.
@@ -231,7 +274,23 @@ pub trait ElementNode: Debug {
     /// result `(min(content.width, max_width) + margin.horizontal, content.height + margin.vertical)`. Stores it as
     /// `DesiredSize` and returns it.
     fn measure(&mut self, available: SizeD, context: &OverlayLayoutContext<'_>) -> SizeD {
-        todo!()
+        let (is_visible, margin, max_width) = {
+            let base = self.base();
+            (base.is_visible, base.margin, base.max_width)
+        };
+        let desired = if !is_visible {
+            SizeD::default()
+        } else {
+            let width = net_max(0.0, net_min(available.width - margin.horizontal(), max_width));
+            let height = net_max(0.0, available.height - margin.vertical());
+            let content = self.measure_core(SizeD { width, height }, context);
+            SizeD {
+                width: net_min(content.width, max_width) + margin.horizontal(),
+                height: content.height + margin.vertical(),
+            }
+        };
+        self.base_mut().set_desired_size(desired);
+        desired
     }
 
     /// C# `ArrangeIn(RectD slot, context)` (public, non-virtual). `slot` includes the margin. Collapsed: `Bounds` becomes
@@ -240,18 +299,64 @@ pub trait ElementNode: Debug {
     /// position follows the alignment (`Right`/`Bottom` anchor to the inner edge, `Center` halves the free space). Then
     /// `Bounds` is set and `arrange_children` runs.
     fn arrange_in(&mut self, slot: RectD, context: &OverlayLayoutContext<'_>) {
-        todo!()
+        let base = self.base();
+        let is_visible = base.is_visible;
+        if !is_visible {
+            self.base_mut().set_bounds(RectD {
+                x: slot.x,
+                y: slot.y,
+                width: 0.0,
+                height: 0.0,
+            });
+            return;
+        }
+        let margin = base.margin;
+        let horizontal = base.horizontal_alignment;
+        let vertical = base.vertical_alignment;
+        let max_width = base.max_width;
+        let desired = base.desired_size();
+
+        let inner_x = slot.x + margin.left;
+        let inner_y = slot.y + margin.top;
+        let inner_w = net_max(0.0, slot.width - margin.horizontal());
+        let inner_h = net_max(0.0, slot.height - margin.vertical());
+        let desired_w = net_max(0.0, desired.width - margin.horizontal());
+        let desired_h = net_max(0.0, desired.height - margin.vertical());
+
+        let width = if horizontal == OverlayHorizontalAlignment::Stretch {
+            net_min(inner_w, max_width)
+        } else {
+            net_min(desired_w, inner_w)
+        };
+        let height = if vertical == OverlayVerticalAlignment::Stretch {
+            inner_h
+        } else {
+            net_min(desired_h, inner_h)
+        };
+        let x = match horizontal {
+            OverlayHorizontalAlignment::Right => inner_x + inner_w - width,
+            OverlayHorizontalAlignment::Center => inner_x + ((inner_w - width) / 2.0),
+            _ => inner_x,
+        };
+        let y = match vertical {
+            OverlayVerticalAlignment::Bottom => inner_y + inner_h - height,
+            OverlayVerticalAlignment::Center => inner_y + ((inner_h - height) / 2.0),
+            _ => inner_y,
+        };
+
+        self.base_mut().set_bounds(RectD { x, y, width, height });
+        self.arrange_children(context);
     }
 }
 
 /// C# `IOpacityTarget` for every element: forwards to `ElementBase`.
 impl<T: ElementNode + ?Sized> OpacityTarget for T {
     fn opacity(&self) -> f32 {
-        todo!()
+        self.base().opacity()
     }
 
     fn set_opacity(&mut self, value: f32) {
-        todo!()
+        self.base_mut().set_opacity(value);
     }
 }
 
@@ -260,26 +365,46 @@ impl<T: ElementNode + ?Sized> OpacityTarget for T {
 /// opacity `<= 0`; else push the opacity, `render_core`, pop the opacity. `hit_test` is C# `HitTest`.
 impl<T: ElementNode + ?Sized> OverlayElement for T {
     fn id(&self) -> &str {
-        todo!()
+        self.base().id()
     }
 
     fn is_visible(&self) -> bool {
-        todo!()
+        self.base().is_visible
     }
 
     fn bounds(&self) -> RectD {
-        todo!()
+        self.base().bounds()
     }
 
     fn arrange(&mut self, context: &OverlayLayoutContext<'_>) {
-        todo!()
+        let client = context.client;
+        self.measure(client, context);
+        self.arrange_in(
+            RectD {
+                x: 0.0,
+                y: 0.0,
+                width: client.width,
+                height: client.height,
+            },
+            context,
+        );
     }
 
     fn render(&self, dc: &mut dyn DrawContext) {
-        todo!()
+        let base = self.base();
+        if !base.is_visible || base.opacity() <= 0.0 {
+            return;
+        }
+        dc.push_opacity(base.opacity());
+        self.render_core(dc);
+        // The pop follows the push on every path (no early return above this line). An error here would mean an
+        // unbalanced opacity stack, which is a bug in the drawing layer, so it is checked in debug builds only.
+        let popped = dc.pop_opacity();
+        debug_assert!(popped.is_ok(), "pop_opacity must follow push_opacity");
     }
 
     fn hit_test(&self, point: PointD) -> bool {
-        todo!()
+        let base = self.base();
+        base.is_visible && base.is_hit_test_visible && base.opacity() > 0.0 && base.bounds().contains(point)
     }
 }

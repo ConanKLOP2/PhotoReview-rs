@@ -8,12 +8,14 @@
 //! Concurrency (D-W8-2, no async runtime): C# `Task.Run` becomes one short-lived `std::thread` per launch. The key needs a file
 //! stat, so the stat runs on that thread, never on the UI thread (C# Q-R29).
 
-#![allow(unused_variables, dead_code)] // D11: stub bodies are todo!(); removed with the last todo!() of this file.
-
 use std::sync::Arc;
 use std::thread::JoinHandle;
+use std::time::Duration;
 
+use pr_core::catalog::types::is_supported_with;
 use pr_core::settings::app_settings::AppSettings;
+use pr_core::sync::CancelToken;
+use pr_core::text::dotnet_path::get_full_path;
 use pr_imaging::cache_key::{CacheKeyError, ImageCacheKey};
 use pr_imaging::decode_types::DecodeBox;
 use pr_imaging::service::PreviewImageService;
@@ -37,11 +39,15 @@ impl PrewarmPreviews for PreviewImageService {
         full_path: &str,
         target_box: Option<DecodeBox>,
     ) -> Result<ImageCacheKey, CacheKeyError> {
-        todo!()
+        match target_box {
+            Some(target_box) => self.get_current_cache_key_for_box(full_path, target_box),
+            None => self.get_current_cache_key(full_path),
+        }
     }
 
     fn start_viewer_preview(&self, full_path: &str, key: &ImageCacheKey) -> PreviewHandle {
-        todo!()
+        // C# GetViewerPreviewAsync(fullPath, key, CancellationToken.None): no start delay, never cancelled.
+        self.get_viewer_preview(full_path, key, &CancelToken::none(), Duration::ZERO)
     }
 }
 
@@ -56,7 +62,7 @@ pub struct PrewarmTask {
 impl PrewarmTask {
     /// Joins the prewarm thread: `Ok(())` when it ended normally, `Err` when it panicked.
     pub fn wait(self) -> std::thread::Result<()> {
-        todo!()
+        self.join.join()
     }
 }
 
@@ -70,5 +76,27 @@ pub fn start(
     path: Option<&str>,
     target_box: Option<DecodeBox>,
 ) -> Option<PrewarmTask> {
-    todo!()
+    // R-PW-1: no service, nothing to start.
+    let previews = previews?;
+    // R-PW-2: blank text (IsNullOrWhiteSpace) starts nothing.
+    let path = path.filter(|text| !text.trim().is_empty())?;
+    // R-PW-3: the RAW rule (rawEnabled: false); WebP follows the setting.
+    if !is_supported_with(path, false, settings.webp_heic_support_enabled) {
+        return None;
+    }
+    // R-PW-4 / R-PW-6: Path.GetFullPath (never std::path::absolute, T-7). A rejected path starts nothing.
+    // DIVERGENCE: C# lets the exception out of the launch code; the presenter's own request still decodes.
+    let full_path = get_full_path(path).ok()?;
+    // R-PW-5 / T-10: the key needs a file stat, so the whole prewarm runs on its own thread, never on the caller's.
+    let join = std::thread::Builder::new()
+        .name("initial-image-prewarm".to_owned())
+        .spawn(move || {
+            let Ok(key) = previews.current_cache_key(&full_path, target_box) else {
+                return;
+            };
+            // The fault of a failed decode is observed and ignored (C# unobserved task exception).
+            let _ = previews.start_viewer_preview(&full_path, &key).wait();
+        })
+        .ok()?;
+    Some(PrewarmTask { join })
 }

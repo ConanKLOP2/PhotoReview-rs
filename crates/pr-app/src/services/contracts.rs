@@ -5,8 +5,6 @@
 //! UI thread (the Win32 clipboard and the zoom prompt belong to the owner window's thread). Only `pr_core::abstractions::
 //! KeyNameValidator` and the preview-service seam are shared across threads.
 
-#![allow(unused_variables, dead_code)] // D11: stub bodies are todo!(); removed with the last todo!() of this file.
-
 /// C# `IClipboardService` (8 lines): writes text to the system clipboard.
 pub trait ClipboardService {
     /// `true` when the text is on the clipboard; `false` when the clipboard stayed unavailable. Never panics for that (R-CT-1).
@@ -20,8 +18,8 @@ pub trait ClipboardService {
 pub struct UnavailableClipboardService;
 
 impl ClipboardService for UnavailableClipboardService {
-    fn try_set_text(&self, text: &str) -> bool {
-        todo!()
+    fn try_set_text(&self, _text: &str) -> bool {
+        false
     }
 }
 
@@ -37,9 +35,7 @@ pub trait PresentationObserver {
 pub struct NullPresentationObserver;
 
 impl PresentationObserver for NullPresentationObserver {
-    fn on_presented(&self, path: &str) {
-        todo!()
-    }
+    fn on_presented(&self, _path: &str) {}
 }
 
 /// C# `IZoomPromptService` (C-13): asks for a custom click-zoom percentage; replaces `new ClickZoomCustomDialog` in the window.
