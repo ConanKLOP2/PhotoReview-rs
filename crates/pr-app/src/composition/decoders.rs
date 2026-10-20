@@ -10,21 +10,22 @@
 //!
 //! Layering: this pure module may name `pr_platform_win::wic::decoder::WicDirectDecoder` (`pr-app` depends on `pr-platform-win`,
 //! D-W8B1-1); it never uses the `windows` crate or `unsafe`.
-// Stub only: the porter removes this allow line once every body is real.
-#![allow(unused_variables, unused_imports, dead_code)]
-
 use std::error::Error;
 use std::fmt;
 use std::sync::Arc;
 
 use pr_core::abstractions::SourceReader;
 use pr_core::model::enums::DecoderBackend;
+use pr_core::sync::CancelToken;
 use pr_imaging::decoder_traits::{DecodeError, ImageDecoder, PlatformImageCodec};
 use pr_imaging::factory::DecoderProvider;
 use pr_imaging::memory_headroom::MemoryInfoSource;
 use pr_imaging_raw::{RawFormat, RawPreviewFallback};
-use pr_libraw::decoder::LibRawApi;
-use pr_turbojpeg::decoder::{FineScaler, TurboJpegTexts};
+use pr_libraw::decoder::{LibRawApi, LibRawDecoder};
+use pr_platform_win::wic::decoder::WicDirectDecoder;
+use pr_turbojpeg::decoder::{FineScaler, TurboJpegDecoder, TurboJpegTexts};
+
+use crate::misc::app_log::AppLog;
 
 /// C# `(bool Available, string? Reason)` of a probe. Invariant (both real probes): `available == reason.is_none()`.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -56,12 +57,24 @@ pub type ProbeFn = Arc<dyn Fn() -> ProbeResult + Send + Sync>;
 
 /// `LibRawAvailability.Probe` (run once per process, cached): `pr_libraw::availability::probe()` mapped to a [`ProbeResult`].
 pub fn libraw_probe() -> ProbeFn {
-    todo!()
+    Arc::new(|| {
+        let outcome = pr_libraw::availability::probe();
+        ProbeResult {
+            available: outcome.available,
+            reason: outcome.reason.clone(),
+        }
+    })
 }
 
 /// `TurboJpegAvailability.Probe`: `pr_turbojpeg::availability::probe()` mapped to a [`ProbeResult`].
 pub fn turbojpeg_probe() -> ProbeFn {
-    todo!()
+    Arc::new(|| {
+        let outcome = pr_turbojpeg::availability::probe();
+        ProbeResult {
+            available: outcome.available,
+            reason: outcome.reason.clone(),
+        }
+    })
 }
 
 /// The two probes of `Create`.
@@ -80,7 +93,10 @@ impl fmt::Debug for DecoderProbes {
 impl DecoderProbes {
     /// The real probes ([`libraw_probe`], [`turbojpeg_probe`]).
     pub fn production() -> Self {
-        todo!()
+        Self {
+            libraw: libraw_probe(),
+            turbojpeg: turbojpeg_probe(),
+        }
     }
 }
 
@@ -110,11 +126,11 @@ pub struct AppLogCompositionLog;
 
 impl CompositionLog for AppLogCompositionLog {
     fn error_forced(&self, message: &str, error: &(dyn Error + 'static)) {
-        todo!()
+        AppLog::global().error_forced(message, error);
     }
 
     fn info(&self, message: &str) {
-        todo!()
+        AppLog::global().info(message);
     }
 }
 
@@ -152,7 +168,13 @@ pub fn create_decoder_providers(
     wpf_decoder: Option<DecoderProvider>,
     is_libraw_needed: Option<Arc<dyn Fn() -> bool + Send + Sync>>,
 ) -> Vec<(DecoderBackend, DecoderProvider)> {
-    todo!()
+    create_decoder_providers_with(
+        deps,
+        wpf_decoder,
+        is_libraw_needed,
+        &DecoderProbes::production(),
+        &AppLogCompositionLog,
+    )
 }
 
 /// C# internal `Create(..., libRawProbe, turboJpegProbe, logForcedError, logInfo)`. In this order:
@@ -172,7 +194,89 @@ pub fn create_decoder_providers_with(
     probes: &DecoderProbes,
     log: &dyn CompositionLog,
 ) -> Vec<(DecoderBackend, DecoderProvider)> {
-    todo!()
+    let mut providers: Vec<(DecoderBackend, DecoderProvider)> = Vec::new();
+    if let Some(wpf) = wpf_decoder {
+        providers.push((DecoderBackend::Wpf, wpf));
+    }
+    {
+        let codec = Arc::clone(&deps.codec);
+        let source_reader = Arc::clone(&deps.source_reader);
+        let memory_info = Arc::clone(&deps.memory_info);
+        providers.push((
+            DecoderBackend::WicDirect,
+            Arc::new(move || -> Arc<dyn ImageDecoder> {
+                Arc::new(WicDirectDecoder::new(
+                    Arc::clone(&codec),
+                    Some(Arc::clone(&source_reader)),
+                    Arc::clone(&memory_info),
+                ))
+            }),
+        ));
+    }
+
+    let turbojpeg = (probes.turbojpeg)();
+    if turbojpeg.available {
+        let codec = Arc::clone(&deps.codec);
+        let scaler = Arc::clone(&deps.fine_scaler);
+        let memory_info = Arc::clone(&deps.memory_info);
+        let texts = Arc::clone(&deps.turbojpeg_texts);
+        providers.push((
+            DecoderBackend::TurboJpeg,
+            Arc::new(move || -> Arc<dyn ImageDecoder> {
+                Arc::new(TurboJpegDecoder::native(
+                    Arc::clone(&codec),
+                    Arc::clone(&scaler),
+                    Arc::clone(&memory_info),
+                    Arc::clone(&texts),
+                ))
+            }),
+        ));
+    } else {
+        let reason = turbojpeg.reason.as_deref();
+        log.error_forced(
+            &format!(
+                "TurboJPEG decoder backend is not available and will not be registered: {}",
+                reason.unwrap_or_default()
+            ),
+            &ProbeFailure(reason.unwrap_or("TurboJPEG probe failed.").to_owned()),
+        );
+    }
+
+    let libraw = (probes.libraw)();
+    if libraw.available {
+        let codec = Arc::clone(&deps.codec);
+        let api = Arc::clone(&deps.libraw_api);
+        let memory_info = Arc::clone(&deps.memory_info);
+        providers.push((
+            DecoderBackend::LibRaw,
+            Arc::new(move || -> Arc<dyn ImageDecoder> {
+                Arc::new(LibRawDecoder::new(
+                    Arc::clone(&codec),
+                    Arc::clone(&api),
+                    Arc::clone(&memory_info),
+                ))
+            }),
+        ));
+    } else {
+        let reason = libraw.reason.as_deref();
+        // C# `isLibRawNeeded?.Invoke() ?? true`: evaluated only on the unavailable path, absent = needed.
+        let needed = is_libraw_needed.as_ref().is_none_or(|needed| needed());
+        if needed {
+            log.error_forced(
+                &format!(
+                    "LibRaw decoder backend is not available and will not be registered: {}",
+                    reason.unwrap_or_default()
+                ),
+                &ProbeFailure(reason.unwrap_or("LibRaw probe failed.").to_owned()),
+            );
+        } else {
+            log.info(&format!(
+                "LibRaw decoder backend is not available (RAW support is off, so it is not needed): {}",
+                reason.unwrap_or_default()
+            ));
+        }
+    }
+    providers
 }
 
 /// C# `LibRawPreviewFallback : IRawPreviewFallback`: adapts LibRaw's thumbnail extractor to the RAW container preview contract.
@@ -201,6 +305,13 @@ impl RawPreviewFallback for LibRawPreviewFallback {
     /// `pr_libraw::decoder::read_jpeg_thumbnail(&*self.api, path, &CancelToken::none())` unchanged (a blank path is its
     /// `InvalidArgument`, a missing file its LibRaw `InvalidData`).
     fn read_jpeg_thumbnail(&self, path: &str, format: RawFormat) -> Result<Vec<u8>, DecodeError> {
-        todo!()
+        if format != RawFormat::Orf {
+            return Err(DecodeError::NotSupported {
+                message: format!("LibRaw thumbnail fallback is not enabled for {format:?}."),
+                user_text: None,
+                inner_hresult: None,
+            });
+        }
+        pr_libraw::decoder::read_jpeg_thumbnail(&*self.api, path, &CancelToken::none())
     }
 }
