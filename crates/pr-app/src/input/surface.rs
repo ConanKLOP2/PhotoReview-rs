@@ -8,8 +8,6 @@
 //! - `RenderingTime(EventArgs)` is not a member. The platform extracts it and passes it to the render handler.
 //! - Handler identity (C# `EventHandler` reference) becomes a [`RenderHookId`].
 
-#![allow(unused_variables, dead_code)] // stub only: removed by the porter when the bodies are filled (contracts/README.md D11)
-
 use pr_core::abstractions::DisplayTiming;
 
 use crate::input::primitives::{PointD, SizeD};

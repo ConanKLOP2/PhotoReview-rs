@@ -12,12 +12,6 @@
 //! - Paths are `&str` / `&[String]`, as in the C# signatures. `IMoveOverride` takes `&Path`, because it feeds pr-core's
 //!   `MoveOverride` (`pr_core::file_actions::undo`).
 //! - Pure module: no `unsafe`, no `windows` crate (AGENTS.md, WAVE-8-PLAN "Crates and layering").
-//!
-//! Stub note: the default bodies that only forward to another member of the same trait (`show_late_action_status` of
-//! `IDuplicateCleanupSink`, `reload_folder`, `on_empty_with_subfolders`) and the empty default bodies are already the
-//! contract; the porter does not change them. Every other body is `todo!()`.
-// Stub only: the porter removes this allow line once every body is real (no other allow is needed).
-#![allow(unused_variables, unused_imports, dead_code)]
 
 use std::io;
 use std::path::Path;
@@ -84,25 +78,25 @@ pub struct FileActionServiceExecutor {
 impl FileActionServiceExecutor {
     /// C# primary constructor. Stores the handle, does nothing else.
     pub fn new(service: Arc<FileActionService>) -> Self {
-        todo!()
+        Self { service }
     }
 }
 
 impl IFileActionExecutor for FileActionServiceExecutor {
     fn is_busy(&self) -> bool {
-        todo!()
+        self.service.is_busy()
     }
 
     fn lacks_recycle_bin(&self, path: &str) -> bool {
-        todo!()
+        self.service.lacks_recycle_bin(path)
     }
 
     fn execute(&self, request: &FileActionRequest, cancel: &CancelToken) -> FileActionResult {
-        todo!()
+        self.service.execute(request, cancel)
     }
 
     fn execute_group(&self, request: &CaptureGroupActionRequest, cancel: &CancelToken) -> CaptureGroupActionResult {
-        todo!()
+        self.service.execute_group(request, cancel)
     }
 }
 
@@ -121,7 +115,7 @@ pub trait IFileActionSink {
 
     /// C# default `EvictCachedPaths(paths)`: the JPEG/RAW partners of a capture that left with the path given to
     /// `on_catalog_changed`. C# default body is empty, so an implementation that caches nothing keeps the default.
-    fn evict_cached_paths(&mut self, paths: &[String]) {}
+    fn evict_cached_paths(&mut self, _paths: &[String]) {}
 
     /// C# `PresentAsync(int index)`: show the image at `index`. Returns once the request is posted (D-W8-2).
     fn present(&mut self, index: i32);
@@ -151,7 +145,7 @@ pub trait IFolderLoadSink {
 
     /// C# default `OnEmptyWithSubfolders(folder, session, subfolderCount)` (Q-R47): forwards to `on_empty`. An implementation
     /// overrides it to show the "subfolders, but no images here" message.
-    fn on_empty_with_subfolders(&mut self, folder: &str, session: &SessionState, subfolder_count: i32) {
+    fn on_empty_with_subfolders(&mut self, folder: &str, session: &SessionState, _subfolder_count: i32) {
         self.on_empty(folder, session)
     }
 
@@ -162,7 +156,7 @@ pub trait IFolderLoadSink {
 
     /// C# default `OnFilesSkipped(folder, skipped)` (IO05): unreadable entries were skipped. The C# default is empty, so the
     /// default here is empty too.
-    fn on_files_skipped(&mut self, folder: &str, skipped: &[SkippedEntry]) {}
+    fn on_files_skipped(&mut self, _folder: &str, _skipped: &[SkippedEntry]) {}
 
     /// C# `OnUnreadableRemovedAsync(removedPaths, currentRemoved)` (AR16). No default: a forgetful forwarding sink would leave
     /// a removed file in the preload. The sink drops the preload and cache of every path in `removed_paths`, rebuilds the
@@ -191,7 +185,7 @@ pub trait IMoveOverride: Send + Sync {
 /// Turns an `IMoveOverride` into the pr-core `MoveOverride` closure (the C# registration of `Func<string, string, Task>`).
 /// The result shares the same implementation (`Arc`), so the composition root hands one override to both services.
 pub fn into_move_override(over: Arc<dyn IMoveOverride>) -> MoveOverride {
-    todo!()
+    Arc::new(move |source: &Path, destination: &Path| over.move_file(source, destination))
 }
 
 /// C# `IPreloadController` (44 lines): the preload seam around the current image. Methods take `&self`, because the
@@ -220,7 +214,7 @@ pub trait IPreloadController {
 
     /// C# default `NotifyNavigation(index)`: called at the start of every navigation, before the image's own decode. Empty
     /// default (fakes).
-    fn notify_navigation(&self, index: i32) {}
+    fn notify_navigation(&self, _index: i32) {}
 
     /// C# default `GetViewerDecodeDelay()`: delay before the viewer decodes a not-yet-cached image (non-zero only during a
     /// key-held burst). Zero default (fakes).
@@ -276,13 +270,13 @@ where
     /// C# constructor. The C# null check (`ArgumentNullException`) has no Rust form: a closure is always present. Does not
     /// call `get_scheduler`.
     pub fn new(get_scheduler: F) -> Self {
-        todo!()
+        Self { get_scheduler }
     }
 
     /// C# `Dispose()`: disposes the scheduler that the factory returns now. Afterwards a `preload_around` starts nothing
     /// (the scheduler's own disposed behaviour, pr-imaging `PreloadScheduler::dispose`).
     pub fn dispose(&self) {
-        todo!()
+        (self.get_scheduler)().dispose();
     }
 }
 
@@ -291,35 +285,35 @@ where
     F: Fn() -> Arc<PreloadScheduler>,
 {
     fn preload_around(&self, center: i32) -> RunHandle {
-        todo!()
+        (self.get_scheduler)().preload_around(center)
     }
 
     fn try_consume_preloaded_key(&self, key: &ImageCacheKey) -> bool {
-        todo!()
+        (self.get_scheduler)().try_consume_preloaded_key(key)
     }
 
     fn cancel(&self) {
-        todo!()
+        (self.get_scheduler)().cancel();
     }
 
     fn remove_preloaded_keys_for_path(&self, normalized_path: &str) {
-        todo!()
+        (self.get_scheduler)().remove_preloaded_keys_for_path(normalized_path);
     }
 
     fn clear_preloaded_keys(&self) {
-        todo!()
+        (self.get_scheduler)().clear_preloaded_keys();
     }
 
     fn is_idle(&self) -> bool {
-        todo!()
+        (self.get_scheduler)().is_idle()
     }
 
     fn notify_navigation(&self, index: i32) {
-        todo!()
+        (self.get_scheduler)().notify_navigation(index);
     }
 
     fn get_viewer_decode_delay(&self) -> Duration {
-        todo!()
+        (self.get_scheduler)().get_viewer_decode_delay()
     }
 }
 

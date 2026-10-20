@@ -4,10 +4,6 @@
 //! baseline d92d6aae. A COM failure of the implementation (C# `ComInterop.Check(hr)` -> `COMException`) is
 //! [`RenderError::Device`]. `ArgumentNullException` has no variant: a Rust reference cannot be null.
 //!
-//! Stub: the `Display` body is `todo!()` (the texts are part of the contract, see the contract's "Error texts").
-
-#![allow(unused_variables, dead_code)] // stub only: removed by the porter when the bodies are filled (contracts/README.md D11)
-
 use std::fmt;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -25,6 +21,13 @@ pub enum RenderError {
     /// `ArgumentOutOfRangeException`: `param` is the C# parameter name (`"value"` for a negative budget, `"style"` for a font size
     /// that is not a finite positive number).
     ArgumentOutOfRange { param: &'static str },
+    /// `GpuImageCache.BudgetBytes` setter with a negative value: `ArgumentOutOfRangeException.ThrowIfNegative(value)`, whose message
+    /// names the value (`"value ('-1') must be a non-negative value. (Parameter 'value')"` plus the `Actual value` line).
+    NegativeBudget { value: i64 },
+    /// `DWriteTextRenderer.CreateLayout` with a font size that is not a finite positive number: C#
+    /// `ArgumentOutOfRangeException(nameof(style), style.FontSizeDip, "FontSizeDip must be a finite positive number.")`.
+    /// `value_bits` is `f64::to_bits` of the size (keeps the error `Eq`).
+    InvalidFontSize { value_bits: u64 },
     /// A failed Direct3D / DXGI / Direct2D / DirectWrite call that is not a device loss (C# `COMException`). `hresult` keeps the
     /// raw `HRESULT` (negative `i32`); `operation` names the call for the log.
     Device { hresult: i32, operation: &'static str },
@@ -32,8 +35,46 @@ pub enum RenderError {
 
 impl fmt::Display for RenderError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        todo!()
+        // The texts are the C# messages verbatim (contract "Error texts"); the log reads them.
+        match self {
+            RenderError::Disposed { object } => {
+                write!(f, "Cannot access a disposed object.\r\nObject name: '{object}'.")
+            }
+            RenderError::InvalidOperation { message } => f.write_str(message),
+            RenderError::InvalidArgument { param, message } => {
+                write!(f, "{message} (Parameter '{param}')")
+            }
+            RenderError::ArgumentOutOfRange { param } => write!(
+                f,
+                "Specified argument was out of the range of valid values. (Parameter '{param}')"
+            ),
+            RenderError::NegativeBudget { value } => write!(
+                f,
+                "value ('{value}') must be a non-negative value. (Parameter 'value')\r\nActual value was {value}."
+            ),
+            RenderError::InvalidFontSize { value_bits } => {
+                let shown = dotnet_double(f64::from_bits(*value_bits));
+                write!(
+                    f,
+                    "FontSizeDip must be a finite positive number. (Parameter 'style')\r\nActual value was {shown}."
+                )
+            }
+            RenderError::Device { hresult, operation } => {
+                write!(f, "{operation} failed with HRESULT 0x{:08X}", *hresult as u32)
+            }
+        }
     }
 }
 
 impl std::error::Error for RenderError {}
+
+/// `double.ToString()` of .NET (invariant spelling of the special values; finite values use the shortest round-trip form).
+fn dotnet_double(value: f64) -> String {
+    if value.is_nan() {
+        "NaN".to_owned()
+    } else if value.is_infinite() {
+        if value > 0.0 { "Infinity" } else { "-Infinity" }.to_owned()
+    } else {
+        format!("{value}")
+    }
+}

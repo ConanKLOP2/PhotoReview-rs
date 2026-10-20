@@ -4,7 +4,6 @@
 //! Traits only, no `windows` types (D-W8-3). The real cache is `pr_platform_win::render::image_cache` (W8-12f policy, W8-12g upload).
 //! Everything here is UI-thread only: no `Send`/`Sync` bound (a Direct2D bitmap is not `Send`).
 //!
-//! Stub: traits have no bodies to fill; the file compiles as is. The `allow` stays out.
 
 use std::any::Any;
 use std::rc::Rc;
@@ -57,7 +56,7 @@ pub trait GpuImageCache {
     /// `BudgetBytes` getter. Default of the real cache: 6 screen-sized images (not a second copy of the preload RAM on the GPU).
     fn budget_bytes(&self) -> i64;
 
-    /// `BudgetBytes` setter: negative is `Err(ArgumentOutOfRange { param: "value" })`; lowering the budget evicts at once.
+    /// `BudgetBytes` setter: negative is `Err(NegativeBudget { value })` (C# `ThrowIfNegative`); lowering the budget evicts at once.
     fn set_budget_bytes(&self, value: i64) -> Result<(), RenderError>;
 
     /// `Clear()`: release every image (also used when the device is recreated). Never fails, also after dispose.

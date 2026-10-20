@@ -7,11 +7,8 @@
 //! (`PresentationComposer`, overlay) are tested with a recording fake `DrawContext`.
 //! `ColorF` and `ImageInterpolation` (also in the C# file) are owned by W8-01c, `viewport::render_geometry` (D-W8c-1).
 //!
-//! Stub: the `Default` body is `todo!()` (the default is asserted by a test); the traits need no bodies.
 //! Calls that cannot fail in C# return `()`. "Outside BeginDraw/EndDraw" (C# `InvalidOperationException`) cannot happen: the
 //! `&mut dyn DrawContext` of `begin_draw` borrows the surface.
-
-#![allow(unused_variables, dead_code)] // stub only: removed by the porter when the bodies are filled (contracts/README.md D11)
 
 use pr_imaging::pixels::PixelBuffer;
 
@@ -42,7 +39,11 @@ pub struct RenderSurfaceOptions {
 impl Default for RenderSurfaceOptions {
     /// `prefer_warp = false`, `allow_tearing = false`, `max_frame_latency = 1` (NOT the derived 0).
     fn default() -> Self {
-        todo!()
+        Self {
+            prefer_warp: false,
+            allow_tearing: false,
+            max_frame_latency: 1,
+        }
     }
 }
 

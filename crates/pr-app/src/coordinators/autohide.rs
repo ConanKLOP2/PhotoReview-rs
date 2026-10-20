@@ -2,11 +2,12 @@
 //! `PhotoReview.App.Shared/Coordinators/ToolbarAutoHidePolicy.cs` (38 lines, feat/ui-dark-chrome-toolbar).
 //!
 //! Pure decision functions: no window, no clock, no WPF. The shell evaluates them on every tick and animates
-//! one container's opacity / hit-test flag from the result. Stub: every body is `todo!()` (contract W8-06b).
+//! one container's opacity / hit-test flag from the result.
 
-#![allow(unused_variables, dead_code)] // D11: removed in the same commit that removes the last todo!()
-
-use pr_core::settings::app_settings::AppSettings;
+use pr_core::settings::app_settings::{
+    AppSettings, MAX_INFO_OVERLAY_AUTO_HIDE_DELAY_MS, MAX_TOOLBAR_AUTO_HIDE_DELAY_MS, MAX_TOOLBAR_OPACITY_PERCENT,
+    MIN_INFO_OVERLAY_AUTO_HIDE_DELAY_MS, MIN_TOOLBAR_AUTO_HIDE_DELAY_MS, MIN_TOOLBAR_OPACITY_PERCENT,
+};
 
 /// C# `InfoOverlayAutoHidePolicy.Outcome` (`readonly record struct Outcome(double Opacity, bool IsHitTestVisible)`).
 /// Opacity is always exactly `0.0` or `1.0`, so the derived `PartialEq` is safe (no NaN reaches it).
@@ -31,13 +32,15 @@ impl InfoOverlayAutoHidePolicy {
         is_compare_open: bool,
         is_window_active: bool,
     ) -> bool {
-        todo!()
+        !auto_hide_enabled || !has_folder_open || status_needs_attention || is_compare_open || !is_window_active
     }
 
     /// C# `DelayMs(AppSettings)`: `settings.InfoOverlayAutoHideDelayMs` clamped to
     /// `[MIN_INFO_OVERLAY_AUTO_HIDE_DELAY_MS, MAX_INFO_OVERLAY_AUTO_HIDE_DELAY_MS]`. Never reads the toolbar delay.
     pub fn delay_ms(settings: &AppSettings) -> i32 {
-        todo!()
+        settings
+            .info_overlay_auto_hide_delay_ms
+            .clamp(MIN_INFO_OVERLAY_AUTO_HIDE_DELAY_MS, MAX_INFO_OVERLAY_AUTO_HIDE_DELAY_MS)
     }
 
     /// C# `Evaluate`: `hidden = !MustStayVisible(...) && idleElapsed`; opacity `0.0` / `1.0`, hit-test `!hidden`.
@@ -49,7 +52,18 @@ impl InfoOverlayAutoHidePolicy {
         is_window_active: bool,
         idle_elapsed: bool,
     ) -> InfoOverlayOutcome {
-        todo!()
+        let must_stay = Self::must_stay_visible(
+            auto_hide_enabled,
+            has_folder_open,
+            status_needs_attention,
+            is_compare_open,
+            is_window_active,
+        );
+        let hidden = !must_stay && idle_elapsed;
+        InfoOverlayOutcome {
+            opacity: if hidden { 0.0 } else { 1.0 },
+            is_hit_test_visible: !hidden,
+        }
     }
 }
 
@@ -65,7 +79,7 @@ impl ToolbarAutoHidePolicy {
         is_tools_popup_open: bool,
         is_keyboard_focus_inside_toolbar: bool,
     ) -> bool {
-        todo!()
+        !auto_hide_enabled || !has_folder_open || is_tools_popup_open || is_keyboard_focus_inside_toolbar
     }
 
     /// C# `IsShown`: `MustStayVisible(...) || isMouseInsideHotZone`. No other input can show a hidden toolbar.
@@ -76,19 +90,27 @@ impl ToolbarAutoHidePolicy {
         is_keyboard_focus_inside_toolbar: bool,
         is_mouse_inside_hot_zone: bool,
     ) -> bool {
-        todo!()
+        Self::must_stay_visible(
+            auto_hide_enabled,
+            has_folder_open,
+            is_tools_popup_open,
+            is_keyboard_focus_inside_toolbar,
+        ) || is_mouse_inside_hot_zone
     }
 
     /// C# `DelayMs(AppSettings)`: `settings.ToolbarAutoHideDelayMs` clamped to
     /// `[MIN_TOOLBAR_AUTO_HIDE_DELAY_MS, MAX_TOOLBAR_AUTO_HIDE_DELAY_MS]`. Never reads the info-overlay delay.
     pub fn delay_ms(settings: &AppSettings) -> i32 {
-        todo!()
+        settings
+            .toolbar_auto_hide_delay_ms
+            .clamp(MIN_TOOLBAR_AUTO_HIDE_DELAY_MS, MAX_TOOLBAR_AUTO_HIDE_DELAY_MS)
     }
 
-    /// C# `TargetOpacity(int percent)`: `Math.Clamp(percent, 20, 100) / 100.0`. The result is an `f64` fraction
-    /// (`60` gives `0.6`, `5` gives `0.2`). Uses the `MIN_`/`MAX_TOOLBAR_OPACITY_PERCENT` constants.
+    /// C# `TargetOpacity(int percent)`: `Math.Clamp(percent, 20, 100) / 100.0`. The integer is clamped first, then
+    /// divided in `f64` (contract trap T3). `60` gives `0.6`, `5` gives `0.2`.
     pub fn target_opacity(percent: i32) -> f64 {
-        todo!()
+        let clamped = percent.clamp(MIN_TOOLBAR_OPACITY_PERCENT, MAX_TOOLBAR_OPACITY_PERCENT);
+        f64::from(clamped) / 100.0
     }
 
     /// C# `IsInsideHotZone`: the toolbar rectangle inflated by `margin` on every side, closed box.
@@ -103,6 +125,9 @@ impl ToolbarAutoHidePolicy {
         toolbar_height: f64,
         margin: f64,
     ) -> bool {
-        todo!()
+        mouse_x >= toolbar_left - margin
+            && mouse_x <= toolbar_left + toolbar_width + margin
+            && mouse_y >= toolbar_top - margin
+            && mouse_y <= toolbar_top + toolbar_height + margin
     }
 }
