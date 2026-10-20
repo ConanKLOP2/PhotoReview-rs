@@ -4,8 +4,6 @@
 //! Pure module: no `unsafe`, no `windows` crate. `is_stable_viewport` is passed as a `fn` pointer (`StabilityRule`) by
 //! `coordinators::fit` (W8-01d, decision D-01d-4), so its signature must stay exactly `fn(&ViewportSnapshot, &ViewportSnapshot) -> bool`.
 
-#![allow(unused_variables, dead_code)] // stub only: removed by the porter when the bodies are filled (contracts/README.md D11)
-
 use crate::viewport::types::ViewportSnapshot;
 
 /// C# `private const double Epsilon = 0.5;`: DIP tolerance for subpixel and DPI noise (strict `<` in the comparison).
@@ -24,13 +22,19 @@ pub struct ValidationResult {
 impl ValidationResult {
     /// C# `ValidationResult.Valid()`: `(true, null)`.
     pub fn valid() -> Self {
-        todo!()
+        Self {
+            is_valid: true,
+            reason: None,
+        }
     }
 
     /// C# `ValidationResult.InvalidDimensions(reason)`: `(false, reason)`. The name is kept although it also serves
     /// the offset, max-image and actual-image groups (C# does the same).
     pub fn invalid_dimensions(reason: &'static str) -> Self {
-        todo!()
+        Self {
+            is_valid: false,
+            reason: Some(reason),
+        }
     }
 }
 
@@ -39,7 +43,15 @@ impl ValidationResult {
 /// first, and an invalid `after` returns false); `before` is not, so a NaN `before` value simply fails the `<` comparison.
 /// Zoom, stretch, offsets and actual/max image sizes are NOT compared (C# does not compare them either).
 pub fn is_stable_viewport(before: &ViewportSnapshot, after: &ViewportSnapshot) -> bool {
-    todo!()
+    if !validate_measurements(after).is_valid {
+        return false;
+    }
+    (before.viewport_width - after.viewport_width).abs() < EPSILON
+        && (before.viewport_height - after.viewport_height).abs() < EPSILON
+        && (before.extent_width - after.extent_width).abs() < EPSILON
+        && (before.extent_height - after.extent_height).abs() < EPSILON
+        && before.horizontal_scroll_bar_visible == after.horizontal_scroll_bar_visible
+        && before.vertical_scroll_bar_visible == after.vertical_scroll_bar_visible
 }
 
 /// C# `ViewportConvergence.ValidateMeasurements(snapshot)`: checks the four groups in this order and reports the first invalid one:
@@ -50,15 +62,27 @@ pub fn is_stable_viewport(before: &ViewportSnapshot, after: &ViewportSnapshot) -
 ///
 /// A zero image size and a zero offset are valid (C# `IsNonNegativeFinite`); a zero viewport is not.
 pub fn validate_measurements(snapshot: &ViewportSnapshot) -> ValidationResult {
-    todo!()
+    if !is_positive_finite(snapshot.viewport_width) || !is_positive_finite(snapshot.viewport_height) {
+        return ValidationResult::invalid_dimensions("Viewport not ready");
+    }
+    if !is_non_negative_finite(snapshot.horizontal_offset) || !is_non_negative_finite(snapshot.vertical_offset) {
+        return ValidationResult::invalid_dimensions("Offsets invalid");
+    }
+    if !is_non_negative_finite(snapshot.max_image_width) || !is_non_negative_finite(snapshot.max_image_height) {
+        return ValidationResult::invalid_dimensions("MaxImage not set");
+    }
+    if !is_non_negative_finite(snapshot.actual_image_width) || !is_non_negative_finite(snapshot.actual_image_height) {
+        return ValidationResult::invalid_dimensions("ActualImage invalid");
+    }
+    ValidationResult::valid()
 }
 
 /// C# `IsPositiveFinite`: `value > 0 && double.IsFinite(value)`. NaN is false.
 fn is_positive_finite(value: f64) -> bool {
-    todo!()
+    value > 0.0 && value.is_finite()
 }
 
 /// C# `IsNonNegativeFinite`: `value >= 0 && double.IsFinite(value)`. NaN is false.
 fn is_non_negative_finite(value: f64) -> bool {
-    todo!()
+    value >= 0.0 && value.is_finite()
 }

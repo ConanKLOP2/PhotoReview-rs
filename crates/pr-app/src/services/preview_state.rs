@@ -3,8 +3,6 @@
 //! C# bridges UI state to the singleton `PreviewImageService` (three `Func` properties, default-initialised). Rust keeps the three
 //! closures as shared `Arc<dyn Fn>` fields so the composition root can clone the context into the service's own closures.
 
-#![allow(unused_variables, dead_code)] // D11: stub bodies are todo!(); removed with the last todo!() of this file.
-
 use std::fmt;
 use std::sync::Arc;
 
@@ -25,7 +23,11 @@ pub struct PreviewStateContext {
 impl PreviewStateContext {
     /// The three C# initialisers: not Original, `DecodeBox::UNBOUNDED`, `DecoderBackend::Wpf` (R-PS-1).
     pub fn new() -> Self {
-        todo!()
+        Self {
+            is_original_loading_mode: Arc::new(|| false),
+            target_decode_box: Arc::new(|| DecodeBox::UNBOUNDED),
+            current_backend: Arc::new(|| DecoderBackend::Wpf),
+        }
     }
 }
 
@@ -37,6 +39,23 @@ impl Default for PreviewStateContext {
 
 impl fmt::Debug for PreviewStateContext {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        todo!()
+        f.debug_struct("PreviewStateContext")
+            .field("is_original_loading_mode", &(self.is_original_loading_mode)())
+            .field("target_decode_box", &(self.target_decode_box)())
+            .field("current_backend", &(self.current_backend)())
+            .finish()
+    }
+}
+
+#[cfg(test)]
+mod debug_tests {
+    use super::*;
+
+    #[test]
+    fn debug_output_names_the_type_and_fields() {
+        let text = format!("{:?}", PreviewStateContext::new());
+        assert!(text.contains("PreviewStateContext"), "{text}");
+        assert!(text.contains("is_original_loading_mode"), "{text}");
+        assert!(text.contains("current_backend"), "{text}");
     }
 }

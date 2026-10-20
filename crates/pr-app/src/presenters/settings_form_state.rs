@@ -12,8 +12,6 @@
 //! Contract: `contracts/W8-10c.md`. Stub: `todo!()` bodies only (decision D11 in
 //! `contracts/README.md`: the stub-level `allow` below is removed by the porter with the last `todo!()`).
 
-#![allow(unused_variables, dead_code)]
-
 use std::collections::{BTreeMap, BTreeSet};
 
 use pr_core::model::fields::{ExifInfoFields, TitleBarFields};
@@ -108,7 +106,64 @@ impl Default for SettingsFormState {
     /// C# property initialisers: empty strings, zero integers and doubles, `false`, `ExifInfoFields`/`TitleBarFields`
     /// default(struct) (bits 0, i.e. `NONE`), empty sets, `None` for the optional tag and selection.
     fn default() -> Self {
-        todo!()
+        Self {
+            shortcut_texts: BTreeMap::new(),
+            actions_json: String::new(),
+            view_mode_index: 0,
+            fit_width_anchor_index: 0,
+            fit_width_anchor2_index: 0,
+            middle_click_action_index: 0,
+            keep_zoom_across_images: false,
+            loading_mode_index: 0,
+            sort_mode_tag: None,
+            scaling_quality_index: 0,
+            decoder_backend_index: 0,
+            instance_mode_index: 0,
+            compare_hash_enabled: false,
+            compare_size_enabled: false,
+            raw_support_enabled: false,
+            webp_heic_support_enabled: false,
+            raw_full_decode_index: 0,
+            raw_pair_mode_index: 0,
+            logging_enabled: false,
+            allow_permanent_delete: false,
+            confirm_before_delete: false,
+            external_editor_path: String::new(),
+            journal_safe: false,
+            move_copy_reuse_last_folder: false,
+            show_info_overlay: false,
+            show_file_info: false,
+            show_folder_info: false,
+            info_overlay_font_size_text: String::new(),
+            show_zoom_indicator: false,
+            toolbar_auto_hide: false,
+            toolbar_auto_hide_delay_text: String::new(),
+            info_overlay_auto_hide: false,
+            info_overlay_auto_hide_delay_text: String::new(),
+            toolbar_opacity_value: 0.0,
+            show_exif_info: false,
+            exif_info_fields: ExifInfoFields::NONE,
+            title_bar_fields: TitleBarFields::NONE,
+            mouse_wheel_action_index: 0,
+            click_to_zoom_enabled: false,
+            click_zoom_percent_text: String::new(),
+            kinetic_pan_enabled: false,
+            kinetic_glide_smoothing_index: 0,
+            arrow_key_navigates_at_zoom_edge: false,
+            click_zoom_key_toggles_fit: false,
+            arrow_pan_step_text: String::new(),
+            keyboard_zoom_step_percent_text: String::new(),
+            keyboard_zoom_anchor_index: 0,
+            image_transition_index: 0,
+            image_transition_ms_text: String::new(),
+            touchpad_swipe_enabled: false,
+            touchpad_swipe_distance_text: String::new(),
+            preload_forward_text: String::new(),
+            preload_backward_text: String::new(),
+            ram_cache_percent: 0.0,
+            context_menu_shown: BTreeSet::new(),
+            selected_language_code: None,
+        }
     }
 }
 
@@ -136,7 +191,10 @@ pub struct SettingsFieldError {
 impl SettingsFieldError {
     /// C# `new SettingsFieldError(message, focus)`. The C# default `focus = None` is written out by the caller.
     pub fn new(message: impl Into<String>, focus: SettingsFocusField) -> Self {
-        todo!()
+        Self {
+            message: message.into(),
+            focus,
+        }
     }
 }
 
@@ -162,6 +220,10 @@ pub struct SettingsSaveResult {
 impl SettingsSaveResult {
     /// C# `SettingsSaveResult.Saved` (a static shared instance in C#; a plain value here).
     pub fn saved() -> Self {
-        todo!()
+        Self {
+            outcome: SettingsSaveOutcome::Saved,
+            message: None,
+            focus: SettingsFocusField::None,
+        }
     }
 }

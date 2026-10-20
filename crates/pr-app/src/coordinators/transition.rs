@@ -1,9 +1,6 @@
 //! Port of `PhotoReview.App.Shared/Coordinators/ImageTransitionDecision.cs` (29 lines, feat/image-crossfade).
 //!
 //! Pure, side-effect-free decision: should a bitmap assignment play the optional image-change fade?
-//! Stub: body is `todo!()` (contract W8-06b).
-
-#![allow(unused_variables, dead_code)] // D11: removed in the same commit that removes the last todo!()
 
 /// C# `public static class ImageTransitionDecision`. Unit struct, associated functions only.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -19,6 +16,15 @@ impl ImageTransitionDecision {
     /// 4. the two paths differ under `OrdinalIgnoreCase`, i.e. `!pr_core::text::eq_ignore_case(prev, new)`.
     ///    `Some("")` is a path (not `None`); `""` against `"a"` differs.
     pub fn should_transition(previous_path: Option<&str>, new_path: Option<&str>, is_compare_visible: bool) -> bool {
-        todo!()
+        if is_compare_visible {
+            return false;
+        }
+        let Some(new_path) = new_path else {
+            return false;
+        };
+        let Some(previous_path) = previous_path else {
+            return false;
+        };
+        !pr_core::text::eq_ignore_case(previous_path, new_path)
     }
 }

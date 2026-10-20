@@ -2,14 +2,13 @@
 //! that `Enum.TryParse` reads from `KeyId.cs` (202 field names, aliases included). Target: `pr_app::input::key_mapping`
 //! (W8-05c, docs/WAVE-8-PLAN.md). Pure: no `windows` crate, no `unsafe`, no clock, no I/O (AGENTS.md, WAVE-8-PLAN layering).
 //!
-//! Stub: the three tables are final data (generated from the C# source at `d92d6aae`, one row per C# entry, C# order, with the
-//! C# name in a trailing comment). The three public functions are `todo!()`. The porter fills bodies only, and must not edit
-//! the tables (a wrong row is fixed by regenerating from the C# file; see contract.md "Golden package").
+//! The three tables are data generated from the C# source at `d92d6aae` (one row per C# entry, C# order, with the C# name in a
+//! trailing comment). They are not edited by hand (a wrong row is fixed by regenerating from the C# file; see
+//! contracts/W8-05c.md "Golden package").
 //! `KeyId` comes from W8-05b (`input::key_id`); see contract.md "Depends on" and open question 1.
 
-#![allow(unused_variables, dead_code)] // stub: removed when the port lands (contracts/README.md D11)
-
 use crate::input::key_id::KeyId;
+use pr_core::settings::shortcuts::canonicalize;
 
 /// `KeyIdMapping.VirtualKeyToKey` (C# lines 63-234): `(virtual-key code, KeyId value)`, C# order, 172 rows.
 /// Codes `0x10`, `0x11`, `0x12` (generic Shift, Control, Menu) map to the LEFT keys; `0xA0`..`0xA5` map to LEFT and RIGHT keys.
@@ -579,13 +578,39 @@ pub const KEY_NAMES: &[(&str, i32)] = &[
 ///   `RightAlt` (121). Every other code ignores the flag;
 /// - otherwise the row of [`VIRTUAL_KEY_TO_KEY`] for that code, or `KeyId::None` when the code has no row.
 pub fn from_virtual_key(virtual_key: i32, is_extended: bool) -> KeyId {
-    todo!()
+    // Range check on the i32 itself (trap 1): a cast to usize first would wrap -1 into a huge index.
+    if !(0..=255).contains(&virtual_key) {
+        return KeyId::NONE;
+    }
+    if is_extended {
+        match virtual_key {
+            VK_CONTROL_CODE => return KeyId::RIGHT_CTRL,
+            VK_MENU_CODE => return KeyId::RIGHT_ALT,
+            _ => {}
+        }
+    }
+    VIRTUAL_KEY_TO_KEY
+        .iter()
+        .find(|(code, _)| *code == virtual_key)
+        .and_then(|&(_, value)| KeyId::from_value(value))
+        .unwrap_or(KeyId::NONE)
 }
+
+/// `VkControl` (C# line 14), used only by the extended-flag rule.
+const VK_CONTROL_CODE: i32 = 0x11;
+/// `VkMenu` (C# line 15), used only by the extended-flag rule.
+const VK_MENU_CODE: i32 = 0x12;
 
 /// `KeyIdMapping.ToVirtualKey` (C# lines 39-43): the row of [`KEY_TO_VIRTUAL_KEY`] for `key`, or `0` when the key has no code
 /// (`None`, `LineFeed`, `System`, `DeadCharProcessed`) or the value is outside the enum (negative, above 172, `i32::MIN`).
 pub fn to_virtual_key(key: KeyId) -> i32 {
-    todo!()
+    // The reverse table has one row per value: the aliases share it, and LeftShift/LeftCtrl/LeftAlt map to 0xA0/0xA2/0xA4
+    // (trap 3), not to the generic 0x10/0x11/0x12. A key without a row gives 0 (trap 5).
+    let value = key.value();
+    KEY_TO_VIRTUAL_KEY
+        .iter()
+        .find(|(candidate, _)| *candidate == value)
+        .map_or(0, |&(_, code)| code)
 }
 
 /// `KeyIdMapping.TryParse(string name, out KeyId key)` (C# lines 49-57). `None` where C# returns `false` (C# sets `key = None`).
@@ -596,5 +621,17 @@ pub fn to_virtual_key(key: KeyId) -> i32 {
 /// 3. exact, case-sensitive lookup in [`KEY_NAMES`] (`Enum.TryParse(ignoreCase: false)`). Every field name is accepted, so
 ///    `"None"`, `"LineFeed"`, `"System"` and `"DeadCharProcessed"` are accepted too.
 pub fn try_parse(name: &str) -> Option<KeyId> {
-    todo!()
+    // Step 1: trim and alias repair (`"enter"` becomes `"Enter"`, `"Return"` becomes `"Enter"`), ASCII only (trap 10).
+    let canonical = canonicalize(Some(name));
+    // Step 2: pre-checks. Behaviour-neutral (trap 7): no field name is empty, contains a comma, starts with a digit, `+` or
+    // `-`, so the exact lookup below would reject these too. Kept to mirror the C# order.
+    let first = canonical.chars().next()?;
+    if canonical.contains(',') || first.is_numeric() || first == '-' || first == '+' {
+        return None;
+    }
+    // Step 3: exact, case-sensitive lookup (`Enum.TryParse(ignoreCase: false)`). Every field name, including `None` (trap 6).
+    KEY_NAMES
+        .iter()
+        .find(|(declared, _)| *declared == canonical)
+        .and_then(|&(_, value)| KeyId::from_value(value))
 }

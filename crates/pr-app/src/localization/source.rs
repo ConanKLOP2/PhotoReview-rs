@@ -3,11 +3,11 @@
 //! binding mechanism and is NOT ported (D-W8-1: the shell repaints from a `ChangeSet`, and subscribes to language
 //! switches with `pr_l10n::localizer::on_current_changed`). Unit W8-04a. The singleton `Instance` becomes a free function.
 
-#![allow(unused_variables, dead_code)] // D11: todo!() bodies; the porter removes this line with the last todo!()
+use pr_l10n::localizer::Localizer;
 
 /// C# `LocalizationSource.this[key]`: `Localizer.Current.Get(key)`, the text of `key` in the current language, or
 /// `key` itself when the catalog has no such key (the `Localizer::get` rule). Reads the ambient
 /// `pr_l10n::localizer::Localizer::current()`.
 pub fn text(key: &str) -> String {
-    todo!()
+    Localizer::current().get(key)
 }

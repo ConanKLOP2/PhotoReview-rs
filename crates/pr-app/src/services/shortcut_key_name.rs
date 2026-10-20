@@ -5,9 +5,8 @@
 //! Name lookup is by the enum's own names (aliases included), never by number: `Enum.TryParse` alone accepts "999" and "A,B", and
 //! names that can never be pressed as a command (Escape, Tab, modifiers) would silently never fire.
 
-#![allow(unused_variables, dead_code)] // D11: stub bodies are todo!(); removed with the last todo!() of this file.
-
 use pr_core::abstractions::KeyNameValidator;
+use pr_core::settings::shortcuts::canonicalize;
 
 use crate::input::key_id::KeyId; // W8-05b: needs `KeyId::ALL` (every variant, aliases included) and `KeyId::name(self) -> &'static str`
 
@@ -17,14 +16,42 @@ use crate::input::key_id::KeyId; // W8-05b: needs `KeyId::ALL` (every variant, a
 /// refuse empty, a comma, a leading digit, a leading `-` or `+`; look the name up case-insensitively among `KeyId::ALL`; refuse
 /// reserved keys ([`is_reserved`]).
 pub fn try_parse(name: Option<&str>) -> Option<KeyId> {
-    todo!()
+    // (1) trim, (2) canonicalise a non-empty text (aliases and casing), (3) structural refusals.
+    let trimmed = name.map(str::trim).unwrap_or("");
+    let text = if trimmed.is_empty() {
+        String::new()
+    } else {
+        canonicalize(Some(trimmed))
+    };
+    if text.is_empty() || text.contains(',') || text.starts_with(|c: char| c.is_ascii_digit() || c == '-' || c == '+') {
+        return None;
+    }
+    // (4) the declared names, compared with OrdinalIgnoreCase (T-1); (5) reserved keys are refused.
+    let key = KeyId::from_name_ignore_case(&text)?;
+    (!is_reserved(key)).then_some(key)
 }
 
 /// C# `ShortcutKeyName.IsReserved(KeyId)`: keys the capture box must let through (focus, cancel) and that can never be a
 /// command: `None`, `Escape`, `Tab`, `ImeProcessed`, `DeadCharProcessed`, `System`, `LeftCtrl`, `RightCtrl`, `LeftAlt`, `RightAlt`,
 /// `LeftShift`, `RightShift`, `LWin`, `RWin` (R-SK-2). Also used by `SettingsPresenter` (K-32 validation).
 pub fn is_reserved(key: KeyId) -> bool {
-    todo!()
+    const RESERVED: [KeyId; 14] = [
+        KeyId::NONE,
+        KeyId::ESCAPE,
+        KeyId::TAB,
+        KeyId::IME_PROCESSED,
+        KeyId::DEAD_CHAR_PROCESSED,
+        KeyId::SYSTEM,
+        KeyId::LEFT_CTRL,
+        KeyId::RIGHT_CTRL,
+        KeyId::LEFT_ALT,
+        KeyId::RIGHT_ALT,
+        KeyId::LEFT_SHIFT,
+        KeyId::RIGHT_SHIFT,
+        KeyId::LWIN,
+        KeyId::RWIN,
+    ];
+    RESERVED.contains(&key)
 }
 
 /// Replaces the retired C# `WpfKeyNameValidator` (9 lines, `IKeyNameValidator` backed by `ShortcutKeyName.TryParse`). The composition root
@@ -35,6 +62,6 @@ pub struct KeyIdNameValidator;
 
 impl KeyNameValidator for KeyIdNameValidator {
     fn is_valid_key_name(&self, key_name: &str) -> bool {
-        todo!()
+        try_parse(Some(key_name)).is_some()
     }
 }
