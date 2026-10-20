@@ -15,6 +15,7 @@ use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::{Arc, Mutex};
 use std::time::{Duration, Instant};
 
+use pr_app::coordinators::presenter::compare_pair::BusyRetryDelay;
 use pr_app::coordinators::presenter::state::{
     ImageChange, ImagePresenter, ImagePresenterDeps, PathHook, PresenterChanges, PresenterEnv,
 };
@@ -23,18 +24,21 @@ use pr_app::coordinators::zoom_detail::{BackgroundJob, BackgroundRunner, Indicat
 use pr_app::misc::file_hash::{FileHashError, FileHasher};
 use pr_app::viewmodels::compare::CompareViewModel;
 use pr_app::viewmodels::format::context::{DateText, FormatContext};
-use pr_core::abstractions::{UiAction, UiActionPanicked, UiCompletion, UiScheduler};
+use pr_core::abstractions::{FileSystem, UiAction, UiActionPanicked, UiCompletion, UiScheduler};
 use pr_core::catalog::generation::GenerationClock;
 use pr_core::catalog::review_catalog::ReviewCatalog;
 use pr_core::catalog::types::CatalogEntry;
 use pr_core::diagnostics::metrics::ReviewMetrics;
 use pr_core::io::navigation_stat::NavigationStatWorker;
 use pr_core::model::enums::RawPairMode;
+use pr_core::session::store::{SessionState, SessionStore};
+use pr_core::session::writer::SessionWriter;
 use pr_core::settings::app_settings::AppSettings;
 use pr_core::sync::CancelToken;
 use pr_core::time::DateTimeUtc;
 use pr_imaging::cache::thumbnails::{
-    CacheImageInfo, CacheImageReader, ThumbnailCache, ThumbnailCacheOptions, ThumbnailCacheServices,
+    CacheImageInfo, CacheImageReader, EmbeddedThumbnailReaderFn, ThumbnailCache, ThumbnailCacheOptions,
+    ThumbnailCacheServices,
 };
 use pr_imaging::cache_key::ImageCacheKey;
 use pr_imaging::decode_types::{
@@ -51,7 +55,7 @@ use pr_l10n::localizer::Localizer;
 use pr_l10n::template::NumberCulture;
 use pr_test_support::TempRoot;
 
-use super::preview_fakes::{PixelsCodec, ServiceOptions, TIMEOUT, build_service, lock};
+use super::preview_fakes::{PixelsCodec, ServiceOptions, TIMEOUT, build_service_with_metrics, lock};
 
 // ---- the sink -------------------------------------------------------------------------------------------------------
 
@@ -160,6 +164,8 @@ pub struct PreloadLog {
     /// Keys `try_consume_preloaded_key` answers `true` for (once each).
     pub warmed: Vec<ImageCacheKey>,
     pub consumed: Vec<ImageCacheKey>,
+    /// What `get_viewer_decode_delay` answers (C# `TestPreloadController.ViewerDecodeDelay`).
+    pub viewer_decode_delay: Duration,
 }
 
 /// Records every call; `warm(key)` makes the next `try_consume_preloaded_key(key)` a hit.
@@ -181,12 +187,22 @@ impl RecordingPreload {
         lock(&self.log).notified.clone()
     }
 
+    /// Sets the delay `get_viewer_decode_delay` answers from now on (a key-held burst in the C# tests).
+    pub fn set_viewer_decode_delay(&self, delay: Duration) {
+        lock(&self.log).viewer_decode_delay = delay;
+    }
+
     pub fn preload_around_calls(&self) -> Vec<i32> {
         lock(&self.log).preload_around.clone()
     }
 
     pub fn removed_for_path(&self) -> Vec<String> {
         lock(&self.log).removed_for_path.clone()
+    }
+
+    /// The keys `try_consume_preloaded_key` answered `true` for.
+    pub fn consumed(&self) -> Vec<ImageCacheKey> {
+        lock(&self.log).consumed.clone()
     }
 
     pub fn total_calls(&self) -> usize {
@@ -227,6 +243,10 @@ impl IPreloadController for RecordingPreload {
 
     fn notify_navigation(&self, index: i32) {
         lock(&self.log).notified.push(index);
+    }
+
+    fn get_viewer_decode_delay(&self) -> Duration {
+        lock(&self.log).viewer_decode_delay
     }
 }
 
@@ -375,13 +395,18 @@ impl std::fmt::Debug for FormatFixture {
 
 impl FormatFixture {
     pub fn new() -> Self {
+        Self::from_catalog(include_str!("../../../../assets/languages/en.json"), "en.json")
+    }
+
+    /// The Vietnamese texts (`vi.json`), for the tests that pin a localized sentence.
+    pub fn vietnamese() -> Self {
+        Self::from_catalog(include_str!("../../../../assets/languages/vi.json"), "vi.json")
+    }
+
+    fn from_catalog(json: &str, name: &str) -> Self {
         let mut warnings = Vec::new();
-        let catalog = LanguageCatalog::try_parse(
-            include_str!("../../../../assets/languages/en.json"),
-            "en.json",
-            &mut warnings,
-        )
-        .unwrap_or_else(|| panic!("en.json did not parse: {warnings:?}"));
+        let catalog = LanguageCatalog::try_parse(json, name, &mut warnings)
+            .unwrap_or_else(|| panic!("{name} did not parse: {warnings:?}"));
         Self {
             texts: Localizer::create(&catalog, &[], &warnings),
             numbers: NumberCulture::invariant(),
@@ -452,6 +477,11 @@ impl CacheImageReader for NoDiskReader {
 
 /// A thumbnail cache whose embedded-thumbnail reader finds nothing (`Ok(None)`: the present shows no placeholder).
 pub fn build_thumbnail_cache(dir: &Path) -> Arc<ThumbnailCache> {
+    build_thumbnail_cache_with(dir, Arc::new(|_path: &str, _cancel: &CancelToken| Ok(None)))
+}
+
+/// A thumbnail cache whose embedded-thumbnail reader is `reader` (a gated, faulting or fast one).
+pub fn build_thumbnail_cache_with(dir: &Path, reader: EmbeddedThumbnailReaderFn) -> Arc<ThumbnailCache> {
     let services = ThumbnailCacheServices {
         platform_codec: Arc::new(PixelsCodec),
         cache_image_reader: Arc::new(NoDiskReader),
@@ -460,7 +490,7 @@ pub fn build_thumbnail_cache(dir: &Path) -> Arc<ThumbnailCache> {
     };
     let mut options = ThumbnailCacheOptions::new(dir);
     options.max_ram_bytes = 1024 * 1024;
-    options.embedded_reader = Some(Arc::new(|_path: &str, _cancel: &CancelToken| Ok(None)));
+    options.embedded_reader = Some(reader);
     match ThumbnailCache::new(services, options) {
         Ok(cache) => Arc::new(cache),
         Err(error) => panic!("the thumbnail cache did not build: {error:?}"),
@@ -502,10 +532,14 @@ pub struct PresenterFixture {
     pub format: FormatFixture,
     pub clock: Arc<GenerationClock>,
     pub service: Arc<PreviewImageService>,
+    /// Shared by the service and the presenter (C# passes one `ReviewMetrics` to both).
+    pub metrics: Arc<ReviewMetrics>,
     pub preload: Arc<RecordingPreload>,
     pub sink_log: Arc<Mutex<SinkLog>>,
     pub presenter: ImagePresenter,
     pub wakes: Arc<AtomicUsize>,
+    /// The live session lent to every call (C# `getSession`); `None` = no session.
+    pub session: Option<SessionState>,
 }
 
 impl std::fmt::Debug for PresenterFixture {
@@ -523,6 +557,16 @@ pub struct FixtureOptions {
     pub indicator_delay: Option<IndicatorDelay>,
     pub runner: Option<Arc<dyn BackgroundRunner>>,
     pub on_presented_hook: Option<PathHook>,
+    /// The presenter's stat file system (C# `fileSystem`); `None` = the physical one.
+    pub file_system: Option<Arc<dyn FileSystem>>,
+    /// A thumbnail cache of the test's own (default: one whose embedded reader finds nothing).
+    pub thumbnails: Option<Arc<ThumbnailCache>>,
+    pub session_store: Option<Arc<SessionStore>>,
+    pub session_writer: Option<Arc<SessionWriter>>,
+    /// C# `busyRetryDelay`; default = instant (returns `true`).
+    pub busy_retry_delay: Option<BusyRetryDelay>,
+    /// A preview service the test built itself (its own decoder, metrics or thread spawner); `service` and the decoder argument are then ignored.
+    pub prebuilt_service: Option<Arc<PreviewImageService>>,
 }
 
 impl PresenterFixture {
@@ -533,8 +577,13 @@ impl PresenterFixture {
 
     pub fn with_options(decoder: Arc<dyn ImageDecoder>, names: &[&str], options: FixtureOptions) -> Self {
         let root = TempRoot::new("presenter");
-        let service = build_service(&root.join("cache"), decoder, options.service);
-        let thumbnails = build_thumbnail_cache(&root.join("thumbs"));
+        let metrics = Arc::new(ReviewMetrics::new());
+        let service = options.prebuilt_service.unwrap_or_else(|| {
+            build_service_with_metrics(&root.join("cache"), decoder, options.service, Arc::clone(&metrics))
+        });
+        let thumbnails = options
+            .thumbnails
+            .unwrap_or_else(|| build_thumbnail_cache(&root.join("thumbs")));
         let clock = Arc::new(GenerationClock::default());
         let preload = RecordingPreload::new();
         let (sink, sink_log) = RecordingSink::new();
@@ -559,14 +608,18 @@ impl PresenterFixture {
             thumbnail_cache: thumbnails,
             preload: Arc::clone(&preload) as Arc<dyn IPreloadController>,
             hasher,
-            metrics: Arc::new(ReviewMetrics::new()),
-            session_store: None,
-            session_writer: None,
+            metrics: Arc::clone(&metrics),
+            session_store: options.session_store,
+            session_writer: options.session_writer,
             sink: Box::new(sink),
-            file_system: None,
+            file_system: options.file_system,
             on_presented_hook: options.on_presented_hook,
             ui_scheduler: options.scheduler,
-            busy_retry_delay: Some(Arc::new(|_delay: Duration, _cancel: &CancelToken| true)),
+            busy_retry_delay: Some(
+                options
+                    .busy_retry_delay
+                    .unwrap_or_else(|| Arc::new(|_delay: Duration, _cancel: &CancelToken| true)),
+            ),
             runner: options.runner,
             stat_worker: Some(NavigationStatWorker::new()),
             wake: Arc::new(move || {
@@ -582,10 +635,12 @@ impl PresenterFixture {
             format,
             clock,
             service,
+            metrics,
             preload,
             sink_log,
             presenter,
             wakes,
+            session: None,
         }
     }
 
@@ -599,7 +654,7 @@ impl PresenterFixture {
         let mut env = PresenterEnv {
             catalog: &mut self.catalog,
             settings: &self.settings,
-            session: None,
+            session: self.session.as_mut(),
             format: self.format.ctx(),
         };
         self.presenter.pump(&mut env)

@@ -12,8 +12,6 @@
 //! - The presenter OWNS the sink (`Box<dyn IPresentationSink>`), the compare view model and the zoom-detail loader. It does NOT own the
 //!   catalog, the settings, the session or the format context: those are lent for one call in [`PresenterEnv`].
 //! - Mutators return [`PresenterChanges`] (a bit set); the shell and the main view model repaint / raise their notifications from it.
-// The navigation record, the event enum and the status helper are consumed by present_a/present_b/missing/compare_pair (W8-07i..k, still stubs); the LAST of them removes this line.
-#![allow(dead_code)]
 
 use std::fmt;
 use std::ops::{BitOr, BitOrAssign};
@@ -33,7 +31,7 @@ use pr_core::settings::app_settings::AppSettings;
 use pr_core::sync::CancelToken;
 use pr_imaging::cache::thumbnails::{ThumbnailCache, ThumbnailResult};
 use pr_imaging::cache_key::ImageCacheKey;
-use pr_imaging::decode_types::PlatformImage;
+use pr_imaging::decode_types::{DecodedImage, PlatformImage};
 use pr_imaging::service::{PreviewError, PreviewImage, PreviewImageService, PreviewResult};
 
 use crate::coordinators::traits::{IPreloadController, IPresentationSink};
@@ -48,7 +46,7 @@ use crate::viewmodels::format::context::FormatContext;
 use super::compare_pair::{BusyRetryDelay, ComparePairCache, default_busy_retry_delay};
 use super::missing::MissingRun;
 use super::photo_info::{PhotoInfo, StatResult};
-use super::present_b::CompareProgress;
+use super::present_b::{CompareProgress, PresentFailure};
 
 /// A callback receiving a path (C# `Action<string>`): the presented hook and the `OriginalShown` measure hook.
 pub type PathHook = Box<dyn FnMut(&str)>;
@@ -279,6 +277,22 @@ pub(super) struct Navigation {
     pub(super) image: Option<PreviewImage>,
     /// The original dimensions for the status line (`None` = unknown).
     pub(super) original_dimensions: Option<(i32, i32)>,
+    /// C# `!ramReady && HasInflightPreview(key)` at the RAM lookup (the thumbnail is requested only when no preview is in flight).
+    pub(super) has_inflight: bool,
+    /// C# `perfPathId` (`PhotoReviewPerf.PathId(path)`, empty unless `perf`).
+    pub(super) perf_path_id: String,
+    /// C# `perfStat`: `Stopwatch.GetTimestamp()` before the initial stat (0 unless `perf`).
+    pub(super) perf_stat_start: i64,
+    /// C# `perfThumb`: timestamp when the thumbnail was requested (0 unless `perf`).
+    pub(super) perf_thumb_start: i64,
+    /// C# `perfAssigned`: timestamp right after the preview was assigned (0 unless `perf`).
+    pub(super) perf_assigned: i64,
+    /// C# `perfCompare`: timestamp when the compare branch started (0 unless `perf`).
+    pub(super) perf_compare_start: i64,
+    /// C# `perfDims`: timestamp when the original-dimension lookup started (0 unless `perf` and not Original mode).
+    pub(super) perf_dims_start: i64,
+    /// The failure whose stale-NotFound recheck stat is in flight (`Phase::AwaitRecheckStat`): the persisted-failure branch reports it.
+    pub(super) pending_failure: Option<PresentFailure>,
 }
 
 /// Which continuation a stat event resumes.
@@ -332,7 +346,8 @@ pub(super) enum PresenterEvent {
     ComparePreview {
         token: i64,
         side: CompareSide,
-        result: Result<PlatformImage, PreviewError>,
+        /// The compare view model keeps `DecodedImage`s (W8-06c), so the worker converts the viewer preview of the partner.
+        result: Result<Arc<DecodedImage>, PreviewError>,
     },
     CompareSizes {
         token: i64,

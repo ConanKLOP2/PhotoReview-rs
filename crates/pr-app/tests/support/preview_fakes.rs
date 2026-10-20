@@ -26,7 +26,7 @@ use pr_imaging::decode_types::{
 };
 use pr_imaging::decoder_traits::{DecodeError, ImageDecoder, PlatformImageCodec};
 use pr_imaging::pixels::{PixelBuffer, PixelLayout};
-use pr_imaging::service::{PreviewImage, PreviewImageService, PreviewServiceConfig};
+use pr_imaging::service::{DecodeThreadSpawner, PreviewImage, PreviewImageService, PreviewServiceConfig};
 
 use pr_app::coordinators::zoom_detail::IndicatorDelay;
 
@@ -453,10 +453,31 @@ pub struct ServiceOptions {
 /// A preview service over `decoder` with the C# test defaults: 64 MiB RAM budget, the disk cache disabled, 32 GiB of RAM,
 /// a fixed `1920 x 1080` decode box, the `pixels` codec and the fake payload codec. `dir` is the (unused) disk folder.
 pub fn build_service(dir: &Path, decoder: Arc<dyn ImageDecoder>, options: ServiceOptions) -> Arc<PreviewImageService> {
+    build_service_with_metrics(dir, decoder, options, Arc::new(ReviewMetrics::new()))
+}
+
+/// [`build_service`] over metrics the test shares with the presenter (C# passes one `ReviewMetrics` to both).
+pub fn build_service_with_metrics(
+    dir: &Path,
+    decoder: Arc<dyn ImageDecoder>,
+    options: ServiceOptions,
+    metrics: Arc<ReviewMetrics>,
+) -> Arc<PreviewImageService> {
+    build_service_full(dir, decoder, options, metrics, None)
+}
+
+/// [`build_service_with_metrics`] with the thread spawner of the test's choice (`None` = the standard one).
+pub fn build_service_full(
+    dir: &Path,
+    decoder: Arc<dyn ImageDecoder>,
+    options: ServiceOptions,
+    metrics: Arc<ReviewMetrics>,
+    spawner: Option<Arc<dyn DecodeThreadSpawner>>,
+) -> Arc<PreviewImageService> {
     let original_mode = options.original_loading_mode;
     let raw_enabled = options.raw_full_decode_enabled;
     let mut config = PreviewServiceConfig::new(
-        Arc::new(ReviewMetrics::new()),
+        metrics,
         Arc::new(move || original_mode),
         Arc::new(|| DecodeBox::new(1920, 1080)),
         Arc::new(PixelsCodec),
@@ -469,6 +490,7 @@ pub fn build_service(dir: &Path, decoder: Arc<dyn ImageDecoder>, options: Servic
     config.physical_memory_bytes = 32 * GIB;
     config.raw_full_decoder = options.raw_full_decoder;
     config.is_raw_full_decode_enabled = Some(Arc::new(move || raw_enabled));
+    config.spawner = spawner;
     match PreviewImageService::new(config) {
         Ok(service) => Arc::new(service),
         Err(error) => panic!("the preview service did not build: {error}"),

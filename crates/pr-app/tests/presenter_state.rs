@@ -1,8 +1,8 @@
 //! Tests of the `ImagePresenter` state slice (W8-07h): constructor, properties, `ClearPresentation`, `EvictCachedPath`, the zoom-detail glue
 //! (C# `ImagePresenter.cs` lines 1 to 232, baseline d92d6aae). Contract: `contracts/W8-07h.md`, kind F (fakes, no oracle, no golden).
 //!
-//! The C# tests that need a successful `PresentAsync` are only complete after W8-07j; they are written here with `#[ignore = "needs W8-07j"]`
-//! (the 07j porter removes the ignores). The zoom swap itself (`show_zoom_detail_image`) is exercised by in-crate tests in `presenter/zoom.rs`.
+//! The C# tests that need a successful `PresentAsync` were written with `#[ignore = "needs W8-07j"]` and un-ignored by W8-07j.
+//! The zoom swap itself (`show_zoom_detail_image`) is exercised by in-crate tests in `presenter/zoom.rs`.
 
 mod support {
     pub mod presenter_fakes;
@@ -198,7 +198,6 @@ fn clear(f: &mut PresenterFixture) {
 
 // C#: ImagePresenterTests.ClearPresentation_ClearsCurrentImageAndCompareState
 #[test]
-#[ignore = "needs W8-07j"]
 fn clear_presentation_clears_current_image_and_compare_state() {
     let mut f = fixture(&["photo.jpg", "photo (1).jpg"]);
     present_index(&mut f, 0);
@@ -214,7 +213,6 @@ fn clear_presentation_clears_current_image_and_compare_state() {
 
 // C#: ZoomDetailTests.NavigatingAfterTheOriginalSwap_StillRequestsTheFileChangeTransition
 #[test]
-#[ignore = "needs W8-07j"]
 fn navigating_after_the_original_swap_still_requests_the_file_change_transition() {
     let mut f = fixture(&["a.jpg", "b.jpg"]);
     present_index(&mut f, 0);
@@ -231,7 +229,6 @@ fn navigating_after_the_original_swap_still_requests_the_file_change_transition(
 
 // C#: ZoomDetailTests.RawPreviewSize_FollowsWhichImageIsDisplayed
 #[test]
-#[ignore = "needs W8-07j"]
 fn raw_preview_size_follows_which_image_is_displayed() {
     let mut f = PresenterFixture::with_options(
         Arc::new(EmbeddedInfoRawDecoder),
@@ -273,7 +270,6 @@ fn raw_preview_size_follows_which_image_is_displayed() {
 
 // C#: ZoomDetailTests.RawPreviewSize_WhenTheHeldOriginalIsStillTheEmbeddedJpeg_StaysInThePhotoInfo
 #[test]
-#[ignore = "needs W8-07j"]
 fn raw_preview_size_when_the_held_original_is_still_the_embedded_jpeg_stays_in_the_photo_info() {
     // The "full" decoder fell back to the embedded JPEG: the held original still is the RAW preview.
     let mut f = PresenterFixture::with_options(
@@ -296,7 +292,6 @@ fn raw_preview_size_when_the_held_original_is_still_the_embedded_jpeg_stays_in_t
 
 // C#: ZoomDetailTests.RawPreviewInfo_OfAnEarlierPhoto_IsNeverShownForTheNextPhotoWhoseFullDecodeFellBackToTheEmbeddedJpeg
 #[test]
-#[ignore = "needs W8-07j"]
 fn raw_preview_info_of_an_earlier_photo_is_never_shown_for_the_next_photo_whose_full_decode_fell_back_to_the_embedded_jpeg()
  {
     // A gets a true full decode; B's "full" decode falls back to its embedded JPEG (still a RAW preview).
@@ -333,7 +328,6 @@ fn raw_preview_info_of_an_earlier_photo_is_never_shown_for_the_next_photo_whose_
 
 // C#: ZoomDetailTests.NonRawPhoto_NeverHasARawPreviewSize
 #[test]
-#[ignore = "needs W8-07j"]
 fn non_raw_photo_never_has_a_raw_preview_size() {
     let mut f = fixture(&["a.jpg"]);
     present_index(&mut f, 0);
@@ -358,7 +352,6 @@ fn non_raw_photo_never_has_a_raw_preview_size() {
 
 // The sink's zoom change is how the C# `OnApplyInitialViewMode` test hook reaches the loader (`take_viewer_zoom_change` after `apply_initial_view_mode`).
 #[test]
-#[ignore = "needs W8-07j"]
 fn the_zoom_of_apply_initial_view_mode_reaches_the_loader_before_the_target_is_armed() {
     let mut f = fixture(&["a.jpg"]);
     lock(&f.sink_log).zoom_on_apply_initial_view_mode = Some(Some(2.0));
