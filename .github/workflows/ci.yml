@@ -58,7 +58,7 @@ jobs:
 
   # `pr-app` has over a hundred integration test files, each linked as its own binary, so it dominates the test time.
   # Its files are split round-robin over 4 shards (computed from the directory on every run, so a new test file needs no
-  # workflow edit); the `rest` shard runs every other crate plus the unit tests and doc tests of `pr-app`.
+  # workflow edit); core, crates and app-unit run the remaining crate, unit and doc tests in parallel.
   test:
     name: test (${{ matrix.shard }})
     runs-on: windows-latest
@@ -67,7 +67,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        shard: [rest, "0", "1", "2", "3"]
+        shard: [core, crates, app-unit, "0", "1", "2", "3"]
     env:
       CARGO_PROFILE_DEV_DEBUG: 0
     steps:
@@ -85,13 +85,22 @@ jobs:
         shell: pwsh
         run: |
           $shard = '${{ matrix.shard }}'
-          if ($shard -eq 'rest') {
-            cargo test --workspace --exclude pr-app --locked
+          if ($shard -eq 'core') {
+            cargo test -p pr-core --locked
             if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+            exit 0
+          }
+          if ($shard -eq 'crates') {
+            cargo test --workspace --exclude pr-app --exclude pr-core --locked
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+            exit 0
+          }
+          if ($shard -eq 'app-unit') {
             cargo test -p pr-app --lib --bins --locked
             if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
             cargo test -p pr-app --doc --locked
-            exit $LASTEXITCODE
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+            exit 0
           }
           $shards = 4
           $names = @(Get-ChildItem crates/pr-app/tests -Filter *.rs -File | Sort-Object Name | ForEach-Object { $_.BaseName })
