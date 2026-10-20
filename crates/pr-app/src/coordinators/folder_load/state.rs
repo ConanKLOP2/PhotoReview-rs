@@ -5,9 +5,6 @@
 //! submits the scan and the Explorer query to a [`WorkerPort`]; each completion comes back as a [`FolderLoadEvent`] that the
 //! shell passes to `handle_event` on the UI thread. The catalog and the sink are not owned: every call receives them in a
 //! [`FolderLoadCx`] (no `Rc<RefCell>` graph, D-W8-1).
-// Stub only: the porter removes this allow line once every body is real.
-#![allow(unused_variables, unused_imports, dead_code)]
-
 use std::error::Error;
 use std::fmt;
 use std::sync::Arc;
@@ -101,11 +98,27 @@ pub enum FolderLoadError {
 
 impl fmt::Display for FolderLoadError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        todo!()
+        match self {
+            // C# ArgumentException.ThrowIfNullOrWhiteSpace message.
+            Self::BlankFolder => f.write_str("The folder path cannot be empty or composed entirely of whitespace."),
+            // C# ObjectDisposedException message.
+            Self::Disposed => f.write_str("Cannot access a disposed object. Object name: 'FolderLoadCoordinator'."),
+            Self::DirectoryNotFound { folder } => f.write_str(&pr_l10n::tr::status_folder_not_found(folder.as_str())),
+            Self::InvalidPath(error) => fmt::Display::fmt(error, f),
+            Self::Io(error) => fmt::Display::fmt(error, f),
+        }
     }
 }
 
-impl Error for FolderLoadError {}
+impl Error for FolderLoadError {
+    fn source(&self) -> Option<&(dyn Error + 'static)> {
+        match self {
+            Self::InvalidPath(error) => Some(error),
+            Self::Io(error) => Some(error),
+            _ => None,
+        }
+    }
+}
 
 /// What the scan job returns (C# tuple `(scannedFiles, entries, sidecarPaths)` plus the `skipped` list and the settings
 /// snapshot the job used). All owned and `Send`: the job never touches the catalog.
@@ -282,16 +295,22 @@ impl fmt::Debug for FolderLoadCoordinator {
 impl FolderLoadCoordinator {
     /// C# constructor: stores the collaborators, starts no work, calls nothing on them.
     pub fn new(deps: FolderLoadDeps) -> Self {
-        todo!()
+        Self {
+            deps,
+            active: None,
+            order_gate_open: false,
+            next_load_id: 0,
+            disposed: false,
+        }
     }
 
     /// Which `await` the active load is parked on; `Idle` when none.
     pub fn phase(&self) -> LoadPhase {
-        todo!()
+        self.active.as_ref().map_or(LoadPhase::Idle, |active| active.phase)
     }
 
     /// C# `Dispose` was called.
     pub fn is_disposed(&self) -> bool {
-        todo!()
+        self.disposed
     }
 }

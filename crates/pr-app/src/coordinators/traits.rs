@@ -27,7 +27,9 @@ use pr_core::file_actions::undo::MoveOverride;
 use pr_core::session::store::SessionState;
 use pr_core::sync::CancelToken;
 use pr_imaging::cache_key::ImageCacheKey;
-use pr_imaging::decode_types::DecodedImage;
+use pr_imaging::decode_types::PlatformImage;
+
+use crate::coordinators::presenter::state::ImageChange;
 use pr_imaging::preload::scheduler::{PreloadScheduler, RunHandle};
 
 /// C# `IDuplicateCleanupSink` (31 lines): status, late status, open folder, reload after a batch.
@@ -229,7 +231,16 @@ pub trait IPresentationSink {
     /// `is_file_change` is true only for the FIRST presentation of a navigation to another file (crossfade, feat/image-crossfade);
     /// false for upgrades of the same image (thumbnail -> preview -> original), for the first image after a folder open, and when
     /// `image` is `None`. The C# default `false` has no Rust equivalent: every caller passes it explicitly.
-    fn set_current_image(&mut self, image: Option<Arc<DecodedImage>>, is_file_change: bool);
+    ///
+    /// Rust: the image is the cheap-to-clone [`PlatformImage`] (the C# `object`), and the facts the C# callback reads back from the
+    /// presenter (`CurrentPresentedPath`, `IsSameSourceSwap`, `CurrentOriginalWidth/Height`) ride in `change` (contract W8-07h).
+    fn set_current_image(&mut self, image: Option<PlatformImage>, is_file_change: bool, change: &ImageChange<'_>);
+
+    /// The zoom (`None` = Fit) the view model asked for during the last sink call (C# re-entrant `ZoomModeChanged -> SetViewerZoom`), if
+    /// any; the presenter pulls it right after `set_current_image` / `apply_initial_view_mode`. Default: no change.
+    fn take_viewer_zoom_change(&mut self) -> Option<Option<f64>> {
+        None
+    }
 
     /// C# `SetStatusText(string)`.
     fn set_status_text(&mut self, status: &str);
