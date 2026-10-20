@@ -13,10 +13,11 @@
 use std::fmt;
 use std::sync::Arc;
 
-use pr_imaging::decode_types::DecodedImage;
+use pr_imaging::decode_types::PlatformImage;
 use pr_imaging::decoder_traits::PlatformImageCodec;
 use pr_imaging::factory::DecoderProvider;
 
+use crate::coordinators::presenter::state::ImageChange;
 use crate::coordinators::traits::IPresentationSink;
 
 /// C# `SharedServiceOptions(Codec, WpfFallbackDecoder, ThumbnailDecoder)`: what a host (old WPF app or Win32 shell) supplies.
@@ -41,11 +42,14 @@ impl fmt::Debug for SharedServiceOptions {
     }
 }
 
+/// C# `Action<object?, bool>` extended with the facts the callback reads from the presenter (contract W8-07h).
+pub type SetCurrentImageCallback = Box<dyn FnMut(Option<PlatformImage>, bool, &ImageChange<'_>)>;
+
 /// C# `MainViewModelSinkCallbacks(SetCurrentImage, SetStatusText, ApplyInitialViewMode, OnPresented)`: the view-model side of the
 /// presentation sink. The host sink calls them on the UI thread, in the order its contract states (view model first).
 pub struct MainViewModelSinkCallbacks {
     /// C# `Action<object?, bool>`: the image (`None` in Compare mode or an empty folder) and `is_file_change`.
-    pub set_current_image: Box<dyn FnMut(Option<Arc<DecodedImage>>, bool)>,
+    pub set_current_image: SetCurrentImageCallback,
     /// C# `Action<string>`.
     pub set_status_text: Box<dyn FnMut(&str)>,
     /// C# `Action`.
