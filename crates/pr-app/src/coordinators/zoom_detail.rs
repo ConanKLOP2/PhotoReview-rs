@@ -13,13 +13,10 @@
 //!
 //! Also defined here because this is the first unit that needs them, and the presenter units (W8-07h..k) reuse them:
 //! [`CompletionInbox`], [`BackgroundRunner`] / [`ThreadRunner`], [`WakeFn`], [`same_platform_image`].
-// Stub only: the porter removes this allow line once every body is real.
-#![allow(unused_variables, unused_imports, dead_code)]
-
 use std::collections::VecDeque;
 use std::fmt;
 use std::sync::{Arc, Condvar, Mutex, PoisonError};
-use std::time::Duration;
+use std::time::{Duration, Instant};
 
 use pr_core::catalog::generation::GenerationClock;
 use pr_core::catalog::types::is_raw_path;
@@ -27,6 +24,8 @@ use pr_core::sync::CancelToken;
 use pr_imaging::cache_key::ImageCacheKey;
 use pr_imaging::decode_types::PlatformImage;
 use pr_imaging::service::{PreviewImage, PreviewImageService, PreviewResult};
+
+use crate::misc::app_log::AppLog;
 
 // ---- Shared seams (used by the presenter units too) -------------------------------------------------------------------
 
@@ -52,7 +51,9 @@ pub struct ThreadRunner;
 
 impl BackgroundRunner for ThreadRunner {
     fn run(&self, name: &'static str, job: BackgroundJob) {
-        todo!()
+        if let Err(error) = std::thread::Builder::new().name(name.to_owned()).spawn(job) {
+            AppLog::global().error(&format!("Could not start the worker thread {name}"), Some(&error));
+        }
     }
 }
 
@@ -136,7 +137,11 @@ impl<T> CompletionInbox<T> {
 /// C# `ReferenceEquals(a.PlatformImage, b.PlatformImage)`: same pixel buffer allocation (`Arc::ptr_eq`), or the same opaque
 /// object. Never compares pixel contents. Different variants are never the same image.
 pub fn same_platform_image(a: &PlatformImage, b: &PlatformImage) -> bool {
-    todo!()
+    match (a, b) {
+        (PlatformImage::Pixels(a), PlatformImage::Pixels(b)) => Arc::ptr_eq(a, b),
+        (PlatformImage::Opaque(a), PlatformImage::Opaque(b)) => std::ptr::addr_eq(Arc::as_ptr(a), Arc::as_ptr(b)),
+        _ => false,
+    }
 }
 
 // ---- Public types of the loader ---------------------------------------------------------------------------------------------
@@ -185,7 +190,21 @@ pub type IndicatorDelay = Arc<dyn Fn(Duration, &CancelToken) -> bool + Send + Sy
 /// The production delay: waits in slices of at most 20 ms and re-checks the token between slices (`CancelToken` has no wait
 /// primitive). Tests never use it (they inject a gate they release themselves).
 pub fn default_indicator_delay() -> IndicatorDelay {
-    todo!()
+    /// Longest wait between two checks of the token.
+    const SLICE: Duration = Duration::from_millis(20);
+    Arc::new(|delay: Duration, cancel: &CancelToken| {
+        let deadline = Instant::now() + delay;
+        loop {
+            if cancel.is_canceled() {
+                return false;
+            }
+            let remaining = deadline.saturating_duration_since(Instant::now());
+            if remaining.is_zero() {
+                return true;
+            }
+            std::thread::sleep(remaining.min(SLICE));
+        }
+    })
 }
 
 /// What a worker reports back to the loader (private protocol between the worker jobs and `pump`; tests do not construct it).
@@ -218,6 +237,7 @@ struct Target {
 struct LoadSlot {
     id: u64,
     cancel: CancelToken,
+    started: Instant,
 }
 
 /// C# `_indicatorCts`.
@@ -271,61 +291,126 @@ impl ZoomDetailLoader {
         runner: Arc<dyn BackgroundRunner>,
         wake: WakeFn,
     ) -> Self {
-        todo!()
+        Self {
+            service,
+            clock,
+            runner,
+            inbox: CompletionInbox::new(wake),
+            indicator_delay: default_indicator_delay(),
+            target: None,
+            original: None,
+            showing_original: false,
+            zoom: None,
+            refresh_hold: false,
+            load: None,
+            failed_token: -1,
+            indicator: None,
+            raw_indicator_visible: false,
+            next_id: 1,
+        }
     }
 
     /// C# `IndicatorDelay { set }` (internal test seam): replaces the 300 ms wait.
     #[must_use]
-    pub fn with_indicator_delay(self, delay: IndicatorDelay) -> Self {
-        todo!()
+    pub fn with_indicator_delay(mut self, delay: IndicatorDelay) -> Self {
+        self.indicator_delay = delay;
+        self
     }
 
     /// C# `HeldOriginal`: the full-resolution decode held for the current image.
     pub fn held_original(&self) -> Option<&PreviewImage> {
-        todo!()
+        self.original.as_ref()
     }
 
     /// C# `IsShowingOriginal`.
     pub fn is_showing_original(&self) -> bool {
-        todo!()
+        self.showing_original
     }
 
     /// C# `PendingLoad != null`: a decode is in flight (its outcome has not been pumped yet).
     pub fn pending_load(&self) -> bool {
-        todo!()
+        self.load.is_some()
     }
 
     /// C# `IsRawDecodeIndicatorVisible`.
     pub fn is_raw_decode_indicator_visible(&self) -> bool {
-        todo!()
+        self.raw_indicator_visible
     }
 
     /// Number of worker completions waiting for [`pump`](Self::pump).
     pub fn queued_events(&self) -> usize {
-        todo!()
+        self.inbox.len()
     }
 
     /// Hang guard for tests: blocks until a worker completion is queued or `timeout` elapsed.
     pub fn wait_for_event(&self, timeout: Duration) -> bool {
-        todo!()
+        self.inbox.wait_ready(timeout)
     }
 
     /// C# `Reset()` (navigation started or the presentation was cleared): cancels the not-yet-started decode, stops the RAW
     /// indicator (effect `RawDecodeIndicatorChanged { visible: false }` when it was visible), drops the target and the held
     /// original (the ~96 MB pixels), clears `showing_original` and the refresh hold. Does NOT reset the failed-token latch.
     pub fn reset(&mut self) -> ZoomDetailEffects {
-        todo!()
+        let mut effects = ZoomDetailEffects::new();
+        self.cancel_pending();
+        self.stop_raw_decode_indicator(&mut effects);
+        self.target = None;
+        self.original = None;
+        self.showing_original = false;
+        self.refresh_hold = false;
+        effects
     }
 
     /// C# `SetZoom(double?)`: `None` = Fit. A zoom different from the stored one (IEEE `!=` on the `Option`) ends the refresh
     /// hold; then `update`.
     pub fn set_zoom(&mut self, zoom: Option<f64>) -> ZoomDetailEffects {
-        todo!()
+        // A Refresh's "full resolution at Fit" lasts until the view actually changes zoom (a repeated Fit keeps it).
+        if zoom != self.zoom {
+            self.refresh_hold = false;
+        }
+        self.zoom = zoom;
+        let mut effects = ZoomDetailEffects::new();
+        self.update(&mut effects);
+        effects
     }
 
     /// C# `Refresh(double effectiveZoom)` (Q-TOUCHPAD-REFRESH): see the contract for the five outcomes and their order.
     pub fn refresh(&mut self, effective_zoom: f64) -> (ZoomDetailRefreshResult, ZoomDetailEffects) {
-        todo!()
+        let mut effects = ZoomDetailEffects::new();
+        // No target: the shown bitmap is already full resolution (Original mode, small source, RAW without full decode) or no image.
+        let Some((token, original_width, preview_pixel_width)) = self
+            .target
+            .as_ref()
+            .map(|target| (target.token, target.original_width, target.preview_pixel_width))
+            .filter(|(token, _, _)| self.clock.is_navigation_current(*token))
+        else {
+            return (ZoomDetailRefreshResult::AlreadyFullResolution, effects);
+        };
+        let retried = self.failed_token == token;
+        // Cleared before the early returns below: a Refresh always re-arms the retry.
+        self.failed_token = -1;
+        if self.showing_original {
+            return (ZoomDetailRefreshResult::AlreadyFullResolution, effects);
+        }
+        // NaN and non-positive zooms land here, like C# `!(effectiveZoom > 0)`.
+        if effective_zoom.is_nan()
+            || effective_zoom <= 0.0
+            || effective_zoom * f64::from(original_width) <= f64::from(preview_pixel_width)
+        {
+            return (ZoomDetailRefreshResult::PreviewSufficient, effects);
+        }
+
+        self.refresh_hold = true;
+        let held = self.original.is_some();
+        self.update(&mut effects);
+        let result = if held || self.showing_original {
+            ZoomDetailRefreshResult::ShowedOriginal
+        } else if retried {
+            ZoomDetailRefreshResult::RetryingOriginal
+        } else {
+            ZoomDetailRefreshResult::LoadingOriginal
+        };
+        (result, effects)
     }
 
     /// C# `OnPreviewPresented(token, path, key, preview)`: `reset`, then arm a target for a downscaled preview unless the
@@ -337,20 +422,135 @@ impl ZoomDetailLoader {
         key: &ImageCacheKey,
         preview: &PreviewImage,
     ) -> ZoomDetailEffects {
-        todo!()
+        let mut effects = self.reset();
+        if !preview.downscaled() {
+            return effects; // already full resolution
+        }
+        // A RAW's shown image is only its embedded JPEG (downscaled while smaller than the sensor). The only thing that can
+        // serve more pixels is the RAW full decoder: when it is not in use never arm a target in ANY loading mode -- the
+        // ordinary decoder would just re-decode the same embedded JPEG and report its own smaller size.
+        if !self.service.is_raw_full_decode_request(path) && (is_raw_path(path) || key.is_original()) {
+            // (a RAW path in any mode, or an Original-mode key of an ordinary image, which is already full resolution)
+            return effects;
+        }
+        let id = self.next_id();
+        self.target = Some(Target {
+            id,
+            token,
+            path: path.to_owned(),
+            key: key.clone(),
+            preview: preview.platform_image().clone(),
+            preview_pixel_width: preview.pixel_width(),
+            original_width: preview.original_width(),
+            original_height: preview.original_height(),
+        });
+        self.update(&mut effects);
+        effects
     }
 
     /// Applies every queued worker completion (decode outcomes, indicator delays) on the UI thread, in arrival order, and
     /// returns their effects. This is the C# `LoadAsync` / `ShowIndicatorAfterDelayAsync` continuation code.
     pub fn pump(&mut self) -> ZoomDetailEffects {
-        todo!()
+        let mut effects = ZoomDetailEffects::new();
+        for event in self.inbox.drain() {
+            match event {
+                ZoomDetailEvent::OriginalDecoded {
+                    load_id,
+                    target_id,
+                    result,
+                } => self.on_original_decoded(load_id, target_id, result, &mut effects),
+                ZoomDetailEvent::IndicatorElapsed { indicator_id } => {
+                    self.on_indicator_elapsed(indicator_id, &mut effects);
+                }
+            }
+        }
+        effects
     }
 
     // ---- private, one per C# member ----
 
+    /// The next identity of a target, load or indicator slot.
+    fn next_id(&mut self) -> u64 {
+        let id = self.next_id;
+        self.next_id = self.next_id.wrapping_add(1);
+        id
+    }
+
     /// C# `Update()`.
     fn update(&mut self, effects: &mut ZoomDetailEffects) {
-        todo!()
+        let Some(target) = self.target.clone() else {
+            return;
+        };
+        if !self.clock.is_navigation_current(target.token) {
+            return;
+        }
+
+        if self.zoom.is_none() && !self.refresh_hold {
+            if self.showing_original {
+                self.showing_original = false;
+                effects.push(ZoomDetailEffect::ShowImage {
+                    image: target.preview,
+                    original_width: target.original_width,
+                    original_height: target.original_height,
+                });
+            }
+            return;
+        }
+
+        if let Some(original) = &self.original {
+            if !self.showing_original {
+                effects.push(ZoomDetailEffect::ShowImage {
+                    image: original.platform_image().clone(),
+                    original_width: original.pixel_width(),
+                    original_height: original.pixel_height(),
+                });
+                self.showing_original = true;
+                effects.push(ZoomDetailEffect::OriginalShown { path: target.path });
+            }
+            return;
+        }
+
+        // The preview already has at least as many pixels as the screen shows: no decode needed. (A Refresh hold was set only
+        // after Refresh measured the opposite, so it skips this check.)
+        if !self.refresh_hold
+            && self
+                .zoom
+                .is_some_and(|zoom| zoom * f64::from(target.original_width) <= f64::from(target.preview_pixel_width))
+        {
+            return;
+        }
+        if self.load.is_some() {
+            return; // already decoding this target
+        }
+        if self.failed_token == target.token {
+            return;
+        }
+
+        let cancel = CancelToken::new();
+        let load_id = self.next_id();
+        self.load = Some(LoadSlot {
+            id: load_id,
+            cancel: cancel.clone(),
+            started: Instant::now(),
+        });
+        if self.service.is_raw_full_decode_request(&target.path) {
+            self.start_raw_decode_indicator(effects);
+        }
+        let service = Arc::clone(&self.service);
+        let inbox = self.inbox.clone();
+        let target_id = target.id;
+        let (path, key) = (target.path, target.key);
+        self.runner.run(
+            "zoom-detail-decode",
+            Box::new(move || {
+                let result = service.decode_original(&path, &key, &cancel).wait();
+                inbox.send(ZoomDetailEvent::OriginalDecoded {
+                    load_id,
+                    target_id,
+                    result,
+                });
+            }),
+        );
     }
 
     /// C# `LoadAsync` continuation: the code after `await DecodeOriginalAsync`, the `catch` blocks and the `finally`.
@@ -361,31 +561,114 @@ impl ZoomDetailLoader {
         result: PreviewResult,
         effects: &mut ZoomDetailEffects,
     ) {
-        todo!()
+        let slot_owner = self.load.as_ref().is_some_and(|load| load.id == load_id);
+        let elapsed_ms = self
+            .load
+            .as_ref()
+            .filter(|load| load.id == load_id)
+            .map_or(0, |load| load.started.elapsed().as_millis());
+        let same_target = self.target.as_ref().filter(|target| target.id == target_id);
+        let mut accepted = false;
+        let mut failed_token = None;
+        match result {
+            Ok(original) => {
+                // INV-1: a navigation (or a newer target) superseded this decode -- drop the pixels.
+                if let Some(target) = same_target.filter(|target| self.clock.is_navigation_current(target.token)) {
+                    let log = AppLog::global();
+                    if log.enabled() {
+                        log.info(&format!(
+                            "ZoomDetail original ready token={} {}x{} ms={} path={}",
+                            target.token,
+                            original.pixel_width(),
+                            original.pixel_height(),
+                            elapsed_ms,
+                            target.path
+                        ));
+                    }
+                    self.original = Some(original);
+                    accepted = true;
+                }
+            }
+            // A cancelled decode is not a failure: no latch, nothing shown.
+            Err(error) if error.is_canceled() => {}
+            Err(error) => {
+                // Zoom detail is best effort: on any decode failure the preview simply stays on screen.
+                let (token, path) = same_target.map_or((-1, ""), |target| (target.token, target.path.as_str()));
+                AppLog::global().error(
+                    &format!("ZoomDetail original decode failed token={token} path={path}"),
+                    Some(&error),
+                );
+                failed_token = same_target.map(|target| target.token);
+            }
+        }
+        if let Some(token) = failed_token {
+            self.failed_token = token;
+        }
+        // Only the load that still owns the slot may touch the shared state. A superseded load finishing late must not
+        // kill the newer load's RAW indicator.
+        if slot_owner {
+            self.stop_raw_decode_indicator(effects);
+            self.load = None;
+        }
+        if accepted {
+            self.update(effects);
+        }
     }
 
     /// C# `CancelPending()`: cancels and forgets the in-flight decode token.
     fn cancel_pending(&mut self) {
-        todo!()
+        if let Some(load) = self.load.take() {
+            load.cancel.cancel();
+        }
     }
 
     /// C# `StartRawDecodeIndicator(loadToken)`: `stop`, then a new slot and a worker that runs the delay.
     fn start_raw_decode_indicator(&mut self, effects: &mut ZoomDetailEffects) {
-        todo!()
+        self.stop_raw_decode_indicator(effects);
+        let cancel = CancelToken::new();
+        let indicator_id = self.next_id();
+        self.indicator = Some(IndicatorSlot {
+            id: indicator_id,
+            cancel: cancel.clone(),
+        });
+        let delay = Arc::clone(&self.indicator_delay);
+        let inbox = self.inbox.clone();
+        self.runner.run(
+            "zoom-detail-indicator",
+            Box::new(move || {
+                if delay(RAW_INDICATOR_DELAY, &cancel) {
+                    inbox.send(ZoomDetailEvent::IndicatorElapsed { indicator_id });
+                }
+            }),
+        );
     }
 
     /// C# `StopRawDecodeIndicator()` (idempotent): forget and cancel the slot, hide the indicator.
     fn stop_raw_decode_indicator(&mut self, effects: &mut ZoomDetailEffects) {
-        todo!()
+        let slot = self.indicator.take();
+        self.set_raw_decode_indicator_visible(false, effects);
+        if let Some(slot) = slot {
+            slot.cancel.cancel();
+        }
     }
 
     /// C# `SetRawDecodeIndicatorVisible(visible)`: pushes an effect only on a transition.
     fn set_raw_decode_indicator_visible(&mut self, visible: bool, effects: &mut ZoomDetailEffects) {
-        todo!()
+        if self.raw_indicator_visible == visible {
+            return;
+        }
+        self.raw_indicator_visible = visible;
+        effects.push(ZoomDetailEffect::RawDecodeIndicatorChanged { visible });
     }
 
     /// C# `ShowIndicatorAfterDelayAsync` tail (`ShowIfCurrent`): visible only when the slot is still the current one and not cancelled.
     fn on_indicator_elapsed(&mut self, indicator_id: u64, effects: &mut ZoomDetailEffects) {
-        todo!()
+        let current = self
+            .indicator
+            .as_ref()
+            .is_some_and(|slot| slot.id == indicator_id && !slot.cancel.is_canceled());
+        if current {
+            self.set_raw_decode_indicator_visible(true, effects);
+        }
     }
 }
