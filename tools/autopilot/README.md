@@ -35,6 +35,12 @@ Create `.claude/settings.local.json` (git-ignored) so the classifier does not st
 Without them the finish agents of a workflow refuse to push or open the PR; the lead (the main session) does it.
 
 ## Claude-free pipeline (Codex only, zero Claude tokens)
+After a unit lands on an integration branch, `unit-pr.sh` opens its own small PR against `master`.
+Run `bash tools/autopilot/unit-pr.sh W8-06f [--ibr integration/wave8-b2] [--dry-run]`.
+It checks same-batch dependencies on `origin/master`, then copies owned source files from the integration branch.
+Failing `not yet implemented` tests may pull in completed source modules for up to four test rounds.
+Cargo output goes to `tools/autopilot/state/logs/<unit>.pr.log`; the worktree keeps its own target directory.
+`--dry-run` runs the checks without staging, committing, pushing, or opening a PR.
 Ports the units of one Wave 8 batch with Codex CLI (gpt-6-luna, effort low) driven by plain bash. Optimised for Codex quota and
 Claude tokens, not for wall-clock time. Files: `codex-pipeline.sh` (driver), `codex-pack.sh` (context pack), `codex-gate.sh` (machine
 checks), `codex-run.sh` (one Codex call, `--json`, `resume`), `CODEX-RULES.md`, `lib/codex-lib.py` (plan/contract/state/lint/telemetry
