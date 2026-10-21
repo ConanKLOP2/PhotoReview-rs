@@ -46,7 +46,6 @@ dependencies = [
  "pr-imaging-raw",
  "pr-l10n",
  "pr-libraw",
- "pr-platform-win",
  "pr-test-support",
  "pr-turbojpeg",
  "serde_json",
@@ -59,7 +58,6 @@ dependencies = [
  "pr-core",
  "pr-imaging",
  "pr-perf",
- "pr-platform-win",
  "pr-test-support",
  "serde_json",
 ]
@@ -130,6 +128,7 @@ dependencies = [
 name = "pr-platform-win"
 version = "0.1.0"
 dependencies = [
+ "pr-app",
  "pr-core",
  "pr-imaging",
  "pr-perf",
@@ -137,6 +136,20 @@ dependencies = [
  "serde_json",
  "windows",
  "windows-core",
+]
+
+[[package]]
+name = "pr-shell"
+version = "0.1.0"
+dependencies = [
+ "pr-app",
+ "pr-core",
+ "pr-imaging",
+ "pr-imaging-raw",
+ "pr-libraw",
+ "pr-platform-win",
+ "pr-test-support",
+ "pr-turbojpeg",
 ]
 
 [[package]]

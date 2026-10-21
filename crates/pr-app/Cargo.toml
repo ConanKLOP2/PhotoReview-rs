@@ -11,9 +11,6 @@ publish.workspace = true
 workspace = true
 
 [features]
-# Phase 0 UI spike (docs/adr/R0001). Off by default so the normal build and tests are unaffected.
-ui-spike = ["pr-platform-win/ui-spike"]
-
 [dependencies]
 serde_json = { workspace = true, features = ["float_roundtrip"] }
 pr-core.workspace = true
@@ -22,17 +19,7 @@ pr-imaging.workspace = true
 pr-imaging-raw.workspace = true
 pr-libraw.workspace = true
 pr-turbojpeg.workspace = true
-pr-platform-win.workspace = true
 pr-bench.workspace = true
-
-[[bin]]
-name = "PhotoReviewRs"
-path = "src/main.rs"
-
-[[bin]]
-name = "r0001-spike"
-path = "src/bin/r0001_spike.rs"
-required-features = ["ui-spike"]
 
 [dev-dependencies]
 pr-test-support.workspace = true
