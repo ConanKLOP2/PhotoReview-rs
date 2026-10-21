@@ -14,8 +14,6 @@
 //!
 //! UI thread only (`Rc`, `RefCell`, no `Send`). The cache is shared as `Rc<BudgetedImageCache<B>>`.
 
-#![allow(unused_variables, dead_code)] // W8-12f stub: the porter removes this line when the last `todo!()` is gone.
-
 use std::cell::{Cell, RefCell};
 use std::collections::{BTreeMap, HashMap, HashSet};
 use std::fmt;
@@ -44,7 +42,10 @@ pub const PIXEL_BUFFER_OBJECT_NAME: &str = "PhotoReview.Imaging.Pixels.PixelBuff
 /// `6 * 2560 * 1440 * 4`.
 #[must_use]
 pub fn default_budget_bytes(pixel_width: i32, pixel_height: i32) -> i64 {
-    todo!("W8-12f")
+    let surface_bytes = i64::from(pixel_width)
+        .saturating_mul(i64::from(pixel_height))
+        .saturating_mul(4);
+    DEFAULT_BUDGET_SCREENS.saturating_mul(MINIMUM_SCREEN_BYTES.max(surface_bytes))
 }
 
 /// What the cache needs from an image (the Rust form of the members of C# `TiledGpuImage` it touches). Implemented for
@@ -138,7 +139,21 @@ pub enum CacheError {
 
 impl fmt::Display for CacheError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        todo!("W8-12f")
+        match self {
+            CacheError::Disposed { object } => {
+                write!(f, "Cannot access a disposed object.\nObject name: '{object}'.")
+            }
+            CacheError::NegativeBudget { value } => {
+                write!(f, "budgetBytes ('{value}') must be a non-negative value.")
+            }
+            CacheError::StripeBytesTooSmall { value } => {
+                write!(
+                    f,
+                    "stripeBytes ('{value}') must be greater than or equal to '{MIN_STRIPE_BYTES}'."
+                )
+            }
+            CacheError::Backend(error) => write!(f, "GPU image backend failed: {error:?}"),
+        }
     }
 }
 
@@ -193,7 +208,15 @@ pub struct BudgetedImageCache<B: GpuImageBackend> {
 
 impl<B: GpuImageBackend> fmt::Debug for BudgetedImageCache<B> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        todo!("W8-12f")
+        let mut d = f.debug_struct("BudgetedImageCache");
+        d.field("stripe_bytes", &self.stripe_bytes);
+        if let Ok(state) = self.state.try_borrow() {
+            d.field("count", &state.entries.len())
+                .field("budget_bytes", &state.budget_bytes)
+                .field("total_gpu_bytes", &state.total_gpu_bytes)
+                .field("disposed", &state.disposed);
+        }
+        d.finish_non_exhaustive()
     }
 }
 
@@ -207,91 +230,206 @@ impl<B: GpuImageBackend> BudgetedImageCache<B> {
         scheduler: Rc<dyn StripeScheduler>,
         budget_bytes: i64,
         stripe_bytes: i32,
-    ) -> Result<Rc<Self>, CacheError> {
-        todo!("W8-12f")
+    ) -> Result<Rc<Self>, CacheError>
+    where
+        B: 'static,
+    {
+        if budget_bytes < 0 {
+            return Err(CacheError::NegativeBudget { value: budget_bytes });
+        }
+        if stripe_bytes < MIN_STRIPE_BYTES {
+            return Err(CacheError::StripeBytesTooSmall { value: stripe_bytes });
+        }
+        let cache = Rc::new(Self {
+            backend,
+            scheduler,
+            stripe_bytes,
+            state: RefCell::new(State {
+                entries: HashMap::new(),
+                order: BTreeMap::new(),
+                retained: HashSet::new(),
+                budget_bytes,
+                total_gpu_bytes: 0,
+                protected_id: None,
+                next_stamp: 0,
+                next_serial: 0,
+                disposed: false,
+            }),
+            device_subscription: Cell::new(None),
+            upload_completed: RefCell::new(Vec::new()),
+            next_handler_id: Cell::new(0),
+        });
+        let weak = Rc::downgrade(&cache);
+        let id = cache.backend.subscribe_device_recreated(Box::new(move || {
+            if let Some(cache) = weak.upgrade() {
+                cache.on_device_recreated();
+            }
+        }));
+        cache.device_subscription.set(Some(id));
+        Ok(cache)
     }
 
     /// C# `BudgetBytes` getter.
     #[must_use]
     pub fn budget_bytes(&self) -> i64 {
-        todo!("W8-12f")
+        self.state.borrow().budget_bytes
     }
 
     /// C# `BudgetBytes` setter: negative -> `Err(NegativeBudget { value })` with the budget UNCHANGED; otherwise assigns and evicts at
     /// once (`evict_over_budget(None)`). No disposed check (C# has none).
     pub fn set_budget_bytes(&self, value: i64) -> Result<(), CacheError> {
-        todo!("W8-12f")
+        if value < 0 {
+            return Err(CacheError::NegativeBudget { value });
+        }
+        let mut state = self.state.borrow_mut();
+        state.budget_bytes = value;
+        self.evict_over_budget(&mut state, None);
+        Ok(())
     }
 
     /// C# `TotalGpuBytes`: sum of `gpu_bytes` of all cached images, partially uploaded ones included.
     #[must_use]
     pub fn total_gpu_bytes(&self) -> i64 {
-        todo!("W8-12f")
+        self.state.borrow().total_gpu_bytes
     }
 
     /// C# `Count`.
     #[must_use]
     pub fn count(&self) -> usize {
-        todo!("W8-12f")
+        self.state.borrow().entries.len()
     }
 
     /// C# `PendingPrefetchCount`: entries whose image is not complete.
     #[must_use]
     pub fn pending_prefetch_count(&self) -> usize {
-        todo!("W8-12f")
+        self.state
+            .borrow()
+            .entries
+            .values()
+            .filter(|entry| !entry.image.is_complete())
+            .count()
     }
 
     /// C# `Contains(pixelBufferId)`.
     #[must_use]
     pub fn contains(&self, pixel_buffer_id: i64) -> bool {
-        todo!("W8-12f")
+        self.state.borrow().entries.contains_key(&pixel_buffer_id)
     }
 
     /// C# `IsFullyUploaded`: cached AND complete AND not released.
     #[must_use]
     pub fn is_fully_uploaded(&self, pixel_buffer_id: i64) -> bool {
-        todo!("W8-12f")
+        self.state
+            .borrow()
+            .entries
+            .get(&pixel_buffer_id)
+            .is_some_and(|entry| entry.image.is_complete() && !entry.image.is_released())
     }
 
     /// C# `GetOrUpload(pixels)`. Errors in C# order: cache disposed, then `pixels.is_disposed()`. A cached image is completed at once
     /// (`upload_rows(.., pixel_height)` with the buffer given HERE, not the pending source), touched (most recent) and becomes the
     /// protected "current" image; a new buffer is uploaded with data, `uploaded_rows = pixel_height`, becomes current, then added.
     pub fn get_or_upload(&self, pixels: &PixelBuffer) -> Result<Rc<B::Image>, CacheError> {
-        todo!("W8-12f")
+        let mut state = self.state.borrow_mut();
+        if state.disposed {
+            return Err(CacheError::Disposed {
+                object: CACHE_OBJECT_NAME,
+            });
+        }
+        if pixels.is_disposed() {
+            return Err(CacheError::Disposed {
+                object: PIXEL_BUFFER_OBJECT_NAME,
+            });
+        }
+        let id = pixels.id();
+        if let Some(entry) = state.entries.get(&id) {
+            let image = Rc::clone(&entry.image);
+            if !image.is_complete() {
+                self.upload_rows(&mut state, id, pixels, image.pixel_height())?;
+            }
+            Self::touch(&mut state, id);
+            state.protected_id = Some(id);
+            return Ok(image);
+        }
+        let image = self.backend.upload(pixels, true)?;
+        image.set_uploaded_rows(image.pixel_height());
+        state.protected_id = Some(id);
+        self.add(&mut state, Rc::clone(&image));
+        Ok(image)
     }
 
     /// C# `Prefetch(pixels)`. Cache disposed -> `Err`; a disposed buffer or an already cached id is not an error (the latter only
     /// touches). Otherwise uploads empty textures, adds the entry (protecting ONLY this id during that eviction), stores the `Arc`
     /// as pending source and schedules the first stripe. Does NOT change the protected "current" image.
     pub fn prefetch(&self, pixels: &Arc<PixelBuffer>) -> Result<(), CacheError> {
-        todo!("W8-12f")
+        let token = {
+            let mut state = self.state.borrow_mut();
+            if state.disposed {
+                return Err(CacheError::Disposed {
+                    object: CACHE_OBJECT_NAME,
+                });
+            }
+            if pixels.is_disposed() {
+                return Ok(());
+            }
+            let id = pixels.id();
+            if state.entries.contains_key(&id) {
+                Self::touch(&mut state, id);
+                return Ok(());
+            }
+            let image = self.backend.upload(pixels, false)?;
+            let token = self.add(&mut state, image);
+            if let Some(entry) = state.entries.get_mut(&token.pixel_buffer_id) {
+                entry.pending_source = Some(Arc::clone(pixels));
+            }
+            token
+        };
+        self.scheduler.schedule_stripe(token);
+        Ok(())
     }
 
     /// C# `Retain(ids)`: replaces the retained set, then evicts. Cache disposed -> `Err`.
     pub fn retain(&self, pixel_buffer_ids: &[i64]) -> Result<(), CacheError> {
-        todo!("W8-12f")
+        let mut state = self.state.borrow_mut();
+        if state.disposed {
+            return Err(CacheError::Disposed {
+                object: CACHE_OBJECT_NAME,
+            });
+        }
+        state.retained = pixel_buffer_ids.iter().copied().collect();
+        self.evict_over_budget(&mut state, None);
+        Ok(())
     }
 
     /// C# `Clear()`: releases every image (oldest first), empties the cache, resets the protected id. The retained set is KEPT.
     /// Never fails.
     pub fn clear(&self) {
-        todo!("W8-12f")
+        let mut state = self.state.borrow_mut();
+        self.clear_locked(&mut state);
     }
 
     /// C# `Dispose()`: idempotent; unsubscribes from the backend and clears. Also run by `Drop`.
     pub fn dispose(&self) {
-        todo!("W8-12f")
+        let mut state = self.state.borrow_mut();
+        if state.disposed {
+            return;
+        }
+        state.disposed = true;
+        if let Some(id) = self.device_subscription.take() {
+            self.backend.unsubscribe_device_recreated(id);
+        }
+        self.clear_locked(&mut state);
     }
 
     /// C# `_disposed`.
     #[must_use]
     pub fn is_disposed(&self) -> bool {
-        todo!("W8-12f")
+        self.state.borrow().disposed
     }
 
     /// C# `OnDeviceRecreated` = `clear()`; public so the host can call it directly and the tests can raise it without a backend event.
     pub fn on_device_recreated(&self) {
-        todo!("W8-12f")
+        self.clear();
     }
 
     /// C# `RunStripe(entry)` for a job queued by the scheduler. Inert (`Ok`) when the entry is gone, has another serial, is released,
@@ -300,26 +438,180 @@ impl<B: GpuImageBackend> BudgetedImageCache<B> {
     /// `max(1, stripe_bytes / stride)` more rows, reschedules while incomplete and raises `UploadCompleted(id)` after the last stripe.
     /// A backend failure is returned, the entry stays as it was and nothing is rescheduled (C# lets the exception escape the job).
     pub fn run_stripe(&self, token: StripeToken) -> Result<(), CacheError> {
-        todo!("W8-12f")
+        let id = token.pixel_buffer_id;
+        let finished = {
+            let mut state = self.state.borrow_mut();
+            if state.disposed {
+                return Ok(());
+            }
+            let Some(entry) = state.entries.get(&id) else {
+                return Ok(());
+            };
+            if entry.serial != token.serial || entry.image.is_released() {
+                return Ok(());
+            }
+            let Some(pending) = entry.pending_source.as_ref() else {
+                return Ok(());
+            };
+            if entry.image.is_complete() {
+                return Ok(());
+            }
+            // Snapshot check BEFORE cloning the `Arc` (the clone below would raise the count).
+            if pending.is_disposed() || Arc::strong_count(pending) == 1 {
+                self.remove(&mut state, id);
+                return Ok(());
+            }
+            let source = Arc::clone(pending);
+            let image = Rc::clone(&entry.image);
+            let rows_per_stripe = self.stripe_bytes.checked_div(source.stride()).unwrap_or(1).max(1);
+            let end_row = image.uploaded_rows().saturating_add(rows_per_stripe);
+            self.upload_rows(&mut state, id, &source, end_row)?;
+            image.is_complete()
+        };
+        if finished {
+            let handlers: Vec<UploadCompletedHandler> = self
+                .upload_completed
+                .borrow()
+                .iter()
+                .map(|(_, handler)| Rc::clone(handler))
+                .collect();
+            for handler in handlers {
+                handler(id);
+            }
+        } else {
+            self.scheduler.schedule_stripe(token);
+        }
+        Ok(())
     }
 
     /// C# `event UploadCompleted +=` (WP-21): raised on the UI thread, after the state borrow is released, once per finished prefetch.
     /// Returns an id for [`unsubscribe_upload_completed`](Self::unsubscribe_upload_completed).
     pub fn subscribe_upload_completed(&self, handler: UploadCompletedHandler) -> u64 {
-        todo!("W8-12f")
+        let id = self.next_handler_id.get();
+        self.next_handler_id.set(id.wrapping_add(1));
+        self.upload_completed.borrow_mut().push((id, handler));
+        id
     }
 
     /// C# `event UploadCompleted -=`; an unknown id is a no-op.
     pub fn unsubscribe_upload_completed(&self, id: u64) {
-        todo!("W8-12f")
+        self.upload_completed
+            .borrow_mut()
+            .retain(|(handler_id, _)| *handler_id != id);
     }
 
-    // Private helpers (same names as C#): add, touch, evict_over_budget(also_keep: Option<i64>), remove, release_image,
-    // schedule_stripe, upload_rows. See contracts/W8-12f.md "Semantics notes".
+    /// C# `Add`: registers `image` as the newest entry, counts its bytes and evicts (keeping only this id besides the exceptions).
+    fn add(&self, state: &mut State<B::Image>, image: Rc<B::Image>) -> StripeToken {
+        let id = image.pixel_buffer_id();
+        let serial = state.next_serial;
+        state.next_serial = serial.wrapping_add(1);
+        let stamp = Self::next_stamp(state);
+        state.total_gpu_bytes = state.total_gpu_bytes.saturating_add(image.gpu_bytes());
+        state.order.insert(stamp, id);
+        state.entries.insert(
+            id,
+            Entry {
+                serial,
+                image,
+                stamp,
+                pending_source: None,
+            },
+        );
+        self.evict_over_budget(state, Some(id));
+        StripeToken {
+            pixel_buffer_id: id,
+            serial,
+        }
+    }
+
+    fn next_stamp(state: &mut State<B::Image>) -> u64 {
+        let stamp = state.next_stamp;
+        state.next_stamp = stamp.wrapping_add(1);
+        stamp
+    }
+
+    /// C# `Touch`: the entry becomes the most recently used.
+    fn touch(state: &mut State<B::Image>, id: i64) {
+        let stamp = Self::next_stamp(state);
+        if let Some(entry) = state.entries.get_mut(&id) {
+            state.order.remove(&entry.stamp);
+            entry.stamp = stamp;
+            state.order.insert(stamp, id);
+        }
+    }
+
+    /// C# `EvictOverBudget`: oldest first until the total fits, skipping the protected id, `also_keep` and the retained ids.
+    fn evict_over_budget(&self, state: &mut State<B::Image>, also_keep: Option<i64>) {
+        let ids: Vec<i64> = state.order.values().copied().collect();
+        for id in ids {
+            if state.total_gpu_bytes <= state.budget_bytes {
+                break;
+            }
+            if state.protected_id != Some(id) && also_keep != Some(id) && !state.retained.contains(&id) {
+                self.remove(state, id);
+            }
+        }
+    }
+
+    /// C# `Remove`: drops the entry and releases its image.
+    fn remove(&self, state: &mut State<B::Image>, id: i64) {
+        if let Some(entry) = state.entries.remove(&id) {
+            state.order.remove(&entry.stamp);
+            state.total_gpu_bytes = state.total_gpu_bytes.saturating_sub(entry.image.gpu_bytes());
+            self.release_image(&entry.image);
+        }
+    }
+
+    /// C# `ReleaseImage`: flag first, then the backend.
+    fn release_image(&self, image: &B::Image) {
+        if image.is_released() {
+            return;
+        }
+        image.set_released(true);
+        self.backend.release(image);
+    }
+
+    /// `clear` on an already borrowed state (also used by `dispose`).
+    fn clear_locked(&self, state: &mut State<B::Image>) {
+        let ids: Vec<i64> = state.order.values().copied().collect();
+        for id in ids {
+            if let Some(entry) = state.entries.get(&id) {
+                self.release_image(&entry.image);
+            }
+        }
+        state.entries.clear();
+        state.order.clear();
+        state.total_gpu_bytes = 0;
+        state.protected_id = None;
+    }
+
+    /// C# `UploadRows`: writes the rows `[uploaded_rows, min(end_row, height))` and then advances `uploaded_rows`.
+    fn upload_rows(
+        &self,
+        state: &mut State<B::Image>,
+        id: i64,
+        pixels: &PixelBuffer,
+        end_row: i32,
+    ) -> Result<(), CacheError> {
+        let Some(entry) = state.entries.get_mut(&id) else {
+            return Ok(());
+        };
+        let image = Rc::clone(&entry.image);
+        let start = image.uploaded_rows();
+        let end = end_row.min(image.pixel_height());
+        if end > start {
+            self.backend.upload_rows(&image, pixels, start, end)?;
+            image.set_uploaded_rows(end);
+        }
+        if image.is_complete() {
+            entry.pending_source = None;
+        }
+        Ok(())
+    }
 }
 
 impl<B: GpuImageBackend> Drop for BudgetedImageCache<B> {
     fn drop(&mut self) {
-        // C# `using` = Dispose: the porter calls `self.dispose()` here.
+        self.dispose();
     }
 }
