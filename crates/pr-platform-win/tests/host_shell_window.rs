@@ -802,6 +802,60 @@ fn insert_message_handler_first_sees_messages_before_earlier_handlers() {
     finish(&ui);
 }
 
+// new (amendment A7): the trait method `ShellWindowApi::insert_message_handler_first` puts the handler at the head, through a trait object
+#[test]
+#[ignore = "native: needs desktop"]
+fn trait_insert_message_handler_first_sees_messages_before_earlier_handlers() {
+    let (ui, hwnd) = start_window(default_options());
+    let calls = new_log();
+    let log = Arc::clone(&calls);
+    ui.invoke(move || {
+        let concrete = window();
+        let w: Rc<dyn ShellWindowApi> = concrete;
+        w.add_message_handler(Rc::new(Handler {
+            name: "added",
+            calls: Arc::clone(&log),
+            handles: false,
+            result: 0,
+        }));
+        w.insert_message_handler_first(Rc::new(Handler {
+            name: "first",
+            calls: Arc::clone(&log),
+            handles: true,
+            result: 7,
+        }));
+        w.insert_message_handler_first(Rc::new(Handler {
+            name: "newest",
+            calls: log,
+            handles: false,
+            result: 0,
+        }));
+        send(hwnd, TEST_MESSAGE, 0, 0);
+    });
+    assert_eq!(
+        log_snapshot(&calls),
+        vec!["newest", "first"],
+        "the later insert is in front; a handled message stops the chain before 'added'"
+    );
+    finish(&ui);
+}
+
+// new (amendment A7): `ShellWindowApi::is_destroyed` is false while the window lives and true after `close` / `dispose`
+#[test]
+#[ignore = "native: needs desktop"]
+fn trait_is_destroyed_turns_true_after_close() {
+    let (ui, _hwnd) = start_window(default_options());
+    let (before, after) = ui.invoke(move || {
+        let w: Rc<dyn ShellWindowApi> = window();
+        let before = w.is_destroyed();
+        w.close();
+        (before, w.is_destroyed())
+    });
+    assert!(!before);
+    assert!(after);
+    finish(&ui);
+}
+
 // new (Q3 of W8-13b): the test executable has no icon resource, so the re-application can only be asserted where one exists
 #[test]
 #[ignore = "native: needs desktop"]

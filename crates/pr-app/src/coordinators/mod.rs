@@ -8,6 +8,7 @@ pub mod file_actions;
 pub mod folder_load;
 pub mod presenter;
 pub mod sibling_navigator;
+pub mod sink_callbacks;
 pub mod traits;
 pub mod transition;
 pub mod zoom_detail;

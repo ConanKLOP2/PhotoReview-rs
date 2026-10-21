@@ -50,6 +50,7 @@ use crate::coordinators::sibling_navigator::{
 };
 use crate::coordinators::traits::{IFolderPicker, IPreloadController};
 use crate::coordinators::zoom_detail::{BackgroundRunner, CompletionInbox};
+use crate::overlay::model::OverlayModel;
 use crate::services::contracts::ClipboardService;
 use crate::services::prewarm::{PrewarmPreviews, PrewarmTask};
 use crate::viewmodels::compare::{CompareChanges, CompareViewModel};
@@ -967,6 +968,12 @@ impl MainViewModel {
         self.refresh_overlay()
     }
 
+    /// The shared settings cell (a clone shares the override and the store with this view model, as the closures the composition
+    /// root builds for the controllers do). C# reads `Settings` through the view model; the shell windows need the same live source.
+    pub fn settings_source(&self) -> SettingsSource {
+        self.settings.clone()
+    }
+
     /// C# `InfoOverlay`.
     pub fn info_overlay(&self) -> &InfoOverlayViewModel<MainFolderInfoLabels> {
         &self.info_overlay
@@ -1367,6 +1374,47 @@ impl MainViewModel {
         ViewInputs {
             has_image: self.has_images(),
             zoom_percent: self.viewer.borrow().display_zoom_percent(),
+        }
+    }
+
+    /// C# `OverlayModel.From(MainViewModel)` (`Shell.Win32/Overlay/OverlayModel.cs`): the immutable snapshot of everything the native
+    /// overlay shows. Strings are never null in Rust (the C# `?? string.Empty` is the identity). The capture-pair text and tool tip are
+    /// empty when the current entry has no pair. `exif_visible` is `is_exif_line_visible()` computed from the one `exif_text()` read.
+    pub fn overlay_model(&self) -> OverlayModel {
+        let settings = self.settings.current();
+        let inputs = self.view_inputs();
+        let has_pair = self.current_has_capture_pair();
+        let exif_text = self.exif_text();
+        OverlayModel {
+            has_images: self.has_images(),
+            status_needs_attention: self.status_needs_attention(),
+            compare_visible: self.presenter.compare().is_visible(),
+            status_panel_visible: self.is_status_panel_visible(),
+            file_info_visible: InfoOverlayViewModel::<MainFolderInfoLabels>::is_file_info_visible(&settings),
+            status_text: self.status_text(),
+            font_size: InfoOverlayViewModel::<MainFolderInfoLabels>::font_size(&settings),
+            exif_font_size: InfoOverlayViewModel::<MainFolderInfoLabels>::exif_font_size(&settings),
+            exif_visible: settings.show_info_overlay && settings.show_exif_info && !exif_text.is_empty(),
+            exif_text,
+            has_skipped_entries: self.has_skipped_entries(),
+            skipped_warning_text: self.skipped_warning_text(),
+            folder_info_visible: self.info_overlay.is_folder_info_visible(&settings),
+            folder_info_text: self.info_overlay.folder_info_text().to_owned(),
+            zoom_indicator_visible: InfoOverlayViewModel::<MainFolderInfoLabels>::is_zoom_indicator_visible(
+                &settings, inputs,
+            ),
+            zoom_indicator_text: InfoOverlayViewModel::<MainFolderInfoLabels>::zoom_indicator_text(inputs),
+            capture_pair_visible: has_pair,
+            capture_pair_text: if has_pair {
+                self.capture_pair_badge()
+            } else {
+                String::new()
+            },
+            capture_pair_tool_tip: if has_pair {
+                self.capture_pair_badge_tool_tip()
+            } else {
+                String::new()
+            },
         }
     }
 

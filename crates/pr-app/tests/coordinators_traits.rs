@@ -209,6 +209,16 @@ fn preload_controller_defaults_are_idle_no_op_navigation_and_zero_decode_delay()
     assert_eq!(Duration::ZERO, controller.get_viewer_decode_delay());
 }
 
+#[test]
+fn preload_controller_dispose_default_is_a_no_op() {
+    // New test (amendment A5: the default `dispose` of a fake that owns nothing)
+    let controller = BarePreload;
+
+    controller.dispose();
+
+    assert!(controller.is_idle());
+}
+
 // ---- IMoveOverride and the into_move_override helper -----------------------------------------------------------------
 
 /// Records both paths of every `move_file` call and returns the scripted result (`Ok` unless a failure is set).
