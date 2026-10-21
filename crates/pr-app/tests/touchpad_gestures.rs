@@ -358,3 +358,21 @@ fn wheel_input_hint_helpers() {
     assert_eq!(w.with_hint(WheelDeviceHint::Touchpad).delta, 1);
     assert_eq!(WheelDeviceHint::default(), WheelDeviceHint::Unknown);
 }
+
+// New test: kills with_hint.
+#[test]
+fn wheel_input_with_hint_is_stored_and_classified() {
+    let input = WheelInput::new(120, false, false, 1000).with_hint(WheelDeviceHint::Touchpad);
+    assert_eq!(input.hint, WheelDeviceHint::Touchpad);
+    assert_eq!(
+        (input.delta, input.horizontal, input.ctrl, input.timestamp),
+        (120, false, false, 1000)
+    );
+    let mut classifier = TouchpadWheelClassifier::new();
+    assert!(classifier.is_touchpad(input.delta, input.timestamp, input.hint));
+
+    let unknown = input.with_hint(WheelDeviceHint::Unknown);
+    assert_eq!(unknown.hint, WheelDeviceHint::Unknown);
+    let mut classifier = TouchpadWheelClassifier::new();
+    assert!(!classifier.is_touchpad(unknown.delta, unknown.timestamp, unknown.hint));
+}
