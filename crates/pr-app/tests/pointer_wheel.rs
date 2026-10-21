@@ -4,9 +4,14 @@
 mod pointer_fixture;
 
 use pointer_fixture::{Fixture, point};
+use pr_app::input::key_id::KeyId;
+use pr_app::input::pointer::PointerContext;
 use pr_app::input::pointer::PointerStep;
+use pr_app::input::primitives::PointerButton;
 use pr_app::input::touchpad_gestures::{WheelDeviceHint, WheelInput};
+use pr_core::abstractions::Log;
 use pr_core::model::enums::{KeyboardZoomAnchor, MouseWheelAction};
+use std::sync::atomic::{AtomicUsize, Ordering};
 
 fn wheel(f: &mut Fixture, delta: i32, ctrl: bool) {
     f.run(|c, ctx| c.on_wheel_vertical(ctx, delta, ctrl, point(400.0, 300.0)));
@@ -329,4 +334,194 @@ fn on_current_index_changed_same_index_keeps_the_wheel_accumulator() {
     f.controller.on_current_index_changed(&mut f.surface, 0);
     wheel(&mut f, -60, false);
     assert_eq!(f.commands.next, 1);
+}
+
+// New test: kills != with == in on_current_index_changed.
+#[test]
+fn changed_index_clears_partial_wheel_notches() {
+    let mut f = Fixture::new();
+    f.settings.mouse_wheel_action = MouseWheelAction::Navigate;
+    f.settings.touchpad_swipe_enabled = false;
+    f.controller.on_current_index_changed(&mut f.surface, 0);
+    wheel(&mut f, -60, false);
+    f.controller.on_current_index_changed(&mut f.surface, 1);
+    wheel(&mut f, -60, false);
+    assert_eq!(f.commands.next, 0);
+    wheel(&mut f, -60, false);
+    assert_eq!(f.commands.next, 1);
+}
+
+// New test: kills on_wheel_vertical -> Default::default(), on_wheel -> Default::default(), and outcome == with !=.
+#[test]
+fn both_wheel_entry_points_return_zoom_continuations() {
+    let mut f = Fixture::new();
+    let vertical = f.call(|c, ctx| c.on_wheel_vertical(ctx, 120, false, point(123.0, 234.0)));
+    assert!(matches!(vertical, PointerStep::AwaitRender(_)));
+    f.drive(vertical);
+    let general = f.call(|c, ctx| c.on_wheel(ctx, WheelInput::new(120, false, false, 5000), point(234.0, 123.0)));
+    assert!(matches!(general, PointerStep::AwaitRender(_)));
+    f.drive(general);
+    assert_eq!(f.yields, 2);
+}
+
+struct CountingLog {
+    enabled: bool,
+    infos: AtomicUsize,
+}
+impl Log for CountingLog {
+    fn enabled(&self) -> bool {
+        self.enabled
+    }
+    fn info(&self, _: &str) {
+        self.infos.fetch_add(1, Ordering::SeqCst);
+    }
+    fn warn(&self, _: &str) {}
+    fn error(&self, _: &str, _: Option<&(dyn std::error::Error + 'static)>) {}
+}
+fn swipe_with_log(f: &mut Fixture, log: &CountingLog, delta: i32) {
+    let mut ctx = PointerContext {
+        surface: &mut f.surface,
+        viewer: &mut f.viewer,
+        settings: &f.settings,
+        versions: &mut f.versions,
+        commands: &mut f.commands,
+        log,
+    };
+    let step = f.controller.on_wheel(
+        &mut ctx,
+        WheelInput::new(delta, false, false, 10_008).with_hint(WheelDeviceHint::Touchpad),
+        point(400.0, 300.0),
+    );
+    assert!(matches!(step, PointerStep::Done));
+}
+
+// New test: kills && with || and != with == in the swipe logging guard.
+#[test]
+fn swipe_log_requires_both_a_step_and_enabled_logging() {
+    let mut f = Fixture::new();
+    let on = CountingLog {
+        enabled: true,
+        infos: AtomicUsize::new(0),
+    };
+    swipe_with_log(&mut f, &on, -1);
+    assert_eq!(on.infos.load(Ordering::SeqCst), 0);
+    swipe_with_log(&mut f, &on, -120);
+    assert_eq!(on.infos.load(Ordering::SeqCst), 1);
+    let off = CountingLog {
+        enabled: false,
+        infos: AtomicUsize::new(0),
+    };
+    swipe_with_log(&mut f, &off, 120);
+    assert_eq!(off.infos.load(Ordering::SeqCst), 0);
+}
+
+// New test: kills both has_images() match guards replaced with true or false in navigate.
+#[test]
+fn navigation_checks_images_for_both_directions() {
+    let mut f = Fixture::new();
+    f.settings.mouse_wheel_action = MouseWheelAction::Navigate;
+    f.commands.has_images = false;
+    wheel(&mut f, -120, false);
+    wheel(&mut f, 120, false);
+    assert_eq!((f.commands.next, f.commands.previous), (0, 0));
+    f.commands.has_images = true;
+    wheel(&mut f, -120, false);
+    wheel(&mut f, 120, false);
+    assert_eq!((f.commands.next, f.commands.previous), (1, 1));
+}
+
+// New test: kills pan_by_touchpad with ().
+#[test]
+fn touchpad_pan_records_exact_offset_for_each_axis() {
+    let mut f = Fixture::new();
+    f.zoomed_with_source(4000, 3000);
+    touchpad(&mut f, -30, false, false, 10_008);
+    touchpad(&mut f, 45, true, false, 10_016);
+    assert_eq!(f.surface.scrolls, vec![(500.0, 230.0), (545.0, 230.0)]);
+}
+
+fn press_can_pan(extent_width: f64, extent_height: f64) -> bool {
+    let mut f = Fixture::new();
+    f.viewer.set_zoom(1.0);
+    f.settings.click_to_zoom_enabled = false;
+    f.surface.extent_width = extent_width;
+    f.surface.extent_height = extent_height;
+    f.controller.on_image_press(
+        &mut PointerContext {
+            surface: &mut f.surface,
+            viewer: &mut f.viewer,
+            settings: &f.settings,
+            versions: &mut f.versions,
+            commands: &mut f.commands,
+            log: &pr_core::abstractions::NullLog,
+        },
+        PointerButton::Left,
+        1,
+        point(400.0, 300.0),
+        0,
+    )
+}
+
+// New test: kills || with &&, > with ==/< />=, and + with -/* in both can_pan axes.
+#[test]
+fn can_pan_requires_strict_half_dip_overflow_on_either_axis() {
+    for (w, h, expected) in [
+        (800.0, 600.0, false),
+        (800.5, 600.0, false),
+        (800.0, 600.5, false),
+        (801.0, 600.0, true),
+        (800.0, 601.0, true),
+    ] {
+        assert_eq!(press_can_pan(w, h), expected, "extent=({w}, {h})");
+    }
+}
+
+// New test: kills cancel_pan with ().
+#[test]
+fn cancel_pan_releases_capture_and_clears_cursor() {
+    let mut f = Fixture::new();
+    f.viewer.set_zoom(1.0);
+    f.surface.extent_width = 1000.0;
+    assert!(f.controller.on_image_press(
+        &mut PointerContext {
+            surface: &mut f.surface,
+            viewer: &mut f.viewer,
+            settings: &f.settings,
+            versions: &mut f.versions,
+            commands: &mut f.commands,
+            log: &pr_core::abstractions::NullLog,
+        },
+        PointerButton::Left,
+        1,
+        point(400.0, 300.0),
+        0
+    ));
+    assert!(f.surface.pan_cursor);
+    f.controller.cancel_pan(&mut f.surface);
+    assert!(!f.surface.pan_cursor);
+    assert_eq!(f.surface.releases, 1);
+}
+
+// New test: kills stop_kinetic -> true and stop_kinetic -> false.
+#[test]
+fn stop_kinetic_reports_whether_a_glide_was_active() {
+    let mut f = Fixture::new();
+    assert!(!f.controller.stop_kinetic(&mut f.surface));
+    f.zoomed_with_source(4000, 3000);
+    f.settings.kinetic_pan_enabled = true;
+    assert!(f.controller.try_pan_by_arrow(
+        &mut PointerContext {
+            surface: &mut f.surface,
+            viewer: &mut f.viewer,
+            settings: &f.settings,
+            versions: &mut f.versions,
+            commands: &mut f.commands,
+            log: &pr_core::abstractions::NullLog,
+        },
+        KeyId::RIGHT,
+        false
+    ));
+    assert!(f.controller.is_kinetic_hooked());
+    assert!(f.controller.stop_kinetic(&mut f.surface));
+    assert!(!f.controller.is_kinetic_hooked());
 }
