@@ -250,15 +250,15 @@ impl DeviceResources {
         self.state.borrow().d3d.clone().ok_or_else(object_disposed_by_name)
     }
 
-    /// C# `EndDrawFault = fault` (`None` clears it). Test seam; `pub(crate)`.
+    /// C# `EndDrawFault = fault` (`None` clears it). Test seam; `pub` so the window-level tests (W8-13i, integration tests) can inject device loss and occlusion.
     #[cfg_attr(not(test), allow(dead_code))] // first production user is the surface (W8-12d); tests use it today
-    pub(crate) fn set_end_draw_fault(&self, fault: Option<FaultHook>) {
+    pub fn set_end_draw_fault(&self, fault: Option<FaultHook>) {
         *self.end_draw_fault.borrow_mut() = fault;
     }
 
-    /// C# `PresentFault = fault`. Test seam; `pub(crate)`.
+    /// C# `PresentFault = fault`. Test seam; `pub` so the window-level tests (W8-13i, integration tests) can inject device loss and occlusion.
     #[cfg_attr(not(test), allow(dead_code))] // first production user is the surface (W8-12d); tests use it today
-    pub(crate) fn set_present_fault(&self, fault: Option<FaultHook>) {
+    pub fn set_present_fault(&self, fault: Option<FaultHook>) {
         *self.present_fault.borrow_mut() = fault;
     }
 }
