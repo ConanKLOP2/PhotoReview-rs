@@ -9,9 +9,6 @@
 //!
 //! UI thread only. The window's handler list owns this object, so it holds the window by `Weak` (no reference cycle, D-W8B4V-7).
 
-// Contract stub: the bodies are `todo!()` until the W8-16f port; removed with the last `todo!()`.
-#![allow(unused_variables, dead_code)]
-
 use std::cell::Cell;
 use std::rc::{Rc, Weak};
 
@@ -21,7 +18,9 @@ use pr_app::overlay::palette;
 use pr_app::viewing::scrollbar_geometry::{ScrollAxis, ScrollBarMetrics};
 use pr_app::viewport::render_geometry::ColorF;
 
-use crate::host::contracts::ShellWindowApi;
+use crate::host::contracts::{ShellWindowApi, WindowMessageHandler};
+use crate::host::frame_clock::base::qpc_frequency;
+use crate::shell_viewing::scrollbar_native;
 use crate::shell_viewing::viewport_controller::ViewportController;
 
 /// Colours of the bar and the thumb per state (C# `ScrollBarColors`, from `DarkScrollBars.xaml`).
@@ -54,7 +53,12 @@ pub struct ScrollBarOptions {
 
 impl Default for ScrollBarOptions {
     fn default() -> Self {
-        todo!("W8-16f")
+        Self {
+            metrics: ScrollBarMetrics::default(),
+            repeat_timing: Rc::new(scrollbar_native::repeat_timing),
+            track_mouse_leave: Rc::new(scrollbar_native::track_mouse_leave),
+            ticks_per_second: qpc_frequency(),
+        }
     }
 }
 
@@ -69,6 +73,8 @@ impl std::fmt::Debug for ScrollBarOptions {
 
 /// C# `ShellScrollBars`. Share it as `Rc<ShellScrollBars>`; it implements `WindowMessageHandler` (in `input.rs`). Every field is interior-mutable
 /// (a handler can be re-entered by a nested `SendMessage`, D-W8B3H-6) and `pub(super)` so `layout.rs`, `input.rs` and `paint.rs` can use them.
+// Most fields are read only by `input.rs` and `paint.rs` (W8-16g); that unit removes this allow.
+#[allow(dead_code)]
 pub struct ShellScrollBars {
     pub(super) window: Weak<dyn ShellWindowApi>,
     pub(super) viewport: Rc<ViewportController>,
@@ -115,21 +121,45 @@ impl ShellScrollBars {
         on_press: Option<Rc<dyn Fn()>>,
         options: Option<ScrollBarOptions>,
     ) -> Rc<ShellScrollBars> {
-        todo!("W8-16f")
+        // T6: the closure only stores `this`; it does not call the window or the viewport (no upgrade yet).
+        let bars = Rc::new_cyclic(|this| ShellScrollBars {
+            window: Rc::downgrade(window),
+            viewport,
+            is_compare_visible,
+            on_press,
+            options: options.unwrap_or_default(),
+            this: this.clone(),
+            pointer_inside: Cell::new(false),
+            tracking: Cell::new(false),
+            pointer: Cell::new(PointD::default()),
+            dragging: Cell::new(false),
+            drag_axis: Cell::new(ScrollAxis::Vertical),
+            drag_grab: Cell::new(0.0),
+            paging: Cell::new(false),
+            page_axis: Cell::new(ScrollAxis::Vertical),
+            page_direction: Cell::new(0),
+            page_region_active: Cell::new(false),
+            next_repeat_ticks: Cell::new(0),
+            frame_hook: Cell::new(None),
+            drawn_frames: Cell::new(0),
+            disposed: Cell::new(false),
+        });
+        window.add_message_handler(Rc::clone(&bars) as Rc<dyn WindowMessageHandler>);
+        bars
     }
 
     /// C# `IsDragging`: the thumb is being dragged.
     pub fn is_dragging(&self) -> bool {
-        todo!("W8-16f")
+        self.dragging.get()
     }
 
     /// C# `IsPaging`: the mouse is held on a track (page repeat).
     pub fn is_paging(&self) -> bool {
-        todo!("W8-16f")
+        self.paging.get()
     }
 
     /// C# `DrawnFrames`: frames in which at least one bar was drawn (diagnostics, tests).
     pub fn drawn_frames(&self) -> i64 {
-        todo!("W8-16f")
+        self.drawn_frames.get()
     }
 }
