@@ -8,10 +8,6 @@ use std::error::Error;
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::{Arc, Mutex, PoisonError};
 
-use pr_shell::composition::decoders::{
-    CompositionLog, DecoderDeps, DecoderProbes, LibRawPreviewFallback, ProbeFn, ProbeResult,
-    create_decoder_providers_with,
-};
 use pr_core::abstractions::PhysicalSourceReader;
 use pr_core::model::enums::DecoderBackend;
 use pr_imaging::decoder_traits::{DecodeError, ImageDecoder};
@@ -20,6 +16,10 @@ use pr_imaging::memory_headroom::MemoryInfo;
 use pr_imaging::pixel_memory::PixelBufferImageCodec;
 use pr_imaging_raw::{RawFormat, RawPreviewFallback};
 use pr_libraw::decoder::{LibRawApi, LibRawSession};
+use pr_shell::composition::decoders::{
+    CompositionLog, DecoderDeps, DecoderProbes, LibRawPreviewFallback, ProbeFn, ProbeResult,
+    create_decoder_providers_with,
+};
 use pr_turbojpeg::decoder::{EnglishTurboJpegTexts, FineScaleError};
 
 /// A `LibRawApi` that must never be reached.
