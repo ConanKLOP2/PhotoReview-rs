@@ -3,8 +3,8 @@
 //! The pure half of the owner-draw menu: colours by item state and sizes by DPI. The menu paints itself with the dark palette of the app
 //! (`pr_app::overlay::palette`), so it does not depend on the undocumented uxtheme ordinals 133/135/136 (on Windows 11 build 26300 they give light text
 //! on a white background). The GDI painting is `owner_draw` (W8-14g).
-#![allow(unused_variables, dead_code)] // stub: the porter removes this line with the last `todo!()`
 
+use pr_app::overlay::palette;
 /// C# `OdsSelected` (`DRAWITEMSTRUCT.itemState`).
 pub const ODS_SELECTED: u32 = 0x0001;
 /// C# `OdsGrayed`.
@@ -16,56 +16,76 @@ pub const ODS_CHECKED: u32 = 0x0008;
 
 /// C# `Scale(px96, dpi)`: `max(1, round_ties_even(px96 * dpi / 96))`; `dpi == 0` counts as 96.
 pub fn scale(px96: i32, dpi: u32) -> i32 {
-    todo!()
+    let scale = if dpi == 0 { 1.0 } else { f64::from(dpi) / 96.0 };
+    ((f64::from(px96) * scale).round_ties_even() as i32).max(1)
 }
 
 /// C# `ItemHeight(textHeight, dpi)`: `max(text_height + scale(10), scale(28))` (a touch-friendly floor).
 pub fn item_height(text_height: i32, dpi: u32) -> i32 {
-    todo!()
+    (text_height + scale(10, dpi)).max(scale(28, dpi))
 }
 
 /// C# `SeparatorHeight(dpi)`: `scale(9)`.
 pub fn separator_height(dpi: u32) -> i32 {
-    todo!()
+    scale(9, dpi)
 }
 
 /// C# `ItemWidth(textWidth, shortcutWidth, dpi)`: `scale(32) + text + (shortcut > 0 ? scale(32) + shortcut : 0) + scale(32)`.
 pub fn item_width(text_width: i32, shortcut_width: i32, dpi: u32) -> i32 {
-    todo!()
+    let shortcut = if shortcut_width > 0 {
+        scale(32, dpi) + shortcut_width
+    } else {
+        0
+    };
+    scale(32, dpi) + text_width + shortcut + scale(32, dpi)
 }
 
 /// C# `LeftGutter(dpi)`: `scale(32)` (room for the check mark).
 pub fn left_gutter(dpi: u32) -> i32 {
-    todo!()
+    scale(32, dpi)
 }
 
 /// C# `RightPad(dpi)`: `scale(16)`.
 pub fn right_pad(dpi: u32) -> i32 {
-    todo!()
+    scale(16, dpi)
 }
 
 /// C# `ColorRef(paletteKey)`: the `COLORREF` (`0x00BBGGRR`) of a `Dark.*` palette key; each channel is `round_ties_even(f32 channel * 255f)` clamped to 0..=255.
 /// An unknown key gives `0` (the keys are constants; the C# `Get` threw).
 pub fn color_ref(palette_key: &str) -> u32 {
-    todo!()
+    fn channel(v: f32) -> u32 {
+        (f64::from(v * 255.0_f32).round_ties_even() as i32).clamp(0, 255) as u32
+    }
+    match palette::get(palette_key) {
+        Some(c) => channel(c.r) | (channel(c.g) << 8) | (channel(c.b) << 16),
+        None => 0,
+    }
 }
 
 /// C# `Background` (`Dark.Panel`): also the menu's `hbrBack`, so borders and padding match.
 pub fn background() -> u32 {
-    todo!()
+    color_ref("Dark.Panel")
 }
 
 /// C# `Separator` (`Dark.Border`).
 pub fn separator() -> u32 {
-    todo!()
+    color_ref("Dark.Border")
 }
 
 /// C# `ItemBackground(state)`: `Dark.ButtonPressed` while `ODS_SELECTED`, else [`background`].
 pub fn item_background(state: u32) -> u32 {
-    todo!()
+    if state & ODS_SELECTED != 0 {
+        color_ref("Dark.ButtonPressed")
+    } else {
+        background()
+    }
 }
 
 /// C# `ItemText(state)`: `Dark.TextFaint` while `ODS_GRAYED` or `ODS_DISABLED`, else `Dark.Text`.
 pub fn item_text(state: u32) -> u32 {
-    todo!()
+    if state & (ODS_GRAYED | ODS_DISABLED) != 0 {
+        color_ref("Dark.TextFaint")
+    } else {
+        color_ref("Dark.Text")
+    }
 }

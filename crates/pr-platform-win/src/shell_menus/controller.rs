@@ -7,7 +7,6 @@
 //!
 //! Differences from C# (contract section "Rust shape"): no `Task`; commands run synchronously after the menu closed and a failure is `Err` (reported
 //! here); `OperationCanceledException` has no Rust twin; `ShowAsync` is [`ContextMenuController::show`].
-#![allow(unused_variables, dead_code)] // stub: the porter removes this line with the last `todo!()`
 
 use std::cell::{Cell, RefCell};
 use std::error::Error;
@@ -17,8 +16,9 @@ use std::sync::Arc;
 
 use pr_app::input::primitives::PointD;
 use pr_app::input::review_command::ReviewCommand;
-use pr_app::menus::builder::MenuBuildError;
-use pr_app::menus::model::MenuItemModel;
+use pr_app::menus::builder::{self, MenuBuildError};
+use pr_app::menus::model::{ContextMenuBuildContext, MenuItemModel};
+use pr_app::menus::zoom_rules;
 use pr_core::abstractions::Log;
 use pr_core::settings::app_settings::AppSettings;
 
@@ -108,12 +108,12 @@ impl ContextMenuController {
 
     /// C# `MenuHost` getter.
     pub fn menu_host(&self) -> Rc<dyn PopupMenuHost> {
-        todo!()
+        Rc::clone(&self.menu_host.borrow())
     }
 
     /// C# `MenuHost` setter (tests install a fake that picks an id).
     pub fn set_menu_host(&self, host: Rc<dyn PopupMenuHost>) {
-        todo!()
+        *self.menu_host.borrow_mut() = host;
     }
 
     /// C# `IsOpen`: true while the modal menu is open; opening again is ignored.
@@ -124,20 +124,130 @@ impl ContextMenuController {
     /// C# `BuildModel()`: `ContextMenuBuildContext { settings, has_image, can_undo, is_fit: effective_zoom.is_none(), effective_zoom,
     /// can_open_in_external_editor, can_copy_path, is_compare_visible }` through `menus::builder::build`.
     pub fn build_model(&self) -> Result<Vec<MenuItemModel>, MenuBuildError> {
-        todo!()
+        let settings = self.actions.settings();
+        let effective_zoom = self.actions.effective_zoom();
+        let context = ContextMenuBuildContext {
+            settings: &settings,
+            has_image: self.actions.has_image(),
+            can_undo: self.actions.can_undo(),
+            is_fit: effective_zoom.is_none(),
+            effective_zoom,
+            can_open_in_external_editor: self.actions.can_open_in_external_editor(),
+            can_copy_path: self.actions.can_copy_path(),
+            is_compare_visible: self.actions.is_compare_visible(),
+        };
+        builder::build(&context)
     }
 
     /// C# `ShowAsync(screenPointDip)`: already open: nothing. Else `is_open = true`; build and (when not empty) show; a build or host error clears the
     /// choice and goes to `report_menu_failed`; `is_open = false` in every case; THEN the command of the chosen id runs, guarded, with the menu closed.
     /// No `RefCell` borrow is held while the host runs.
     pub fn show(&self, screen_point_dip: PointD) {
-        todo!()
+        if self.is_open.get() {
+            return;
+        }
+        let chosen = {
+            // The flag is cleared on every exit of this block (C# `finally`), a panic of the host included.
+            let _open = OpenGuard::set(&self.is_open);
+            match self.build_model() {
+                Ok(items) if items.is_empty() => None,
+                Ok(items) => {
+                    // Cloned out of the `RefCell` first: the modal host re-enters the window procedure (D-W8B4I-1).
+                    let host = self.menu_host();
+                    match host.show(&items, screen_point_dip) {
+                        Ok(chosen) => chosen,
+                        Err(error) => {
+                            self.actions.report_menu_failed(&*error);
+                            None
+                        }
+                    }
+                }
+                Err(error) => {
+                    self.actions.report_menu_failed(&error);
+                    None
+                }
+            }
+        };
+        if let Some(id) = chosen {
+            self.guarded(&id, || self.execute(&id));
+        }
     }
 
     /// C# `ExecuteAsync(id)`: the command of a model id (names as in `ContextMenuModelBuilder`). Unknown ids and separators do nothing (`Ok`).
     /// Commands marked guarded in the C# switch report their own failure (`report_action_failed(zoom_action_name, error)`) and return `Ok`.
     pub fn execute(&self, id: &str) -> ActionResult {
-        todo!()
+        let actions = &*self.actions;
+        match id {
+            "Undo" => actions.execute(ReviewCommand::UNDO),
+            "MoveToRecycleBin" => actions.execute(ReviewCommand::RECYCLE),
+            "Fit" => actions.fit(),
+            "ZoomToLevel" => self.guard_zoom(|| actions.zoom_to_configured_level()),
+            "ZoomFitWidth" => self.guard_zoom(|| actions.execute(ReviewCommand::FIT_WIDTH)),
+            "ZoomFitWidth2" => self.guard_zoom(|| actions.execute(ReviewCommand::FIT_WIDTH2)),
+            "ZoomFitHeight" => self.guard_zoom(|| actions.execute(ReviewCommand::FIT_HEIGHT)),
+            "Refresh" => actions.execute(ReviewCommand::REFRESH),
+            "OpenFolder" => actions.execute(ReviewCommand::OPEN_FOLDER),
+            "NextFolder" => actions.execute(ReviewCommand::NEXT_FOLDER),
+            "PreviousFolder" => actions.execute(ReviewCommand::PREVIOUS_FOLDER),
+            "ExternalEditor" => self.run(|| actions.open_in_external_editor()),
+            "CopyFileName" => self.run(|| actions.copy_file_name()),
+            "CopyFullPath" => self.run(|| actions.copy_full_pathname()),
+            "Settings" => self.run(|| actions.show_settings()),
+            "Zoom.Custom" => self.guard_zoom(|| actions.custom_zoom()),
+            "Zoom.AlsoSetClickLevel" => {
+                let current = actions.settings().set_zoom_also_sets_click_level;
+                actions.set_zoom_also_sets_click_level(!current);
+                Ok(())
+            }
+            "Zoom.SetCurrentAsClickLevel" => {
+                if let Some(percent) = zoom_rules::calculate_click_level_from_effective_zoom(actions.effective_zoom()) {
+                    actions.set_click_zoom_percent(percent);
+                }
+                Ok(())
+            }
+            _ => match try_parse_preset(id) {
+                Some(percent) => self.guard_zoom(|| actions.apply_zoom_preset(percent)),
+                None => Ok(()),
+            },
+        }
+    }
+
+    /// C# `GuardedAsync(actionName, action)`: a failure goes to the log and to `report_action_failed`; it never escapes.
+    fn guarded(&self, action_name: &str, action: impl FnOnce() -> ActionResult) {
+        if let Err(error) = action() {
+            if let Some(log) = &self.log {
+                log.error(&format!("Context menu command {action_name} failed"), Some(&*error));
+            }
+            self.actions.report_action_failed(action_name, &*error);
+        }
+    }
+
+    /// A command guarded with the localized name of the zoom commands (`Tr.MainMenuZoom`), read at call time.
+    fn guard_zoom(&self, action: impl FnOnce() -> ActionResult) -> ActionResult {
+        self.guarded(&self.actions.zoom_action_name(), action);
+        Ok(())
+    }
+
+    /// C# `Run(action)`: guarded with the EMPTY action name.
+    fn run(&self, action: impl FnOnce() -> ActionResult) -> ActionResult {
+        self.guarded("", action);
+        Ok(())
+    }
+}
+
+/// Sets the open flag and clears it again when dropped (C# `try`/`finally`).
+struct OpenGuard<'a>(&'a Cell<bool>);
+
+impl<'a> OpenGuard<'a> {
+    fn set(flag: &'a Cell<bool>) -> Self {
+        flag.set(true);
+        Self(flag)
+    }
+}
+
+impl Drop for OpenGuard<'_> {
+    fn drop(&mut self) {
+        self.0.set(false);
     }
 }
 
@@ -151,5 +261,9 @@ impl fmt::Debug for ContextMenuController {
 
 /// C# `TryParsePreset(id, out percent)`: `Zoom.Preset.` followed by digits only (`NumberStyles.None`, invariant); no sign, no space, no overflow.
 pub fn try_parse_preset(id: &str) -> Option<i32> {
-    todo!()
+    let digits = id.strip_prefix(ZOOM_PRESET_PREFIX)?;
+    if digits.is_empty() || !digits.bytes().all(|b| b.is_ascii_digit()) {
+        return None;
+    }
+    digits.parse::<i32>().ok()
 }
