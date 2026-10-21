@@ -7,8 +7,8 @@
 //!
 //! Rust shape (D-W8B3H-2): a clock is shared (the message loop polls it, windows and presenters subscribe), so [`FrameClockBase`] has `&self` methods
 //! over interior mutability and is used as `Rc<dyn HostFrameClock>`; it is `!Send` (UI thread only). `FrameTick`, `FrameHandler` and
-//! `FrameHandlerId` are interim twins of `pr_app::input::frame_clock` (same fields, same meaning); the layering PR replaces them by imports and adds
-//! `impl pr_app::input::frame_clock::FrameClock for` a newtype around `Rc<dyn HostFrameClock>`.
+//! `FrameHandlerId` are re-exports of `pr_app::input::frame_clock` (amendment A10); the `impl pr_app::input::frame_clock::FrameClock for` a newtype
+//! around `Rc<dyn HostFrameClock>` is still to be written by its unit.
 
 use std::cell::RefCell;
 use std::fmt;
@@ -20,34 +20,11 @@ use pr_core::abstractions::{DisplayClock, DisplayTiming};
 
 use crate::host::error::HostError;
 
-/// Identifies one subscription (replaces C# delegate identity for `-=`). Same type as `pr_app::input::frame_clock::FrameHandlerId`.
-pub type FrameHandlerId = u64;
-
-/// A `Frame` subscriber; runs on the UI thread. Same type as `pr_app::input::frame_clock::FrameHandler`.
-pub type FrameHandler = Box<dyn FnMut(&FrameTick)>;
+// `FrameTick`, `FrameHandler` and `FrameHandlerId` are the `pr_app` types (reconciliation amendment A10; they were field-for-field twins).
+pub use pr_app::input::frame_clock::{FrameHandler, FrameHandlerId, FrameTick};
 
 /// Clock seam for tests (C# `Func<long>? timestamp`): Stopwatch ticks, that is QueryPerformanceCounter ticks.
 pub type TimestampFn = Box<dyn Fn() -> i64>;
-
-/// Interim twin of `pr_app::input::frame_clock::FrameTick` (C# `FrameTick(long Timestamp, double RenderingTimeMs, DisplayTiming? Timing)`).
-#[derive(Debug, Clone, Copy)]
-pub struct FrameTick {
-    /// QPC ticks of the frame (the scheduled vblank grid point or `now`).
-    pub timestamp: i64,
-    /// `(timestamp - epoch) * 1000.0 / Frequency`, epoch = the clock's creation time.
-    pub rendering_time_ms: f64,
-    /// `DisplayClock::get_timing(window)` at tick time; `None` when unknown.
-    pub timing: Option<DisplayTiming>,
-}
-
-impl PartialEq for FrameTick {
-    /// C# record equality: `rendering_time_ms` compares like `double.Equals` (NaN equals NaN, `0.0` equals `-0.0`), the rest field by field.
-    fn eq(&self, other: &Self) -> bool {
-        let same_ms = self.rendering_time_ms == other.rendering_time_ms
-            || (self.rendering_time_ms.is_nan() && other.rendering_time_ms.is_nan());
-        self.timestamp == other.timestamp && same_ms && self.timing == other.timing
-    }
-}
 
 /// `Stopwatch.Frequency`: delegates to `crate::display_clock::qpc_frequency()` (already `pub(crate)`: QueryPerformanceFrequency once, cached, 1e9 when the
 /// call fails; do not write a second copy).

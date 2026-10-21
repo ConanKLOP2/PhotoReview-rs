@@ -333,6 +333,20 @@ fn cancel_and_is_idle_reflect_the_schedulers_in_flight_preload() {
 }
 
 #[test]
+fn trait_dispose_through_a_controller_object_disposes_the_scheduler() {
+    // New test (amendment A5: `IPreloadController::dispose` reaches the adapter's scheduler like the C# `as IDisposable` cast)
+    let target = RecordingTarget::new(2);
+    let scheduler = new_scheduler(&target);
+    let shared = Arc::clone(&scheduler);
+    let controller: Arc<dyn IPreloadController> = Arc::new(PreloadControllerAdapter::new(move || Arc::clone(&shared)));
+
+    controller.dispose();
+    assert!(controller.preload_around(0).wait_timeout(GUARD));
+
+    assert!(target.preloaded().is_empty());
+}
+
+#[test]
 fn dispose_disposes_the_scheduler_so_a_later_preload_starts_nothing() {
     // C#: PreloadControllerAdapterTests.Dispose_DisposesTheSchedulerSoALaterPreloadStartsNothing
     let target = RecordingTarget::new(2);

@@ -419,3 +419,29 @@ fn layer_max_propagates_nan_from_first_child() {
     let size = layer.measure(client(100.0, 100.0), &ctx);
     assert!(size.width.is_nan());
 }
+
+// New test (amendment A1): `child` / `child_mut` give typed access by index; wrong type or index is `None`.
+#[test]
+fn layer_child_typed_access_returns_matching_type_only() {
+    let mut layer = LayerElement::new("L");
+    layer.add(Box::new(FixedBox::new("a", 1.0, 1.0)));
+    layer.add(Box::new(LayerElement::new("M")));
+
+    assert_eq!(layer.child::<FixedBox>(0).map(|b| b.content.width), Some(1.0));
+    assert!(layer.child::<LayerElement>(1).is_some());
+    assert!(layer.child::<LayerElement>(0).is_none(), "wrong type");
+    assert!(layer.child::<FixedBox>(2).is_none(), "out of range");
+    assert!(layer.child_mut::<LayerElement>(0).is_none());
+    assert!(layer.child_mut::<FixedBox>(5).is_none());
+}
+
+// New test (amendment A1): `child_mut` edits the child in place.
+#[test]
+fn layer_child_mut_edits_the_stored_child() {
+    let mut layer = LayerElement::new("L");
+    layer.add(Box::new(FixedBox::new("a", 1.0, 1.0)));
+
+    layer.child_mut::<FixedBox>(0).expect("fixed box").content.width = 9.0;
+
+    assert_eq!(layer.child::<FixedBox>(0).map(|b| b.content.width), Some(9.0));
+}
