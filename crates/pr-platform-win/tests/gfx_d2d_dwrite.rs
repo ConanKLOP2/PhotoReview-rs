@@ -35,21 +35,8 @@ use windows::Win32::Graphics::Dxgi::{IDXGIDevice, IDXGISurface};
 use windows::Win32::System::Threading::{GetCurrentProcess, GetProcessHandleCount};
 use windows::Win32::UI::WindowsAndMessaging::{CreateWindowExW, DestroyWindow, WINDOW_EX_STYLE, WS_POPUP};
 use windows::core::{BOOL, Interface, w};
+use windows_numerics::{Matrix3x2, Vector2};
 
-/// Builds a `windows_numerics::Vector2` (`#[repr(C)] { X: f32, Y: f32 }`) without naming the type: the `windows-numerics` crate is
-/// not a direct dependency of this crate yet (contract D-W8B3G-9 c, the lead adds it for W8-12e), so the type is inferred from the call.
-fn vec2<T>(x: f32, y: f32) -> T {
-    assert_eq!(size_of::<T>(), 8, "Vector2 is two f32");
-    // SAFETY: `T` is always `Vector2` at the call sites (a plain `repr(C)` pair of `f32`, any bit pattern valid); the size is asserted.
-    unsafe { std::mem::transmute_copy(&[x, y]) }
-}
-
-/// Builds a `windows_numerics::Matrix3x2` (`#[repr(C)]`, six `f32`, row-major M11 M12 M21 M22 M31 M32), see [`vec2`].
-fn matrix3x2<T>(values: [f32; 6]) -> T {
-    assert_eq!(size_of::<T>(), 24, "Matrix3x2 is six f32");
-    // SAFETY: `T` is always `Matrix3x2` at the call sites (plain `repr(C)` floats, any bit pattern valid); the size is asserted.
-    unsafe { std::mem::transmute_copy(&values) }
-}
 // ---------------------------------------------------------------- pure
 
 // C#: DeviceResources.CreateTarget lines 353-364
@@ -324,12 +311,12 @@ fn device_context_state_setters_round_trip() {
     let context = &rig.context;
     // SAFETY: the context is a live owned interface; every pointer argument is a local that outlives its call.
     unsafe {
-        let matrix = matrix3x2([1.0, 0.0, 0.0, 1.0, 3.0, 4.0]);
+        let matrix = Matrix3x2::translation(3.0, 4.0);
         context.SetTransform(&matrix);
-        let mut back = matrix3x2([0.0; 6]);
+        let mut back = Matrix3x2::default();
         context.GetTransform(&mut back);
         assert_eq!(back, matrix);
-        context.SetTransform(&matrix3x2([1.0, 0.0, 0.0, 1.0, 0.0, 0.0]));
+        context.SetTransform(&Matrix3x2::identity());
 
         context.SetAntialiasMode(D2D1_ANTIALIAS_MODE_ALIASED);
         assert_eq!(context.GetAntialiasMode(), D2D1_ANTIALIAS_MODE_ALIASED);
@@ -506,7 +493,7 @@ fn copy_from_memory_and_clip_and_brush_primitives_work() {
         // SAFETY: `rect` is a local that outlives the call; the brush is live; inside BeginDraw/EndDraw.
         unsafe {
             context.DrawRectangle(&rect, &black, 1.0, None);
-            context.DrawLine(vec2(2.5, 4.5), vec2(5.5, 4.5), &black, 1.0, None);
+            context.DrawLine(Vector2::new(2.5, 4.5), Vector2::new(5.5, 4.5), &black, 1.0, None);
         }
     });
     let pixels = rig.pixels(&target, 8, 8);
@@ -710,7 +697,7 @@ fn directwrite_text_drawn_with_d2d_produces_ink() {
     rig.draw(&target, |context| {
         clear(context, 1.0, 1.0, 1.0, 1.0);
         // SAFETY: layout and brush are live and belong to compatible factories; inside BeginDraw/EndDraw.
-        unsafe { context.DrawTextLayout(vec2(0.0, 0.0), &layout, &black, D2D1_DRAW_TEXT_OPTIONS_NONE) };
+        unsafe { context.DrawTextLayout(Vector2::new(0.0, 0.0), &layout, &black, D2D1_DRAW_TEXT_OPTIONS_NONE) };
     });
     let pixels = rig.pixels(&target, 96, 32);
     let dark = pixels
