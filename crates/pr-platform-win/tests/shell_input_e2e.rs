@@ -31,12 +31,15 @@ use std::cell::RefCell;
 use std::ffi::c_void;
 use std::mem::ManuallyDrop;
 use std::path::PathBuf;
+use std::sync::Arc;
 use std::time::Instant;
 
 use main_window_fixture::{BuildOptions, Built, build, built, finish, run, start_ui, wait_until};
 use pr_app::input::key_id::KeyId;
 use pr_app::input::key_mapping;
 use pr_app::input::primitives::PointD;
+use pr_imaging::decode_types::PlatformImage;
+use pr_imaging::pixels::{PixelBuffer, PixelLayout};
 use pr_platform_win::host::contracts::ShellWindowApi;
 use pr_platform_win::shell_input::drop_target::{DropCallbacks, DropRegisterError, ShellDropTarget};
 use pr_platform_win::shell_input::main_window::MainWindowInputFeature;
@@ -63,13 +66,41 @@ fn settle_step() {
     b.window.pump_view_model();
 }
 
-/// Hands the current image of the view model to the window, like the production presentation hub does.
+thread_local! {
+    /// Identity of the last image the view model handed to the hub (see [`present_current`]).
+    static LAST_PRESENTED: RefCell<Option<usize>> = const { RefCell::new(None) };
+}
+
+/// The preview the fake decoder (`SizedDecoder`) stands for: 600 x 400 pixels of a 6000 x 4000 source.
+fn preview_pixels() -> PlatformImage {
+    let buffer = PixelBuffer::allocate(600, 400, PixelLayout::Pbgra32).expect("a preview buffer");
+    PlatformImage::Pixels(Arc::new(buffer))
+}
+
+/// Hands a NEW current image of the view model to the window, like the production composition does: the presentation sink calls `set_current_image`
+/// (here: the hub gets the preview) and then `apply_initial_view_mode` (here: `ShellInput::apply_initial_view`, the composition root of W8-17c wires it
+/// the same way). The test view model's decoder is a fake whose images are `Opaque` (no pixels); the window lays out pixels, so the hub gets a
+/// same-sized pixel buffer instead. Once per image, not once per probe.
 fn present_current() {
     let b = built();
     let image = b.window.view_model().borrow().current_image().cloned();
-    if let Some(image) = image {
-        b.hub.raise(Some(&image), false);
+    let Some(image) = image else {
+        return;
+    };
+    let identity = match &image {
+        PlatformImage::Opaque(opaque) => Arc::as_ptr(opaque).cast::<()>() as usize,
+        PlatformImage::Pixels(pixels) => Arc::as_ptr(pixels) as usize,
+    };
+    if LAST_PRESENTED.with(|last| last.replace(Some(identity))) == Some(identity) {
+        return;
     }
+    let shown = match image {
+        PlatformImage::Opaque(_) => preview_pixels(),
+        pixels => pixels,
+    };
+    b.hub.raise(Some(&shown), false);
+    b.window.apply_changes(&pr_app::viewmodels::main::ChangeSet::default());
+    input().input().apply_initial_view();
 }
 
 /// Waits (bounded) for `condition`, settling the view model on every probe.
@@ -303,14 +334,22 @@ fn wheel_zooms_at_the_cursor_through_real_messages_keeping_the_point_under_it() 
         let zoom = b.window.view_model().borrow().viewer().borrow().zoom();
         !is_fit() && zoom != zoom_before && !b.window.viewport().is_layout_posted()
     });
-    let fraction_after = run(&ui, move || {
+    // The zoom is applied inside the pointer call, where the viewer is borrowed and the layout reads the content of the previous pass (D-W8B4I-1); the
+    // Render-priority resume of the zoom pass re-anchors on the settled layout. The END state is what the C# test checks, so wait (bounded) for the resume.
+    let fraction_at = move || {
         let viewport = built().window.viewport().clone();
         let p = viewport.to_image_element(PointD { x, y });
         (
             p.x / viewport.image_actual_width(),
             p.y / viewport.image_actual_height(),
         )
+    };
+    wait_until(&ui, "the zoom pass re-anchored the point under the cursor", move || {
+        settle_step();
+        let after = fraction_at();
+        (fraction_before.0 - after.0).abs() < 0.01 && (fraction_before.1 - after.1).abs() < 0.01
     });
+    let fraction_after = run(&ui, fraction_at);
     assert!(
         (fraction_before.0 - fraction_after.0).abs() < 0.01,
         "{fraction_before:?} vs {fraction_after:?}"
@@ -583,7 +622,8 @@ impl IDataObject_Impl for DropList_Impl {
 fn drop_target_is_registered_with_ole_and_a_drop_opens_the_first_file() {
     let ui = start_ui();
     let folder = start_with_images(&ui, &["a.jpg"]);
-    let other = folder.join("..").join("other");
+    // A sibling folder, spelled without `..`: the catalog reports the normalized path, which the wait below compares.
+    let other = folder.parent().expect("the folder has a parent").join("other");
     let target_file = run(&ui, move || {
         std::fs::create_dir_all(&other).expect("create the other folder");
         let file = other.join("z.jpg");

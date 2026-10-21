@@ -684,8 +684,6 @@ impl StripeScheduler for DispatcherStripeScheduler {
 /// All state of the main window (C# `ShellMainWindow` fields of every partial). `Rc`-shared with the closures of the window events; the closures hold a
 /// `Weak` (same rule as `ShellWindowInner`, D-W8B3H-18). Fields are `pub(super)` for the feature files of this module; other units use the accessors of
 /// `impl MainWindow` / `impl MainWindowInner` below.
-// The fields `poster`, `frame_clock`, `frame`, `scroll_bars` and `viewing` are read by the units 13i/13j/13k, whose stubs are not ported yet.
-#[allow(dead_code)]
 pub struct MainWindowInner {
     pub(super) id: MainWindowId,
     pub(super) weak_self: Weak<MainWindowInner>,
@@ -730,6 +728,11 @@ pub struct MainWindowInner {
     pub(super) pumping: Cell<bool>,
     /// A `pump_view_model` call was refused while `pumping`: the running pump loops once more.
     pub(super) pump_again: Cell<bool>,
+    /// The viewer-derived part of the last [`ViewportContent`] that could be read. A pointer call holds `viewer.borrow_mut()` while the controller asks the
+    /// surface for a layout pass; the content callback then returns this copy instead of panicking (D-W8B4I-1, decide under borrow, act after release).
+    pub(super) last_content: Cell<ViewportContent>,
+    /// `update_fit_size` was asked while the viewer was borrowed: it was posted (Render) and runs after the release.
+    pub(super) fit_size_deferred: Cell<bool>,
     /// Features of other units (input, menus, overlay, keep-warm), in registration order.
     pub(super) features: RefCell<Vec<Rc<dyn MainWindowFeature>>>,
     /// C# `_keepAlive` + `_keepWarm` + `_frameLog` as 16d returns them from `register_keep_warm`; `release_renderer` calls `KeepWarmSetup::dispose` FIRST (D-W8B4X-4).
@@ -751,8 +754,6 @@ impl fmt::Debug for MainWindowInner {
     }
 }
 
-// The `pub(crate)` accessors are the plug-in surface of the units 14c, 14f, 15j, 16d and 13i..13k, which are not merged yet.
-#[allow(dead_code)]
 impl MainWindowInner {
     /// C# constructor body (lines 84-123), in this order: copy the collaborators; build the viewport through `viewport_factory` (callbacks hold a `Weak`);
     /// install the size accessor on `size_source` (reads `published_viewport`) and publish the initial size; `viewer.set_dpi_scale(window.dpi_scale())`;
@@ -830,6 +831,8 @@ impl MainWindowInner {
             is_closing_or_closed: Cell::new(false),
             pumping: Cell::new(false),
             pump_again: Cell::new(false),
+            last_content: Cell::new(ViewportContent::empty()),
+            fit_size_deferred: Cell::new(false),
             features: RefCell::new(Vec::new()),
             keep_warm: RefCell::new(None),
             frame: FrameState::default(),
@@ -1002,6 +1005,7 @@ impl MainWindowInner {
     }
 
     /// Accessor: the poster for non-`Send` UI-thread closures (see [`UiLocalPoster`]).
+    #[allow(dead_code)] // no production caller yet (wiring uses the dispatcher directly); kept as the documented accessor
     pub(crate) fn poster(&self) -> &UiLocalPoster {
         &self.poster
     }

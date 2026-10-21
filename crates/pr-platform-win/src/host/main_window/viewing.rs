@@ -525,7 +525,6 @@ impl MainWindowInner {
     /// viewport (`image_origin`, `image_actual_width/height`), the window (`client_size_dip` converted to `pr_app`'s `SizeD`, `dpi_scale`) and `vm.compare()`
     /// (short borrow); `frame = composer.draw(context, &inputs)` (an `Err` is logged and the frame goes on). `image_drawn_in_frame = true` when `frame.main_drawn`
     /// and `composer.current()` is the image the presenter assigned (`Arc::ptr_eq` with `hub.current_image()`'s pixels), else when `frame.compare_images > 0`.
-    #[allow(dead_code)] // called by 13i `draw_content`; remove this line when 13i is merged.
     pub(super) fn draw_presentation(&self, context: &mut dyn DrawContext) {
         let Some(composer) = self.current_composer() else {
             return;

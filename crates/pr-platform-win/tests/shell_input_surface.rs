@@ -599,11 +599,11 @@ fn custom_zoom_cancelled_changes_nothing() {
     assert_eq!(150, clicks(&rig));
     assert_eq!(zoom_before, rig.viewer.borrow().zoom());
 
-    prompt.answer.set(Some(200));
+    prompt.answer.set(Some(400));
     rig.input.open_click_zoom_custom_dialog();
     rig.drain();
-    assert_eq!(200, clicks(&rig));
-    assert_eq!(200, rig.viewer.borrow().display_zoom_percent());
+    assert_eq!(400, clicks(&rig));
+    assert_eq!(400, rig.viewer.borrow().display_zoom_percent());
 }
 
 // ---- change fan-out ----------------------------------------------------------------------------------------------------------------------------

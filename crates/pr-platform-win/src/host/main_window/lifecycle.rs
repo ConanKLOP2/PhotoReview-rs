@@ -355,28 +355,47 @@ impl MainWindowInner {
 
     /// C# `ContentFromViewer()` (lines 250-258): `ViewportContent { stretch, image_width, image_height, max_image_width, max_image_height, bitmap_width,
     /// bitmap_height, is_fit }` from `viewer` and `image` (width/height of the bitmap only when it is not disposed, else 0).
+    ///
+    /// D-W8B4I-1: a pointer call (`ShellInput::run_pointer`) holds `viewer.borrow_mut()` while the controller asks the surface for `source_size()` and
+    /// `update_layout()`, and both come back here. The viewer cannot be read then, so the viewer-derived fields are the ones of the last successful read
+    /// (`last_content`) and only the bitmap size (which does not come from the viewer) is fresh. The layout of that pass is the one of the previous
+    /// content; the controller notices the difference at its Render-priority resume and re-anchors (the same end state as the C#, which read live).
     pub(super) fn content_from_viewer(&self) -> ViewportContent {
-        let viewer = self.viewer.borrow();
         let image = self.image.borrow();
         let (bitmap_width, bitmap_height) = bitmap_size(image.as_deref());
-        ViewportContent {
-            stretch: viewer.stretch(),
-            image_width: viewer.image_width(),
-            image_height: viewer.image_height(),
-            max_image_width: viewer.max_image_width(),
-            max_image_height: viewer.max_image_height(),
-            bitmap_width,
-            bitmap_height,
-            is_fit: viewer.is_fit(),
-        }
+        let content = match self.viewer.try_borrow() {
+            Some(viewer) => ViewportContent {
+                stretch: viewer.stretch(),
+                image_width: viewer.image_width(),
+                image_height: viewer.image_height(),
+                max_image_width: viewer.max_image_width(),
+                max_image_height: viewer.max_image_height(),
+                bitmap_width,
+                bitmap_height,
+                is_fit: viewer.is_fit(),
+            },
+            None => ViewportContent {
+                bitmap_width,
+                bitmap_height,
+                ..self.last_content.get()
+            },
+        };
+        self.last_content.set(content);
+        content
     }
 
     /// C# `UpdateFitSize()` (261-266): `(w, h) = viewport.viewport_size()`; `viewer.update_viewport(w, h, force = false)` (the returned update goes through
     /// `apply_viewer_changes`); `update_target_decode_box(None)`; publish the size for `size_source`.
+    ///
+    /// D-W8B4I-1: while a pointer call holds the viewer (the layout pass it asked for found a changed Fit size) the update cannot run: it is posted
+    /// (Render, once) through [`MainWindowInner::update_fit_size_if_alive`] and runs after the release.
     pub(super) fn update_fit_size(&self) {
         let (width, height) = self.viewport.viewport_size();
         let update = {
-            let mut viewer = self.viewer.borrow_mut();
+            let Some(mut viewer) = self.viewer.try_borrow_mut() else {
+                self.defer_update_fit_size();
+                return;
+            };
             viewer.update_viewport(width, height, false)
         };
         self.apply_viewer_changes(update.changes);
@@ -404,8 +423,22 @@ impl MainWindowInner {
         }
     }
 
+    /// Posts one `update_fit_size_if_alive` (Render) for a call that found the viewer borrowed; repeated asks before it runs coalesce.
+    fn defer_update_fit_size(&self) {
+        if self.fit_size_deferred.replace(true) {
+            return;
+        }
+        post_to_window(
+            &self.dispatcher,
+            self.id,
+            UiPriority::Render,
+            MainWindowInner::update_fit_size_if_alive,
+        );
+    }
+
     /// C# `UpdateFitSizeIfAlive()` (306-312): `update_fit_size()` unless disposed.
     pub(super) fn update_fit_size_if_alive(&self) {
+        self.fit_size_deferred.set(false);
         if !self.disposed.get() {
             self.update_fit_size();
         }

@@ -409,6 +409,17 @@ impl ViewerHandle {
     pub fn borrow_mut(&self) -> RefMut<'_, ViewerState> {
         self.0.borrow_mut()
     }
+
+    /// Shared read access, or `None` while the viewer is borrowed mutably. For callbacks that can run inside a pure controller call that holds
+    /// `borrow_mut` (the layout callbacks of the main window during a pointer call, D-W8B4I-1): they fall back instead of panicking.
+    pub fn try_borrow(&self) -> Option<Ref<'_, ViewerState>> {
+        self.0.try_borrow().ok()
+    }
+
+    /// Exclusive access, or `None` while the viewer is borrowed (see [`ViewerHandle::try_borrow`]).
+    pub fn try_borrow_mut(&self) -> Option<RefMut<'_, ViewerState>> {
+        self.0.try_borrow_mut().ok()
+    }
 }
 
 /// What the bridge collected since the view model last asked (see [`PresentationBridge::take_pending`]).

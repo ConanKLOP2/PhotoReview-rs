@@ -826,3 +826,47 @@ fn repeated_open_close_cycles_do_not_grow_gui_or_handle_counts() {
     );
     finish(ui);
 }
+
+// ---- the viewer is borrowed by a pointer call (D-W8B4I-1): the layout callbacks must not touch it ------------------------------------------------
+
+// D-W8B4I-1 (14c integration): `ShellInput::run_pointer` holds `viewer.borrow_mut()` while the controller asks the surface for `source_size()` and
+// `update_layout()`; the layout's content callback (`content_from_viewer`) used to `borrow()` the same cell and panicked ("already mutably borrowed").
+#[test]
+#[ignore = "native: needs desktop"]
+fn the_layout_content_callback_survives_a_held_viewer_borrow() {
+    let ui = start_ui();
+    run(&ui, || {
+        let b = build(BuildOptions::default());
+        let viewer = b.window.view_model().borrow().viewer().clone();
+        let held = viewer.borrow_mut();
+        let size = b.window.viewport().source_size();
+        b.window.viewport().update_layout();
+        drop(held);
+        assert!(size.is_none(), "no image is shown: no bitmap size");
+    });
+    finish(ui);
+}
+
+// D-W8B4I-1: the same for the Fit callback (`update_fit_size` borrows the viewer mutably): under a held borrow it is deferred and runs after the release.
+#[test]
+#[ignore = "native: needs desktop"]
+fn update_fit_size_under_a_held_viewer_borrow_runs_after_the_release() {
+    let ui = start_ui();
+    run(&ui, || {
+        let b = build(BuildOptions::default());
+        let viewer = b.window.view_model().borrow().viewer().clone();
+        // Make the viewer's stored viewport size different from the window's.
+        viewer.borrow_mut().update_viewport(300.0, 200.0, true);
+        assert_eq!(300.0, viewer.borrow().max_image_width());
+        let held = viewer.borrow_mut();
+        b.window.viewport().update_fit_size();
+        drop(held);
+    });
+    wait_until(&ui, "the deferred update_fit_size ran", || {
+        let b = built();
+        let viewer = b.window.view_model().borrow().viewer().clone();
+        let (width, _) = b.window.viewport().viewport_size();
+        (viewer.borrow().max_image_width() - width).abs() < 1e-9
+    });
+    finish(ui);
+}
