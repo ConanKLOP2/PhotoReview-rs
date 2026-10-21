@@ -1,4 +1,4 @@
-//! Tests for `pr_app::composition::decoders` (contract W8-09a). Port of `DecoderProvidersTests` and
+//! Tests for `pr_shell::composition::decoders` (contract W8-09a). Port of `DecoderProvidersTests` and
 //! `LibRawPreviewFallbackTests` (C# baseline d92d6aae, `tests/PhotoReview.App.Tests/Composition/`).
 //!
 //! Nothing here loads `libraw.dll` / `turbojpeg.dll`: the probes are closures and the `LibRawApi` is a fake whose `init`
@@ -8,7 +8,7 @@ use std::error::Error;
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::{Arc, Mutex, PoisonError};
 
-use pr_app::composition::decoders::{
+use pr_shell::composition::decoders::{
     CompositionLog, DecoderDeps, DecoderProbes, LibRawPreviewFallback, ProbeFn, ProbeResult,
     create_decoder_providers_with,
 };

@@ -25,7 +25,7 @@ use pr_libraw::decoder::{LibRawApi, LibRawDecoder};
 use pr_platform_win::wic::decoder::WicDirectDecoder;
 use pr_turbojpeg::decoder::{FineScaler, TurboJpegDecoder, TurboJpegTexts};
 
-use crate::misc::app_log::AppLog;
+use pr_app::misc::app_log::AppLog;
 
 /// C# `(bool Available, string? Reason)` of a probe. Invariant (both real probes): `available == reason.is_none()`.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -120,7 +120,7 @@ pub trait CompositionLog: Send + Sync {
     fn info(&self, message: &str);
 }
 
-/// Production [`CompositionLog`] over `crate::misc::app_log::AppLog::global()`.
+/// Production [`CompositionLog`] over `pr_app::misc::app_log::AppLog::global()`.
 #[derive(Debug, Default, Clone, Copy)]
 pub struct AppLogCompositionLog;
 

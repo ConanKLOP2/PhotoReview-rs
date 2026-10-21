@@ -14,8 +14,8 @@ use pr_imaging::decode_types::PlatformImage;
 use pr_imaging::decoder_traits::PlatformImageCodec;
 use pr_imaging::factory::DecoderProvider;
 
-use crate::coordinators::presenter::state::ImageChange;
-use crate::coordinators::traits::IPresentationSink;
+use pr_app::coordinators::presenter::state::ImageChange;
+use pr_app::coordinators::traits::IPresentationSink;
 
 /// C# `SharedServiceOptions(Codec, WpfFallbackDecoder, ThumbnailDecoder)`: what a host (old WPF app or Win32 shell) supplies.
 #[derive(Clone)]
