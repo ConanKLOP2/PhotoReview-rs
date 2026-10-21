@@ -6,8 +6,6 @@
 //! The viewport controller is taken as the trait [`ViewportControllerApi`] (its members are the C# `ViewportController` members this adapter
 //! forwards); W8-16h implements it for its controller, tests implement it with a fake (D-W8B4I-6). The surface never holds a `ViewerHandle` borrow
 //! across a call into the controller: `capture` borrows the viewer immutably for the duration of reading five numbers.
-#![allow(unused_variables, dead_code)] // stub: the porter removes this line with the last `todo!()`
-
 use std::fmt;
 use std::rc::Rc;
 
@@ -19,6 +17,7 @@ use pr_app::viewport::types::{ViewportLayout, ViewportSnapshot};
 use pr_core::abstractions::DisplayTiming;
 
 use super::dispatch::{FrameRouter, InputSurface};
+use crate::shell_viewing::viewport_controller::ViewportController;
 
 /// The members of the C# `ViewportController` that `ViewportImageSurface` forwards (`Viewing/ViewportController.cs` lines 92-262). `&self`: the
 /// controller is shared with the main window and re-entered by the window procedure.
@@ -101,102 +100,214 @@ impl fmt::Debug for ViewportImageSurface {
 
 impl ImageSurface for ViewportImageSurface {
     fn is_loaded(&self) -> bool {
-        todo!()
+        self.viewport.is_loaded()
     }
     fn horizontal_offset(&self) -> f64 {
-        todo!()
+        self.viewport.horizontal_offset()
     }
     fn vertical_offset(&self) -> f64 {
-        todo!()
+        self.viewport.vertical_offset()
     }
     fn viewport_width(&self) -> f64 {
-        todo!()
+        self.viewport.layout().viewport_width
     }
     fn viewport_height(&self) -> f64 {
-        todo!()
+        self.viewport.layout().viewport_height
     }
     fn extent_width(&self) -> f64 {
-        todo!()
+        self.viewport.layout().extent_width
     }
     fn extent_height(&self) -> f64 {
-        todo!()
+        self.viewport.layout().extent_height
     }
     fn drag_threshold(&self) -> (f64, f64) {
-        todo!()
+        self.viewport.drag_threshold()
     }
     fn scroll_to(&mut self, horizontal: f64, vertical: f64) {
-        todo!()
+        self.viewport.scroll_to(horizontal, vertical);
     }
     fn update_layout(&mut self) {
-        todo!()
+        self.viewport.update_layout();
     }
     fn yield_to_render(&mut self, continuation: Box<dyn FnOnce()>) {
-        todo!()
+        self.viewport.yield_to_render(continuation);
     }
     fn image_origin(&self) -> PointD {
-        todo!()
+        self.viewport.image_origin()
     }
     fn to_image_element(&self, surface_point: PointD) -> PointD {
-        todo!()
+        self.viewport.to_image_element(surface_point)
     }
     fn image_actual_width(&self) -> f64 {
-        todo!()
+        self.viewport.image_actual_width()
     }
     fn image_actual_height(&self) -> f64 {
-        todo!()
+        self.viewport.image_actual_height()
     }
     fn source_size(&self) -> Option<SizeD> {
-        todo!()
+        self.viewport.source_size()
     }
     fn capture_mouse(&mut self) {
-        todo!()
+        self.viewport.capture_mouse();
     }
     fn release_mouse_capture(&mut self) {
-        todo!()
+        self.viewport.release_mouse_capture();
     }
     fn set_pan_cursor(&mut self, panning: bool) {
-        todo!()
+        self.viewport.set_pan_cursor(panning);
     }
-    fn hook_render_frame(&mut self, handler: RenderFrameHandler) -> RenderHookId {
-        todo!()
+    /// D-W8B4I-5: the router is captured at hook time and called after the controller's own handler, once per frame.
+    fn hook_render_frame(&mut self, mut handler: RenderFrameHandler) -> RenderHookId {
+        let router = self.router.clone();
+        self.viewport.hook_render_frame(Box::new(move |ticks| {
+            handler(ticks);
+            if let Some(router) = &router {
+                router(ticks);
+            }
+        }))
     }
     fn unhook_render_frame(&mut self, id: RenderHookId) {
-        todo!()
+        self.viewport.unhook_render_frame(id);
     }
     fn timestamp(&self) -> i64 {
-        todo!()
+        self.viewport.timestamp()
     }
     fn display_timing(&mut self) -> Option<DisplayTiming> {
-        todo!()
+        self.viewport.display_timing()
     }
     fn pointer_position(&self) -> Option<PointD> {
-        todo!()
+        self.viewport.pointer_position()
     }
 }
 
 impl FitSurface for ViewportImageSurface {
     fn viewport_size(&self) -> (f64, f64) {
-        todo!()
+        self.viewport.viewport_size()
     }
     fn is_loaded(&self) -> bool {
-        todo!()
+        self.viewport.is_loaded()
     }
     fn update_layout(&mut self) {
-        todo!()
+        self.viewport.update_layout();
     }
     fn update_fit_size(&mut self) {
-        todo!()
+        self.viewport.update_fit_size();
     }
+    /// C# `Capture()` (T1): the viewer is borrowed immutably for the four reads only and released before the controller is read.
     fn capture(&self) -> ViewportSnapshot {
-        todo!()
+        let layout = self.viewport.layout();
+        let (zoom, stretch, max_image_width, max_image_height) = {
+            let viewer = self.viewer.borrow();
+            (
+                viewer.zoom(),
+                viewer.stretch(),
+                viewer.max_image_width(),
+                viewer.max_image_height(),
+            )
+        };
+        ViewportSnapshot {
+            zoom,
+            stretch,
+            max_image_width,
+            max_image_height,
+            actual_image_width: self.viewport.image_actual_width(),
+            actual_image_height: self.viewport.image_actual_height(),
+            extent_width: layout.extent_width,
+            extent_height: layout.extent_height,
+            viewport_width: layout.viewport_width,
+            viewport_height: layout.viewport_height,
+            horizontal_offset: self.viewport.horizontal_offset(),
+            vertical_offset: self.viewport.vertical_offset(),
+            horizontal_scroll_bar_visible: layout.horizontal_bar_visible,
+            vertical_scroll_bar_visible: layout.vertical_bar_visible,
+        }
     }
     fn scroll_home(&mut self) {
-        todo!()
+        self.viewport.scroll_home();
     }
 }
 
 impl InputSurface for ViewportImageSurface {
     fn set_frame_router(&mut self, router: Option<FrameRouter>) {
-        todo!()
+        self.router = router;
+    }
+}
+
+/// Plain forwarders (D-W8B4I-6, D-W8B4X-2): the real controller is the production [`ViewportControllerApi`].
+impl ViewportControllerApi for ViewportController {
+    fn layout(&self) -> ViewportLayout {
+        ViewportController::layout(self)
+    }
+    fn viewport_size(&self) -> (f64, f64) {
+        ViewportController::viewport_size(self)
+    }
+    fn is_loaded(&self) -> bool {
+        ViewportController::is_loaded(self)
+    }
+    fn update_layout(&self) {
+        ViewportController::update_layout(self);
+    }
+    fn update_fit_size(&self) {
+        ViewportController::update_fit_size(self);
+    }
+    fn scroll_home(&self) {
+        ViewportController::scroll_home(self);
+    }
+    fn invalidate_layout(&self) {
+        ViewportController::invalidate_layout(self);
+    }
+    fn horizontal_offset(&self) -> f64 {
+        ViewportController::horizontal_offset(self)
+    }
+    fn vertical_offset(&self) -> f64 {
+        ViewportController::vertical_offset(self)
+    }
+    fn drag_threshold(&self) -> (f64, f64) {
+        ViewportController::drag_threshold(self)
+    }
+    fn scroll_to(&self, horizontal: f64, vertical: f64) {
+        ViewportController::scroll_to(self, horizontal, vertical);
+    }
+    fn image_origin(&self) -> PointD {
+        ViewportController::image_origin(self)
+    }
+    fn to_image_element(&self, surface_point: PointD) -> PointD {
+        ViewportController::to_image_element(self, surface_point)
+    }
+    fn image_actual_width(&self) -> f64 {
+        ViewportController::image_actual_width(self)
+    }
+    fn image_actual_height(&self) -> f64 {
+        ViewportController::image_actual_height(self)
+    }
+    fn source_size(&self) -> Option<SizeD> {
+        ViewportController::source_size(self)
+    }
+    fn capture_mouse(&self) {
+        ViewportController::capture_mouse(self);
+    }
+    fn release_mouse_capture(&self) {
+        ViewportController::release_mouse_capture(self);
+    }
+    fn set_pan_cursor(&self, panning: bool) {
+        ViewportController::set_pan_cursor(self, panning);
+    }
+    fn hook_render_frame(&self, handler: RenderFrameHandler) -> RenderHookId {
+        ViewportController::hook_render_frame(self, handler)
+    }
+    fn unhook_render_frame(&self, id: RenderHookId) {
+        ViewportController::unhook_render_frame(self, id);
+    }
+    fn timestamp(&self) -> i64 {
+        ViewportController::timestamp(self)
+    }
+    fn display_timing(&self) -> Option<DisplayTiming> {
+        ViewportController::display_timing(self)
+    }
+    fn pointer_position(&self) -> Option<PointD> {
+        ViewportController::pointer_position(self)
+    }
+    fn yield_to_render(&self, continuation: Box<dyn FnOnce()>) {
+        ViewportController::yield_to_render(self, continuation);
     }
 }
