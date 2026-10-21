@@ -51,8 +51,16 @@ jobs:
         with:
           shared-key: lint
           save-if: ${{ github.ref == 'refs/heads/master' }}
+      # One rustfmt run per package: `cargo fmt --all` hands every test file of the whole workspace to one rustfmt process, which
+      # fails with os error 206 (command line too long) on Windows once pr-platform-win and pr-app have enough test files.
       - name: Format
-        run: cargo fmt --all --check
+        shell: pwsh
+        run: |
+          $names = (cargo metadata --no-deps --format-version 1 | ConvertFrom-Json).packages.name | Sort-Object
+          foreach ($name in $names) {
+            cargo fmt -p $name --check
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          }
       - name: Clippy
         run: cargo clippy --workspace --all-targets --locked -- -D warnings
 
