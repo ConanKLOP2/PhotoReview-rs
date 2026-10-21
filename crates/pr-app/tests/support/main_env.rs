@@ -832,6 +832,8 @@ impl Default for EnvOptions {
 
 /// A `MainViewModel` with all its collaborators; the test thread is the UI thread.
 pub struct MainEnv {
+    /// `{:?}` of the `MainViewModelDeps` the view model was built from (the deps are moved into it).
+    pub deps_debug: String,
     pub vm: MainViewModel,
     pub photos: PathBuf,
     pub paths: AppPaths,
@@ -1153,7 +1155,7 @@ impl MainEnv {
         let mut user_reset = options.reset_caches;
         let picker = options.picker.unwrap_or_default();
 
-        let vm = MainViewModel::new(MainViewModelDeps {
+        let deps = MainViewModelDeps {
             catalog: match options.catalog_builder {
                 Some(builder) => builder(&photos),
                 None => options.catalog.unwrap_or_default(),
@@ -1189,9 +1191,12 @@ impl MainEnv {
             inbox: inbox.clone(),
             runner: runner.clone(),
             log: log_dyn,
-        });
+        };
+        let deps_debug = format!("{deps:?}");
+        let vm = MainViewModel::new(deps);
 
         Self {
+            deps_debug,
             vm,
             photos,
             paths,
