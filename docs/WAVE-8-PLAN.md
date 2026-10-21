@@ -146,24 +146,24 @@ output is a table in the contract: C# member, windows-rs item or `GAP`; a `GAP` 
 | W8-11a | `Win32/{Structs 137, WindowMessages 192}` = 329 | `win32::{structs, messages}` (custom `WM_*`, constants equal the C# values) | 🟢 | Haiku | G (constants) | none | B3 |
 | W8-11b | `Win32/{User32 184, Kernel32 23, Kernel32Loader 17, Gdi32 12, Shell32 10, Shcore 13, Dwmapi 19, Ole32 20}` = 298 | `win32::api` (feature list, safe wrappers used by hosts) | 🟡 | Sonnet | N | 11a | B3 |
 | W8-11c | `Win32/{CommonControlsNative 280, Comctl32 39, ActivationContext 39}` = 358 | `win32::comctl` (manifest/activation context, comctl v6) | 🟡 | Sonnet | N | 11a | B3 |
-| W8-11d | `Win32/{DialogChromeNative 143, DialogNative 223}` = 366 | `win32::dialog_native` | 🟡 | Sonnet | N | 11a, 11b | B3 |
+| W8-11d | `Win32/{DialogChromeNative 143, DialogNative 223}` = 366 | `win32::dialog_native` | 🟡 | Sonnet | N | 11a | B3 |
 | W8-11e | `Win32/{KeyCaptureNative 20, SettingsDialogNative 61, StartupAdditions 27}`, `Shell/{IDataObject 81, IDropTarget 38, IFileOpenDialog 222}` = 449 | `win32::{key_capture, settings_native, startup}`; Shell COM interfaces come from windows-rs | 🟡 | Sonnet | N | 11a | B3 |
 | W8-11f | `Graphics/{ComInterop 70, Guids 52, RenderingAdditions 94, DWriteAdditions 64}` = 280 | `gfx::{com, guids, extras}` | 🔴 | Sonnet | N | none | B3 |
 | W8-11g | `Graphics/{D3D11 195, Dxgi 264}` = 459 (audit only) | `gfx::{d3d11, dxgi}` thin helpers over windows-rs (swap chain, device flags); audit table of C# members | 🔴 | Sonnet | N | 11f | B3 |
-| W8-11h | `Graphics/{D2D1 476, DWrite 251}` = 727 (audit only) | `gfx::{d2d, dwrite}` thin helpers over windows-rs; audit table | 🔴 | Sonnet | N | 11f | B3 |
+| W8-11h | `Graphics/{D2D1 476, DWrite 251}` = 727 (audit only) | `gfx::{d2d, dwrite}` thin helpers over windows-rs; audit table | 🔴 | Sonnet | N | 11f, 11g | B3 |
 
 ### 12 Rendering (`pr_platform_win::render`, from `Shell.Rendering`)
 | WU | C# files (lines) | Rust | Col | Model | Test | Depends on | Batch |
 |---|---|---|---|---|---|---|---|
 | W8-12a | `Contracts/{GpuImageContracts 33, RenderSurfaceContracts 94, TextContracts 26}`, `TiledGpuImage 62`, `D2DRenderSurfaceFactory 13` = 228 | `render::contracts` as traits in `pr_app::services::render` (no `windows` types), `render::tiled` | 🟢 | Haiku | F | 01c | B1 |
-| W8-12b | `DeviceResources` lines 1 to 230 (device creation, adapter choice, device loss) | `render::device::{create, loss}` | 🔴 | Sonnet | N | 11g, 11h, 12a | B3 |
-| W8-12c | `DeviceResources` lines 230 to 456 (brushes, caches, text factories) | `render::device::resources` | 🔴 | Sonnet | N | 12b | B3 |
-| W8-12d | `D2DRenderSurface` 236 (swap chain, resize, `EndDraw`, `Present`) | `render::surface` | 🔴 | Sonnet | N | 12c | B3 |
-| W8-12e | `D2DDrawContext` 359 | `render::draw_context` | 🔴 | Sonnet | N | 12c, 01c | B3 |
+| W8-12b | `DeviceResources` lines 1 to 230 (device creation, adapter choice, device loss) | `render::device::{create, loss}` | 🔴 | Sonnet | N | 11f, 11g, 11h, 12a | B3 |
+| W8-12c | `DeviceResources` lines 230 to 456 (brushes, caches, text factories) | `render::device::resources` | 🔴 | Sonnet | N | 12b, 11g, 11h | B3 |
+| W8-12d | `D2DRenderSurface` 236 (swap chain, resize, `EndDraw`, `Present`) | `render::surface` | 🔴 | Sonnet | N | 12c, 11f, 11g, 12e (type; 12d and 12e are ported together) | B3 |
+| W8-12e | `D2DDrawContext` 359 | `render::draw_context` | 🔴 | Sonnet | N | 12c, 12d, 12a, 01c, 11h | B3 |
 | W8-12f | `GpuImageCache` lines 1 to 200 (budget and LRU eviction policy, pure part) | `render::image_cache::policy` | 🟡 | Sonnet | F | 12a, `pr_core::caching::lru` | B3 |
-| W8-12g | `GpuImageCache` lines 200 to 414 (bitmap upload, tiles, device-loss rebuild) | `render::image_cache::upload` | 🔴 | Sonnet | N | 12f, 12c | B3 |
-| W8-12h | `GpuKeepAlive` 231 (WP21-STALL keep-warm thread, env vars `PHOTOREVIEW_RS_GPU_KEEPWARM*`) | `render::keep_alive` | 🔴 | Sonnet | F+N | 12c | B3 |
-| W8-12i | `Text/{DWriteTextRenderer 201, TextLayoutCache 197}` = 398 | `render::text::{renderer, layout_cache}` | 🟡 | Sonnet | F+N | 12c | B3 |
+| W8-12g | `GpuImageCache` lines 200 to 414 (bitmap upload, tiles, device-loss rebuild) | `render::image_cache::upload` | 🔴 | Sonnet | N | 12f, 12c, 11f | B3 |
+| W8-12h | `GpuKeepAlive` 231 (WP21-STALL keep-warm thread, env vars `PHOTOREVIEW_RS_GPU_KEEPWARM*`) | `render::keep_alive` | 🔴 | Sonnet | F+N | 12c, 11f | B3 |
+| W8-12i | `Text/{DWriteTextRenderer 201, TextLayoutCache 197}` = 398 | `render::text::{renderer, layout_cache}` | 🟡 | Sonnet | F+N | 12c, 11f | B3 |
 | W8-12j | NEW, no C# source: swap-chain latency experiment (waitable swap chain, `DXGI_SWAP_CHAIN_FLAG_FRAME_LATENCY_WAITABLE_OBJECT`, DirectComposition) behind an env switch; only started if an attended re-measure still shows the `EndDraw` stall (R0001) | `render::surface` option | 🟡 | Sonnet | N | 12d | B3 (conditional) |
 
 ### 13 Window host (`pr_platform_win::host`)
