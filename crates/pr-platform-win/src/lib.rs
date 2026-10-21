@@ -101,3 +101,9 @@ pub mod win32;
 
 #[cfg(windows)]
 pub mod host;
+
+#[cfg(windows)]
+pub mod shell_input;
+
+#[cfg(windows)]
+pub mod shell_menus;
