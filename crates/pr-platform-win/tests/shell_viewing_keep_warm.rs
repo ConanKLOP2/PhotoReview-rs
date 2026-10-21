@@ -370,9 +370,8 @@ fn controller_does_not_keep_the_window_alive() {
 #[test]
 fn frame_log_writes_frames_and_closing_the_window_releases_the_file() {
     // C#: ShellKeepWarmTests.FrameLog_WritesFrames_AndClosingTheWindowReleasesTheFile
-    let path = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
-        .join("../../target-cx")
-        .join(format!("frames-{}.log", std::process::id()));
+    let root = pr_test_support::TempRoot::new("w8-16d-frame-log");
+    let path = root.join("frames.log");
     let w = Rc::new(FakeKeepWarmWindow::default());
     let mut r = registration(false, false, false);
     r.frame_log_path = Some(path.clone());
@@ -380,5 +379,4 @@ fn frame_log_writes_frames_and_closing_the_window_releases_the_file() {
     s.frame_log.as_mut().unwrap().record(1, 2, 0.0, 0.0);
     s.dispose();
     assert!(std::fs::read_to_string(&path).unwrap().contains("F gap="));
-    std::fs::remove_file(path).unwrap();
 }
