@@ -120,6 +120,10 @@ impl ShellWindowApi for FakeWindow {
         self.subscriptions.borrow_mut().retain(|(known, _, _)| *known != id);
     }
     fn add_message_handler(&self, _handler: Rc<dyn WindowMessageHandler>) {}
+    fn insert_message_handler_first(&self, _handler: Rc<dyn WindowMessageHandler>) {}
+    fn is_destroyed(&self) -> bool {
+        false
+    }
     fn invalidate(&self) {
         self.invalidations.set(self.invalidations.get() + 1);
     }
