@@ -4,9 +4,20 @@
 //!
 //! Unit W8-11d (plan: `win32::dialog_native`; D-W8B3-5 keeps this class in its own file because C# keeps it in its own class). The C# comment "window property
 //! instead of `GetWindowSubclass`: the test host loads comctl32 v5" is why the attached flag is a window property; the Rust port keeps that.
-#![allow(unused_variables, dead_code)] // stub: removed by the W8-11d porter when the last `todo!()` is gone.
 
-use super::structs::{Hdc, Hgdi, Hwnd, Point};
+use core::ffi::c_void;
+
+use windows::Win32::Foundation::HANDLE;
+use windows::Win32::Graphics::Gdi::{
+    BeginPaint, BitBlt, CreateCompatibleBitmap, CreateCompatibleDC, DeleteDC, Ellipse, EndPaint, GetWindowDC,
+    PAINTSTRUCT, Polyline, ROP_CODE,
+};
+use windows::Win32::UI::Input::KeyboardAndMouse::{TRACKMOUSEEVENT, TRACKMOUSEEVENT_FLAGS, TrackMouseEvent};
+use windows::Win32::UI::WindowsAndMessaging::{GetPropW, RemovePropW, SetPropW};
+use windows::core::PCWSTR;
+
+use super::dialog_native::{to_hdc, to_hwnd};
+use super::structs::{Hdc, Hgdi, Hwnd, Point, to_utf16z};
 
 // Repeated in the C# class, same value as `messages`: re-exported, not redefined.
 pub use super::messages::{WM_ERASEBKGND, WM_KILLFOCUS, WM_MOUSEMOVE, WM_NCDESTROY, WM_PAINT, WM_SETFOCUS};
@@ -62,7 +73,6 @@ pub const SM_CXBORDER: i32 = 5; // SmCxBorder
 pub const SM_CXEDGE: i32 = 45; // SmCxEdge
 pub const DT_HIDEPREFIX: u32 = 0x00100000; // DtHidePrefix
 pub const DT_RIGHT: u32 = 2; // DtRight
-
 /// `BeginPaint`: the device context and the `PAINTSTRUCT` (72 bytes, `PAINTSTRUCT_SIZE`) to give back to `end_paint`.
 #[derive(Debug, Clone, Copy)]
 pub struct PaintSession {
@@ -72,39 +82,64 @@ pub struct PaintSession {
     pub paint: windows::Win32::Graphics::Gdi::PAINTSTRUCT,
 }
 
+const _: () = assert!(size_of::<PAINTSTRUCT>() == PAINTSTRUCT_SIZE as usize);
+const _: () = assert!(size_of::<TRACKMOUSEEVENT>() == TRACKMOUSEEVENT_SIZE as usize);
+
 /// C# `BeginPaint(hwnd, byte* paintStruct)`: `None` when the call fails (no display context). Only valid while handling `WM_PAINT` of `hwnd`.
 pub fn begin_paint(hwnd: Hwnd) -> Option<PaintSession> {
-    todo!()
+    let mut paint = PAINTSTRUCT::default();
+    // SAFETY: the `PAINTSTRUCT` is a local that becomes the field of the returned `PaintSession`; the OS fills it in `BeginPaint` and does not keep the pointer.
+    let hdc = unsafe { BeginPaint(to_hwnd(hwnd), &mut paint) };
+    if hdc.0.is_null() {
+        None
+    } else {
+        Some(PaintSession {
+            hdc: hdc.0 as isize,
+            paint,
+        })
+    }
 }
 
 /// C# `EndPaint(hwnd, byte* paintStruct)`: always `true` in the OS; pair every successful `begin_paint` with one `end_paint` of the same window.
 pub fn end_paint(hwnd: Hwnd, session: &PaintSession) -> bool {
-    todo!()
+    // SAFETY: the `PAINTSTRUCT` is the one `BeginPaint` filled and `PaintSession` owns; `EndPaint` only reads it.
+    unsafe { EndPaint(to_hwnd(hwnd), &session.paint) }.as_bool()
 }
 
 /// C# `GetWindowDC`: the DC of the whole window, non-client area included (for `WM_NCPAINT`); release it with `dialog_native::user32::release_dc`.
 pub fn get_window_dc(hwnd: Hwnd) -> Hdc {
-    todo!()
+    // SAFETY: a handle value; the OS validates it.
+    unsafe { GetWindowDC(Some(to_hwnd(hwnd))) }.0 as isize
 }
 
 /// C# `TrackMouseEvent(byte* track)` with a `TRACKMOUSEEVENT` (24 bytes, `TRACKMOUSEEVENT_SIZE`): the wrapper sets `cbSize`.
 pub fn track_mouse_event(flags: u32, hwnd: Hwnd, hover_time: u32) -> bool {
-    todo!()
+    let mut track = TRACKMOUSEEVENT {
+        cbSize: TRACKMOUSEEVENT_SIZE as u32, // 24, asserted above
+        dwFlags: TRACKMOUSEEVENT_FLAGS(flags),
+        hwndTrack: to_hwnd(hwnd),
+        dwHoverTime: hover_time,
+    };
+    // SAFETY: the pointer is to a live local `TRACKMOUSEEVENT` with `cbSize` set to its size; the OS reads it and does not keep the pointer.
+    unsafe { TrackMouseEvent(&mut track) }.is_ok()
 }
 
 /// C# `CreateCompatibleDC`: `0` on failure; delete it with `delete_dc`.
 pub fn create_compatible_dc(hdc: Hdc) -> Hdc {
-    todo!()
+    // SAFETY: a handle value (`0` = a DC compatible with the screen); the OS validates it.
+    unsafe { CreateCompatibleDC(Some(to_hdc(hdc))) }.0 as isize
 }
 
 /// C# `CreateCompatibleBitmap`: `0` on failure; delete it with `dialog_native::gdi32::delete_object`.
 pub fn create_compatible_bitmap(hdc: Hdc, width: i32, height: i32) -> Hgdi {
-    todo!()
+    // SAFETY: a handle value and sizes; the OS validates them.
+    unsafe { CreateCompatibleBitmap(to_hdc(hdc), width, height) }.0 as isize
 }
 
 /// C# `DeleteDC` (a DC from `create_compatible_dc`, not a window DC).
 pub fn delete_dc(hdc: Hdc) -> bool {
-    todo!()
+    // SAFETY: a handle value; the OS validates it.
+    unsafe { DeleteDC(to_hdc(hdc)) }.as_bool()
 }
 
 /// C# `BitBlt(dest, x, y, w, h, source, sx, sy, rop)` (`SRCCOPY`).
@@ -120,30 +155,57 @@ pub fn bit_blt(
     source_y: i32,
     rop: u32,
 ) -> bool {
-    todo!()
+    // SAFETY: handle values and integers; the OS validates the DCs.
+    unsafe {
+        BitBlt(
+            to_hdc(destination),
+            x,
+            y,
+            width,
+            height,
+            Some(to_hdc(source)),
+            source_x,
+            source_y,
+            ROP_CODE(rop),
+        )
+    }
+    .is_ok()
 }
 
 /// C# `Ellipse`.
 pub fn ellipse(hdc: Hdc, left: i32, top: i32, right: i32, bottom: i32) -> bool {
-    todo!()
+    // SAFETY: a handle value and integers; the OS validates the DC.
+    unsafe { Ellipse(to_hdc(hdc), left, top, right, bottom) }.as_bool()
 }
 
 /// C# `Polyline(hdc, Point*, count)`; the count is `points.len()` (the OS needs at least 2 points, else it fails).
 pub fn polyline(hdc: Hdc, points: &[Point]) -> bool {
-    todo!()
+    if i32::try_from(points.len()).is_err() {
+        return false;
+    }
+    // SAFETY: `points` is a live slice of `POINT` (8 bytes each) and the count passed is its length (checked above to fit `i32`).
+    unsafe { Polyline(to_hdc(hdc), points) }.as_bool()
 }
 
 /// C# `SetProp(hwnd, name, value)`: attaches `value` under the property name (the "chrome attached" flag).
 pub fn set_prop(hwnd: Hwnd, name: &str, value: isize) -> bool {
-    todo!()
+    let name = to_utf16z(name);
+    // SAFETY: `name` is a NUL-terminated UTF-16 buffer in a local that lives past the call (the OS copies the string); the value is stored as is, never dereferenced.
+    unsafe { SetPropW(to_hwnd(hwnd), PCWSTR(name.as_ptr()), Some(HANDLE(value as *mut c_void))) }.is_ok()
 }
 
 /// C# `GetProp`: `0` when the property is absent.
 pub fn get_prop(hwnd: Hwnd, name: &str) -> isize {
-    todo!()
+    let name = to_utf16z(name);
+    // SAFETY: `name` is a NUL-terminated UTF-16 buffer in a local that lives past the call; the returned value is not dereferenced.
+    unsafe { GetPropW(to_hwnd(hwnd), PCWSTR(name.as_ptr())) }.0 as isize
 }
 
 /// C# `RemoveProp`: the removed value (`0` when absent). A window must remove its own properties before it is destroyed (`WM_NCDESTROY`).
 pub fn remove_prop(hwnd: Hwnd, name: &str) -> isize {
-    todo!()
+    let name = to_utf16z(name);
+    // SAFETY: `name` is a NUL-terminated UTF-16 buffer in a local that lives past the call; the returned value is not dereferenced.
+    unsafe { RemovePropW(to_hwnd(hwnd), PCWSTR(name.as_ptr())) }
+        .map(|h| h.0 as isize)
+        .unwrap_or(0)
 }

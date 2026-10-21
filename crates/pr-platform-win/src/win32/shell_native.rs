@@ -7,12 +7,20 @@
 //! is `ShellNative` and the few constants the Rust callers still spell out. `ComInterop` itself belongs to W8-11f.
 //!
 //! COM must be initialised on the calling thread (the shell UI thread is an STA); every function returns the failing `HRESULT` as `Hresult`.
-#![allow(unused_variables, dead_code)] // stub: removed by the W8-11e porter when the last `todo!()` is gone.
 
-use windows::Win32::System::Com::{IDataObject, STGMEDIUM};
-use windows::Win32::UI::Shell::{IFileOpenDialog, IFileSaveDialog, IShellItem};
+use core::ffi::c_void;
 
-use super::structs::Hresult;
+use windows::Win32::System::Com::{
+    CLSCTX_INPROC_SERVER, CoCreateInstance, CoTaskMemFree, IBindCtx, IDataObject, STGMEDIUM,
+};
+use windows::Win32::System::Ole::ReleaseStgMedium;
+use windows::Win32::UI::Shell::{
+    FileOpenDialog, FileSaveDialog, IFileOpenDialog, IFileSaveDialog, IShellItem, SHCreateDataObject,
+    SHCreateItemFromParsingName,
+};
+use windows::core::{PCWSTR, PWSTR};
+
+use super::structs::{Hresult, to_utf16z};
 
 pub const CF_HDROP: u16 = 0x000F; // HDrop
 pub const CF_UNICODETEXT: u16 = 0x000D; // UnicodeText
@@ -27,22 +35,30 @@ pub const HRESULT_ERROR_CANCELLED: i32 = -2147023673;
 
 /// C# `ShellNative.CreateItemFromPath(path)`: `SHCreateItemFromParsingName(path, null, IID_IShellItem)`.
 pub fn create_item_from_path(path: &str) -> Result<IShellItem, Hresult> {
-    todo!()
+    let path = to_utf16z(path);
+    // SAFETY: `path` is a NUL-terminated UTF-16 buffer in a local that lives past the call; no bind context is passed.
+    unsafe { SHCreateItemFromParsingName::<_, _, IShellItem>(PCWSTR(path.as_ptr()), None::<&IBindCtx>) }
+        .map_err(|e| Hresult(e.code().0))
 }
 
 /// C# `ShellNative.CreateFileOpenDialog()`: `CoCreateInstance(CLSID_FileOpenDialog, null, CLSCTX_INPROC_SERVER, IID_IFileOpenDialog)`.
 pub fn create_file_open_dialog() -> Result<IFileOpenDialog, Hresult> {
-    todo!()
+    // SAFETY: the class id is a static constant; the new COM object is owned by the returned smart pointer (dropping it is `Release`) and is used on the creating thread.
+    unsafe { CoCreateInstance::<_, IFileOpenDialog>(&FileOpenDialog, None, CLSCTX_INPROC_SERVER) }
+        .map_err(|e| Hresult(e.code().0))
 }
 
 /// C# `ShellNative.CreateFileSaveDialog()`: the same for `CLSID_FileSaveDialog`.
 pub fn create_file_save_dialog() -> Result<IFileSaveDialog, Hresult> {
-    todo!()
+    // SAFETY: as in `create_file_open_dialog`.
+    unsafe { CoCreateInstance::<_, IFileSaveDialog>(&FileSaveDialog, None, CLSCTX_INPROC_SERVER) }
+        .map_err(|e| Hresult(e.code().0))
 }
 
 /// C# `ShellNative.CreateEmptyDataObject()`: `SHCreateDataObject(null, 0, null, null, IID_IDataObject)`, the shell's empty data object (any `SetData`/`GetData`).
 pub fn create_empty_data_object() -> Result<IDataObject, Hresult> {
-    todo!()
+    // SAFETY: no item ids and no inner data object are passed; the new COM object is owned by the returned smart pointer and is used on the creating thread.
+    unsafe { SHCreateDataObject::<_, IDataObject>(None, None, None::<&IDataObject>) }.map_err(|e| Hresult(e.code().0))
 }
 
 /// C# `ShellNative.TakeCoTaskString(pwstr)`: reads a `PWSTR` the shell allocated with `CoTaskMemAlloc` (`IShellItem::GetDisplayName`, `IFileDialog::GetFileName`),
@@ -51,7 +67,15 @@ pub fn create_empty_data_object() -> Result<IDataObject, Hresult> {
 /// # Safety
 /// `pwstr` is null or a NUL-terminated UTF-16 string allocated with `CoTaskMemAlloc` that nobody else frees; it is invalid after this call.
 pub unsafe fn take_co_task_string(pwstr: *mut u16) -> Option<String> {
-    todo!()
+    if pwstr.is_null() {
+        return None;
+    }
+    let wide = PWSTR(pwstr);
+    // SAFETY: `pwstr` was allocated by the shell with `CoTaskMemAlloc`, is NUL-terminated UTF-16, and nobody frees it before this call (`# Safety`).
+    let text = String::from_utf16_lossy(unsafe { wide.as_wide() });
+    // SAFETY: the same allocation, freed exactly once and unconditionally (even for text that is not valid UTF-16), like the C# `finally`; `text` is a copy.
+    unsafe { CoTaskMemFree(Some(pwstr.cast_const().cast::<c_void>())) };
+    Some(text)
 }
 
 /// C# `OleNative.ReleaseStgMedium(StgMedium*)`: frees what `IDataObject::GetData` returned (after this the medium's handle is invalid).
@@ -59,5 +83,6 @@ pub unsafe fn take_co_task_string(pwstr: *mut u16) -> Option<String> {
 /// # Safety
 /// `medium` is a medium filled by `GetData` (or built by the caller with a release method that matches its `tymed`) and is released exactly once.
 pub unsafe fn release_stg_medium(medium: &mut STGMEDIUM) {
-    todo!()
+    // SAFETY: `medium` was filled by `IDataObject::GetData` (or built with a matching release method) and is released exactly once (`# Safety`).
+    unsafe { ReleaseStgMedium(medium) }
 }

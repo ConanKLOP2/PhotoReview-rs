@@ -403,7 +403,7 @@ pub(crate) fn qpc_frequency() -> i64 {
 }
 
 #[cfg(windows)]
-fn qpc_timestamp() -> i64 {
+pub(crate) fn qpc_timestamp() -> i64 {
     let mut counter = 0_i64;
     // SAFETY: `counter` is a valid writable i64 for the synchronous QueryPerformanceCounter call.
     if unsafe { QueryPerformanceCounter(&mut counter) } != 0 {
@@ -426,7 +426,7 @@ pub(crate) fn qpc_frequency() -> i64 {
 }
 
 #[cfg(not(windows))]
-fn qpc_timestamp() -> i64 {
+pub(crate) fn qpc_timestamp() -> i64 {
     static START: OnceLock<Instant> = OnceLock::new();
     i64::try_from(START.get_or_init(Instant::now).elapsed().as_nanos()).unwrap_or(i64::MAX)
 }
