@@ -846,7 +846,7 @@ impl MainWindowInner {
         self.register_scroll_bars(); // 13i: BEFORE input (the bars' mouse handler must see the press first)
         self.register_input(); // 14c
         self.register_windowing(); // 13k
-        // 14f: register_context_menu(self)  (the unit adds its line here when it merges)
+        self.register_context_menu(); // 14f
         self.register_keep_warm(); // 16d
     }
 
