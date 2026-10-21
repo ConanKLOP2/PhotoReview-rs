@@ -12,31 +12,34 @@
 //! The cross-thread handlers only record the event in [`OverlayPending`] and call [`UiWake::wake`]; the owner then runs [`MainWindowOverlay::run_pending`] on
 //! the UI thread (D-W8B4O-10).
 
-#![allow(unused_variables, dead_code)] // stub only: removed by the porter when the bodies are filled (contracts/README.md D11)
-
+use std::any::Any;
 use std::cell::{Cell, RefCell};
 use std::fmt;
 use std::rc::{Rc, Weak};
-use std::sync::atomic::AtomicBool;
-use std::sync::{Arc, Mutex};
+use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::{Arc, Mutex, PoisonError};
 
 use pr_app::input::primitives::PointD;
 use pr_app::overlay::model::OverlayModel;
 use pr_app::overlay::tools_menu::OverlayCommands;
 use pr_app::services::render::{DrawContext, TextRenderer};
-use pr_app::viewmodels::main::state::ChangeSet;
-use pr_core::abstractions::Log;
+use pr_app::viewmodels::main::state::{ChangeSet, MainProperty};
+use pr_core::abstractions::{Log, UiPriority};
 use pr_core::settings::app_settings::AppSettings;
 use pr_core::settings::store::SettingsStore;
 use pr_l10n::localizer::{CurrentChangedSubscription, Localizer};
 
-use crate::host::contracts::{EventHandlerId, ShellWindowApi, WindowMessageHandler};
+use crate::host::contracts::{EventHandlerId, ShellWindowApi, ShellWindowEvent, WindowMessageHandler};
 use crate::host::frame_clock::HostFrameClock;
+use crate::host::main_window::core::{MainWindowFeature, MainWindowId, coalesced_wake};
 use crate::host::shell_window::ShellWindow;
-use crate::shell_overlay::messages::OverlayMessageHandler;
+use crate::host::ui_dispatcher::Win32UiDispatcher;
+use crate::shell_overlay::messages::{OverlayInput, OverlayMessageHandler};
 use crate::shell_overlay::native::OverlayOs;
-use crate::shell_overlay::overlay::state::{OverlayMenuHost, ShellOverlay};
-use crate::shell_overlay::tooltips::{DeferredTooltips, LocalPoster, TooltipFactory};
+use crate::shell_overlay::overlay::state::{OverlayMenuHost, ShellOverlay, ShellOverlayOptions, overlay_clock};
+use crate::shell_overlay::tooltips::{
+    DeferredTooltips, LocalPoster, NativeTooltipHost, OverlayTooltips, TooltipFactory,
+};
 
 /// What the overlay needs from the shell window beyond [`ShellWindowApi`]: C# calls `ShellWindow.InsertMessageHandlerFirst`, which is on the concrete
 /// class and not in `IShellWindow` (so not in `ShellWindowApi`). Implemented for [`ShellWindow`] below; tests implement it on a fake window.
@@ -47,7 +50,7 @@ pub trait OverlayWindowPort: ShellWindowApi {
 
 impl OverlayWindowPort for ShellWindow {
     fn insert_message_handler_first(&self, handler: Rc<dyn WindowMessageHandler>) {
-        todo!()
+        ShellWindow::insert_message_handler_first(self, handler);
     }
 }
 
@@ -108,14 +111,14 @@ pub struct ViewModelOverlayCommands {
 
 impl fmt::Debug for ViewModelOverlayCommands {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        todo!()
+        f.debug_struct("ViewModelOverlayCommands").finish_non_exhaustive()
     }
 }
 
 impl ViewModelOverlayCommands {
     /// C# primary constructor.
     pub fn new(view_model: Rc<dyn OverlayViewModel>, fit: Box<dyn FnMut()>) -> Self {
-        todo!()
+        Self { view_model, fit }
     }
 }
 
@@ -123,39 +126,39 @@ impl OverlayCommands for ViewModelOverlayCommands {
     /// `open_folder` -> `pick_and_open_folder`; `show_settings`, `show_skipped_files`, `show_recovery`, `show_diagnostics`, `show_benchmark`,
     /// `clear_cache` map to the view-model method of the same name; `fit` -> the `fit` closure; `remove_duplicates(numbered)` -> `remove_duplicates(numbered)`.
     fn open_folder(&mut self) {
-        todo!()
+        self.view_model.pick_and_open_folder();
     }
 
     fn show_settings(&mut self) {
-        todo!()
+        self.view_model.show_settings();
     }
 
     fn fit(&mut self) {
-        todo!()
+        (self.fit)();
     }
 
     fn show_skipped_files(&mut self) {
-        todo!()
+        self.view_model.show_skipped_files();
     }
 
     fn show_recovery(&mut self) {
-        todo!()
+        self.view_model.show_recovery();
     }
 
     fn show_diagnostics(&mut self) {
-        todo!()
+        self.view_model.show_diagnostics();
     }
 
     fn show_benchmark(&mut self) {
-        todo!()
+        self.view_model.show_benchmark();
     }
 
     fn clear_cache(&mut self) {
-        todo!()
+        self.view_model.clear_cache();
     }
 
     fn remove_duplicates(&mut self, numbered: bool) {
-        todo!()
+        self.view_model.remove_duplicates(numbered);
     }
 }
 
@@ -194,7 +197,12 @@ pub struct OverlayDeps {
 
 impl fmt::Debug for OverlayDeps {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        todo!()
+        f.debug_struct("OverlayDeps")
+            .field("text_renderer_id", &self.text_renderer_id)
+            .field("menus", &self.menus.is_some())
+            .field("settings_store", &self.settings_store.is_some())
+            .field("tooltip_factory", &self.tooltip_factory.is_some())
+            .finish_non_exhaustive()
     }
 }
 
@@ -202,7 +210,12 @@ impl fmt::Debug for OverlayDeps {
 /// `_onLanguageChanged`, `_onOverlaySourceChanged`, `_overlayRefreshPosted`). UI thread only.
 pub struct MainWindowOverlay {
     overlay: Rc<ShellOverlay>,
+    #[allow(dead_code, reason = "owned so the tooltips live as long as the overlay")]
     tooltips: Rc<DeferredTooltips>,
+    #[allow(
+        dead_code,
+        reason = "owned: the window's chain holds it too; kept for the lifetime of the overlay"
+    )]
     handler: Rc<OverlayMessageHandler>,
     window: Rc<dyn OverlayWindowPort>,
     view_model: Rc<dyn OverlayViewModel>,
@@ -224,7 +237,10 @@ pub struct MainWindowOverlay {
 
 impl fmt::Debug for MainWindowOverlay {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        todo!()
+        f.debug_struct("MainWindowOverlay")
+            .field("refresh_posted", &self.refresh_posted.get())
+            .field("disposed", &self.disposed.get())
+            .finish_non_exhaustive()
     }
 }
 
@@ -237,68 +253,338 @@ impl MainWindowOverlay {
     /// handler records the settings in [`OverlayPending`] and calls `wake`); subscribe the localizer (records the flag and calls `wake`). The C#
     /// `InvalidOperationException("The overlay is already attached.")` is the owner's `Option` field (a second `attach` is a programming error of the owner).
     pub fn attach(deps: OverlayDeps) -> Rc<MainWindowOverlay> {
-        todo!()
+        let OverlayDeps {
+            window,
+            clock,
+            view_model,
+            text,
+            text_renderer_id,
+            texts,
+            menus,
+            settings_store,
+            poster,
+            wake,
+            fit,
+            tooltip_factory,
+            os,
+            log: _,
+        } = deps;
+        let pending = Arc::new(OverlayPending::default());
+
+        Rc::new_cyclic(|weak: &Weak<MainWindowOverlay>| {
+            // Deferred tooltips: the control is created by a Background job (C# `_dispatcher.Post(action, UiPriority.Background)`).
+            let factory: TooltipFactory = tooltip_factory.unwrap_or_else(|| {
+                let window = Rc::clone(&window);
+                Box::new(move || {
+                    NativeTooltipHost::new(window.hwnd()).map(|host| Rc::new(host) as Rc<dyn OverlayTooltips>)
+                })
+            });
+            let tooltips = Rc::new(DeferredTooltips::new(factory, poster.as_ref()));
+
+            let overlay = ShellOverlay::new(ShellOverlayOptions {
+                text,
+                text_renderer_id,
+                texts,
+                clock: overlay_clock(clock),
+                settings: {
+                    let view_model = Rc::clone(&view_model);
+                    Box::new(move || view_model.settings())
+                },
+                commands: Box::new(ViewModelOverlayCommands::new(Rc::clone(&view_model), fit)),
+                request_render: {
+                    let window = Rc::clone(&window);
+                    Box::new(move || window.invalidate())
+                },
+                is_window_active: {
+                    let window = Rc::clone(&window);
+                    Box::new(move || window.is_active())
+                },
+                menus,
+                tooltips: Some(Rc::clone(&tooltips) as Rc<dyn OverlayTooltips>),
+                client_origin_on_screen_dip: {
+                    let weak = weak.clone();
+                    Some(Box::new(move || {
+                        weak.upgrade()
+                            .map_or(PointD { x: 0.0, y: 0.0 }, |this| this.client_origin_on_screen_dip())
+                    }))
+                },
+                on_command_failed: {
+                    let weak = weak.clone();
+                    Some(Box::new(move |name, message| {
+                        if let Some(this) = weak.upgrade() {
+                            this.on_command_failed(name, message);
+                        }
+                    }))
+                },
+                on_menu_failed: {
+                    let weak = weak.clone();
+                    Some(Box::new(move |error| {
+                        if let Some(this) = weak.upgrade() {
+                            this.on_command_failed("ToolsMenu", &error.to_string());
+                        }
+                    }))
+                },
+                timestamp: None,
+                ticks_per_second: None,
+                animator_ticks_per_second: None,
+            });
+            overlay.update(view_model.overlay_model());
+
+            // The handler goes to the FRONT of the chain; it relays to the same deferred tooltips as the overlay.
+            let handler = Rc::new(OverlayMessageHandler::new(
+                Rc::clone(&overlay) as Rc<dyn OverlayInput>,
+                Rc::clone(&window) as Rc<dyn ShellWindowApi>,
+                Some(Rc::clone(&tooltips) as Rc<dyn OverlayTooltips>),
+                Rc::clone(&os),
+            ));
+            OverlayWindowPort::insert_message_handler_first(
+                window.as_ref(),
+                Rc::clone(&handler) as Rc<dyn WindowMessageHandler>,
+            );
+
+            let activated = {
+                let overlay = Rc::downgrade(&overlay);
+                ShellWindowApi::subscribe(
+                    window.as_ref(),
+                    ShellWindowEvent::Activated,
+                    Box::new(move || {
+                        if let Some(overlay) = overlay.upgrade() {
+                            overlay.window_activated();
+                        }
+                    }),
+                )
+            };
+            let deactivated = {
+                let overlay = Rc::downgrade(&overlay);
+                ShellWindowApi::subscribe(
+                    window.as_ref(),
+                    ShellWindowEvent::Deactivated,
+                    Box::new(move || {
+                        if let Some(overlay) = overlay.upgrade() {
+                            overlay.window_deactivated();
+                        }
+                    }),
+                )
+            };
+
+            // Cross-thread handlers: only `Arc<OverlayPending>` and `Arc<dyn UiWake>` are captured; the result is always `Ok(())`.
+            let settings_subscription = settings_store.as_ref().map(|store| {
+                let pending = Arc::clone(&pending);
+                let wake = Arc::clone(&wake);
+                store.subscribe_changed(Box::new(move |settings| {
+                    *pending.settings.lock().unwrap_or_else(PoisonError::into_inner) = Some(Arc::clone(settings));
+                    wake.wake();
+                    Ok(())
+                }))
+            });
+            let language_subscription = {
+                let pending = Arc::clone(&pending);
+                let wake = Arc::clone(&wake);
+                pr_l10n::localizer::on_current_changed(move || {
+                    pending.language_changed.store(true, Ordering::SeqCst);
+                    wake.wake();
+                })
+            };
+
+            MainWindowOverlay {
+                overlay,
+                tooltips,
+                handler,
+                window,
+                view_model,
+                poster,
+                os,
+                pending,
+                settings_store,
+                settings_subscription: Cell::new(settings_subscription),
+                language_subscription: RefCell::new(Some(language_subscription)),
+                window_subscriptions: RefCell::new(vec![activated, deactivated]),
+                refresh_posted: Cell::new(false),
+                disposed: Cell::new(false),
+                weak_self: weak.clone(),
+            }
+        })
     }
 
     /// C# `Overlay` (null before attach and after dispose: the owner's `Option`).
     pub fn overlay(&self) -> &Rc<ShellOverlay> {
-        todo!()
+        &self.overlay
     }
 
     /// C# `DrawOverlay(context)`: `overlay.render(dc, window.client_size_dip(), window.dpi_scale())`; the host-twin `SizeD` is converted to the
     /// `pr_app` one. Called from the frame callback of the main window between `BeginDraw` and `EndDraw`, after the image layer.
     pub fn draw_overlay(&self, dc: &mut dyn DrawContext) {
-        todo!()
+        self.overlay
+            .render(dc, self.window.client_size_dip(), self.window.dpi_scale());
     }
 
     /// C# `OnOverlaySourceChanged` for one change set of the view model: nothing when disposed; when `changes.main` holds `CurrentIndex` or `CurrentImage`
     /// (image navigation) `overlay.note_activity()`; when `main`, `overlay` (info overlay) or `compare` changed, `mark_model_dirty()`.
     pub fn on_view_model_changed(&self, changes: &ChangeSet) {
-        todo!()
+        if self.disposed.get() {
+            return;
+        }
+        if changes.main.contains(MainProperty::CurrentIndex) || changes.main.contains(MainProperty::CurrentImage) {
+            self.overlay.note_activity();
+        }
+        if !changes.main.is_empty() || !changes.overlay.is_empty() || !changes.compare.is_empty() {
+            self.mark_model_dirty();
+        }
     }
 
     /// C# `MarkOverlayModelDirty()`: posts ONE `refresh_model` at `UiPriority::Render` (coalesced by `refresh_posted`); nothing when disposed.
     pub fn mark_model_dirty(&self) {
-        todo!()
+        if self.disposed.get() || self.refresh_posted.replace(true) {
+            return;
+        }
+        let weak = self.weak_self.clone();
+        self.poster.post(
+            UiPriority::Render,
+            Box::new(move || {
+                if let Some(this) = weak.upgrade() {
+                    this.refresh_model();
+                }
+            }),
+        );
     }
 
     /// C# `RefreshOverlayModel()` (the posted job): `refresh_posted = false`; when not disposed, `overlay.update(view_model.overlay_model())`.
     pub fn refresh_model(&self) {
-        todo!()
+        // Cleared FIRST: a change made inside `update` (a render request) can post again.
+        self.refresh_posted.set(false);
+        if !self.disposed.get() {
+            self.overlay.update(self.view_model.overlay_model());
+        }
     }
 
     /// The UI-thread end of [`UiWake::wake`]: takes the pending settings (C# `_onOverlaySettingsChanged`: `view_model.set_settings(settings)`, then
     /// `overlay.settings_changed()`, then `mark_model_dirty()`; the view model must see the new settings before the overlay re-evaluates) and the pending
     /// language flag (`on_language_changed`).
     pub fn run_pending(&self) {
-        todo!()
+        if self.disposed.get() {
+            return;
+        }
+        let settings = self
+            .pending
+            .settings
+            .lock()
+            .unwrap_or_else(PoisonError::into_inner)
+            .take();
+        if let Some(settings) = settings {
+            self.view_model.set_settings(settings);
+            self.overlay.settings_changed();
+            self.mark_model_dirty();
+        }
+        if self.pending.language_changed.swap(false, Ordering::SeqCst) {
+            self.on_language_changed();
+        }
     }
 
     /// C# `OnLanguageChangedOnUi()`: nothing when disposed; `view_model.refresh_localized_text()`, `overlay.apply_localization(&Localizer::current())`,
     /// `overlay.update(view_model.overlay_model())` (in that order).
     pub fn on_language_changed(&self) {
-        todo!()
+        if self.disposed.get() {
+            return;
+        }
+        self.view_model.refresh_localized_text();
+        self.overlay.apply_localization(&Localizer::current());
+        self.overlay.update(self.view_model.overlay_model());
     }
 
     /// C# `ClientOriginOnScreenDip()`: [`client_origin_dip`] of `os.client_origin_on_screen(window.hwnd())` and `window.dpi_scale()`.
     pub fn client_origin_on_screen_dip(&self) -> PointD {
-        todo!()
+        client_origin_dip(
+            self.os.client_origin_on_screen(self.window.hwnd()),
+            self.window.dpi_scale(),
+        )
     }
 
     /// C# `OnOverlayCommandFailed(actionName, exception)`: `view_model.report_action_failed(action_name, message)`; nothing when disposed.
     pub fn on_command_failed(&self, action_name: &str, message: &str) {
-        todo!()
+        if self.disposed.get() {
+            return;
+        }
+        self.view_model.report_action_failed(action_name, message);
     }
 
     /// C# `DisposeOverlay()`: idempotent. Unsubscribes the localizer, the settings store, the window events (the view-model subscription of C# does not exist:
     /// the owner stops calling `on_view_model_changed`), then disposes the overlay (timers, animator, tooltips, text layouts). The message handler stays in the
     /// window's chain (C# never removed it) but its overlay is disposed, so it only answers `None`.
     pub fn dispose(&self) {
-        todo!()
+        if self.disposed.replace(true) {
+            return;
+        }
+        drop(self.language_subscription.borrow_mut().take());
+        if let (Some(store), Some(id)) = (&self.settings_store, self.settings_subscription.take()) {
+            store.unsubscribe_changed(id);
+        }
+        let subscriptions = std::mem::take(&mut *self.window_subscriptions.borrow_mut());
+        for id in subscriptions {
+            ShellWindowApi::unsubscribe(self.window.as_ref(), id);
+        }
+        self.overlay.dispose();
     }
 }
 
 /// C# `ClientOriginOnScreenDip` arithmetic: `(x / dpi, y / dpi)` with `dpi = dpi_scale <= 0 ? 1 : dpi_scale`. Pure.
 pub fn client_origin_dip(origin_px: (i32, i32), dpi_scale: f64) -> PointD {
-    todo!()
+    let dpi = if dpi_scale <= 0.0 { 1.0 } else { dpi_scale };
+    PointD {
+        x: f64::from(origin_px.0) / dpi,
+        y: f64::from(origin_px.1) / dpi,
+    }
+}
+
+impl MainWindowFeature for MainWindowOverlay {
+    fn name(&self) -> &'static str {
+        "overlay"
+    }
+
+    /// At the place of C# `DisposeOverlay()` in `Dispose()`.
+    fn dispose(&self) {
+        MainWindowOverlay::dispose(self);
+    }
+
+    /// After the scroll bars, in the same frame as the image.
+    fn draw_overlay(&self, context: &mut dyn DrawContext) {
+        MainWindowOverlay::draw_overlay(self, context);
+    }
+
+    /// The single entry that replaces the three C# `PropertyChanged` subscriptions.
+    fn on_changes(&self, changes: &ChangeSet) {
+        self.on_view_model_changed(changes);
+    }
+
+    fn as_any(&self) -> &dyn Any {
+        self
+    }
+}
+
+/// The production [`UiWake`] (contract Q1): `wake()` posts ONE `Send` job at `Render` priority (coalesced while it is queued) whose body finds the main
+/// window on the UI thread, takes its registered [`MainWindowOverlay`] feature and runs [`MainWindowOverlay::run_pending`]. A wake that finds no live
+/// window, or a window without the feature, is dropped.
+pub struct WindowUiWake {
+    wake: Arc<dyn Fn() + Send + Sync>,
+}
+
+impl WindowUiWake {
+    /// `window`: the id of the main window, or `None` for "the main window of the thread the job runs on".
+    pub fn new(dispatcher: Win32UiDispatcher, window: Option<MainWindowId>) -> Self {
+        let wake = coalesced_wake(dispatcher, window, UiPriority::Render, |inner| {
+            inner.with_feature::<MainWindowOverlay, ()>(MainWindowOverlay::run_pending);
+        });
+        Self { wake }
+    }
+}
+
+impl fmt::Debug for WindowUiWake {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.debug_struct("WindowUiWake").finish_non_exhaustive()
+    }
+}
+
+impl UiWake for WindowUiWake {
+    fn wake(&self) {
+        (self.wake)();
+    }
 }
