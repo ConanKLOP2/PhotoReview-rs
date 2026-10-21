@@ -1,6 +1,6 @@
 # Task on progress
 
-**Updated:** 2026-10-18 (branch `codex/integration-wave-6`)
+**Updated:** 2026-10-21 (Wave 8 B1+B2 on master, see the last section; the "State" below is the 2026-10-18 Wave 6 snapshot)
 
 ## How to resume (read this first)
 1. Read `AGENTS.md`, this file, `docs/PROPOSED-DECISIONS.md` (P-01..P-33: unconfirmed proposals, all acted on),
@@ -275,8 +275,11 @@
 - NOT run: any Rust test of the new units (all stub bodies are `todo!()`); `cargo-mutants`; the C# claims in the contracts were checked by sub-agents reading the baseline source, not by running the C# tests; CI result pending at PR time.
 - Open: B1 stub changes of D-W8B2-6, duplicate concepts and image payload type (D-W8B2-4/5).
 
-## Codex pipeline status (2026-10-21)
-- Wave 8 B1 and B2 are ported on `master` (26/26 B2 units, PRs #46-#77) through `tools/autopilot/codex-pipeline.sh` (Codex gpt-6-sol medium) with Claude fallback; W8-04e and W8-10b were finished by Claude.
-- `codex-pipeline.sh --redo U1,U2` (rerun a unit that already has state) and `unit-pr.sh` are on `master` (#56).
-- Open: mutant-kill debt for W8-08a (Codex on `codex/mut-w808a`), PR #78 (W8-05g mutant tests); remaining `todo!()` stubs are the overlay units (`panel`, `folder_info`, `capture_badge`, `toolbar`, `status`, `zoom_indicator`, `tools_menu`) and native/WIC test stubs.
-- Check the state with `bash tools/autopilot/status.sh`. Do not run two pipelines at once (lock: `tools/autopilot/state/pipeline.lock`).
+## Wave 8 B1 + B2 complete (2026-10-21, master `7ed0452` + #80)
+- Wave 8 batches B1 (35 units) and B2 (26 units: 05g/05h, 06c/06e/06f, 07a-07k, 08a-08e, 09a, 10d/10e/10g/10i) are on `master` (B2 PRs #46-#77, mutant-kill PRs #76, #78, #80). 61 of 151 Wave 8 units are done; B3 (Win32 foundation and rendering, 23), B4 (main window, input, menus, overlay, 24), B5 (dialogs and settings UI, 35) and B6 (startup and composition, 8) are not started. No `PhotoReviewRs.exe` window exists yet (B6 20b closes the wave).
+- Verified on master after #80: `cargo clippy --workspace --all-targets --locked -- -D warnings` clean; `cargo test --workspace --locked --no-fail-fast` 8049 passed, 0 failed, 453 ignored (native/slow) over 393 test binaries. CI (`build-test`, `repo-checks`) green on every merged PR.
+- Mutation evidence: W8-05g 117 mutants (112 caught, 5 unviable, 0 missed); W8-06c 24/24 caught; W8-08a `viewmodels/main/state.rs` 220 mutants, 159 caught in the first full run, then a serial re-run of the survivors left 5, #80 killed 2, the other 3 are judged equivalent (documented in #80). Measure with `-j 1`: `-j 3` with one shared `CARGO_TARGET_DIR` reports false MISSED results.
+- Tooling: `tools/autopilot/codex-pipeline.sh` (Codex gpt-6-sol medium, `--redo`), `tools/autopilot/unit-pr.sh` (#56). Do not run two pipelines at once (lock: `tools/autopilot/state/pipeline.lock`).
+- Open debts (low priority): `LocalizationService::export_todo` (unblocks the `#[ignore = "needs W8-04a export_todo"]` test); `FakeExecutor` mutex poisoning after two consecutive `Scripted::Panic`; real WIC tests in `composition_factories` (`#[ignore = "native"]` if flaky); 6 out-of-scope surviving mutants (`review_command.rs` force_picker x2, `touchpad_gestures.rs` with_hint, `presenter/missing.rs` pending_next, `presenter/photo_info.rs` raw_preview_width/height); remaining `todo!()` stubs are the overlay units and native/WIC test stubs.
+- Question for the user: an unknown `Operation` in the action list JSON is refused in Rust, C# treats it as Move (pinned by test T12 in `action_list_json`). Not changed.
+- Next: write the B3 contracts (Win32 foundation: windows-rs audit, Direct2D device/surface, message loop, UI dispatcher), then port with the Codex pipeline; every `unsafe` unit needs a careful review.
