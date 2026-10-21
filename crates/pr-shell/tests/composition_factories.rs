@@ -1,4 +1,4 @@
-//! Tests for `pr_app::composition::factories` (contract W8-09a). Port of the `ServiceFactoriesTests` slice of the C# baseline
+//! Tests for `pr_shell::composition::factories` (contract W8-09a). Port of the `ServiceFactoriesTests` slice of the C# baseline
 //! d92d6aae (`tests/PhotoReview.App.Tests/Composition/ServiceFactoriesTests.cs`); `AppDecoderFactory_EveryBackendGoesThroughTheWebpHeicSwitch`
 //! belongs to W8-09b (it resolves the whole service graph).
 //!
@@ -10,10 +10,6 @@ use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::{Arc, Mutex, PoisonError};
 
-use pr_app::composition::decoders::{DecoderDeps, ProbeFn, ProbeResult};
-use pr_app::composition::factories::{
-    create_recovery_retry_service, create_source_prefetch, create_webp_heic_decoder, raw_decoder_options,
-};
 use pr_core::abstractions::{
     Clock, FileSystem, PhysicalSourceReader, ReadSeek, RecycleBin, SourceReadPriority, SourceReader,
 };
@@ -35,6 +31,10 @@ use pr_imaging::pixel_memory::PixelBufferImageCodec;
 use pr_imaging::webp_heic::WicCodecSupport;
 use pr_imaging_raw::RawPreviewFallback;
 use pr_libraw::decoder::{LibRawApi, LibRawSession};
+use pr_shell::composition::decoders::{DecoderDeps, ProbeFn, ProbeResult};
+use pr_shell::composition::factories::{
+    create_recovery_retry_service, create_source_prefetch, create_webp_heic_decoder, raw_decoder_options,
+};
 use pr_test_support::{FakeClock, FakeFileSystem, FakeRecycleBin, RecordingLog, TempRoot};
 use pr_turbojpeg::decoder::{EnglishTurboJpegTexts, FineScaleError};
 

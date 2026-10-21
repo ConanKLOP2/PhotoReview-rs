@@ -1,0 +1,36 @@
+[package]
+name = "pr-shell"
+description = "Thin executable package: composition root and the PhotoReviewRs binary (docs/adr/R0001, D-W8B1-1)"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true
+
+[features]
+# Phase 0 UI spike (docs/adr/R0001). Off by default so the normal build and tests are unaffected.
+ui-spike = ["pr-platform-win/ui-spike"]
+
+[dependencies]
+pr-app.workspace = true
+pr-core.workspace = true
+pr-imaging.workspace = true
+pr-imaging-raw.workspace = true
+pr-libraw.workspace = true
+pr-turbojpeg.workspace = true
+pr-platform-win.workspace = true
+
+[[bin]]
+name = "PhotoReviewRs"
+path = "src/main.rs"
+
+[[bin]]
+name = "r0001-spike"
+path = "src/bin/r0001_spike.rs"
+required-features = ["ui-spike"]
+
+[dev-dependencies]
+pr-test-support.workspace = true

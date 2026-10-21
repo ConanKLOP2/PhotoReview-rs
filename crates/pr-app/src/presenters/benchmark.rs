@@ -25,7 +25,7 @@ use pr_bench::models::{
 };
 use pr_bench::profiles;
 use pr_bench::workload_runner::{create_seeded_random, prepare_iteration, registry_images_per_sample};
-use pr_core::abstractions::RecycleBin;
+use pr_core::abstractions::{MemoryProbe, RecycleBin};
 use pr_core::catalog::types::is_supported;
 use pr_core::sync::CancelToken;
 use pr_core::text::dotnet_path::get_directory_name;
@@ -890,6 +890,9 @@ pub struct BenchmarkSessionDeps {
     pub real_recycle_bin: Arc<dyn Fn() -> Arc<dyn RecycleBin> + Send + Sync>,
     /// `BenchmarkExecutorOptions::physical_memory_bytes`.
     pub physical_memory_bytes: i64,
+    /// `BenchmarkExecutorOptions::memory_probe`: the host passes `pr_platform_win::memory_probe::WindowsMemoryProbe` (this crate cannot name
+    /// it, D-W8B1-1); `None` = fail closed.
+    pub memory_probe: Option<Arc<dyn MemoryProbe>>,
 }
 
 impl fmt::Debug for BenchmarkSessionDeps {
@@ -941,6 +944,7 @@ impl ProductionBenchmarkSession {
         let options = BenchmarkExecutorOptions {
             decoder: Some((deps.decoder_factory)()),
             physical_memory_bytes: deps.physical_memory_bytes,
+            memory_probe: deps.memory_probe.clone(),
             ..BenchmarkExecutorOptions::default()
         };
         let executor = BenchmarkImageExecutor::new(

@@ -118,7 +118,7 @@ a native twin. Batch column = contract batch (section "Batches").
 | W8-08d | lines 860 to 1100 (settings dialog entry, session persist, instance label, title bar, localized refresh) | `viewmodels::main::session` | 🟡 | Sonnet | F | 08c, 02b | B2 |
 | W8-08e | lines 1100 to 1385 (change notification, move/copy to folder, remembered folders, `ExifAutomationName`) | `viewmodels::main::notify_move` | 🟡 | Sonnet | F | 08d, 07e | B2 |
 
-### 09 Composition (`pr_app::composition`; no DI container, explicit builder)
+### 09 Composition (`pr_shell::composition`; no DI container, explicit builder)
 | WU | C# files (lines) | Rust | Col | Model | Test | Depends on | Batch |
 |---|---|---|---|---|---|---|---|
 | W8-09a | `Composition/{DecoderProviders 84, LibRawPreviewFallback 16, ServiceFactories 80, SharedServiceContracts 23}` = 203 | `composition::{decoders, factories, contracts}` | 🟡 | Sonnet | F | `pr_imaging`, `pr_imaging_raw` | B2 |

@@ -26,6 +26,7 @@ pr-imaging-raw = { path = "crates/pr-imaging-raw" }
 pr-libraw = { path = "crates/pr-libraw" }
 pr-turbojpeg = { path = "crates/pr-turbojpeg" }
 pr-platform-win = { path = "crates/pr-platform-win" }
+pr-app = { path = "crates/pr-app" }
 pr-bench = { path = "crates/pr-bench" }
 pr-perf = { path = "crates/pr-perf" }
 pr-test-support = { path = "crates/pr-test-support" }
