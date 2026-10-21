@@ -655,6 +655,24 @@ impl MainViewModel {
         self.apply_sink_actions()
     }
 
+    /// C# `Compare.SelectLeft()` (`CompareViewModel.SelectLeft` = `SelectedPath = LeftPath`), called by the shell on a click on the left
+    /// compare cell (`ShellMainWindow.Viewing.cs` `TrySelectCompareAt`). Only the compare view model changes: the returned set holds
+    /// the compare bits (`selected_path` when it differs).
+    pub fn select_compare_left(&mut self) -> ChangeSet {
+        ChangeSet {
+            compare: self.presenter.compare_mut().select_left(),
+            ..ChangeSet::default()
+        }
+    }
+
+    /// C# `Compare.SelectRight()` (`SelectedPath = RightPath`); see [`MainViewModel::select_compare_left`].
+    pub fn select_compare_right(&mut self) -> ChangeSet {
+        ChangeSet {
+            compare: self.presenter.compare_mut().select_right(),
+            ..ChangeSet::default()
+        }
+    }
+
     /// Test seam: the C# tests hold the `ReviewCatalog` object and move its current index behind the presenter's back
     /// (`_catalog.SetCurrent`, `_catalog.Reset`). The view model owns the catalog here, so those tests use this accessor.
     /// Never called by production code.

@@ -223,6 +223,10 @@ pub trait IPreloadController {
     fn get_viewer_decode_delay(&self) -> Duration {
         Duration::ZERO
     }
+
+    /// C# `(controller as IDisposable)?.Dispose()` (`ShellMainWindow.cs` 401): releases what the controller owns (the scheduler's
+    /// workers). Empty default for fakes that own nothing; [`PreloadControllerAdapter`] overrides it. Reconciliation amendment A5.
+    fn dispose(&self) {}
 }
 
 /// C# `IPresentationSink` (27 lines): where the image presenter sends its results (the image, the status line, trace marks).
@@ -325,6 +329,10 @@ where
 
     fn get_viewer_decode_delay(&self) -> Duration {
         (self.get_scheduler)().get_viewer_decode_delay()
+    }
+
+    fn dispose(&self) {
+        (self.get_scheduler)().dispose();
     }
 }
 
