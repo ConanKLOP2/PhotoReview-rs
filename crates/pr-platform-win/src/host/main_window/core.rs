@@ -844,7 +844,7 @@ impl MainWindowInner {
     /// (the C# rule). Lines of units that are not on master are comments until they merge.
     pub(super) fn register_features(&self) {
         self.register_scroll_bars(); // 13i: BEFORE input (the bars' mouse handler must see the press first)
-        // 14c: register_input(self)  (the unit adds its line here when it merges)
+        self.register_input(); // 14c
         self.register_windowing(); // 13k
         // 14f: register_context_menu(self)  (the unit adds its line here when it merges)
         self.register_keep_warm(); // 16d
