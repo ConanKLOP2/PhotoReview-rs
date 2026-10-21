@@ -757,7 +757,6 @@ fn export_translation_without_service_is_none_none() {
 }
 
 #[test]
-#[ignore = "needs W8-04a export_todo"]
 fn export_translation_with_service_selects_the_written_file() {
     // New test
     let root = TempRoot::new("w8-10e-export-translation");
