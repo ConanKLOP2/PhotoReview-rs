@@ -53,6 +53,7 @@ pub struct LocalizationPaths {
 /// `apply` and `switch` publish and must run on the UI thread.
 pub struct LocalizationService {
     loader: LanguageLoader,
+    shipped_dir: PathBuf,
     user_languages_dir: PathBuf,
     installed_ui_culture: UiCulture,
     cultures: Arc<dyn CultureLookup>,
@@ -83,9 +84,14 @@ impl LocalizationService {
         cultures: Arc<dyn CultureLookup>,
         log: Arc<dyn Log>,
     ) -> Self {
-        let loader = LanguageLoader::new(file_system, paths.shipped_dir, Some(paths.user_languages_dir.clone()));
+        let loader = LanguageLoader::new(
+            file_system,
+            paths.shipped_dir.clone(),
+            Some(paths.user_languages_dir.clone()),
+        );
         Self {
             loader,
+            shipped_dir: paths.shipped_dir,
             user_languages_dir: paths.user_languages_dir,
             installed_ui_culture,
             cultures,
@@ -191,6 +197,16 @@ impl LocalizationService {
         let localizer = Arc::new(self.load(Some(&language)));
         self.apply(Some(&language), Arc::clone(&localizer));
         localizer.warnings().to_vec()
+    }
+
+    /// C# `ExportTodo(language)`: `TranslationExport.Export(ResolveCode(language), ShippedLanguagesDir, UserLanguagesDir)`;
+    /// returns the path of the written `<code>.todo.json`.
+    pub fn export_todo(&self, language: Option<&str>) -> Result<PathBuf, super::export::TranslationExportError> {
+        super::export::export(
+            &self.resolve_code(language),
+            &self.shipped_dir,
+            &self.user_languages_dir,
+        )
     }
 
     /// C# `ResolveCode(language)`: `loader.resolve(language, Some(installed_ui_culture))`; unknown codes give `en`.

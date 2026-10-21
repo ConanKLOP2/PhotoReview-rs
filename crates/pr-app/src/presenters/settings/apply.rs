@@ -420,21 +420,25 @@ impl SettingsPresenter {
     /// Some(&settings.ui_language))`, `path = service.export_todo(Some(&language))`, and on success `(Some(SettingsExplorerRequest {
     /// arguments: "/select,\"{path}\"", .. }), None)`; an export error gives `(None, Some(error text))`.
     ///
-    /// DIFFERENT UNTIL W8-04a lands `LocalizationService::export_todo` (contract O1: a B1 file this unit does not own, and the shipped
-    /// languages directory is private to the service): with a service this returns `(None, Some(<fixed English text>))` instead of
-    /// writing a file.
     pub fn export_translation(
         &self,
         selected: Option<&LanguageOption>,
     ) -> (Option<SettingsExplorerRequest>, Option<String>) {
-        if self.localization.is_none() {
+        let Some(localization) = self.localization.as_ref() else {
             return (None, None);
+        };
+        let language = language_options::to_setting(selected, Some(self.settings.ui_language.as_str()));
+        let service = localization.lock().unwrap_or_else(PoisonError::into_inner);
+        match service.export_todo(Some(&language)) {
+            Ok(path) => (
+                Some(SettingsExplorerRequest {
+                    arguments: Some(format!("/select,\"{}\"", path.display())),
+                    error_message: None,
+                }),
+                None,
+            ),
+            Err(error) => (None, Some(error.to_string())),
         }
-        let _language = language_options::to_setting(selected, Some(self.settings.ui_language.as_str()));
-        (
-            None,
-            Some("Translation export is not available in this build.".to_owned()),
-        )
     }
 
     /// C# static `PrepareLogLocation()`: `directory = parent of AppLog::global().file_path()`; `create_dir_all` failure gives an
