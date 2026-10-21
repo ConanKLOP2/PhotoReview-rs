@@ -9,18 +9,19 @@
 //!
 //! Ticks are the nanoseconds of `render::keep_alive::monotonic_ticks` (D-W8B3S-8): the same clock as `GpuKeepAlive`, never `Stopwatch`/QPC units.
 
-// Contract stub: the bodies are `todo!()` until the W8-16d port; removed with the last `todo!()`.
-#![allow(unused_variables, dead_code)]
-
 use std::cell::Cell;
 use std::path::PathBuf;
-use std::rc::Rc;
+use std::rc::{Rc, Weak};
 use std::sync::Arc;
 
 use super::frame_log::FrameLog;
-use crate::host::contracts::{WindowMessage, WindowMessageHandler};
+use crate::host::contracts::{ShellWindowApi, WindowMessage, WindowMessageHandler};
 use crate::host::shell_window::ShellWindow;
-use crate::render::keep_alive::{GpuKeepAlive, OpenKeepAliveWork, TickClock};
+use crate::render::keep_alive::{
+    GpuKeepAlive, KeepAliveOptions, OpenKeepAliveWork, TickClock, monotonic_ticks, open_offscreen_hardware_work,
+    ticks_from_ms,
+};
+use crate::win32::messages::*;
 use crate::win32::structs::Lresult;
 
 /// `PHOTOREVIEW_RS_GPU_KEEPWARM` (C# `PHOTOREVIEW_GPU_KEEPWARM`, R0002): `0`, `off`, `false`, `no` (any case, trimmed) switch it off.
@@ -55,7 +56,11 @@ pub struct KeepWarmOptions {
 impl Default for KeepWarmOptions {
     /// Enabled, 5000 ms, 20 ms.
     fn default() -> Self {
-        todo!("W8-16d")
+        Self {
+            enabled: true,
+            window_ms: DEFAULT_WINDOW_MS,
+            interval_ms: DEFAULT_INTERVAL_MS,
+        }
     }
 }
 
@@ -65,14 +70,52 @@ impl KeepWarmOptions {
     /// value (also empty) = enabled, absent = enabled. The two numbers: parsed like .NET `int.TryParse(NumberStyles.Integer, InvariantCulture)`
     /// (ASCII whitespace and one sign allowed, anything else or an overflow = the default), then clamped.
     pub fn from_environment(get: &dyn Fn(&str) -> Option<String>) -> KeepWarmOptions {
-        todo!("W8-16d")
+        let enabled = get(ENABLED_VARIABLE).is_none_or(|raw| {
+            let value = raw.trim();
+            !(value == "0" || ["off", "false", "no"].iter().any(|off| value.eq_ignore_ascii_case(off)))
+        });
+        fn read_int(get: &dyn Fn(&str) -> Option<String>, name: &str, fallback: i32, min: i32, max: i32) -> i32 {
+            get(name)
+                .and_then(|raw| {
+                    raw.trim_matches(|ch| matches!(ch, ' ' | '\t' | '\n' | '\u{b}' | '\u{c}' | '\r'))
+                        .parse::<i32>()
+                        .ok()
+                })
+                .map_or(fallback, |value| value.clamp(min, max))
+        }
+        Self {
+            enabled,
+            window_ms: read_int(get, WINDOW_VARIABLE, DEFAULT_WINDOW_MS, MIN_WINDOW_MS, MAX_WINDOW_MS),
+            interval_ms: read_int(
+                get,
+                INTERVAL_VARIABLE,
+                DEFAULT_INTERVAL_MS,
+                MIN_INTERVAL_MS,
+                MAX_INTERVAL_MS,
+            ),
+        }
     }
 }
 
 /// C# `KeepWarmController.IsInteraction(message)`: `WM_KEYDOWN`, `WM_SYSKEYDOWN`, `WM_MOUSEMOVE`, `WM_LBUTTONDOWN`, `WM_RBUTTONDOWN`, `WM_MBUTTONDOWN`,
 /// `WM_XBUTTONDOWN`, `WM_MOUSEWHEEL`, `WM_MOUSEHWHEEL`, `WM_ACTIVATE`, `WM_TOUCH`, `WM_POINTERUPDATE`, `WM_POINTERDOWN`.
 pub fn is_interaction(message: u32) -> bool {
-    todo!("W8-16d")
+    matches!(
+        message,
+        WM_KEYDOWN
+            | WM_SYSKEYDOWN
+            | WM_MOUSEMOVE
+            | WM_LBUTTONDOWN
+            | WM_RBUTTONDOWN
+            | WM_MBUTTONDOWN
+            | WM_XBUTTONDOWN
+            | WM_MOUSEWHEEL
+            | WM_MOUSEHWHEEL
+            | WM_ACTIVATE
+            | WM_TOUCH
+            | WM_POINTER_UPDATE
+            | WM_POINTER_DOWN
+    )
 }
 
 /// C# `KeepWarmController` (a message handler registered FIRST in the chain; it always answers "not handled").
@@ -106,36 +149,62 @@ impl KeepWarmController {
         activate: Box<dyn Fn(i64)>,
         timestamp: Option<Box<dyn Fn() -> i64>>,
     ) -> Self {
-        todo!("W8-16d")
+        Self {
+            options,
+            is_window_active,
+            activate,
+            timestamp: timestamp.unwrap_or_else(|| Box::new(monotonic_ticks)),
+            last_activation: Cell::new(0),
+            has_activation: Cell::new(false),
+            activations: Cell::new(0),
+            launch_warmups: Cell::new(0),
+        }
     }
 
     /// C# `Activations`: how many times the warm window was extended by an interaction (diagnostics, tests).
     pub fn activations(&self) -> i64 {
-        todo!("W8-16d")
+        self.activations.get()
     }
 
     /// C# `LaunchWarmups`: how many launch warm-ups ran (not counted in `activations`).
     pub fn launch_warmups(&self) -> i64 {
-        todo!("W8-16d")
+        self.launch_warmups.get()
     }
 
     /// C# `WarmAtLaunch()`: warm as soon as the first image was presented, without waiting for an interaction (perf gate 3). Disabled = nothing.
     /// Otherwise `launch_warmups += 1` and `activate(timestamp() + ticks_from_ms(window_ms))` once; it does not touch `activations` or the throttle.
     pub fn warm_at_launch(&self) {
-        todo!("W8-16d")
+        if !self.options.enabled {
+            return;
+        }
+        self.launch_warmups.set(self.launch_warmups.get().saturating_add(1));
+        (self.activate)((self.timestamp)().saturating_add(ticks_from_ms(i64::from(self.options.window_ms))));
     }
 
     /// C# `NoteInteraction()`: disabled or the window not active = nothing (and the throttle is NOT consumed). Otherwise, unless an extension was made
     /// less than `THROTTLE_MS` ago: remember `now`, `activations += 1`, `activate(now + ticks_from_ms(window_ms))`.
     pub fn note_interaction(&self) {
-        todo!("W8-16d")
+        if !self.options.enabled || !(self.is_window_active)() {
+            return;
+        }
+        let now = (self.timestamp)();
+        if self.has_activation.get() && now.saturating_sub(self.last_activation.get()) < ticks_from_ms(THROTTLE_MS) {
+            return;
+        }
+        self.last_activation.set(now);
+        self.has_activation.set(true);
+        self.activations.set(self.activations.get().saturating_add(1));
+        (self.activate)(now.saturating_add(ticks_from_ms(i64::from(self.options.window_ms))));
     }
 }
 
 impl WindowMessageHandler for KeepWarmController {
     /// C# `TryHandle`: an interaction message calls `note_interaction`; the answer is ALWAYS `None` (input behaviour is untouched).
     fn try_handle(&self, message: &WindowMessage) -> Option<Lresult> {
-        todo!("W8-16d")
+        if is_interaction(message.msg) {
+            self.note_interaction();
+        }
+        None
     }
 }
 
@@ -150,11 +219,11 @@ pub trait KeepWarmWindow {
 
 impl KeepWarmWindow for ShellWindow {
     fn is_active(&self) -> bool {
-        todo!("W8-16d")
+        ShellWindowApi::is_active(self)
     }
 
     fn insert_message_handler_first(&self, handler: Rc<dyn WindowMessageHandler>) {
-        todo!("W8-16d")
+        ShellWindow::insert_message_handler_first(self, handler);
     }
 }
 
@@ -205,7 +274,10 @@ impl std::fmt::Debug for KeepWarmSetup {
 impl KeepWarmSetup {
     /// C# `DisposeKeepWarm()`: disposes the keep-alive thread (joins it) and closes the frame log; idempotent.
     pub fn dispose(&mut self) {
-        todo!("W8-16d")
+        if let Some(keep_alive) = self.keep_alive.take() {
+            keep_alive.dispose();
+        }
+        self.frame_log.take();
     }
 }
 
@@ -214,5 +286,48 @@ impl KeepWarmSetup {
 /// `GpuKeepAlive` (interval = `options.interval_ms`, work = the injected one or the hardware work) and the controller (active = `window.is_active`,
 /// activate = `keep_alive.activate`) and registers the controller first in the window's handler chain.
 pub fn register_keep_warm(window: &Rc<dyn KeepWarmWindow>, registration: KeepWarmRegistration) -> KeepWarmSetup {
-    todo!("W8-16d")
+    let KeepWarmRegistration {
+        frame_log_path,
+        keep_warm,
+        prefer_warp,
+        work,
+        timestamp,
+    } = registration;
+    let frequency = crate::display_clock::qpc_frequency();
+    let frame_log = match frame_log_path.filter(|path| !path.as_os_str().is_empty()) {
+        Some(path) => FrameLog::from_environment(|_| Some(path.to_string_lossy().into_owned()), frequency),
+        None => FrameLog::from_environment(|name| std::env::var(name).ok(), frequency),
+    };
+    let options = keep_warm.unwrap_or_else(|| KeepWarmOptions::from_environment(&|name| std::env::var(name).ok()));
+    if !options.enabled || (prefer_warp && work.is_none()) {
+        return KeepWarmSetup {
+            keep_alive: None,
+            controller: None,
+            frame_log,
+        };
+    }
+    let clock = timestamp.unwrap_or_else(|| Arc::new(monotonic_ticks));
+    let keep_alive = Arc::new(GpuKeepAlive::new(
+        options.interval_ms,
+        work.unwrap_or_else(|| Box::new(open_offscreen_hardware_work)),
+        KeepAliveOptions {
+            timestamp: Some(clock.clone()),
+            below_normal_priority: true,
+        },
+    ));
+    let weak_window: Weak<dyn KeepWarmWindow> = Rc::downgrade(window);
+    let active = Box::new(move || weak_window.upgrade().is_some_and(|window| window.is_active()));
+    let activate_keep_alive = keep_alive.clone();
+    let controller = Rc::new(KeepWarmController::new(
+        options,
+        active,
+        Box::new(move |until| activate_keep_alive.activate(until)),
+        Some(Box::new(move || clock())),
+    ));
+    window.insert_message_handler_first(controller.clone());
+    KeepWarmSetup {
+        keep_alive: Some(keep_alive),
+        controller: Some(controller),
+        frame_log,
+    }
 }

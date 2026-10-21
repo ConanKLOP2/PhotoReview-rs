@@ -11,13 +11,13 @@
 //! on the UI thread ([`PresentationPrefetcher::apply_lookup`], [`PresentationPrefetcher::run_retry`]); the data crossing threads are plain `Send` values
 //! ([`LookupRequest`], `Vec<Option<Arc<PixelBuffer>>>`).
 
-// Contract stub: the bodies are `todo!()` until the W8-16d port; removed with the last `todo!()`.
-#![allow(unused_variables, dead_code)]
-
+use std::cell::{Cell, RefCell};
+use std::collections::{BTreeMap, HashSet};
 use std::rc::Rc;
 use std::sync::Arc;
 use std::time::Duration;
 
+use pr_app::services::render::GpuImageCache;
 use pr_app::services::render::RenderError;
 use pr_imaging::pixels::PixelBuffer;
 
@@ -44,11 +44,11 @@ pub trait PrefetchCache {
 
 impl<D: BitmapDevice + 'static> PrefetchCache for D2dGpuImageCache<D> {
     fn contains(&self, pixel_buffer_id: i64) -> bool {
-        todo!("W8-16d")
+        self.inner().contains(pixel_buffer_id)
     }
 
     fn prefetch(&self, pixels: &Arc<PixelBuffer>) -> Result<(), RenderError> {
-        todo!("W8-16d")
+        GpuImageCache::prefetch(self, pixels)
     }
 }
 
@@ -84,13 +84,33 @@ pub trait PrefetchHost {
 /// C# `Plan(count, index, direction, ahead, behind)`: candidate indexes by priority, `ahead` images in the direction of travel (`direction < 0` is
 /// backwards, anything else forwards) then `behind` the other way; indexes outside `0..count` are dropped (no wrap-around).
 pub fn plan(count: i32, index: i32, direction: i32, ahead: usize, behind: usize) -> Vec<i32> {
-    todo!("W8-16d")
+    let mut result = Vec::new();
+    let step: i64 = if direction < 0 { -1 } else { 1 };
+    for (limit, sign) in [(ahead, step), (behind, -step)] {
+        for offset in 1..=limit {
+            let Ok(offset) = i64::try_from(offset) else { break };
+            let candidate = i64::from(index).saturating_add(sign.saturating_mul(offset));
+            if candidate >= 0 && candidate < i64::from(count) {
+                if let Ok(candidate) = i32::try_from(candidate) {
+                    result.push(candidate);
+                }
+            }
+        }
+    }
+    result
 }
 
 /// C# `PresentationPrefetcher`. Share it as `Rc<PresentationPrefetcher>`; every method takes `&self`.
 pub struct PresentationPrefetcher {
-    // Fields (interior-mutable): cache, host, planned ids, last_index, direction, generation, prefetch_calls, plan_changed handlers.
-    _private: (),
+    cache: Rc<dyn PrefetchCache>,
+    host: Rc<dyn PrefetchHost>,
+    planned: RefCell<HashSet<i64>>,
+    last_index: Cell<i32>,
+    direction: Cell<i32>,
+    generation: Cell<u64>,
+    prefetch_calls: Cell<i32>,
+    next_handler: Cell<u64>,
+    handlers: RefCell<BTreeMap<u64, Rc<dyn Fn()>>>,
 }
 
 impl std::fmt::Debug for PresentationPrefetcher {
@@ -102,32 +122,45 @@ impl std::fmt::Debug for PresentationPrefetcher {
 impl PresentationPrefetcher {
     /// C# constructor `(cache, host)`: direction +1, `last_index = -1`, generation 0.
     pub fn new(cache: Rc<dyn PrefetchCache>, host: Rc<dyn PrefetchHost>) -> Self {
-        todo!("W8-16d")
+        Self {
+            cache,
+            host,
+            planned: RefCell::new(HashSet::new()),
+            last_index: Cell::new(-1),
+            direction: Cell::new(1),
+            generation: Cell::new(0),
+            prefetch_calls: Cell::new(0),
+            next_handler: Cell::new(1),
+            handlers: RefCell::new(BTreeMap::new()),
+        }
     }
 
     /// C# `Direction`: +1 forwards, -1 backwards (kept while standing still).
     pub fn direction(&self) -> i32 {
-        todo!("W8-16d")
+        self.direction.get()
     }
 
     /// C# `PlannedIds`: the buffer ids requested by the latest applied pass (for `GpuImageCache::retain`).
     pub fn planned_ids(&self) -> Vec<i64> {
-        todo!("W8-16d")
+        self.planned.borrow().iter().copied().collect()
     }
 
     /// C# `PrefetchCalls`: how many `prefetch` calls were made (diagnostics, tests).
     pub fn prefetch_calls(&self) -> i32 {
-        todo!("W8-16d")
+        self.prefetch_calls.get()
     }
 
     /// C# `PlanChanged +=`: raised after each applying pass so the window updates `retain`.
     pub fn subscribe_plan_changed(&self, handler: Rc<dyn Fn()>) -> u64 {
-        todo!("W8-16d")
+        let id = self.next_handler.get();
+        self.next_handler.set(id.wrapping_add(1));
+        self.handlers.borrow_mut().insert(id, handler);
+        id
     }
 
     /// C# `PlanChanged -=`; an unknown id is a no-op.
     pub fn unsubscribe_plan_changed(&self, id: u64) {
-        todo!("W8-16d")
+        self.handlers.borrow_mut().remove(&id);
     }
 
     /// C# `Navigated(index, count)` (UI thread): the current image (catalog index) changed. `index < 0 || count <= 0` clears the plan, forgets the last
@@ -135,13 +168,38 @@ impl PresentationPrefetcher {
     /// `index - last_index` (kept when equal or on the first call), the generation is bumped, one pass runs now and `RETRY_DELAYS_MS` retry passes are
     /// scheduled with [`PrefetchHost::schedule_retry`].
     pub fn navigated(&self, index: i32, count: i32) {
-        todo!("W8-16d")
+        if index < 0 || count <= 0 {
+            self.planned.borrow_mut().clear();
+            self.last_index.set(-1);
+            self.generation.set(self.generation.get().wrapping_add(1));
+            return;
+        }
+        let last = self.last_index.get();
+        if last >= 0 && index != last {
+            self.direction.set(if index > last { 1 } else { -1 });
+        }
+        self.last_index.set(index);
+        let generation = self.generation.get().wrapping_add(1);
+        self.generation.set(generation);
+        self.pass(index, count, generation);
+        for delay in RETRY_DELAYS_MS {
+            self.host.schedule_retry(
+                Duration::from_millis(delay),
+                RetryRequest {
+                    generation,
+                    index,
+                    count,
+                },
+            );
+        }
     }
 
     /// The host calls this on the UI thread when a scheduled retry is due. Runs a pass only when `request.generation` is still current (the user has
     /// not navigated since).
     pub fn run_retry(&self, request: RetryRequest) {
-        todo!("W8-16d")
+        if request.generation == self.generation.get() {
+            self.pass(request.index, request.count, request.generation);
+        }
     }
 
     /// The host calls this on the UI thread with the result of a [`LookupRequest`] (C# `Apply(found)` inside the posted action). Ignored when
@@ -149,6 +207,35 @@ impl PresentationPrefetcher {
     /// `contains(id)` is false, `prefetch` it (`prefetch_calls += 1`); then raise `PlanChanged`. The first `prefetch` error stops the pass and is
     /// returned (planned ids so far stay, no `PlanChanged`), exactly like the C# exception leaving the posted action.
     pub fn apply_lookup(&self, generation: u64, found: &[Option<Arc<PixelBuffer>>]) -> Result<(), RenderError> {
-        todo!("W8-16d")
+        if generation != self.generation.get() {
+            return Ok(());
+        }
+        self.planned.borrow_mut().clear();
+        for pixels in found.iter().flatten() {
+            if pixels.is_disposed() {
+                continue;
+            }
+            let id = pixels.id();
+            self.planned.borrow_mut().insert(id);
+            if !self.cache.contains(id) {
+                self.cache.prefetch(pixels)?;
+                self.prefetch_calls.set(self.prefetch_calls.get().saturating_add(1));
+            }
+        }
+        let handlers: Vec<_> = self.handlers.borrow().values().cloned().collect();
+        for handler in handlers {
+            handler();
+        }
+        Ok(())
+    }
+
+    fn pass(&self, index: i32, count: i32, generation: u64) {
+        let paths: Vec<_> = plan(count, index, self.direction.get(), AHEAD, BEHIND)
+            .into_iter()
+            .filter_map(|candidate| self.host.path_at(candidate))
+            .collect();
+        if !paths.is_empty() {
+            self.host.start_lookup(LookupRequest { generation, paths });
+        }
     }
 }
