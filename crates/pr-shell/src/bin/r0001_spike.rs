@@ -51,14 +51,14 @@ fn main() {
         eprintln!("usage: r0001-spike <folder> [--measure N] [--interval-ms MS] [--size WxH] [--full]");
         std::process::exit(2);
     };
-    let opts = pr_app::spike::viewer::Options {
+    let opts = pr_shell::spike::viewer::Options {
         folder,
         measure,
         interval_ms,
         client,
         full_only,
     };
-    if let Err(e) = pr_app::spike::viewer::run(&opts, process_start) {
+    if let Err(e) = pr_shell::spike::viewer::run(&opts, process_start) {
         eprintln!("spike failed: {e}");
         std::process::exit(1);
     }

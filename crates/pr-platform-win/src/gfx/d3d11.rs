@@ -5,16 +5,18 @@
 //! `DeviceResources.CreateDevice` (hardware first, WARP as the fallback) and the two context calls that fix flip-model teardown.
 //! Table: `contracts/W8-11g.md`.
 
-#![allow(unused_variables, dead_code)] // W8-11g stub: the porter removes this line when the last `todo!()` is gone.
-
+use windows::Win32::Foundation::{E_FAIL, HMODULE};
 use windows::Win32::Graphics::Direct3D::{
-    D3D_FEATURE_LEVEL, D3D_FEATURE_LEVEL_9_3, D3D_FEATURE_LEVEL_10_0, D3D_FEATURE_LEVEL_10_1, D3D_FEATURE_LEVEL_11_0,
+    D3D_DRIVER_TYPE, D3D_DRIVER_TYPE_HARDWARE, D3D_DRIVER_TYPE_UNKNOWN, D3D_DRIVER_TYPE_WARP, D3D_FEATURE_LEVEL,
+    D3D_FEATURE_LEVEL_9_3, D3D_FEATURE_LEVEL_10_0, D3D_FEATURE_LEVEL_10_1, D3D_FEATURE_LEVEL_11_0,
 };
-use windows::Win32::Graphics::Direct3D11::{D3D11_CREATE_DEVICE_BGRA_SUPPORT, D3D11_CREATE_DEVICE_FLAG, ID3D11Device};
-use windows::Win32::Graphics::Dxgi::IDXGIDevice;
+use windows::Win32::Graphics::Direct3D11::{
+    D3D11_CREATE_DEVICE_BGRA_SUPPORT, D3D11_CREATE_DEVICE_FLAG, D3D11_SDK_VERSION, D3D11CreateDevice, ID3D11Device,
+};
+use windows::Win32::Graphics::Dxgi::{CreateDXGIFactory1, IDXGIAdapter, IDXGIDevice, IDXGIFactory1};
+use windows::core::Interface;
 
-use super::com::GfxError;
-
+use super::com::{GfxError, ResultExt};
 /// The feature levels the C# `D3D11.CreateDevice` offers, in this order: 11.0, 10.1, 10.0, 9.3 (no 11.1: the C# list is kept).
 pub const FEATURE_LEVELS: [D3D_FEATURE_LEVEL; 4] = [
     D3D_FEATURE_LEVEL_11_0,
@@ -47,11 +49,55 @@ pub struct CreatedDevice {
     pub is_warp: bool,
 }
 
+/// Runs `D3D11CreateDevice` with the given adapter and driver type; success without a device object is `E_FAIL`.
+fn create_with(
+    adapter: Option<&IDXGIAdapter>,
+    driver: D3D_DRIVER_TYPE,
+    flags: D3D11_CREATE_DEVICE_FLAG,
+    operation: &'static str,
+    is_warp: bool,
+) -> Result<CreatedDevice, GfxError> {
+    let mut device: Option<ID3D11Device> = None;
+    let mut level = D3D_FEATURE_LEVEL::default();
+    // SAFETY: `device` and `level` are locals that outlive the call; the optional adapter is a live interface borrowed for the call
+    // (None selects the default adapter); the feature-level slice is a constant; the immediate-context out pointer is None (Direct2D
+    // manages the context); the software module is null as the API requires for non-software drivers.
+    unsafe {
+        D3D11CreateDevice(
+            adapter,
+            driver,
+            HMODULE::default(),
+            flags,
+            Some(&FEATURE_LEVELS),
+            D3D11_SDK_VERSION,
+            Some(&mut device),
+            Some(&mut level),
+            None,
+        )
+    }
+    .gfx(operation)?;
+    let device = device.ok_or(GfxError::new(operation, E_FAIL.0))?;
+    Ok(CreatedDevice {
+        device,
+        feature_level: level,
+        is_warp,
+    })
+}
+
 /// C# `D3D11.CreateDevice(driverType, flags, out device, out featureLevel)` but with the HRESULT as `Err`:
 /// `D3D11CreateDevice(None, kind, null module, flags, FEATURE_LEVELS, D3D11_SDK_VERSION, &device, &level, None)`. A call that
 /// succeeds without a device is `Err(E_FAIL)`. `operation` is `"D3D11CreateDevice(Hardware)"` or `"D3D11CreateDevice(WARP)"`.
 pub fn create_device(kind: DriverKind, flags: D3D11_CREATE_DEVICE_FLAG) -> Result<CreatedDevice, GfxError> {
-    todo!("W8-11g")
+    match kind {
+        DriverKind::Hardware => create_with(
+            None,
+            D3D_DRIVER_TYPE_HARDWARE,
+            flags,
+            "D3D11CreateDevice(Hardware)",
+            false,
+        ),
+        DriverKind::Warp => create_with(None, D3D_DRIVER_TYPE_WARP, flags, "D3D11CreateDevice(WARP)", true),
+    }
 }
 
 /// NEW (no C# twin; proven by the R0001 spike `create_dxgi`): a hardware device on the adapter with the given index, for the attended
@@ -60,35 +106,69 @@ pub fn create_device(kind: DriverKind, flags: D3D11_CREATE_DEVICE_FLAG) -> Resul
 /// MUST be UNKNOWN when an adapter is passed). An index with no adapter is `Err(DXGI_ERROR_NOT_FOUND)`. Reading the environment
 /// variable that selects the index is W8-12b's job, not this module's.
 pub fn create_device_on_adapter(index: u32, flags: D3D11_CREATE_DEVICE_FLAG) -> Result<CreatedDevice, GfxError> {
-    todo!("W8-11g")
+    // SAFETY: no arguments; returns an owned factory that lives until the end of this function.
+    let factory = unsafe { CreateDXGIFactory1::<IDXGIFactory1>() }.gfx("CreateDXGIFactory1")?;
+    // SAFETY: `factory` is a live owned interface; the call only reads the index and returns an owned adapter.
+    let adapter1 = unsafe { factory.EnumAdapters1(index) }.gfx("IDXGIFactory1::EnumAdapters1")?;
+    let adapter: IDXGIAdapter = adapter1.cast().gfx("QueryInterface IDXGIAdapter")?;
+    create_with(
+        Some(&adapter),
+        D3D_DRIVER_TYPE_UNKNOWN,
+        flags,
+        "D3D11CreateDevice(adapter)",
+        false,
+    )
 }
 
 /// `DeviceResources.CreateDevice` lines 259 to 272: unless `prefer_warp`, try [`DriverKind::Hardware`] with
 /// [`DEFAULT_DEVICE_FLAGS`]; ANY failure (or `prefer_warp`) falls back to [`DriverKind::Warp`]; a WARP failure is the error of the call.
 pub fn create_device_with_fallback(prefer_warp: bool) -> Result<CreatedDevice, GfxError> {
-    todo!("W8-11g")
+    if !prefer_warp {
+        if let Ok(created) = create_device(DriverKind::Hardware, DEFAULT_DEVICE_FLAGS) {
+            return Ok(created);
+        }
+        // The hardware error is dropped on purpose (no GPU, RDP, driver error): C# did the same.
+    }
+    create_device(DriverKind::Warp, DEFAULT_DEVICE_FLAGS)
 }
 
 /// The device as `IDXGIDevice` (C# `(IDxgiDevice)(object)d3d`, a `QueryInterface`; the result holds its own reference).
 pub fn dxgi_device(device: &ID3D11Device) -> Result<IDXGIDevice, GfxError> {
-    todo!("W8-11g")
+    device.cast::<IDXGIDevice>().gfx("QueryInterface IDXGIDevice")
 }
 
 /// C# `D3D11.ClearStateAndFlush(device)`: `GetImmediateContext`, then `ClearState()` and `Flush()`. Call it after the Direct2D target is
 /// released (`SetTarget(None)` and the bitmap dropped) and BEFORE `ResizeBuffers`, and at teardown while the swap chain is still alive.
 /// A device without an immediate context (removed) is a silent no-op like the C# null check. Never fails.
 pub fn clear_state_and_flush(device: &ID3D11Device) {
-    todo!("W8-11g")
+    // SAFETY: `device` is a live owned interface; the context is an owned interface used on the calling (owner) thread only.
+    let Ok(context) = (unsafe { device.GetImmediateContext() }) else {
+        return;
+    };
+    // SAFETY: `context` is the live immediate context obtained above; no pointers are passed.
+    unsafe {
+        context.ClearState();
+        context.Flush();
+    }
 }
 
 /// C# `D3D11.Flush(device)`: `ID3D11DeviceContext::Flush` only (WP21-STALL keep-warm: submit the queued Direct2D work).
 pub fn flush(device: &ID3D11Device) {
-    todo!("W8-11g")
+    // SAFETY: `device` is a live owned interface; the context is an owned interface used on the calling (owner) thread only.
+    let Ok(context) = (unsafe { device.GetImmediateContext() }) else {
+        return;
+    };
+    // SAFETY: `context` is the live immediate context obtained above; no pointers are passed.
+    unsafe { context.Flush() };
 }
 
 /// C# `ID3D11Device.GetDeviceRemovedReason()` as an HRESULT: `0` while the device is alive, else `DXGI_ERROR_DEVICE_REMOVED` /
 /// `DXGI_ERROR_DEVICE_RESET` / ... (windows-rs gives `Err(code)`, mapped back to the number).
 #[must_use]
 pub fn device_removed_reason(device: &ID3D11Device) -> i32 {
-    todo!("W8-11g")
+    // SAFETY: `device` is a live owned interface; the call takes no arguments.
+    match unsafe { device.GetDeviceRemovedReason() } {
+        Ok(()) => 0,
+        Err(e) => e.code().0,
+    }
 }

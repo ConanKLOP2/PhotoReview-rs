@@ -45,7 +45,6 @@ use pr_imaging::service::handle::PreviewHandle;
 use pr_imaging::service::{
     PreviewError, PreviewImageService, PreviewResult, PreviewServiceBuildError, PreviewServiceConfig,
 };
-use pr_platform_win::memory_probe::WindowsMemoryProbe;
 
 pub use crate::models::BenchmarkProfile;
 
@@ -99,9 +98,12 @@ impl From<PreviewServiceBuildError> for ExecutorError {
 
 /// The optional / Rust-only constructor inputs. `Default` = the C# defaults.
 pub struct BenchmarkExecutorOptions {
-    /// C# `hasHeadroom`: `None` = the real OS memory check (`pr_platform_win::WindowsMemoryProbe`, production
-    /// behaviour); `Some(f)` = `DelegateMemoryProbe::new(f)` (tests inject a fixed answer).
+    /// C# `hasHeadroom`: `Some(f)` = `DelegateMemoryProbe::new(f)` (tests inject a fixed answer); `None` = [`memory_probe`](Self::memory_probe).
     pub has_headroom: Option<HasHeadroomFn>,
+    /// The OS memory check used when `has_headroom` is `None`. The production host passes `pr_platform_win::memory_probe::WindowsMemoryProbe`
+    /// (this crate cannot name it: `pr-platform-win` depends on `pr-app`, which depends on this crate, D-W8B1-1). `None` = fail closed (no
+    /// headroom, the same answer `WindowsMemoryProbe` gives when `GlobalMemoryStatusEx` fails).
+    pub memory_probe: Option<Arc<dyn MemoryProbe>>,
     /// C# `decoder`: the decoder the preview service decodes with. C# `null` = "WIC Direct over the platform codec"; the
     /// WIC decoder lives in `pr_platform_win`, so the host passes it explicitly and `None` is an error
     /// ([`PreviewServiceBuildError::NoDecoder`]).
@@ -122,6 +124,7 @@ impl Default for BenchmarkExecutorOptions {
     fn default() -> Self {
         Self {
             has_headroom: None,
+            memory_probe: None,
             decoder: None,
             log: None,
             scratch_parent: None,
@@ -495,7 +498,14 @@ impl BenchmarkImageExecutor {
         config.physical_memory_bytes = options.physical_memory_bytes;
         let preview_service = Arc::new(PreviewImageService::new(config)?);
 
-        match Self::build_preload(profile, files, &preview_service, &metrics, options.has_headroom) {
+        match Self::build_preload(
+            profile,
+            files,
+            &preview_service,
+            &metrics,
+            options.has_headroom,
+            options.memory_probe,
+        ) {
             Ok((preload_target, preload_scheduler)) => Ok(Self {
                 metrics,
                 preview_service,
@@ -523,6 +533,7 @@ impl BenchmarkImageExecutor {
         preview_service: &Arc<PreviewImageService>,
         metrics: &Arc<ReviewMetrics>,
         has_headroom: Option<HasHeadroomFn>,
+        memory_probe: Option<Arc<dyn MemoryProbe>>,
     ) -> Result<(Arc<WindowedPreloadTarget>, PreloadScheduler), ExecutorError> {
         let entries = files
             .iter()
@@ -546,7 +557,7 @@ impl BenchmarkImageExecutor {
             },
             window: PreloadWindow::DEFAULT,
         };
-        let memory_probe = choose_memory_probe(has_headroom, Arc::new(DefaultFileLog));
+        let memory_probe = choose_memory_probe(has_headroom, memory_probe);
         let target: Arc<dyn PreloadTarget> = Arc::clone(&preload_target) as Arc<dyn PreloadTarget>;
         let scheduler = PreloadScheduler::new(
             target,
@@ -757,11 +768,28 @@ pub(crate) fn delete_scratch_directory_after_prune(
     }
 }
 
-/// Picks the memory probe: `Some(f)` => `DelegateMemoryProbe::new(f)`, `None` => `pr_platform_win::WindowsMemoryProbe`.
-pub(crate) fn choose_memory_probe(has_headroom: Option<HasHeadroomFn>, log: Arc<dyn Log>) -> Arc<dyn MemoryProbe> {
-    match has_headroom {
-        Some(has_headroom) => Arc::new(DelegateMemoryProbe::new(move |load: f64| has_headroom(load))),
-        None => Arc::new(WindowsMemoryProbe::new(log)),
+/// Picks the memory probe: `has_headroom` => `DelegateMemoryProbe::new(f)`, else the injected OS probe, else [`FailClosedMemoryProbe`].
+pub(crate) fn choose_memory_probe(
+    has_headroom: Option<HasHeadroomFn>,
+    memory_probe: Option<Arc<dyn MemoryProbe>>,
+) -> Arc<dyn MemoryProbe> {
+    match (has_headroom, memory_probe) {
+        (Some(has_headroom), _) => Arc::new(DelegateMemoryProbe::new(move |load: f64| has_headroom(load))),
+        (None, Some(probe)) => probe,
+        (None, None) => Arc::new(FailClosedMemoryProbe),
+    }
+}
+
+/// No OS probe was injected: never any headroom, no snapshot (what `WindowsMemoryProbe` answers when the API fails).
+struct FailClosedMemoryProbe;
+
+impl MemoryProbe for FailClosedMemoryProbe {
+    fn has_headroom(&self, _maximum_load: f64, _reserve_bytes: i64) -> bool {
+        false
+    }
+
+    fn get_snapshot(&self) -> Option<pr_core::abstractions::MemorySnapshot> {
+        None
     }
 }
 
