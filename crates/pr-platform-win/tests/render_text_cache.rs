@@ -370,3 +370,50 @@ fn resolve_locale_prefers_the_explicit_name() {
     // T10: a blank UI culture name is not trimmed.
     assert_eq!(resolve_locale(None, " "), " ");
 }
+
+// Mutation killers (W8-12i): getters and Debug output of the key, the entry and the cache.
+#[test]
+fn bold_key_and_entry_accessors_report_the_stored_values() {
+    let bold_key = TextLayoutKey::new("hello", "Consolas", 14.5, true, 80.0, TextTrimming::None);
+    assert!(bold_key.bold());
+    assert!(!key("hello").bold());
+
+    let drops = Rc::new(Cell::new(0));
+    let cache = new_cache(4);
+    let entry = cache
+        .acquire(bold_key, |_| {
+            Ok::<_, ()>(NewLayoutEntry {
+                native: DropCounter(Rc::clone(&drops)),
+                width: 37.25,
+                height: 18.5,
+                line_count: 3,
+                is_trimmed: true,
+            })
+        })
+        .expect("acquire succeeds");
+    assert_eq!(entry.text(), "hello");
+    assert_eq!(entry.width().to_bits(), 37.25_f64.to_bits());
+    assert_eq!(entry.height().to_bits(), 18.5_f64.to_bits());
+    assert_eq!(entry.line_count(), 3);
+    assert!(entry.is_trimmed());
+    assert!(entry.key().bold());
+    // `is_trimmed == false` must not read back as true (the entry above only covers the true side).
+    let plain = acquire(&cache, key("plain"), &drops);
+    assert!(!plain.is_trimmed());
+    assert_eq!(plain.text(), "plain");
+}
+
+#[test]
+fn debug_output_of_entry_and_cache_names_the_fields() {
+    let drops = Rc::new(Cell::new(0));
+    let cache = new_cache(7);
+    let entry = acquire(&cache, key("dbg"), &drops);
+    let entry_text = format!("{entry:?}");
+    assert!(entry_text.contains("TextLayoutEntry"), "{entry_text}");
+    assert!(entry_text.contains("ref_count: 1"), "{entry_text}");
+    assert!(entry_text.contains("line_count: 1"), "{entry_text}");
+    let cache_text = format!("{cache:?}");
+    assert!(cache_text.contains("TextLayoutCache"), "{cache_text}");
+    assert!(cache_text.contains("capacity: 7"), "{cache_text}");
+    assert!(cache_text.contains("misses: 1"), "{cache_text}");
+}

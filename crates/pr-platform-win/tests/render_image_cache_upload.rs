@@ -1074,3 +1074,67 @@ fn get_or_upload_returns_the_same_rc_for_the_same_buffer_through_the_trait() {
         }
     );
 }
+
+// Mutation killers (W8-12g): `ResourcesBitmapDevice::create_bitmap` error mapping and its `Debug` output.
+#[test]
+#[ignore = "native: needs desktop"]
+fn resources_bitmap_device_keeps_the_com_hresult_but_maps_other_faults_to_invalid_arg() {
+    let rig = Rig::new(8, 8);
+    // A 4 TB bitmap is refused by Direct2D itself: a `RenderFault::Device` that keeps the real HRESULT.
+    let too_big = rig
+        .device
+        .create_bitmap(1_000_000, 1_000_000, D2D1_ALPHA_MODE_PREMULTIPLIED)
+        .expect_err("an absurd bitmap size must fail");
+    assert_ne!(too_big.hresult, E_INVALIDARG);
+    assert!(too_big.hresult < 0);
+    // A zero size is a non-COM fault (`ArgumentOutOfRange`) and becomes `E_INVALIDARG`.
+    let zero = rig
+        .device
+        .create_bitmap(0, 4, D2D1_ALPHA_MODE_PREMULTIPLIED)
+        .expect_err("zero width must fail");
+    assert_eq!(zero.hresult, E_INVALIDARG);
+    assert_eq!(rig.resources().live_bitmap_count(), 0);
+}
+
+#[test]
+#[ignore = "native: needs desktop"]
+fn resources_bitmap_device_debug_shows_the_handler_count() {
+    let rig = Rig::new(8, 8);
+    let text = format!("{:?}", rig.device);
+    assert!(text.contains("ResourcesBitmapDevice"), "{text}");
+    assert!(text.contains("handlers: 0"), "{text}");
+    let id = rig.device.subscribe_device_recreated(Box::new(|| {}));
+    assert!(format!("{:?}", rig.device).contains("handlers: 1"));
+    rig.device.unsubscribe_device_recreated(id);
+    assert!(format!("{:?}", rig.device).contains("handlers: 0"));
+}
+
+#[test]
+#[ignore = "native: needs desktop"]
+fn resources_bitmap_device_unsubscribe_removes_only_the_given_handler() {
+    let rig = Rig::new(8, 8);
+    let calls = Rc::new(std::cell::RefCell::new(Vec::<&'static str>::new()));
+    let first_calls = Rc::clone(&calls);
+    let first = rig
+        .device
+        .subscribe_device_recreated(Box::new(move || first_calls.borrow_mut().push("first")));
+    let second_calls = Rc::clone(&calls);
+    let second = rig
+        .device
+        .subscribe_device_recreated(Box::new(move || second_calls.borrow_mut().push("second")));
+    assert_ne!(first, second);
+    rig.device.raise_device_recreated();
+    assert_eq!(*calls.borrow(), ["first", "second"]);
+    calls.borrow_mut().clear();
+    rig.device.unsubscribe_device_recreated(first);
+    rig.device.raise_device_recreated();
+    assert_eq!(*calls.borrow(), ["second"]);
+    calls.borrow_mut().clear();
+    rig.device.unsubscribe_device_recreated(first + 1000); // unknown id: no-op
+    rig.device.raise_device_recreated();
+    assert_eq!(*calls.borrow(), ["second"]);
+    rig.device.unsubscribe_device_recreated(second);
+    calls.borrow_mut().clear();
+    rig.device.raise_device_recreated();
+    assert!(calls.borrow().is_empty());
+}

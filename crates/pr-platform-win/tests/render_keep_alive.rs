@@ -222,6 +222,20 @@ fn monotonic_ticks_never_decreases() {
 }
 
 #[test]
+fn monotonic_ticks_advances_with_real_time_in_nanoseconds() {
+    // Kills `monotonic_ticks -> 0 / 1`: a clock that is a constant never advances. Busy-wait (no sleep) until 2 ms of the real
+    // monotonic clock passed; the tick delta must then be at least 2 ms in nanoseconds (the unit is TICKS_PER_SECOND).
+    let first = monotonic_ticks();
+    let wall = Instant::now();
+    while wall.elapsed() < Duration::from_millis(2) {
+        std::hint::spin_loop();
+    }
+    let second = monotonic_ticks();
+    assert!(second > first);
+    assert!(second - first >= 2 * TICKS_PER_SECOND / 1000);
+}
+
+#[test]
 fn keep_alive_options_default_lowers_priority_and_uses_the_real_clock() {
     let options = KeepAliveOptions::default();
     assert!(options.timestamp.is_none());
@@ -586,6 +600,34 @@ fn open_hardware_work_is_none_without_a_real_gpu_otherwise_a_runnable_device() {
     }
 }
 
+// Mutation killer: `<Rc<DeviceResources> as KeepAliveDevice>::is_warp` must report the real adapter kind.
+#[test]
+#[ignore = "native: needs the OS graphics stack"]
+fn rc_device_resources_is_warp_follows_the_adapter() {
+    let warp =
+        pr_platform_win::render::device::DeviceResources::create_offscreen(16, 16, 1.0, true).expect("WARP device");
+    assert!(KeepAliveDevice::is_warp(&warp));
+    let preferred =
+        pr_platform_win::render::device::DeviceResources::create_offscreen(16, 16, 1.0, false).expect("device");
+    // On a machine with a hardware GPU this is false (kills the `-> true` mutant); on WARP-only machines it is true either way.
+    assert_eq!(KeepAliveDevice::is_warp(&preferred), preferred.is_warp());
+    // `open_offscreen_hardware_work` is `None` exactly when that adapter is WARP (kills `-> Ok(None)` on a hardware GPU).
+    let opened = open_offscreen_hardware_work().expect("factory ok");
+    assert_eq!(opened.is_none(), preferred.is_warp());
+}
+
+#[test]
+#[ignore = "native: needs the OS graphics stack"]
+fn rc_device_resources_touch_gpu_reports_a_disposed_device_as_e_fail() {
+    let mut resources =
+        pr_platform_win::render::device::DeviceResources::create_offscreen(16, 16, 1.0, true).expect("device");
+    KeepAliveDevice::touch_gpu(&mut resources).expect("a live device is touched");
+    resources.dispose();
+    let error = KeepAliveDevice::touch_gpu(&mut resources).expect_err("a disposed device cannot be touched");
+    assert_eq!(error.hresult, 0x8000_4005_u32 as i32);
+    assert_eq!(error.operation, "DeviceResources::TouchGpu");
+}
+
 /// Reports what the real work does without polling.
 enum Event {
     Touched,
@@ -609,6 +651,7 @@ impl KeepAliveWork for Reporting {
 #[test]
 #[ignore = "native: needs the OS graphics stack"]
 fn real_keep_alive_on_this_machine_either_runs_or_disables_itself() {
+    // The waits are failure-case bounds only (60 s): opening a real device can take long on a machine that is building other crates.
     let (tx, rx) = mpsc::channel::<Event>();
     let open: OpenKeepAliveWork = Box::new(move || match open_offscreen_hardware_work() {
         Ok(Some(inner)) => Ok(Some(Box::new(Reporting { inner, tx }) as Box<dyn KeepAliveWork>)),
@@ -620,10 +663,10 @@ fn real_keep_alive_on_this_machine_either_runs_or_disables_itself() {
     });
     let keep_alive = GpuKeepAlive::new(10, open, KeepAliveOptions::default());
     keep_alive.activate(monotonic_ticks() + ticks_from_ms(200));
-    match rx.recv_timeout(Duration::from_secs(20)).expect("an event within 20 s") {
-        Event::NoGpu => assert!(keep_alive.wait_disabled(Duration::from_secs(20))),
+    match rx.recv_timeout(Duration::from_secs(60)).expect("an event within 60 s") {
+        Event::NoGpu => assert!(keep_alive.wait_disabled(Duration::from_secs(60))),
         Event::Touched => {
-            let second = rx.recv_timeout(Duration::from_secs(20)).expect("a second touch");
+            let second = rx.recv_timeout(Duration::from_secs(60)).expect("a second touch");
             assert!(matches!(second, Event::Touched));
             assert!(!keep_alive.is_disabled());
         }
