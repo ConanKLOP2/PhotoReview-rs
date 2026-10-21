@@ -175,22 +175,22 @@ output is a table in the contract: C# member, windows-rs item or `GAP`; a `GAP` 
 | W8-13d | `Hosting/Win32UiDispatcher 389`; `Win32UiSynchronizationContext 80` retired (becomes a channel plus `PostMessage` wake) | `host::ui_dispatcher` implementing the `UiDispatcher` trait | 🔴 | Sonnet | F+N | 11b, 13c | B3 |
 | W8-13e | `Hosting/WndProcThunk 104`, `ShellWindow` lines 1 to 250 | `host::{wndproc, shell_window::create}` (GWLP_USERDATA trampoline, panic guard at the FFI boundary) | 🔴 | Sonnet | N | 11a, 11b, 13c | B3 |
 | W8-13f | `Hosting/ShellWindow` lines 250 to 516 | `host::shell_window::{messages, dpi}` | 🔴 | Sonnet | N | 13e | B3 |
-| W8-13g | `ShellMainWindow.cs` lines 1 to 226 (fields, ctor, composition of parts) | `host::main_window::core` | 🔴 | Sonnet | N | 13f, 12d | B4 |
-| W8-13h | `ShellMainWindow.cs` lines 226 to 452 | `host::main_window::lifecycle` | 🔴 | Sonnet | N | 13g | B4 |
-| W8-13i | `ShellMainWindow.Frame 169`, `ShellMainWindow.ScrollBars 34`, `Program.cs 16` = 219 | `host::main_window::{frame, scrollbars}` (Program becomes W8-20a) | 🟡 | Sonnet | N | 13h | B4 |
-| W8-13j | `ShellMainWindow.Viewing` 336 | `host::main_window::viewing` | 🔴 | Sonnet | F+N | 13h, 16h | B4 |
-| W8-13k | `Windowing/{ShellFullscreen 163, TitleBar 52, ShellMainWindow.Windowing 127}` = 342; WPF `FullscreenWindowPlacer 63` retired | `host::main_window::windowing` (real `WindowOps`), `dark_title_bar` reuse | 🟡 | Sonnet | F+N | 03b, 13h | B4 |
+| W8-13g | `ShellMainWindow.cs` lines 1 to 226 (fields, ctor, composition of parts) | `host::main_window::core` | 🔴 | Sonnet | N | 13f, 12d, 13a, 13d, 12f, 12g, 04c, 08a..e, 16h, 16d | B4 |
+| W8-13h | `ShellMainWindow.cs` lines 226 to 452 | `host::main_window::lifecycle` | 🔴 | Sonnet | N | 13g, 08c..e, 04c, 11e | B4 |
+| W8-13i | `ShellMainWindow.Frame 169`, `ShellMainWindow.ScrollBars 34`, `Program.cs 16` = 219 | `host::main_window::{frame, scrollbars}` (Program becomes W8-20a) | 🟡 | Sonnet | N | 13h, 12d, 12e, 16a, 16f, 16g | B4 |
+| W8-13j | `ShellMainWindow.Viewing` 336 | `host::main_window::viewing` | 🔴 | Sonnet | F+N | 13h, 16h, 16a, 16b, 16c, 16d, 12f, 12g, 13a, 13d, 08e | B4 |
+| W8-13k | `Windowing/{ShellFullscreen 163, TitleBar 52, ShellMainWindow.Windowing 127}` = 342; WPF `FullscreenWindowPlacer 63` retired | `host::main_window::windowing` (real `WindowOps`), `dark_title_bar` reuse | 🟡 | Sonnet | F+N | 03a, 03b, 13h, 11b, 11e, 13b | B4 |
 
 ### 14 Win32 input and menus (`pr_platform_win::{shell_input, shell_menus}`)
 | WU | C# files (lines) | Rust | Col | Model | Test | Depends on | Batch |
 |---|---|---|---|---|---|---|---|
-| W8-14a | `Input/{ClickCounter 58, InputNative 99, KeyboardMessageHandler 60, PointerMessageHandler 50, WheelMessageHandler 31, ShellInputEnvironment 30}` = 328; WPF `WpfInputAdapters 23` retired | `shell_input::{click_counter, handlers}` (decode WPARAM/LPARAM; tested with synthetic messages) | 🟡 | Sonnet | F | 05a, 05c, 11a | B4 |
-| W8-14b | `Input/ShellInput` 420 | `shell_input::dispatch` | 🔴 | Sonnet | F | 14a, 05d, 05g, 05h | B4 |
-| W8-14c | `Input/{ViewportImageSurface 87, ShellMainWindow.Input 293}` = 380; WPF `WpfImageSurface 135` retired | `shell_input::{surface, main_window}` | 🟡 | Sonnet | F | 14b, 13h | B4 |
-| W8-14d | `Input/DropTarget` 249 (OLE drop: `#[implement]` COM object) | `shell_input::drop_target` | 🔴 | Sonnet | N | 11e, 13h | B4 |
-| W8-14e | `Menus/{ContextMenuController 207, ContextMenuMessageHandler 57, IPopupMenuHost 10, NativeMenuMapping 35, MenuOwnerDraw 59}` = 368 | `shell_menus::{controller, mapping}` | 🟡 | Sonnet | F | 02a, 11b | B4 |
-| W8-14f | `Menus/{NativePopupMenuHost 149, ShellMainWindow.Menus 92}` = 241 | `shell_menus::{popup_host, main_window}` | 🟡 | Sonnet | N | 14e, 13h | B4 |
-| W8-14g | `Menus/OwnerDrawMenuSession` 336 (owner-draw GDI, dark palette) | `shell_menus::owner_draw` | 🔴 | Sonnet | N | 14e, 15b | B4 |
+| W8-14a | `Input/{ClickCounter 58, InputNative 99, KeyboardMessageHandler 60, PointerMessageHandler 50, WheelMessageHandler 31, ShellInputEnvironment 30}` = 328; WPF `WpfInputAdapters 23` retired | `shell_input::{click_counter, handlers}` (decode WPARAM/LPARAM; tested with synthetic messages) | 🟡 | Sonnet | F | 05a, 05c, 05e, 11a, 11b, 11c, 11e, 13b | B4 |
+| W8-14b | `Input/ShellInput` 420 | `shell_input::dispatch` | 🔴 | Sonnet | F | 14a, 05a, 05d, 05g, 05h, 01d, 04e, 06a, 08a, 13b, 13d | B4 |
+| W8-14c | `Input/{ViewportImageSurface 87, ShellMainWindow.Input 293}` = 380; WPF `WpfImageSurface 135` retired | `shell_input::{surface, main_window}` | 🟡 | Sonnet | F | 14a, 14b, 14d, 16h, 08a..e, 04c, 13g, 13h | B4 |
+| W8-14d | `Input/DropTarget` 249 (OLE drop: `#[implement]` COM object) | `shell_input::drop_target` | 🔴 | Sonnet | N | 11b, 11e, 13c | B4 |
+| W8-14e | `Menus/{ContextMenuController 207, ContextMenuMessageHandler 57, IPopupMenuHost 10, NativeMenuMapping 35, MenuOwnerDraw 59}` = 368 | `shell_menus::{controller, mapping}` | 🟡 | Sonnet | F | 02a, 05a, 11b, 13b, 01d, 15b, 14a | B4 |
+| W8-14f | `Menus/{NativePopupMenuHost 149, ShellMainWindow.Menus 92}` = 241 | `shell_menus::{popup_host, main_window}` | 🟡 | Sonnet | N | 14c, 14e, 14g, 11b, 13c, 13g, 13h | B4 |
+| W8-14g | `Menus/OwnerDrawMenuSession` 336 (owner-draw GDI, dark palette) | `shell_menus::owner_draw` | 🔴 | Sonnet | N | 14e, 15b, 11b, 11c, 11d, 13c | B4 |
 
 ### 15 Overlay (`pr_app::overlay` pure element tree; `pr_platform_win::shell_overlay` Win32 parts)
 | WU | C# files (lines) | Rust | Col | Model | Test | Depends on | Batch |
@@ -200,24 +200,24 @@ output is a table in the contract: C# member, windows-rs item or `GAP`; a `GAP` 
 | W8-15c | `Overlay/{ButtonElement 177, TextElement 114}` = 291 | `overlay::{button, text}` | 🟢 | Haiku | F | 15a, 15b | B1 |
 | W8-15d | `Overlay/{PanelElement 166, CapturePairBadge 38, FolderInfoPanel 39}` = 243 | `overlay::{panel, capture_badge, folder_info}` | 🟢 | Haiku | F | 15c | B1 |
 | W8-15e | `Overlay/{StatusPanel 92, ToolbarPanel 117, ToolsMenu 74, ZoomIndicatorPanel 38}` = 321 | `overlay::{status, toolbar, tools_menu, zoom_indicator}` | 🟢 | Haiku | F | 15d, 06b | B1 |
-| W8-15f | `Overlay/{OverlayHost 101, OverlayMessageHandler 111, OverlayNative 134, ShellOverlayServices 19}` = 365 | `shell_overlay::{host, messages}` | 🟡 | Sonnet | F+N | 15a, 11b | B4 |
-| W8-15g | `Overlay/{NativeTooltipHost 191, DeferredTooltips 79}` = 270 | `shell_overlay::tooltips` | 🟡 | Sonnet | N | 11c, 15b | B4 |
-| W8-15h | `Overlay/ShellOverlay` lines 1 to 338 | `shell_overlay::overlay::{layout, hit_test}` | 🔴 | Sonnet | F | 15e, 15f, 12e | B4 |
-| W8-15i | `Overlay/ShellOverlay` lines 338 to 675 | `shell_overlay::overlay::{input, paint}` | 🔴 | Sonnet | F+N | 15h, 15g | B4 |
-| W8-15j | `Overlay/ShellMainWindow.Overlay` 284 | `shell_overlay::main_window` | 🟡 | Sonnet | F | 15i, 13h | B4 |
+| W8-15f | `Overlay/{OverlayHost 101, OverlayMessageHandler 111, OverlayNative 134, ShellOverlayServices 19}` = 365 | `shell_overlay::{host, messages}` | 🟡 | Sonnet | F+N | 15a, 11b, 11c, 11d, 11e, 12a, 13b, 13e, 15d | B4 |
+| W8-15g | `Overlay/{NativeTooltipHost 191, DeferredTooltips 79}` = 270 | `shell_overlay::tooltips` | 🟡 | Sonnet | N | 11b, 11c, 11d, 15b, 13b, 13g (type only) | B4 |
+| W8-15h | `Overlay/ShellOverlay` lines 1 to 338 | `shell_overlay::overlay::{layout, hit_test}` | 🔴 | Sonnet | F | 15b, 15d, 15e, 15f, 15g (type only), 14e (type only), 06b, 12i, 13a, 13b | B4 |
+| W8-15i | `Overlay/ShellOverlay` lines 338 to 675 | `shell_overlay::overlay::{input, paint}` | 🔴 | Sonnet | F+N | 15d, 15e, 15f, 15g, 15h, 12e, 12i | B4 |
+| W8-15j | `Overlay/ShellMainWindow.Overlay` 284 | `shell_overlay::main_window` | 🟡 | Sonnet | F | 15f, 15g, 15i, 08a..e, 13e, 13f, 06b, 12i, 14c, 13g, 13h (final wiring) | B4 |
 
 ### 16 Viewing (`pr_platform_win::shell_viewing`)
 | WU | C# files (lines) | Rust | Col | Model | Test | Depends on | Batch |
 |---|---|---|---|---|---|---|---|
 | W8-16a | `Viewing/{ImageLayer 54, ScalingPolicy 46, FrameLog 70, FrameStats 104, FramePacer 108}` = 382 | `shell_viewing::{image_layer, scaling_policy, frame_stats, pacer}`; `FrameLog` output format is persisted by perf tooling (`pr_perf`) | 🟢 | Haiku | G | 12a | B1 |
-| W8-16b | `Viewing/{CompareLayer 166, CrossfadeLayer 165}` = 331 | `shell_viewing::{compare, crossfade}` | 🔴 | Sonnet | F+N | 16a, 12e, 06c | B4 |
-| W8-16c | `Viewing/PresentationComposer` 354 | `shell_viewing::composer` | 🔴 | Sonnet | F | 16b, 16a | B4 |
-| W8-16d | `Viewing/{PresentationPrefetcher 181, KeepWarm 138, ShellMainWindow.KeepWarm 39, ShellViewingRegistration 24}` = 382 | `shell_viewing::{prefetcher, keep_warm}` | 🟡 | Sonnet | F | 12h, 16c | B4 |
+| W8-16b | `Viewing/{CompareLayer 166, CrossfadeLayer 165}` = 331 | `shell_viewing::{compare, crossfade}` | 🔴 | Sonnet | F+N | 16a, 06c, 12a, 12e, 12g, 13a, 15b | B4 |
+| W8-16c | `Viewing/PresentationComposer` 354 | `shell_viewing::composer` | 🔴 | Sonnet | F | 16a, 16b, 12f, 12g, 13a | B4 |
+| W8-16d | `Viewing/{PresentationPrefetcher 181, KeepWarm 138, ShellMainWindow.KeepWarm 39, ShellViewingRegistration 24}` = 382 | `shell_viewing::{prefetcher, keep_warm}` | 🟡 | Sonnet | F | 12g, 12h, 16a, 13b, 13e | B4 |
 | W8-16e | `Viewing/{ScrollBarGeometry 255, ScrollBarNative 69}` = 324 | `shell_viewing::scrollbar_geometry` (pure), thin native wrapper | 🟢 | Haiku | G | 01a | B1 |
-| W8-16f | `Viewing/ScrollBars` lines 1 to 245 | `shell_viewing::scrollbars::{state, layout}` | 🟡 | Sonnet | F | 16e, 11c | B4 |
-| W8-16g | `Viewing/ScrollBars` lines 245 to 490 | `shell_viewing::scrollbars::{input, paint}` | 🟡 | Sonnet | F+N | 16f | B4 |
-| W8-16h | `Viewing/ViewportController` 283 | `shell_viewing::viewport_controller` | 🔴 | Sonnet | F | 01b, 16e, 05h | B4 |
-| W8-16i | `Viewing/Win32PresentationSink 103`, `Startup/ShellPresentationSink 89` = 192; WPF `WpfPresentationSink 116`, `WpfPresentationSinkFactory 23` retired | `shell_viewing::presentation_sink` | 🟡 | Sonnet | F | 16c, 06d | B4 |
+| W8-16f | `Viewing/ScrollBars` lines 1 to 245 | `shell_viewing::scrollbars::{state, layout}` | 🟡 | Sonnet | F | 16e, 16b, 16h, 13a, 13b | B4 |
+| W8-16g | `Viewing/ScrollBars` lines 245 to 490 | `shell_viewing::scrollbars::{input, paint}` | 🟡 | Sonnet | F+N | 16f, 14a, 16e, 11a, 12e, 13b | B4 |
+| W8-16h | `Viewing/ViewportController` 283 | `shell_viewing::viewport_controller` | 🔴 | Sonnet | F | 01a, 01b, 01d, 05a, 13a, 13b | B4 |
+| W8-16i | `Viewing/Win32PresentationSink 103`, `Startup/ShellPresentationSink 89` = 192; WPF `WpfPresentationSink 116`, `WpfPresentationSinkFactory 23` retired | `shell_viewing::presentation_sink` | 🟡 | Sonnet | F | 06d, 07h | B4 |
 
 ### 17 Startup and process lifecycle (`pr_platform_win::shell_startup`, logic in `pr_app::startup`)
 | WU | C# files (lines) | Rust | Col | Model | Test | Depends on | Batch |
@@ -324,6 +324,8 @@ Pure and covered by golden/oracle (**G**, **G+N**, **G+F**, constants): 24 units
 
 Check: 35 + 26 + 23 + 24 + 35 + 8 = 151. Reading rule: a unit in batch Bn may start before Bn-1 is fully merged if its `Depends on` units are
 merged (P-28); the batch only fixes the order in which contracts (stubs, goldens, `Depends on`) are written.
+
+**B4 port order (reconciliation D-W8B4X-1, `contracts/README.md` section "Wave 8 batch B4 reconciliation").** (0) One prerequisite PR first: the amendments to merged `pr-app` / host code listed there (A1 and A3 to A12), no unit work. (1) Pure and F units: 16h, 16b, 16c, 16d, 16f, 14a, 16g (after 14a: it uses the shared `signed_*_word`), 14b, 14e. (2) After PR #112 (the 15d/15e panels): 15f (`host.rs` and `messages.rs` with fakes; its native tests later), then 15h, 15i, 15j (the seam part). (3) Native units: 13g and 13h in one PR, 13i, 13k, 13j, 14d, 14c, 14g, 14f, 15g, the native tests of 15f, 16i. (4) Final wiring once 13g/13h are on master: the `MainWindowFeature` and `OverlayViewModel` impls of 15j and the production adapters of 14c/14f. A unit that is ported before its consumer is used as the concrete type by the consumer (interim ports remain only for 16i and 17b).
 
 ## Per-unit gate
 Contract (stub, goldens/fakes, `Depends on`), red tests (Haiku), port, adversarial verifier (Sonnet), time-boxed mutation on pure files only

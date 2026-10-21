@@ -197,6 +197,13 @@ impl ShellInput {
         todo!()
     }
 
+    /// C# `Pointer.OnWindowPreviewMouseDown()` (D-W8B4X-8): the window-level press tunnel without a mouse message, called by the main window's scroll-bar press hook
+    /// (`MainWindowFeature::on_scroll_bar_press`, 14c's `InputFeature`). Runs `pointer.on_window_preview_mouse_down(surface)` (stops a kinetic glide and cancels a
+    /// pending fit), under the same borrow discipline as `handle_pointer_down`.
+    pub fn pointer_press_tunnel(&self) {
+        todo!()
+    }
+
     /// C# `ApplyFitAsync()`: `apply_fit_start(.., cancel_pan = Pointer.cancel_pan)`; an `AwaitRender` continuation is posted at Render priority and
     /// resumed with `apply_fit_resume`.
     pub fn apply_fit(&self) {

@@ -9,144 +9,31 @@
 #![allow(unused_variables, dead_code)] // W8-13j stub: the porter removes this line when the last `todo!()` is gone.
 
 use std::cell::{Cell, RefCell};
-use std::collections::{BTreeSet, VecDeque};
+use std::collections::VecDeque;
 use std::rc::{Rc, Weak};
 use std::sync::Arc;
 use std::time::Duration;
 
-use pr_app::input::primitives::{PointD, RectD, SizeD};
+use pr_app::input::primitives::PointD;
 use pr_app::services::render::DrawContext;
-use pr_core::model::enums::ScalingQuality;
 use pr_imaging::decode_types::PlatformImage;
 use pr_imaging::pixels::PixelBuffer;
 use pr_imaging::service::CacheClearedSubscription;
 
 use super::core::{MainWindow, MainWindowInner};
+use crate::shell_viewing::composer::PresentationComposer;
 use crate::shell_viewing::frame_stats::FrameStats;
 use crate::shell_viewing::pacer::FramePacer;
+use crate::shell_viewing::prefetcher::{LookupRequest, PrefetchHost, PresentationPrefetcher, RetryRequest};
 
 /// C# `DeferUploadBytes` = 16 MiB: an upgrade of the SAME image whose bitmap is larger than this is uploaded in the background before it replaces the
 /// current one (about 4 MP, 6 ms of synchronous upload); a smaller one replaces at once.
 pub const DEFER_UPLOAD_BYTES: i64 = 16 * 1024 * 1024;
 
-/// Interim twin of the C# `PresentationInputs` record (16c `composer::PresentationInputs<'a>`, which borrows the compare frame). 16c's type wins; the adapter
-/// that implements [`ComposerPort`] for `PresentationComposer` converts field by field.
-#[derive(Debug, Clone)]
-pub struct PresentationInputs {
-    /// `_window.ClientSizeDip` (converted from the host twin to `pr_app`'s `SizeD`).
-    pub viewport: SizeD,
-    /// `RectD(origin.X, origin.Y, ImageActualWidth, ImageActualHeight)`.
-    pub main_destination: RectD,
-    /// `viewer.EffectiveScalingQuality`.
-    pub effective_quality: ScalingQuality,
-    /// `viewer.ScalingQuality`.
-    pub compare_quality: ScalingQuality,
-    /// `_window.DpiScale`.
-    pub dpi_scale: f64,
-    /// `compare.IsVisible`.
-    pub compare_visible: bool,
-    /// `CompareFrame(left, right, isLeftSelected, isRightSelected)`.
-    pub compare: CompareFrameOwned,
-}
-
-/// Interim owned twin of 16c's `CompareFrame<'a>` (the left/right bitmaps of the compare view model, selection flags).
-#[derive(Debug, Clone, Default)]
-pub struct CompareFrameOwned {
-    pub left: Option<Arc<PixelBuffer>>,
-    pub right: Option<Arc<PixelBuffer>>,
-    pub is_left_selected: bool,
-    pub is_right_selected: bool,
-}
-
-/// What one `draw` did (16c `ComposedFrame`; only the members the window reads). Interim twin.
-#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
-pub struct ComposedFrameSummary {
-    pub main_drawn: bool,
-    pub compare_images: i32,
-}
-
-/// A composer call failed (16c `ComposerError`: disposed, or the GPU cache refused a prefetch). Logged by the window, never thrown.
-pub type ComposerFailure = Box<dyn std::error::Error>;
-
-/// The members of `PresentationComposer` (C#, W8-16c, `shell_viewing::composer`) that the main window calls. INTERIM: an adapter next to 16c's type implements
-/// this trait for it (the signatures follow 16c's), or the lead replaces `Rc<dyn ComposerPort>` by `Rc<PresentationComposer>`. UI thread, all `&self`.
-pub trait ComposerPort {
-    /// C# `Set(PixelBuffer)`.
-    fn set(&self, image: Option<Arc<PixelBuffer>>);
-    /// C# `SetIncoming(buffer, isFileChange, deferUploadBytes)`: `Ok(true)` = the incoming bitmap replaced `Current` at once.
-    fn set_incoming(
-        &self,
-        image: Option<Arc<PixelBuffer>>,
-        is_file_change: bool,
-        defer_upload_bytes: i64,
-    ) -> Result<bool, ComposerFailure>;
-    /// C# `Current`.
-    fn current(&self) -> Option<Arc<PixelBuffer>>;
-    /// C# `TryPromotePending()`: whether it promoted.
-    fn try_promote_pending(&self) -> bool;
-    /// C# `BeginCrossfade(TimeSpan)`: `Ok(true)` when a fade started.
-    fn begin_crossfade(&self, duration: Duration) -> Result<bool, ComposerFailure>;
-    /// C# `CancelCrossfade()`.
-    fn cancel_crossfade(&self);
-    /// C# `CollectRetainedIds`.
-    fn collect_retained_ids(&self, ids: &mut BTreeSet<i64>);
-    /// C# `Draw(context, inputs)`.
-    fn draw(
-        &self,
-        context: &mut dyn DrawContext,
-        inputs: &PresentationInputs,
-    ) -> Result<ComposedFrameSummary, ComposerFailure>;
-    /// C# `Crossfade.IsActive` (the note of a slow frame).
-    fn crossfade_is_active(&self) -> bool;
-    /// C# `CurrentChanged += handler` (an upgrade finished uploading and became the current image); the id unsubscribes.
-    fn subscribe_current_changed(&self, handler: Rc<dyn Fn()>) -> u64;
-    /// C# `CurrentChanged -= handler`.
-    fn unsubscribe_current_changed(&self, id: u64);
-    /// C# `Dispose()`: idempotent.
-    fn dispose(&self);
-}
-
-/// One RAM-cache lookup the host runs off the UI thread (16d `LookupRequest`). Interim twin.
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub struct LookupRequest {
-    pub generation: u64,
-    pub paths: Vec<String>,
-}
-
-/// One retry pass the host schedules (16d `RetryRequest`). Interim twin.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct RetryRequest {
-    pub generation: u64,
-    pub index: i32,
-    pub count: i32,
-}
-
-/// The members of `PresentationPrefetcher` (C#, W8-16d, `shell_viewing::prefetcher`) that the window and its host adapter call. INTERIM, as [`ComposerPort`].
-pub trait PrefetcherPort {
-    /// C# `Navigated(index, count)`.
-    fn navigated(&self, index: i32, count: i32);
-    /// C# `PlannedIds`.
-    fn planned_ids(&self) -> Vec<i64>;
-    /// 16d: the result of a [`LookupRequest`], on the UI thread.
-    fn apply_lookup(&self, generation: u64, found: &[Option<Arc<PixelBuffer>>]);
-    /// 16d: a [`RetryRequest`] came due, on the UI thread.
-    fn run_retry(&self, request: RetryRequest);
-    /// C# `PlanChanged += handler`; the id unsubscribes.
-    fn subscribe_plan_changed(&self, handler: Rc<dyn Fn()>) -> u64;
-    /// C# `PlanChanged -= handler`.
-    fn unsubscribe_plan_changed(&self, id: u64);
-}
-
-/// C# `IPrefetchHost` as 16d reshaped it (UI thread only; 16d's trait wins, this is its interim shape): the window implements it
-/// ([`MainWindowPrefetchHost`], C# `PrefetchHost(ShellMainWindow owner)`).
-pub trait PrefetchHost {
-    /// C# `PathAt(index)`: the catalog path, `None` outside the catalog.
-    fn path_at(&self, index: i32) -> Option<String>;
-    /// C# `RunBackground(() => PostToUi(Apply(LookupCached(paths))))`: never inline.
-    fn start_lookup(&self, request: LookupRequest);
-    /// C# `ScheduleOnUi(delay, pass)`.
-    fn schedule_retry(&self, delay: Duration, request: RetryRequest);
-}
+// D-W8B4X-2: `PresentationComposer` (16c) and `PresentationPrefetcher` (16d) are ported BEFORE this unit, so the window uses the concrete types. The interim
+// `ComposerPort`, `PrefetcherPort`, `PresentationInputs`, `CompareFrameOwned`, `ComposedFrameSummary`, `LookupRequest`, `RetryRequest` and `PrefetchHost` of the first
+// 13j draft are gone; the owners' types (`composer::{PresentationInputs, ComposedFrame, ComposerError}`, `prefetcher::{LookupRequest, RetryRequest, PrefetchHost}`)
+// are imported above. Tests inject fakes through the owners' seams (`PrefetchStatus` cache, `HostFrameClock`, `PrefetchCache`, `PrefetchHost`).
 
 /// C# `PrefetchHost` of the main window. Holds a `Weak` (never keeps the window alive); every method runs on the UI thread.
 /// `path_at` reads the catalog (short borrow of the view model). `start_lookup` moves the request and an `Arc<PreviewImageService>` to a worker thread, which
@@ -187,9 +74,9 @@ pub struct PendingImage {
 /// The fields that `ShellMainWindow.Viewing.cs` added (`_viewingClock` is `MainWindowInner::frame_clock`).
 pub struct ViewingState {
     /// C# `_composer`.
-    pub(super) composer: RefCell<Option<Rc<dyn ComposerPort>>>,
+    pub(super) composer: RefCell<Option<Rc<PresentationComposer>>>,
     /// C# `_prefetcher`.
-    pub(super) prefetcher: RefCell<Option<Rc<dyn PrefetcherPort>>>,
+    pub(super) prefetcher: RefCell<Option<Rc<PresentationPrefetcher>>>,
     /// Ids of the subscriptions on the composer (`CurrentChanged`) and the prefetcher (`PlanChanged`).
     pub(super) composer_subscription: Cell<Option<u64>>,
     pub(super) prefetcher_subscription: Cell<Option<u64>>,
@@ -247,9 +134,13 @@ impl MainWindowInner {
         todo!("W8-13j")
     }
 
-    /// The part of `attach_viewing` after construction, so tests can inject fakes: store both, subscribe `CurrentChanged` -> `on_composer_current_changed` and
-    /// `PlanChanged` -> `on_prefetch_plan_changed` (closures with a `Weak`), and `composer.set(image)` when `image` exists and is not disposed.
-    pub(super) fn attach_viewing_with(&self, composer: Rc<dyn ComposerPort>, prefetcher: Rc<dyn PrefetcherPort>) {
+    /// The part of `attach_viewing` after construction, so tests can inject composers and prefetchers built over fakes: store both, subscribe `CurrentChanged` ->
+    /// `on_composer_current_changed` and `PlanChanged` -> `on_prefetch_plan_changed` (closures with a `Weak`), and `composer.set(image)` when `image` exists and is not disposed.
+    pub(super) fn attach_viewing_with(
+        &self,
+        composer: Rc<PresentationComposer>,
+        prefetcher: Rc<PresentationPrefetcher>,
+    ) {
         todo!("W8-13j")
     }
 
@@ -329,12 +220,12 @@ impl MainWindow {
     }
 
     /// C# `Composer` (tests and other packs).
-    pub fn composer(&self) -> Option<Rc<dyn ComposerPort>> {
+    pub fn composer(&self) -> Option<Rc<PresentationComposer>> {
         todo!("W8-13j")
     }
 
     /// C# `Prefetcher`.
-    pub fn prefetcher(&self) -> Option<Rc<dyn PrefetcherPort>> {
+    pub fn prefetcher(&self) -> Option<Rc<PresentationPrefetcher>> {
         todo!("W8-13j")
     }
 
