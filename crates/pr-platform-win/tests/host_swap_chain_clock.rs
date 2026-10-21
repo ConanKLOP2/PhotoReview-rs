@@ -327,3 +327,50 @@ fn swap_chain_clock_does_not_close_the_handle() {
         CloseHandle(HANDLE(raw as *mut _)).unwrap();
     }
 }
+
+// new (W8-13b smoke, written after W8-12d merged): the real swap-chain frame-latency handle of a window surface drives the clock
+#[test]
+#[ignore = "native: needs desktop"]
+fn swap_chain_clock_ticks_from_a_real_surface_handle() {
+    use pr_platform_win::host::frame_clock::timer::TimerFrameClock;
+    use pr_platform_win::host::shell_window::{ShellWindow, ShellWindowOptions};
+    use pr_platform_win::render::draw_context::ColorF;
+    use pr_platform_win::render::surface::{D2dRenderSurface, SurfaceOptions};
+
+    // A hidden shell window is the target (it is never shown); the swap chain is the software (WARP) one.
+    let timer: Rc<dyn HostFrameClock> = Rc::new(TimerFrameClock::create(None, 0).unwrap());
+    let window = ShellWindow::create(ShellWindowOptions::default(), timer).unwrap();
+    let hwnd = pr_platform_win::host::contracts::ShellWindowApi::hwnd(&window);
+    let mut surface = D2dRenderSurface::create_window_surface(
+        hwnd,
+        SurfaceOptions {
+            prefer_warp: true,
+            ..SurfaceOptions::default()
+        },
+    )
+    .unwrap();
+    let handle = surface.frame_latency_wait_handle();
+    assert_ne!(handle, 0, "a window surface has a frame-latency waitable object");
+
+    let clock = SwapChainFrameClock::create(handle, None, hwnd).unwrap();
+    assert_eq!(clock.wait_handle(), handle);
+    let ticks = Rc::new(RefCell::new(Vec::new()));
+    clock.subscribe(recorder(&ticks));
+    assert!(clock.is_armed());
+
+    surface.begin_draw_context().unwrap().clear(ColorF {
+        r: 0.0,
+        g: 0.0,
+        b: 0.0,
+        a: 1.0,
+    });
+    surface.end_draw_and_present().unwrap();
+
+    // SAFETY: `handle` is the live waitable object of `surface`, which outlives the wait; waiting only reads it.
+    let waited = unsafe { WaitForSingleObject(HANDLE(handle as *mut core::ffi::c_void), 60_000) };
+    assert_eq!(waited, WAIT_OBJECT_0, "the handle signals within the bound");
+    assert!(clock.on_signaled().unwrap());
+    assert_eq!(ticks.borrow().len(), 1);
+    clock.dispose();
+    surface.dispose();
+}
