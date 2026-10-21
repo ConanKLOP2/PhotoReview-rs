@@ -132,6 +132,20 @@ fn photo_info_from_non_raw_image_has_zero_preview_size() {
     assert_eq!(info.exif, None);
 }
 
+// New test: kills raw_preview_width and raw_preview_height.
+#[test]
+fn photo_info_raw_preview_dimensions_are_exact_or_zero() {
+    let preview = raw_view(2000, 1333, true, (2000, 1333));
+    let info = PhotoInfo::from_image("C:\\p\\photo.cr3", preview.as_ref());
+    assert_eq!(info.raw_preview_width, 2000);
+    assert_eq!(info.raw_preview_height, 1333);
+
+    let without_preview = raw_view(2000, 1333, false, (0, 0));
+    let info = PhotoInfo::from_image("C:\\p\\photo.cr3", without_preview.as_ref());
+    assert_eq!(info.raw_preview_width, 0);
+    assert_eq!(info.raw_preview_height, 0);
+}
+
 // ---- stat_now ---------------------------------------------------------------------------------------------------------------------
 
 fn stat_of_failure(error: io::Error) -> StatOutcome {

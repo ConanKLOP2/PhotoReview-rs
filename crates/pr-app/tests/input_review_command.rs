@@ -170,3 +170,18 @@ fn review_command_constants_map_to_the_right_kind() {
     assert!(ReviewCommand::move_to_folder(true).force_picker);
     assert!(!ReviewCommand::move_to_folder(false).force_picker);
 }
+
+// New test: kills force_picker (move_to_folder and copy_to_folder).
+#[test]
+fn folder_commands_preserve_both_force_picker_values() {
+    for force_picker in [false, true] {
+        let moved = ReviewCommand::move_to_folder(force_picker);
+        let copied = ReviewCommand::copy_to_folder(force_picker);
+        assert_eq!(moved.kind, ReviewCommandType::MoveToFolder);
+        assert_eq!(copied.kind, ReviewCommandType::CopyToFolder);
+        assert_eq!(moved.force_picker, force_picker);
+        assert_eq!(copied.force_picker, force_picker);
+        assert_eq!(moved.action_index, -1);
+        assert_eq!(copied.action_index, -1);
+    }
+}

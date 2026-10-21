@@ -493,3 +493,28 @@ fn remove_missing_superseded_while_the_next_stat_is_pending_does_not_present() {
     assert!(presented_paths(&f).is_empty());
     assert_eq!(f.preload.notified(), Vec::<i32>::new(), "no present for the next photo");
 }
+
+// New test: kills pending_next.
+#[test]
+fn remove_missing_waits_for_pending_next_then_presents_it() {
+    let fs = ScriptedFs::new();
+    let mut f = fixture_with_fs(&["missing.png", "next.png"], &fs);
+    let (missing, next) = (f.path("missing.png"), f.path("next.png"));
+    delete(&missing);
+    fs.hold(&next);
+    let token = f.clock.next_navigation();
+
+    {
+        let mut env = env(&mut f.catalog, &f.settings, &f.format);
+        f.presenter.remove_missing_catalog_item(&mut env, &missing, token);
+    }
+    assert!(fs.wait_started(&next));
+    assert!(!f.presenter.is_idle(), "the next stat is pending");
+    assert_eq!(&*f.catalog.paths(), &[next.clone()][..]);
+    assert!(presented_paths(&f).is_empty());
+
+    fs.release(&next);
+    f.pump_until_idle();
+    assert!(f.presenter.is_idle(), "the pending stat was consumed");
+    assert_eq!(presented_paths(&f), vec![next]);
+}
