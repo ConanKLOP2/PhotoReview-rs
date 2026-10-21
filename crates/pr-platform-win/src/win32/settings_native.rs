@@ -3,7 +3,13 @@
 //! Ctrl+Tab), the `SCROLLINFO` struct (`structs::ScrollInfo`) and `ScrollConstants`.
 //!
 //! Unit W8-11e.
-#![allow(unused_variables, dead_code)] // stub: removed by the W8-11e porter when the last `todo!()` is gone.
+
+use core::ffi::c_void;
+
+use windows::Win32::Foundation::HWND;
+use windows::Win32::UI::Controls::SetScrollInfo;
+use windows::Win32::UI::Input::KeyboardAndMouse::GetKeyState;
+use windows::Win32::UI::WindowsAndMessaging::{GetScrollInfo, SCROLLBAR_CONSTANTS, SetParent};
 
 use super::structs::{Hwnd, ScrollInfo};
 
@@ -29,20 +35,29 @@ pub const WS_CLIPSIBLINGS: u32 = 0x04000000; // WsClipSiblings
 
 /// C# `SetParent(child, newParent)`: the previous parent (`0` on failure). The caller also changes `WS_CHILD`/`WS_POPUP` itself when the style requires it.
 pub fn set_parent(child: Hwnd, new_parent: Hwnd) -> Hwnd {
-    todo!()
+    // SAFETY: handle values; the OS validates both windows (NULL is an `Err` here, `0` like the C# result).
+    unsafe { SetParent(HWND(child as *mut c_void), Some(HWND(new_parent as *mut c_void))) }
+        .map(|h| h.0 as isize)
+        .unwrap_or(0)
 }
 
 /// C# `SetScrollInfo(hwnd, bar, ScrollInfo*, redraw)`: the current scroll position. The wrapper sets `info.cbSize` (28) on a copy.
 pub fn set_scroll_info(hwnd: Hwnd, bar: i32, info: &ScrollInfo, redraw: bool) -> i32 {
-    todo!()
+    let mut copy = *info;
+    copy.cbSize = size_of::<ScrollInfo>() as u32; // 28
+    // SAFETY: the pointer is to a local `SCROLLINFO` copy with `cbSize` set; the OS only reads it.
+    unsafe { SetScrollInfo(HWND(hwnd as *mut c_void), SCROLLBAR_CONSTANTS(bar), &copy, redraw) }
 }
 
 /// C# `GetScrollInfo(hwnd, bar, ScrollInfo*)`: fills the fields selected by `info.fMask`; the wrapper sets `cbSize`. `true` on success.
 pub fn get_scroll_info(hwnd: Hwnd, bar: i32, info: &mut ScrollInfo) -> bool {
-    todo!()
+    info.cbSize = size_of::<ScrollInfo>() as u32; // 28
+    // SAFETY: the pointer is to a live `&mut SCROLLINFO` with `cbSize` set; the OS fills the fields chosen by `fMask` and does not keep the pointer.
+    unsafe { GetScrollInfo(HWND(hwnd as *mut c_void), SCROLLBAR_CONSTANTS(bar), info) }.is_ok()
 }
 
 /// C# `GetKeyState(virtualKey)`: the high bit (a negative `i16`) is "down", the low bit "toggled".
 pub fn get_key_state(virtual_key: i32) -> i16 {
-    todo!()
+    // SAFETY: a plain integer argument.
+    unsafe { GetKeyState(virtual_key) }
 }
