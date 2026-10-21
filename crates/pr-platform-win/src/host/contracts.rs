@@ -1,8 +1,8 @@
 //! Port of `PhotoReview.Shell.Win32/Hosting/ShellWindowContracts.cs` (67 lines, C-15) and `NativeRect.cs` (13 lines), baseline `d92d6aae`. Unit W8-13b.
 //!
 //! The shell window contract (`IShellWindow`, `IWindowMessageHandler`, `WindowMessage`, `ShellCursor`) and the small `Rect` helpers. The concrete
-//! window is `shell_window::ShellWindow` (13e/13f). `SizeD`/`PointD` are interim twins of `pr_app::input::primitives::{SizeD, PointD}` (same fields and
-//! record equality); the layering PR replaces them by imports (D-W8B3H-1).
+//! window is `shell_window::ShellWindow` (13e/13f). `SizeD`/`PointD` are `pub use` of `pr_app::input::primitives::{SizeD, PointD}` (the interim twins
+//! were replaced by the re-export, reconciliation amendment A10).
 //!
 //! Naming: C# `IShellWindow` becomes the trait [`ShellWindowApi`] because the concrete type keeps the C# name `ShellWindow` (D-W8B3H-3).
 //! C# events become `subscribe`/`unsubscribe` pairs with a `u64` id (precedent: `FrameClock`, `RenderSurface::subscribe_device_recreated`).
@@ -37,37 +37,8 @@ pub trait WindowMessageHandler {
     fn try_handle(&self, message: &WindowMessage) -> Option<Lresult>;
 }
 
-/// Interim twin of `pr_app::input::primitives::SizeD` (DIP).
-#[derive(Debug, Clone, Copy, Default)]
-pub struct SizeD {
-    pub width: f64,
-    pub height: f64,
-}
-
-impl PartialEq for SizeD {
-    /// Record equality of two `double`s: NaN equals NaN, `0.0` equals `-0.0`.
-    fn eq(&self, other: &Self) -> bool {
-        double_equals(self.width, other.width) && double_equals(self.height, other.height)
-    }
-}
-
-/// Interim twin of `pr_app::input::primitives::PointD` (DIP or pixel).
-#[derive(Debug, Clone, Copy, Default)]
-pub struct PointD {
-    pub x: f64,
-    pub y: f64,
-}
-
-impl PartialEq for PointD {
-    fn eq(&self, other: &Self) -> bool {
-        double_equals(self.x, other.x) && double_equals(self.y, other.y)
-    }
-}
-
-/// C# `double.Equals(double)`: NaN equals NaN, `0.0` equals `-0.0`.
-fn double_equals(a: f64, b: f64) -> bool {
-    a == b || (a.is_nan() && b.is_nan())
-}
+/// `SizeD` / `PointD` are the `pr_app` types (DIP or pixel; record equality with `double.Equals` semantics). Reconciliation A10.
+pub use pr_app::input::primitives::{PointD, SizeD};
 
 /// C# `CancelEventArgs`: a `Closing` handler sets `cancel = true` to keep the window.
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
@@ -116,6 +87,11 @@ pub trait ShellWindowApi {
     fn unsubscribe(&self, id: EventHandlerId);
     /// C# `AddMessageHandler`.
     fn add_message_handler(&self, handler: Rc<dyn WindowMessageHandler>);
+    /// C# internal `InsertMessageHandlerFirst` (the overlay `AttachOverlay` and the keep-warm listener `RegisterKeepWarm`): the handler is put at
+    /// the HEAD of the chain, so it sees every message before the ones added earlier. Reconciliation amendment A7.
+    fn insert_message_handler_first(&self, handler: Rc<dyn WindowMessageHandler>);
+    /// C# `IsDestroyed`: true after `WM_DESTROY` (and after `dispose`). Reconciliation amendment A7.
+    fn is_destroyed(&self) -> bool;
     /// C# `Invalidate()`: request the next frame (coalesced).
     fn invalidate(&self);
     /// C# `SetTitle`; `Err(Win32 "SetWindowText failed")` when the OS refuses. A destroyed window is `Ok(())`.
@@ -344,6 +320,12 @@ mod tests {
         }
         fn add_message_handler(&self, handler: Rc<dyn WindowMessageHandler>) {
             self.handlers.borrow_mut().push(handler);
+        }
+        fn insert_message_handler_first(&self, handler: Rc<dyn WindowMessageHandler>) {
+            self.handlers.borrow_mut().insert(0, handler);
+        }
+        fn is_destroyed(&self) -> bool {
+            self.closed.get()
         }
         fn invalidate(&self) {
             self.invalidated.set(self.invalidated.get() + 1);

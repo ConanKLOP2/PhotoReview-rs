@@ -1622,3 +1622,48 @@ fn navigating_after_fit_width_with_keep_zoom_forgets_the_previous_images_fit_axi
         "not refitted against A's viewport"
     );
 }
+#[test]
+fn select_compare_left_and_right_select_the_cell_paths_and_report_the_compare_changes() {
+    // New test (amendment A4; C#: CompareViewModel.SelectLeft / SelectRight reached through ShellMainWindow.TrySelectCompareAt)
+    let (mut env, files) = pair_env(false);
+    env.vm.toggle_compare();
+    env.settle();
+    assert_eq!(env.vm.compare().left_path(), Some(files[0].as_str()));
+    assert_eq!(env.vm.compare().right_path(), Some(files[1].as_str()));
+
+    let right = env.vm.select_compare_right();
+
+    assert_eq!(env.vm.compare().selected_path(), Some(files[1].as_str()));
+    assert!(env.vm.compare().is_right_selected());
+    assert!(
+        right
+            .compare
+            .contains(pr_app::viewmodels::compare::CompareProperty::SelectedPath)
+    );
+    assert!(
+        right.main.is_empty() && right.viewer.is_empty(),
+        "only the compare view model changes"
+    );
+
+    let left = env.vm.select_compare_left();
+
+    assert_eq!(env.vm.compare().selected_path(), Some(files[0].as_str()));
+    assert!(env.vm.compare().is_left_selected());
+    assert!(
+        left.compare
+            .contains(pr_app::viewmodels::compare::CompareProperty::IsLeftSelected)
+    );
+}
+
+#[test]
+fn select_compare_left_when_already_selected_reports_no_change() {
+    // New test (amendment A4; SetProperty only notifies on a difference)
+    let (mut env, _files) = pair_env(false);
+    env.vm.toggle_compare();
+    env.settle();
+    env.vm.select_compare_left();
+
+    let again = env.vm.select_compare_left();
+
+    assert!(again.is_empty());
+}

@@ -40,6 +40,17 @@ impl LayerElement {
         self.children.push(child);
         self
     }
+
+    /// Typed access to the child at `index`: `None` when the index is out of range or the child is not a `T` (same rules
+    /// as `PanelElement::child`). Rust-side addition; the C# code reads `Children[i]` and casts.
+    pub fn child<T: ElementNode + 'static>(&self, index: usize) -> Option<&T> {
+        self.children.get(index)?.as_any().downcast_ref::<T>()
+    }
+
+    /// Typed mutable access to the child at `index`; same rules as [`LayerElement::child`].
+    pub fn child_mut<T: ElementNode + 'static>(&mut self, index: usize) -> Option<&mut T> {
+        self.children.get_mut(index)?.as_any_mut().downcast_mut::<T>()
+    }
 }
 
 impl ElementNode for LayerElement {

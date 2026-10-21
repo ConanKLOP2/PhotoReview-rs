@@ -652,6 +652,14 @@ impl ShellWindowApi for ShellWindow {
     fn add_message_handler(&self, handler: Rc<dyn WindowMessageHandler>) {
         self.inner.handlers.borrow_mut().push(handler);
     }
+    /// Delegates to the inherent [`ShellWindow::insert_message_handler_first`] (reconciliation amendment A7).
+    fn insert_message_handler_first(&self, handler: Rc<dyn WindowMessageHandler>) {
+        ShellWindow::insert_message_handler_first(self, handler);
+    }
+    /// Delegates to the inherent [`ShellWindow::is_destroyed`] (reconciliation amendment A7).
+    fn is_destroyed(&self) -> bool {
+        ShellWindow::is_destroyed(self)
+    }
     /// C# `Invalidate()`: no-op when a render is already requested or the window is destroyed; else `render_requested = true` and ONE frame-clock subscription.
     fn invalidate(&self) {
         self.inner.invalidate();

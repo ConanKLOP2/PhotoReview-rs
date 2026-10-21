@@ -5,8 +5,9 @@
 //! (`message_loop`, `pending_panic`), the UI dispatcher (`ui_dispatcher`) and the window procedure plus the shell window (`wndproc`, `shell_window`).
 //! Everything here is UI-thread code: the types are `!Send` except the cross-thread half of `ui_dispatcher`. All `unsafe` has a `// SAFETY:` comment.
 //!
-//! No `pr_app` type is used (`pr-app` still depends on this crate, D-W8B1-1): `FrameTick`/`FrameHandler` and `SizeD`/`PointD` are interim twins that
-//! the layering PR replaces by imports (D-W8B3H-1). `UiDispatcher`/`UiScheduler` are in `pr_core::abstractions` and need no twin.
+//! `pr-platform-win` depends on `pr-app` (not the other way round): `SizeD`/`PointD` (`contracts`) and `FrameTick`/`FrameHandler`/`FrameHandlerId`
+//! (`frame_clock::base`) are `pub use` of the `pr_app` types (reconciliation amendment A10), so no conversion exists at the boundary.
+//! `UiDispatcher`/`UiScheduler` are in `pr_core::abstractions` and need no twin.
 
 pub mod contracts;
 pub mod error;
