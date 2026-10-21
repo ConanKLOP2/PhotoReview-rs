@@ -14,7 +14,6 @@ use pr_platform_win::shell_viewing::compare::{self, CompareFrame};
 use pr_platform_win::shell_viewing::crossfade::CrossfadeLayer;
 
 // This integration target uses only the clock; the shared drawing fakes serve the pure target.
-#[allow(dead_code)]
 #[path = "common/viewing_fakes.rs"]
 mod viewing_fakes;
 use viewing_fakes::FakeClock;
