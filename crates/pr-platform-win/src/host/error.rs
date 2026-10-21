@@ -6,8 +6,6 @@
 //! Not an error: a handler or window procedure that panics (see `pending_panic`), and the C# thread-affinity `InvalidOperationException`
 //! (the host types are `!Send`, so a call from another thread does not compile; D-W8B3H-4).
 
-#![allow(unused_variables, dead_code)] // W8-13a stub: the porter removes this line when the last `todo!()` is gone.
-
 use std::fmt;
 
 use crate::gfx::com::GfxError;
@@ -32,7 +30,22 @@ impl fmt::Display for HostError {
     /// `Win32`: `"{operation} (Win32 error {code})"`; `Gfx`: `"{operation} failed with HRESULT 0x{hresult:08X}"`; `InvalidOperation`: the message;
     /// `InvalidArgument`: `"{message} (Parameter '{param}')"`; `ArgumentOutOfRange`: `"Specified argument was out of the range of valid values. (Parameter '{param}')"`.
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        todo!("W8-13a")
+        match self {
+            Self::Win32 { operation, error } => write!(f, "{operation} (Win32 error {})", error.0),
+            Self::Gfx(error) => write!(
+                f,
+                "{} failed with HRESULT 0x{:08X}",
+                error.operation, error.hresult as u32
+            ),
+            Self::InvalidOperation { message } => f.write_str(message),
+            Self::InvalidArgument { param, message } => write!(f, "{message} (Parameter '{param}')"),
+            Self::ArgumentOutOfRange { param } => {
+                write!(
+                    f,
+                    "Specified argument was out of the range of valid values. (Parameter '{param}')"
+                )
+            }
+        }
     }
 }
 
@@ -40,6 +53,6 @@ impl std::error::Error for HostError {}
 
 impl From<GfxError> for HostError {
     fn from(error: GfxError) -> Self {
-        todo!("W8-13a")
+        Self::Gfx(error)
     }
 }
