@@ -5,7 +5,6 @@
 //! flags, screen to client DIP for the wheel) and call a port trait. The C# handlers hold the concrete `ShellInput`; the Rust handlers hold a port
 //! trait implemented by `dispatch::ShellInput` (W8-14b), which breaks the 14a <-> 14b cycle and lets the decoding be tested with a recording fake.
 //! Handlers are `&self` and re-entrant (D-W8B3H-6): their small state is in `Cell`s.
-#![allow(unused_variables, dead_code)] // stub: the porter removes this line with the last `todo!()`
 
 use std::cell::Cell;
 use std::fmt;
@@ -14,8 +13,23 @@ use std::rc::Rc;
 use pr_app::input::key_id::KeyId;
 use pr_app::input::primitives::{PointD, PointerButton};
 
+use pr_app::input::key_mapping;
+use pr_app::input::wheel_message;
+
+use super::native::{
+    MK_CONTROL, MK_LBUTTON, SCAN_CODE_RIGHT_SHIFT, VK_LSHIFT, VK_RSHIFT, VK_SHIFT, is_extended_key, is_key_repeat,
+    signed_high_word, signed_low_word,
+};
 use crate::host::contracts::{WindowMessage, WindowMessageHandler};
+use crate::win32::messages::{
+    WM_CAPTURECHANGED, WM_CHAR, WM_KEYDOWN, WM_KEYUP, WM_LBUTTONDBLCLK, WM_LBUTTONDOWN, WM_LBUTTONUP, WM_MBUTTONDBLCLK,
+    WM_MBUTTONDOWN, WM_MOUSEHWHEEL, WM_MOUSEMOVE, WM_MOUSEWHEEL, WM_RBUTTONDBLCLK, WM_RBUTTONDOWN, WM_SYSCHAR,
+    WM_SYSKEYDOWN, WM_SYSKEYUP, WM_XBUTTONDBLCLK, WM_XBUTTONDOWN,
+};
 use crate::win32::structs::{Lparam, Lresult};
+
+/// C# `XButton1`: the high word of `wParam` of `WM_XBUTTONDOWN` for the first extra button.
+const XBUTTON1: i32 = 1;
 
 /// What `KeyboardMessageHandler` needs from `ShellInput` (C# `HandleKeyDown` and `Environment.MessageTime()`).
 pub trait KeyInputPort {
@@ -68,7 +82,15 @@ impl KeyboardMessageHandler {
     /// C# `ResolveVirtualKey(virtualKey, lParam)`: `VK_SHIFT` is shared by both Shift keys; scan code `0x36` (bits 16..23 of `lparam`) is the right
     /// one (`VK_RSHIFT`), any other scan code is `VK_LSHIFT`. Other keys are returned unchanged.
     pub fn resolve_virtual_key(virtual_key: i32, lparam: Lparam) -> i32 {
-        todo!()
+        if virtual_key != VK_SHIFT {
+            return virtual_key;
+        }
+        let scan_code = (((lparam as usize) >> 16) & 0xFF) as i32;
+        if scan_code == SCAN_CODE_RIGHT_SHIFT {
+            VK_RSHIFT
+        } else {
+            VK_LSHIFT
+        }
     }
 }
 
@@ -83,7 +105,34 @@ impl fmt::Debug for KeyboardMessageHandler {
 
 impl WindowMessageHandler for KeyboardMessageHandler {
     fn try_handle(&self, message: &WindowMessage) -> Option<Lresult> {
-        todo!()
+        match message.msg {
+            WM_KEYDOWN | WM_SYSKEYDOWN => {
+                let raw = message.wparam as i32;
+                let virtual_key = Self::resolve_virtual_key(raw, message.lparam);
+                let key = key_mapping::from_virtual_key(virtual_key, is_extended_key(message.lparam));
+                // No cell is borrowed across the port call (T1): the port can re-enter this chain.
+                let handled = self.input.handle_key_down(
+                    key,
+                    message.msg == WM_SYSKEYDOWN,
+                    is_key_repeat(message.lparam),
+                    self.input.message_time(),
+                );
+                self.last_key_handled.set(handled);
+                // The RAW wparam (`VK_SHIFT`), because the key-up message carries the raw one.
+                self.handled_virtual_key.set(if handled { raw } else { -1 });
+                handled.then_some(0)
+            }
+            WM_KEYUP | WM_SYSKEYUP => {
+                if self.handled_virtual_key.get() == message.wparam as i32 {
+                    self.handled_virtual_key.set(-1);
+                    Some(0)
+                } else {
+                    None
+                }
+            }
+            WM_CHAR | WM_SYSCHAR => self.last_key_handled.get().then_some(0),
+            _ => None,
+        }
     }
 }
 
@@ -108,7 +157,42 @@ impl fmt::Debug for PointerMessageHandler {
 
 impl WindowMessageHandler for PointerMessageHandler {
     fn try_handle(&self, message: &WindowMessage) -> Option<Lresult> {
-        todo!()
+        let x = signed_low_word(message.lparam);
+        let y = signed_high_word(message.lparam);
+        match message.msg {
+            WM_LBUTTONDOWN | WM_LBUTTONDBLCLK => self.input.handle_pointer_down(PointerButton::Left, x, y).then_some(0),
+            WM_MBUTTONDOWN | WM_MBUTTONDBLCLK => {
+                self.input.handle_pointer_down(PointerButton::Middle, x, y).then_some(0)
+            }
+            WM_RBUTTONDOWN | WM_RBUTTONDBLCLK => {
+                self.input.handle_pointer_down(PointerButton::Right, x, y).then_some(0)
+            }
+            WM_XBUTTONDOWN | WM_XBUTTONDBLCLK => {
+                let which = signed_high_word(message.wparam as isize);
+                let button = if which == XBUTTON1 {
+                    PointerButton::XButton1
+                } else {
+                    PointerButton::XButton2
+                };
+                // C#: the answer is ignored, the window goes on.
+                self.input.handle_pointer_down(button, x, y);
+                None
+            }
+            WM_MOUSEMOVE => {
+                self.input
+                    .handle_pointer_move(x, y, (message.wparam as i32 & MK_LBUTTON) != 0);
+                None
+            }
+            WM_LBUTTONUP => {
+                self.input.handle_left_button_up(x, y);
+                None
+            }
+            WM_CAPTURECHANGED => {
+                self.input.handle_capture_lost();
+                None
+            }
+            _ => None,
+        }
     }
 }
 
@@ -133,6 +217,19 @@ impl fmt::Debug for WheelMessageHandler {
 
 impl WindowMessageHandler for WheelMessageHandler {
     fn try_handle(&self, message: &WindowMessage) -> Option<Lresult> {
-        todo!()
+        if message.msg != WM_MOUSEWHEEL && message.msg != WM_MOUSEHWHEEL {
+            return None;
+        }
+        // Same bits as `InputNative.SignedLowWord/HighWord/WheelDelta` (pure helpers of W8-05a).
+        let screen = wheel_message::screen_point(message.lparam as i64);
+        let client = self.input.screen_to_client_dip(screen);
+        let delta = wheel_message::delta(message.wparam as i64);
+        let ctrl = (message.wparam as i32 & MK_CONTROL) != 0;
+        let handled = if message.msg == WM_MOUSEWHEEL {
+            self.input.handle_vertical_wheel(delta, ctrl, client)
+        } else {
+            self.input.handle_horizontal_wheel(delta, ctrl, client)
+        };
+        handled.then_some(0)
     }
 }
