@@ -815,3 +815,23 @@ fn release_resources_reaches_every_child_including_nested_ones() {
 
     assert_eq!((ra.get(), rb.get()), (1, 1));
 }
+
+#[test]
+fn horizontal_arrange_gives_children_the_inner_height_inside_the_padding() {
+    // new: kills `-` -> `+` in arrange_stack (inner height = bounds.height - padding.vertical())
+    let fake = FakeTextRenderer::new();
+    let mut panel = PanelElement::new("P");
+    panel.orientation = OverlayOrientation::Horizontal;
+    panel.padding = OverlayThickness::symmetric(6.0, 4.0);
+    panel.base_mut().horizontal_alignment = OverlayHorizontalAlignment::Left;
+    panel.base_mut().vertical_alignment = OverlayVerticalAlignment::Top;
+    panel.add(Box::new(text("a", "AAAA", 10.0)));
+
+    panel.arrange(&context(&fake, 800.0, 600.0));
+
+    assert_rect(panel.bounds(), rect(0.0, 0.0, 32.0, 23.0));
+    assert_rect(
+        panel.child::<TextElement>(0).expect("a").bounds(),
+        rect(6.0, 4.0, 20.0, 15.0),
+    );
+}
