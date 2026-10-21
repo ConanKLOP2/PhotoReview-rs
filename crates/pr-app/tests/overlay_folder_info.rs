@@ -164,3 +164,49 @@ fn hidden_panel_has_no_size_and_no_hit_and_visible_hit_returns_the_inner_panel()
     assert!(hit.as_any().downcast_ref::<PanelElement>().is_some());
     assert!(panel.find(TEXT_ID).is_some());
 }
+
+#[test]
+fn arrange_places_the_text_child_inside_the_padding() {
+    // new: kills arrange_children -> () (the delegate to the inner panel)
+    let fake = FakeTextRenderer::new();
+    let mut panel = FolderInfoPanel::new(&english());
+    panel.apply(&model(true, "ABCDEFGHIJ", 10.0));
+
+    panel.arrange(&context(&fake, 800.0, 600.0));
+
+    let b = panel.bounds();
+    let text = panel.text().expect("text").bounds();
+    assert_eq!((text.x, text.y), (b.x + 6.0, b.y + 4.0));
+    assert_eq!((text.width, text.height), (50.0, 15.0));
+}
+
+#[test]
+fn render_draws_the_background_then_the_text() {
+    // new: kills render_core -> () (the delegate to the inner panel)
+    let fake = FakeTextRenderer::new();
+    let mut panel = FolderInfoPanel::new(&english());
+    panel.apply(&model(true, "ABCDEFGHIJ", 10.0));
+    panel.arrange(&context(&fake, 800.0, 600.0));
+
+    let mut dc = overlay_fakes::RecordingDrawContext::new();
+    panel.render(&mut dc);
+
+    assert_eq!(dc.fills.len(), 1);
+    assert!(dc.fills[0].rounded);
+    assert_eq!(dc.texts.len(), 1);
+    assert_eq!(dc.texts[0].0, "ABCDEFGHIJ");
+}
+
+#[test]
+fn release_resources_returns_the_text_layout_lease() {
+    // new: kills release_resources -> () (the delegate to the inner panel)
+    let fake = FakeTextRenderer::new();
+    let mut panel = FolderInfoPanel::new(&english());
+    panel.apply(&model(true, "ABCDEFGHIJ", 10.0));
+    panel.arrange(&context(&fake, 800.0, 600.0));
+    assert_eq!(fake.live(), 1);
+
+    panel.release_resources();
+
+    assert_eq!(fake.live(), 0);
+}

@@ -897,3 +897,31 @@ fn zoom_sits_top_right_and_renders_its_text() {
     zoom.release_resources();
     assert_eq!(fake.live(), 0);
 }
+
+#[test]
+fn zoom_arrange_places_the_text_child_inside_the_padding() {
+    // new: kills ZoomIndicatorPanel::arrange_children -> ()
+    let fake = FakeTextRenderer::new();
+    let mut zoom = ZoomIndicatorPanel::new(&english());
+    zoom.apply(&OverlayModel {
+        zoom_indicator_visible: true,
+        zoom_indicator_text: "ABCDEFGHIJ".to_owned(),
+        font_size: 10.0,
+        ..OverlayModel::default()
+    });
+
+    zoom.arrange(&context(&fake));
+
+    let b = zoom.bounds();
+    let t = zoom.text().bounds();
+    assert_eq!((t.x, t.y, t.width, t.height), (b.x + 6.0, b.y + 4.0, 50.0, 15.0));
+}
+
+#[test]
+fn zoom_find_returns_the_matching_element_by_id() {
+    // new: kills `==` -> `!=` in ZoomIndicatorPanel::find
+    let zoom = ZoomIndicatorPanel::new(&english());
+    assert_eq!(zoom.find(ZOOM_PANEL_ID).map(|e| e.base().id()), Some(ZOOM_PANEL_ID));
+    assert_eq!(zoom.find(ZOOM_TEXT_ID).map(|e| e.base().id()), Some(ZOOM_TEXT_ID));
+    assert!(zoom.find("missing").is_none());
+}
