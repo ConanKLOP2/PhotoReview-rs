@@ -18,7 +18,6 @@ use std::sync::Arc;
 
 use pr_app::coordinators::fade_gate::FadeTargetGate;
 use pr_app::input::primitives::{PointD, SizeD};
-use pr_app::menus::model::MenuItemModel;
 use pr_app::overlay::animator::Animator;
 use pr_app::overlay::capture_badge::CapturePairBadge;
 use pr_app::overlay::folder_info::FolderInfoPanel;
@@ -80,13 +79,11 @@ pub fn overlay_clock(clock: Rc<dyn HostFrameClock>) -> Rc<dyn OverlayFrameClock>
 /// (C# any exception except `OutOfMemoryException`). Same shape as `shell_menus::controller::PopupMenuHost::show` of W8-14e (D-W8B4O-6).
 pub type MenuShowResult = Result<Option<String>, Box<dyn std::error::Error>>;
 
-/// The popup menu service the Tools button uses (C# `IPopupMenuHost`, W8-14e/14f). A local seam with the SAME signature as 14e's `PopupMenuHost`, so 15i
-/// does not depend on 14e; when 14e is on master the lead replaces this trait by `pub use` of that one, or adds the one-line blanket impl. `show` is MODAL:
-/// it returns when the menu closes. `&self`: the window keeps receiving messages while it is open.
-pub trait OverlayMenuHost {
-    /// C# `Show(items, screenPointDip)`: `screen_point_dip` is in SCREEN DIP of the window's DPI (the menu's top-left anchor).
-    fn show(&self, items: &[MenuItemModel], screen_point_dip: PointD) -> MenuShowResult;
-}
+/// The popup menu service the Tools button uses (C# `IPopupMenuHost`): the trait is OWNED by W8-14e (`shell_menus::controller::PopupMenuHost`, same
+/// `show(&self, &[MenuItemModel], PointD) -> Result<Option<String>, Box<dyn Error>>`) and renamed on import (D-W8B4X-3); there is no twin. `show` is MODAL: it
+/// returns when the menu closes. `&self`: the window keeps receiving messages while it is open. `screen_point_dip` is in SCREEN DIP of the window's DPI (the menu's
+/// top-left anchor).
+pub use crate::shell_menus::controller::PopupMenuHost as OverlayMenuHost;
 
 /// C# `OnCommandFailed(name, exception)` as `(name, message)`.
 pub type CommandFailedHandler = Box<dyn Fn(&str, &str)>;
