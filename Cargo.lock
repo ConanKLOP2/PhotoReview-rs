@@ -131,6 +131,7 @@ dependencies = [
  "pr-app",
  "pr-core",
  "pr-imaging",
+ "pr-l10n",
  "pr-perf",
  "pr-test-support",
  "serde_json",

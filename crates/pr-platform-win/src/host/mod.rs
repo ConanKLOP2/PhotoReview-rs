@@ -12,6 +12,7 @@ pub mod contracts;
 pub mod error;
 pub mod frame_clock;
 pub mod icons;
+pub mod main_window;
 pub mod message_loop;
 pub mod native;
 pub mod pending_panic;
