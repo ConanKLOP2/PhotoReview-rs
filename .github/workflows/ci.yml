@@ -66,7 +66,7 @@ jobs:
 
   # `pr-app` has over a hundred integration test files, each linked as its own binary, so it dominates the test time.
   # Its files are split round-robin over 4 shards (computed from the directory on every run, so a new test file needs no
-  # workflow edit); core, crates and app-unit run the remaining crate, unit and doc tests in parallel.
+  # workflow edit); core-a, core-b, crates and app-unit run the remaining crate, unit and doc tests in parallel.
   test:
     name: test (${{ matrix.shard }})
     runs-on: windows-latest
@@ -75,7 +75,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        shard: [core, crates, app-unit, "0", "1", "2", "3"]
+        shard: [core-a, core-b, crates, app-unit, "0", "1", "2", "3"]
     env:
       CARGO_PROFILE_DEV_DEBUG: 0
     steps:
@@ -93,10 +93,17 @@ jobs:
         shell: pwsh
         run: |
           $shard = '${{ matrix.shard }}'
-          if ($shard -eq 'core') {
-            cargo test -p pr-core --locked
-            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-            exit 0
+          if ($shard -like 'core-*') {
+            # pr-core tests are sequential and a few files (journal, compaction) take 15-35 s each: alternate the
+            # files over two shards (computed from the directory); core-a also runs the lib tests, core-b the doc tests.
+            $half = if ($shard -eq 'core-a') { 0 } else { 1 }
+            $names = @(Get-ChildItem crates/pr-core/tests -Filter *.rs -File | Sort-Object Name | ForEach-Object { $_.BaseName })
+            $targets = @(if ($half -eq 0) { '--lib' } else { '--doc' })
+            for ($k = 0; $k -lt $names.Count; $k++) {
+              if ($k % 2 -eq $half) { $targets += '--test'; $targets += $names[$k] }
+            }
+            cargo test -p pr-core --locked @targets
+            exit $LASTEXITCODE
           }
           if ($shard -eq 'crates') {
             cargo test --workspace --exclude pr-app --exclude pr-core --locked
