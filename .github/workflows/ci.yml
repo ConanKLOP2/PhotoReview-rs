@@ -98,12 +98,17 @@ jobs:
             # files over two shards (computed from the directory); core-a also runs the lib tests, core-b the doc tests.
             $half = if ($shard -eq 'core-a') { 0 } else { 1 }
             $names = @(Get-ChildItem crates/pr-core/tests -Filter *.rs -File | Sort-Object Name | ForEach-Object { $_.BaseName })
-            $targets = @(if ($half -eq 0) { '--lib' } else { '--doc' })
+            $targets = @(if ($half -eq 0) { '--lib' } else { })
             for ($k = 0; $k -lt $names.Count; $k++) {
               if ($k % 2 -eq $half) { $targets += '--test'; $targets += $names[$k] }
             }
             cargo test -p pr-core --locked @targets
-            exit $LASTEXITCODE
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+            if ($half -eq 1) {
+              cargo test -p pr-core --doc --locked
+              exit $LASTEXITCODE
+            }
+            exit 0
           }
           if ($shard -eq 'crates') {
             cargo test --workspace --exclude pr-app --exclude pr-core --locked
