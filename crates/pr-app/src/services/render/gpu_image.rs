@@ -62,3 +62,18 @@ pub trait GpuImageCache {
     /// `Clear()`: release every image (also used when the device is recreated). Never fails, also after dispose.
     fn clear(&self);
 }
+
+/// The prefetch half of the C# `GpuImageCache` class that `PresentationComposer` (W8-16c) uses on the concrete type but `IGpuImageCache`
+/// does not declare: `IsFullyUploaded(long)` and the `UploadCompleted` event (D-W8B3S-5). Implemented by the real cache
+/// (`pr_platform_win::render::image_cache`, W8-12g); handlers run on the UI thread, after the cache released its own state borrow.
+pub trait PrefetchStatus: GpuImageCache {
+    /// `IsFullyUploaded(pixelBufferId)`: the image is cached, complete (all stripes uploaded) and not released.
+    fn is_fully_uploaded(&self, pixel_buffer_id: i64) -> bool;
+
+    /// `UploadCompleted += handler`: raised once per finished prefetch with the `PixelBuffer::id()`. Returns an id for
+    /// [`unsubscribe_upload_completed`](Self::unsubscribe_upload_completed).
+    fn subscribe_upload_completed(&self, handler: Rc<dyn Fn(i64)>) -> u64;
+
+    /// `UploadCompleted -= handler`; an unknown id is a no-op.
+    fn unsubscribe_upload_completed(&self, id: u64);
+}
