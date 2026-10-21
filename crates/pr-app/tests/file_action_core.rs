@@ -601,6 +601,28 @@ fn executor_throws_entry_goes_back_at_its_index_failure_is_reported_and_logged()
     assert_eq!(env.sink.navigation_changes, 1);
 }
 
+// New test (test infrastructure): a scripted panic must not poison the fake executor's script, so a second one still reads "boom".
+#[test]
+fn two_scripted_executor_panics_in_a_row_both_report_boom() {
+    let mut env = move_env(&["a.jpg", "b.jpg", "c.jpg"]);
+    env.exec.script(Scripted::Panic("boom".to_string()));
+    env.exec.script(Scripted::Panic("boom".to_string()));
+    let failed = en(
+        "status.actionFailed",
+        &[arg("actionName", "MoveToSub"), arg("message", "boom")],
+    );
+
+    env.run_action(0, None, Some(&p("a.jpg")));
+    assert_eq!(env.run_worker(), FileActionStep::Pending);
+    assert_eq!(env.present_finished(false), DONE_FALSE);
+    assert_eq!(env.sink.last_status(), Some(failed.as_str()));
+
+    env.run_action(0, None, Some(&p("b.jpg")));
+    assert_eq!(env.run_worker(), FileActionStep::Pending);
+    assert_eq!(env.present_finished(false), DONE_FALSE);
+    assert_eq!(env.sink.last_status(), Some(failed.as_str()));
+}
+
 // C#: FileActionControllerUnexpectedThrowTests.GroupExecutorThrows_WholeCaptureGoesBackAsOneGroupedEntry
 #[test]
 fn group_executor_throws_whole_capture_goes_back_as_one_grouped_entry() {

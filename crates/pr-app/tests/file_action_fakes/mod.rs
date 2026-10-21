@@ -292,7 +292,9 @@ impl IFileActionExecutor for FakeExecutor {
 
     fn execute(&self, request: &FileActionRequest, _cancel: &CancelToken) -> FileActionResult {
         self.calls.lock().unwrap().push(ExecutorCall::Single(request.clone()));
-        match self.script.lock().unwrap().pop_front() {
+        // Take the entry first: a guard held across the `panic!` below would poison the script mutex.
+        let next = self.script.lock().unwrap().pop_front();
+        match next {
             Some(Scripted::Single(result)) => return result,
             Some(Scripted::Panic(text)) => panic!("{text}"),
             _ => {}
@@ -310,7 +312,9 @@ impl IFileActionExecutor for FakeExecutor {
 
     fn execute_group(&self, request: &CaptureGroupActionRequest, _cancel: &CancelToken) -> CaptureGroupActionResult {
         self.calls.lock().unwrap().push(ExecutorCall::Group(request.clone()));
-        match self.script.lock().unwrap().pop_front() {
+        // Take the entry first: a guard held across the `panic!` below would poison the script mutex.
+        let next = self.script.lock().unwrap().pop_front();
+        match next {
             Some(Scripted::Group(result)) => return result,
             Some(Scripted::Panic(text)) => panic!("{text}"),
             _ => {}
