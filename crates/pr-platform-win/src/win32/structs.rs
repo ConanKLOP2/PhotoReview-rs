@@ -5,11 +5,10 @@
 //! each C# struct becomes a type alias of the `windows` type under the C# name (D-W8B3-3) and the layout is pinned by compile-time asserts here
 //! and by `tests/golden/win32-constants.json` (kind `layout`, 16 types). This file also owns what every other Win32 unit shares: the handle
 //! aliases, `Win32Error`/`Hresult`, the window-procedure type and the UTF-16 helpers.
-#![allow(unused_variables, dead_code)] // stub: removed by the W8-11a porter when the last `todo!()` is gone.
 
 use core::fmt;
 
-use windows::Win32::Foundation::{POINT, POINTL, RECT};
+use windows::Win32::Foundation::{GetLastError, POINT, POINTL, RECT};
 use windows::Win32::Graphics::Gdi::{MONITORINFO, MONITORINFOEXW};
 use windows::Win32::System::ApplicationInstallationAndServicing::ACTCTXW;
 use windows::Win32::System::Com::{FORMATETC, STGMEDIUM};
@@ -57,13 +56,14 @@ pub struct Win32Error(pub u32);
 impl Win32Error {
     /// `GetLastError()` of the calling thread. Wrappers call this immediately after the failing call and before anything else that could change it.
     pub fn last() -> Self {
-        todo!()
+        // SAFETY: `GetLastError` only reads the calling thread's last-error value; no pointers are involved.
+        Self(unsafe { GetLastError() }.0)
     }
 }
 
 impl fmt::Display for Win32Error {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        todo!()
+        write!(f, "Win32 error {} (0x{:08X})", self.0, self.0)
     }
 }
 
@@ -76,13 +76,13 @@ pub struct Hresult(pub i32);
 impl Hresult {
     /// C# `hr >= 0`.
     pub fn succeeded(self) -> bool {
-        todo!()
+        self.0 >= 0
     }
 }
 
 impl fmt::Display for Hresult {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        todo!()
+        write!(f, "HRESULT 0x{:08X}", self.0 as u32)
     }
 }
 
@@ -157,47 +157,68 @@ const _: () = {
 
 /// `WNDCLASSEXW` zeroed with `cbSize = 80`.
 pub fn new_wnd_class_ex() -> WndClassEx {
-    todo!()
+    WndClassEx {
+        cbSize: size_of::<WndClassEx>() as u32,
+        ..Default::default()
+    }
 }
 
 /// `MONITORINFO` zeroed with `cbSize = 40`.
 pub fn new_monitor_info() -> MonitorInfo {
-    todo!()
+    MonitorInfo {
+        cbSize: size_of::<MonitorInfo>() as u32,
+        ..Default::default()
+    }
 }
 
 /// `MONITORINFOEXW` zeroed with `cbSize = 104` (not 40: the C# comment "cbSize must be sizeof(MonitorInfoEx)" and the C# test `MonitorInfoEx_Size_Is104`).
 pub fn new_monitor_info_ex() -> MonitorInfoEx {
-    todo!()
+    let mut info = MonitorInfoEx::default();
+    info.monitorInfo.cbSize = size_of::<MonitorInfoEx>() as u32;
+    info
 }
 
 /// `WINDOWPLACEMENT` zeroed with `length = 44`.
 pub fn new_window_placement() -> WindowPlacement {
-    todo!()
+    WindowPlacement {
+        length: size_of::<WindowPlacement>() as u32,
+        ..Default::default()
+    }
 }
 
 /// `SCROLLINFO` zeroed with `cbSize = 28`.
 pub fn new_scroll_info() -> ScrollInfo {
-    todo!()
+    ScrollInfo {
+        cbSize: size_of::<ScrollInfo>() as u32,
+        ..Default::default()
+    }
 }
 
 /// `TASKDIALOGCONFIG` zeroed with `cbSize = 160`.
 pub fn new_task_dialog_config() -> TaskDialogConfig {
-    todo!()
+    TaskDialogConfig {
+        cbSize: size_of::<TaskDialogConfig>() as u32,
+        ..Default::default()
+    }
 }
 
 /// `ACTCTXW` zeroed with `cbSize = 56`.
 pub fn new_act_ctx() -> ActCtx {
-    todo!()
+    ActCtx {
+        cbSize: size_of::<ActCtx>() as u32,
+        ..Default::default()
+    }
 }
 
 // ---- UTF-16 helpers shared by the wrappers (C# `StringMarshalling.Utf16` and `fixed (char*)`) ----
 
 /// `text` as UTF-16 code units followed by one NUL. An embedded NUL stays in the buffer (the OS then sees a shorter string, like C#).
 pub fn to_utf16z(text: &str) -> Vec<u16> {
-    todo!()
+    text.encode_utf16().chain(core::iter::once(0)).collect()
 }
 
 /// UTF-16 code units up to the first NUL (or the whole slice) to a `String`; unpaired surrogates become U+FFFD (C# `new string(char*)` would keep them).
 pub fn utf16_to_string(units: &[u16]) -> String {
-    todo!()
+    let end = units.iter().position(|&unit| unit == 0).unwrap_or(units.len());
+    String::from_utf16_lossy(&units[..end])
 }
