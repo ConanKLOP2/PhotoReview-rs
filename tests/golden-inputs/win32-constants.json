@@ -1,0 +1,46 @@
+{
+ "const_classes": [
+  "PhotoReview.Shell.Interop.WindowMessages",
+  "PhotoReview.Shell.Interop.User32",
+  "PhotoReview.Shell.Interop.Kernel32",
+  "PhotoReview.Shell.Interop.Gdi32",
+  "PhotoReview.Shell.Interop.Shcore",
+  "PhotoReview.Shell.Interop.Dwmapi",
+  "PhotoReview.Shell.Interop.Comctl32",
+  "PhotoReview.Shell.Interop.ActivationContext",
+  "PhotoReview.Shell.Interop.ControlConstants",
+  "PhotoReview.Shell.Interop.DialogChromeNative",
+  "PhotoReview.Shell.Interop.DialogConstants",
+  "PhotoReview.Shell.Interop.ScrollConstants",
+  "PhotoReview.Shell.Interop.Imm32",
+  "PhotoReview.Shell.Interop.Shell.ClipboardFormats",
+  "PhotoReview.Shell.Interop.Shell.DataViewAspect",
+  "PhotoReview.Shell.Interop.Shell.DataObjectDirection",
+  "PhotoReview.Shell.Interop.Shell.OleErrors",
+  "PhotoReview.Shell.Interop.Shell.ShellGuids"
+ ],
+ "enums": [
+  "PhotoReview.Shell.Interop.Shell.Tymed",
+  "PhotoReview.Shell.Interop.Shell.DropEffect",
+  "PhotoReview.Shell.Interop.Shell.FileDialogOptions",
+  "PhotoReview.Shell.Interop.Shell.ShellItemDisplayName"
+ ],
+ "layouts": [
+  "PhotoReview.Shell.Interop.Rect",
+  "PhotoReview.Shell.Interop.Point",
+  "PhotoReview.Shell.Interop.WndClassEx",
+  "PhotoReview.Shell.Interop.Msg",
+  "PhotoReview.Shell.Interop.MonitorInfo",
+  "PhotoReview.Shell.Interop.MonitorInfoEx",
+  "PhotoReview.Shell.Interop.WindowPlacement",
+  "PhotoReview.Shell.Interop.InputMessageSource",
+  "PhotoReview.Shell.Interop.TaskDialogButton",
+  "PhotoReview.Shell.Interop.TaskDialogConfig",
+  "PhotoReview.Shell.Interop.ScrollInfo",
+  "PhotoReview.Shell.Interop.ActivationContext+ActCtx",
+  "PhotoReview.Shell.Interop.Shell.FormatEtc",
+  "PhotoReview.Shell.Interop.Shell.StgMedium",
+  "PhotoReview.Shell.Interop.Shell.PointL",
+  "PhotoReview.Shell.Interop.Shell.ComdlgFilterSpec"
+ ]
+}
