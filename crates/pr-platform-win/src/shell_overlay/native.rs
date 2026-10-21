@@ -5,7 +5,10 @@
 //! `win32` wrappers; the tooltip constants and structures (`TTM_*`, `TOOLINFOW`, `MSG`) move to `tooltips` (15g, their only user).
 //! Everything is behind [`OverlayOs`] so [`super::messages::OverlayMessageHandler`] is testable without a window (precedent: `host::message_loop::LoopOs`).
 
-#![allow(unused_variables, dead_code)] // stub only: removed by the porter when the bodies are filled (contracts/README.md D11)
+use std::ffi::c_void;
+
+use windows::Win32::Foundation::{HWND, POINT};
+use windows::Win32::Graphics::Gdi::ClientToScreen;
 
 use crate::win32::structs::Hwnd;
 
@@ -40,20 +43,28 @@ pub struct Win32OverlayOs;
 
 impl OverlayOs for Win32OverlayOs {
     fn request_mouse_leave(&self, hwnd: Hwnd) {
-        todo!()
+        let _ = crate::win32::dialog_chrome::track_mouse_event(TME_LEAVE, hwnd, 0);
     }
 
     fn is_key_down(&self, virtual_key: i32) -> bool {
-        todo!()
+        key_state_is_down(crate::win32::settings_native::get_key_state(virtual_key))
     }
 
     fn client_origin_on_screen(&self, hwnd: Hwnd) -> (i32, i32) {
-        todo!()
+        let mut origin = POINT { x: 0, y: 0 };
+        // SAFETY: origin is a live stack value. ClientToScreen writes it synchronously and does not retain the pointer;
+        // HWND is an opaque handle whose validity is checked by user32.
+        let converted = unsafe { ClientToScreen(HWND(hwnd as *mut c_void), &mut origin) };
+        if converted.as_bool() {
+            (origin.x, origin.y)
+        } else {
+            (0, 0)
+        }
     }
 }
 
 /// C# `(GetKeyState(virtualKey) & 0x8000) != 0` for a raw `GetKeyState` result (pure, tested with a table: `i16::MIN` and `-1` are down, `1` (toggled
 /// only) and `0` are not).
 pub fn key_state_is_down(state: i16) -> bool {
-    todo!()
+    (state as u16 & 0x8000) != 0
 }
