@@ -739,6 +739,90 @@ Written by the contract writer; the lead may overrule. Where a question had a re
 - **D-W8B3-13 Findings of the audit (no action needed, recorded):** (a) there is no GAP: every P/Invoke of `Win32/*.cs` exists in `windows` 0.62.2; (b) `Kernel32Loader` (`LoadLibraryEx`, `GetProcAddress` by ordinal) is used only by a C# test (uxtheme ordinals 135/136); (c) C# `NmListViewSize = 88` and `NmLvCustomDrawSize = 104` are wrong (64 and 136) and unused,
   ported with the C# value and flagged; (d) `Msg.Private` (offset 44) has no windows-rs field (tail padding); (e) the existing `dark_title_bar.rs` keeps its run-time binding of `DwmSetWindowAttribute`; the new `dwmapi` wrapper imports it statically (W8-11b open question 3).
 
+## Wave 8 batch B3 (render group 12b-12e)
+
+Group of batch B3 of `docs/WAVE-8-PLAN.md` (P-38): the Direct2D renderer core of `Shell.Rendering` (`DeviceResources` 456, `D2DRenderSurface` 236 + factory 13, `D2DDrawContext` 359 = 1 064 C# lines) as `pr_platform_win::render::{device, surface, draw_context}`.
+Four contracts (`contracts/W8-12b.md` .. `W8-12e.md`), seven stub files under `crates/pr-platform-win/src/render/` (`mod.rs`, `device/{mod, create, loss, resources}.rs`, `surface.rs`, `draw_context.rs`; every body `todo!()`), `#[cfg(windows)] pub mod render;` in `lib.rs`.
+Test kind N for all four (native tests `#[ignore = "native: needs desktop"]`); each unit also carries small PURE functions (`clamp_dimension`, `classify_end_draw`, `sync_interval`, `FrameState`, ...) so the verifier has something to mutate. The rest of unit 12 (12f..12j) is written by another agent.
+
+| WU | Unit | Rust | Porter | Depends on | Golden |
+|---|---|---|---|---|---|
+| W8-12b | DeviceResources: state, creation, loss, teardown (about 290 C# lines) | `render::device::{mod, create, loss}` | Sonnet (red) | 11f, 11g, 11h | none (N) |
+| W8-12c | DeviceResources: target, bitmaps, resize, probes, interpolation map (about 140 C# lines) | `render::device::resources` | Sonnet (red) | 12b, 11g, 11h | none (N) |
+| W8-12d | D2DRenderSurface + D2DRenderSurfaceFactory (249 lines) | `render::surface` | Sonnet (red) | 12c, 11g, 11f, 12e (type) | none (N) |
+| W8-12e | D2DDrawContext + INativeTextLayout (359 lines) | `render::draw_context` | Sonnet (red) | 12c, 12d, 01c, 01a, 12a, 11h | none (N) |
+
+## Lead decisions (Wave 8 batch B3, render group)
+
+The recommended option of each open question was taken (standing user instruction: never stop to ask); to be logged in `docs/PROPOSED-DECISIONS.md` by the lead when the batch is merged.
+
+- **D-W8B3R-1 Interim types until the layering PR.** `pr-app` still depends on `pr-platform-win` (D-W8B1-1), so the render types cannot implement the `pr_app::services::render` traits or name `RectD`/`ColorF`/`GpuImage` yet. The stubs therefore use std/`windows`-only twins with the same names and fields:
+  `RenderFault` (twin of `RenderError`, `device/mod.rs`), `ImageInterpolation` (`device/resources.rs`), `SurfaceOptions`, `PresentResult` (`surface.rs`), `PointD`, `RectD`, `ColorF`, `Matrix3x2` and the `&dyn Any` image argument (`draw_context.rs`). Each is replaced by an import when the layering PR lands
+  (option A of the W8-12a contract: `pr-platform-win` depends on `pr-app`; `main.rs`, the spike and the composition move to a thin package), and the `impl RenderSurface / DrawContext / OrientedDrawContext / RenderSurfaceFactory` adapters are written then.
+  **Recommended order: layering PR, then ports of 12d and 12e; 12b and 12c have no `pr_app` dependency beyond `RenderError` and may be ported first.** Closing the layering question is a lead action, not part of this batch.
+- **D-W8B3R-2 `DeviceResources` is cut by responsibility, not at line 230.** The plan labels the halves "device creation, adapter choice, device loss" / "brushes, caches, text factories"; the second label matches nothing in the file (the brush is created in `CreateDevice`, the caches are 12f/12g, the text factories 12i), and the line cut
+  would put `CreateDevice`/`CreateSwapChain` in 12c. 12b = state + getters + `Create*` + `CreateAll`/`CreateDevice`/`CreateSwapChain` + `EndDraw`/`Present` seams + `Recreate`/`Dispose`/`ReleaseAll`; 12c = `CreateBitmap`/`ReleaseBitmap`/`Resize`/`TouchGpu`/`Synchronize`/`CreateTarget`/`ReleaseTarget`/`InterpolationModes`.
+  `create_all` ends with `create_target` (12c), so whole-object native tests of 12b turn green with 12c: **one porter, two stacked PRs**.
+- **D-W8B3R-3 One shared object.** `DeviceResources` is `Rc<DeviceResources>` shared by the surface, the draw context and (12g) the cache, as in C#; every method takes `&self` (`RefCell<DeviceState>` plus `Cell` counters). It is `!Send`/`!Sync` through `PhantomData<*const ()>` because windows 0.62.2 marks the COM
+  interfaces `Send` (D-W8B3G-9 d). The keep-warm thread (12h) builds its own instance on its own thread. COM interfaces are handed out as clones (`AddRef`); callers must not keep `target()` across `resize` (the back-buffer trap).
+- **D-W8B3R-4 Frame protocol.** `begin_draw_context(&mut self)` returns `&mut D2dDrawContext` borrowed from the surface, so surface calls during a live context reference do not compile. The reference can still be dropped without `end_draw_and_present`, so the C# runtime checks stay (second begin, resize while drawing, end without begin).
+  The draw context holds an `Rc<DeviceResources>` clone, not the surface. The C# owner-thread check has no Rust twin (`!Send`); "draw outside a frame" cannot be reached (`debug_assert` + skip). Recorded as Different-by-construction.
+- **D-W8B3R-5 12e does not depend on 12g.** The C# image tests go through `GpuImageCache` + `D2DGpuImageBackend`. 12e tests build a `TiledGpuImage<ID2D1Bitmap1>` themselves (`compute_tiles` + `DeviceResources::create_bitmap` + `copy_from_memory`); the cache-driven tests (`TiledImage_ForcedSmallTiles...`, `Panorama30000x2000`, the cache half of
+  `DeviceLost_RecreateTarget...`, `Cache_*`) belong to 12g.
+- **D-W8B3R-6 Adapter override.** `PHOTOREVIEW_RS_GPU_ADAPTER=<index>` (read once per device creation in 12b, only when not `prefer_warp`) tries `d3d11::create_device_on_adapter(index)` first and falls through to the normal path on failure (D-W8B3G-8 left the variable to 12b). The C# has no such switch.
+- **D-W8B3R-7 Missing plan edges and Cargo lead actions.** 12b needs 11f; 12c needs 11g and 11h; 12d needs 11g, 11f and the type `D2dDrawContext` of 12e; 12e needs 12d (tests), 12a, 01a, 11h. Cargo (NOT edited here, to avoid conflicts with the other B3 agents): `windows` feature `Win32_UI_HiDpi` for `cfg(windows)`
+  (`GetDpiForWindow`, 12b; `GetClientRect` needs `Win32_UI_WindowsAndMessaging`, already on); `windows-numerics = "0.3"` as a workspace and `pr-platform-win` dependency (12e; already locked at 0.3.1; verified that `windows` 0.62.2 does not re-export `Matrix3x2`). The stubs did not need either.
+- **D-W8B3R-8 Behaviour decisions.** `Resize` keeps its two-way result (`Ok(Resized)` / `Ok(BuffersFailed(hr))` / `Err`); an `EndDraw` or `Present` failure that is not a loss is `Ok(Failed)`, never `Err`; the unbalanced-stack error is raised after the frame was presented; `create_bitmap` takes a slice and rejects sizes below 1 (C# cast to `uint`);
+  present flags stay 0 (no `DXGI_PRESENT_ALLOW_TEARING`, C# v1); diagnostics are `Duration` (C# `Stopwatch` ticks); the `EndDrawFault`/`PresentFault` seams are `pub(crate)` hooks that see the real HRESULT; `DeviceLoss` stays in `gfx::com` (D-W8B3G-5).
+- **D-W8B3R-9 Pure seams for testability.** `clamp_dimension`, `normalize_dpi_scale`, `dpi_scale_from_window_dpi`, `parse_adapter_index`, `classify_end_draw`/`FrameEnd` (12b), `to_d2d_interpolation`, `buffers_failed` (12c), `sync_interval` (12d), `Matrix3x2::multiply`, `to_d2d_rect`, `to_d2d_color`, `FrameState` (12e) are plain functions
+  with ordinary tests and mutation targets; everything that touches a COM object is native.
+- **D-W8B3R-10 Test helpers are private per unit.** The hidden `STATIC` window helper and the `RenderTestImages` helpers are copied into each unit's test module (a shared `render/test_*.rs` needs lead wiring); native tests use `windows` directly for `CreateWindowEx`, not W8-11b.
+
+Safety finding that refines the gfx wording: in windows 0.62.2 EVERY Direct2D draw call used by 12c/12d/12e (`BeginDraw`, `Clear`, `FillRectangle`, `DrawBitmap`, `DrawTextLayout`, `SetTransform`, `PushAxisAlignedClip`, `SetColor`, ...) is an `unsafe fn` over raw pointers, so 12e is a many-small-`unsafe`-blocks unit, each with `// SAFETY:`
+(contract W8-12e "Safety rules"); the gfx helpers wrap only bitmap creation, copy and read-back.
+
+Open items (recommended defaults taken, listed in the contracts): layering PR timing (all four); attended R0001 `EndDraw` re-measure before 12d, W8-12j decides (12d Q2); `allow_tearing` stays sync-0 only (12d Q3); `RenderFault` location until the layering PR (12b Q5); shared test helpers (12d Q5, 12e Q5).
+Not verified here: every native behaviour claimed as a test (back-buffer-reference `DXGI_ERROR_INVALID_CALL` on `ResizeBuffers`, hidden-window swap chain on WARP, waitable object signalled after creation, `D2DERR_RECREATE_TARGET` injection results, pixel-exact output, `ClearStateAndFlush` ordering hang): written from the C# comments and tests and the DXGI rules, each with a note on what to change if Windows disagrees.
+
+## Wave 8 batch B3 (render group 12f-12j)
+
+Second group of batch B3 of `docs/WAVE-8-PLAN.md` (P-38): the rendering support of `Shell.Rendering` that does not need the device/surface/draw context (12b-12e are written by another contract writer in parallel). Five contracts (`contracts/W8-12f.md` .. `W8-12j.md`), eight stub files under
+`crates/pr-platform-win/src/render/` (`image_cache/{mod,policy,upload}.rs`, `keep_alive.rs`, `text/{mod,renderer,layout_cache}.rs`, plus `render/mod.rs` declaring only `image_cache`, `keep_alive`, `text`), `#[cfg(windows)] pub mod render;` in `lib.rs`. Every body is `todo!()`; the stubs compile against the CURRENT crate graph
+(`pr-app` depends on `pr-platform-win`), so they use `std`, `pr_imaging`, `pr_core` and `gfx` types only. W8-12j is contract-only (conditional, no C# source, no stub).
+
+| WU | Unit | Rust | Porter | Test | Depends on |
+|---|---|---|---|---|---|
+| W8-12f | `GpuImageCache` lines 1-300: byte budget, LRU, current/retained protection, striped prefetch, device-loss clear | `render::image_cache::policy` | Sonnet | F (fakes, no GPU) | 12a |
+| W8-12g | `GpuImageCache` lines 301-414: `D2DGpuImageBackend` (tiles, bitmap upload, stripe copy, release) | `render::image_cache::upload` | Sonnet (red) | N + pure helpers | 12f, 12c, 11f, 11h, 01c, layering PR |
+| W8-12h | `GpuKeepAlive` 231 (WP21-STALL keep-warm thread) | `render::keep_alive` | Sonnet (red) | F+N | 12c, 11f |
+| W8-12i | `Text/{DWriteTextRenderer 201, TextLayoutCache 197}` | `render::text::{renderer, layout_cache}` | Sonnet | F+N | 12a, 11f, 11h, (12c), layering PR for the trait impls |
+| W8-12j | NEW (no C# source): swap-chain latency experiment, CONDITIONAL on an attended re-measure | none until triggered | Sonnet | N | 12d, 12e, 12h, 11g, 16a, 13g |
+
+## Lead decisions (Wave 8 batch B3, render group 12f-12j)
+
+The recommended option of each open question was taken (standing user instruction: never stop to ask); to be logged in `docs/PROPOSED-DECISIONS.md` by the lead when the batch is merged.
+
+- **D-W8B3S-1 Cut of `GpuImageCache.cs`:** 12f = lines 1-300 (the whole class `GpuImageCache`, already written against an internal backend seam and a dispatcher, hence pure), 12g = lines 301-414 (`IGpuImageBackend` + `D2DGpuImageBackend`). The plan's cut at line 200 is inside `EvictOverBudget`.
+- **D-W8B3S-2 Prefetch stripes are `StripeToken` jobs handed to a `StripeScheduler` trait**, not closures: `pr_core::abstractions::ui::UiAction` is `Send`, the cache (`Rc`, `RefCell`) is not. The host (W8-13d) posts a `Send` job at `UiPriority::Background` that calls `cache.run_stripe(token)`. The token carries an entry serial so a job queued for an evicted or cleared entry stays inert even if the same `PixelBuffer` id is cached again.
+- **D-W8B3S-3 `pr_core::caching::lru::BoundedLruCache` is NOT reused by 12f** although the plan row lists it: it is thread-safe, evicts on insert and cannot protect entries; the C# cache keeps the current image and the retained ids over budget. 12f uses `HashMap` + `BTreeMap` stamps (the technique of `lru.rs`).
+- **D-W8B3S-4 Placeholder seams until the layering PR (D-W8B1-1):** `CachedImage`, `GpuImageBackend`, `CacheError` (12f, permanent seams: the policy stays testable on fakes), `BitmapDevice` (12g), `KeepAliveDevice` (12h), local `TextTrimming`/`LayoutSize`/`TextError` (12i). Each contract lists the exact `impl` blocks the porter adds after the layering PR (`impl GpuImageBackend for D2dGpuImageBackend`, `impl GpuImageCache for D2dGpuImageCache`,
+  `impl TextRenderer for DWriteTextRenderer`, `impl TextLayout for DWriteTextLayoutLease`). The layering PR itself is still a lead action and still blocks the trait glue, NOT the pure logic.
+- **D-W8B3S-5 The 12a `GpuImageCache` trait lacks `IsFullyUploaded` and `UploadCompleted`**, which `PresentationComposer` (W8-16c, C# lines 93, 137, 211, 285, 324) uses on the concrete class. Recommended (lead action, not done here, 12a is merged): a sub-trait `PrefetchStatus: GpuImageCache` in `pr_app::services::render::gpu_image` with `is_fully_uploaded`, `subscribe_upload_completed`, `unsubscribe_upload_completed`,
+  implemented by the 12g adapter.
+- **D-W8B3S-6 Missing plan edges (lead action):** 12g also depends on 11f, 11h, 01c, 12a and the layering PR (its draw-based native tests on 12d and 12e); 12h on 11f; 12i on 12a, 11f, 11h (and 12e for its ink/colour native tests); 12j on 12e, 12h, 11g, 16a and 13g (window style `WS_EX_NOREDIRECTIONBITMAP` for the DirectComposition mode).
+- **D-W8B3S-7 12h reads no environment variable:** the plan row names `PHOTOREVIEW_RS_GPU_KEEPWARM*`, but in C# they are read by `Win32/Viewing/KeepWarm.cs` (W8-16d, `KeepWarmOptions`): `PHOTOREVIEW_GPU_KEEPWARM` (0/off/false/no), `_MS` (250-60000, default 5000), `_INTERVAL_MS` (5-100, default 20), renamed with the `PHOTOREVIEW_RS_` prefix (R0002). Row correction for the plan.
+- **D-W8B3S-8 Keep-warm ticks are nanoseconds of a monotonic clock** (`monotonic_ticks`, `ticks_from_ms`, `TICKS_PER_SECOND`), not `Stopwatch` units; no consumer may assume `Stopwatch.Frequency`.
+- **D-W8B3S-9 `GpuKeepAlive::wait_blocked` is the one added test hook** (no C# twin): it replaces `SpinWait.SpinUntil` polling (AGENTS.md forbids sleep polling) for "the thread is parked on the activation event after N waits".
+- **D-W8B3S-10 `TextLayoutCache` has no lock:** the C# `lock` guarded a lease disposed from another thread; Rust leases and the renderer are `!Send` (`PhantomData<*const ()>`, because windows-rs 0.62.2 marks the DirectWrite interfaces `Send`, D-W8B3G-9 d).
+- **D-W8B3S-11 W8-12j trigger:** it starts only if an ATTENDED re-measure of the PRODUCTION surface (12d with the C# swap chain values, D-W8B3G-3) WITH keep-warm (12h) still shows a windowed p95 above 10 ms (R0001 threshold; target < 8.5 ms). The R0001 spike used `FLIP_SEQUENTIAL`, no waitable flag and no keep-warm thread, and its 300-510 ms `EndDraw` stalls look like WP21-STALL (0.47 s, Intel UHD 630), so the spike
+  numbers do not decide the question. Recommended first action after 12d/12e/12h merge: the cheap attended measurement.
+- **D-W8B3S-12 W8-12j has one env switch (`PHOTOREVIEW_RS_SWAPCHAIN_EXPERIMENT`) with one change per value** (`sequential`, `buffers3`, `tearing`, `composition`; unset = production path, zero cost); the losing modes are deleted at the end, no permanent experiment matrix.
+
+Open items (recommended defaults taken, listed in the contracts): shape of 12b/12c `DeviceResources` (12g `BitmapDevice` and 12h `KeepAliveDevice` assume `Rc<DeviceResources>` with `max_bitmap_size`, `generation`, a bitmap leak counter, `is_warp`, `touch_gpu`, a device-recreated subscription) is the other writer's decision; strong `Arc` vs `Weak` source buffer in `prefetch` (12f Q1);
+`with_data` upload as create + `copy_from_memory` (12g Q3); locale source for the text renderer (12i Q2); per-call `String` clones in the layout cache key (12i Q1); who logs a disabled keep-alive (12h Q3).
+Not verified here: every native behaviour claimed as a test (DirectWrite metrics ranges, ellipsis `IsTrimmed`, `CopyFromMemory` stripes across gutter tiles, `D2D1_ALPHA_MODE_IGNORE` read-back, `SetThreadPriority`, high-resolution timer sleeps, GPU idle behaviour) is written from the C# tests and the DXGI/DirectWrite rules, not run; the pure policies were not compiled as Rust tests (the stubs
+compile, `cargo check` and `cargo clippy -D warnings` are clean); the 12j analysis relies on the numbers in `docs/adr/R0001-ui-framework.md`.
+
 ## Wave 8 batch B3 (host group 13a-13f)
 
 Group 13a-13f of batch B3 of `docs/WAVE-8-PLAN.md` (P-38): the window host `pr_platform_win::host` from `PhotoReview.Shell.Win32/Hosting` (C# `FrameClockBase`, `TimerFrameClock`, `SwapChainFrameClock`, `ShellWindowContracts`, `ShellIcons`, `NativeRect`, `MessageLoop`, `Win32UiDispatcher`, `WndProcThunk`, `ShellWindow`; baseline `d92d6aae`).
