@@ -98,3 +98,6 @@ pub mod shell_viewing;
 /// Wave 8 Win32 foundation (W8-11a to W8-11e stubs): constants, struct layouts and thin wrappers that replace `PhotoReview.Shell.Interop`.
 #[cfg(windows)]
 pub mod win32;
+
+#[cfg(windows)]
+pub mod host;
