@@ -1,0 +1,4537 @@
+{
+  "generator": "oracle-cs win32-constants",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "WmNull",
+      "type": "UInt32",
+      "value": 0
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "WmCreate",
+      "type": "UInt32",
+      "value": 1
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "WmDestroy",
+      "type": "UInt32",
+      "value": 2
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "WmMove",
+      "type": "UInt32",
+      "value": 3
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "WmSize",
+      "type": "UInt32",
+      "value": 5
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "WmActivate",
+      "type": "UInt32",
+      "value": 6
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "WmSetFocus",
+      "type": "UInt32",
+      "value": 7
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "WmKillFocus",
+      "type": "UInt32",
+      "value": 8
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "WmEnable",
+      "type": "UInt32",
+      "value": 10
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "WmSetText",
+      "type": "UInt32",
+      "value": 12
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "WmPaint",
+      "type": "UInt32",
+      "value": 15
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "WmClose",
+      "type": "UInt32",
+      "value": 16
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "WmQuit",
+      "type": "UInt32",
+      "value": 18
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "WmEraseBkgnd",
+      "type": "UInt32",
+      "value": 20
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "WmShowWindow",
+      "type": "UInt32",
+      "value": 24
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "WmSettingChange",
+      "type": "UInt32",
+      "value": 26
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "WmDisplayChange",
+      "type": "UInt32",
+      "value": 126
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "WmActivateApp",
+      "type": "UInt32",
+      "value": 28
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "WmSetCursor",
+      "type": "UInt32",
+      "value": 32
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "WmMouseActivate",
+      "type": "UInt32",
+      "value": 33
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "WmGetMinMaxInfo",
+      "type": "UInt32",
+      "value": 36
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "WmWindowPosChanging",
+      "type": "UInt32",
+      "value": 70
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "WmWindowPosChanged",
+      "type": "UInt32",
+      "value": 71
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "WmContextMenu",
+      "type": "UInt32",
+      "value": 123
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "WmNcCreate",
+      "type": "UInt32",
+      "value": 129
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "WmNcDestroy",
+      "type": "UInt32",
+      "value": 130
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "WmNcCalcSize",
+      "type": "UInt32",
+      "value": 131
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "WmNcHitTest",
+      "type": "UInt32",
+      "value": 132
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "WmNcActivate",
+      "type": "UInt32",
+      "value": 134
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "WmGetDlgCode",
+      "type": "UInt32",
+      "value": 135
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "WmInput",
+      "type": "UInt32",
+      "value": 255
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "WmKeyDown",
+      "type": "UInt32",
+      "value": 256
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "WmKeyUp",
+      "type": "UInt32",
+      "value": 257
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "WmChar",
+      "type": "UInt32",
+      "value": 258
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "WmSysKeyDown",
+      "type": "UInt32",
+      "value": 260
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "WmSysKeyUp",
+      "type": "UInt32",
+      "value": 261
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "WmSysChar",
+      "type": "UInt32",
+      "value": 262
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "WmCommand",
+      "type": "UInt32",
+      "value": 273
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "WmSysCommand",
+      "type": "UInt32",
+      "value": 274
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "WmTimer",
+      "type": "UInt32",
+      "value": 275
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "WmMenuChar",
+      "type": "UInt32",
+      "value": 288
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "WmEnterIdle",
+      "type": "UInt32",
+      "value": 289
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "WmMouseMove",
+      "type": "UInt32",
+      "value": 512
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "WmLButtonDown",
+      "type": "UInt32",
+      "value": 513
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "WmLButtonUp",
+      "type": "UInt32",
+      "value": 514
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "WmLButtonDblClk",
+      "type": "UInt32",
+      "value": 515
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "WmRButtonDown",
+      "type": "UInt32",
+      "value": 516
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "WmRButtonUp",
+      "type": "UInt32",
+      "value": 517
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "WmRButtonDblClk",
+      "type": "UInt32",
+      "value": 518
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "WmMButtonDown",
+      "type": "UInt32",
+      "value": 519
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "WmMButtonUp",
+      "type": "UInt32",
+      "value": 520
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "WmMButtonDblClk",
+      "type": "UInt32",
+      "value": 521
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "WmMouseWheel",
+      "type": "UInt32",
+      "value": 522
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "WmXButtonDown",
+      "type": "UInt32",
+      "value": 523
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "WmXButtonUp",
+      "type": "UInt32",
+      "value": 524
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "WmXButtonDblClk",
+      "type": "UInt32",
+      "value": 525
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "WmMouseHWheel",
+      "type": "UInt32",
+      "value": 526
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "WmCaptureChanged",
+      "type": "UInt32",
+      "value": 533
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "WmEnterSizeMove",
+      "type": "UInt32",
+      "value": 561
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "WmExitSizeMove",
+      "type": "UInt32",
+      "value": 562
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "WmDropFiles",
+      "type": "UInt32",
+      "value": 563
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "WmDpiChanged",
+      "type": "UInt32",
+      "value": 736
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "WmDpiChangedBeforeParent",
+      "type": "UInt32",
+      "value": 738
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "WmDpiChangedAfterParent",
+      "type": "UInt32",
+      "value": 739
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "WmGetDpiScaledSize",
+      "type": "UInt32",
+      "value": 740
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "WmUser",
+      "type": "UInt32",
+      "value": 1024
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "WmApp",
+      "type": "UInt32",
+      "value": 32768
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "WsOverlapped",
+      "type": "UInt32",
+      "value": 0
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "WsPopup",
+      "type": "UInt32",
+      "value": 2147483648
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "WsChild",
+      "type": "UInt32",
+      "value": 1073741824
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "WsVisible",
+      "type": "UInt32",
+      "value": 268435456
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "WsCaption",
+      "type": "UInt32",
+      "value": 12582912
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "WsSysMenu",
+      "type": "UInt32",
+      "value": 524288
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "WsThickFrame",
+      "type": "UInt32",
+      "value": 262144
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "WsMinimizeBox",
+      "type": "UInt32",
+      "value": 131072
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "WsMaximizeBox",
+      "type": "UInt32",
+      "value": 65536
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "WsOverlappedWindow",
+      "type": "UInt32",
+      "value": 13565952
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "WsExAcceptFiles",
+      "type": "UInt32",
+      "value": 16
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "WsExTopmost",
+      "type": "UInt32",
+      "value": 8
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "WsExToolWindow",
+      "type": "UInt32",
+      "value": 128
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "WsExLayered",
+      "type": "UInt32",
+      "value": 524288
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "WsExAppWindow",
+      "type": "UInt32",
+      "value": 262144
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "WsExNoRedirectionBitmap",
+      "type": "UInt32",
+      "value": 2097152
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "WsExNoActivate",
+      "type": "UInt32",
+      "value": 134217728
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "SwpNoSize",
+      "type": "UInt32",
+      "value": 1
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "SwpNoMove",
+      "type": "UInt32",
+      "value": 2
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "SwpNoZOrder",
+      "type": "UInt32",
+      "value": 4
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "SwpNoRedraw",
+      "type": "UInt32",
+      "value": 8
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "SwpNoActivate",
+      "type": "UInt32",
+      "value": 16
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "SwpFrameChanged",
+      "type": "UInt32",
+      "value": 32
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "SwpShowWindow",
+      "type": "UInt32",
+      "value": 64
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "SwpHideWindow",
+      "type": "UInt32",
+      "value": 128
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "SwpNoOwnerZOrder",
+      "type": "UInt32",
+      "value": 512
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "SwpNoSendChanging",
+      "type": "UInt32",
+      "value": 1024
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "HwndTop",
+      "type": "IntPtr",
+      "value": 0
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "HwndBottom",
+      "type": "IntPtr",
+      "value": 1
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "HwndTopMost",
+      "type": "IntPtr",
+      "value": -1
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "HwndNoTopMost",
+      "type": "IntPtr",
+      "value": -2
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "SwHide",
+      "type": "Int32",
+      "value": 0
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "SwShowNormal",
+      "type": "Int32",
+      "value": 1
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "SwShowMinimized",
+      "type": "Int32",
+      "value": 2
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "SwShowMaximized",
+      "type": "Int32",
+      "value": 3
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "SwShowNoActivate",
+      "type": "Int32",
+      "value": 4
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "SwShow",
+      "type": "Int32",
+      "value": 5
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "SwMinimize",
+      "type": "Int32",
+      "value": 6
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "SwShowMinNoActive",
+      "type": "Int32",
+      "value": 7
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "SwShowNa",
+      "type": "Int32",
+      "value": 8
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "SwRestore",
+      "type": "Int32",
+      "value": 9
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "SwShowDefault",
+      "type": "Int32",
+      "value": 10
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "GwlExStyle",
+      "type": "Int32",
+      "value": -20
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "GwlStyle",
+      "type": "Int32",
+      "value": -16
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "GwlpWndProc",
+      "type": "Int32",
+      "value": -4
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "GwlpHInstance",
+      "type": "Int32",
+      "value": -6
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "GwlpUserData",
+      "type": "Int32",
+      "value": -21
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "SmCxScreen",
+      "type": "Int32",
+      "value": 0
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "SmCyScreen",
+      "type": "Int32",
+      "value": 1
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "SmCyCaption",
+      "type": "Int32",
+      "value": 4
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "SmCxDoubleClk",
+      "type": "Int32",
+      "value": 36
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "SmCyDoubleClk",
+      "type": "Int32",
+      "value": 37
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "SmCxSizeFrame",
+      "type": "Int32",
+      "value": 32
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "SmCySizeFrame",
+      "type": "Int32",
+      "value": 33
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "SmCxSmIcon",
+      "type": "Int32",
+      "value": 49
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "SmCySmIcon",
+      "type": "Int32",
+      "value": 50
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "SmCxDrag",
+      "type": "Int32",
+      "value": 68
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "SmCyDrag",
+      "type": "Int32",
+      "value": 69
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "MonitorDefaultToNull",
+      "type": "UInt32",
+      "value": 0
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "MonitorDefaultToPrimary",
+      "type": "UInt32",
+      "value": 1
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "MonitorDefaultToNearest",
+      "type": "UInt32",
+      "value": 2
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "MonitorInfoFPrimary",
+      "type": "UInt32",
+      "value": 1
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "MfString",
+      "type": "UInt32",
+      "value": 0
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "MfGrayed",
+      "type": "UInt32",
+      "value": 1
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "MfDisabled",
+      "type": "UInt32",
+      "value": 2
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "MfChecked",
+      "type": "UInt32",
+      "value": 8
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "MfPopup",
+      "type": "UInt32",
+      "value": 16
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "MfByCommand",
+      "type": "UInt32",
+      "value": 0
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "MfByPosition",
+      "type": "UInt32",
+      "value": 1024
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "MfSeparator",
+      "type": "UInt32",
+      "value": 2048
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "TpmLeftAlign",
+      "type": "UInt32",
+      "value": 0
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "TpmRightAlign",
+      "type": "UInt32",
+      "value": 8
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "TpmTopAlign",
+      "type": "UInt32",
+      "value": 0
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "TpmBottomAlign",
+      "type": "UInt32",
+      "value": 32
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "TpmLeftButton",
+      "type": "UInt32",
+      "value": 0
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "TpmRightButton",
+      "type": "UInt32",
+      "value": 2
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "TpmReturnCmd",
+      "type": "UInt32",
+      "value": 256
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "TpmNonotify",
+      "type": "UInt32",
+      "value": 128
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "CfUnicodeText",
+      "type": "UInt32",
+      "value": 13
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "CfHDrop",
+      "type": "UInt32",
+      "value": 15
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "GmemMoveable",
+      "type": "UInt32",
+      "value": 2
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "GmemZeroInit",
+      "type": "UInt32",
+      "value": 64
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "GHnd",
+      "type": "UInt32",
+      "value": 66
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "PmNoRemove",
+      "type": "UInt32",
+      "value": 0
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "PmRemove",
+      "type": "UInt32",
+      "value": 1
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "PmNoYield",
+      "type": "UInt32",
+      "value": 2
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "QsAllInput",
+      "type": "UInt32",
+      "value": 1279
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "MwmoAlertable",
+      "type": "UInt32",
+      "value": 2
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "MwmoInputAvailable",
+      "type": "UInt32",
+      "value": 4
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "WaitObject0",
+      "type": "UInt32",
+      "value": 0
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "WaitFailed",
+      "type": "UInt32",
+      "value": 4294967295
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "InfiniteWait",
+      "type": "UInt32",
+      "value": 4294967295
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "IdOk",
+      "type": "Int32",
+      "value": 1
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "IdCancel",
+      "type": "Int32",
+      "value": 2
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "IdYes",
+      "type": "Int32",
+      "value": 6
+    },
+    {
+      "kind": "const",
+      "class": "WindowMessages",
+      "name": "IdNo",
+      "type": "Int32",
+      "value": 7
+    },
+    {
+      "kind": "const",
+      "class": "User32",
+      "name": "DpiAwarenessContextPerMonitorAwareV2",
+      "type": "IntPtr",
+      "value": -4
+    },
+    {
+      "kind": "const",
+      "class": "User32",
+      "name": "WmCreate",
+      "type": "UInt32",
+      "value": 1
+    },
+    {
+      "kind": "const",
+      "class": "User32",
+      "name": "WmDestroy",
+      "type": "UInt32",
+      "value": 2
+    },
+    {
+      "kind": "const",
+      "class": "User32",
+      "name": "WmClose",
+      "type": "UInt32",
+      "value": 16
+    },
+    {
+      "kind": "const",
+      "class": "User32",
+      "name": "WsOverlappedWindow",
+      "type": "UInt32",
+      "value": 13565952
+    },
+    {
+      "kind": "const",
+      "class": "User32",
+      "name": "CwUseDefault",
+      "type": "Int32",
+      "value": -2147483648
+    },
+    {
+      "kind": "const",
+      "class": "User32",
+      "name": "SwShowNoActivate",
+      "type": "Int32",
+      "value": 4
+    },
+    {
+      "kind": "const",
+      "class": "User32",
+      "name": "SwShowDefault",
+      "type": "Int32",
+      "value": 10
+    },
+    {
+      "kind": "const",
+      "class": "User32",
+      "name": "IdcArrow",
+      "type": "Int32",
+      "value": 32512
+    },
+    {
+      "kind": "const",
+      "class": "Kernel32",
+      "name": "LoadLibrarySearchSystem32",
+      "type": "UInt32",
+      "value": 2048
+    },
+    {
+      "kind": "const",
+      "class": "Gdi32",
+      "name": "BlackBrush",
+      "type": "Int32",
+      "value": 4
+    },
+    {
+      "kind": "const",
+      "class": "Shcore",
+      "name": "MdtEffectiveDpi",
+      "type": "Int32",
+      "value": 0
+    },
+    {
+      "kind": "const",
+      "class": "Dwmapi",
+      "name": "DwmwaNcRenderingPolicy",
+      "type": "UInt32",
+      "value": 2
+    },
+    {
+      "kind": "const",
+      "class": "Dwmapi",
+      "name": "DwmwaTransitionsForceDisabled",
+      "type": "UInt32",
+      "value": 3
+    },
+    {
+      "kind": "const",
+      "class": "Dwmapi",
+      "name": "DwmwaCloak",
+      "type": "UInt32",
+      "value": 13
+    },
+    {
+      "kind": "const",
+      "class": "Dwmapi",
+      "name": "DwmwaUseImmersiveDarkMode",
+      "type": "UInt32",
+      "value": 20
+    },
+    {
+      "kind": "const",
+      "class": "Dwmapi",
+      "name": "DwmwaWindowCornerPreference",
+      "type": "UInt32",
+      "value": 33
+    },
+    {
+      "kind": "const",
+      "class": "Dwmapi",
+      "name": "DwmwaBorderColor",
+      "type": "UInt32",
+      "value": 34
+    },
+    {
+      "kind": "const",
+      "class": "Dwmapi",
+      "name": "DwmwaCaptionColor",
+      "type": "UInt32",
+      "value": 35
+    },
+    {
+      "kind": "const",
+      "class": "Comctl32",
+      "name": "TdcbfOkButton",
+      "type": "UInt32",
+      "value": 1
+    },
+    {
+      "kind": "const",
+      "class": "Comctl32",
+      "name": "TdcbfYesButton",
+      "type": "UInt32",
+      "value": 2
+    },
+    {
+      "kind": "const",
+      "class": "Comctl32",
+      "name": "TdcbfNoButton",
+      "type": "UInt32",
+      "value": 4
+    },
+    {
+      "kind": "const",
+      "class": "Comctl32",
+      "name": "TdcbfCancelButton",
+      "type": "UInt32",
+      "value": 8
+    },
+    {
+      "kind": "const",
+      "class": "Comctl32",
+      "name": "TdcbfRetryButton",
+      "type": "UInt32",
+      "value": 16
+    },
+    {
+      "kind": "const",
+      "class": "Comctl32",
+      "name": "TdcbfCloseButton",
+      "type": "UInt32",
+      "value": 32
+    },
+    {
+      "kind": "const",
+      "class": "Comctl32",
+      "name": "TdfEnableHyperlinks",
+      "type": "UInt32",
+      "value": 1
+    },
+    {
+      "kind": "const",
+      "class": "Comctl32",
+      "name": "TdfUseHIconMain",
+      "type": "UInt32",
+      "value": 2
+    },
+    {
+      "kind": "const",
+      "class": "Comctl32",
+      "name": "TdfUseHIconFooter",
+      "type": "UInt32",
+      "value": 4
+    },
+    {
+      "kind": "const",
+      "class": "Comctl32",
+      "name": "TdfAllowDialogCancellation",
+      "type": "UInt32",
+      "value": 8
+    },
+    {
+      "kind": "const",
+      "class": "Comctl32",
+      "name": "TdfUseCommandLinks",
+      "type": "UInt32",
+      "value": 16
+    },
+    {
+      "kind": "const",
+      "class": "Comctl32",
+      "name": "TdfExpandedByDefault",
+      "type": "UInt32",
+      "value": 128
+    },
+    {
+      "kind": "const",
+      "class": "Comctl32",
+      "name": "TdfVerificationFlagChecked",
+      "type": "UInt32",
+      "value": 256
+    },
+    {
+      "kind": "const",
+      "class": "Comctl32",
+      "name": "TdfPositionRelativeToWindow",
+      "type": "UInt32",
+      "value": 4096
+    },
+    {
+      "kind": "const",
+      "class": "Comctl32",
+      "name": "TdfRtlLayout",
+      "type": "UInt32",
+      "value": 8192
+    },
+    {
+      "kind": "const",
+      "class": "Comctl32",
+      "name": "TdfNoDefaultRadioButton",
+      "type": "UInt32",
+      "value": 16384
+    },
+    {
+      "kind": "const",
+      "class": "Comctl32",
+      "name": "TdfCanBeMinimized",
+      "type": "UInt32",
+      "value": 32768
+    },
+    {
+      "kind": "const",
+      "class": "Comctl32",
+      "name": "TdfSizeToContent",
+      "type": "UInt32",
+      "value": 16777216
+    },
+    {
+      "kind": "const",
+      "class": "Comctl32",
+      "name": "TdWarningIcon",
+      "type": "IntPtr",
+      "value": -1
+    },
+    {
+      "kind": "const",
+      "class": "Comctl32",
+      "name": "TdErrorIcon",
+      "type": "IntPtr",
+      "value": -2
+    },
+    {
+      "kind": "const",
+      "class": "Comctl32",
+      "name": "TdInformationIcon",
+      "type": "IntPtr",
+      "value": -3
+    },
+    {
+      "kind": "const",
+      "class": "Comctl32",
+      "name": "TdShieldIcon",
+      "type": "IntPtr",
+      "value": -4
+    },
+    {
+      "kind": "const",
+      "class": "ActivationContext",
+      "name": "FlagResourceNameValid",
+      "type": "UInt32",
+      "value": 8
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "IccListViewClasses",
+      "type": "UInt32",
+      "value": 1
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "IccBarClasses",
+      "type": "UInt32",
+      "value": 4
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "IccProgressClass",
+      "type": "UInt32",
+      "value": 32
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "IccWin95Classes",
+      "type": "UInt32",
+      "value": 255
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "IccStandardClasses",
+      "type": "UInt32",
+      "value": 16384
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "ListViewClass",
+      "type": "String",
+      "value": "SysListView32"
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "ProgressClass",
+      "type": "String",
+      "value": "msctls_progress32"
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "TrackbarClass",
+      "type": "String",
+      "value": "msctls_trackbar32"
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "TooltipClass",
+      "type": "String",
+      "value": "tooltips_class32"
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "WmNotify",
+      "type": "UInt32",
+      "value": 78
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "WmMeasureItem",
+      "type": "UInt32",
+      "value": 44
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "WmDrawItem",
+      "type": "UInt32",
+      "value": 43
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "WmHScroll",
+      "type": "UInt32",
+      "value": 276
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "WmVScroll",
+      "type": "UInt32",
+      "value": 277
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "WmUser",
+      "type": "UInt32",
+      "value": 1024
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "WmNcDestroy",
+      "type": "UInt32",
+      "value": 130
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "WmMouseMove",
+      "type": "UInt32",
+      "value": 512
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "WmMouseLeave",
+      "type": "UInt32",
+      "value": 675
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "WmThemeChanged",
+      "type": "UInt32",
+      "value": 794
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "NmClick",
+      "type": "Int32",
+      "value": -2
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "NmDblClk",
+      "type": "Int32",
+      "value": -3
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "NmCustomDraw",
+      "type": "Int32",
+      "value": -12
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "LvnItemChanged",
+      "type": "Int32",
+      "value": -101
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "LvnColumnClick",
+      "type": "Int32",
+      "value": -108
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "TtnGetDispInfo",
+      "type": "Int32",
+      "value": -530
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "CddsPrePaint",
+      "type": "UInt32",
+      "value": 1
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "CddsItem",
+      "type": "UInt32",
+      "value": 65536
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "CddsItemPrePaint",
+      "type": "UInt32",
+      "value": 65537
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "CddsSubItem",
+      "type": "UInt32",
+      "value": 131072
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "CdrfDoDefault",
+      "type": "IntPtr",
+      "value": 0
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "CdrfNewFont",
+      "type": "IntPtr",
+      "value": 2
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "CdrfSkipDefault",
+      "type": "IntPtr",
+      "value": 4
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "CdrfNotifyItemDraw",
+      "type": "IntPtr",
+      "value": 32
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "CdrfNotifySubItemDraw",
+      "type": "IntPtr",
+      "value": 32
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "CdisSelected",
+      "type": "UInt32",
+      "value": 1
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "BsAutoCheckBox",
+      "type": "UInt32",
+      "value": 3
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "BsAutoRadioButton",
+      "type": "UInt32",
+      "value": 9
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "BsGroupBox",
+      "type": "UInt32",
+      "value": 7
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "BmGetCheck",
+      "type": "UInt32",
+      "value": 240
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "BmSetCheck",
+      "type": "UInt32",
+      "value": 241
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "BstUnchecked",
+      "type": "Int32",
+      "value": 0
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "BstChecked",
+      "type": "Int32",
+      "value": 1
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "EsMultiline",
+      "type": "UInt32",
+      "value": 4
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "EsAutoVScroll",
+      "type": "UInt32",
+      "value": 64
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "EsReadOnly",
+      "type": "UInt32",
+      "value": 2048
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "EsWantReturn",
+      "type": "UInt32",
+      "value": 4096
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "EsNumber",
+      "type": "UInt32",
+      "value": 8192
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "SsEtchedFrame",
+      "type": "UInt32",
+      "value": 18
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "SsCenterImage",
+      "type": "UInt32",
+      "value": 512
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "CbsDropDownList",
+      "type": "UInt32",
+      "value": 3
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "CbsHasStrings",
+      "type": "UInt32",
+      "value": 512
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "CbAddString",
+      "type": "UInt32",
+      "value": 323
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "CbGetCount",
+      "type": "UInt32",
+      "value": 326
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "CbGetCurSel",
+      "type": "UInt32",
+      "value": 327
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "CbResetContent",
+      "type": "UInt32",
+      "value": 331
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "CbSetCurSel",
+      "type": "UInt32",
+      "value": 334
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "CbShowDropDown",
+      "type": "UInt32",
+      "value": 335
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "CbSetItemHeight",
+      "type": "UInt32",
+      "value": 339
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "CbGetDroppedState",
+      "type": "UInt32",
+      "value": 343
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "CbGetLbText",
+      "type": "UInt32",
+      "value": 328
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "CbGetLbTextLen",
+      "type": "UInt32",
+      "value": 329
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "CbnSelChange",
+      "type": "Int32",
+      "value": 1
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "CbnDropDown",
+      "type": "Int32",
+      "value": 7
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "ComboBoxInfoSize",
+      "type": "Int32",
+      "value": 64
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "ComboBoxInfoListOffset",
+      "type": "Int32",
+      "value": 56
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "LbsMultipleSel",
+      "type": "UInt32",
+      "value": 8
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "LbsExtendedSel",
+      "type": "UInt32",
+      "value": 2048
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "LbsOwnerDrawFixed",
+      "type": "UInt32",
+      "value": 16
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "LbsHasStrings",
+      "type": "UInt32",
+      "value": 64
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "LbSetSel",
+      "type": "UInt32",
+      "value": 389
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "LbSetCurSel",
+      "type": "UInt32",
+      "value": 390
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "LbGetSel",
+      "type": "UInt32",
+      "value": 391
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "LbGetCurSel",
+      "type": "UInt32",
+      "value": 392
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "LbGetItemRect",
+      "type": "UInt32",
+      "value": 408
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "LbGetItemData",
+      "type": "UInt32",
+      "value": 409
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "LbSetItemData",
+      "type": "UInt32",
+      "value": 410
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "LbGetSelCount",
+      "type": "UInt32",
+      "value": 400
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "LbSetItemHeight",
+      "type": "UInt32",
+      "value": 416
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "LbItemFromPoint",
+      "type": "UInt32",
+      "value": 425
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "LbSetTopIndex",
+      "type": "UInt32",
+      "value": 407
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "LbGetTopIndex",
+      "type": "UInt32",
+      "value": 398
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "LbSelItemRange",
+      "type": "UInt32",
+      "value": 411
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "LbGetCount",
+      "type": "UInt32",
+      "value": 395
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "LbDeleteString",
+      "type": "UInt32",
+      "value": 386
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "LbInsertString",
+      "type": "UInt32",
+      "value": 385
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "LbGetText",
+      "type": "UInt32",
+      "value": 393
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "LbGetTextLen",
+      "type": "UInt32",
+      "value": 394
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "LbnSelChange",
+      "type": "Int32",
+      "value": 1
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "LbnDblClk",
+      "type": "Int32",
+      "value": 2
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "OdsSelected",
+      "type": "UInt32",
+      "value": 1
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "OdsFocus",
+      "type": "UInt32",
+      "value": 16
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "OdsDisabled",
+      "type": "UInt32",
+      "value": 4
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "DrawItemSize",
+      "type": "Int32",
+      "value": 64
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "MeasureItemSize",
+      "type": "Int32",
+      "value": 32
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "PbsSmooth",
+      "type": "UInt32",
+      "value": 1
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "PbmSetPos",
+      "type": "UInt32",
+      "value": 1026
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "PbmSetRange32",
+      "type": "UInt32",
+      "value": 1030
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "PbmGetPos",
+      "type": "UInt32",
+      "value": 1032
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "PbmSetBarColor",
+      "type": "UInt32",
+      "value": 1033
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "PbmSetBkColor",
+      "type": "UInt32",
+      "value": 8193
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "TbsAutoTicks",
+      "type": "UInt32",
+      "value": 1
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "TbsHorz",
+      "type": "UInt32",
+      "value": 0
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "TbsNoTicks",
+      "type": "UInt32",
+      "value": 16
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "TbsToolTips",
+      "type": "UInt32",
+      "value": 256
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "TbmGetPos",
+      "type": "UInt32",
+      "value": 1024
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "TbmSetPos",
+      "type": "UInt32",
+      "value": 1029
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "TbmSetRange",
+      "type": "UInt32",
+      "value": 1030
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "TbmSetTicFreq",
+      "type": "UInt32",
+      "value": 1044
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "TbmSetPageSize",
+      "type": "UInt32",
+      "value": 1045
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "TbmSetLineSize",
+      "type": "UInt32",
+      "value": 1047
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "TbmGetRangeMin",
+      "type": "UInt32",
+      "value": 1025
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "TbmGetRangeMax",
+      "type": "UInt32",
+      "value": 1026
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "TbThumbTrack",
+      "type": "Int32",
+      "value": 5
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "TbEndTrack",
+      "type": "Int32",
+      "value": 8
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "TtsAlwaysTip",
+      "type": "UInt32",
+      "value": 1
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "TtsNoPrefix",
+      "type": "UInt32",
+      "value": 2
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "TtfIdIsHwnd",
+      "type": "UInt32",
+      "value": 1
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "TtfSubclass",
+      "type": "UInt32",
+      "value": 16
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "TtmActivate",
+      "type": "UInt32",
+      "value": 1025
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "TtmSetDelayTime",
+      "type": "UInt32",
+      "value": 1027
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "TtmSetTipBkColor",
+      "type": "UInt32",
+      "value": 1043
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "TtmSetTipTextColor",
+      "type": "UInt32",
+      "value": 1044
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "TtmSetMaxTipWidth",
+      "type": "UInt32",
+      "value": 1048
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "TtmPop",
+      "type": "UInt32",
+      "value": 1052
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "TtmAddTool",
+      "type": "UInt32",
+      "value": 1074
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "TtmUpdateTipText",
+      "type": "UInt32",
+      "value": 1081
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "TtmGetToolCount",
+      "type": "UInt32",
+      "value": 1037
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "ToolInfoSize",
+      "type": "Int32",
+      "value": 64
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "LpstrTextCallback",
+      "type": "IntPtr",
+      "value": -1
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "LvsReport",
+      "type": "UInt32",
+      "value": 1
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "LvsSingleSel",
+      "type": "UInt32",
+      "value": 4
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "LvsShowSelAlways",
+      "type": "UInt32",
+      "value": 8
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "LvsNoSortHeader",
+      "type": "UInt32",
+      "value": 32768
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "LvsExFullRowSelect",
+      "type": "UInt32",
+      "value": 32
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "LvsExDoubleBuffer",
+      "type": "UInt32",
+      "value": 65536
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "LvsExLabelTip",
+      "type": "UInt32",
+      "value": 16384
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "LvmSetBkColor",
+      "type": "UInt32",
+      "value": 4097
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "LvmGetItemCount",
+      "type": "UInt32",
+      "value": 4100
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "LvmDeleteAllItems",
+      "type": "UInt32",
+      "value": 4105
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "LvmGetNextItem",
+      "type": "UInt32",
+      "value": 4108
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "LvmEnsureVisible",
+      "type": "UInt32",
+      "value": 4115
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "LvmGetColumnWidth",
+      "type": "UInt32",
+      "value": 4125
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "LvmSetColumnWidth",
+      "type": "UInt32",
+      "value": 4126
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "LvmGetHeader",
+      "type": "UInt32",
+      "value": 4127
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "LvmSetItemState",
+      "type": "UInt32",
+      "value": 4139
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "LvmGetItemState",
+      "type": "UInt32",
+      "value": 4140
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "LvmGetSelectedCount",
+      "type": "UInt32",
+      "value": 4146
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "LvmSetExtendedStyle",
+      "type": "UInt32",
+      "value": 4150
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "LvmSetTextColor",
+      "type": "UInt32",
+      "value": 4132
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "LvmSetTextBkColor",
+      "type": "UInt32",
+      "value": 4134
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "LvmGetItemText",
+      "type": "UInt32",
+      "value": 4211
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "LvmSetItemText",
+      "type": "UInt32",
+      "value": 4212
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "LvmInsertColumn",
+      "type": "UInt32",
+      "value": 4193
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "LvmInsertItem",
+      "type": "UInt32",
+      "value": 4173
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "LvmGetItem",
+      "type": "UInt32",
+      "value": 4171
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "LvmSetItem",
+      "type": "UInt32",
+      "value": 4172
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "LvifText",
+      "type": "UInt32",
+      "value": 1
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "LvifParam",
+      "type": "UInt32",
+      "value": 4
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "LvifState",
+      "type": "UInt32",
+      "value": 8
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "LvisFocused",
+      "type": "UInt32",
+      "value": 1
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "LvisSelected",
+      "type": "UInt32",
+      "value": 2
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "LvcfFmt",
+      "type": "UInt32",
+      "value": 1
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "LvcfWidth",
+      "type": "UInt32",
+      "value": 2
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "LvcfText",
+      "type": "UInt32",
+      "value": 4
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "LvcfSubItem",
+      "type": "UInt32",
+      "value": 8
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "LvcfmtLeft",
+      "type": "Int32",
+      "value": 0
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "LvcfmtRight",
+      "type": "Int32",
+      "value": 1
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "LvnisSelected",
+      "type": "Int32",
+      "value": 2
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "LvniSelected",
+      "type": "Int32",
+      "value": 2
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "LvColumnSize",
+      "type": "Int32",
+      "value": 56
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "LvItemSize",
+      "type": "Int32",
+      "value": 88
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "NmHdrSize",
+      "type": "Int32",
+      "value": 24
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "NmListViewSize",
+      "type": "Int32",
+      "value": 88
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "NmCustomDrawSize",
+      "type": "Int32",
+      "value": 80
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "NmLvCustomDrawSize",
+      "type": "Int32",
+      "value": 104
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "HdmGetItem",
+      "type": "UInt32",
+      "value": 4619
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "HdmSetItem",
+      "type": "UInt32",
+      "value": 4620
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "HdiFormat",
+      "type": "UInt32",
+      "value": 4
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "HdfSortUp",
+      "type": "Int32",
+      "value": 1024
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "HdfSortDown",
+      "type": "Int32",
+      "value": 512
+    },
+    {
+      "kind": "const",
+      "class": "ControlConstants",
+      "name": "HdItemSize",
+      "type": "Int32",
+      "value": 72
+    },
+    {
+      "kind": "const",
+      "class": "DialogChromeNative",
+      "name": "SrcCopy",
+      "type": "UInt32",
+      "value": 13369376
+    },
+    {
+      "kind": "const",
+      "class": "DialogChromeNative",
+      "name": "PaintStructSize",
+      "type": "Int32",
+      "value": 72
+    },
+    {
+      "kind": "const",
+      "class": "DialogChromeNative",
+      "name": "TrackMouseEventSize",
+      "type": "Int32",
+      "value": 24
+    },
+    {
+      "kind": "const",
+      "class": "DialogChromeNative",
+      "name": "TmeLeave",
+      "type": "UInt32",
+      "value": 2
+    },
+    {
+      "kind": "const",
+      "class": "DialogChromeNative",
+      "name": "WmPaint",
+      "type": "UInt32",
+      "value": 15
+    },
+    {
+      "kind": "const",
+      "class": "DialogChromeNative",
+      "name": "WmEraseBkgnd",
+      "type": "UInt32",
+      "value": 20
+    },
+    {
+      "kind": "const",
+      "class": "DialogChromeNative",
+      "name": "WmNcPaint",
+      "type": "UInt32",
+      "value": 133
+    },
+    {
+      "kind": "const",
+      "class": "DialogChromeNative",
+      "name": "WmPrint",
+      "type": "UInt32",
+      "value": 791
+    },
+    {
+      "kind": "const",
+      "class": "DialogChromeNative",
+      "name": "WmPrintClient",
+      "type": "UInt32",
+      "value": 792
+    },
+    {
+      "kind": "const",
+      "class": "DialogChromeNative",
+      "name": "WmMouseMove",
+      "type": "UInt32",
+      "value": 512
+    },
+    {
+      "kind": "const",
+      "class": "DialogChromeNative",
+      "name": "WmMouseLeave",
+      "type": "UInt32",
+      "value": 675
+    },
+    {
+      "kind": "const",
+      "class": "DialogChromeNative",
+      "name": "WmSetFocus",
+      "type": "UInt32",
+      "value": 7
+    },
+    {
+      "kind": "const",
+      "class": "DialogChromeNative",
+      "name": "WmKillFocus",
+      "type": "UInt32",
+      "value": 8
+    },
+    {
+      "kind": "const",
+      "class": "DialogChromeNative",
+      "name": "WmQueryUiState",
+      "type": "UInt32",
+      "value": 297
+    },
+    {
+      "kind": "const",
+      "class": "DialogChromeNative",
+      "name": "WmUpdateUiState",
+      "type": "UInt32",
+      "value": 296
+    },
+    {
+      "kind": "const",
+      "class": "DialogChromeNative",
+      "name": "WmNcDestroy",
+      "type": "UInt32",
+      "value": 130
+    },
+    {
+      "kind": "const",
+      "class": "DialogChromeNative",
+      "name": "PrfNonClient",
+      "type": "UInt32",
+      "value": 2
+    },
+    {
+      "kind": "const",
+      "class": "DialogChromeNative",
+      "name": "UisfHideFocus",
+      "type": "UInt32",
+      "value": 1
+    },
+    {
+      "kind": "const",
+      "class": "DialogChromeNative",
+      "name": "UisfHideAccel",
+      "type": "UInt32",
+      "value": 2
+    },
+    {
+      "kind": "const",
+      "class": "DialogChromeNative",
+      "name": "BmGetState",
+      "type": "UInt32",
+      "value": 242
+    },
+    {
+      "kind": "const",
+      "class": "DialogChromeNative",
+      "name": "BstPushed",
+      "type": "UInt32",
+      "value": 4
+    },
+    {
+      "kind": "const",
+      "class": "DialogChromeNative",
+      "name": "BstFocus",
+      "type": "UInt32",
+      "value": 8
+    },
+    {
+      "kind": "const",
+      "class": "DialogChromeNative",
+      "name": "BsTypeMask",
+      "type": "UInt32",
+      "value": 15
+    },
+    {
+      "kind": "const",
+      "class": "DialogChromeNative",
+      "name": "BsPushLike",
+      "type": "UInt32",
+      "value": 4096
+    },
+    {
+      "kind": "const",
+      "class": "DialogChromeNative",
+      "name": "BsMultiline",
+      "type": "UInt32",
+      "value": 8192
+    },
+    {
+      "kind": "const",
+      "class": "DialogChromeNative",
+      "name": "BsLeftText",
+      "type": "UInt32",
+      "value": 32
+    },
+    {
+      "kind": "const",
+      "class": "DialogChromeNative",
+      "name": "BsIcon",
+      "type": "UInt32",
+      "value": 64
+    },
+    {
+      "kind": "const",
+      "class": "DialogChromeNative",
+      "name": "BsBitmap",
+      "type": "UInt32",
+      "value": 128
+    },
+    {
+      "kind": "const",
+      "class": "DialogChromeNative",
+      "name": "CbsTypeMask",
+      "type": "UInt32",
+      "value": 3
+    },
+    {
+      "kind": "const",
+      "class": "DialogChromeNative",
+      "name": "CbsOwnerDrawFixed",
+      "type": "UInt32",
+      "value": 16
+    },
+    {
+      "kind": "const",
+      "class": "DialogChromeNative",
+      "name": "CbsOwnerDrawVariable",
+      "type": "UInt32",
+      "value": 32
+    },
+    {
+      "kind": "const",
+      "class": "DialogChromeNative",
+      "name": "PbmGetRange",
+      "type": "UInt32",
+      "value": 1031
+    },
+    {
+      "kind": "const",
+      "class": "DialogChromeNative",
+      "name": "PbsMarquee",
+      "type": "UInt32",
+      "value": 8
+    },
+    {
+      "kind": "const",
+      "class": "DialogChromeNative",
+      "name": "TbsVert",
+      "type": "UInt32",
+      "value": 2
+    },
+    {
+      "kind": "const",
+      "class": "DialogChromeNative",
+      "name": "TbmGetNumTics",
+      "type": "UInt32",
+      "value": 1040
+    },
+    {
+      "kind": "const",
+      "class": "DialogChromeNative",
+      "name": "TbmGetPTics",
+      "type": "UInt32",
+      "value": 1038
+    },
+    {
+      "kind": "const",
+      "class": "DialogChromeNative",
+      "name": "TbmGetThumbRect",
+      "type": "UInt32",
+      "value": 1049
+    },
+    {
+      "kind": "const",
+      "class": "DialogChromeNative",
+      "name": "TbmGetChannelRect",
+      "type": "UInt32",
+      "value": 1050
+    },
+    {
+      "kind": "const",
+      "class": "DialogChromeNative",
+      "name": "TbmGetRangeMin",
+      "type": "UInt32",
+      "value": 1025
+    },
+    {
+      "kind": "const",
+      "class": "DialogChromeNative",
+      "name": "TbmGetRangeMax",
+      "type": "UInt32",
+      "value": 1026
+    },
+    {
+      "kind": "const",
+      "class": "DialogChromeNative",
+      "name": "SsTypeMask",
+      "type": "UInt32",
+      "value": 31
+    },
+    {
+      "kind": "const",
+      "class": "DialogChromeNative",
+      "name": "SsEtchedHorz",
+      "type": "UInt32",
+      "value": 16
+    },
+    {
+      "kind": "const",
+      "class": "DialogChromeNative",
+      "name": "SsEtchedVert",
+      "type": "UInt32",
+      "value": 17
+    },
+    {
+      "kind": "const",
+      "class": "DialogChromeNative",
+      "name": "SsEtchedFrame",
+      "type": "UInt32",
+      "value": 18
+    },
+    {
+      "kind": "const",
+      "class": "DialogChromeNative",
+      "name": "HdmGetItemCount",
+      "type": "UInt32",
+      "value": 4608
+    },
+    {
+      "kind": "const",
+      "class": "DialogChromeNative",
+      "name": "HdmGetItemRect",
+      "type": "UInt32",
+      "value": 4615
+    },
+    {
+      "kind": "const",
+      "class": "DialogChromeNative",
+      "name": "LvmGetBkColor",
+      "type": "UInt32",
+      "value": 4096
+    },
+    {
+      "kind": "const",
+      "class": "DialogChromeNative",
+      "name": "CdisFocus",
+      "type": "UInt32",
+      "value": 16
+    },
+    {
+      "kind": "const",
+      "class": "DialogChromeNative",
+      "name": "CdisHot",
+      "type": "UInt32",
+      "value": 64
+    },
+    {
+      "kind": "const",
+      "class": "DialogChromeNative",
+      "name": "WsBorder",
+      "type": "UInt32",
+      "value": 8388608
+    },
+    {
+      "kind": "const",
+      "class": "DialogChromeNative",
+      "name": "WsDlgFrame",
+      "type": "UInt32",
+      "value": 4194304
+    },
+    {
+      "kind": "const",
+      "class": "DialogChromeNative",
+      "name": "WsExClientEdge",
+      "type": "UInt32",
+      "value": 512
+    },
+    {
+      "kind": "const",
+      "class": "DialogChromeNative",
+      "name": "WsExStaticEdge",
+      "type": "UInt32",
+      "value": 131072
+    },
+    {
+      "kind": "const",
+      "class": "DialogChromeNative",
+      "name": "SmCxBorder",
+      "type": "Int32",
+      "value": 5
+    },
+    {
+      "kind": "const",
+      "class": "DialogChromeNative",
+      "name": "SmCxEdge",
+      "type": "Int32",
+      "value": 45
+    },
+    {
+      "kind": "const",
+      "class": "DialogChromeNative",
+      "name": "DtHidePrefix",
+      "type": "UInt32",
+      "value": 1048576
+    },
+    {
+      "kind": "const",
+      "class": "DialogChromeNative",
+      "name": "DtRight",
+      "type": "UInt32",
+      "value": 2
+    },
+    {
+      "kind": "const",
+      "class": "DialogConstants",
+      "name": "WmSetFont",
+      "type": "UInt32",
+      "value": 48
+    },
+    {
+      "kind": "const",
+      "class": "DialogConstants",
+      "name": "WmGetFont",
+      "type": "UInt32",
+      "value": 49
+    },
+    {
+      "kind": "const",
+      "class": "DialogConstants",
+      "name": "WmInitDialog",
+      "type": "UInt32",
+      "value": 272
+    },
+    {
+      "kind": "const",
+      "class": "DialogConstants",
+      "name": "WmCtlColorMsgBox",
+      "type": "UInt32",
+      "value": 306
+    },
+    {
+      "kind": "const",
+      "class": "DialogConstants",
+      "name": "WmCtlColorEdit",
+      "type": "UInt32",
+      "value": 307
+    },
+    {
+      "kind": "const",
+      "class": "DialogConstants",
+      "name": "WmCtlColorListBox",
+      "type": "UInt32",
+      "value": 308
+    },
+    {
+      "kind": "const",
+      "class": "DialogConstants",
+      "name": "WmCtlColorBtn",
+      "type": "UInt32",
+      "value": 309
+    },
+    {
+      "kind": "const",
+      "class": "DialogConstants",
+      "name": "WmCtlColorDlg",
+      "type": "UInt32",
+      "value": 310
+    },
+    {
+      "kind": "const",
+      "class": "DialogConstants",
+      "name": "WmCtlColorScrollBar",
+      "type": "UInt32",
+      "value": 311
+    },
+    {
+      "kind": "const",
+      "class": "DialogConstants",
+      "name": "WmCtlColorStatic",
+      "type": "UInt32",
+      "value": 312
+    },
+    {
+      "kind": "const",
+      "class": "DialogConstants",
+      "name": "DmGetDefId",
+      "type": "UInt32",
+      "value": 1024
+    },
+    {
+      "kind": "const",
+      "class": "DialogConstants",
+      "name": "DmSetDefId",
+      "type": "UInt32",
+      "value": 1025
+    },
+    {
+      "kind": "const",
+      "class": "DialogConstants",
+      "name": "BmSetStyle",
+      "type": "UInt32",
+      "value": 244
+    },
+    {
+      "kind": "const",
+      "class": "DialogConstants",
+      "name": "EmSetSel",
+      "type": "UInt32",
+      "value": 177
+    },
+    {
+      "kind": "const",
+      "class": "DialogConstants",
+      "name": "EmGetSel",
+      "type": "UInt32",
+      "value": 176
+    },
+    {
+      "kind": "const",
+      "class": "DialogConstants",
+      "name": "EmSetLimitText",
+      "type": "UInt32",
+      "value": 197
+    },
+    {
+      "kind": "const",
+      "class": "DialogConstants",
+      "name": "EmGetRect",
+      "type": "UInt32",
+      "value": 178
+    },
+    {
+      "kind": "const",
+      "class": "DialogConstants",
+      "name": "EmSetRect",
+      "type": "UInt32",
+      "value": 179
+    },
+    {
+      "kind": "const",
+      "class": "DialogConstants",
+      "name": "EsMultiline",
+      "type": "UInt32",
+      "value": 4
+    },
+    {
+      "kind": "const",
+      "class": "DialogConstants",
+      "name": "LbAddString",
+      "type": "UInt32",
+      "value": 384
+    },
+    {
+      "kind": "const",
+      "class": "DialogConstants",
+      "name": "LbResetContent",
+      "type": "UInt32",
+      "value": 388
+    },
+    {
+      "kind": "const",
+      "class": "DialogConstants",
+      "name": "LbSetCurSel",
+      "type": "UInt32",
+      "value": 390
+    },
+    {
+      "kind": "const",
+      "class": "DialogConstants",
+      "name": "LbGetCount",
+      "type": "UInt32",
+      "value": 395
+    },
+    {
+      "kind": "const",
+      "class": "DialogConstants",
+      "name": "LbGetTextLen",
+      "type": "UInt32",
+      "value": 394
+    },
+    {
+      "kind": "const",
+      "class": "DialogConstants",
+      "name": "LbGetText",
+      "type": "UInt32",
+      "value": 393
+    },
+    {
+      "kind": "const",
+      "class": "DialogConstants",
+      "name": "LbSetHorizontalExtent",
+      "type": "UInt32",
+      "value": 404
+    },
+    {
+      "kind": "const",
+      "class": "DialogConstants",
+      "name": "LbInitStorage",
+      "type": "UInt32",
+      "value": 424
+    },
+    {
+      "kind": "const",
+      "class": "DialogConstants",
+      "name": "BnClicked",
+      "type": "UInt32",
+      "value": 0
+    },
+    {
+      "kind": "const",
+      "class": "DialogConstants",
+      "name": "DwlpMsgResult",
+      "type": "Int32",
+      "value": 0
+    },
+    {
+      "kind": "const",
+      "class": "DialogConstants",
+      "name": "DwlpUser",
+      "type": "Int32",
+      "value": 16
+    },
+    {
+      "kind": "const",
+      "class": "DialogConstants",
+      "name": "WsTabStop",
+      "type": "UInt32",
+      "value": 65536
+    },
+    {
+      "kind": "const",
+      "class": "DialogConstants",
+      "name": "WsGroup",
+      "type": "UInt32",
+      "value": 131072
+    },
+    {
+      "kind": "const",
+      "class": "DialogConstants",
+      "name": "WsBorder",
+      "type": "UInt32",
+      "value": 8388608
+    },
+    {
+      "kind": "const",
+      "class": "DialogConstants",
+      "name": "WsVScroll",
+      "type": "UInt32",
+      "value": 2097152
+    },
+    {
+      "kind": "const",
+      "class": "DialogConstants",
+      "name": "WsHScroll",
+      "type": "UInt32",
+      "value": 1048576
+    },
+    {
+      "kind": "const",
+      "class": "DialogConstants",
+      "name": "WsDisabled",
+      "type": "UInt32",
+      "value": 134217728
+    },
+    {
+      "kind": "const",
+      "class": "DialogConstants",
+      "name": "WsDlgFrame",
+      "type": "UInt32",
+      "value": 4194304
+    },
+    {
+      "kind": "const",
+      "class": "DialogConstants",
+      "name": "WsExDlgModalFrame",
+      "type": "UInt32",
+      "value": 1
+    },
+    {
+      "kind": "const",
+      "class": "DialogConstants",
+      "name": "WsExClientEdge",
+      "type": "UInt32",
+      "value": 512
+    },
+    {
+      "kind": "const",
+      "class": "DialogConstants",
+      "name": "WsExControlParent",
+      "type": "UInt32",
+      "value": 65536
+    },
+    {
+      "kind": "const",
+      "class": "DialogConstants",
+      "name": "BsPushButton",
+      "type": "UInt32",
+      "value": 0
+    },
+    {
+      "kind": "const",
+      "class": "DialogConstants",
+      "name": "BsDefPushButton",
+      "type": "UInt32",
+      "value": 1
+    },
+    {
+      "kind": "const",
+      "class": "DialogConstants",
+      "name": "EsAutoHScroll",
+      "type": "UInt32",
+      "value": 128
+    },
+    {
+      "kind": "const",
+      "class": "DialogConstants",
+      "name": "SsLeft",
+      "type": "UInt32",
+      "value": 0
+    },
+    {
+      "kind": "const",
+      "class": "DialogConstants",
+      "name": "SsNoPrefix",
+      "type": "UInt32",
+      "value": 128
+    },
+    {
+      "kind": "const",
+      "class": "DialogConstants",
+      "name": "LbsNotify",
+      "type": "UInt32",
+      "value": 1
+    },
+    {
+      "kind": "const",
+      "class": "DialogConstants",
+      "name": "LbsNoIntegralHeight",
+      "type": "UInt32",
+      "value": 256
+    },
+    {
+      "kind": "const",
+      "class": "DialogConstants",
+      "name": "DsModalFrame",
+      "type": "UInt32",
+      "value": 128
+    },
+    {
+      "kind": "const",
+      "class": "DialogConstants",
+      "name": "DsSetFont",
+      "type": "UInt32",
+      "value": 64
+    },
+    {
+      "kind": "const",
+      "class": "DialogConstants",
+      "name": "DsNoFailCreate",
+      "type": "UInt32",
+      "value": 16
+    },
+    {
+      "kind": "const",
+      "class": "DialogConstants",
+      "name": "DtCenter",
+      "type": "UInt32",
+      "value": 1
+    },
+    {
+      "kind": "const",
+      "class": "DialogConstants",
+      "name": "DtVCenter",
+      "type": "UInt32",
+      "value": 4
+    },
+    {
+      "kind": "const",
+      "class": "DialogConstants",
+      "name": "DtEndEllipsis",
+      "type": "UInt32",
+      "value": 32768
+    },
+    {
+      "kind": "const",
+      "class": "DialogConstants",
+      "name": "DtWordBreak",
+      "type": "UInt32",
+      "value": 16
+    },
+    {
+      "kind": "const",
+      "class": "DialogConstants",
+      "name": "DtSingleLine",
+      "type": "UInt32",
+      "value": 32
+    },
+    {
+      "kind": "const",
+      "class": "DialogConstants",
+      "name": "DtCalcRect",
+      "type": "UInt32",
+      "value": 1024
+    },
+    {
+      "kind": "const",
+      "class": "DialogConstants",
+      "name": "DtNoPrefix",
+      "type": "UInt32",
+      "value": 2048
+    },
+    {
+      "kind": "const",
+      "class": "DialogConstants",
+      "name": "DtEditControl",
+      "type": "UInt32",
+      "value": 8192
+    },
+    {
+      "kind": "const",
+      "class": "DialogConstants",
+      "name": "SpiGetNonClientMetrics",
+      "type": "UInt32",
+      "value": 41
+    },
+    {
+      "kind": "const",
+      "class": "DialogConstants",
+      "name": "NonClientMetricsSize",
+      "type": "Int32",
+      "value": 504
+    },
+    {
+      "kind": "const",
+      "class": "DialogConstants",
+      "name": "NonClientMessageFontOffset",
+      "type": "Int32",
+      "value": 408
+    },
+    {
+      "kind": "const",
+      "class": "DialogConstants",
+      "name": "LogFontSize",
+      "type": "Int32",
+      "value": 92
+    },
+    {
+      "kind": "const",
+      "class": "DialogConstants",
+      "name": "GrGdiObjects",
+      "type": "Int32",
+      "value": 0
+    },
+    {
+      "kind": "const",
+      "class": "DialogConstants",
+      "name": "GrUserObjects",
+      "type": "Int32",
+      "value": 1
+    },
+    {
+      "kind": "const",
+      "class": "DialogConstants",
+      "name": "TransparentBackground",
+      "type": "Int32",
+      "value": 1
+    },
+    {
+      "kind": "const",
+      "class": "ScrollConstants",
+      "name": "SbVert",
+      "type": "Int32",
+      "value": 1
+    },
+    {
+      "kind": "const",
+      "class": "ScrollConstants",
+      "name": "SbCtl",
+      "type": "Int32",
+      "value": 2
+    },
+    {
+      "kind": "const",
+      "class": "ScrollConstants",
+      "name": "SifRange",
+      "type": "UInt32",
+      "value": 1
+    },
+    {
+      "kind": "const",
+      "class": "ScrollConstants",
+      "name": "SifPage",
+      "type": "UInt32",
+      "value": 2
+    },
+    {
+      "kind": "const",
+      "class": "ScrollConstants",
+      "name": "SifPos",
+      "type": "UInt32",
+      "value": 4
+    },
+    {
+      "kind": "const",
+      "class": "ScrollConstants",
+      "name": "SifDisableNoScroll",
+      "type": "UInt32",
+      "value": 8
+    },
+    {
+      "kind": "const",
+      "class": "ScrollConstants",
+      "name": "SifTrackPos",
+      "type": "UInt32",
+      "value": 16
+    },
+    {
+      "kind": "const",
+      "class": "ScrollConstants",
+      "name": "SbLineUp",
+      "type": "Int32",
+      "value": 0
+    },
+    {
+      "kind": "const",
+      "class": "ScrollConstants",
+      "name": "SbLineDown",
+      "type": "Int32",
+      "value": 1
+    },
+    {
+      "kind": "const",
+      "class": "ScrollConstants",
+      "name": "SbPageUp",
+      "type": "Int32",
+      "value": 2
+    },
+    {
+      "kind": "const",
+      "class": "ScrollConstants",
+      "name": "SbPageDown",
+      "type": "Int32",
+      "value": 3
+    },
+    {
+      "kind": "const",
+      "class": "ScrollConstants",
+      "name": "SbThumbPosition",
+      "type": "Int32",
+      "value": 4
+    },
+    {
+      "kind": "const",
+      "class": "ScrollConstants",
+      "name": "SbThumbTrack",
+      "type": "Int32",
+      "value": 5
+    },
+    {
+      "kind": "const",
+      "class": "ScrollConstants",
+      "name": "SbTop",
+      "type": "Int32",
+      "value": 6
+    },
+    {
+      "kind": "const",
+      "class": "ScrollConstants",
+      "name": "SbBottom",
+      "type": "Int32",
+      "value": 7
+    },
+    {
+      "kind": "const",
+      "class": "ScrollConstants",
+      "name": "SbEndScroll",
+      "type": "Int32",
+      "value": 8
+    },
+    {
+      "kind": "const",
+      "class": "ScrollConstants",
+      "name": "SbsVert",
+      "type": "UInt32",
+      "value": 1
+    },
+    {
+      "kind": "const",
+      "class": "ScrollConstants",
+      "name": "WsClipChildren",
+      "type": "UInt32",
+      "value": 33554432
+    },
+    {
+      "kind": "const",
+      "class": "ScrollConstants",
+      "name": "WsClipSiblings",
+      "type": "UInt32",
+      "value": 67108864
+    },
+    {
+      "kind": "const",
+      "class": "Imm32",
+      "name": "VkProcessKey",
+      "type": "Int32",
+      "value": 229
+    },
+    {
+      "kind": "const",
+      "class": "ClipboardFormats",
+      "name": "HDrop",
+      "type": "UInt16",
+      "value": 15
+    },
+    {
+      "kind": "const",
+      "class": "ClipboardFormats",
+      "name": "UnicodeText",
+      "type": "UInt16",
+      "value": 13
+    },
+    {
+      "kind": "const",
+      "class": "DataViewAspect",
+      "name": "Content",
+      "type": "UInt32",
+      "value": 1
+    },
+    {
+      "kind": "const",
+      "class": "DataObjectDirection",
+      "name": "Get",
+      "type": "UInt32",
+      "value": 1
+    },
+    {
+      "kind": "const",
+      "class": "DataObjectDirection",
+      "name": "Set",
+      "type": "UInt32",
+      "value": 2
+    },
+    {
+      "kind": "const",
+      "class": "OleErrors",
+      "name": "DvEFormatEtc",
+      "type": "Int32",
+      "value": -2147221404
+    },
+    {
+      "kind": "const",
+      "class": "OleErrors",
+      "name": "DragDropSEffectNone",
+      "type": "Int32",
+      "value": 0
+    },
+    {
+      "kind": "const",
+      "class": "ShellGuids",
+      "name": "ModalWindow",
+      "type": "String",
+      "value": "b4db1657-70d7-485e-8e3e-6fcb5a5c1802"
+    },
+    {
+      "kind": "const",
+      "class": "ShellGuids",
+      "name": "FileDialog",
+      "type": "String",
+      "value": "42f85136-db7e-439c-85f1-e4075d135fc8"
+    },
+    {
+      "kind": "const",
+      "class": "ShellGuids",
+      "name": "FileOpenDialog",
+      "type": "String",
+      "value": "d57c7288-d4ad-4768-be02-9d969532d960"
+    },
+    {
+      "kind": "const",
+      "class": "ShellGuids",
+      "name": "ShellItem",
+      "type": "String",
+      "value": "43826d1e-e718-42ee-bc55-a1e261c37bfe"
+    },
+    {
+      "kind": "const",
+      "class": "ShellGuids",
+      "name": "ShellItemArray",
+      "type": "String",
+      "value": "b63ea76d-1f85-456f-a19c-48159efa858b"
+    },
+    {
+      "kind": "const",
+      "class": "ShellGuids",
+      "name": "DropTarget",
+      "type": "String",
+      "value": "00000122-0000-0000-c000-000000000046"
+    },
+    {
+      "kind": "const",
+      "class": "ShellGuids",
+      "name": "DataObject",
+      "type": "String",
+      "value": "0000010e-0000-0000-c000-000000000046"
+    },
+    {
+      "kind": "const",
+      "class": "ShellGuids",
+      "name": "ClsidFileOpenDialog",
+      "type": "String",
+      "value": "dc1c5a9c-e88a-4dde-a5a1-60f82a20aef7"
+    },
+    {
+      "kind": "const",
+      "class": "ShellGuids",
+      "name": "FileSaveDialog",
+      "type": "String",
+      "value": "84bccd23-5fde-4cdb-aea4-af64b83d78ab"
+    },
+    {
+      "kind": "const",
+      "class": "ShellGuids",
+      "name": "ClsidFileSaveDialog",
+      "type": "String",
+      "value": "c0b4e2f3-ba21-4773-8dba-335ec946eb8b"
+    },
+    {
+      "kind": "enum",
+      "enum": "Tymed",
+      "name": "Null",
+      "value": 0
+    },
+    {
+      "kind": "enum",
+      "enum": "Tymed",
+      "name": "HGlobal",
+      "value": 1
+    },
+    {
+      "kind": "enum",
+      "enum": "Tymed",
+      "name": "File",
+      "value": 2
+    },
+    {
+      "kind": "enum",
+      "enum": "Tymed",
+      "name": "IStream",
+      "value": 4
+    },
+    {
+      "kind": "enum",
+      "enum": "Tymed",
+      "name": "IStorage",
+      "value": 8
+    },
+    {
+      "kind": "enum",
+      "enum": "DropEffect",
+      "name": "None",
+      "value": 0
+    },
+    {
+      "kind": "enum",
+      "enum": "DropEffect",
+      "name": "Copy",
+      "value": 1
+    },
+    {
+      "kind": "enum",
+      "enum": "DropEffect",
+      "name": "Move",
+      "value": 2
+    },
+    {
+      "kind": "enum",
+      "enum": "DropEffect",
+      "name": "Link",
+      "value": 4
+    },
+    {
+      "kind": "enum",
+      "enum": "DropEffect",
+      "name": "Scroll",
+      "value": 2147483648
+    },
+    {
+      "kind": "enum",
+      "enum": "FileDialogOptions",
+      "name": "None",
+      "value": 0
+    },
+    {
+      "kind": "enum",
+      "enum": "FileDialogOptions",
+      "name": "OverwritePrompt",
+      "value": 2
+    },
+    {
+      "kind": "enum",
+      "enum": "FileDialogOptions",
+      "name": "StrictFileTypes",
+      "value": 4
+    },
+    {
+      "kind": "enum",
+      "enum": "FileDialogOptions",
+      "name": "NoChangeDir",
+      "value": 8
+    },
+    {
+      "kind": "enum",
+      "enum": "FileDialogOptions",
+      "name": "PickFolders",
+      "value": 32
+    },
+    {
+      "kind": "enum",
+      "enum": "FileDialogOptions",
+      "name": "ForceFileSystem",
+      "value": 64
+    },
+    {
+      "kind": "enum",
+      "enum": "FileDialogOptions",
+      "name": "AllNonStorageItems",
+      "value": 128
+    },
+    {
+      "kind": "enum",
+      "enum": "FileDialogOptions",
+      "name": "NoValidate",
+      "value": 256
+    },
+    {
+      "kind": "enum",
+      "enum": "FileDialogOptions",
+      "name": "AllowMultiSelect",
+      "value": 512
+    },
+    {
+      "kind": "enum",
+      "enum": "FileDialogOptions",
+      "name": "PathMustExist",
+      "value": 2048
+    },
+    {
+      "kind": "enum",
+      "enum": "FileDialogOptions",
+      "name": "FileMustExist",
+      "value": 4096
+    },
+    {
+      "kind": "enum",
+      "enum": "FileDialogOptions",
+      "name": "CreatePrompt",
+      "value": 8192
+    },
+    {
+      "kind": "enum",
+      "enum": "FileDialogOptions",
+      "name": "ShareAware",
+      "value": 16384
+    },
+    {
+      "kind": "enum",
+      "enum": "FileDialogOptions",
+      "name": "NoReadOnlyReturn",
+      "value": 32768
+    },
+    {
+      "kind": "enum",
+      "enum": "FileDialogOptions",
+      "name": "NoTestFileCreate",
+      "value": 65536
+    },
+    {
+      "kind": "enum",
+      "enum": "FileDialogOptions",
+      "name": "HideMruPlaces",
+      "value": 131072
+    },
+    {
+      "kind": "enum",
+      "enum": "FileDialogOptions",
+      "name": "HidePinnedPlaces",
+      "value": 262144
+    },
+    {
+      "kind": "enum",
+      "enum": "FileDialogOptions",
+      "name": "NoDereferenceLinks",
+      "value": 1048576
+    },
+    {
+      "kind": "enum",
+      "enum": "FileDialogOptions",
+      "name": "DontAddToRecent",
+      "value": 33554432
+    },
+    {
+      "kind": "enum",
+      "enum": "FileDialogOptions",
+      "name": "ForceShowHidden",
+      "value": 268435456
+    },
+    {
+      "kind": "enum",
+      "enum": "FileDialogOptions",
+      "name": "DefaultNoMiniMode",
+      "value": 536870912
+    },
+    {
+      "kind": "enum",
+      "enum": "ShellItemDisplayName",
+      "name": "NormalDisplay",
+      "value": 0
+    },
+    {
+      "kind": "enum",
+      "enum": "ShellItemDisplayName",
+      "name": "ParentRelativeParsing",
+      "value": 2147581953
+    },
+    {
+      "kind": "enum",
+      "enum": "ShellItemDisplayName",
+      "name": "DesktopAbsoluteParsing",
+      "value": 2147647488
+    },
+    {
+      "kind": "enum",
+      "enum": "ShellItemDisplayName",
+      "name": "FileSystemPath",
+      "value": 2147844096
+    },
+    {
+      "kind": "enum",
+      "enum": "ShellItemDisplayName",
+      "name": "Url",
+      "value": 2147909632
+    },
+    {
+      "kind": "layout",
+      "type": "Rect",
+      "size": 16,
+      "fields": [
+        {
+          "name": "Left",
+          "offset": 0
+        },
+        {
+          "name": "Top",
+          "offset": 4
+        },
+        {
+          "name": "Right",
+          "offset": 8
+        },
+        {
+          "name": "Bottom",
+          "offset": 12
+        }
+      ]
+    },
+    {
+      "kind": "layout",
+      "type": "Point",
+      "size": 8,
+      "fields": [
+        {
+          "name": "X",
+          "offset": 0
+        },
+        {
+          "name": "Y",
+          "offset": 4
+        }
+      ]
+    },
+    {
+      "kind": "layout",
+      "type": "WndClassEx",
+      "size": 80,
+      "fields": [
+        {
+          "name": "Size",
+          "offset": 0
+        },
+        {
+          "name": "Style",
+          "offset": 4
+        },
+        {
+          "name": "WndProc",
+          "offset": 8
+        },
+        {
+          "name": "ClassExtra",
+          "offset": 16
+        },
+        {
+          "name": "WindowExtra",
+          "offset": 20
+        },
+        {
+          "name": "Instance",
+          "offset": 24
+        },
+        {
+          "name": "Icon",
+          "offset": 32
+        },
+        {
+          "name": "Cursor",
+          "offset": 40
+        },
+        {
+          "name": "Background",
+          "offset": 48
+        },
+        {
+          "name": "MenuName",
+          "offset": 56
+        },
+        {
+          "name": "ClassName",
+          "offset": 64
+        },
+        {
+          "name": "IconSmall",
+          "offset": 72
+        }
+      ]
+    },
+    {
+      "kind": "layout",
+      "type": "Msg",
+      "size": 48,
+      "fields": [
+        {
+          "name": "Hwnd",
+          "offset": 0
+        },
+        {
+          "name": "Message",
+          "offset": 8
+        },
+        {
+          "name": "WParam",
+          "offset": 16
+        },
+        {
+          "name": "LParam",
+          "offset": 24
+        },
+        {
+          "name": "Time",
+          "offset": 32
+        },
+        {
+          "name": "PointX",
+          "offset": 36
+        },
+        {
+          "name": "PointY",
+          "offset": 40
+        },
+        {
+          "name": "Private",
+          "offset": 44
+        }
+      ]
+    },
+    {
+      "kind": "layout",
+      "type": "MonitorInfo",
+      "size": 40,
+      "fields": [
+        {
+          "name": "Size",
+          "offset": 0
+        },
+        {
+          "name": "Monitor",
+          "offset": 4
+        },
+        {
+          "name": "Work",
+          "offset": 20
+        },
+        {
+          "name": "Flags",
+          "offset": 36
+        }
+      ]
+    },
+    {
+      "kind": "layout",
+      "type": "MonitorInfoEx",
+      "size": 104,
+      "fields": [
+        {
+          "name": "Size",
+          "offset": 0
+        },
+        {
+          "name": "Monitor",
+          "offset": 4
+        },
+        {
+          "name": "Work",
+          "offset": 20
+        },
+        {
+          "name": "Flags",
+          "offset": 36
+        },
+        {
+          "name": "Device",
+          "offset": 40
+        }
+      ]
+    },
+    {
+      "kind": "layout",
+      "type": "WindowPlacement",
+      "size": 44,
+      "fields": [
+        {
+          "name": "Length",
+          "offset": 0
+        },
+        {
+          "name": "Flags",
+          "offset": 4
+        },
+        {
+          "name": "ShowCmd",
+          "offset": 8
+        },
+        {
+          "name": "MinPosition",
+          "offset": 12
+        },
+        {
+          "name": "MaxPosition",
+          "offset": 20
+        },
+        {
+          "name": "NormalPosition",
+          "offset": 28
+        }
+      ]
+    },
+    {
+      "kind": "layout",
+      "type": "InputMessageSource",
+      "size": 8,
+      "fields": [
+        {
+          "name": "DeviceType",
+          "offset": 0
+        },
+        {
+          "name": "OriginId",
+          "offset": 4
+        }
+      ]
+    },
+    {
+      "kind": "layout",
+      "type": "TaskDialogButton",
+      "size": 12,
+      "fields": [
+        {
+          "name": "Id",
+          "offset": 0
+        },
+        {
+          "name": "Text",
+          "offset": 4
+        }
+      ]
+    },
+    {
+      "kind": "layout",
+      "type": "TaskDialogConfig",
+      "size": 160,
+      "fields": [
+        {
+          "name": "Size",
+          "offset": 0
+        },
+        {
+          "name": "ParentWindow",
+          "offset": 4
+        },
+        {
+          "name": "Instance",
+          "offset": 12
+        },
+        {
+          "name": "Flags",
+          "offset": 20
+        },
+        {
+          "name": "CommonButtons",
+          "offset": 24
+        },
+        {
+          "name": "WindowTitle",
+          "offset": 28
+        },
+        {
+          "name": "MainIcon",
+          "offset": 36
+        },
+        {
+          "name": "MainInstruction",
+          "offset": 44
+        },
+        {
+          "name": "Content",
+          "offset": 52
+        },
+        {
+          "name": "ButtonCount",
+          "offset": 60
+        },
+        {
+          "name": "Buttons",
+          "offset": 64
+        },
+        {
+          "name": "DefaultButton",
+          "offset": 72
+        },
+        {
+          "name": "RadioButtonCount",
+          "offset": 76
+        },
+        {
+          "name": "RadioButtons",
+          "offset": 80
+        },
+        {
+          "name": "DefaultRadioButton",
+          "offset": 88
+        },
+        {
+          "name": "VerificationText",
+          "offset": 92
+        },
+        {
+          "name": "ExpandedInformation",
+          "offset": 100
+        },
+        {
+          "name": "ExpandedControlText",
+          "offset": 108
+        },
+        {
+          "name": "CollapsedControlText",
+          "offset": 116
+        },
+        {
+          "name": "FooterIcon",
+          "offset": 124
+        },
+        {
+          "name": "Footer",
+          "offset": 132
+        },
+        {
+          "name": "Callback",
+          "offset": 140
+        },
+        {
+          "name": "CallbackData",
+          "offset": 148
+        },
+        {
+          "name": "Width",
+          "offset": 156
+        }
+      ]
+    },
+    {
+      "kind": "layout",
+      "type": "ScrollInfo",
+      "size": 28,
+      "fields": [
+        {
+          "name": "Size",
+          "offset": 0
+        },
+        {
+          "name": "Mask",
+          "offset": 4
+        },
+        {
+          "name": "Min",
+          "offset": 8
+        },
+        {
+          "name": "Max",
+          "offset": 12
+        },
+        {
+          "name": "Page",
+          "offset": 16
+        },
+        {
+          "name": "Pos",
+          "offset": 20
+        },
+        {
+          "name": "TrackPos",
+          "offset": 24
+        }
+      ]
+    },
+    {
+      "kind": "layout",
+      "type": "ActivationContext+ActCtx",
+      "size": 56,
+      "fields": [
+        {
+          "name": "Size",
+          "offset": 0
+        },
+        {
+          "name": "Flags",
+          "offset": 4
+        },
+        {
+          "name": "Source",
+          "offset": 8
+        },
+        {
+          "name": "ProcessorArchitecture",
+          "offset": 16
+        },
+        {
+          "name": "LangId",
+          "offset": 18
+        },
+        {
+          "name": "AssemblyDirectory",
+          "offset": 24
+        },
+        {
+          "name": "ResourceName",
+          "offset": 32
+        },
+        {
+          "name": "ApplicationName",
+          "offset": 40
+        },
+        {
+          "name": "Module",
+          "offset": 48
+        }
+      ]
+    },
+    {
+      "kind": "layout",
+      "type": "FormatEtc",
+      "size": 32,
+      "fields": [
+        {
+          "name": "ClipboardFormat",
+          "offset": 0
+        },
+        {
+          "name": "TargetDevice",
+          "offset": 8
+        },
+        {
+          "name": "Aspect",
+          "offset": 16
+        },
+        {
+          "name": "Index",
+          "offset": 20
+        },
+        {
+          "name": "Medium",
+          "offset": 24
+        }
+      ]
+    },
+    {
+      "kind": "layout",
+      "type": "StgMedium",
+      "size": 24,
+      "fields": [
+        {
+          "name": "Medium",
+          "offset": 0
+        },
+        {
+          "name": "Handle",
+          "offset": 8
+        },
+        {
+          "name": "ReleaseUnknown",
+          "offset": 16
+        }
+      ]
+    },
+    {
+      "kind": "layout",
+      "type": "PointL",
+      "size": 8,
+      "fields": [
+        {
+          "name": "X",
+          "offset": 0
+        },
+        {
+          "name": "Y",
+          "offset": 4
+        }
+      ]
+    },
+    {
+      "kind": "layout",
+      "type": "ComdlgFilterSpec",
+      "size": 16,
+      "fields": [
+        {
+          "name": "Name",
+          "offset": 0
+        },
+        {
+          "name": "Spec",
+          "offset": 8
+        }
+      ]
+    }
+  ]
+}

@@ -1,14 +1,14 @@
-//! `pr_platform_win::render`: Direct2D / DirectWrite implementations of the `pr_app::services::render` contracts (Wave 8 unit 12,
-//! batch B3). Lead-owned index; each agent lists only its own modules, alphabetical.
+//! `pr_platform_win::render`: the Direct2D renderer of `PhotoReview.Shell.Rendering` (Wave 8 unit 12, batch B3). Lead-owned index.
 //!
-//! Declared by the render group 12f-12j (this file): `image_cache` (12f policy + 12g upload), `keep_alive` (12h), `text` (12i).
-//! The group 12b-12e (`device`, `draw_context`, `surface`) is declared by the other contract writer; the merge adds those lines.
-//! W8-12j (swap-chain latency experiment) is contract-only and has no module here.
+//! The render TRAITS (`RenderSurface`, `DrawContext`, `GpuImage`, `RenderError`, ...) live in `pr_app::services::render` (W8-12a, D-W8-3);
+//! this module is their Direct2D implementation. While `pr-app` still depends on `pr-platform-win` (D-W8B1-1) the types here use the
+//! interim std/`windows`-only types documented in `contracts/W8-12b.md` .. `W8-12i.md` (decisions D-W8B3R-1, D-W8B3S-4).
 //!
-//! Layering (D-W8B1-1): the stubs of this group compile against the CURRENT crate graph (`pr-app` depends on `pr-platform-win`), so
-//! they use `std`, `pr_imaging`, `pr_core` and `crate::gfx` types only and name the `pr_app` types they will implement in their docs.
-//! After the layering PR the porters add the trait impls listed in each contract.
+//! 12j (swap-chain latency experiment) is contract-only and has no module here.
 
+pub mod device;
+pub mod draw_context;
 pub mod image_cache;
 pub mod keep_alive;
+pub mod surface;
 pub mod text;

@@ -392,6 +392,8 @@ JsonArray cases = command switch
     "recovery-presentation" => Commands.RecoveryPresentationCases(inputs),
     // Commands\W8-10h
     "benchmark-presentation" => Commands.W810hBenchmarkPresentationCases(inputs),
+    // Commands\W8-11a
+    "win32-constants" => Commands.W811aWin32ConstantsCases(inputs),
     // Commands\W8-15b
     "overlay-animator" => Commands.W815bAnimatorCases(inputs),
     "overlay-frame-delay" => Commands.W815bFrameDelayCases(inputs),

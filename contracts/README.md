@@ -699,6 +699,91 @@ Open items (recommended defaults taken, listed in the contracts): hidden `STATIC
 attended R0001 re-measure before W8-12d (11g Q3). Not verified here: every native behaviour claimed as a test (swap chain resize failing while a back buffer reference lives, wrong-flags `ResizeBuffers`, hidden-window swap chain creation, timer behaviour): they are written from the
 C# comments and DXGI rules, with a note in each test description on what to change if Windows disagrees.
 
+## Wave 8 batch B3 roster (win32 group 11a-11e; `pr-platform-win`, `unsafe` with SAFETY per block)
+
+Group 11a-11e of batch B3 of `docs/WAVE-8-PLAN.md` (P-38): 5 contracts (`contracts/W8-11a.md` .. `W8-11e.md`), stubs under `crates/pr-platform-win/src/win32/`, one oracle command (`win32-constants`, 597 cases) and its golden. Replaces `PhotoReview.Shell.Interop`
+(`Win32/*.cs` 1 459 lines, `Shell/*.cs` 341 lines of the 3 270; the five units cover 1 800) with the `windows` crate plus a few hundred lines of constants and thin wrappers; 11f..11h (`gfx`) and 12b..13f are separate contract groups. Nothing is ported yet: every wrapper body is `todo!()`
+(the constant tables are complete in the stubs). None of the five units needs a `pr_app` type, so D-W8B1-1 (the layering PR) does not block them.
+
+| WU | Unit | Rust | Porter | Test kind / golden |
+|---|---|---|---|---|
+| W8-11a | `Structs`, `WindowMessages` (+ handle, error and string helpers shared by 11b..11e) | `win32::{messages, structs}` | Haiku | G: golden `win32-constants` (163 `WindowMessages` constants + 16 struct layouts; the same file serves 11b..11e) |
+| W8-11b | `User32`, `Kernel32`, `Kernel32Loader`, `Gdi32`, `Shell32`, `Shcore`, `Dwmapi`, `Ole32` | `win32::api` | Sonnet | N (4 C# `InteropSignatureTests` native + new) + constants from the golden |
+| W8-11c | `CommonControlsNative`, `Comctl32`, `ActivationContext` (+ the shell manifest) | `win32::{comctl, control_constants, activation_context}`, `shell.manifest` | Sonnet | N + pure (181 + 22 + 1 constants, manifest twin of `ShellAssemblyTests`) |
+| W8-11d | `DialogNative`, `DialogChromeNative` | `win32::{dialog_native, dialog_chrome}` | Sonnet | N + pure (65 + 57 constants) |
+| W8-11e | `KeyCaptureNative`, `SettingsDialogNative`, `StartupAdditions`, `IDataObject`, `IDropTarget`, `IFileOpenDialog` | `win32::{key_capture, settings_native, startup, shell_native}` | Sonnet | N (3 C# `ShellComInteropGraphicsTests` + new) + pure (enum and GUID audit against windows-rs) |
+
+## Lead decisions (Wave 8 batch B3, win32 group)
+
+Written by the contract writer; the lead may overrule. Where a question had a recommended default it was taken (standing instruction). Detail and reasons are in the contracts.
+
+- **D-W8B3-1 One shared golden.** `tools/oracle-cs/Commands/W8-11a.cs` (command `win32-constants`, dispatch line in `Program.cs`) reflects over the internal types of `PhotoReview.Shell.Interop.dll` and writes every constant of 18 classes, every member of 4 enums and the size and field offsets of 16 structs
+  (`tests/golden/win32-constants.json`, 545 const + 36 enum + 16 layout cases; the writer ran it twice, byte-identical, cached baseline build, 8 s). 11b..11e read it; none of them touches an oracle file. The class-to-unit assignment is in W8-11a "Golden package".
+- **D-W8B3-2 Constants use the SDK names and the C# types; the stubs already hold the values.** 499 of 545 names were found in the `windows` crate by rule; 46 were mapped by hand (`<STRUCT>_SIZE` for byte sizes, spelling slips); every value that the crate also defines was compared and matched, except the four `TD_*_ICON` (C# `-1..-4`, SDK `0xFFFF..`: W8-11c note 3).
+  A constant that C# repeats in a second class is defined once in `messages` and re-exported (`pub use`).
+- **D-W8B3-3 Struct aliases, plain-integer handles.** The 16 C# structs are `type` aliases of the windows-rs structs under the C# names; compile-time `size_of`/`offset_of` asserts reproduce every golden number (including `packed(1)` `TASKDIALOGCONFIG`). Handles are `isize`, `Wparam` is `usize`.
+- **D-W8B3-4 Wrapper conventions** (W8-11b notes 1 to 5, reused by 11c to 11e): `Result<_, Win32Error>` for `SetLastError` functions, `Result<_, Hresult>` for `HRESULT` ones, `&str` strings converted to NUL-terminated UTF-16, and `pub unsafe fn` exactly where an integer argument can become a pointer the callee dereferences
+  (`send_message`, `post_message`, `def_window_proc`, `dispatch_message`, `set_window_long_ptr`, `register_class_ex`, `create_window_ex`, `create_dialog_indirect_param`, `is_dialog_message`, `set_clipboard_data`, `global_free`, `set_window_subclass`, `def_subclass_proc`, `task_dialog_indirect`).
+- **D-W8B3-5 Plan row deviations.** `structs.rs` also holds the structs that other Interop files declare (`ScrollInfo`, `ActCtx`, `FormatEtc`, `StgMedium`, `PointL`, `ComdlgFilterSpec`) and the shared types (`Win32Error`, `Hresult`, `WndProc`, UTF-16 helpers) so 11b..11e depend on 11a only. `DialogChromeNative` is its own file (`dialog_chrome.rs`).
+  11e gets a fourth file `shell_native.rs` for `ShellNative`/`OleNative`. 11c splits into `comctl.rs`, `control_constants.rs`, `activation_context.rs`. Plan edge correction: 11d needs 11a only in code (11b is a convention reference).
+- **D-W8B3-6 Wrappers set the size field** (`cbSize`, `length`) of the structure they pass, so a forgotten size cannot fail the call.
+- **D-W8B3-7 `EnumDisplayMonitors` returns a `Vec<MonitorEnumItem>`** (the unmanaged callback and `data` pointer stay internal).
+- **D-W8B3-8 `TaskDialogIndirect` is bound at run time, only successful lookups are cached; the comctl32 v6 manifest is a file in the crate and a test-only `ActivationScope`.** Verified on this machine by parsing `System32\comctl32.dll`: the v5.82 a manifest-less process loads has no `TaskDialogIndirect` (a static import would keep every `cargo test` executable of the crate from starting) but does export
+  `SetWindowSubclass`, `RemoveWindowSubclass`, `DefSubclassProc` and `InitCommonControlsEx` by name, so those are imported statically. Embedding the manifest in the app exe is W8-20a's (recommended: `/MANIFESTINPUT` link argument, no dependency).
+- **D-W8B3-9 `draw_text` clears `DT_MODIFYSTRING`** (the OS must never write into the read-only text slice); pure helper with an exact-value test.
+- **D-W8B3-10 Shell COM is not ported.** The 340 lines of hand-written vtables (`IDataObject`, `IDropTarget`, `IShellItem`, `IFileDialog`...) are replaced by the windows-rs interfaces; W8-11e carries the slot-by-slot audit table and ports only `ShellNative`/`OleNative`. `ComInterop` (W8-11f) is not needed by 11e.
+- **D-W8B3-11 `windows` features** added to `crates/pr-platform-win/Cargo.toml` (target-specific dependency, no version change): `Win32_UI_Input`, `Win32_UI_Input_Ime`, `Win32_UI_Controls`, `Win32_UI_HiDpi`, `Win32_UI_Shell_Common`, `Win32_Graphics_Gdi`, `Win32_System_DataExchange`, `Win32_System_Memory`, `Win32_System_Ole`,
+  `Win32_System_ApplicationInstallationAndServicing` (already present: `Win32_Foundation` via the workspace, `Win32_Graphics_Dwm`, `Win32_System_Com`, `Win32_System_LibraryLoader`, `Win32_System_Threading`, `Win32_UI_Shell`, `Win32_UI_WindowsAndMessaging`, `Win32_UI_Input_KeyboardAndMouse`). `Cargo.lock` is unchanged (`--locked` builds).
+- **D-W8B3-12 Native test conventions.** Pure tests (golden constants, layouts, enum and GUID audits, manifest text, string helpers, `fn`-pointer shape checks) are NOT ignored; every test that calls the OS beyond `GetLastError` is `#[ignore = "native: needs desktop"]`, runs on its own thread, destroys what it creates and never shows a modal dialog or empties the clipboard;
+  the one test that changes process-wide state (`SetProcessDpiAwarenessContext`) is alone in its test executable. The lead runs `--include-ignored` once on an interactive desktop before any of these rows is marked Done.
+- **D-W8B3-13 Findings of the audit (no action needed, recorded):** (a) there is no GAP: every P/Invoke of `Win32/*.cs` exists in `windows` 0.62.2; (b) `Kernel32Loader` (`LoadLibraryEx`, `GetProcAddress` by ordinal) is used only by a C# test (uxtheme ordinals 135/136); (c) C# `NmListViewSize = 88` and `NmLvCustomDrawSize = 104` are wrong (64 and 136) and unused,
+  ported with the C# value and flagged; (d) `Msg.Private` (offset 44) has no windows-rs field (tail padding); (e) the existing `dark_title_bar.rs` keeps its run-time binding of `DwmSetWindowAttribute`; the new `dwmapi` wrapper imports it statically (W8-11b open question 3).
+
+## Wave 8 batch B3 (render group 12b-12e)
+
+Group of batch B3 of `docs/WAVE-8-PLAN.md` (P-38): the Direct2D renderer core of `Shell.Rendering` (`DeviceResources` 456, `D2DRenderSurface` 236 + factory 13, `D2DDrawContext` 359 = 1 064 C# lines) as `pr_platform_win::render::{device, surface, draw_context}`.
+Four contracts (`contracts/W8-12b.md` .. `W8-12e.md`), seven stub files under `crates/pr-platform-win/src/render/` (`mod.rs`, `device/{mod, create, loss, resources}.rs`, `surface.rs`, `draw_context.rs`; every body `todo!()`), `#[cfg(windows)] pub mod render;` in `lib.rs`.
+Test kind N for all four (native tests `#[ignore = "native: needs desktop"]`); each unit also carries small PURE functions (`clamp_dimension`, `classify_end_draw`, `sync_interval`, `FrameState`, ...) so the verifier has something to mutate. The rest of unit 12 (12f..12j) is written by another agent.
+
+| WU | Unit | Rust | Porter | Depends on | Golden |
+|---|---|---|---|---|---|
+| W8-12b | DeviceResources: state, creation, loss, teardown (about 290 C# lines) | `render::device::{mod, create, loss}` | Sonnet (red) | 11f, 11g, 11h | none (N) |
+| W8-12c | DeviceResources: target, bitmaps, resize, probes, interpolation map (about 140 C# lines) | `render::device::resources` | Sonnet (red) | 12b, 11g, 11h | none (N) |
+| W8-12d | D2DRenderSurface + D2DRenderSurfaceFactory (249 lines) | `render::surface` | Sonnet (red) | 12c, 11g, 11f, 12e (type) | none (N) |
+| W8-12e | D2DDrawContext + INativeTextLayout (359 lines) | `render::draw_context` | Sonnet (red) | 12c, 12d, 01c, 01a, 12a, 11h | none (N) |
+
+## Lead decisions (Wave 8 batch B3, render group)
+
+The recommended option of each open question was taken (standing user instruction: never stop to ask); to be logged in `docs/PROPOSED-DECISIONS.md` by the lead when the batch is merged.
+
+- **D-W8B3R-1 Interim types until the layering PR.** `pr-app` still depends on `pr-platform-win` (D-W8B1-1), so the render types cannot implement the `pr_app::services::render` traits or name `RectD`/`ColorF`/`GpuImage` yet. The stubs therefore use std/`windows`-only twins with the same names and fields:
+  `RenderFault` (twin of `RenderError`, `device/mod.rs`), `ImageInterpolation` (`device/resources.rs`), `SurfaceOptions`, `PresentResult` (`surface.rs`), `PointD`, `RectD`, `ColorF`, `Matrix3x2` and the `&dyn Any` image argument (`draw_context.rs`). Each is replaced by an import when the layering PR lands
+  (option A of the W8-12a contract: `pr-platform-win` depends on `pr-app`; `main.rs`, the spike and the composition move to a thin package), and the `impl RenderSurface / DrawContext / OrientedDrawContext / RenderSurfaceFactory` adapters are written then.
+  **Recommended order: layering PR, then ports of 12d and 12e; 12b and 12c have no `pr_app` dependency beyond `RenderError` and may be ported first.** Closing the layering question is a lead action, not part of this batch.
+- **D-W8B3R-2 `DeviceResources` is cut by responsibility, not at line 230.** The plan labels the halves "device creation, adapter choice, device loss" / "brushes, caches, text factories"; the second label matches nothing in the file (the brush is created in `CreateDevice`, the caches are 12f/12g, the text factories 12i), and the line cut
+  would put `CreateDevice`/`CreateSwapChain` in 12c. 12b = state + getters + `Create*` + `CreateAll`/`CreateDevice`/`CreateSwapChain` + `EndDraw`/`Present` seams + `Recreate`/`Dispose`/`ReleaseAll`; 12c = `CreateBitmap`/`ReleaseBitmap`/`Resize`/`TouchGpu`/`Synchronize`/`CreateTarget`/`ReleaseTarget`/`InterpolationModes`.
+  `create_all` ends with `create_target` (12c), so whole-object native tests of 12b turn green with 12c: **one porter, two stacked PRs**.
+- **D-W8B3R-3 One shared object.** `DeviceResources` is `Rc<DeviceResources>` shared by the surface, the draw context and (12g) the cache, as in C#; every method takes `&self` (`RefCell<DeviceState>` plus `Cell` counters). It is `!Send`/`!Sync` through `PhantomData<*const ()>` because windows 0.62.2 marks the COM
+  interfaces `Send` (D-W8B3G-9 d). The keep-warm thread (12h) builds its own instance on its own thread. COM interfaces are handed out as clones (`AddRef`); callers must not keep `target()` across `resize` (the back-buffer trap).
+- **D-W8B3R-4 Frame protocol.** `begin_draw_context(&mut self)` returns `&mut D2dDrawContext` borrowed from the surface, so surface calls during a live context reference do not compile. The reference can still be dropped without `end_draw_and_present`, so the C# runtime checks stay (second begin, resize while drawing, end without begin).
+  The draw context holds an `Rc<DeviceResources>` clone, not the surface. The C# owner-thread check has no Rust twin (`!Send`); "draw outside a frame" cannot be reached (`debug_assert` + skip). Recorded as Different-by-construction.
+- **D-W8B3R-5 12e does not depend on 12g.** The C# image tests go through `GpuImageCache` + `D2DGpuImageBackend`. 12e tests build a `TiledGpuImage<ID2D1Bitmap1>` themselves (`compute_tiles` + `DeviceResources::create_bitmap` + `copy_from_memory`); the cache-driven tests (`TiledImage_ForcedSmallTiles...`, `Panorama30000x2000`, the cache half of
+  `DeviceLost_RecreateTarget...`, `Cache_*`) belong to 12g.
+- **D-W8B3R-6 Adapter override.** `PHOTOREVIEW_RS_GPU_ADAPTER=<index>` (read once per device creation in 12b, only when not `prefer_warp`) tries `d3d11::create_device_on_adapter(index)` first and falls through to the normal path on failure (D-W8B3G-8 left the variable to 12b). The C# has no such switch.
+- **D-W8B3R-7 Missing plan edges and Cargo lead actions.** 12b needs 11f; 12c needs 11g and 11h; 12d needs 11g, 11f and the type `D2dDrawContext` of 12e; 12e needs 12d (tests), 12a, 01a, 11h. Cargo (NOT edited here, to avoid conflicts with the other B3 agents): `windows` feature `Win32_UI_HiDpi` for `cfg(windows)`
+  (`GetDpiForWindow`, 12b; `GetClientRect` needs `Win32_UI_WindowsAndMessaging`, already on); `windows-numerics = "0.3"` as a workspace and `pr-platform-win` dependency (12e; already locked at 0.3.1; verified that `windows` 0.62.2 does not re-export `Matrix3x2`). The stubs did not need either.
+- **D-W8B3R-8 Behaviour decisions.** `Resize` keeps its two-way result (`Ok(Resized)` / `Ok(BuffersFailed(hr))` / `Err`); an `EndDraw` or `Present` failure that is not a loss is `Ok(Failed)`, never `Err`; the unbalanced-stack error is raised after the frame was presented; `create_bitmap` takes a slice and rejects sizes below 1 (C# cast to `uint`);
+  present flags stay 0 (no `DXGI_PRESENT_ALLOW_TEARING`, C# v1); diagnostics are `Duration` (C# `Stopwatch` ticks); the `EndDrawFault`/`PresentFault` seams are `pub(crate)` hooks that see the real HRESULT; `DeviceLoss` stays in `gfx::com` (D-W8B3G-5).
+- **D-W8B3R-9 Pure seams for testability.** `clamp_dimension`, `normalize_dpi_scale`, `dpi_scale_from_window_dpi`, `parse_adapter_index`, `classify_end_draw`/`FrameEnd` (12b), `to_d2d_interpolation`, `buffers_failed` (12c), `sync_interval` (12d), `Matrix3x2::multiply`, `to_d2d_rect`, `to_d2d_color`, `FrameState` (12e) are plain functions
+  with ordinary tests and mutation targets; everything that touches a COM object is native.
+- **D-W8B3R-10 Test helpers are private per unit.** The hidden `STATIC` window helper and the `RenderTestImages` helpers are copied into each unit's test module (a shared `render/test_*.rs` needs lead wiring); native tests use `windows` directly for `CreateWindowEx`, not W8-11b.
+
+Safety finding that refines the gfx wording: in windows 0.62.2 EVERY Direct2D draw call used by 12c/12d/12e (`BeginDraw`, `Clear`, `FillRectangle`, `DrawBitmap`, `DrawTextLayout`, `SetTransform`, `PushAxisAlignedClip`, `SetColor`, ...) is an `unsafe fn` over raw pointers, so 12e is a many-small-`unsafe`-blocks unit, each with `// SAFETY:`
+(contract W8-12e "Safety rules"); the gfx helpers wrap only bitmap creation, copy and read-back.
+
+Open items (recommended defaults taken, listed in the contracts): layering PR timing (all four); attended R0001 `EndDraw` re-measure before 12d, W8-12j decides (12d Q2); `allow_tearing` stays sync-0 only (12d Q3); `RenderFault` location until the layering PR (12b Q5); shared test helpers (12d Q5, 12e Q5).
+Not verified here: every native behaviour claimed as a test (back-buffer-reference `DXGI_ERROR_INVALID_CALL` on `ResizeBuffers`, hidden-window swap chain on WARP, waitable object signalled after creation, `D2DERR_RECREATE_TARGET` injection results, pixel-exact output, `ClearStateAndFlush` ordering hang): written from the C# comments and tests and the DXGI rules, each with a note on what to change if Windows disagrees.
+
 ## Wave 8 batch B3 (render group 12f-12j)
 
 Second group of batch B3 of `docs/WAVE-8-PLAN.md` (P-38): the rendering support of `Shell.Rendering` that does not need the device/surface/draw context (12b-12e are written by another contract writer in parallel). Five contracts (`contracts/W8-12f.md` .. `W8-12j.md`), eight stub files under
