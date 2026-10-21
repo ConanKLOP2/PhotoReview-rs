@@ -4,8 +4,6 @@
 //! `WM_LBUTTONDBLCLK` from the OS; a click continues the chain when it has the same button, comes within `GetDoubleClickTime` of the previous one and
 //! lies inside the `SM_CXDOUBLECLK x SM_CYDOUBLECLK` rectangle centred on the previous click. The third click counts on (Fit when `>= 2`). Pure: the
 //! caller passes the time stamp and the thresholds.
-#![allow(unused_variables, dead_code)] // stub: the porter removes this line with the last `todo!()`
-
 use pr_app::input::primitives::PointerButton;
 
 /// C# `ClickCounter` (`internal sealed class`): the state of the current click chain.
@@ -47,17 +45,37 @@ impl ClickCounter {
         slop_width: i32,
         slop_height: i32,
     ) -> i32 {
-        todo!()
+        // C# `unchecked(time - _time)`: a `GetMessageTime` wrap-around still counts as consecutive.
+        let elapsed = time.wrapping_sub(self.time);
+        // The inputs are 16-bit client coordinates, so the `i32` difference cannot overflow.
+        let continues = self.has
+            && button == self.button
+            && (0..=double_click_time_ms).contains(&elapsed)
+            && (x - self.x).abs() <= slop_width / 2
+            && (y - self.y).abs() <= slop_height / 2;
+        let count = if continues { self.count.saturating_add(1) } else { 1 };
+        self.has = true;
+        self.button = button;
+        self.x = x;
+        self.y = y;
+        self.time = time;
+        self.count = count;
+        count
     }
 
     /// C# `Reset()`: forget the chain (the next click counts 1).
     pub fn reset(&mut self) {
-        todo!()
+        self.has = false;
     }
 
     /// C# `internal Seed(...)` (tests): as if `count` consecutive clicks had happened, the last at `time`.
     pub fn seed(&mut self, button: PointerButton, x: i32, y: i32, time: i32, count: i32) {
-        todo!()
+        self.has = true;
+        self.button = button;
+        self.x = x;
+        self.y = y;
+        self.time = time;
+        self.count = count;
     }
 }
 

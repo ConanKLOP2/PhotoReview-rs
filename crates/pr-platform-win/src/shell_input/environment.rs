@@ -4,7 +4,6 @@
 //! double-click thresholds). The default is the real Win32; tests (the G-INPUT replay with synthetic `SendMessage`, where `GetKeyState`,
 //! `GetMessageTime` and `GetCurrentInputMessageSource` do not describe the fake message) replace single members. DPI-dependent functions take the
 //! window's whole DPI.
-#![allow(unused_variables, dead_code)] // stub: the porter removes this line with the last `todo!()`
 
 use std::fmt;
 
