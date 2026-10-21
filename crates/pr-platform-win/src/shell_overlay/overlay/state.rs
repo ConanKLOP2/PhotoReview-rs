@@ -6,10 +6,10 @@
 //! Ownership (D-W8B4O-4): C# kept `Toolbar`, `Status`, ... as properties AND inside the host's roots. Rust owns the elements ONCE, inside the
 //! [`OverlayHost`]: roots `InfoOverlayHost` (a `LayerElement` holding `StatusPanel`, `FolderInfoPanel`, `ZoomIndicatorPanel`, `CapturePairBadge` in that
 //! order) and `ToolbarPanel` (added last = on top). The typed properties become the closure accessors `with_toolbar`, `with_status`, ... (the state is in
-//! a `RefCell`, so a plain `&ToolbarPanel` cannot be returned). Mutation goes through `OverlayHost::root_mut` and `LayerElement::child_mut` (a `pr_app`
-//! amendment, see the contract).
-
-#![allow(unused_variables, dead_code)] // stub only: removed by the porter when the bodies are filled (contracts/README.md D11)
+//! a `RefCell`, so a plain `&ToolbarPanel` cannot be returned). Mutation goes through `OverlayHost::root_mut` and `LayerElement::child_mut`.
+//!
+//! No borrow across a callback (D-W8B4O-7): every method reads the settings and the window flag BEFORE it borrows the state, mutates under a short
+//! `borrow_mut`, releases it, and only then calls `request_render`, the clock or any other injected function.
 
 use std::cell::{Cell, RefCell};
 use std::fmt;
@@ -19,19 +19,22 @@ use std::sync::Arc;
 use pr_app::coordinators::fade_gate::FadeTargetGate;
 use pr_app::input::primitives::{PointD, SizeD};
 use pr_app::overlay::animator::Animator;
+use pr_app::overlay::button::ButtonElement;
 use pr_app::overlay::capture_badge::CapturePairBadge;
+use pr_app::overlay::element::ElementNode;
 use pr_app::overlay::folder_info::FolderInfoPanel;
 use pr_app::overlay::frame_delay::FrameDelayTimer;
 use pr_app::overlay::layer::LayerElement;
 use pr_app::overlay::model::OverlayModel;
-use pr_app::overlay::status::StatusPanel;
-use pr_app::overlay::toolbar::ToolbarPanel;
+use pr_app::overlay::status::{self, StatusPanel};
+use pr_app::overlay::toolbar::{self, ToolbarPanel};
 use pr_app::overlay::tools_menu::OverlayCommands;
+use pr_app::overlay::zoom_indicator::ZoomIndicatorPanel;
 use pr_app::services::render::TextRenderer;
 use pr_core::settings::app_settings::AppSettings;
 use pr_l10n::localizer::Localizer;
 
-use crate::host::frame_clock::{FrameHandler, FrameHandlerId, HostFrameClock};
+use crate::host::frame_clock::{FrameHandler, FrameHandlerId, HostFrameClock, qpc_frequency, qpc_now};
 use crate::shell_overlay::host::OverlayHost;
 use crate::shell_overlay::tooltips::OverlayTooltips;
 
@@ -94,9 +97,13 @@ pub type MenuFailedHandler = Box<dyn Fn(&(dyn std::error::Error + 'static))>;
 /// The five buttons of the overlay (C# `_hot`/`_pressed` held `ButtonElement` references; Rust holds this id, the element lives in the host).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum OverlayButton {
+    /// The open-folder button of the toolbar.
     OpenFolder,
+    /// The settings button of the toolbar.
     Settings,
+    /// The fit button of the toolbar.
     Fit,
+    /// The tools (three dots) button of the toolbar.
     Tools,
     /// The "view list" button of the skipped-files row (`StatusPanel.ViewList`).
     ViewList,
@@ -105,12 +112,20 @@ pub enum OverlayButton {
 impl OverlayButton {
     /// The element id (`OpenFolderButton`, `SettingsButton`, `FitButton`, `ToolsButton`, `SkippedViewListButton`).
     pub fn element_id(self) -> &'static str {
-        todo!()
+        match self {
+            Self::OpenFolder => toolbar::OPEN_FOLDER_ID,
+            Self::Settings => toolbar::SETTINGS_ID,
+            Self::Fit => toolbar::FIT_ID,
+            Self::Tools => toolbar::TOOLS_ID,
+            Self::ViewList => status::SKIPPED_VIEW_LIST_ID,
+        }
     }
 
     /// The inverse of [`OverlayButton::element_id`]; `None` for any other id.
     pub fn from_element_id(id: &str) -> Option<OverlayButton> {
-        todo!()
+        [Self::OpenFolder, Self::Settings, Self::Fit, Self::Tools, Self::ViewList]
+            .into_iter()
+            .find(|button| button.element_id() == id)
     }
 }
 
@@ -153,11 +168,18 @@ pub struct ShellOverlayOptions {
 
 impl fmt::Debug for ShellOverlayOptions {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        todo!()
+        f.debug_struct("ShellOverlayOptions")
+            .field("text_renderer_id", &self.text_renderer_id)
+            .field("menus", &self.menus.is_some())
+            .field("tooltips", &self.tooltips.is_some())
+            .field("ticks_per_second", &self.ticks_per_second)
+            .field("animator_ticks_per_second", &self.animator_ticks_per_second)
+            .finish_non_exhaustive()
     }
 }
 
 /// The mutable state (C# private fields). One `RefCell`; no borrow is held across a call to an injected callback, a seam or the OS (D-W8B4O-7).
+// Fields read only by W8-15i (input, paint) carry `allow(dead_code)`; the allows go when 15i lands.
 pub(super) struct OverlayState {
     /// C# `_host`: roots `InfoOverlayHost` then `ToolbarPanel`.
     pub(super) host: OverlayHost,
@@ -172,14 +194,17 @@ pub(super) struct OverlayState {
     /// C# `_infoGate`.
     pub(super) info_gate: FadeTargetGate,
     /// C# `_tooltipScratch` (reused list).
+    #[allow(dead_code)] // read by W8-15i (paint)
     pub(super) tooltip_scratch: Vec<crate::shell_overlay::tooltips::OverlayTooltip>,
     /// C# `_model`.
     pub(super) model: OverlayModel,
     /// C# `_hot`.
     pub(super) hot: Option<OverlayButton>,
     /// C# `_pressed`.
+    #[allow(dead_code)] // read by W8-15i (input)
     pub(super) pressed: Option<OverlayButton>,
     /// C# `_pointerDown`.
+    #[allow(dead_code)] // read by W8-15i (input)
     pub(super) pointer_down: bool,
     /// C# `_toolbarMouseInsideHotZone` (initially `true`: "inside" until the mouse says otherwise, as WPF).
     pub(super) toolbar_mouse_inside_hot_zone: bool,
@@ -201,9 +226,48 @@ pub(super) struct OverlayState {
     pub(super) frame_subscription: Option<FrameHandlerId>,
 }
 
+impl OverlayState {
+    /// The toolbar root (`None` after dispose).
+    pub(super) fn toolbar(&self) -> Option<&ToolbarPanel> {
+        self.host.root::<ToolbarPanel>(toolbar::PANEL_ID)
+    }
+
+    /// Mutable twin of [`OverlayState::toolbar`].
+    pub(super) fn toolbar_mut(&mut self) -> Option<&mut ToolbarPanel> {
+        self.host.root_mut::<ToolbarPanel>(toolbar::PANEL_ID)
+    }
+
+    /// The info layer root (`None` after dispose).
+    pub(super) fn info_layer(&self) -> Option<&LayerElement> {
+        self.host.root::<LayerElement>(INFO_LAYER_ID)
+    }
+
+    /// Mutable twin of [`OverlayState::info_layer`].
+    pub(super) fn info_layer_mut(&mut self) -> Option<&mut LayerElement> {
+        self.host.root_mut::<LayerElement>(INFO_LAYER_ID)
+    }
+
+    /// The `ButtonElement` behind an [`OverlayButton`] (`None` after dispose): the C# `_hot`/`_pressed` references.
+    pub(super) fn button_mut(&mut self, button: OverlayButton) -> Option<&mut ButtonElement> {
+        match button {
+            OverlayButton::ViewList => Some(self.info_layer_mut()?.child_mut::<StatusPanel>(0)?.view_list_mut()),
+            toolbar_button => {
+                let [open_folder, settings, fit, tools] = self.toolbar_mut()?.buttons_mut();
+                Some(match toolbar_button {
+                    OverlayButton::OpenFolder => open_folder,
+                    OverlayButton::Settings => settings,
+                    OverlayButton::Fit => fit,
+                    _ => tools,
+                })
+            }
+        }
+    }
+}
+
 /// C# `ShellOverlay`. Created with [`ShellOverlay::new`] as an `Rc` (the frame handler holds a `Weak`). UI thread only.
 pub struct ShellOverlay {
     pub(super) state: RefCell<OverlayState>,
+    #[allow(dead_code)] // read by W8-15i (input)
     pub(super) commands: RefCell<Box<dyn OverlayCommands>>,
     pub(super) text: Rc<dyn TextRenderer>,
     pub(super) text_renderer_id: u64,
@@ -211,22 +275,37 @@ pub struct ShellOverlay {
     pub(super) settings: Box<dyn Fn() -> Arc<AppSettings>>,
     pub(super) request_render: Box<dyn Fn()>,
     pub(super) is_window_active: Box<dyn Fn() -> bool>,
+    #[allow(dead_code)] // read by W8-15i (input)
     pub(super) menus: Option<Rc<dyn OverlayMenuHost>>,
+    #[allow(dead_code)] // read by W8-15i (paint)
     pub(super) tooltips: Option<Rc<dyn OverlayTooltips>>,
+    #[allow(dead_code)] // read by W8-15i (input)
     pub(super) client_origin_on_screen_dip: Option<Box<dyn Fn() -> PointD>>,
+    #[allow(dead_code)] // read by W8-15i (input)
     pub(super) on_command_failed: Option<CommandFailedHandler>,
+    #[allow(dead_code)] // read by W8-15i (input)
     pub(super) on_menu_failed: Option<MenuFailedHandler>,
     pub(super) timestamp: Box<dyn Fn() -> i64>,
+    #[allow(dead_code)] // kept for symmetry with the timers' own copy; the C# options carried it
     pub(super) ticks_per_second: i64,
     /// `Rc::new_cyclic` handle for the frame handler.
     pub(super) weak_self: Weak<ShellOverlay>,
-    /// Re-entrancy guard of `dispose` (C# `_disposed` is checked first in every entry point; this one is only for the `Drop` path).
+    /// Re-entrancy guard of `dispose` (C# `_disposed` is checked first in every entry point; this one makes `dispose` and `Drop` idempotent).
     pub(super) disposing: Cell<bool>,
 }
 
 impl fmt::Debug for ShellOverlay {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        todo!()
+        let mut out = f.debug_struct("ShellOverlay");
+        out.field("text_renderer_id", &self.text_renderer_id);
+        match self.state.try_borrow() {
+            Ok(state) => out
+                .field("has_images", &state.model.has_images)
+                .field("tools_open", &state.tools_open)
+                .field("disposed", &state.disposed),
+            Err(_) => out.field("state", &"<borrowed>"),
+        };
+        out.finish_non_exhaustive()
     }
 }
 
@@ -237,130 +316,340 @@ impl ShellOverlay {
     /// `apply_toolbar_visibility`, `apply_info_overlay_visibility`. The click subscriptions of the C# constructor (`Toolbar.OpenFolder.Clicked += ...`)
     /// are the id dispatch of `input::dispatch_click`. Invalid ticks-per-second (`<= 0`) is a programming error: panic with the `AnimatorError` text.
     pub fn new(options: ShellOverlayOptions) -> Rc<ShellOverlay> {
-        todo!()
+        let ShellOverlayOptions {
+            text,
+            text_renderer_id,
+            texts,
+            clock,
+            settings,
+            commands,
+            request_render,
+            is_window_active,
+            menus,
+            tooltips,
+            client_origin_on_screen_dip,
+            on_command_failed,
+            on_menu_failed,
+            timestamp,
+            ticks_per_second,
+            animator_ticks_per_second,
+        } = options;
+        let ticks_per_second = ticks_per_second.unwrap_or_else(qpc_frequency);
+        let animator_ticks_per_second = animator_ticks_per_second.unwrap_or_else(qpc_frequency);
+
+        let mut toolbar_panel = ToolbarPanel::new(&texts);
+        toolbar_panel.base_mut().is_visible = true;
+        let mut info_layer = LayerElement::new(INFO_LAYER_ID);
+        info_layer
+            .add(Box::new(StatusPanel::new(&texts)))
+            .add(Box::new(FolderInfoPanel::new(&texts)))
+            .add(Box::new(ZoomIndicatorPanel::new(&texts)))
+            .add(Box::new(CapturePairBadge::new()));
+        let mut host = OverlayHost::new();
+        // Fresh host, distinct constant ids: `add` cannot fail here.
+        host.add(Box::new(info_layer))
+            .unwrap_or_else(|error| panic!("overlay host rejected the info layer: {error}"));
+        host.add(Box::new(toolbar_panel))
+            .unwrap_or_else(|error| panic!("overlay host rejected the toolbar: {error}"));
+
+        let animator = Animator::new(animator_ticks_per_second).unwrap_or_else(|error| panic!("{error}"));
+        let toolbar_timer = FrameDelayTimer::new(ticks_per_second).unwrap_or_else(|error| panic!("{error}"));
+        let info_timer = FrameDelayTimer::new(ticks_per_second).unwrap_or_else(|error| panic!("{error}"));
+
+        let state = OverlayState {
+            host,
+            animator,
+            toolbar_timer,
+            info_timer,
+            toolbar_gate: FadeTargetGate::new(),
+            info_gate: FadeTargetGate::new(),
+            tooltip_scratch: Vec::new(),
+            model: OverlayModel::default(),
+            hot: None,
+            pressed: None,
+            pointer_down: false,
+            toolbar_mouse_inside_hot_zone: true,
+            toolbar_was_kept_visible: true,
+            tools_open: false,
+            info_idle_elapsed: false,
+            info_was_kept_visible: true,
+            last_client: SizeD::default(),
+            last_dpi: 1.0,
+            disposed: false,
+            frame_subscription: None,
+        };
+        let overlay = Rc::new_cyclic(|weak| ShellOverlay {
+            state: RefCell::new(state),
+            commands: RefCell::new(commands),
+            text,
+            text_renderer_id,
+            clock,
+            settings,
+            request_render,
+            is_window_active,
+            menus,
+            tooltips,
+            client_origin_on_screen_dip,
+            on_command_failed,
+            on_menu_failed,
+            timestamp: timestamp.unwrap_or_else(|| Box::new(qpc_now)),
+            ticks_per_second,
+            weak_self: weak.clone(),
+            disposing: Cell::new(false),
+        });
+        overlay.apply_model();
+        overlay.apply_toolbar_visibility();
+        overlay.apply_info_overlay_visibility();
+        overlay
     }
 
     /// C# `Model`: a clone of the current model.
     pub fn model(&self) -> OverlayModel {
-        todo!()
+        self.state.borrow().model.clone()
     }
 
     /// C# `IsToolsMenuOpen`.
     pub fn is_tools_menu_open(&self) -> bool {
-        todo!()
+        self.state.borrow().tools_open
     }
 
-    /// C# `HasKeyboardFocus` (`Toolbar.HasKeyboardFocus`).
+    /// C# `HasKeyboardFocus` (`Toolbar.HasKeyboardFocus`); `false` after dispose.
     pub fn has_keyboard_focus(&self) -> bool {
-        todo!()
+        self.state
+            .borrow()
+            .toolbar()
+            .is_some_and(ToolbarPanel::has_keyboard_focus)
     }
 
-    /// C# `Toolbar` as a closure accessor (the state is in a `RefCell`).
+    /// C# `Toolbar` as a closure accessor (the state is in a `RefCell`). Panics after `dispose` (the host released its roots); `read` must not call back into
+    /// the overlay's mutating methods.
     pub fn with_toolbar<R>(&self, read: impl FnOnce(&ToolbarPanel) -> R) -> R {
-        todo!()
+        let state = self.state.borrow();
+        read(state.toolbar().expect("ShellOverlay is disposed"))
     }
 
-    /// C# `Status`.
+    /// C# `Status` (same rules as [`ShellOverlay::with_toolbar`]).
     pub fn with_status<R>(&self, read: impl FnOnce(&StatusPanel) -> R) -> R {
-        todo!()
+        let state = self.state.borrow();
+        let panel = state
+            .info_layer()
+            .and_then(|layer| layer.child::<StatusPanel>(0))
+            .expect("ShellOverlay is disposed");
+        read(panel)
     }
 
-    /// C# `FolderInfo`.
+    /// C# `FolderInfo` (same rules as [`ShellOverlay::with_toolbar`]).
     pub fn with_folder_info<R>(&self, read: impl FnOnce(&FolderInfoPanel) -> R) -> R {
-        todo!()
+        let state = self.state.borrow();
+        let panel = state
+            .info_layer()
+            .and_then(|layer| layer.child::<FolderInfoPanel>(1))
+            .expect("ShellOverlay is disposed");
+        read(panel)
     }
 
-    /// C# `ZoomIndicator`.
-    pub fn with_zoom_indicator<R>(
-        &self,
-        read: impl FnOnce(&pr_app::overlay::zoom_indicator::ZoomIndicatorPanel) -> R,
-    ) -> R {
-        todo!()
+    /// C# `ZoomIndicator` (same rules as [`ShellOverlay::with_toolbar`]).
+    pub fn with_zoom_indicator<R>(&self, read: impl FnOnce(&ZoomIndicatorPanel) -> R) -> R {
+        let state = self.state.borrow();
+        let panel = state
+            .info_layer()
+            .and_then(|layer| layer.child::<ZoomIndicatorPanel>(2))
+            .expect("ShellOverlay is disposed");
+        read(panel)
     }
 
-    /// C# `CapturePair`.
+    /// C# `CapturePair` (same rules as [`ShellOverlay::with_toolbar`]).
     pub fn with_capture_pair<R>(&self, read: impl FnOnce(&CapturePairBadge) -> R) -> R {
-        todo!()
+        let state = self.state.borrow();
+        let panel = state
+            .info_layer()
+            .and_then(|layer| layer.child::<CapturePairBadge>(3))
+            .expect("ShellOverlay is disposed");
+        read(panel)
     }
 
-    /// C# `InfoLayer`.
+    /// C# `InfoLayer` (same rules as [`ShellOverlay::with_toolbar`]).
     pub fn with_info_layer<R>(&self, read: impl FnOnce(&LayerElement) -> R) -> R {
-        todo!()
+        let state = self.state.borrow();
+        read(state.info_layer().expect("ShellOverlay is disposed"))
     }
 
-    /// Opacity of the toolbar root (C# `Toolbar.Opacity`).
+    /// Opacity of the toolbar root (C# `Toolbar.Opacity`); `0` after dispose.
     pub fn toolbar_opacity(&self) -> f32 {
-        todo!()
+        self.state.borrow().toolbar().map_or(0.0, |t| t.base().opacity())
     }
 
-    /// `Toolbar.IsHitTestVisible`.
+    /// `Toolbar.IsHitTestVisible`; `false` after dispose.
     pub fn toolbar_hit_test_visible(&self) -> bool {
-        todo!()
+        self.state
+            .borrow()
+            .toolbar()
+            .is_some_and(|t| t.base().is_hit_test_visible)
     }
 
-    /// Opacity of the info layer (`InfoLayer.Opacity`).
+    /// Opacity of the info layer (`InfoLayer.Opacity`); `0` after dispose.
     pub fn info_opacity(&self) -> f32 {
-        todo!()
+        self.state
+            .borrow()
+            .info_layer()
+            .map_or(0.0, |layer| layer.base().opacity())
     }
 
-    /// `InfoLayer.IsHitTestVisible`.
+    /// `InfoLayer.IsHitTestVisible`; `false` after dispose.
     pub fn info_hit_test_visible(&self) -> bool {
-        todo!()
+        self.state
+            .borrow()
+            .info_layer()
+            .is_some_and(|layer| layer.base().is_hit_test_visible)
     }
 
     /// True while the single frame subscription exists (the test twin of C# `Clock.SubscriberCount > 0`).
     pub fn is_frame_subscribed(&self) -> bool {
-        todo!()
+        self.state.borrow().frame_subscription.is_some()
+    }
+
+    /// The test twin of C# `Animator.IsAnimating`: at least one fade is running.
+    pub fn is_animating(&self) -> bool {
+        self.state.borrow().animator.is_animating()
+    }
+
+    /// True after `dispose` (C# `_disposed`).
+    pub(super) fn is_disposed(&self) -> bool {
+        self.state.borrow().disposed
     }
 
     /// C# `Update(model)` (lines 153 to 180): ignored after dispose. Stores the model, `apply_model`; `has_images` changed: `apply_toolbar_visibility`;
     /// `compare_visible` changed: `note_info_activity`; else when `has_images`, `status_text`, `has_skipped_entries` or `status_needs_attention` changed:
     /// `apply_info_overlay_visibility`; always `request_render`.
     pub fn update(&self, model: OverlayModel) {
-        todo!()
+        let old = {
+            let mut state = self.state.borrow_mut();
+            if state.disposed {
+                return;
+            }
+            std::mem::replace(&mut state.model, model)
+        };
+        self.apply_model();
+        let new = self.model();
+        if old.has_images != new.has_images {
+            self.apply_toolbar_visibility();
+        }
+        if old.compare_visible != new.compare_visible {
+            self.note_info_activity();
+        } else if old.has_images != new.has_images
+            || old.status_text != new.status_text
+            || old.has_skipped_entries != new.has_skipped_entries
+            || old.status_needs_attention != new.status_needs_attention
+        {
+            self.apply_info_overlay_visibility();
+        }
+        (self.request_render)();
     }
 
     /// C# `SettingsChanged()` (lines 183 to 193): `apply_toolbar_visibility`, `note_info_activity`, `request_render`.
     pub fn settings_changed(&self) {
-        todo!()
+        if self.is_disposed() {
+            return;
+        }
+        self.apply_toolbar_visibility();
+        self.note_info_activity();
+        (self.request_render)();
     }
 
     /// C# `ApplyLocalization()` (lines 196 to 208): `ToolbarPanel`, `StatusPanel`, `FolderInfoPanel`, `ZoomIndicatorPanel` re-read their texts from `texts`
     /// (the capture badge has none); `request_render`.
     pub fn apply_localization(&self, texts: &Localizer) {
-        todo!()
+        {
+            let mut state = self.state.borrow_mut();
+            if state.disposed {
+                return;
+            }
+            if let Some(toolbar_panel) = state.toolbar_mut() {
+                toolbar_panel.apply_localization(texts);
+            }
+            if let Some(layer) = state.info_layer_mut() {
+                if let Some(panel) = layer.child_mut::<StatusPanel>(0) {
+                    panel.apply_localization(texts);
+                }
+                if let Some(panel) = layer.child_mut::<FolderInfoPanel>(1) {
+                    panel.apply_localization(texts);
+                }
+                if let Some(panel) = layer.child_mut::<ZoomIndicatorPanel>(2) {
+                    panel.apply_localization(texts);
+                }
+            }
+        }
+        (self.request_render)();
     }
 
     /// C# `NoteActivity()` (lines 211 to 217): non-mouse user activity (image change, scroll, key).
     pub fn note_activity(&self) {
-        todo!()
+        if !self.is_disposed() {
+            self.note_info_activity();
+        }
     }
 
     /// C# `WindowActivated()`: activity.
     pub fn window_activated(&self) {
-        todo!()
+        self.note_activity();
     }
 
     /// C# `WindowDeactivated()` (lines 223 to 229): `apply_info_overlay_visibility` (the info overlay must show while another window has the focus).
     pub fn window_deactivated(&self) {
-        todo!()
+        if !self.is_disposed() {
+            self.apply_info_overlay_visibility();
+        }
     }
 
     /// C# `ApplyModel()` (lines 586 to 592): `Status.Apply`, `FolderInfo.Apply`, `ZoomIndicator.Apply`, `CapturePair.Apply`.
     pub(super) fn apply_model(&self) {
-        todo!()
+        let mut guard = self.state.borrow_mut();
+        let state = &mut *guard;
+        let Some(layer) = state.host.root_mut::<LayerElement>(INFO_LAYER_ID) else {
+            return;
+        };
+        let model = &state.model;
+        if let Some(panel) = layer.child_mut::<StatusPanel>(0) {
+            panel.apply(model);
+        }
+        if let Some(panel) = layer.child_mut::<FolderInfoPanel>(1) {
+            panel.apply(model);
+        }
+        if let Some(panel) = layer.child_mut::<ZoomIndicatorPanel>(2) {
+            panel.apply(model);
+        }
+        if let Some(panel) = layer.child_mut::<CapturePairBadge>(3) {
+            panel.apply(model);
+        }
     }
 
     /// C# `Dispose()` (lines 660 to 674): idempotent; unsubscribes the frame handler, disposes both timers and the animator, disposes the tooltips, releases the
     /// host (text layout leases). After it every entry point is a no-op (`false` for the boolean ones).
     pub fn dispose(&self) {
-        todo!()
+        if self.disposing.replace(true) {
+            return;
+        }
+        let subscription = {
+            let mut state = self.state.borrow_mut();
+            state.disposed = true;
+            state.animator.dispose();
+            state.toolbar_timer.dispose();
+            state.info_timer.dispose();
+            state.frame_subscription.take()
+        };
+        if let Some(id) = subscription {
+            self.clock.unsubscribe(id);
+        }
+        if let Some(tooltips) = &self.tooltips {
+            tooltips.dispose();
+        }
+        self.state.borrow_mut().host.dispose();
     }
 }
 
 impl Drop for ShellOverlay {
     /// Same as `dispose` (idempotent).
     fn drop(&mut self) {
-        todo!()
+        self.dispose();
     }
 }
