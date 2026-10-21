@@ -594,6 +594,22 @@ impl ShellWindow {
         self.inner.handlers.borrow_mut().insert(0, handler);
     }
 
+    /// Removes `handler` (found by identity) from the handler chain; `false` when it is not registered. The C# window owns its handlers and drops them
+    /// with itself; in Rust a handler that holds the window (the scroll bars hold the viewport, which holds the window) would keep the window alive in
+    /// a cycle, so its owner removes it when the window is closed (W8-13i).
+    pub fn remove_message_handler(&self, handler: &Rc<dyn WindowMessageHandler>) -> bool {
+        let removed = {
+            let mut handlers = self.inner.handlers.borrow_mut();
+            let target = Rc::as_ptr(handler);
+            handlers
+                .iter()
+                .position(|known| std::ptr::addr_eq(Rc::as_ptr(known), target))
+                .map(|index| handlers.remove(index))
+        };
+        // The handler's `Drop` may run arbitrary code: outside the borrow.
+        removed.is_some()
+    }
+
     /// C# internal `Show(bool activate)`: `SW_SHOWNORMAL` or `SW_SHOWNOACTIVATE`.
     pub fn show(&self, activate: bool) {
         self.show_command(if activate { SW_SHOWNORMAL } else { SW_SHOWNOACTIVATE });
