@@ -6,9 +6,15 @@
 //! go straight to the `windows` crate here (no new C# P/Invoke is ported); everything else the host uses comes from `win32::{api, messages,
 //! dialog_native, comctl}` (see the contract's table). The functions are safe: none lets an integer argument be dereferenced by the callee.
 
-#![allow(unused_variables, dead_code)] // W8-13b stub: the porter removes this line when the last `todo!()` is gone.
+use std::ffi::c_void;
 
-use windows::Win32::UI::WindowsAndMessaging::{CREATESTRUCTW, MINMAXINFO};
+use windows::Win32::Foundation::{HINSTANCE, HWND};
+use windows::Win32::Graphics::Gdi::ValidateRect;
+use windows::Win32::UI::Input::KeyboardAndMouse::GetCapture;
+use windows::Win32::UI::WindowsAndMessaging::{
+    CREATESTRUCTW, GDI_IMAGE_TYPE, IMAGE_FLAGS, LoadImageW, MINMAXINFO, WindowFromPoint,
+};
+use windows::core::PCWSTR;
 
 use crate::win32::structs::{Hinstance, Hwnd, Point};
 
@@ -40,21 +46,36 @@ pub const LR_SHARED: u32 = 0x8000;
 
 /// `GetCapture()`: the window that has the mouse capture on this thread, `0` for none.
 pub fn get_capture() -> Hwnd {
-    todo!("W8-13b")
+    // SAFETY: no arguments; reads the calling thread's capture window.
+    unsafe { GetCapture() }.0 as isize
 }
 
 /// `ValidateRect(hwnd, NULL)`: marks the whole client area valid (C# `PendingUser32.ValidateRect(hwnd, null)`).
 pub fn validate_whole_client(hwnd: Hwnd) -> bool {
-    todo!("W8-13b")
+    // SAFETY: a null rectangle pointer means "the whole client area"; the window handle is validated by the OS.
+    unsafe { ValidateRect(Some(HWND(hwnd as *mut c_void)), None) }.as_bool()
 }
 
 /// `WindowFromPoint(point)`: the window under a screen point, `0` for none.
 pub fn window_from_point(point: Point) -> Hwnd {
-    todo!("W8-13b")
+    // SAFETY: the point is passed by value; no pointer argument.
+    unsafe { WindowFromPoint(point) }.0 as isize
 }
 
 /// `LoadImageW(instance, MAKEINTRESOURCE(resource_id), IMAGE_ICON, cx, cy, LR_SHARED)`: the shared icon handle, `0` when it cannot be loaded
 /// (the error is not needed: callers fall back to the default icon).
 pub fn load_shared_icon(instance: Hinstance, resource_id: i32, cx: i32, cy: i32) -> isize {
-    todo!("W8-13b")
+    // SAFETY: the "name" is `MAKEINTRESOURCE(resource_id)`, an integer atom in a pointer that the OS never dereferences as text; the instance is
+    // a handle value the OS validates (0 = the system module); no memory is read or written by us.
+    unsafe {
+        LoadImageW(
+            Some(HINSTANCE(instance as *mut c_void)),
+            PCWSTR(resource_id as usize as *const u16),
+            GDI_IMAGE_TYPE(IMAGE_ICON),
+            cx,
+            cy,
+            IMAGE_FLAGS(LR_SHARED),
+        )
+    }
+    .map_or(0, |handle| handle.0 as isize)
 }
