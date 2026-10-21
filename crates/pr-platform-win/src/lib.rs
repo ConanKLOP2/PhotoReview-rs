@@ -81,6 +81,9 @@ pub mod display_clock;
 #[cfg(windows)]
 pub mod gfx;
 
+#[cfg(windows)]
+pub mod render;
+
 /// Phase 0 UI spike (R0001): Win32 window + Direct2D/DirectWrite host and a WIC JPEG writer for synthetic fixtures.
 #[cfg(all(windows, feature = "ui-spike"))]
 pub mod spike_ui;
