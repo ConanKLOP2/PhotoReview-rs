@@ -77,8 +77,6 @@ impl ShellScrollBars {
     }
 
     /// C# `ToDip(pixelX, pixelY)`: client pixels to DIP, divided by `viewport_controller::normalized_dpi(window.dpi_scale())`.
-    // Used by `input.rs` (W8-16g); that unit removes this allow.
-    #[allow(dead_code)]
     pub(super) fn to_dip(&self, pixel_x: i32, pixel_y: i32) -> PointD {
         let Some(window) = self.window.upgrade() else {
             return PointD { x: 0.0, y: 0.0 };
@@ -92,8 +90,6 @@ impl ShellScrollBars {
 
     /// C# `IsOverPageRegion(layout, point)`: the point is on the track part the held page button belongs to (`TrackBefore` for direction -1, else
     /// `TrackAfter`) AND on the axis being paged.
-    // Used by `input.rs` (W8-16g); that unit removes this allow.
-    #[allow(dead_code)]
     pub(super) fn is_over_page_region(&self, layout: &ScrollBarLayout, point: PointD) -> bool {
         let wanted = if self.page_direction.get() < 0 {
             ScrollBarPart::TrackBefore

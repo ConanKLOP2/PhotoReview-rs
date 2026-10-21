@@ -7,7 +7,11 @@
 use std::cell::{Cell, RefCell};
 use std::rc::Rc;
 
+use pr_app::input::primitives::RectD;
+use pr_app::services::render::{DrawContext, GpuImage, RenderError, TextLayout};
 use pr_app::viewmodels::viewer_state::ViewerState;
+use pr_app::viewport::render_geometry::{ColorF, ImageInterpolation};
+use pr_imaging::pixels::PixelBuffer;
 use pr_platform_win::host::contracts::{
     ClosingHandler, EventHandlerId, PointD, ShellCursor, ShellWindowApi, ShellWindowEvent, SizeD, WindowEventHandler,
     WindowMessage, WindowMessageHandler,
@@ -25,6 +29,10 @@ use super::viewing_fakes::{FakeHostClock, FakeRenderPoster, FakeWindow};
 pub struct ScrollWindow {
     pub inner: Rc<FakeWindow>,
     handlers: RefCell<Vec<Rc<dyn WindowMessageHandler>>>,
+    /// 16g: replaces the window handle the bars see (`Some(0)` = no handle yet, C# `Hwnd == 0`).
+    pub hwnd_override: Cell<Option<Hwnd>>,
+    /// 16g: runs inside `capture_pointer` after the fake captured (a window whose capture re-dispatches `WM_CAPTURECHANGED`, contract T2).
+    pub on_capture: RefCell<Option<Rc<dyn Fn()>>>,
 }
 
 impl ScrollWindow {
@@ -32,7 +40,14 @@ impl ScrollWindow {
         Rc::new(ScrollWindow {
             inner,
             handlers: RefCell::new(Vec::new()),
+            hwnd_override: Cell::new(None),
+            on_capture: RefCell::new(None),
         })
+    }
+
+    /// 16g: forgets every registered handler (the bars then have no owner but the test).
+    pub fn clear_handlers(&self) {
+        self.handlers.borrow_mut().clear();
     }
 
     /// Number of registered message handlers.
@@ -55,7 +70,7 @@ impl ScrollWindow {
 
 impl ShellWindowApi for ScrollWindow {
     fn hwnd(&self) -> Hwnd {
-        self.inner.hwnd()
+        self.hwnd_override.get().unwrap_or_else(|| self.inner.hwnd())
     }
     fn dpi_scale(&self) -> f64 {
         self.inner.dpi_scale()
@@ -98,6 +113,10 @@ impl ShellWindowApi for ScrollWindow {
     }
     fn capture_pointer(&self) {
         self.inner.capture_pointer();
+        let hook = self.on_capture.borrow().clone();
+        if let Some(hook) = hook {
+            hook();
+        }
     }
     fn release_pointer(&self) {
         self.inner.release_pointer();
@@ -311,5 +330,103 @@ impl ScrollBarRig {
         self.bitmap.set((width, height));
         self.viewport.invalidate_layout();
         self.drain();
+    }
+}
+
+// ---- 16g additions (mouse helpers, the fill recorder) ----
+
+/// C# `FillRecorder` (`ScrollBarTestSupport.cs`): `Rects` / `Rounded` / `Clips` / `ClipDepth`; `pop_failures` makes `pop_clip` return an error.
+#[derive(Default)]
+pub struct FillRecorder {
+    pub rects: Vec<(RectD, ColorF)>,
+    pub rounded: Vec<(RectD, f64, ColorF)>,
+    pub clips: Vec<RectD>,
+    pub clip_depth: i32,
+    pub pops: u32,
+    pub pop_failures: bool,
+    /// Every call in order: `"fill"`, `"round"`, `"push"`, `"pop"`.
+    pub order: Vec<&'static str>,
+}
+
+impl DrawContext for FillRecorder {
+    fn clear(&mut self, _: ColorF) {}
+    fn draw_image(&mut self, _: &dyn GpuImage, _: RectD, _: Option<RectD>, _: ImageInterpolation, _: f32) {}
+    fn fill_rectangle(&mut self, rect: RectD, color: ColorF) {
+        self.order.push("fill");
+        self.rects.push((rect, color));
+    }
+    fn fill_rounded_rectangle(&mut self, rect: RectD, radius: f64, color: ColorF) {
+        self.order.push("round");
+        self.rounded.push((rect, radius, color));
+    }
+    fn draw_rectangle(&mut self, _: RectD, _: ColorF, _: f64) {}
+    fn draw_text(&mut self, _: &dyn TextLayout, _: PointD, _: ColorF) -> Result<(), RenderError> {
+        Ok(())
+    }
+    fn push_clip(&mut self, rect: RectD) {
+        self.order.push("push");
+        self.clips.push(rect);
+        self.clip_depth += 1;
+    }
+    fn pop_clip(&mut self) -> Result<(), RenderError> {
+        self.order.push("pop");
+        self.pops += 1;
+        self.clip_depth -= 1;
+        if self.pop_failures {
+            Err(RenderError::InvalidOperation {
+                message: "PopClip without PushClip.",
+            })
+        } else {
+            Ok(())
+        }
+    }
+    fn push_opacity(&mut self, _: f32) {}
+    fn pop_opacity(&mut self) -> Result<(), RenderError> {
+        Ok(())
+    }
+    fn try_read_pixels(&mut self) -> Result<Option<PixelBuffer>, RenderError> {
+        Ok(None)
+    }
+}
+
+impl ScrollBarRig {
+    /// C# `Pack(x, y)`: `(y << 16) | x` as an unsigned 32-bit value (zero-extended, like `(nint)(uint)`); negative values keep their low 16 bits.
+    pub fn pack(x: i32, y: i32) -> Lparam {
+        ((u32::from(y as u16) << 16) | u32::from(x as u16)) as Lparam
+    }
+
+    /// C# `Mouse(message, x, y)`: dispatches with PIXEL client coordinates through the handler chain, then drains.
+    pub fn mouse(&self, msg: u32, x: f64, y: f64) -> Option<Lresult> {
+        let outcome = self
+            .window
+            .dispatch(msg, 0x0001, ScrollBarRig::pack(x.round() as i32, y.round() as i32));
+        self.drain();
+        outcome
+    }
+
+    pub fn down(&self, x: f64, y: f64) -> Option<Lresult> {
+        self.mouse(pr_platform_win::win32::messages::WM_LBUTTONDOWN, x, y)
+    }
+
+    pub fn move_to(&self, x: f64, y: f64) -> Option<Lresult> {
+        self.mouse(pr_platform_win::win32::messages::WM_MOUSEMOVE, x, y)
+    }
+
+    pub fn up(&self, x: f64, y: f64) -> Option<Lresult> {
+        self.mouse(pr_platform_win::win32::messages::WM_LBUTTONUP, x, y)
+    }
+
+    /// C# `TickAt(ms)`: the clock `Now` becomes `ms`, one frame is delivered, the queue is drained.
+    pub fn tick_at(&self, ms: i64) {
+        self.now.set(ms);
+        self.clock.tick(16.0);
+        self.drain();
+    }
+
+    /// C# `Draw()`: draws into a fresh recorder.
+    pub fn draw(&self) -> FillRecorder {
+        let mut recorder = FillRecorder::default();
+        self.bars().draw(&mut recorder).expect("draw");
+        recorder
     }
 }

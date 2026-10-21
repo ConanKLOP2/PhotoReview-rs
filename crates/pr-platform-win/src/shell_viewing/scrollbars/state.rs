@@ -73,8 +73,6 @@ impl std::fmt::Debug for ScrollBarOptions {
 
 /// C# `ShellScrollBars`. Share it as `Rc<ShellScrollBars>`; it implements `WindowMessageHandler` (in `input.rs`). Every field is interior-mutable
 /// (a handler can be re-entered by a nested `SendMessage`, D-W8B3H-6) and `pub(super)` so `layout.rs`, `input.rs` and `paint.rs` can use them.
-// Most fields are read only by `input.rs` and `paint.rs` (W8-16g); that unit removes this allow.
-#[allow(dead_code)]
 pub struct ShellScrollBars {
     pub(super) window: Weak<dyn ShellWindowApi>,
     pub(super) viewport: Rc<ViewportController>,
