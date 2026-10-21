@@ -698,3 +698,42 @@ The recommended option of each open question was taken (standing user instructio
 Open items (recommended defaults taken, listed in the contracts): hidden `STATIC` window for the swap chain tests with a composition swap chain fallback (W8-11g Q4); no `DXGI_PRESENT_ALLOW_TEARING` yet (11g Q2); safe `copy_from_memory` wrapper (11h Q1); handle-count leak smoke test (11h Q3);
 attended R0001 re-measure before W8-12d (11g Q3). Not verified here: every native behaviour claimed as a test (swap chain resize failing while a back buffer reference lives, wrong-flags `ResizeBuffers`, hidden-window swap chain creation, timer behaviour): they are written from the
 C# comments and DXGI rules, with a note in each test description on what to change if Windows disagrees.
+
+## Wave 8 batch B3 (render group 12f-12j)
+
+Second group of batch B3 of `docs/WAVE-8-PLAN.md` (P-38): the rendering support of `Shell.Rendering` that does not need the device/surface/draw context (12b-12e are written by another contract writer in parallel). Five contracts (`contracts/W8-12f.md` .. `W8-12j.md`), eight stub files under
+`crates/pr-platform-win/src/render/` (`image_cache/{mod,policy,upload}.rs`, `keep_alive.rs`, `text/{mod,renderer,layout_cache}.rs`, plus `render/mod.rs` declaring only `image_cache`, `keep_alive`, `text`), `#[cfg(windows)] pub mod render;` in `lib.rs`. Every body is `todo!()`; the stubs compile against the CURRENT crate graph
+(`pr-app` depends on `pr-platform-win`), so they use `std`, `pr_imaging`, `pr_core` and `gfx` types only. W8-12j is contract-only (conditional, no C# source, no stub).
+
+| WU | Unit | Rust | Porter | Test | Depends on |
+|---|---|---|---|---|---|
+| W8-12f | `GpuImageCache` lines 1-300: byte budget, LRU, current/retained protection, striped prefetch, device-loss clear | `render::image_cache::policy` | Sonnet | F (fakes, no GPU) | 12a |
+| W8-12g | `GpuImageCache` lines 301-414: `D2DGpuImageBackend` (tiles, bitmap upload, stripe copy, release) | `render::image_cache::upload` | Sonnet (red) | N + pure helpers | 12f, 12c, 11f, 11h, 01c, layering PR |
+| W8-12h | `GpuKeepAlive` 231 (WP21-STALL keep-warm thread) | `render::keep_alive` | Sonnet (red) | F+N | 12c, 11f |
+| W8-12i | `Text/{DWriteTextRenderer 201, TextLayoutCache 197}` | `render::text::{renderer, layout_cache}` | Sonnet | F+N | 12a, 11f, 11h, (12c), layering PR for the trait impls |
+| W8-12j | NEW (no C# source): swap-chain latency experiment, CONDITIONAL on an attended re-measure | none until triggered | Sonnet | N | 12d, 12e, 12h, 11g, 16a, 13g |
+
+## Lead decisions (Wave 8 batch B3, render group 12f-12j)
+
+The recommended option of each open question was taken (standing user instruction: never stop to ask); to be logged in `docs/PROPOSED-DECISIONS.md` by the lead when the batch is merged.
+
+- **D-W8B3S-1 Cut of `GpuImageCache.cs`:** 12f = lines 1-300 (the whole class `GpuImageCache`, already written against an internal backend seam and a dispatcher, hence pure), 12g = lines 301-414 (`IGpuImageBackend` + `D2DGpuImageBackend`). The plan's cut at line 200 is inside `EvictOverBudget`.
+- **D-W8B3S-2 Prefetch stripes are `StripeToken` jobs handed to a `StripeScheduler` trait**, not closures: `pr_core::abstractions::ui::UiAction` is `Send`, the cache (`Rc`, `RefCell`) is not. The host (W8-13d) posts a `Send` job at `UiPriority::Background` that calls `cache.run_stripe(token)`. The token carries an entry serial so a job queued for an evicted or cleared entry stays inert even if the same `PixelBuffer` id is cached again.
+- **D-W8B3S-3 `pr_core::caching::lru::BoundedLruCache` is NOT reused by 12f** although the plan row lists it: it is thread-safe, evicts on insert and cannot protect entries; the C# cache keeps the current image and the retained ids over budget. 12f uses `HashMap` + `BTreeMap` stamps (the technique of `lru.rs`).
+- **D-W8B3S-4 Placeholder seams until the layering PR (D-W8B1-1):** `CachedImage`, `GpuImageBackend`, `CacheError` (12f, permanent seams: the policy stays testable on fakes), `BitmapDevice` (12g), `KeepAliveDevice` (12h), local `TextTrimming`/`LayoutSize`/`TextError` (12i). Each contract lists the exact `impl` blocks the porter adds after the layering PR (`impl GpuImageBackend for D2dGpuImageBackend`, `impl GpuImageCache for D2dGpuImageCache`,
+  `impl TextRenderer for DWriteTextRenderer`, `impl TextLayout for DWriteTextLayoutLease`). The layering PR itself is still a lead action and still blocks the trait glue, NOT the pure logic.
+- **D-W8B3S-5 The 12a `GpuImageCache` trait lacks `IsFullyUploaded` and `UploadCompleted`**, which `PresentationComposer` (W8-16c, C# lines 93, 137, 211, 285, 324) uses on the concrete class. Recommended (lead action, not done here, 12a is merged): a sub-trait `PrefetchStatus: GpuImageCache` in `pr_app::services::render::gpu_image` with `is_fully_uploaded`, `subscribe_upload_completed`, `unsubscribe_upload_completed`,
+  implemented by the 12g adapter.
+- **D-W8B3S-6 Missing plan edges (lead action):** 12g also depends on 11f, 11h, 01c, 12a and the layering PR (its draw-based native tests on 12d and 12e); 12h on 11f; 12i on 12a, 11f, 11h (and 12e for its ink/colour native tests); 12j on 12e, 12h, 11g, 16a and 13g (window style `WS_EX_NOREDIRECTIONBITMAP` for the DirectComposition mode).
+- **D-W8B3S-7 12h reads no environment variable:** the plan row names `PHOTOREVIEW_RS_GPU_KEEPWARM*`, but in C# they are read by `Win32/Viewing/KeepWarm.cs` (W8-16d, `KeepWarmOptions`): `PHOTOREVIEW_GPU_KEEPWARM` (0/off/false/no), `_MS` (250-60000, default 5000), `_INTERVAL_MS` (5-100, default 20), renamed with the `PHOTOREVIEW_RS_` prefix (R0002). Row correction for the plan.
+- **D-W8B3S-8 Keep-warm ticks are nanoseconds of a monotonic clock** (`monotonic_ticks`, `ticks_from_ms`, `TICKS_PER_SECOND`), not `Stopwatch` units; no consumer may assume `Stopwatch.Frequency`.
+- **D-W8B3S-9 `GpuKeepAlive::wait_blocked` is the one added test hook** (no C# twin): it replaces `SpinWait.SpinUntil` polling (AGENTS.md forbids sleep polling) for "the thread is parked on the activation event after N waits".
+- **D-W8B3S-10 `TextLayoutCache` has no lock:** the C# `lock` guarded a lease disposed from another thread; Rust leases and the renderer are `!Send` (`PhantomData<*const ()>`, because windows-rs 0.62.2 marks the DirectWrite interfaces `Send`, D-W8B3G-9 d).
+- **D-W8B3S-11 W8-12j trigger:** it starts only if an ATTENDED re-measure of the PRODUCTION surface (12d with the C# swap chain values, D-W8B3G-3) WITH keep-warm (12h) still shows a windowed p95 above 10 ms (R0001 threshold; target < 8.5 ms). The R0001 spike used `FLIP_SEQUENTIAL`, no waitable flag and no keep-warm thread, and its 300-510 ms `EndDraw` stalls look like WP21-STALL (0.47 s, Intel UHD 630), so the spike
+  numbers do not decide the question. Recommended first action after 12d/12e/12h merge: the cheap attended measurement.
+- **D-W8B3S-12 W8-12j has one env switch (`PHOTOREVIEW_RS_SWAPCHAIN_EXPERIMENT`) with one change per value** (`sequential`, `buffers3`, `tearing`, `composition`; unset = production path, zero cost); the losing modes are deleted at the end, no permanent experiment matrix.
+
+Open items (recommended defaults taken, listed in the contracts): shape of 12b/12c `DeviceResources` (12g `BitmapDevice` and 12h `KeepAliveDevice` assume `Rc<DeviceResources>` with `max_bitmap_size`, `generation`, a bitmap leak counter, `is_warp`, `touch_gpu`, a device-recreated subscription) is the other writer's decision; strong `Arc` vs `Weak` source buffer in `prefetch` (12f Q1);
+`with_data` upload as create + `copy_from_memory` (12g Q3); locale source for the text renderer (12i Q2); per-call `String` clones in the layout cache key (12i Q1); who logs a disabled keep-alive (12h Q3).
+Not verified here: every native behaviour claimed as a test (DirectWrite metrics ranges, ellipsis `IsTrimmed`, `CopyFromMemory` stripes across gutter tiles, `D2D1_ALPHA_MODE_IGNORE` read-back, `SetThreadPriority`, high-resolution timer sleeps, GPU idle behaviour) is written from the C# tests and the DXGI/DirectWrite rules, not run; the pure policies were not compiled as Rust tests (the stubs
+compile, `cargo check` and `cargo clippy -D warnings` are clean); the 12j analysis relies on the numbers in `docs/adr/R0001-ui-framework.md`.
