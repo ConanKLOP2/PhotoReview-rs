@@ -107,3 +107,7 @@ pub mod shell_input;
 
 #[cfg(windows)]
 pub mod shell_menus;
+
+/// Wave 8 batch B4 overlay Win32 parts (W8-15f to 15j stubs): host, message handler, tooltips, `ShellOverlay` (layout, hit test, input, paint), main window glue.
+#[cfg(windows)]
+pub mod shell_overlay;
