@@ -114,7 +114,7 @@ impl MainWindowInput {
     /// C# `RegisterInput()`: builds the surface and `ShellInput` (host = this wiring), then registers the drop target on the window handle. A failed
     /// `RegisterDragDrop` logs the warning "Drag and drop is unavailable (RegisterDragDrop failed)." and goes on. The caller (W8-13h) must register
     /// the scroll bars first and the context menu after (handler order), and forward the window's `Closed` event to [`MainWindowInput::on_window_closed`].
-    pub fn register(services: Rc<dyn MainWindowInputServices>) -> MainWindowInput {
+    pub fn register(services: Rc<dyn MainWindowInputServices>) -> Rc<MainWindowInput> {
         todo!()
     }
 

@@ -7,7 +7,6 @@
 
 #![allow(unused_variables, dead_code)] // W8-13i stub: the porter removes this line when the last `todo!()` is gone.
 
-use std::any::Any;
 use std::cell::{Cell, RefCell};
 use std::rc::Rc;
 
@@ -15,21 +14,12 @@ use pr_app::services::render::DrawContext;
 
 use super::core::{MainWindow, MainWindowError, MainWindowInner};
 use crate::host::contracts::EventHandlerId;
-
-/// The members of `ShellScrollBars` (C#, W8-16f/16g) that the main window calls. 16g implements this trait for `ShellScrollBars`; the concrete type is
-/// reached through [`ScrollBarsPort::as_any`] (tests and other packs read geometry and drag state from it, C# `ScrollBars`).
-pub trait ScrollBarsPort {
-    /// C# `Draw(IDrawContext)`: the visible bars (nothing when the image fits).
-    fn draw(&self, context: &mut dyn DrawContext);
-    /// C# `Dispose()`: idempotent; releases the mouse handler and the frame-clock hook.
-    fn dispose(&self);
-    /// Down-cast support.
-    fn as_any(&self) -> &dyn Any;
-}
+use crate::shell_viewing::scrollbars::ShellScrollBars;
 
 /// The field `_scrollBars` plus the id of the `Closed` subscription of `OnWindowClosedForScrollBars`.
 pub struct ScrollBarState {
-    pub(super) bars: RefCell<Option<Rc<dyn ScrollBarsPort>>>,
+    /// The concrete bars of 16f/16g (ported BEFORE this unit; no port trait, D-W8B4X-2).
+    pub(super) bars: RefCell<Option<Rc<ShellScrollBars>>>,
     pub(super) closed_subscription: Cell<Option<EventHandlerId>>,
 }
 
@@ -49,7 +39,7 @@ impl Default for ScrollBarState {
 }
 
 impl MainWindowInner {
-    /// C# `RegisterScrollBars()`: `ShellScrollBars::new(&window_api, viewport, is_compare_visible, Some(on_press), None)` (16f; the constructor appends the bars to
+    /// C# `RegisterScrollBars()`: `ShellScrollBars::new(&window_api, viewport.clone(), is_compare_visible, Some(on_press), Some(options))` with `options.metrics.thickness = viewport.scroll_bar_thickness()` (D-W8B4X-7, 16f; the constructor appends the bars to
     /// the window's handler chain, so this runs BEFORE `register_input`). `is_compare_visible` reads `vm.compare().is_visible()` (short borrow); `on_press` calls
     /// `MainWindowFeature::on_scroll_bar_press` of every feature (the input feature turns it into `OnWindowPreviewMouseDown`, which stops the kinetic glide: a
     /// press on a bar is still a "window preview mouse down"); subscribes `Closed` (id kept in `closed_subscription`).
@@ -62,7 +52,7 @@ impl MainWindowInner {
         todo!("W8-13i")
     }
 
-    /// C# `DrawScrollBars(context)`: `bars?.draw(context)`.
+    /// C# `DrawScrollBars(context)`: `bars?.draw(context)`; an `Err(RenderError)` is logged ("Frame failed") and ends the frame like any other draw fault (D-W8B4M-8).
     pub(super) fn draw_scroll_bars(&self, context: &mut dyn DrawContext) {
         todo!("W8-13i")
     }
@@ -70,7 +60,7 @@ impl MainWindowInner {
 
 impl MainWindow {
     /// C# `ScrollBars` getter: `Err(FeatureNotRegistered { feature: "Scroll bars" })` ("Scroll bars are not registered.") before `register_scroll_bars`.
-    pub fn scroll_bars(&self) -> Result<Rc<dyn ScrollBarsPort>, MainWindowError> {
+    pub fn scroll_bars(&self) -> Result<Rc<ShellScrollBars>, MainWindowError> {
         todo!("W8-13i")
     }
 }

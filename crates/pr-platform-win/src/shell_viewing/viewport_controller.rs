@@ -161,6 +161,12 @@ impl ViewportController {
         todo!("W8-16h")
     }
 
+    /// `options.scroll_bar_thickness` (DIP): the single source of the bar thickness (D-W8B4X-7). The main window gives the same value to
+    /// `ScrollBarOptions::metrics.thickness` (13i), so the layout engine and the painted/hit-tested bars cannot disagree.
+    pub fn scroll_bar_thickness(&self) -> f64 {
+        todo!("W8-16h")
+    }
+
     // ---- members of `FitSurface` (C-07) ----
 
     /// C# `ViewportSize`: the client size in DIP with each side passed through `ViewportLayoutMath.SanitizeLength` (NaN / negative / infinite = 0).

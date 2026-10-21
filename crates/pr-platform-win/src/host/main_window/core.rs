@@ -6,10 +6,9 @@
 //! blocks. Features of OTHER units (input 14c, menus 14f, overlay 15j, keep-warm 16d) plug in through [`MainWindowFeature`] and [`FeatureOptions`]
 //! and use the `pub(crate)` accessors below (D-W8B4M-3, -5).
 //!
-//! Interim seams (D-W8B4M-4): the collaborators that other batch-B4/B6 units own are named by small traits here ([`MainViewport`] for
-//! `ViewportController` 16h, [`PresentationHubPort`] for `ShellPresentationHub` 16i, [`StartupCloakPort`] and [`PlacementSavePort`] for `StartupCloak` and
-//! `ShellPlacement.Save` 17b, [`KeepWarmPort`] for `KeepWarmController` 16d). The owning unit implements the trait for its type, or the lead replaces the
-//! trait by the type once it is on master. Sizes cross the seams as `f64` DIP.
+//! Interim seams (D-W8B4M-4, narrowed by the B4 reconciliation D-W8B4X-2): the collaborators of units that are ported AFTER this one stay behind small traits
+//! ([`PresentationHubPort`] for `ShellPresentationHub` 16i, [`StartupCloakPort`] and [`PlacementSavePort`] for `StartupCloak` and `ShellPlacement.Save` 17b). The
+//! collaborators of units ported BEFORE this one (16h `ViewportController`, 16d `KeepWarmSetup`) are used as the concrete types (D-W8B4X-2).
 
 #![allow(unused_variables, dead_code)] // W8-13g stub: the porter removes this line when the last `todo!()` is gone.
 
@@ -21,11 +20,9 @@ use std::path::{Path, PathBuf};
 use std::rc::{Rc, Weak};
 use std::sync::{Arc, Mutex};
 
-use pr_app::input::primitives::PointD;
 use pr_app::services::viewport_size_source::ViewportSizeSource;
 use pr_app::viewmodels::main::MainViewModel;
 use pr_app::viewport::render_geometry::ColorF;
-use pr_app::viewport::types::ViewerStretchMode;
 use pr_app::windowing::contracts::WindowShowState;
 use pr_core::abstractions::{Log, UiPriority};
 use pr_imaging::decode_types::PlatformImage;
@@ -35,7 +32,7 @@ use super::frame::FrameState;
 use super::scrollbars::ScrollBarState;
 use super::viewing::ViewingState;
 use super::windowing::{ShellWindowingSeams, WindowingState};
-use crate::host::contracts::EventHandlerId;
+use crate::host::contracts::{EventHandlerId, ShellWindowApi};
 use crate::host::error::HostError;
 use crate::host::frame_clock::base::HostFrameClock;
 use crate::host::shell_window::ShellWindow;
@@ -44,7 +41,9 @@ use crate::render::device::RenderFault;
 use crate::render::image_cache::policy::{StripeScheduler, StripeToken};
 use crate::render::image_cache::upload::{D2dGpuImageCache, ResourcesBitmapDevice};
 use crate::render::surface::{D2dRenderSurface, SurfaceOptions};
-use crate::shell_viewing::frame_log::FrameLog;
+use crate::shell_viewing::keep_warm::KeepWarmSetup;
+use crate::shell_viewing::presentation_sink::ImageChangedHandler;
+use crate::shell_viewing::viewport_controller::{RenderPoster, ViewportController};
 use crate::win32::structs::Hwnd;
 
 /// C# `DefaultWidthDip`: the size (DIP) before there is a saved placement (`MainWindow.xaml` Width).
@@ -81,13 +80,13 @@ pub type MainWindowId = u64;
 /// reads it back in its `register_*` (D-W8B4M-5). At most one value per type.
 #[derive(Default)]
 pub struct FeatureOptions {
-    map: HashMap<TypeId, Rc<dyn Any>>,
+    map: RefCell<HashMap<TypeId, Rc<dyn Any>>>,
 }
 
 impl fmt::Debug for FeatureOptions {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_struct("FeatureOptions")
-            .field("entries", &self.map.len())
+            .field("entries", &self.map.borrow().len())
             .finish()
     }
 }
@@ -98,8 +97,14 @@ impl FeatureOptions {
         todo!("W8-13g")
     }
 
-    /// The value of type `T`, if one was inserted.
+    /// The value of type `T`, if one was inserted (shared, `Rc`).
     pub fn get<T: Any>(&self) -> Option<Rc<T>> {
+        todo!("W8-13g")
+    }
+
+    /// Removes and returns the value of type `T` (D-W8B4X-5): for one-shot values that cannot be shared or cloned (16d `KeepWarmRegistration` holds a
+    /// `Box<dyn FnOnce>`). `None` when no value was inserted, when it was taken already, or when an `Rc` handed out by [`get`](Self::get) is still alive.
+    pub fn take<T: Any>(&self) -> Option<T> {
         todo!("W8-13g")
     }
 }
@@ -137,48 +142,19 @@ impl Default for MainWindowOptions {
 
 // ---- seams to other units' types ---------------------------------------------------------------------------------------------------------------
 
-/// Interim twin of `shell_viewing::viewport_controller::ViewportContent` (W8-16h; C# `ViewportContent` record): what `MainImage` took from `ViewerState`
-/// and the drawn bitmap. 16h's type wins; the move is a rename.
-#[derive(Debug, Clone, Copy)]
-pub struct ViewportContent {
-    pub stretch: ViewerStretchMode,
-    pub image_width: f64,
-    pub image_height: f64,
-    pub max_image_width: f64,
-    pub max_image_height: f64,
-    pub bitmap_width: f64,
-    pub bitmap_height: f64,
-    pub is_fit: bool,
-}
+/// `ViewportContent` is owned by 16h (`shell_viewing::viewport_controller`); the window only re-exports it (D-W8B4X-2). The interim twin and the
+/// `MainViewport` trait of the first 13g draft are gone: 16h is ported BEFORE this unit, so the window holds the concrete `Rc<ViewportController>`.
+pub use crate::shell_viewing::viewport_controller::ViewportContent;
 
-/// The members of `ViewportController` (C#, W8-16h, `shell_viewing::viewport_controller`) that the main window calls. INTERIM: 16h implements this trait for its
-/// controller, or the lead replaces `Rc<dyn MainViewport>` by `Rc<ViewportController>` once 16h is on master (the scroll bars, W8-16f, take the concrete
-/// controller anyway). UI thread only, all `&self`. Coordinates are DIP; the point type is `pr_app`'s (what 16h returns).
-pub trait MainViewport {
-    /// C# `ViewportSize`: `(width, height)` DIP of the visible image area (after the scroll bars).
-    fn viewport_size(&self) -> (f64, f64);
-    /// C# `InvalidateLayout()`: queue one coalesced layout pass at `UiPriority::Render`.
-    fn invalidate_layout(&self);
-    /// C# `IsLayoutPosted`.
-    fn is_layout_posted(&self) -> bool;
-    /// C# `UpdateLayout()`: run the posted layout now.
-    fn update_layout(&self);
-    /// C# `ImageOrigin`.
-    fn image_origin(&self) -> PointD;
-    /// C# `ImageActualWidth`.
-    fn image_actual_width(&self) -> f64;
-    /// C# `ImageActualHeight`.
-    fn image_actual_height(&self) -> f64;
-    /// C# `LayoutUpdated += handler`; the id unsubscribes.
-    fn subscribe_layout_updated(&self, handler: Rc<dyn Fn()>) -> u64;
-    /// C# `LayoutUpdated -= handler`.
-    fn unsubscribe_layout_updated(&self, id: u64);
-    /// C# `Dispose()`: idempotent.
-    fn dispose(&self);
-}
-
-/// The two window-owned callbacks of the C# `ViewportController` constructor (`ContentFromViewer`, `UpdateFitSize`), in the `Rc<dyn Fn>` form 16h takes.
+/// What the composition root's factory gets to build the `ViewportController`: the window collaborators it needs and the two window-owned callbacks of the C#
+/// constructor (`ContentFromViewer`, `UpdateFitSize`).
 pub struct ViewportCallbacks {
+    /// The native window (`Rc<ShellWindow>` coerced).
+    pub window: Rc<dyn ShellWindowApi>,
+    /// The frame clock of the window.
+    pub frame_clock: Rc<dyn HostFrameClock>,
+    /// The window's poster (`UiLocalPoster` implements 16h's `RenderPoster`).
+    pub poster: UiLocalPoster,
     /// C# `ContentFromViewer`.
     pub content: Rc<dyn Fn() -> ViewportContent>,
     /// C# `UpdateFitSize`.
@@ -192,12 +168,13 @@ impl fmt::Debug for ViewportCallbacks {
 }
 
 /// Builds the viewport controller from the window callbacks. The composition root writes it as
-/// `|callbacks| ViewportController::new(window, poster, clock, callbacks.content, callbacks.update_fit_size, options_with(create_viewport_input_hooks(..)))`
+/// `|cb| ViewportController::new(cb.window, Rc::new(cb.poster), cb.frame_clock, cb.content, cb.update_fit_size, options_with(create_viewport_input_hooks(..)))`
 /// (the C# constructor called `CreateViewportOptions` of `ShellMainWindow.Input.cs` = 14c itself; the factory removes the edge 13g -> 14c, D-W8B4M-4).
-pub type ViewportFactory = Box<dyn FnOnce(ViewportCallbacks) -> Rc<dyn MainViewport>>;
+/// The factory must leave `ViewportControllerOptions::scroll_bar_thickness` at its default (D-W8B4X-7).
+pub type ViewportFactory = Box<dyn FnOnce(ViewportCallbacks) -> Rc<ViewportController>>;
 
-/// A hub image handler (16i `ImageChangedHandler`): the new image (`None` = empty folder or compare) and C# `isFileChange`.
-pub type HubImageHandler = Rc<dyn Fn(Option<&PlatformImage>, bool)>;
+/// A hub image handler: the new image (`None` = empty folder or compare) and C# `isFileChange`. The type is 16i's `ImageChangedHandler` (D-W8B4X-2).
+pub type HubImageHandler = ImageChangedHandler;
 
 /// `ShellPresentationHub` (W8-16i, `shell_viewing::presentation_sink`), the members the window calls. INTERIM trait (16i implements it for the hub, or the lead
 /// replaces `Rc<dyn PresentationHubPort>` by `Rc<ShellPresentationHub>`). The hub calls `ImageChanged` handlers INSIDE the view model's sink replay, i.e. while
@@ -231,12 +208,6 @@ pub trait PlacementSavePort {
         restore_state: Option<WindowShowState>,
         restore_bounds: Option<(i32, i32, i32, i32)>,
     ) -> bool;
-}
-
-/// `KeepWarmController` (W8-16d), the one member `on_frame_presented` calls.
-pub trait KeepWarmPort {
-    /// C# `WarmAtLaunch()`.
-    fn warm_at_launch(&self);
 }
 
 /// A unit that plugs into the window (C# `partial class` members for input, menus, overlay, keep-warm). Registered with
@@ -394,6 +365,14 @@ impl LocalPoster for UiLocalPoster {
     }
 }
 
+/// 16h's `RenderPoster` seam (D-W8B4X-6): `post_render(job)` = `self.post(UiPriority::Render, job)`. The thread-local queues are per thread, so every clone of the
+/// poster is FIFO-ordered with the others.
+impl RenderPoster for UiLocalPoster {
+    fn post_render(&self, job: Box<dyn FnOnce()>) {
+        todo!("W8-13g")
+    }
+}
+
 /// A coalescing wake for a `Send` caller (15j `UiWake`, the view-model inbox `WakeFn`): the returned closure posts at most ONE `Send` job at `priority` while
 /// one is queued; the job calls `f` on the window found by `id` (`None` = the current window of the thread). A wake that finds no live window is dropped.
 pub(crate) fn coalesced_wake(
@@ -473,7 +452,7 @@ pub struct MainWindowInner {
     pub(super) options: MainWindowOptions,
     pub(super) log: Arc<dyn Log>,
     pub(super) mark: StartupMark,
-    pub(super) viewport: Rc<dyn MainViewport>,
+    pub(super) viewport: Rc<ViewportController>,
     /// Ids of the subscriptions made on `window` by this struct (constructor), removed by `dispose`.
     pub(super) window_subscriptions: RefCell<Vec<EventHandlerId>>,
     /// Id of the `layout_updated` subscription on `viewport`.
@@ -496,10 +475,8 @@ pub struct MainWindowInner {
     pub(super) is_closing_or_closed: Cell<bool>,
     /// Features of other units (input, menus, overlay, keep-warm), in registration order.
     pub(super) features: RefCell<Vec<Rc<dyn MainWindowFeature>>>,
-    /// C# `_keepWarm` (set by 16d's `register_keep_warm`).
-    pub(super) keep_warm: RefCell<Option<Rc<dyn KeepWarmPort>>>,
-    /// C# `_frameLog` (set by 16d's `register_keep_warm`, closed by `dispose_keep_warm`).
-    pub(super) frame_log: RefCell<Option<FrameLog>>,
+    /// C# `_keepAlive` + `_keepWarm` + `_frameLog` as 16d returns them from `register_keep_warm`; `release_renderer` calls `KeepWarmSetup::dispose` FIRST (D-W8B4X-4).
+    pub(super) keep_warm: RefCell<Option<KeepWarmSetup>>,
     /// W8-13i state (`Present`, first-image events, scroll bars).
     pub(super) frame: FrameState,
     pub(super) scroll_bars: ScrollBarState,
@@ -560,7 +537,7 @@ impl MainWindowInner {
     }
 
     /// Accessor: C# `Viewport`.
-    pub(crate) fn viewport(&self) -> &Rc<dyn MainViewport> {
+    pub(crate) fn viewport(&self) -> &Rc<ViewportController> {
         todo!("W8-13g")
     }
 
@@ -604,8 +581,8 @@ impl MainWindowInner {
         todo!("W8-13g")
     }
 
-    /// Called by 16d's `register_keep_warm`: stores the controller port and the frame log (C# `_keepWarm`, `_frameLog`).
-    pub(crate) fn set_keep_warm(&self, keep_warm: Option<Rc<dyn KeepWarmPort>>, frame_log: Option<FrameLog>) {
+    /// Called by the 5th `register_features` line with the result of 16d's `register_keep_warm` (C# `_keepAlive`, `_keepWarm`, `_frameLog`).
+    pub(crate) fn set_keep_warm(&self, setup: KeepWarmSetup) {
         todo!("W8-13g")
     }
 
@@ -651,7 +628,7 @@ impl MainWindow {
     }
 
     /// C# `Viewport`.
-    pub fn viewport(&self) -> &Rc<dyn MainViewport> {
+    pub fn viewport(&self) -> &Rc<ViewportController> {
         todo!("W8-13g")
     }
 
@@ -688,6 +665,12 @@ impl MainWindow {
 
     /// Registers a feature of another unit (see [`MainWindowFeature`]).
     pub fn add_feature(&self, feature: Rc<dyn MainWindowFeature>) {
+        todo!("W8-13g")
+    }
+
+    /// Runs `f` on the registered feature of concrete type `T` (D-W8B4X-9): how the composition root (`pr-shell`, W8-17e) reaches `MainWindowInput` for the Fit
+    /// closure of the overlay and for the Tools-menu host.
+    pub fn with_feature<T: 'static, R>(&self, f: impl FnOnce(&T) -> R) -> Option<R> {
         todo!("W8-13g")
     }
 

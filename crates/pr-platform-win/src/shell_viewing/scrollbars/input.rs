@@ -13,19 +13,10 @@ use pr_app::input::primitives::PointD;
 use pr_app::viewing::scrollbar_geometry::ScrollAxis;
 
 use super::state::ShellScrollBars;
+// D-W8B4X-10: `InputNative.SignedLowWord/SignedHighWord` (a client coordinate from `lparam`; `Lparam` is `isize`) are owned by W8-14a and used here, so W8-14a is ported BEFORE 16g:
+// `use crate::shell_input::native::{signed_high_word, signed_low_word};` (the porter adds the import with the first call).
 use crate::host::contracts::{WindowMessage, WindowMessageHandler};
-use crate::win32::structs::{Lparam, Lresult};
-
-/// C# `InputNative.SignedLowWord(lParam)`: the low 16 bits as a signed value (a client x coordinate; negative on a secondary monitor to the left).
-/// Local twin until W8-14a's `shell_input` helper merges (D-W8B4V-8).
-pub(super) fn signed_low_word(lparam: Lparam) -> i32 {
-    todo!("W8-16g")
-}
-
-/// C# `InputNative.SignedHighWord(lParam)`: bits 16..32 as a signed value (a client y coordinate).
-pub(super) fn signed_high_word(lparam: Lparam) -> i32 {
-    todo!("W8-16g")
-}
+use crate::win32::structs::Lresult;
 
 impl WindowMessageHandler for ShellScrollBars {
     /// C# `TryHandle`: `WM_LBUTTONDOWN` / `WM_LBUTTONDBLCLK` -> `on_left_down` (`Some(0)` when taken); `WM_MOUSEMOVE` -> `on_move`, never taken;

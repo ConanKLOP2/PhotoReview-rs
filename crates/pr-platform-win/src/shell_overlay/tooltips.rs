@@ -18,7 +18,6 @@ use std::marker::PhantomData;
 use std::rc::{Rc, Weak};
 
 use pr_app::input::primitives::RectD;
-use pr_core::abstractions::UiPriority;
 use windows::Win32::UI::Controls::TTTOOLINFOW;
 
 use crate::host::error::HostError;
@@ -162,16 +161,10 @@ pub fn tools_unchanged(old: &[OverlayTooltip], old_dpi: f64, new: &[OverlayToolt
     todo!()
 }
 
-/// A job for the UI thread that does not need to be `Send` (it was created on the UI thread and runs there).
-pub type LocalJob = Box<dyn FnOnce()>;
-
-/// Posts [`LocalJob`]s to the UI thread's dispatcher at a priority. NOT `Send`: only UI-thread code calls it. Implemented by the main window (W8-13g)
-/// over `Win32UiDispatcher` plus a UI-thread mailbox (the dispatcher itself only takes `Send` actions); tests implement it with a recording fake that
-/// runs jobs on demand.
-pub trait LocalPoster {
-    /// Queues `job`; it runs on the UI thread, after the current message, ordered by `priority` (as `UiDispatcher::post_with_priority`).
-    fn post(&self, priority: UiPriority, job: LocalJob);
-}
+/// The one poster seam for non-`Send` UI-thread jobs is owned by W8-13g (`host::main_window::core`: the trait `LocalPoster`, the alias `LocalJob` and the
+/// implementation `UiLocalPoster` over `Win32UiDispatcher` plus a UI-thread mailbox); this file re-exports it (D-W8B4X-3) instead of declaring a twin. Tests
+/// implement it with a recording fake that runs jobs on demand.
+pub use crate::host::main_window::core::{LocalJob, LocalPoster};
 
 /// Creates the real tooltip control (C# `Func<IOverlayTooltips>`); runs on the UI thread, once.
 pub type TooltipFactory = Box<dyn FnOnce() -> Result<Rc<dyn OverlayTooltips>, HostError>>;
