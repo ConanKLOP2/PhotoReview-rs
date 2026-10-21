@@ -659,6 +659,46 @@ The recommended option of each open question was taken (standing user instructio
 - **D-W8B2-7 Missing plan edges and open items:** W8-05g also needs 05f, 04e and 06a. Unresolved: `SettingsTexts` over the Localizer, the `ShellIntegration` registry and the HTTP transport (10e), the time format "T" (10g), a compare size-pair formatter (06c).
 - **D-W8B2-8 Stub hygiene:** the stub-only allow lines additionally allow the clippy lints their doc text or boxed seams trigger (`doc_lazy_continuation`, `type_complexity`, `enum_variant_names`, `large_enum_variant`, `should_implement_trait`); the porter removes them. `Debug` is implemented on every public type. No `Cargo.toml` change.
 
+## Wave 8 batch B3 (gfx group 11f-11h)
+
+Group of batch B3 of `docs/WAVE-8-PLAN.md` (P-38): the graphics interop audit of `Shell.Interop/Graphics` (1 466 C# lines) as `pr_platform_win::gfx`. Three contracts (`contracts/W8-11f.md`, `W8-11g.md`, `W8-11h.md`),
+seven stub files under `crates/pr-platform-win/src/gfx/` (every body `todo!()`), `pub mod gfx;` in `lib.rs`, seven `windows` features in `crates/pr-platform-win/Cargo.toml` (versions untouched). Test kind N for all three
+(native tests `#[ignore = "native: ..."]`; the pure helpers carry ordinary tests). The rest of B3 (11a-11e, 12b-12j, 13a-13f) is written by other agents.
+
+| WU | Unit | Rust | Porter | Depends on | Golden |
+|---|---|---|---|---|---|
+| W8-11f | ComInterop, Guids, RenderingAdditions, DWriteAdditions (280 lines) | `gfx::{com, guids, extras}` | Sonnet (red: manual PR review) | none | none (N) |
+| W8-11g | D3D11, Dxgi (459 lines, audit + thin helpers) | `gfx::{d3d11, dxgi}` | Sonnet (red) | 11f | none (N) |
+| W8-11h | D2D1, DWrite (727 lines, audit + thin helpers) | `gfx::{d2d, dwrite}` | Sonnet (red) | 11f, 11g (tests) | none (N) |
+
+Audit result: no `GAP`. Every declaration of the four hand-written COM files (`D3D11`, `Dxgi`, `D2D1`, `DWrite`) has a windows-rs item; 218 `Reserved` vtable placeholders and all slot arithmetic are retired. The two raw-vtable calls of the
+C# `*Additions` files (`FillRoundedRectangle`, `CreateEllipsisTrimmingSign`) exist natively in windows-rs 0.62.2. Facts proven in a scratch test while writing the contracts: the 27 C# IIDs equal the windows-rs IIDs; the struct
+sizes and flag values the C# test `StructLayouts_MatchWin32Sdk` checks hold for the windows-rs types; the HRESULT constants match.
+
+## Lead decisions (Wave 8 batch B3, gfx group)
+
+The recommended option of each open question was taken (standing user instruction: never stop to ask); to be logged in `docs/PROPOSED-DECISIONS.md` by the lead when the batch is merged.
+
+- **D-W8B3G-1 `gfx` is std + `windows` only:** no `pr_app` or `pr_core` type in a `gfx` signature (`pr-app` depends on `pr-platform-win`, D-W8B1-1). Window handles are `HWND` inside, `isize` at the `pr_app` boundary (`gfx::com::hwnd`).
+- **D-W8B3G-2 One error type:** `gfx::com::GfxError { hresult: i32, operation: &'static str }` (`Copy`) for the whole layer; it is converted field by field into `RenderError::Device` by `pr_platform_win::render` (12b).
+- **D-W8B3G-3 Production swap chain values are the C# ones** (`FLIP_DISCARD`, `STRETCH`, `IGNORE`, 2 buffers, `FRAME_LATENCY_WAITABLE_OBJECT`), not the R0001 spike's (`FLIP_SEQUENTIAL`, `NONE`, flags 0). `dxgi::window_swap_chain_desc` is pure and fixed;
+  W8-12j builds its own description if the attended re-measure still shows the `EndDraw` stall. A null waitable handle after a successful `SetMaximumFrameLatency` is an error (C# stored 0).
+- **D-W8B3G-4 One waitable timer:** `extras::WaitableTimer` serves `GpuKeepAlive` (12h) and the host `TimerFrameClock` (13); the host copy `PendingKernel32` is not ported; `CancelWaitableTimer` becomes `cancel()`. The timer is `!Send`
+  (create it on the waiting thread).
+- **D-W8B3G-5 `DeviceLoss` lives in `gfx::com`** (`is_device_lost`, `describe_hresult`, the HRESULT constants), not in the `DeviceResources` port, because 12b (device) and 12d (surface) both need it and the plan cuts `DeviceResources` at line 230.
+- **D-W8B3G-6 Audit rule:** one table row per non-`Reserved` C# member (kept as thin helper / replaced by a windows-rs item / retired, with the reason); `Reserved` placeholders are one row per interface. Draw calls on the Direct2D device context are NOT wrapped
+  (12e owns the frame state machine); helpers return owned windows-rs types.
+- **D-W8B3G-7 `ComInterop.Wrap/QueryInterface/Release` are retired**, not re-created: `Interface::cast` and `Drop` replace them. The ordering that `ComInterop.Release` served (back buffer reference released before `ResizeBuffers`) is a documented rule (W8-11g trap T1), enforced
+  by field order or explicit `take()` in 12b/12c.
+- **D-W8B3G-8 `d3d11::create_device_on_adapter(index, flags)` is added** (no C# twin, proven by the R0001 spike) so the attended re-measure can choose the adapter; the environment variable is read in W8-12b.
+- **D-W8B3G-9 Missing plan edges, one dependency, one rule (lead actions):** (a) W8-11h native tests need W8-11g (WARP device and swap chain); (b) W8-12b to 12i also depend on W8-11f (`GfxError`, `is_device_lost`); (c) W8-12e needs the crate `windows-numerics`
+  (`Matrix3x2` for `SetTransform`, `Vector2` for `DrawTextLayout`, `Matrix4x4` in `DrawBitmap`; they are not re-exported by `windows` 0.62.2) in `[workspace.dependencies]` and `crates/pr-platform-win/Cargo.toml` (already locked at 0.3.1; the version choice is the
+  lead's, not done here); (d) windows 0.62.2 marks the D3D11, DXGI, Direct2D and DirectWrite interfaces `Send`, so the owning render types of 12b/12c/12d/12e/12i must be `!Send` (`PhantomData<*const ()>`): the compiler does not enforce the UI-thread rule.
+
+Open items (recommended defaults taken, listed in the contracts): hidden `STATIC` window for the swap chain tests with a composition swap chain fallback (W8-11g Q4); no `DXGI_PRESENT_ALLOW_TEARING` yet (11g Q2); safe `copy_from_memory` wrapper (11h Q1); handle-count leak smoke test (11h Q3);
+attended R0001 re-measure before W8-12d (11g Q3). Not verified here: every native behaviour claimed as a test (swap chain resize failing while a back buffer reference lives, wrong-flags `ResizeBuffers`, hidden-window swap chain creation, timer behaviour): they are written from the
+C# comments and DXGI rules, with a note in each test description on what to change if Windows disagrees.
+
 ## Wave 8 batch B3 roster (win32 group 11a-11e; `pr-platform-win`, `unsafe` with SAFETY per block)
 
 Group 11a-11e of batch B3 of `docs/WAVE-8-PLAN.md` (P-38): 5 contracts (`contracts/W8-11a.md` .. `W8-11e.md`), stubs under `crates/pr-platform-win/src/win32/`, one oracle command (`win32-constants`, 597 cases) and its golden. Replaces `PhotoReview.Shell.Interop`

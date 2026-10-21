@@ -77,6 +77,10 @@ pub(crate) mod vblank_driver;
 #[cfg(windows)]
 pub mod display_clock;
 
+/// Wave 8 graphics interop helpers over `windows-rs` (D3D11, DXGI, Direct2D, DirectWrite; W8-11f..11h stubs).
+#[cfg(windows)]
+pub mod gfx;
+
 /// Phase 0 UI spike (R0001): Win32 window + Direct2D/DirectWrite host and a WIC JPEG writer for synthetic fixtures.
 #[cfg(all(windows, feature = "ui-spike"))]
 pub mod spike_ui;
