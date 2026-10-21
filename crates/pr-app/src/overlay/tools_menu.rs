@@ -12,8 +12,7 @@
 //! ordinal (case-sensitive) string equality, never `eq_ignore_case`; T4 the async commands are sync in Rust: the trait
 //! method submits work and returns, the host reports completion through `UiDispatcher` (D-W8-2).
 
-#![allow(unused_variables, dead_code)] // stub only: removed by the porter when the bodies are filled (contracts/README.md D11)
-
+use crate::menus::builder::build_tools_menu;
 use crate::menus::model::MenuItemModel;
 
 /// C# `ToolsMenu.Recovery`: `"Tools.Recovery"`.
@@ -78,7 +77,7 @@ pub trait OverlayCommands {
 /// items are enabled; the two duplicate items are disabled when there are no images (C# `hasImages` rule of the
 /// builder). Ids are exactly `TOOLS_IDS`, in that order.
 pub fn build(has_images: bool) -> Vec<MenuItemModel> {
-    todo!()
+    build_tools_menu(has_images)
 }
 
 /// C# `ToolsMenu.Execute(string? id, IOverlayCommands commands, bool hasImages)`. Runs the command of item `id`:
@@ -90,5 +89,22 @@ pub fn build(has_images: bool) -> Vec<MenuItemModel> {
 /// Returns `true` when `id` is one of the six ids (including the no-op duplicate case, trap T2), `false` for `None`
 /// and any other id (trap T1). Ordinal match only (trap T3). Commands are never invoked for an unknown id.
 pub fn execute(id: Option<&str>, commands: &mut dyn OverlayCommands, has_images: bool) -> bool {
-    todo!()
+    match id {
+        Some(RECOVERY) => commands.show_recovery(),
+        Some(DIAGNOSTICS) => commands.show_diagnostics(),
+        Some(BENCHMARK) => commands.show_benchmark(),
+        Some(CLEAR_CACHE) => commands.clear_cache(),
+        Some(REMOVE_NUMBERED_DUPLICATES) => {
+            if has_images {
+                commands.remove_duplicates(true);
+            }
+        }
+        Some(REMOVE_ORIGINAL_DUPLICATES) => {
+            if has_images {
+                commands.remove_duplicates(false);
+            }
+        }
+        _ => return false,
+    }
+    true
 }
