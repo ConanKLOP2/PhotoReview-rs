@@ -3,8 +3,8 @@
 //! [`policy::GpuImageBackend`] seam; [`upload`] (W8-12g) is `IGpuImageBackend` + `D2DGpuImageBackend` (lines 301-414): tiles, bitmap
 //! upload, release.
 //!
-//! The concrete cache that `pr_app::services::render::GpuImageCache` is implemented for is
-//! `BudgetedImageCache<D2dGpuImageBackend<..>>` (W8-12g adds `impl GpuImageCache for D2dGpuImageCache` once the layering PR lands).
+//! The concrete cache that `pr_app::services::render::GpuImageCache` (and `PrefetchStatus`) is implemented for is
+//! [`upload::D2dGpuImageCache`], an adapter around `BudgetedImageCache<D2dGpuImageBackend<..>>`.
 
 pub mod policy;
 pub mod upload;
