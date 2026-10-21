@@ -179,7 +179,6 @@ impl fmt::Debug for ShellOverlayOptions {
 }
 
 /// The mutable state (C# private fields). One `RefCell`; no borrow is held across a call to an injected callback, a seam or the OS (D-W8B4O-7).
-// Fields read only by W8-15i (input, paint) carry `allow(dead_code)`; the allows go when 15i lands.
 pub(super) struct OverlayState {
     /// C# `_host`: roots `InfoOverlayHost` then `ToolbarPanel`.
     pub(super) host: OverlayHost,
@@ -194,17 +193,14 @@ pub(super) struct OverlayState {
     /// C# `_infoGate`.
     pub(super) info_gate: FadeTargetGate,
     /// C# `_tooltipScratch` (reused list).
-    #[allow(dead_code)] // read by W8-15i (paint)
     pub(super) tooltip_scratch: Vec<crate::shell_overlay::tooltips::OverlayTooltip>,
     /// C# `_model`.
     pub(super) model: OverlayModel,
     /// C# `_hot`.
     pub(super) hot: Option<OverlayButton>,
     /// C# `_pressed`.
-    #[allow(dead_code)] // read by W8-15i (input)
     pub(super) pressed: Option<OverlayButton>,
     /// C# `_pointerDown`.
-    #[allow(dead_code)] // read by W8-15i (input)
     pub(super) pointer_down: bool,
     /// C# `_toolbarMouseInsideHotZone` (initially `true`: "inside" until the mouse says otherwise, as WPF).
     pub(super) toolbar_mouse_inside_hot_zone: bool,
@@ -267,7 +263,6 @@ impl OverlayState {
 /// C# `ShellOverlay`. Created with [`ShellOverlay::new`] as an `Rc` (the frame handler holds a `Weak`). UI thread only.
 pub struct ShellOverlay {
     pub(super) state: RefCell<OverlayState>,
-    #[allow(dead_code)] // read by W8-15i (input)
     pub(super) commands: RefCell<Box<dyn OverlayCommands>>,
     pub(super) text: Rc<dyn TextRenderer>,
     pub(super) text_renderer_id: u64,
@@ -275,15 +270,10 @@ pub struct ShellOverlay {
     pub(super) settings: Box<dyn Fn() -> Arc<AppSettings>>,
     pub(super) request_render: Box<dyn Fn()>,
     pub(super) is_window_active: Box<dyn Fn() -> bool>,
-    #[allow(dead_code)] // read by W8-15i (input)
     pub(super) menus: Option<Rc<dyn OverlayMenuHost>>,
-    #[allow(dead_code)] // read by W8-15i (paint)
     pub(super) tooltips: Option<Rc<dyn OverlayTooltips>>,
-    #[allow(dead_code)] // read by W8-15i (input)
     pub(super) client_origin_on_screen_dip: Option<Box<dyn Fn() -> PointD>>,
-    #[allow(dead_code)] // read by W8-15i (input)
     pub(super) on_command_failed: Option<CommandFailedHandler>,
-    #[allow(dead_code)] // read by W8-15i (input)
     pub(super) on_menu_failed: Option<MenuFailedHandler>,
     pub(super) timestamp: Box<dyn Fn() -> i64>,
     #[allow(dead_code)] // kept for symmetry with the timers' own copy; the C# options carried it
