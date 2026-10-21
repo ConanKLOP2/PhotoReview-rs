@@ -87,3 +87,7 @@ pub mod test_support;
 
 /// Wave 8 viewing adapters that need no `pr-app` type (W8-16a/16e stubs; `pr-app` depends on this crate).
 pub mod shell_viewing;
+
+/// Wave 8 Win32 foundation (W8-11a to W8-11e stubs): constants, struct layouts and thin wrappers that replace `PhotoReview.Shell.Interop`.
+#[cfg(windows)]
+pub mod win32;
