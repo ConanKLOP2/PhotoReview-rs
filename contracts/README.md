@@ -1760,3 +1760,76 @@ Contract-only lane E of Wave 9 (plan: `docs/WAVE-9-PLAN-edt.md`; C# baseline `7e
 
 ### Not verified
 The three new oracle commands were run twice at `7eaee2a2` with byte-identical goldens. No oracle exists for E2, E3, E4, E5, E8 and E9. The mutation runs, the native tests and the desktop run are not done. The en/vi catalog keys are not synced. No unit is ported.
+
+## Wave 9 sync (FEAT-RENAME)
+
+Contract-only lane R of Wave 9 (plan: `docs/WAVE-9-PLAN-ren.md`; C# baseline `7eaee2a2`, compared with `d92d6aae`; feature commits `55a37986` core, `9800058e` state, `170a2d19` UI): 11 contracts (`contracts/W9-R1.md` .. `W9-R11.md`). These are planned ports, not implemented Rust behavior or an advance of `docs/SYNC-LEDGER.md`. Lane E merged first.
+
+| Unit | Contract | Kind | Oracle command (golden cases) | Depends on |
+|---|---|---|---|---|
+| W9-R1 rename name policy and JPEG+RAW+XMP plan | `contracts/W9-R1.md` | G | `w9-r1-rename-policy` (input staged in `tests/golden-inputs/staged/`) | none |
+| W9-R2 case-only rename and `FileActionService.rename` | `contracts/W9-R2.md` | F + N | none | R1 |
+| W9-R3 journal, undo and recovery for case-only pairs | `contracts/W9-R3.md` | F + N | none | R2 |
+| W9-R4 catalog rekey and cache key | `contracts/W9-R4.md` | F | none | R1 |
+| W9-R5 `FileActionController` rename | `contracts/W9-R5.md` | F | none | R1–R4 |
+| W9-R6 `ImagePresenter`, `ZoomDetailLoader`, `MainViewModel` retarget | `contracts/W9-R6.md` | F | none | R4, R5 |
+| W9-R7 settings, menu, shortcut and `RenamePromptPresenter` | `contracts/W9-R7.md` | F | none | R1, R6 |
+| W9-R8 native `RenamePromptDialog` and shell wiring | `contracts/W9-R8.md` | N | none | R7 |
+| W9-R9 core rename and fault matrix test owner | `contracts/W9-R9.md` | F + N | none | R2, R3 |
+| W9-R10 controller, presenter and view-model test owner | `contracts/W9-R10.md` | F | none | R5, R6, R7 |
+| W9-R11 native dialog and shell end-to-end test owner | `contracts/W9-R11.md` | N | none | R8 |
+
+### Decisions
+
+| ID | Decision |
+|---|---|
+| D-W9R-1 | The name policy and JPEG+RAW+XMP plan are pure `pr_core::file_actions::rename` APIs; string comparison follows C# OrdinalIgnoreCase, but name bytes and extension spelling are preserved. |
+| D-W9R-2 | Rename is a same-folder Move using the existing journal schema and service gate. The Rust operation is blocking on the file-action lane per R0003; no new async runtime or `FileOperationType` variant. |
+| D-W9R-3 | Undo, reconcile and recovery use stored spelling for case-only pairs; a third spelling is ambiguous and stays recoverable. |
+| D-W9R-4 | Catalog rekey is atomic and in place; preserve index/metadata, bump one structural version, invalidate old-path caches. |
+| D-W9R-5 | Controller order is validation, generation stop, preload cancel, worker I/O, catalog/session/presenter/cache rekey, preload restart; same name changes nothing. |
+| D-W9R-6 | Retarget displayed state without decoding when possible. MainViewModel methods mutate and return `ChangeSet`; off-thread completion uses existing event plumbing. |
+| D-W9R-7 | Menu item is Win32-only, appended as ID 18; F2 is optional default and an Action shortcut wins collision. Prompt validation checks catalog while typing and disk only on commit. |
+| D-W9R-8 | Native rename dialog is separate from `TextPromptDialog` (the latter belongs to FEAT-EXTERNAL-EDITORS). F2 and right-click menu use one command path. |
+| D-W9R-9 | Core fault matrix is a separate test owner because the C# test file exceeds a production slice; no real Recycle Bin operation. |
+| D-W9R-10 | Large controller/presenter/view-model test suites are separate test owners; deterministic fakes replace sleeps. |
+| D-W9R-11 | Native dialog and shell end-to-end tests remain `Partial` until an attended/hidden desktop run, regardless of cargo check. |
+| D-W9R-12 | **Needs a human decision:** C# `RenameNamePolicy.Check` throws on a blank current path; Rust returns `RenameNameProblem::Empty` instead of panicking (default chosen, change only if a hard error type is wanted). |
+| D-W9R-13 | Merge order resolved: lane E merged first. `RenameFile` stays last after `OpenInDefaultEditor`; `ReviewCommandType::RenameFile = 31`. |
+| D-W9R-14 | Golden-pinned settings cases stay at `d92d6aae` until the lead advances `SYNC-LEDGER`; R7 updates rename expectations by hand. |
+
+### Unconfirmed sources
+
+For every item here the binding decision is **the C# code as implemented at `7eaee2a2` is the spec**. The older document at `57b04243` is a design rationale and was never confirmed as a behavior override.
+
+| Design item or open question | Implemented C# resolution / divergence |
+|---|---|
+| Q1 case-only rename | Supported with `CaseOnlyRename` and stored-name enumeration; no temporary file name. |
+| Q2 F2 default | `ShortcutMappings.RenameFile = "F2"`, optional/clearable; conflicting Action wins. |
+| Q3 single Undo slot | Rename registers as Move and replaces the latest Undo action. |
+| Q4 sidecar scope | JPEG+RAW group with known `.xmp` only. PR4 sidecar discovery is absent; do not invent `.dop`, `.pp3`, `.acr` support. |
+| Q5 UI scope | **Divergence:** design recommends both Win32 and WPF, PR3 implements Win32 only. `ContextMenuItemInfo.ShellOnly` hides it from WPF and WPF settings preserves the hidden choice. |
+| Q6 location after rename | Preserve index and viewer state; no sort or folder reload. |
+| Q7 untouched failure | Journal line is Dismissed when unchanged is proven; ambiguous mutation stays Failed. |
+| Design R36 title bar path was not checked | Implemented presenter/session notification and title propagation are the spec; tests must check displayed name rather than assume the old design inventory. |
+| Manifest `longPathAware` was not checked | Implemented `RenameNamePolicy.Check` defaults to `longPathAware=false`; reject a new path reaching 260 only when longer than the existing one. |
+| LibRaw file share mode was not checked | No claim that native RAW decode permits rename; cancel ZoomDetail pending work and require native verification. |
+| Failure message for file locked by an external editor | **Divergence:** design suggests text telling user to close the editor; PR3 shows the generic `status.renameFailed` message on status bar, without an error dialog or special close-editor hint. |
+| Preview cache re-key was optional in design | **Divergence:** code evicts old-path cache and original dimensions; it does not re-key decoded RAM image under the new name. |
+| Design estimated four PRs | Implemented FEAT-RENAME commits are design, core, state and UI; the planned PR4 advanced sidecar discovery is absent. |
+| Design says no code until confirmation | Historical statement is obsolete after #527/#529/#530. Contract source is implemented code, status label remains unconfirmed. |
+
+### Localisation ownership
+
+The source of all text is C# `src/PhotoReview.Core/Localization/Languages/{en,vi}.json` at `7eaee2a2`; the Rust catalog lives in `assets/languages/{en,vi}.json` and generated flat `pr_l10n::keys`/`tr`. Do not hand-edit synced language assets; the integration lead runs the sync tool after the baseline moves.
+
+- R2: `core.fileAction.renameInvalidName`.
+- R5/R6: `status.renamed`, `status.renameFailed`, `status.renameUnchanged`, `status.renameUndone`.
+- R7/R8: `main.menu.renameFile`, `main.menu.renameFile.automationName`, `settings.contextMenu.item.renameFile`, `settings.shortcut.renameFile`, `settings.shortcut.renameFile.clearAutomationName`, `dialog.rename.title`, `dialog.rename.label`, `dialog.rename.ok`, `dialog.rename.error.empty`, `.invalidCharacter`, `.trailingDot`, `.reservedName`, `.tooLong`, `.pathTooLong`, `.sidecarNotMappable`, `.exists` (the last eight suffixes are under `dialog.rename.error`).
+
+### Needs a human or product decision (acted on as recommended, P-49)
+
+1. D-W9R-12: blank current path maps to `RenameNameProblem::Empty`.
+2. Keep WPF-only `ShellOnly` semantics for parity; no WPF window port is planned.
+3. The lead advances `docs/SYNC-LEDGER.md` only after triaging unrelated C# changes in the range; golden-pinned settings stay at `d92d6aae` until then.
+4. Generate the `w9-r1-rename-policy` oracle golden with `-p:W9RenameBaseline=true`; the golden generator moves its input out of `tests/golden-inputs/staged/` in the same change.

@@ -79,7 +79,9 @@ if ($requiredDlls | Where-Object { -not (Test-Path (Join-Path $coreDir $_)) }) {
 }
 
 $oracleOut = Join-Path $work 'oracle'
-& dotnet build (Join-Path $root 'tools\oracle-cs\OracleCs.csproj') -c Release -o $oracleOut -nologo -v quiet "-p:CSharpCoreDir=$coreDir" "-p:CSharpSrcDir=$(Join-Path $work 'src')"
+# Enable the W9 rename baseline only when its extracted C# source exists.
+$w9RenameBaseline = if (Test-Path (Join-Path $work 'src\src\PhotoReview.Core\FileActions\RenameNamePolicy.cs')) { 'true' } else { 'false' }
+& dotnet build (Join-Path $root 'tools\oracle-cs\OracleCs.csproj') -c Release -o $oracleOut -nologo -v quiet "-p:CSharpCoreDir=$coreDir" "-p:CSharpSrcDir=$(Join-Path $work 'src')" "-p:W9RenameBaseline=$w9RenameBaseline"
 if ($LASTEXITCODE -ne 0) { throw 'oracle-cs build failed' }
 # W5: turbojpeg-native-decode and libraw-decoder-native load the native DLLs from the folder of oracle-cs.exe.
 foreach ($native in 'turbojpeg.dll', 'libraw.dll') {
@@ -90,6 +92,9 @@ foreach ($native in 'turbojpeg.dll', 'libraw.dll') {
 $inputs = Join-Path $root 'tests\golden-inputs'
 if (-not $Command) { $Command = Get-ChildItem $inputs -Filter *.json | ForEach-Object BaseName }
 foreach ($c in $Command) {
-    & (Join-Path $oracleOut 'oracle-cs.exe') $c (Join-Path $inputs "$c.json") (Join-Path $root "tests\golden\$c.json") $sha
+    # Explicit commands may use staged inputs when no top-level golden input exists.
+    $inputPath = Join-Path $inputs "$c.json"
+    if (-not (Test-Path $inputPath) -and (Test-Path (Join-Path $inputs "staged\$c.json"))) { $inputPath = Join-Path $inputs "staged\$c.json" }
+    & (Join-Path $oracleOut 'oracle-cs.exe') $c $inputPath (Join-Path $root "tests\golden\$c.json") $sha
     if ($LASTEXITCODE -ne 0) { throw "oracle-cs $c failed" }
 }

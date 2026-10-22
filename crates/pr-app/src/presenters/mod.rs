@@ -7,6 +7,7 @@ pub mod benchmark_presentation;
 pub mod recovery_filter;
 pub mod recovery_presentation;
 pub mod recovery_window;
+pub mod rename_prompt;
 pub mod secondary;
 pub mod settings;
 pub mod settings_field_map;

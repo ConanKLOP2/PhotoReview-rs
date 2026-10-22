@@ -282,6 +282,18 @@ impl fmt::Debug for ZoomDetailLoader {
 }
 
 impl ZoomDetailLoader {
+    /// FEAT-RENAME (C# `RetargetPath(long newToken, string newPath)`, W9-R6 stub): the file behind the current target was
+    /// renamed (same pixels). Cancels the not-yet-started decode, re-arms the target under `new_path` and the navigation
+    /// `new_token` with a NEW target `id` (a decode already running for the old path must see another target and drop its
+    /// pixels), keeps a held original and the shown state, moves a latched failure to the new token, and restarts the
+    /// decode when zoomed without an original. No target is a no-op; a blank path is a caller bug (debug assertion).
+    pub fn retarget_path(&mut self, new_token: i64, new_path: &str) -> ZoomDetailEffects {
+        let _ = (new_token, new_path);
+        todo!()
+    }
+}
+
+impl ZoomDetailLoader {
     /// C# constructor `(previewService, clock, show, uiScheduler)`. `show` and `uiScheduler` are gone (effects + inbox); `runner`
     /// runs the decode wait and the indicator delay; `wake` is called after every completion arrived (see [`WakeFn`]).
     /// Starts nothing, reads no file. Indicator delay: [`default_indicator_delay`].

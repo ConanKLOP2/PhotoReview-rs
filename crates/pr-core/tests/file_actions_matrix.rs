@@ -554,6 +554,7 @@ fn do_group(rig: &mut Rig, operation: FileOperationType, destination: Option<&st
         operation,
         destination: destination.map(str::to_owned),
         allow_permanent_delete: opts.permanent,
+        destination_file_names: None,
     };
     let cancel = if opts.cancellable {
         rig.token()

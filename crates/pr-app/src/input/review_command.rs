@@ -40,6 +40,8 @@ pub enum ReviewCommandType {
     /// W9-E7 (FEAT-EXTERNAL-EDITORS): sends the current photo to the default external editor. C# declares it right after `Refresh` (value 30);
     /// FEAT-RENAME's `RenameFile` follows it (value 31, not part of lane W9-E).
     OpenInDefaultEditor = 30,
+    /// FEAT-RENAME: F2 or Win32 context-menu command.
+    RenameFile = 31,
 }
 
 impl ReviewCommandType {
@@ -63,6 +65,7 @@ impl ReviewCommandType {
                 | Self::CustomZoom
                 | Self::ToggleCaptureMember
                 | Self::Refresh
+                | Self::RenameFile
         )
     }
 }
@@ -145,4 +148,6 @@ impl ReviewCommand {
     pub const REFRESH: Self = Self::new(ReviewCommandType::Refresh);
     /// W9-E7: C# `ReviewCommand.OpenInDefaultEditor`.
     pub const OPEN_IN_DEFAULT_EDITOR: Self = Self::new(ReviewCommandType::OpenInDefaultEditor);
+    /// FEAT-RENAME command shared by F2 and the Win32 menu.
+    pub const RENAME_FILE: Self = Self::new(ReviewCommandType::RenameFile);
 }

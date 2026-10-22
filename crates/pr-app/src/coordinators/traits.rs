@@ -13,12 +13,15 @@
 //!   `MoveOverride` (`pr_core::file_actions::undo`).
 //! - Pure module: no `unsafe`, no `windows` crate (AGENTS.md, WAVE-8-PLAN "Crates and layering").
 
+use std::collections::HashMap;
 use std::io;
 use std::path::Path;
 use std::sync::Arc;
 use std::time::Duration;
 
 use pr_core::abstractions::SkippedEntry;
+use pr_core::catalog::types::CaptureGroup;
+use pr_core::file_actions::rename::RenameRequest;
 use pr_core::file_actions::service::FileActionService;
 use pr_core::file_actions::types::{
     CaptureGroupActionRequest, CaptureGroupActionResult, FileActionRequest, FileActionResult,
@@ -69,6 +72,19 @@ pub trait IFileActionExecutor {
 
     /// C# `ExecuteGroupAsync(request, ct)`, run synchronously and blocking (D-W8-2, R0003).
     fn execute_group(&self, request: &CaptureGroupActionRequest, cancel: &CancelToken) -> CaptureGroupActionResult;
+
+    /// FEAT-RENAME (C# default member `RenameAsync`, `FileActionService.RenameAsync`), blocking on the file-action lane (R0003).
+    /// W9-R5 stub: the C# default throws `NotSupportedException`; the porter returns a failed result instead of panicking.
+    fn rename(&self, request: &RenameRequest, cancel: &CancelToken) -> FileActionResult {
+        let _ = (request, cancel);
+        todo!()
+    }
+
+    /// FEAT-RENAME (C# default member `RenameGroupAsync`, `FileActionService.RenameGroupAsync`), blocking (R0003).
+    fn rename_group(&self, group: &CaptureGroup, typed_stem: &str, cancel: &CancelToken) -> CaptureGroupActionResult {
+        let _ = (group, typed_stem, cancel);
+        todo!()
+    }
 }
 
 /// C# `FileActionServiceExecutor(FileActionService service)`: production executor, forwards to the real service.
@@ -100,6 +116,14 @@ impl IFileActionExecutor for FileActionServiceExecutor {
     fn execute_group(&self, request: &CaptureGroupActionRequest, cancel: &CancelToken) -> CaptureGroupActionResult {
         self.service.execute_group(request, cancel)
     }
+
+    fn rename(&self, request: &RenameRequest, cancel: &CancelToken) -> FileActionResult {
+        self.service.rename(request, cancel)
+    }
+
+    fn rename_group(&self, group: &CaptureGroup, typed_stem: &str, cancel: &CancelToken) -> CaptureGroupActionResult {
+        self.service.rename_group(group, typed_stem, cancel)
+    }
 }
 
 /// C# `IFileActionSink` (39 lines): what a file action (move, copy, recycle, undo) needs from the UI.
@@ -127,6 +151,15 @@ pub trait IFileActionSink {
 
     /// C# `NotifyNavigationStateChanged()`: undo history, button states and similar must be refreshed.
     fn notify_navigation_state_changed(&mut self);
+
+    /// FEAT-RENAME (C# default member `OnFilesRenamed`): files were renamed in place and the catalog already lists the new
+    /// names (`renames`: old path to new path, every member of a capture; empty after an attempt that changed nothing, where
+    /// it only re-arms what `StopForAction` stopped). Returns true when the shown image was kept in place; false when the
+    /// caller must present the current entry again. C# default body: `false`.
+    fn on_files_renamed(&mut self, renames: &HashMap<String, String>) -> bool {
+        let _ = renames;
+        false
+    }
 }
 
 /// C# `IFolderLoadSink` (56 lines): progress and result events of a folder load, delivered to the UI.
