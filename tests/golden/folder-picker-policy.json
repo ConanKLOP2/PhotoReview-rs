@@ -1,0 +1,189 @@
+{
+  "generator": "oracle-cs folder-picker-policy",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "id": "null",
+      "folder": null,
+      "kind": "usable",
+      "result": null
+    },
+    {
+      "id": "empty",
+      "folder": "",
+      "kind": "usable",
+      "result": null
+    },
+    {
+      "id": "space-only",
+      "folder": "  ",
+      "kind": "usable",
+      "result": null
+    },
+    {
+      "id": "existing-root",
+      "folder": "$ROOT",
+      "kind": "usable",
+      "result": "same"
+    },
+    {
+      "id": "existing-subfolder",
+      "folder": "$ROOT\\photos",
+      "kind": "usable",
+      "result": "same"
+    },
+    {
+      "id": "existing-trailing-separator",
+      "folder": "$ROOT\\photos\\",
+      "kind": "usable",
+      "result": "same"
+    },
+    {
+      "id": "existing-dot-dot-segment",
+      "folder": "$ROOT\\photos\\sub\\..",
+      "kind": "usable",
+      "result": "same"
+    },
+    {
+      "id": "existing-other-case",
+      "folder": "$ROOT\\PHOTOS",
+      "kind": "usable",
+      "result": "same"
+    },
+    {
+      "id": "existing-trailing-spaces",
+      "folder": "$ROOT\\photos  ",
+      "kind": "usable",
+      "result": "same"
+    },
+    {
+      "id": "existing-extended-prefix",
+      "folder": "\\\\?\\$ROOT\\photos",
+      "kind": "usable",
+      "result": "same"
+    },
+    {
+      "id": "existing-forward-slashes",
+      "folder": "$ROOT/photos/sub",
+      "kind": "usable",
+      "result": "same"
+    },
+    {
+      "id": "existing-drive-root",
+      "folder": "C:\\",
+      "kind": "usable",
+      "result": "same"
+    },
+    {
+      "id": "existing-current-folder",
+      "folder": ".",
+      "kind": "usable",
+      "result": "same"
+    },
+    {
+      "id": "file-not-folder",
+      "folder": "$ROOT\\a.jpg",
+      "kind": "usable",
+      "result": null
+    },
+    {
+      "id": "missing-folder",
+      "folder": "$ROOT\\missing",
+      "kind": "usable",
+      "result": null
+    },
+    {
+      "id": "missing-relative",
+      "folder": "oracle-w8-18b-no-such-folder",
+      "kind": "usable",
+      "result": null
+    },
+    {
+      "id": "invalid-character",
+      "folder": "$ROOT\\photos|x",
+      "kind": "usable",
+      "result": null
+    },
+    {
+      "id": "embedded-nul",
+      "folder": "$ROOT\\photos\u0000x",
+      "kind": "usable",
+      "result": null
+    },
+    {
+      "id": "existing-initial-is-forwarded-unchanged",
+      "owner": 4660,
+      "title": "Choose",
+      "folder": "$ROOT\\photos\\",
+      "answer": "D:\\Photos",
+      "kind": "pick",
+      "result": "D:\\Photos",
+      "shown": {
+        "owner": 4660,
+        "title": "Choose",
+        "initial": "$ROOT\\photos\\"
+      }
+    },
+    {
+      "id": "missing-initial-is-dropped",
+      "owner": 4660,
+      "title": "Choose",
+      "folder": "$ROOT\\missing",
+      "answer": "D:\\Photos",
+      "kind": "pick",
+      "result": "D:\\Photos",
+      "shown": {
+        "owner": 4660,
+        "title": "Choose",
+        "initial": null
+      }
+    },
+    {
+      "id": "empty-initial-is-dropped",
+      "owner": 77,
+      "title": "Chọn thư mục ảnh",
+      "folder": "",
+      "answer": null,
+      "kind": "pick",
+      "result": null,
+      "shown": {
+        "owner": 77,
+        "title": "Chọn thư mục ảnh",
+        "initial": null
+      }
+    },
+    {
+      "id": "null-initial",
+      "owner": 0,
+      "title": "",
+      "folder": null,
+      "answer": null,
+      "kind": "pick",
+      "result": null,
+      "shown": {
+        "owner": 0,
+        "title": "",
+        "initial": null
+      }
+    },
+    {
+      "id": "cancelled-is-null",
+      "owner": 1,
+      "title": "T",
+      "folder": "$ROOT",
+      "answer": null,
+      "kind": "pick",
+      "result": null,
+      "shown": {
+        "owner": 1,
+        "title": "T",
+        "initial": "$ROOT"
+      }
+    },
+    {
+      "kind": "title",
+      "id": "pick-folder-title",
+      "text": "Choose an image folder"
+    }
+  ]
+}

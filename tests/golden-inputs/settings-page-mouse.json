@@ -1,0 +1,21 @@
+{
+ "command": "settings-page-mouse",
+ "notes": [
+  "Feeds W8-19h (dialogs::settings::pages::mouse). Reflection over the internal MouseSettingsPage and SettingsPageBuilder of PhotoReview.dll; see tools/oracle-cs/Commands/W8-19h.cs for the case kinds and output fields.",
+  "id_base is SettingsDialog.PageIdBase(2) = 3000 (Mouse is the third navigation entry). English default localizer. Run against the C# baseline d92d6aae (the HEAD page asks for ContextMenuRows(includeShellOnly: true))."
+ ],
+ "cases": [
+  {
+   "name": "Mouse page declaration",
+   "kind": "declare",
+   "page": "Mouse",
+   "id_base": 3000,
+   "fields": [
+    "_clickZoomPercent", "_clickToZoom", "_arrowPanStep", "_keyboardZoomAnchor", "_zoomShortcutsSummary", "_fitWidthAnchor", "_keepZoom",
+    "_keyboardZoomStep", "_fitWidthAnchor2", "_middleClick", "_clickZoomKeyTogglesFit", "_mouseWheel", "_kineticPan", "_kineticSmoothing",
+    "_arrowKeyAtEdge", "_imageTransition", "_imageTransitionMs", "_touchpadSwipe", "_touchpadDistance"
+   ],
+   "menu_checks": true
+  }
+ ]
+}

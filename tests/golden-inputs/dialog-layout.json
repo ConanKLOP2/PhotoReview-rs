@@ -1,0 +1,958 @@
+{
+ "command": "dialog-layout",
+ "notes": [
+  "Feeds W8-18i (dialogs::native::dialog::{dpi, layout}); the kinds style and constants are also compared by W8-18h and W8-18j. Reflection over the internal NativeDialog and its subclasses of the PhotoReview (Shell.Win32) assembly; no window is created.",
+  "A window-less dialog is RuntimeHelpers.GetUninitializedObject(ListDialog) with _avgCharWidth, _lineHeight and an empty _childHosts set by reflection (hwnd 0): ButtonWidth(ids) is then exactly Dx(50).",
+  "Output per kind: dlu -> dx, dy; button_row -> row_width, button_width, placed (the PlaceButtonRow result for client width 600, right margin 10, top 5, height 20); style -> style, ex_style (uint); constants -> id_ok, id_cancel, size_minimized, ws_default_dialog, list_view_subclass_id, item_tip_subclass_id, idc_wait."
+ ],
+ "cases": [
+  {
+   "name": "dlu avg 6 line 15 units -5",
+   "kind": "dlu",
+   "avg": 6,
+   "line": 15,
+   "units": -5
+  },
+  {
+   "name": "dlu avg 6 line 15 units -4",
+   "kind": "dlu",
+   "avg": 6,
+   "line": 15,
+   "units": -4
+  },
+  {
+   "name": "dlu avg 6 line 15 units -1",
+   "kind": "dlu",
+   "avg": 6,
+   "line": 15,
+   "units": -1
+  },
+  {
+   "name": "dlu avg 6 line 15 units 0",
+   "kind": "dlu",
+   "avg": 6,
+   "line": 15,
+   "units": 0
+  },
+  {
+   "name": "dlu avg 6 line 15 units 1",
+   "kind": "dlu",
+   "avg": 6,
+   "line": 15,
+   "units": 1
+  },
+  {
+   "name": "dlu avg 6 line 15 units 2",
+   "kind": "dlu",
+   "avg": 6,
+   "line": 15,
+   "units": 2
+  },
+  {
+   "name": "dlu avg 6 line 15 units 3",
+   "kind": "dlu",
+   "avg": 6,
+   "line": 15,
+   "units": 3
+  },
+  {
+   "name": "dlu avg 6 line 15 units 4",
+   "kind": "dlu",
+   "avg": 6,
+   "line": 15,
+   "units": 4
+  },
+  {
+   "name": "dlu avg 6 line 15 units 5",
+   "kind": "dlu",
+   "avg": 6,
+   "line": 15,
+   "units": 5
+  },
+  {
+   "name": "dlu avg 6 line 15 units 6",
+   "kind": "dlu",
+   "avg": 6,
+   "line": 15,
+   "units": 6
+  },
+  {
+   "name": "dlu avg 6 line 15 units 7",
+   "kind": "dlu",
+   "avg": 6,
+   "line": 15,
+   "units": 7
+  },
+  {
+   "name": "dlu avg 6 line 15 units 16",
+   "kind": "dlu",
+   "avg": 6,
+   "line": 15,
+   "units": 16
+  },
+  {
+   "name": "dlu avg 6 line 15 units 50",
+   "kind": "dlu",
+   "avg": 6,
+   "line": 15,
+   "units": 50
+  },
+  {
+   "name": "dlu avg 6 line 15 units 240",
+   "kind": "dlu",
+   "avg": 6,
+   "line": 15,
+   "units": 240
+  },
+  {
+   "name": "dlu avg 6 line 15 units 420",
+   "kind": "dlu",
+   "avg": 6,
+   "line": 15,
+   "units": 420
+  },
+  {
+   "name": "dlu avg 6 line 15 units 1000",
+   "kind": "dlu",
+   "avg": 6,
+   "line": 15,
+   "units": 1000
+  },
+  {
+   "name": "dlu avg 7 line 16 units -5",
+   "kind": "dlu",
+   "avg": 7,
+   "line": 16,
+   "units": -5
+  },
+  {
+   "name": "dlu avg 7 line 16 units -4",
+   "kind": "dlu",
+   "avg": 7,
+   "line": 16,
+   "units": -4
+  },
+  {
+   "name": "dlu avg 7 line 16 units -1",
+   "kind": "dlu",
+   "avg": 7,
+   "line": 16,
+   "units": -1
+  },
+  {
+   "name": "dlu avg 7 line 16 units 0",
+   "kind": "dlu",
+   "avg": 7,
+   "line": 16,
+   "units": 0
+  },
+  {
+   "name": "dlu avg 7 line 16 units 1",
+   "kind": "dlu",
+   "avg": 7,
+   "line": 16,
+   "units": 1
+  },
+  {
+   "name": "dlu avg 7 line 16 units 2",
+   "kind": "dlu",
+   "avg": 7,
+   "line": 16,
+   "units": 2
+  },
+  {
+   "name": "dlu avg 7 line 16 units 3",
+   "kind": "dlu",
+   "avg": 7,
+   "line": 16,
+   "units": 3
+  },
+  {
+   "name": "dlu avg 7 line 16 units 4",
+   "kind": "dlu",
+   "avg": 7,
+   "line": 16,
+   "units": 4
+  },
+  {
+   "name": "dlu avg 7 line 16 units 5",
+   "kind": "dlu",
+   "avg": 7,
+   "line": 16,
+   "units": 5
+  },
+  {
+   "name": "dlu avg 7 line 16 units 6",
+   "kind": "dlu",
+   "avg": 7,
+   "line": 16,
+   "units": 6
+  },
+  {
+   "name": "dlu avg 7 line 16 units 7",
+   "kind": "dlu",
+   "avg": 7,
+   "line": 16,
+   "units": 7
+  },
+  {
+   "name": "dlu avg 7 line 16 units 16",
+   "kind": "dlu",
+   "avg": 7,
+   "line": 16,
+   "units": 16
+  },
+  {
+   "name": "dlu avg 7 line 16 units 50",
+   "kind": "dlu",
+   "avg": 7,
+   "line": 16,
+   "units": 50
+  },
+  {
+   "name": "dlu avg 7 line 16 units 240",
+   "kind": "dlu",
+   "avg": 7,
+   "line": 16,
+   "units": 240
+  },
+  {
+   "name": "dlu avg 7 line 16 units 420",
+   "kind": "dlu",
+   "avg": 7,
+   "line": 16,
+   "units": 420
+  },
+  {
+   "name": "dlu avg 7 line 16 units 1000",
+   "kind": "dlu",
+   "avg": 7,
+   "line": 16,
+   "units": 1000
+  },
+  {
+   "name": "dlu avg 8 line 20 units -5",
+   "kind": "dlu",
+   "avg": 8,
+   "line": 20,
+   "units": -5
+  },
+  {
+   "name": "dlu avg 8 line 20 units -4",
+   "kind": "dlu",
+   "avg": 8,
+   "line": 20,
+   "units": -4
+  },
+  {
+   "name": "dlu avg 8 line 20 units -1",
+   "kind": "dlu",
+   "avg": 8,
+   "line": 20,
+   "units": -1
+  },
+  {
+   "name": "dlu avg 8 line 20 units 0",
+   "kind": "dlu",
+   "avg": 8,
+   "line": 20,
+   "units": 0
+  },
+  {
+   "name": "dlu avg 8 line 20 units 1",
+   "kind": "dlu",
+   "avg": 8,
+   "line": 20,
+   "units": 1
+  },
+  {
+   "name": "dlu avg 8 line 20 units 2",
+   "kind": "dlu",
+   "avg": 8,
+   "line": 20,
+   "units": 2
+  },
+  {
+   "name": "dlu avg 8 line 20 units 3",
+   "kind": "dlu",
+   "avg": 8,
+   "line": 20,
+   "units": 3
+  },
+  {
+   "name": "dlu avg 8 line 20 units 4",
+   "kind": "dlu",
+   "avg": 8,
+   "line": 20,
+   "units": 4
+  },
+  {
+   "name": "dlu avg 8 line 20 units 5",
+   "kind": "dlu",
+   "avg": 8,
+   "line": 20,
+   "units": 5
+  },
+  {
+   "name": "dlu avg 8 line 20 units 6",
+   "kind": "dlu",
+   "avg": 8,
+   "line": 20,
+   "units": 6
+  },
+  {
+   "name": "dlu avg 8 line 20 units 7",
+   "kind": "dlu",
+   "avg": 8,
+   "line": 20,
+   "units": 7
+  },
+  {
+   "name": "dlu avg 8 line 20 units 16",
+   "kind": "dlu",
+   "avg": 8,
+   "line": 20,
+   "units": 16
+  },
+  {
+   "name": "dlu avg 8 line 20 units 50",
+   "kind": "dlu",
+   "avg": 8,
+   "line": 20,
+   "units": 50
+  },
+  {
+   "name": "dlu avg 8 line 20 units 240",
+   "kind": "dlu",
+   "avg": 8,
+   "line": 20,
+   "units": 240
+  },
+  {
+   "name": "dlu avg 8 line 20 units 420",
+   "kind": "dlu",
+   "avg": 8,
+   "line": 20,
+   "units": 420
+  },
+  {
+   "name": "dlu avg 8 line 20 units 1000",
+   "kind": "dlu",
+   "avg": 8,
+   "line": 20,
+   "units": 1000
+  },
+  {
+   "name": "dlu avg 9 line 24 units -5",
+   "kind": "dlu",
+   "avg": 9,
+   "line": 24,
+   "units": -5
+  },
+  {
+   "name": "dlu avg 9 line 24 units -4",
+   "kind": "dlu",
+   "avg": 9,
+   "line": 24,
+   "units": -4
+  },
+  {
+   "name": "dlu avg 9 line 24 units -1",
+   "kind": "dlu",
+   "avg": 9,
+   "line": 24,
+   "units": -1
+  },
+  {
+   "name": "dlu avg 9 line 24 units 0",
+   "kind": "dlu",
+   "avg": 9,
+   "line": 24,
+   "units": 0
+  },
+  {
+   "name": "dlu avg 9 line 24 units 1",
+   "kind": "dlu",
+   "avg": 9,
+   "line": 24,
+   "units": 1
+  },
+  {
+   "name": "dlu avg 9 line 24 units 2",
+   "kind": "dlu",
+   "avg": 9,
+   "line": 24,
+   "units": 2
+  },
+  {
+   "name": "dlu avg 9 line 24 units 3",
+   "kind": "dlu",
+   "avg": 9,
+   "line": 24,
+   "units": 3
+  },
+  {
+   "name": "dlu avg 9 line 24 units 4",
+   "kind": "dlu",
+   "avg": 9,
+   "line": 24,
+   "units": 4
+  },
+  {
+   "name": "dlu avg 9 line 24 units 5",
+   "kind": "dlu",
+   "avg": 9,
+   "line": 24,
+   "units": 5
+  },
+  {
+   "name": "dlu avg 9 line 24 units 6",
+   "kind": "dlu",
+   "avg": 9,
+   "line": 24,
+   "units": 6
+  },
+  {
+   "name": "dlu avg 9 line 24 units 7",
+   "kind": "dlu",
+   "avg": 9,
+   "line": 24,
+   "units": 7
+  },
+  {
+   "name": "dlu avg 9 line 24 units 16",
+   "kind": "dlu",
+   "avg": 9,
+   "line": 24,
+   "units": 16
+  },
+  {
+   "name": "dlu avg 9 line 24 units 50",
+   "kind": "dlu",
+   "avg": 9,
+   "line": 24,
+   "units": 50
+  },
+  {
+   "name": "dlu avg 9 line 24 units 240",
+   "kind": "dlu",
+   "avg": 9,
+   "line": 24,
+   "units": 240
+  },
+  {
+   "name": "dlu avg 9 line 24 units 420",
+   "kind": "dlu",
+   "avg": 9,
+   "line": 24,
+   "units": 420
+  },
+  {
+   "name": "dlu avg 9 line 24 units 1000",
+   "kind": "dlu",
+   "avg": 9,
+   "line": 24,
+   "units": 1000
+  },
+  {
+   "name": "dlu avg 10 line 28 units -5",
+   "kind": "dlu",
+   "avg": 10,
+   "line": 28,
+   "units": -5
+  },
+  {
+   "name": "dlu avg 10 line 28 units -4",
+   "kind": "dlu",
+   "avg": 10,
+   "line": 28,
+   "units": -4
+  },
+  {
+   "name": "dlu avg 10 line 28 units -1",
+   "kind": "dlu",
+   "avg": 10,
+   "line": 28,
+   "units": -1
+  },
+  {
+   "name": "dlu avg 10 line 28 units 0",
+   "kind": "dlu",
+   "avg": 10,
+   "line": 28,
+   "units": 0
+  },
+  {
+   "name": "dlu avg 10 line 28 units 1",
+   "kind": "dlu",
+   "avg": 10,
+   "line": 28,
+   "units": 1
+  },
+  {
+   "name": "dlu avg 10 line 28 units 2",
+   "kind": "dlu",
+   "avg": 10,
+   "line": 28,
+   "units": 2
+  },
+  {
+   "name": "dlu avg 10 line 28 units 3",
+   "kind": "dlu",
+   "avg": 10,
+   "line": 28,
+   "units": 3
+  },
+  {
+   "name": "dlu avg 10 line 28 units 4",
+   "kind": "dlu",
+   "avg": 10,
+   "line": 28,
+   "units": 4
+  },
+  {
+   "name": "dlu avg 10 line 28 units 5",
+   "kind": "dlu",
+   "avg": 10,
+   "line": 28,
+   "units": 5
+  },
+  {
+   "name": "dlu avg 10 line 28 units 6",
+   "kind": "dlu",
+   "avg": 10,
+   "line": 28,
+   "units": 6
+  },
+  {
+   "name": "dlu avg 10 line 28 units 7",
+   "kind": "dlu",
+   "avg": 10,
+   "line": 28,
+   "units": 7
+  },
+  {
+   "name": "dlu avg 10 line 28 units 16",
+   "kind": "dlu",
+   "avg": 10,
+   "line": 28,
+   "units": 16
+  },
+  {
+   "name": "dlu avg 10 line 28 units 50",
+   "kind": "dlu",
+   "avg": 10,
+   "line": 28,
+   "units": 50
+  },
+  {
+   "name": "dlu avg 10 line 28 units 240",
+   "kind": "dlu",
+   "avg": 10,
+   "line": 28,
+   "units": 240
+  },
+  {
+   "name": "dlu avg 10 line 28 units 420",
+   "kind": "dlu",
+   "avg": 10,
+   "line": 28,
+   "units": 420
+  },
+  {
+   "name": "dlu avg 10 line 28 units 1000",
+   "kind": "dlu",
+   "avg": 10,
+   "line": 28,
+   "units": 1000
+  },
+  {
+   "name": "dlu avg 1 line 1 units -5",
+   "kind": "dlu",
+   "avg": 1,
+   "line": 1,
+   "units": -5
+  },
+  {
+   "name": "dlu avg 1 line 1 units -4",
+   "kind": "dlu",
+   "avg": 1,
+   "line": 1,
+   "units": -4
+  },
+  {
+   "name": "dlu avg 1 line 1 units -1",
+   "kind": "dlu",
+   "avg": 1,
+   "line": 1,
+   "units": -1
+  },
+  {
+   "name": "dlu avg 1 line 1 units 0",
+   "kind": "dlu",
+   "avg": 1,
+   "line": 1,
+   "units": 0
+  },
+  {
+   "name": "dlu avg 1 line 1 units 1",
+   "kind": "dlu",
+   "avg": 1,
+   "line": 1,
+   "units": 1
+  },
+  {
+   "name": "dlu avg 1 line 1 units 2",
+   "kind": "dlu",
+   "avg": 1,
+   "line": 1,
+   "units": 2
+  },
+  {
+   "name": "dlu avg 1 line 1 units 3",
+   "kind": "dlu",
+   "avg": 1,
+   "line": 1,
+   "units": 3
+  },
+  {
+   "name": "dlu avg 1 line 1 units 4",
+   "kind": "dlu",
+   "avg": 1,
+   "line": 1,
+   "units": 4
+  },
+  {
+   "name": "dlu avg 1 line 1 units 5",
+   "kind": "dlu",
+   "avg": 1,
+   "line": 1,
+   "units": 5
+  },
+  {
+   "name": "dlu avg 1 line 1 units 6",
+   "kind": "dlu",
+   "avg": 1,
+   "line": 1,
+   "units": 6
+  },
+  {
+   "name": "dlu avg 1 line 1 units 7",
+   "kind": "dlu",
+   "avg": 1,
+   "line": 1,
+   "units": 7
+  },
+  {
+   "name": "dlu avg 1 line 1 units 16",
+   "kind": "dlu",
+   "avg": 1,
+   "line": 1,
+   "units": 16
+  },
+  {
+   "name": "dlu avg 1 line 1 units 50",
+   "kind": "dlu",
+   "avg": 1,
+   "line": 1,
+   "units": 50
+  },
+  {
+   "name": "dlu avg 1 line 1 units 240",
+   "kind": "dlu",
+   "avg": 1,
+   "line": 1,
+   "units": 240
+  },
+  {
+   "name": "dlu avg 1 line 1 units 420",
+   "kind": "dlu",
+   "avg": 1,
+   "line": 1,
+   "units": 420
+  },
+  {
+   "name": "dlu avg 1 line 1 units 1000",
+   "kind": "dlu",
+   "avg": 1,
+   "line": 1,
+   "units": 1000
+  },
+  {
+   "name": "dlu avg 12 line 30 units -5",
+   "kind": "dlu",
+   "avg": 12,
+   "line": 30,
+   "units": -5
+  },
+  {
+   "name": "dlu avg 12 line 30 units -4",
+   "kind": "dlu",
+   "avg": 12,
+   "line": 30,
+   "units": -4
+  },
+  {
+   "name": "dlu avg 12 line 30 units -1",
+   "kind": "dlu",
+   "avg": 12,
+   "line": 30,
+   "units": -1
+  },
+  {
+   "name": "dlu avg 12 line 30 units 0",
+   "kind": "dlu",
+   "avg": 12,
+   "line": 30,
+   "units": 0
+  },
+  {
+   "name": "dlu avg 12 line 30 units 1",
+   "kind": "dlu",
+   "avg": 12,
+   "line": 30,
+   "units": 1
+  },
+  {
+   "name": "dlu avg 12 line 30 units 2",
+   "kind": "dlu",
+   "avg": 12,
+   "line": 30,
+   "units": 2
+  },
+  {
+   "name": "dlu avg 12 line 30 units 3",
+   "kind": "dlu",
+   "avg": 12,
+   "line": 30,
+   "units": 3
+  },
+  {
+   "name": "dlu avg 12 line 30 units 4",
+   "kind": "dlu",
+   "avg": 12,
+   "line": 30,
+   "units": 4
+  },
+  {
+   "name": "dlu avg 12 line 30 units 5",
+   "kind": "dlu",
+   "avg": 12,
+   "line": 30,
+   "units": 5
+  },
+  {
+   "name": "dlu avg 12 line 30 units 6",
+   "kind": "dlu",
+   "avg": 12,
+   "line": 30,
+   "units": 6
+  },
+  {
+   "name": "dlu avg 12 line 30 units 7",
+   "kind": "dlu",
+   "avg": 12,
+   "line": 30,
+   "units": 7
+  },
+  {
+   "name": "dlu avg 12 line 30 units 16",
+   "kind": "dlu",
+   "avg": 12,
+   "line": 30,
+   "units": 16
+  },
+  {
+   "name": "dlu avg 12 line 30 units 50",
+   "kind": "dlu",
+   "avg": 12,
+   "line": 30,
+   "units": 50
+  },
+  {
+   "name": "dlu avg 12 line 30 units 240",
+   "kind": "dlu",
+   "avg": 12,
+   "line": 30,
+   "units": 240
+  },
+  {
+   "name": "dlu avg 12 line 30 units 420",
+   "kind": "dlu",
+   "avg": 12,
+   "line": 30,
+   "units": 420
+  },
+  {
+   "name": "dlu avg 12 line 30 units 1000",
+   "kind": "dlu",
+   "avg": 12,
+   "line": 30,
+   "units": 1000
+  },
+  {
+   "name": "button row avg 6 line 15 count 0",
+   "kind": "button_row",
+   "avg": 6,
+   "line": 15,
+   "count": 0
+  },
+  {
+   "name": "button row avg 6 line 15 count 1",
+   "kind": "button_row",
+   "avg": 6,
+   "line": 15,
+   "count": 1
+  },
+  {
+   "name": "button row avg 6 line 15 count 2",
+   "kind": "button_row",
+   "avg": 6,
+   "line": 15,
+   "count": 2
+  },
+  {
+   "name": "button row avg 6 line 15 count 3",
+   "kind": "button_row",
+   "avg": 6,
+   "line": 15,
+   "count": 3
+  },
+  {
+   "name": "button row avg 6 line 15 count 4",
+   "kind": "button_row",
+   "avg": 6,
+   "line": 15,
+   "count": 4
+  },
+  {
+   "name": "button row avg 8 line 20 count 0",
+   "kind": "button_row",
+   "avg": 8,
+   "line": 20,
+   "count": 0
+  },
+  {
+   "name": "button row avg 8 line 20 count 1",
+   "kind": "button_row",
+   "avg": 8,
+   "line": 20,
+   "count": 1
+  },
+  {
+   "name": "button row avg 8 line 20 count 2",
+   "kind": "button_row",
+   "avg": 8,
+   "line": 20,
+   "count": 2
+  },
+  {
+   "name": "button row avg 8 line 20 count 3",
+   "kind": "button_row",
+   "avg": 8,
+   "line": 20,
+   "count": 3
+  },
+  {
+   "name": "button row avg 8 line 20 count 4",
+   "kind": "button_row",
+   "avg": 8,
+   "line": 20,
+   "count": 4
+  },
+  {
+   "name": "button row avg 1 line 1 count 0",
+   "kind": "button_row",
+   "avg": 1,
+   "line": 1,
+   "count": 0
+  },
+  {
+   "name": "button row avg 1 line 1 count 1",
+   "kind": "button_row",
+   "avg": 1,
+   "line": 1,
+   "count": 1
+  },
+  {
+   "name": "button row avg 1 line 1 count 2",
+   "kind": "button_row",
+   "avg": 1,
+   "line": 1,
+   "count": 2
+  },
+  {
+   "name": "button row avg 1 line 1 count 3",
+   "kind": "button_row",
+   "avg": 1,
+   "line": 1,
+   "count": 3
+  },
+  {
+   "name": "button row avg 1 line 1 count 4",
+   "kind": "button_row",
+   "avg": 1,
+   "line": 1,
+   "count": 4
+  },
+  {
+   "name": "button row avg 12 line 30 count 0",
+   "kind": "button_row",
+   "avg": 12,
+   "line": 30,
+   "count": 0
+  },
+  {
+   "name": "button row avg 12 line 30 count 1",
+   "kind": "button_row",
+   "avg": 12,
+   "line": 30,
+   "count": 1
+  },
+  {
+   "name": "button row avg 12 line 30 count 2",
+   "kind": "button_row",
+   "avg": 12,
+   "line": 30,
+   "count": 2
+  },
+  {
+   "name": "button row avg 12 line 30 count 3",
+   "kind": "button_row",
+   "avg": 12,
+   "line": 30,
+   "count": 3
+  },
+  {
+   "name": "button row avg 12 line 30 count 4",
+   "kind": "button_row",
+   "avg": 12,
+   "line": 30,
+   "count": 4
+  },
+  {
+   "name": "style words of ListDialog",
+   "kind": "style",
+   "type": "ListDialog"
+  },
+  {
+   "name": "style words of DiagnosticsDialog",
+   "kind": "style",
+   "type": "DiagnosticsDialog"
+  },
+  {
+   "name": "style words of BenchmarkDialog",
+   "kind": "style",
+   "type": "BenchmarkDialog"
+  },
+  {
+   "name": "style words of ZoomPromptDialog",
+   "kind": "style",
+   "type": "ZoomPromptDialog"
+  },
+  {
+   "name": "constants of the NativeDialog class",
+   "kind": "constants"
+  }
+ ]
+}

@@ -1,0 +1,467 @@
+{
+ "command": "settings-dialog-layout",
+ "notes": [
+  "Feeds W8-19m (dialogs::settings::dialog::{footer, page_layout}). Reflection over the internal SettingsDialog (real constructor, no window; the private _avgCharWidth / _lineHeight of the NativeDialog base and, for scroll cases, _active, _scroll, _contentHeight, _viewportHeight are set by reflection; see tools/oracle-cs/Commands/W8-19m.cs) at the baseline d92d6aae. Without a control every measured text is empty (width 0) and every measured height is 0.",
+  "Output per kind: metrics -> margin, field_height, button_height, scroll_bar_width; sizes -> preferred_width/height, minimum_width/height; layout -> viewport_width, viewport_height after LayoutControls(width, height); scroll -> offsets (the offset of page 0 after each op; the thumb codes see track position 0)."
+ ],
+ "cases": [
+  {
+   "name": "metrics_6_15",
+   "kind": "metrics",
+   "avg": 6,
+   "line": 15
+  },
+  {
+   "name": "sizes_6_15",
+   "kind": "sizes",
+   "avg": 6,
+   "line": 15
+  },
+  {
+   "name": "metrics_7_16",
+   "kind": "metrics",
+   "avg": 7,
+   "line": 16
+  },
+  {
+   "name": "sizes_7_16",
+   "kind": "sizes",
+   "avg": 7,
+   "line": 16
+  },
+  {
+   "name": "metrics_8_18",
+   "kind": "metrics",
+   "avg": 8,
+   "line": 18
+  },
+  {
+   "name": "sizes_8_18",
+   "kind": "sizes",
+   "avg": 8,
+   "line": 18
+  },
+  {
+   "name": "metrics_10_22",
+   "kind": "metrics",
+   "avg": 10,
+   "line": 22
+  },
+  {
+   "name": "sizes_10_22",
+   "kind": "sizes",
+   "avg": 10,
+   "line": 22
+  },
+  {
+   "name": "metrics_4_8",
+   "kind": "metrics",
+   "avg": 4,
+   "line": 8
+  },
+  {
+   "name": "sizes_4_8",
+   "kind": "sizes",
+   "avg": 4,
+   "line": 8
+  },
+  {
+   "name": "metrics_12_30",
+   "kind": "metrics",
+   "avg": 12,
+   "line": 30
+  },
+  {
+   "name": "sizes_12_30",
+   "kind": "sizes",
+   "avg": 12,
+   "line": 30
+  },
+  {
+   "name": "metrics_1_1",
+   "kind": "metrics",
+   "avg": 1,
+   "line": 1
+  },
+  {
+   "name": "sizes_1_1",
+   "kind": "sizes",
+   "avg": 1,
+   "line": 1
+  },
+  {
+   "name": "layout_6_15_700x500",
+   "kind": "layout",
+   "avg": 6,
+   "line": 15,
+   "width": 700,
+   "height": 500
+  },
+  {
+   "name": "layout_6_15_900x700",
+   "kind": "layout",
+   "avg": 6,
+   "line": 15,
+   "width": 900,
+   "height": 700
+  },
+  {
+   "name": "layout_6_15_400x300",
+   "kind": "layout",
+   "avg": 6,
+   "line": 15,
+   "width": 400,
+   "height": 300
+  },
+  {
+   "name": "layout_6_15_1200x800",
+   "kind": "layout",
+   "avg": 6,
+   "line": 15,
+   "width": 1200,
+   "height": 800
+  },
+  {
+   "name": "layout_6_15_300x200",
+   "kind": "layout",
+   "avg": 6,
+   "line": 15,
+   "width": 300,
+   "height": 200
+  },
+  {
+   "name": "layout_8_18_700x500",
+   "kind": "layout",
+   "avg": 8,
+   "line": 18,
+   "width": 700,
+   "height": 500
+  },
+  {
+   "name": "layout_8_18_900x700",
+   "kind": "layout",
+   "avg": 8,
+   "line": 18,
+   "width": 900,
+   "height": 700
+  },
+  {
+   "name": "layout_8_18_400x300",
+   "kind": "layout",
+   "avg": 8,
+   "line": 18,
+   "width": 400,
+   "height": 300
+  },
+  {
+   "name": "layout_8_18_1200x800",
+   "kind": "layout",
+   "avg": 8,
+   "line": 18,
+   "width": 1200,
+   "height": 800
+  },
+  {
+   "name": "layout_8_18_300x200",
+   "kind": "layout",
+   "avg": 8,
+   "line": 18,
+   "width": 300,
+   "height": 200
+  },
+  {
+   "name": "layout_12_30_700x500",
+   "kind": "layout",
+   "avg": 12,
+   "line": 30,
+   "width": 700,
+   "height": 500
+  },
+  {
+   "name": "layout_12_30_900x700",
+   "kind": "layout",
+   "avg": 12,
+   "line": 30,
+   "width": 900,
+   "height": 700
+  },
+  {
+   "name": "layout_12_30_400x300",
+   "kind": "layout",
+   "avg": 12,
+   "line": 30,
+   "width": 400,
+   "height": 300
+  },
+  {
+   "name": "layout_12_30_1200x800",
+   "kind": "layout",
+   "avg": 12,
+   "line": 30,
+   "width": 1200,
+   "height": 800
+  },
+  {
+   "name": "layout_12_30_300x200",
+   "kind": "layout",
+   "avg": 12,
+   "line": 30,
+   "width": 300,
+   "height": 200
+  },
+  {
+   "name": "scroll_set_clamps",
+   "kind": "scroll",
+   "line": 15,
+   "content": 1000,
+   "viewport": 400,
+   "start": 0,
+   "ops": [
+    {
+     "op": "set",
+     "value": 100
+    },
+    {
+     "op": "set",
+     "value": -50
+    },
+    {
+     "op": "set",
+     "value": 10000
+    },
+    {
+     "op": "set",
+     "value": 600
+    },
+    {
+     "op": "set",
+     "value": 601
+    },
+    {
+     "op": "set",
+     "value": 0
+    }
+   ]
+  },
+  {
+   "name": "scroll_wheel",
+   "kind": "scroll",
+   "line": 15,
+   "content": 1000,
+   "viewport": 400,
+   "start": 300,
+   "ops": [
+    {
+     "op": "wheel",
+     "delta": -120
+    },
+    {
+     "op": "wheel",
+     "delta": 120
+    },
+    {
+     "op": "wheel",
+     "delta": 60
+    },
+    {
+     "op": "wheel",
+     "delta": -60
+    },
+    {
+     "op": "wheel",
+     "delta": 30
+    },
+    {
+     "op": "wheel",
+     "delta": -30
+    },
+    {
+     "op": "wheel",
+     "delta": 1
+    },
+    {
+     "op": "wheel",
+     "delta": -1
+    },
+    {
+     "op": "wheel",
+     "delta": 0
+    },
+    {
+     "op": "wheel",
+     "delta": -1200
+    },
+    {
+     "op": "wheel",
+     "delta": 1200
+    },
+    {
+     "op": "wheel",
+     "delta": 240
+    }
+   ]
+  },
+  {
+   "name": "scroll_wheel_odd_line",
+   "kind": "scroll",
+   "line": 17,
+   "content": 1000,
+   "viewport": 400,
+   "start": 200,
+   "ops": [
+    {
+     "op": "wheel",
+     "delta": -40
+    },
+    {
+     "op": "wheel",
+     "delta": -80
+    },
+    {
+     "op": "wheel",
+     "delta": 40
+    },
+    {
+     "op": "wheel",
+     "delta": 20
+    },
+    {
+     "op": "wheel",
+     "delta": -20
+    }
+   ]
+  },
+  {
+   "name": "scroll_bar_codes",
+   "kind": "scroll",
+   "line": 15,
+   "content": 1000,
+   "viewport": 400,
+   "start": 300,
+   "ops": [
+    {
+     "op": "bar",
+     "code": 0
+    },
+    {
+     "op": "bar",
+     "code": 1
+    },
+    {
+     "op": "bar",
+     "code": 2
+    },
+    {
+     "op": "bar",
+     "code": 3
+    },
+    {
+     "op": "bar",
+     "code": 4
+    },
+    {
+     "op": "bar",
+     "code": 5
+    },
+    {
+     "op": "bar",
+     "code": 6
+    },
+    {
+     "op": "bar",
+     "code": 1
+    },
+    {
+     "op": "bar",
+     "code": 7
+    },
+    {
+     "op": "bar",
+     "code": 8
+    },
+    {
+     "op": "bar",
+     "code": 9
+    },
+    {
+     "op": "bar",
+     "code": -1
+    }
+   ]
+  },
+  {
+   "name": "scroll_bar_page_small_viewport",
+   "kind": "scroll",
+   "line": 15,
+   "content": 1000,
+   "viewport": 20,
+   "start": 300,
+   "ops": [
+    {
+     "op": "bar",
+     "code": 2
+    },
+    {
+     "op": "bar",
+     "code": 3
+    },
+    {
+     "op": "bar",
+     "code": 0
+    },
+    {
+     "op": "bar",
+     "code": 1
+    }
+   ]
+  },
+  {
+   "name": "scroll_content_fits",
+   "kind": "scroll",
+   "line": 15,
+   "content": 300,
+   "viewport": 400,
+   "start": 0,
+   "ops": [
+    {
+     "op": "set",
+     "value": 50
+    },
+    {
+     "op": "wheel",
+     "delta": -120
+    },
+    {
+     "op": "bar",
+     "code": 7
+    },
+    {
+     "op": "bar",
+     "code": 3
+    }
+   ]
+  },
+  {
+   "name": "scroll_start_beyond_max",
+   "kind": "scroll",
+   "line": 15,
+   "content": 1000,
+   "viewport": 400,
+   "start": 900,
+   "ops": [
+    {
+     "op": "set",
+     "value": 900
+    },
+    {
+     "op": "bar",
+     "code": 8
+    },
+    {
+     "op": "set",
+     "value": 700
+    }
+   ]
+  }
+ ]
+}

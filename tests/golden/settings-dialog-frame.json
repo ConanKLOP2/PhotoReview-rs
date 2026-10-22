@@ -1,0 +1,336 @@
+{
+  "generator": "oracle-cs settings-dialog-frame",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "frame",
+      "kind": "frame",
+      "title": "Photo Review · Settings",
+      "resizable": true,
+      "header_ids": [
+        100,
+        103
+      ],
+      "initial_focus_id": 101,
+      "default_button_id": 1,
+      "items": [
+        {
+          "class": "Static",
+          "id": 100,
+          "text": "Settings",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "ListBox",
+          "id": 101,
+          "text": "",
+          "style": 1342243153,
+          "ex_style": 512
+        },
+        {
+          "class": "Static",
+          "id": 102,
+          "text": "9.9.9+oracle",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 103,
+          "text": "",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "ScrollBar",
+          "id": 104,
+          "text": "",
+          "style": 1342177281,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 110,
+          "text": "",
+          "style": 1442840704,
+          "ex_style": 65536
+        },
+        {
+          "class": "Static",
+          "id": 111,
+          "text": "",
+          "style": 1442840704,
+          "ex_style": 65536
+        },
+        {
+          "class": "Static",
+          "id": 112,
+          "text": "",
+          "style": 1442840704,
+          "ex_style": 65536
+        },
+        {
+          "class": "Static",
+          "id": 113,
+          "text": "",
+          "style": 1442840704,
+          "ex_style": 65536
+        },
+        {
+          "class": "Static",
+          "id": 114,
+          "text": "",
+          "style": 1442840704,
+          "ex_style": 65536
+        },
+        {
+          "class": "Static",
+          "id": 115,
+          "text": "",
+          "style": 1442840704,
+          "ex_style": 65536
+        },
+        {
+          "class": "Static",
+          "id": 116,
+          "text": "",
+          "style": 1442840704,
+          "ex_style": 65536
+        },
+        {
+          "class": "Button",
+          "id": 121,
+          "text": "Restore defaults",
+          "style": 1342242816,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 122,
+          "text": "Reset this page",
+          "style": 1342242816,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 123,
+          "text": "Export Settings…",
+          "style": 1342242816,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 124,
+          "text": "Import Settings…",
+          "style": 1342242816,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 2,
+          "text": "Cancel",
+          "style": 1342242816,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 120,
+          "text": "Apply",
+          "style": 1342242816,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 1,
+          "text": "Save",
+          "style": 1342242817,
+          "ex_style": 0
+        }
+      ],
+      "page_keys": [
+        "General",
+        "Display",
+        "Mouse",
+        "Performance",
+        "Shortcuts",
+        "Files",
+        "Diagnostics"
+      ],
+      "page_types": [
+        "GeneralSettingsPage",
+        "DisplaySettingsPage",
+        "MouseSettingsPage",
+        "PerformanceSettingsPage",
+        "ShortcutsSettingsPage",
+        "FilesSettingsPage",
+        "DiagnosticsSettingsPage"
+      ],
+      "page_item_counts": [
+        26,
+        55,
+        70,
+        13,
+        76,
+        35,
+        3
+      ],
+      "active_page_index": -1,
+      "active_page_key": "",
+      "saved": false
+    },
+    {
+      "name": "constants",
+      "kind": "constants",
+      "header_id": 100,
+      "nav_id": 101,
+      "version_id": 102,
+      "page_title_id": 103,
+      "scroll_id": 104,
+      "viewport_base": 110,
+      "apply_id": 120,
+      "defaults_id": 121,
+      "reset_page_id": 122,
+      "export_id": 123,
+      "import_id": 124,
+      "page_id_stride": 1000,
+      "save_id": 1,
+      "cancel_id": 2,
+      "wm_app_language": 32821,
+      "wm_app_queue": 32822,
+      "forward_all_subclass_id": 1398027061,
+      "wheel_subclass_id": 1464349493,
+      "key_box_subclass_id": 1262629685
+    },
+    {
+      "name": "page_math",
+      "kind": "page_math",
+      "indices": [
+        -1,
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        100
+      ],
+      "page_id_base": [
+        0,
+        1000,
+        2000,
+        3000,
+        4000,
+        5000,
+        6000,
+        7000,
+        8000,
+        101000
+      ],
+      "viewport_id": [
+        109,
+        110,
+        111,
+        112,
+        113,
+        114,
+        115,
+        116,
+        117,
+        210
+      ]
+    },
+    {
+      "name": "page_of",
+      "kind": "page_of",
+      "ids": [
+        -5,
+        0,
+        99,
+        100,
+        124,
+        999,
+        1000,
+        1001,
+        1999,
+        2000,
+        5013,
+        6999,
+        7000,
+        7999,
+        8000,
+        12345
+      ],
+      "results": [
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        0,
+        0,
+        0,
+        1,
+        4,
+        5,
+        6,
+        6,
+        7,
+        11
+      ]
+    },
+    {
+      "name": "dialog_key_ctrl_tab",
+      "kind": "dialog_key",
+      "control": true,
+      "message": "keydown",
+      "vk": 9,
+      "handled": true,
+      "active_page_index": 1,
+      "active_page_key": "Display"
+    },
+    {
+      "name": "dialog_key_plain_tab",
+      "kind": "dialog_key",
+      "control": false,
+      "message": "keydown",
+      "vk": 9,
+      "handled": false,
+      "active_page_index": -1,
+      "active_page_key": ""
+    },
+    {
+      "name": "dialog_key_ctrl_tab_sys",
+      "kind": "dialog_key",
+      "control": true,
+      "message": "syskeydown",
+      "vk": 9,
+      "handled": false,
+      "active_page_index": -1,
+      "active_page_key": ""
+    },
+    {
+      "name": "dialog_key_ctrl_tab_up",
+      "kind": "dialog_key",
+      "control": true,
+      "message": "keyup",
+      "vk": 9,
+      "handled": false,
+      "active_page_index": -1,
+      "active_page_key": ""
+    },
+    {
+      "name": "dialog_key_ctrl_a",
+      "kind": "dialog_key",
+      "control": true,
+      "message": "keydown",
+      "vk": 65,
+      "handled": false,
+      "active_page_index": -1,
+      "active_page_key": ""
+    }
+  ]
+}

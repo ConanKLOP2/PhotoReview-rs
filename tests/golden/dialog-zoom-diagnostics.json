@@ -1,0 +1,1340 @@
+{
+  "generator": "oracle-cs dialog-zoom-diagnostics",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "zoom dialog current 100",
+      "kind": "zoom_dialog",
+      "current": 100,
+      "title": "Custom click zoom level",
+      "items": [
+        {
+          "class": "Static",
+          "id": 100,
+          "text": "Zoom level (10–800 %):",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Edit",
+          "id": 101,
+          "text": "",
+          "style": 1342242944,
+          "ex_style": 512
+        },
+        {
+          "class": "Static",
+          "id": 102,
+          "text": "",
+          "style": 1073741952,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 2,
+          "text": "Cancel",
+          "style": 1342242816,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 1,
+          "text": "Apply",
+          "style": 1342242817,
+          "ex_style": 0
+        }
+      ],
+      "initial_focus_id": 101,
+      "default_button_id": 1,
+      "resizable": false,
+      "header_ids": [],
+      "uses_modal_frame": true,
+      "extra_window_style": 0,
+      "initial_text": "100"
+    },
+    {
+      "name": "zoom dialog current 175",
+      "kind": "zoom_dialog",
+      "current": 175,
+      "title": "Custom click zoom level",
+      "items": [
+        {
+          "class": "Static",
+          "id": 100,
+          "text": "Zoom level (10–800 %):",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Edit",
+          "id": 101,
+          "text": "",
+          "style": 1342242944,
+          "ex_style": 512
+        },
+        {
+          "class": "Static",
+          "id": 102,
+          "text": "",
+          "style": 1073741952,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 2,
+          "text": "Cancel",
+          "style": 1342242816,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 1,
+          "text": "Apply",
+          "style": 1342242817,
+          "ex_style": 0
+        }
+      ],
+      "initial_focus_id": 101,
+      "default_button_id": 1,
+      "resizable": false,
+      "header_ids": [],
+      "uses_modal_frame": true,
+      "extra_window_style": 0,
+      "initial_text": "175"
+    },
+    {
+      "name": "zoom dialog current 10",
+      "kind": "zoom_dialog",
+      "current": 10,
+      "title": "Custom click zoom level",
+      "items": [
+        {
+          "class": "Static",
+          "id": 100,
+          "text": "Zoom level (10–800 %):",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Edit",
+          "id": 101,
+          "text": "",
+          "style": 1342242944,
+          "ex_style": 512
+        },
+        {
+          "class": "Static",
+          "id": 102,
+          "text": "",
+          "style": 1073741952,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 2,
+          "text": "Cancel",
+          "style": 1342242816,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 1,
+          "text": "Apply",
+          "style": 1342242817,
+          "ex_style": 0
+        }
+      ],
+      "initial_focus_id": 101,
+      "default_button_id": 1,
+      "resizable": false,
+      "header_ids": [],
+      "uses_modal_frame": true,
+      "extra_window_style": 0,
+      "initial_text": "10"
+    },
+    {
+      "name": "zoom dialog current 800",
+      "kind": "zoom_dialog",
+      "current": 800,
+      "title": "Custom click zoom level",
+      "items": [
+        {
+          "class": "Static",
+          "id": 100,
+          "text": "Zoom level (10–800 %):",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Edit",
+          "id": 101,
+          "text": "",
+          "style": 1342242944,
+          "ex_style": 512
+        },
+        {
+          "class": "Static",
+          "id": 102,
+          "text": "",
+          "style": 1073741952,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 2,
+          "text": "Cancel",
+          "style": 1342242816,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 1,
+          "text": "Apply",
+          "style": 1342242817,
+          "ex_style": 0
+        }
+      ],
+      "initial_focus_id": 101,
+      "default_button_id": 1,
+      "resizable": false,
+      "header_ids": [],
+      "uses_modal_frame": true,
+      "extra_window_style": 0,
+      "initial_text": "800"
+    },
+    {
+      "name": "zoom dialog current 9999",
+      "kind": "zoom_dialog",
+      "current": 9999,
+      "title": "Custom click zoom level",
+      "items": [
+        {
+          "class": "Static",
+          "id": 100,
+          "text": "Zoom level (10–800 %):",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Edit",
+          "id": 101,
+          "text": "",
+          "style": 1342242944,
+          "ex_style": 512
+        },
+        {
+          "class": "Static",
+          "id": 102,
+          "text": "",
+          "style": 1073741952,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 2,
+          "text": "Cancel",
+          "style": 1342242816,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 1,
+          "text": "Apply",
+          "style": 1342242817,
+          "ex_style": 0
+        }
+      ],
+      "initial_focus_id": 101,
+      "default_button_id": 1,
+      "resizable": false,
+      "header_ids": [],
+      "uses_modal_frame": true,
+      "extra_window_style": 0,
+      "initial_text": "9999"
+    },
+    {
+      "name": "zoom dialog current 0",
+      "kind": "zoom_dialog",
+      "current": 0,
+      "title": "Custom click zoom level",
+      "items": [
+        {
+          "class": "Static",
+          "id": 100,
+          "text": "Zoom level (10–800 %):",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Edit",
+          "id": 101,
+          "text": "",
+          "style": 1342242944,
+          "ex_style": 512
+        },
+        {
+          "class": "Static",
+          "id": 102,
+          "text": "",
+          "style": 1073741952,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 2,
+          "text": "Cancel",
+          "style": 1342242816,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 1,
+          "text": "Apply",
+          "style": 1342242817,
+          "ex_style": 0
+        }
+      ],
+      "initial_focus_id": 101,
+      "default_button_id": 1,
+      "resizable": false,
+      "header_ids": [],
+      "uses_modal_frame": true,
+      "extra_window_style": 0,
+      "initial_text": "0"
+    },
+    {
+      "name": "zoom dialog current -5",
+      "kind": "zoom_dialog",
+      "current": -5,
+      "title": "Custom click zoom level",
+      "items": [
+        {
+          "class": "Static",
+          "id": 100,
+          "text": "Zoom level (10–800 %):",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Edit",
+          "id": 101,
+          "text": "",
+          "style": 1342242944,
+          "ex_style": 512
+        },
+        {
+          "class": "Static",
+          "id": 102,
+          "text": "",
+          "style": 1073741952,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 2,
+          "text": "Cancel",
+          "style": 1342242816,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 1,
+          "text": "Apply",
+          "style": 1342242817,
+          "ex_style": 0
+        }
+      ],
+      "initial_focus_id": 101,
+      "default_button_id": 1,
+      "resizable": false,
+      "header_ids": [],
+      "uses_modal_frame": true,
+      "extra_window_style": 0,
+      "initial_text": "-5"
+    },
+    {
+      "name": "diagnostics dialog distinct values",
+      "kind": "diagnostics_dialog",
+      "display": [
+        "v00",
+        "v01",
+        "v02",
+        "v03",
+        "v04",
+        "v05",
+        "v06",
+        "v07",
+        "v08",
+        "v09",
+        "v10",
+        "v11",
+        "v12",
+        "v13",
+        "v14"
+      ],
+      "title": "Diagnostics",
+      "items": [
+        {
+          "class": "Static",
+          "id": 200,
+          "text": "Performance diagnostics",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 201,
+          "text": "These figures exist only for the current session; nothing is sent anywhere.",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 210,
+          "text": "Cache hits",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 240,
+          "text": "v00",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 211,
+          "text": "Cache misses",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 241,
+          "text": "v01",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 212,
+          "text": "Cache hit rate",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 242,
+          "text": "v02",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 213,
+          "text": "Source bytes read",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 243,
+          "text": "v03",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 214,
+          "text": "Source file reads",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 244,
+          "text": "v04",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 215,
+          "text": "Decode time",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 245,
+          "text": "v05",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 216,
+          "text": "Key-to-present latency",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 246,
+          "text": "v06",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 217,
+          "text": "Explorer order",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 247,
+          "text": "v07",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 218,
+          "text": "Explorer sort/group",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 248,
+          "text": "v08",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 219,
+          "text": "Source opens (total / top)",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 249,
+          "text": "v09",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 220,
+          "text": "Metadata queries (stat)",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 250,
+          "text": "v10",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 221,
+          "text": "Session writes",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 251,
+          "text": "v11",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 222,
+          "text": "Decoder fallbacks",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 252,
+          "text": "v12",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 223,
+          "text": "Present latency histogram",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 253,
+          "text": "v13",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 224,
+          "text": "Cross-thread presents (expect 0)",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 254,
+          "text": "v14",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 270,
+          "text": "Copy",
+          "style": 1342242816,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 2,
+          "text": "Close",
+          "style": 1342242817,
+          "ex_style": 0
+        }
+      ],
+      "initial_focus_id": 2,
+      "default_button_id": 2,
+      "resizable": false,
+      "header_ids": [
+        200
+      ],
+      "uses_modal_frame": true,
+      "extra_window_style": 0
+    },
+    {
+      "name": "diagnostics dialog odd values",
+      "kind": "diagnostics_dialog",
+      "display": [
+        "1,234",
+        "",
+        "98.5 %",
+        "1 234 567 bytes",
+        "12 ms",
+        "Biến đổi âm",
+        "a\tb",
+        "line1\nline2",
+        "IMG_0001.jpg (3), IMG_0002.jpg (2)",
+        "0",
+        "N/A",
+        "7",
+        "0",
+        "<1 ms: 3, <10 ms: 9",
+        "0"
+      ],
+      "title": "Diagnostics",
+      "items": [
+        {
+          "class": "Static",
+          "id": 200,
+          "text": "Performance diagnostics",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 201,
+          "text": "These figures exist only for the current session; nothing is sent anywhere.",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 210,
+          "text": "Cache hits",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 240,
+          "text": "1,234",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 211,
+          "text": "Cache misses",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 241,
+          "text": "",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 212,
+          "text": "Cache hit rate",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 242,
+          "text": "98.5 %",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 213,
+          "text": "Source bytes read",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 243,
+          "text": "1 234 567 bytes",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 214,
+          "text": "Source file reads",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 244,
+          "text": "12 ms",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 215,
+          "text": "Decode time",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 245,
+          "text": "Biến đổi âm",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 216,
+          "text": "Key-to-present latency",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 246,
+          "text": "a\tb",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 217,
+          "text": "Explorer order",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 247,
+          "text": "line1\nline2",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 218,
+          "text": "Explorer sort/group",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 248,
+          "text": "IMG_0001.jpg (3), IMG_0002.jpg (2)",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 219,
+          "text": "Source opens (total / top)",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 249,
+          "text": "0",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 220,
+          "text": "Metadata queries (stat)",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 250,
+          "text": "N/A",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 221,
+          "text": "Session writes",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 251,
+          "text": "7",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 222,
+          "text": "Decoder fallbacks",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 252,
+          "text": "0",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 223,
+          "text": "Present latency histogram",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 253,
+          "text": "<1 ms: 3, <10 ms: 9",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 224,
+          "text": "Cross-thread presents (expect 0)",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 254,
+          "text": "0",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 270,
+          "text": "Copy",
+          "style": 1342242816,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 2,
+          "text": "Close",
+          "style": 1342242817,
+          "ex_style": 0
+        }
+      ],
+      "initial_focus_id": 2,
+      "default_button_id": 2,
+      "resizable": false,
+      "header_ids": [
+        200
+      ],
+      "uses_modal_frame": true,
+      "extra_window_style": 0
+    },
+    {
+      "name": "diagnostics text distinct values",
+      "kind": "diagnostics_text",
+      "display": [
+        "v00",
+        "v01",
+        "v02",
+        "v03",
+        "v04",
+        "v05",
+        "v06",
+        "v07",
+        "v08",
+        "v09",
+        "v10",
+        "v11",
+        "v12",
+        "v13",
+        "v14"
+      ],
+      "labels": [
+        "Cache hits",
+        "Cache misses",
+        "Cache hit rate",
+        "Source bytes read",
+        "Source file reads",
+        "Decode time",
+        "Key-to-present latency",
+        "Explorer order",
+        "Explorer sort/group",
+        "Source opens (total / top)",
+        "Metadata queries (stat)",
+        "Session writes",
+        "Decoder fallbacks",
+        "Present latency histogram",
+        "Cross-thread presents (expect 0)"
+      ],
+      "values": [
+        "v00",
+        "v01",
+        "v02",
+        "v03",
+        "v04",
+        "v05",
+        "v06",
+        "v07",
+        "v08",
+        "v09",
+        "v10",
+        "v11",
+        "v12",
+        "v13",
+        "v14"
+      ],
+      "copy_text": "Cache hits\tv00\r\nCache misses\tv01\r\nCache hit rate\tv02\r\nSource bytes read\tv03\r\nSource file reads\tv04\r\nDecode time\tv05\r\nKey-to-present latency\tv06\r\nExplorer order\tv07\r\nExplorer sort/group\tv08\r\nSource opens (total / top)\tv09\r\nMetadata queries (stat)\tv10\r\nSession writes\tv11\r\nDecoder fallbacks\tv12\r\nPresent latency histogram\tv13\r\nCross-thread presents (expect 0)\tv14\r\n"
+    },
+    {
+      "name": "diagnostics text odd values",
+      "kind": "diagnostics_text",
+      "display": [
+        "1,234",
+        "",
+        "98.5 %",
+        "1 234 567 bytes",
+        "12 ms",
+        "Biến đổi âm",
+        "a\tb",
+        "line1\nline2",
+        "IMG_0001.jpg (3), IMG_0002.jpg (2)",
+        "0",
+        "N/A",
+        "7",
+        "0",
+        "<1 ms: 3, <10 ms: 9",
+        "0"
+      ],
+      "labels": [
+        "Cache hits",
+        "Cache misses",
+        "Cache hit rate",
+        "Source bytes read",
+        "Source file reads",
+        "Decode time",
+        "Key-to-present latency",
+        "Explorer order",
+        "Explorer sort/group",
+        "Source opens (total / top)",
+        "Metadata queries (stat)",
+        "Session writes",
+        "Decoder fallbacks",
+        "Present latency histogram",
+        "Cross-thread presents (expect 0)"
+      ],
+      "values": [
+        "1,234",
+        "",
+        "98.5 %",
+        "1 234 567 bytes",
+        "12 ms",
+        "Biến đổi âm",
+        "a\tb",
+        "line1\nline2",
+        "IMG_0001.jpg (3), IMG_0002.jpg (2)",
+        "0",
+        "N/A",
+        "7",
+        "0",
+        "<1 ms: 3, <10 ms: 9",
+        "0"
+      ],
+      "copy_text": "Cache hits\t1,234\r\nCache misses\t\r\nCache hit rate\t98.5 %\r\nSource bytes read\t1 234 567 bytes\r\nSource file reads\t12 ms\r\nDecode time\tBiến đổi âm\r\nKey-to-present latency\ta\tb\r\nExplorer order\tline1\nline2\r\nExplorer sort/group\tIMG_0001.jpg (3), IMG_0002.jpg (2)\r\nSource opens (total / top)\t0\r\nMetadata queries (stat)\tN/A\r\nSession writes\t7\r\nDecoder fallbacks\t0\r\nPresent latency histogram\t<1 ms: 3, <10 ms: 9\r\nCross-thread presents (expect 0)\t0\r\n"
+    },
+    {
+      "name": "diagnostics row -1",
+      "kind": "diagnostics_row",
+      "row": -1,
+      "display": [
+        "v00",
+        "v01",
+        "v02",
+        "v03",
+        "v04",
+        "v05",
+        "v06",
+        "v07",
+        "v08",
+        "v09",
+        "v10",
+        "v11",
+        "v12",
+        "v13",
+        "v14"
+      ],
+      "threw": "ArgumentOutOfRangeException"
+    },
+    {
+      "name": "diagnostics row 0",
+      "kind": "diagnostics_row",
+      "row": 0,
+      "display": [
+        "v00",
+        "v01",
+        "v02",
+        "v03",
+        "v04",
+        "v05",
+        "v06",
+        "v07",
+        "v08",
+        "v09",
+        "v10",
+        "v11",
+        "v12",
+        "v13",
+        "v14"
+      ],
+      "label": "Cache hits",
+      "value": "v00"
+    },
+    {
+      "name": "diagnostics row 2",
+      "kind": "diagnostics_row",
+      "row": 2,
+      "display": [
+        "v00",
+        "v01",
+        "v02",
+        "v03",
+        "v04",
+        "v05",
+        "v06",
+        "v07",
+        "v08",
+        "v09",
+        "v10",
+        "v11",
+        "v12",
+        "v13",
+        "v14"
+      ],
+      "label": "Cache hit rate",
+      "value": "v02"
+    },
+    {
+      "name": "diagnostics row 14",
+      "kind": "diagnostics_row",
+      "row": 14,
+      "display": [
+        "v00",
+        "v01",
+        "v02",
+        "v03",
+        "v04",
+        "v05",
+        "v06",
+        "v07",
+        "v08",
+        "v09",
+        "v10",
+        "v11",
+        "v12",
+        "v13",
+        "v14"
+      ],
+      "label": "Cross-thread presents (expect 0)",
+      "value": "v14"
+    },
+    {
+      "name": "diagnostics row 15",
+      "kind": "diagnostics_row",
+      "row": 15,
+      "display": [
+        "v00",
+        "v01",
+        "v02",
+        "v03",
+        "v04",
+        "v05",
+        "v06",
+        "v07",
+        "v08",
+        "v09",
+        "v10",
+        "v11",
+        "v12",
+        "v13",
+        "v14"
+      ],
+      "threw": "ArgumentOutOfRangeException"
+    },
+    {
+      "name": "diagnostics row 100",
+      "kind": "diagnostics_row",
+      "row": 100,
+      "display": [
+        "v00",
+        "v01",
+        "v02",
+        "v03",
+        "v04",
+        "v05",
+        "v06",
+        "v07",
+        "v08",
+        "v09",
+        "v10",
+        "v11",
+        "v12",
+        "v13",
+        "v14"
+      ],
+      "threw": "ArgumentOutOfRangeException"
+    },
+    {
+      "name": "zoom preferred avg 6 line 15 error off",
+      "kind": "preferred",
+      "type": "zoom",
+      "avg": 6,
+      "line": 15,
+      "error_visible": false,
+      "preferred_width": 300,
+      "preferred_height": 117,
+      "minimum_width": 300,
+      "minimum_height": 117
+    },
+    {
+      "name": "zoom preferred avg 6 line 15 error on",
+      "kind": "preferred",
+      "type": "zoom",
+      "avg": 6,
+      "line": 15,
+      "error_visible": true,
+      "preferred_width": 300,
+      "preferred_height": 125,
+      "minimum_width": 300,
+      "minimum_height": 125
+    },
+    {
+      "name": "zoom preferred avg 7 line 16 error off",
+      "kind": "preferred",
+      "type": "zoom",
+      "avg": 7,
+      "line": 16,
+      "error_visible": false,
+      "preferred_width": 350,
+      "preferred_height": 124,
+      "minimum_width": 350,
+      "minimum_height": 124
+    },
+    {
+      "name": "zoom preferred avg 7 line 16 error on",
+      "kind": "preferred",
+      "type": "zoom",
+      "avg": 7,
+      "line": 16,
+      "error_visible": true,
+      "preferred_width": 350,
+      "preferred_height": 132,
+      "minimum_width": 350,
+      "minimum_height": 132
+    },
+    {
+      "name": "zoom preferred avg 8 line 20 error off",
+      "kind": "preferred",
+      "type": "zoom",
+      "avg": 8,
+      "line": 20,
+      "error_visible": false,
+      "preferred_width": 400,
+      "preferred_height": 155,
+      "minimum_width": 400,
+      "minimum_height": 155
+    },
+    {
+      "name": "zoom preferred avg 8 line 20 error on",
+      "kind": "preferred",
+      "type": "zoom",
+      "avg": 8,
+      "line": 20,
+      "error_visible": true,
+      "preferred_width": 400,
+      "preferred_height": 165,
+      "minimum_width": 400,
+      "minimum_height": 165
+    },
+    {
+      "name": "zoom preferred avg 9 line 24 error off",
+      "kind": "preferred",
+      "type": "zoom",
+      "avg": 9,
+      "line": 24,
+      "error_visible": false,
+      "preferred_width": 450,
+      "preferred_height": 186,
+      "minimum_width": 450,
+      "minimum_height": 186
+    },
+    {
+      "name": "zoom preferred avg 9 line 24 error on",
+      "kind": "preferred",
+      "type": "zoom",
+      "avg": 9,
+      "line": 24,
+      "error_visible": true,
+      "preferred_width": 450,
+      "preferred_height": 198,
+      "minimum_width": 450,
+      "minimum_height": 198
+    },
+    {
+      "name": "zoom preferred avg 10 line 29 error off",
+      "kind": "preferred",
+      "type": "zoom",
+      "avg": 10,
+      "line": 29,
+      "error_visible": false,
+      "preferred_width": 500,
+      "preferred_height": 225,
+      "minimum_width": 500,
+      "minimum_height": 225
+    },
+    {
+      "name": "zoom preferred avg 10 line 29 error on",
+      "kind": "preferred",
+      "type": "zoom",
+      "avg": 10,
+      "line": 29,
+      "error_visible": true,
+      "preferred_width": 500,
+      "preferred_height": 240,
+      "minimum_width": 500,
+      "minimum_height": 240
+    },
+    {
+      "name": "diagnostics preferred avg 6 line 15",
+      "kind": "preferred",
+      "type": "diagnostics",
+      "avg": 6,
+      "line": 15,
+      "preferred_width": 600,
+      "preferred_height": 202,
+      "minimum_width": 600,
+      "minimum_height": 202
+    },
+    {
+      "name": "diagnostics preferred avg 7 line 16",
+      "kind": "preferred",
+      "type": "diagnostics",
+      "avg": 7,
+      "line": 16,
+      "preferred_width": 700,
+      "preferred_height": 208,
+      "minimum_width": 700,
+      "minimum_height": 208
+    },
+    {
+      "name": "diagnostics preferred avg 8 line 20",
+      "kind": "preferred",
+      "type": "diagnostics",
+      "avg": 8,
+      "line": 20,
+      "preferred_width": 800,
+      "preferred_height": 268,
+      "minimum_width": 800,
+      "minimum_height": 268
+    },
+    {
+      "name": "diagnostics preferred avg 9 line 24",
+      "kind": "preferred",
+      "type": "diagnostics",
+      "avg": 9,
+      "line": 24,
+      "preferred_width": 900,
+      "preferred_height": 312,
+      "minimum_width": 900,
+      "minimum_height": 312
+    },
+    {
+      "name": "diagnostics preferred avg 10 line 29",
+      "kind": "preferred",
+      "type": "diagnostics",
+      "avg": 10,
+      "line": 29,
+      "preferred_width": 1000,
+      "preferred_height": 380,
+      "minimum_width": 1000,
+      "minimum_height": 380
+    },
+    {
+      "name": "ids of both dialogs",
+      "kind": "constants",
+      "zoom_label_id": 100,
+      "zoom_edit_id": 101,
+      "zoom_error_id": 102,
+      "zoom_cancel_id": 2,
+      "zoom_apply_id": 1,
+      "diagnostics_header_id": 200,
+      "diagnostics_note_id": 201,
+      "diagnostics_first_label_id": 210,
+      "diagnostics_first_value_id": 240,
+      "diagnostics_copy_id": 270,
+      "diagnostics_close_id": 2,
+      "diagnostics_row_count": 15
+    }
+  ]
+}

@@ -1,0 +1,4248 @@
+{
+  "generator": "oracle-cs settings-layout",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "label_width: clamp to 80..140 dlu on s100",
+      "kind": "label_width",
+      "surface": "s100",
+      "widths": [
+        0,
+        100,
+        200,
+        300,
+        315,
+        316,
+        400,
+        500,
+        800,
+        2000,
+        -50
+      ],
+      "surface_def": {
+        "dx_mul": 3,
+        "dx_div": 2,
+        "dy_mul": 15,
+        "dy_div": 8,
+        "line_height": 16,
+        "field_height": 23,
+        "avg_char_width": 7
+      },
+      "values": [
+        120,
+        120,
+        120,
+        120,
+        120,
+        120,
+        152,
+        190,
+        210,
+        210,
+        120
+      ]
+    },
+    {
+      "name": "label_width: s150",
+      "kind": "label_width",
+      "surface": "s150",
+      "widths": [
+        0,
+        300,
+        600,
+        900,
+        1400,
+        3000
+      ],
+      "surface_def": {
+        "dx_mul": 9,
+        "dx_div": 4,
+        "dy_mul": 45,
+        "dy_div": 16,
+        "line_height": 24,
+        "field_height": 34,
+        "avg_char_width": 10
+      },
+      "values": [
+        180,
+        180,
+        228,
+        315,
+        315,
+        315
+      ]
+    },
+    {
+      "name": "label_width: unit scale",
+      "kind": "label_width",
+      "surface": "unit",
+      "widths": [
+        0,
+        50,
+        100,
+        200,
+        500
+      ],
+      "surface_def": {
+        "dx_mul": 1,
+        "dx_div": 1,
+        "dy_mul": 1,
+        "dy_div": 1,
+        "line_height": 10,
+        "field_height": 14,
+        "avg_char_width": 5
+      },
+      "values": [
+        80,
+        80,
+        80,
+        80,
+        140
+      ]
+    },
+    {
+      "name": "check: one line, no indent",
+      "kind": "element",
+      "surface": "s100",
+      "element": {
+        "type": "check",
+        "id": 1,
+        "indent": 0
+      },
+      "x": 0,
+      "y": 0,
+      "width": 400,
+      "texts": {
+        "1": "Show the grid"
+      },
+      "surface_def": {
+        "dx_mul": 3,
+        "dx_div": 2,
+        "dy_mul": 15,
+        "dy_div": 8,
+        "line_height": 16,
+        "field_height": 23,
+        "avg_char_width": 7
+      },
+      "height": 26,
+      "calls": [
+        [
+          "place",
+          1,
+          0,
+          0,
+          400,
+          19
+        ]
+      ],
+      "control_ids": [
+        1
+      ]
+    },
+    {
+      "name": "check: indent 10 dlu wraps in a narrow column",
+      "kind": "element",
+      "surface": "s100",
+      "element": {
+        "type": "check",
+        "id": 1,
+        "indent": 10
+      },
+      "x": 0,
+      "y": 0,
+      "width": 120,
+      "texts": {
+        "1": "Move to the next image after a review action finishes"
+      },
+      "surface_def": {
+        "dx_mul": 3,
+        "dx_div": 2,
+        "dy_mul": 15,
+        "dy_div": 8,
+        "line_height": 16,
+        "field_height": 23,
+        "avg_char_width": 7
+      },
+      "height": 88,
+      "calls": [
+        [
+          "place",
+          1,
+          15,
+          0,
+          105,
+          81
+        ]
+      ],
+      "control_ids": [
+        1
+      ]
+    },
+    {
+      "name": "check: Vietnamese text, scrolled origin y=-500",
+      "kind": "element",
+      "surface": "s100",
+      "element": {
+        "type": "check",
+        "id": 7,
+        "indent": 4
+      },
+      "x": 0,
+      "y": -500,
+      "width": 300,
+      "texts": {
+        "7": "Hỏi xác nhận trước khi chuyển ảnh vào Thùng rác"
+      },
+      "surface_def": {
+        "dx_mul": 3,
+        "dx_div": 2,
+        "dy_mul": 15,
+        "dy_div": 8,
+        "line_height": 16,
+        "field_height": 23,
+        "avg_char_width": 7
+      },
+      "height": 40,
+      "calls": [
+        [
+          "place",
+          7,
+          6,
+          -500,
+          294,
+          33
+        ]
+      ],
+      "control_ids": [
+        7
+      ]
+    },
+    {
+      "name": "check: hidden control is hidden and takes no room",
+      "kind": "element",
+      "surface": "s100",
+      "element": {
+        "type": "check",
+        "id": 1,
+        "indent": 0
+      },
+      "x": 0,
+      "y": 0,
+      "width": 400,
+      "hidden": [
+        1
+      ],
+      "texts": {
+        "1": "x"
+      },
+      "surface_def": {
+        "dx_mul": 3,
+        "dx_div": 2,
+        "dy_mul": 15,
+        "dy_div": 8,
+        "line_height": 16,
+        "field_height": 23,
+        "avg_char_width": 7
+      },
+      "height": 0,
+      "calls": [
+        [
+          "hide",
+          1
+        ]
+      ],
+      "control_ids": [
+        1
+      ]
+    },
+    {
+      "name": "check: Visible=false hides the control",
+      "kind": "element",
+      "surface": "s100",
+      "element": {
+        "type": "check",
+        "id": 1,
+        "indent": 0,
+        "visible": false
+      },
+      "x": 0,
+      "y": 0,
+      "width": 400,
+      "texts": {
+        "1": "x"
+      },
+      "surface_def": {
+        "dx_mul": 3,
+        "dx_div": 2,
+        "dy_mul": 15,
+        "dy_div": 8,
+        "line_height": 16,
+        "field_height": 23,
+        "avg_char_width": 7
+      },
+      "height": 0,
+      "calls": [
+        [
+          "hide",
+          1
+        ]
+      ],
+      "control_ids": [
+        1
+      ]
+    },
+    {
+      "name": "check: width smaller than the indent",
+      "kind": "element",
+      "surface": "unit",
+      "element": {
+        "type": "check",
+        "id": 1,
+        "indent": 50
+      },
+      "x": 0,
+      "y": 0,
+      "width": 30,
+      "texts": {
+        "1": "abcdefgh"
+      },
+      "surface_def": {
+        "dx_mul": 1,
+        "dx_div": 1,
+        "dy_mul": 1,
+        "dy_div": 1,
+        "line_height": 10,
+        "field_height": 14,
+        "avg_char_width": 5
+      },
+      "height": 25,
+      "calls": [
+        [
+          "place",
+          1,
+          50,
+          0,
+          -20,
+          21
+        ]
+      ],
+      "control_ids": [
+        1
+      ]
+    },
+    {
+      "name": "check: s150 two-line text",
+      "kind": "element",
+      "surface": "s150",
+      "element": {
+        "type": "check",
+        "id": 1,
+        "indent": 0
+      },
+      "x": 0,
+      "y": 0,
+      "width": 200,
+      "texts": {
+        "1": "Remember the last used folder between sessions"
+      },
+      "surface_def": {
+        "dx_mul": 9,
+        "dx_div": 4,
+        "dy_mul": 45,
+        "dy_div": 16,
+        "line_height": 24,
+        "field_height": 34,
+        "avg_char_width": 10
+      },
+      "height": 85,
+      "calls": [
+        [
+          "place",
+          1,
+          0,
+          0,
+          200,
+          74
+        ]
+      ],
+      "control_ids": [
+        1
+      ]
+    },
+    {
+      "name": "check: non-BMP characters count two UTF-16 units",
+      "kind": "element",
+      "surface": "unit",
+      "element": {
+        "type": "check",
+        "id": 1,
+        "indent": 0
+      },
+      "x": 0,
+      "y": 0,
+      "width": 60,
+      "texts": {
+        "1": "\uD83D\uDE00\uD83D\uDE00\uD83D\uDE00\uD83D\uDE00\uD83D\uDE00"
+      },
+      "surface_def": {
+        "dx_mul": 1,
+        "dx_div": 1,
+        "dy_mul": 1,
+        "dy_div": 1,
+        "line_height": 10,
+        "field_height": 14,
+        "avg_char_width": 5
+      },
+      "height": 25,
+      "calls": [
+        [
+          "place",
+          1,
+          0,
+          0,
+          60,
+          21
+        ]
+      ],
+      "control_ids": [
+        1
+      ]
+    },
+    {
+      "name": "row combo: default width (240 dlu cap) on a wide page",
+      "kind": "element",
+      "surface": "s100",
+      "element": {
+        "type": "row",
+        "label": 1,
+        "control": 2,
+        "row_kind": "Combo",
+        "width_dlu": 0
+      },
+      "x": 0,
+      "y": 0,
+      "width": 700,
+      "texts": {
+        "1": "Image transition",
+        "2": ""
+      },
+      "combo_drop": {
+        "2": 120
+      },
+      "surface_def": {
+        "dx_mul": 3,
+        "dx_div": 2,
+        "dy_mul": 15,
+        "dy_div": 8,
+        "line_height": 16,
+        "field_height": 23,
+        "avg_char_width": 7
+      },
+      "height": 32,
+      "calls": [
+        [
+          "place",
+          1,
+          0,
+          3,
+          210,
+          16
+        ],
+        [
+          "place",
+          2,
+          219,
+          0,
+          360,
+          143
+        ]
+      ],
+      "control_ids": [
+        1,
+        2
+      ]
+    },
+    {
+      "name": "row combo: width 100 dlu",
+      "kind": "element",
+      "surface": "s100",
+      "element": {
+        "type": "row",
+        "label": 1,
+        "control": 2,
+        "row_kind": "Combo",
+        "width_dlu": 100
+      },
+      "x": 0,
+      "y": 0,
+      "width": 500,
+      "texts": {
+        "1": "Language"
+      },
+      "combo_drop": {
+        "2": 90
+      },
+      "surface_def": {
+        "dx_mul": 3,
+        "dx_div": 2,
+        "dy_mul": 15,
+        "dy_div": 8,
+        "line_height": 16,
+        "field_height": 23,
+        "avg_char_width": 7
+      },
+      "height": 32,
+      "calls": [
+        [
+          "place",
+          1,
+          0,
+          3,
+          190,
+          16
+        ],
+        [
+          "place",
+          2,
+          199,
+          0,
+          150,
+          113
+        ]
+      ],
+      "control_ids": [
+        1,
+        2
+      ]
+    },
+    {
+      "name": "row edit: 60 dlu",
+      "kind": "element",
+      "surface": "s100",
+      "element": {
+        "type": "row",
+        "label": 1,
+        "control": 2,
+        "row_kind": "Edit",
+        "width_dlu": 60
+      },
+      "x": 0,
+      "y": 0,
+      "width": 500,
+      "texts": {
+        "1": "Pan step (px)"
+      },
+      "surface_def": {
+        "dx_mul": 3,
+        "dx_div": 2,
+        "dy_mul": 15,
+        "dy_div": 8,
+        "line_height": 16,
+        "field_height": 23,
+        "avg_char_width": 7
+      },
+      "height": 32,
+      "calls": [
+        [
+          "place",
+          1,
+          0,
+          3,
+          190,
+          16
+        ],
+        [
+          "place",
+          2,
+          199,
+          0,
+          90,
+          23
+        ]
+      ],
+      "control_ids": [
+        1,
+        2
+      ]
+    },
+    {
+      "name": "row edit: width_dlu larger than the space available",
+      "kind": "element",
+      "surface": "s100",
+      "element": {
+        "type": "row",
+        "label": 1,
+        "control": 2,
+        "row_kind": "Edit",
+        "width_dlu": 400
+      },
+      "x": 0,
+      "y": 0,
+      "width": 300,
+      "texts": {
+        "1": "Editor path"
+      },
+      "surface_def": {
+        "dx_mul": 3,
+        "dx_div": 2,
+        "dy_mul": 15,
+        "dy_div": 8,
+        "line_height": 16,
+        "field_height": 23,
+        "avg_char_width": 7
+      },
+      "height": 32,
+      "calls": [
+        [
+          "place",
+          1,
+          0,
+          3,
+          120,
+          16
+        ],
+        [
+          "place",
+          2,
+          129,
+          0,
+          171,
+          23
+        ]
+      ],
+      "control_ids": [
+        1,
+        2
+      ]
+    },
+    {
+      "name": "row edit: very narrow page keeps a 30 dlu control",
+      "kind": "element",
+      "surface": "s100",
+      "element": {
+        "type": "row",
+        "label": 1,
+        "control": 2,
+        "row_kind": "Edit",
+        "width_dlu": 60
+      },
+      "x": 0,
+      "y": 0,
+      "width": 40,
+      "texts": {
+        "1": "A"
+      },
+      "surface_def": {
+        "dx_mul": 3,
+        "dx_div": 2,
+        "dy_mul": 15,
+        "dy_div": 8,
+        "line_height": 16,
+        "field_height": 23,
+        "avg_char_width": 7
+      },
+      "height": 32,
+      "calls": [
+        [
+          "place",
+          1,
+          0,
+          3,
+          120,
+          16
+        ],
+        [
+          "place",
+          2,
+          129,
+          0,
+          45,
+          23
+        ]
+      ],
+      "control_ids": [
+        1,
+        2
+      ]
+    },
+    {
+      "name": "row combo: long Vietnamese label wraps and centres the control",
+      "kind": "element",
+      "surface": "s100",
+      "element": {
+        "type": "row",
+        "label": 1,
+        "control": 2,
+        "row_kind": "Combo",
+        "width_dlu": 0
+      },
+      "x": 0,
+      "y": 0,
+      "width": 420,
+      "texts": {
+        "1": "Kiểu chuyển cảnh giữa hai ảnh khi duyệt nhanh bằng bàn phím"
+      },
+      "combo_drop": {
+        "2": 100
+      },
+      "surface_def": {
+        "dx_mul": 3,
+        "dx_div": 2,
+        "dy_mul": 15,
+        "dy_div": 8,
+        "line_height": 16,
+        "field_height": 23,
+        "avg_char_width": 7
+      },
+      "height": 57,
+      "calls": [
+        [
+          "place",
+          1,
+          0,
+          0,
+          159,
+          48
+        ],
+        [
+          "place",
+          2,
+          168,
+          12,
+          252,
+          123
+        ]
+      ],
+      "control_ids": [
+        1,
+        2
+      ]
+    },
+    {
+      "name": "row edit: label taller than the field, explicit heights",
+      "kind": "element",
+      "surface": "unit",
+      "element": {
+        "type": "row",
+        "label": 1,
+        "control": 2,
+        "row_kind": "Edit",
+        "width_dlu": 20
+      },
+      "x": 0,
+      "y": 0,
+      "width": 300,
+      "heights": {
+        "1": 40
+      },
+      "surface_def": {
+        "dx_mul": 1,
+        "dx_div": 1,
+        "dy_mul": 1,
+        "dy_div": 1,
+        "line_height": 10,
+        "field_height": 14,
+        "avg_char_width": 5
+      },
+      "height": 45,
+      "calls": [
+        [
+          "place",
+          1,
+          0,
+          0,
+          114,
+          40
+        ],
+        [
+          "place",
+          2,
+          120,
+          13,
+          20,
+          14
+        ]
+      ],
+      "control_ids": [
+        1,
+        2
+      ]
+    },
+    {
+      "name": "row: hidden control hides label and control",
+      "kind": "element",
+      "surface": "s100",
+      "element": {
+        "type": "row",
+        "label": 1,
+        "control": 2,
+        "row_kind": "Edit",
+        "width_dlu": 60
+      },
+      "x": 0,
+      "y": 0,
+      "width": 500,
+      "hidden": [
+        2
+      ],
+      "texts": {
+        "1": "x"
+      },
+      "surface_def": {
+        "dx_mul": 3,
+        "dx_div": 2,
+        "dy_mul": 15,
+        "dy_div": 8,
+        "line_height": 16,
+        "field_height": 23,
+        "avg_char_width": 7
+      },
+      "height": 0,
+      "calls": [
+        [
+          "hide",
+          1
+        ],
+        [
+          "hide",
+          2
+        ]
+      ],
+      "control_ids": [
+        1,
+        2
+      ]
+    },
+    {
+      "name": "row: hidden label alone is still placed",
+      "kind": "element",
+      "surface": "s100",
+      "element": {
+        "type": "row",
+        "label": 1,
+        "control": 2,
+        "row_kind": "Edit",
+        "width_dlu": 60
+      },
+      "x": 0,
+      "y": 0,
+      "width": 500,
+      "hidden": [
+        1
+      ],
+      "texts": {
+        "1": "x"
+      },
+      "surface_def": {
+        "dx_mul": 3,
+        "dx_div": 2,
+        "dy_mul": 15,
+        "dy_div": 8,
+        "line_height": 16,
+        "field_height": 23,
+        "avg_char_width": 7
+      },
+      "height": 32,
+      "calls": [
+        [
+          "place",
+          1,
+          0,
+          3,
+          190,
+          16
+        ],
+        [
+          "place",
+          2,
+          199,
+          0,
+          90,
+          23
+        ]
+      ],
+      "control_ids": [
+        1,
+        2
+      ]
+    },
+    {
+      "name": "row: Visible=false",
+      "kind": "element",
+      "surface": "s100",
+      "element": {
+        "type": "row",
+        "label": 1,
+        "control": 2,
+        "row_kind": "Combo",
+        "width_dlu": 0,
+        "visible": false
+      },
+      "x": 0,
+      "y": 0,
+      "width": 500,
+      "surface_def": {
+        "dx_mul": 3,
+        "dx_div": 2,
+        "dy_mul": 15,
+        "dy_div": 8,
+        "line_height": 16,
+        "field_height": 23,
+        "avg_char_width": 7
+      },
+      "height": 0,
+      "calls": [
+        [
+          "hide",
+          1
+        ],
+        [
+          "hide",
+          2
+        ]
+      ],
+      "control_ids": [
+        1,
+        2
+      ]
+    },
+    {
+      "name": "row combo: s150",
+      "kind": "element",
+      "surface": "s150",
+      "element": {
+        "type": "row",
+        "label": 1,
+        "control": 2,
+        "row_kind": "Combo",
+        "width_dlu": 120
+      },
+      "x": 0,
+      "y": 0,
+      "width": 900,
+      "texts": {
+        "1": "Decoder"
+      },
+      "combo_drop": {
+        "2": 150
+      },
+      "surface_def": {
+        "dx_mul": 9,
+        "dx_div": 4,
+        "dy_mul": 45,
+        "dy_div": 16,
+        "line_height": 24,
+        "field_height": 34,
+        "avg_char_width": 10
+      },
+      "height": 48,
+      "calls": [
+        [
+          "place",
+          1,
+          0,
+          5,
+          315,
+          24
+        ],
+        [
+          "place",
+          2,
+          328,
+          0,
+          270,
+          184
+        ]
+      ],
+      "control_ids": [
+        1,
+        2
+      ]
+    },
+    {
+      "name": "slider: value text 37 percent",
+      "kind": "element",
+      "surface": "s100",
+      "element": {
+        "type": "slider",
+        "label": 1,
+        "slider": 2,
+        "value": 3
+      },
+      "x": 0,
+      "y": 0,
+      "width": 500,
+      "texts": {
+        "1": "RAM cache",
+        "3": "37 %"
+      },
+      "surface_def": {
+        "dx_mul": 3,
+        "dx_div": 2,
+        "dy_mul": 15,
+        "dy_div": 8,
+        "line_height": 16,
+        "field_height": 23,
+        "avg_char_width": 7
+      },
+      "height": 40,
+      "calls": [
+        [
+          "place",
+          1,
+          0,
+          7,
+          190,
+          16
+        ],
+        [
+          "place",
+          2,
+          199,
+          0,
+          225,
+          31
+        ],
+        [
+          "place",
+          3,
+          433,
+          7,
+          51,
+          16
+        ]
+      ],
+      "control_ids": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "name": "slider: wide page clamps the track to 150 dlu",
+      "kind": "element",
+      "surface": "s100",
+      "element": {
+        "type": "slider",
+        "label": 1,
+        "slider": 2,
+        "value": 3
+      },
+      "x": 0,
+      "y": 0,
+      "width": 1200,
+      "texts": {
+        "1": "RAM cache",
+        "3": "5 %"
+      },
+      "surface_def": {
+        "dx_mul": 3,
+        "dx_div": 2,
+        "dy_mul": 15,
+        "dy_div": 8,
+        "line_height": 16,
+        "field_height": 23,
+        "avg_char_width": 7
+      },
+      "height": 40,
+      "calls": [
+        [
+          "place",
+          1,
+          0,
+          7,
+          210,
+          16
+        ],
+        [
+          "place",
+          2,
+          219,
+          0,
+          225,
+          31
+        ],
+        [
+          "place",
+          3,
+          453,
+          7,
+          51,
+          16
+        ]
+      ],
+      "control_ids": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "name": "slider: narrow page clamps the track to 60 dlu",
+      "kind": "element",
+      "surface": "s100",
+      "element": {
+        "type": "slider",
+        "label": 1,
+        "slider": 2,
+        "value": 3
+      },
+      "x": 0,
+      "y": 0,
+      "width": 200,
+      "texts": {
+        "1": "Opacity",
+        "3": "100 %"
+      },
+      "surface_def": {
+        "dx_mul": 3,
+        "dx_div": 2,
+        "dy_mul": 15,
+        "dy_div": 8,
+        "line_height": 16,
+        "field_height": 23,
+        "avg_char_width": 7
+      },
+      "height": 40,
+      "calls": [
+        [
+          "place",
+          1,
+          0,
+          7,
+          120,
+          16
+        ],
+        [
+          "place",
+          2,
+          129,
+          0,
+          90,
+          31
+        ],
+        [
+          "place",
+          3,
+          228,
+          7,
+          51,
+          16
+        ]
+      ],
+      "control_ids": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "name": "slider: long value text widens the value column",
+      "kind": "element",
+      "surface": "s100",
+      "element": {
+        "type": "slider",
+        "label": 1,
+        "slider": 2,
+        "value": 3
+      },
+      "x": 0,
+      "y": 0,
+      "width": 600,
+      "texts": {
+        "1": "Cache",
+        "3": "12,345 MB (about 3.5 % of RAM)"
+      },
+      "surface_def": {
+        "dx_mul": 3,
+        "dx_div": 2,
+        "dy_mul": 15,
+        "dy_div": 8,
+        "line_height": 16,
+        "field_height": 23,
+        "avg_char_width": 7
+      },
+      "height": 40,
+      "calls": [
+        [
+          "place",
+          1,
+          0,
+          7,
+          210,
+          16
+        ],
+        [
+          "place",
+          2,
+          219,
+          0,
+          153,
+          31
+        ],
+        [
+          "place",
+          3,
+          381,
+          7,
+          219,
+          16
+        ]
+      ],
+      "control_ids": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "name": "slider: empty value text uses the 100 % minimum",
+      "kind": "element",
+      "surface": "unit",
+      "element": {
+        "type": "slider",
+        "label": 1,
+        "slider": 2,
+        "value": 3
+      },
+      "x": 0,
+      "y": 0,
+      "width": 400,
+      "texts": {
+        "1": "x"
+      },
+      "surface_def": {
+        "dx_mul": 1,
+        "dx_div": 1,
+        "dy_mul": 1,
+        "dy_div": 1,
+        "line_height": 10,
+        "field_height": 14,
+        "avg_char_width": 5
+      },
+      "height": 23,
+      "calls": [
+        [
+          "place",
+          1,
+          0,
+          4,
+          140,
+          10
+        ],
+        [
+          "place",
+          2,
+          146,
+          0,
+          150,
+          18
+        ],
+        [
+          "place",
+          3,
+          302,
+          4,
+          34,
+          10
+        ]
+      ],
+      "control_ids": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "name": "slider: tall wrapped label",
+      "kind": "element",
+      "surface": "s100",
+      "element": {
+        "type": "slider",
+        "label": 1,
+        "slider": 2,
+        "value": 3
+      },
+      "x": 0,
+      "y": 0,
+      "width": 420,
+      "texts": {
+        "1": "Dung lượng bộ nhớ đệm ảnh tối đa theo phần trăm RAM",
+        "3": "50 %"
+      },
+      "surface_def": {
+        "dx_mul": 3,
+        "dx_div": 2,
+        "dy_mul": 15,
+        "dy_div": 8,
+        "line_height": 16,
+        "field_height": 23,
+        "avg_char_width": 7
+      },
+      "height": 57,
+      "calls": [
+        [
+          "place",
+          1,
+          0,
+          0,
+          159,
+          48
+        ],
+        [
+          "place",
+          2,
+          168,
+          8,
+          192,
+          31
+        ],
+        [
+          "place",
+          3,
+          369,
+          16,
+          51,
+          16
+        ]
+      ],
+      "control_ids": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "name": "slider: Visible=false hides the three controls",
+      "kind": "element",
+      "surface": "s100",
+      "element": {
+        "type": "slider",
+        "label": 1,
+        "slider": 2,
+        "value": 3,
+        "visible": false
+      },
+      "x": 0,
+      "y": 0,
+      "width": 420,
+      "surface_def": {
+        "dx_mul": 3,
+        "dx_div": 2,
+        "dy_mul": 15,
+        "dy_div": 8,
+        "line_height": 16,
+        "field_height": 23,
+        "avg_char_width": 7
+      },
+      "height": 0,
+      "calls": [
+        [
+          "hide",
+          1
+        ],
+        [
+          "hide",
+          2
+        ],
+        [
+          "hide",
+          3
+        ]
+      ],
+      "control_ids": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "name": "text: aligned note",
+      "kind": "element",
+      "surface": "s100",
+      "element": {
+        "type": "text",
+        "id": 1,
+        "aligned": true
+      },
+      "x": 0,
+      "y": 0,
+      "width": 500,
+      "texts": {
+        "1": "Smaller values save memory; larger values make switching faster."
+      },
+      "surface_def": {
+        "dx_mul": 3,
+        "dx_div": 2,
+        "dy_mul": 15,
+        "dy_div": 8,
+        "line_height": 16,
+        "field_height": 23,
+        "avg_char_width": 7
+      },
+      "height": 41,
+      "calls": [
+        [
+          "place",
+          1,
+          199,
+          0,
+          301,
+          32
+        ]
+      ],
+      "control_ids": [
+        1
+      ]
+    },
+    {
+      "name": "text: full-width status",
+      "kind": "element",
+      "surface": "s100",
+      "element": {
+        "type": "text",
+        "id": 1,
+        "aligned": false
+      },
+      "x": 0,
+      "y": 0,
+      "width": 500,
+      "texts": {
+        "1": "Checking for updates..."
+      },
+      "surface_def": {
+        "dx_mul": 3,
+        "dx_div": 2,
+        "dy_mul": 15,
+        "dy_div": 8,
+        "line_height": 16,
+        "field_height": 23,
+        "avg_char_width": 7
+      },
+      "height": 25,
+      "calls": [
+        [
+          "place",
+          1,
+          0,
+          0,
+          500,
+          16
+        ]
+      ],
+      "control_ids": [
+        1
+      ]
+    },
+    {
+      "name": "text: empty text hides the control and takes no room",
+      "kind": "element",
+      "surface": "s100",
+      "element": {
+        "type": "text",
+        "id": 1,
+        "aligned": false
+      },
+      "x": 0,
+      "y": 0,
+      "width": 500,
+      "texts": {
+        "1": ""
+      },
+      "surface_def": {
+        "dx_mul": 3,
+        "dx_div": 2,
+        "dy_mul": 15,
+        "dy_div": 8,
+        "line_height": 16,
+        "field_height": 23,
+        "avg_char_width": 7
+      },
+      "height": 0,
+      "calls": [
+        [
+          "hide",
+          1
+        ]
+      ],
+      "control_ids": [
+        1
+      ]
+    },
+    {
+      "name": "text: missing text counts as empty",
+      "kind": "element",
+      "surface": "s100",
+      "element": {
+        "type": "text",
+        "id": 1,
+        "aligned": true
+      },
+      "x": 0,
+      "y": 0,
+      "width": 500,
+      "surface_def": {
+        "dx_mul": 3,
+        "dx_div": 2,
+        "dy_mul": 15,
+        "dy_div": 8,
+        "line_height": 16,
+        "field_height": 23,
+        "avg_char_width": 7
+      },
+      "height": 0,
+      "calls": [
+        [
+          "hide",
+          1
+        ]
+      ],
+      "control_ids": [
+        1
+      ]
+    },
+    {
+      "name": "text: hidden id",
+      "kind": "element",
+      "surface": "s100",
+      "element": {
+        "type": "text",
+        "id": 1,
+        "aligned": false
+      },
+      "x": 0,
+      "y": 0,
+      "width": 500,
+      "hidden": [
+        1
+      ],
+      "texts": {
+        "1": "x"
+      },
+      "surface_def": {
+        "dx_mul": 3,
+        "dx_div": 2,
+        "dy_mul": 15,
+        "dy_div": 8,
+        "line_height": 16,
+        "field_height": 23,
+        "avg_char_width": 7
+      },
+      "height": 0,
+      "calls": [
+        [
+          "hide",
+          1
+        ]
+      ],
+      "control_ids": [
+        1
+      ]
+    },
+    {
+      "name": "text: aligned note on a very narrow page keeps 30 dlu",
+      "kind": "element",
+      "surface": "unit",
+      "element": {
+        "type": "text",
+        "id": 1,
+        "aligned": true
+      },
+      "x": 0,
+      "y": 0,
+      "width": 100,
+      "texts": {
+        "1": "abc def ghi"
+      },
+      "surface_def": {
+        "dx_mul": 1,
+        "dx_div": 1,
+        "dy_mul": 1,
+        "dy_div": 1,
+        "line_height": 10,
+        "field_height": 14,
+        "avg_char_width": 5
+      },
+      "height": 25,
+      "calls": [
+        [
+          "place",
+          1,
+          86,
+          0,
+          30,
+          20
+        ]
+      ],
+      "control_ids": [
+        1
+      ]
+    },
+    {
+      "name": "buttons: three, one line, not aligned",
+      "kind": "element",
+      "surface": "s100",
+      "element": {
+        "type": "buttons",
+        "ids": [
+          1,
+          2,
+          3
+        ],
+        "aligned": false
+      },
+      "x": 0,
+      "y": 0,
+      "width": 600,
+      "texts": {
+        "1": "Import",
+        "2": "Export settings",
+        "3": "Reset"
+      },
+      "surface_def": {
+        "dx_mul": 3,
+        "dx_div": 2,
+        "dy_mul": 15,
+        "dy_div": 8,
+        "line_height": 16,
+        "field_height": 23,
+        "avg_char_width": 7
+      },
+      "height": 32,
+      "calls": [
+        [
+          "place",
+          1,
+          0,
+          0,
+          75,
+          23
+        ],
+        [
+          "place",
+          2,
+          84,
+          0,
+          129,
+          23
+        ],
+        [
+          "place",
+          3,
+          222,
+          0,
+          75,
+          23
+        ]
+      ],
+      "control_ids": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "name": "buttons: wrap to a second line",
+      "kind": "element",
+      "surface": "s100",
+      "element": {
+        "type": "buttons",
+        "ids": [
+          1,
+          2,
+          3
+        ],
+        "aligned": false
+      },
+      "x": 0,
+      "y": 0,
+      "width": 230,
+      "texts": {
+        "1": "Import",
+        "2": "Export settings",
+        "3": "Reset"
+      },
+      "surface_def": {
+        "dx_mul": 3,
+        "dx_div": 2,
+        "dy_mul": 15,
+        "dy_div": 8,
+        "line_height": 16,
+        "field_height": 23,
+        "avg_char_width": 7
+      },
+      "height": 62,
+      "calls": [
+        [
+          "place",
+          1,
+          0,
+          0,
+          75,
+          23
+        ],
+        [
+          "place",
+          2,
+          84,
+          0,
+          129,
+          23
+        ],
+        [
+          "place",
+          3,
+          0,
+          30,
+          75,
+          23
+        ]
+      ],
+      "control_ids": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "name": "buttons: aligned with the control column",
+      "kind": "element",
+      "surface": "s100",
+      "element": {
+        "type": "buttons",
+        "ids": [
+          1,
+          2
+        ],
+        "aligned": true
+      },
+      "x": 0,
+      "y": 0,
+      "width": 500,
+      "texts": {
+        "1": "Browse...",
+        "2": "Clear"
+      },
+      "surface_def": {
+        "dx_mul": 3,
+        "dx_div": 2,
+        "dy_mul": 15,
+        "dy_div": 8,
+        "line_height": 16,
+        "field_height": 23,
+        "avg_char_width": 7
+      },
+      "height": 32,
+      "calls": [
+        [
+          "place",
+          1,
+          199,
+          0,
+          87,
+          23
+        ],
+        [
+          "place",
+          2,
+          295,
+          0,
+          75,
+          23
+        ]
+      ],
+      "control_ids": [
+        1,
+        2
+      ]
+    },
+    {
+      "name": "buttons: a hidden button is skipped",
+      "kind": "element",
+      "surface": "s100",
+      "element": {
+        "type": "buttons",
+        "ids": [
+          1,
+          2,
+          3
+        ],
+        "aligned": false
+      },
+      "x": 0,
+      "y": 0,
+      "width": 600,
+      "hidden": [
+        2
+      ],
+      "texts": {
+        "1": "A",
+        "2": "B",
+        "3": "C"
+      },
+      "surface_def": {
+        "dx_mul": 3,
+        "dx_div": 2,
+        "dy_mul": 15,
+        "dy_div": 8,
+        "line_height": 16,
+        "field_height": 23,
+        "avg_char_width": 7
+      },
+      "height": 32,
+      "calls": [
+        [
+          "place",
+          1,
+          0,
+          0,
+          75,
+          23
+        ],
+        [
+          "hide",
+          2
+        ],
+        [
+          "place",
+          3,
+          84,
+          0,
+          75,
+          23
+        ]
+      ],
+      "control_ids": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "name": "buttons: all hidden returns 0",
+      "kind": "element",
+      "surface": "s100",
+      "element": {
+        "type": "buttons",
+        "ids": [
+          1,
+          2
+        ],
+        "aligned": false
+      },
+      "x": 0,
+      "y": 0,
+      "width": 600,
+      "hidden": [
+        1,
+        2
+      ],
+      "texts": {
+        "1": "A",
+        "2": "B"
+      },
+      "surface_def": {
+        "dx_mul": 3,
+        "dx_div": 2,
+        "dy_mul": 15,
+        "dy_div": 8,
+        "line_height": 16,
+        "field_height": 23,
+        "avg_char_width": 7
+      },
+      "height": 0,
+      "calls": [
+        [
+          "hide",
+          1
+        ],
+        [
+          "hide",
+          2
+        ]
+      ],
+      "control_ids": [
+        1,
+        2
+      ]
+    },
+    {
+      "name": "buttons: minimum 50 dlu button width",
+      "kind": "element",
+      "surface": "unit",
+      "element": {
+        "type": "buttons",
+        "ids": [
+          1
+        ],
+        "aligned": false
+      },
+      "x": 0,
+      "y": 0,
+      "width": 300,
+      "texts": {
+        "1": "OK"
+      },
+      "surface_def": {
+        "dx_mul": 1,
+        "dx_div": 1,
+        "dy_mul": 1,
+        "dy_div": 1,
+        "line_height": 10,
+        "field_height": 14,
+        "avg_char_width": 5
+      },
+      "height": 19,
+      "calls": [
+        [
+          "place",
+          1,
+          0,
+          0,
+          50,
+          14
+        ]
+      ],
+      "control_ids": [
+        1
+      ]
+    },
+    {
+      "name": "buttons: empty list",
+      "kind": "element",
+      "surface": "s100",
+      "element": {
+        "type": "buttons",
+        "ids": [],
+        "aligned": false
+      },
+      "x": 0,
+      "y": 0,
+      "width": 300,
+      "surface_def": {
+        "dx_mul": 3,
+        "dx_div": 2,
+        "dy_mul": 15,
+        "dy_div": 8,
+        "line_height": 16,
+        "field_height": 23,
+        "avg_char_width": 7
+      },
+      "height": 0,
+      "calls": [],
+      "control_ids": []
+    },
+    {
+      "name": "buttons: Visible=false hides every id",
+      "kind": "element",
+      "surface": "s100",
+      "element": {
+        "type": "buttons",
+        "ids": [
+          1,
+          2
+        ],
+        "aligned": true,
+        "visible": false
+      },
+      "x": 0,
+      "y": 0,
+      "width": 300,
+      "texts": {
+        "1": "A",
+        "2": "B"
+      },
+      "surface_def": {
+        "dx_mul": 3,
+        "dx_div": 2,
+        "dy_mul": 15,
+        "dy_div": 8,
+        "line_height": 16,
+        "field_height": 23,
+        "avg_char_width": 7
+      },
+      "height": 0,
+      "calls": [
+        [
+          "hide",
+          1
+        ],
+        [
+          "hide",
+          2
+        ]
+      ],
+      "control_ids": [
+        1,
+        2
+      ]
+    },
+    {
+      "name": "radio: no hint",
+      "kind": "element",
+      "surface": "s100",
+      "element": {
+        "type": "radio",
+        "id": 1,
+        "hint": null,
+        "indent": 0
+      },
+      "x": 0,
+      "y": 0,
+      "width": 500,
+      "texts": {
+        "1": "Fade"
+      },
+      "surface_def": {
+        "dx_mul": 3,
+        "dx_div": 2,
+        "dy_mul": 15,
+        "dy_div": 8,
+        "line_height": 16,
+        "field_height": 23,
+        "avg_char_width": 7
+      },
+      "height": 29,
+      "calls": [
+        [
+          "place",
+          1,
+          0,
+          0,
+          500,
+          19
+        ]
+      ],
+      "control_ids": [
+        1
+      ]
+    },
+    {
+      "name": "radio: with a hint, indent 6",
+      "kind": "element",
+      "surface": "s100",
+      "element": {
+        "type": "radio",
+        "id": 1,
+        "hint": 2,
+        "indent": 6
+      },
+      "x": 0,
+      "y": 0,
+      "width": 500,
+      "texts": {
+        "1": "Slide",
+        "2": "Images slide in from the side."
+      },
+      "surface_def": {
+        "dx_mul": 3,
+        "dx_div": 2,
+        "dy_mul": 15,
+        "dy_div": 8,
+        "line_height": 16,
+        "field_height": 23,
+        "avg_char_width": 7
+      },
+      "height": 48,
+      "calls": [
+        [
+          "place",
+          1,
+          9,
+          0,
+          491,
+          19
+        ],
+        [
+          "place",
+          2,
+          27,
+          22,
+          473,
+          16
+        ]
+      ],
+      "control_ids": [
+        1,
+        2
+      ]
+    },
+    {
+      "name": "radio: wrapped text and a two-line hint",
+      "kind": "element",
+      "surface": "s100",
+      "element": {
+        "type": "radio",
+        "id": 1,
+        "hint": 2,
+        "indent": 0
+      },
+      "x": 0,
+      "y": 0,
+      "width": 180,
+      "texts": {
+        "1": "Keep the current zoom for the next image",
+        "2": "The zoom and the position stay when you move to the next image in the folder."
+      },
+      "surface_def": {
+        "dx_mul": 3,
+        "dx_div": 2,
+        "dy_mul": 15,
+        "dy_div": 8,
+        "line_height": 16,
+        "field_height": 23,
+        "avg_char_width": 7
+      },
+      "height": 110,
+      "calls": [
+        [
+          "place",
+          1,
+          0,
+          0,
+          180,
+          33
+        ],
+        [
+          "place",
+          2,
+          18,
+          36,
+          162,
+          64
+        ]
+      ],
+      "control_ids": [
+        1,
+        2
+      ]
+    },
+    {
+      "name": "radio: hidden radio hides its hint",
+      "kind": "element",
+      "surface": "s100",
+      "element": {
+        "type": "radio",
+        "id": 1,
+        "hint": 2,
+        "indent": 0
+      },
+      "x": 0,
+      "y": 0,
+      "width": 500,
+      "hidden": [
+        1
+      ],
+      "texts": {
+        "1": "x",
+        "2": "y"
+      },
+      "surface_def": {
+        "dx_mul": 3,
+        "dx_div": 2,
+        "dy_mul": 15,
+        "dy_div": 8,
+        "line_height": 16,
+        "field_height": 23,
+        "avg_char_width": 7
+      },
+      "height": 0,
+      "calls": [
+        [
+          "hide",
+          1
+        ],
+        [
+          "hide",
+          2
+        ]
+      ],
+      "control_ids": [
+        1,
+        2
+      ]
+    },
+    {
+      "name": "radio: hint hidden alone is still placed",
+      "kind": "element",
+      "surface": "s100",
+      "element": {
+        "type": "radio",
+        "id": 1,
+        "hint": 2,
+        "indent": 0
+      },
+      "x": 0,
+      "y": 0,
+      "width": 500,
+      "hidden": [
+        2
+      ],
+      "texts": {
+        "1": "x",
+        "2": "y"
+      },
+      "surface_def": {
+        "dx_mul": 3,
+        "dx_div": 2,
+        "dy_mul": 15,
+        "dy_div": 8,
+        "line_height": 16,
+        "field_height": 23,
+        "avg_char_width": 7
+      },
+      "height": 48,
+      "calls": [
+        [
+          "place",
+          1,
+          0,
+          0,
+          500,
+          19
+        ],
+        [
+          "place",
+          2,
+          18,
+          22,
+          482,
+          16
+        ]
+      ],
+      "control_ids": [
+        1,
+        2
+      ]
+    },
+    {
+      "name": "radio: Visible=false",
+      "kind": "element",
+      "surface": "s100",
+      "element": {
+        "type": "radio",
+        "id": 1,
+        "hint": 2,
+        "indent": 0,
+        "visible": false
+      },
+      "x": 0,
+      "y": 0,
+      "width": 500,
+      "texts": {
+        "1": "x",
+        "2": "y"
+      },
+      "surface_def": {
+        "dx_mul": 3,
+        "dx_div": 2,
+        "dy_mul": 15,
+        "dy_div": 8,
+        "line_height": 16,
+        "field_height": 23,
+        "avg_char_width": 7
+      },
+      "height": 0,
+      "calls": [
+        [
+          "hide",
+          1
+        ],
+        [
+          "hide",
+          2
+        ]
+      ],
+      "control_ids": [
+        1,
+        2
+      ]
+    },
+    {
+      "name": "radio: narrow page keeps the minimum widths",
+      "kind": "element",
+      "surface": "unit",
+      "element": {
+        "type": "radio",
+        "id": 1,
+        "hint": 2,
+        "indent": 30
+      },
+      "x": 0,
+      "y": 0,
+      "width": 40,
+      "texts": {
+        "1": "abcdef",
+        "2": "ghijkl"
+      },
+      "surface_def": {
+        "dx_mul": 1,
+        "dx_div": 1,
+        "dy_mul": 1,
+        "dy_div": 1,
+        "line_height": 10,
+        "field_height": 14,
+        "avg_char_width": 5
+      },
+      "height": 39,
+      "calls": [
+        [
+          "place",
+          1,
+          30,
+          0,
+          10,
+          21
+        ],
+        [
+          "place",
+          2,
+          42,
+          23,
+          30,
+          10
+        ]
+      ],
+      "control_ids": [
+        1,
+        2
+      ]
+    },
+    {
+      "name": "check_flow: five boxes on a wide page",
+      "kind": "element",
+      "surface": "s100",
+      "element": {
+        "type": "check_flow",
+        "ids": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "indent": 0
+      },
+      "x": 0,
+      "y": 0,
+      "width": 900,
+      "texts": {
+        "1": "Name",
+        "2": "Date",
+        "3": "Size",
+        "4": "Type",
+        "5": "Dimensions"
+      },
+      "surface_def": {
+        "dx_mul": 3,
+        "dx_div": 2,
+        "dy_mul": 15,
+        "dy_div": 8,
+        "line_height": 16,
+        "field_height": 23,
+        "avg_char_width": 7
+      },
+      "height": 28,
+      "calls": [
+        [
+          "place",
+          1,
+          0,
+          0,
+          52,
+          19
+        ],
+        [
+          "place",
+          2,
+          67,
+          0,
+          52,
+          19
+        ],
+        [
+          "place",
+          3,
+          134,
+          0,
+          52,
+          19
+        ],
+        [
+          "place",
+          4,
+          201,
+          0,
+          52,
+          19
+        ],
+        [
+          "place",
+          5,
+          268,
+          0,
+          94,
+          19
+        ]
+      ],
+      "control_ids": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "name": "check_flow: wraps",
+      "kind": "element",
+      "surface": "s100",
+      "element": {
+        "type": "check_flow",
+        "ids": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "indent": 4
+      },
+      "x": 0,
+      "y": 0,
+      "width": 260,
+      "texts": {
+        "1": "Name",
+        "2": "Date",
+        "3": "Size",
+        "4": "Type",
+        "5": "Dimensions"
+      },
+      "surface_def": {
+        "dx_mul": 3,
+        "dx_div": 2,
+        "dy_mul": 15,
+        "dy_div": 8,
+        "line_height": 16,
+        "field_height": 23,
+        "avg_char_width": 7
+      },
+      "height": 54,
+      "calls": [
+        [
+          "place",
+          1,
+          6,
+          0,
+          52,
+          19
+        ],
+        [
+          "place",
+          2,
+          73,
+          0,
+          52,
+          19
+        ],
+        [
+          "place",
+          3,
+          140,
+          0,
+          52,
+          19
+        ],
+        [
+          "place",
+          4,
+          207,
+          0,
+          52,
+          19
+        ],
+        [
+          "place",
+          5,
+          6,
+          26,
+          94,
+          19
+        ]
+      ],
+      "control_ids": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "name": "check_flow: an item wider than the row is clipped to the row",
+      "kind": "element",
+      "surface": "unit",
+      "element": {
+        "type": "check_flow",
+        "ids": [
+          1,
+          2
+        ],
+        "indent": 0
+      },
+      "x": 0,
+      "y": 0,
+      "width": 60,
+      "texts": {
+        "1": "a very long item text here",
+        "2": "b"
+      },
+      "surface_def": {
+        "dx_mul": 1,
+        "dx_div": 1,
+        "dy_mul": 1,
+        "dy_div": 1,
+        "line_height": 10,
+        "field_height": 14,
+        "avg_char_width": 5
+      },
+      "height": 33,
+      "calls": [
+        [
+          "place",
+          1,
+          0,
+          0,
+          60,
+          12
+        ],
+        [
+          "place",
+          2,
+          0,
+          16,
+          21,
+          12
+        ]
+      ],
+      "control_ids": [
+        1,
+        2
+      ]
+    },
+    {
+      "name": "check_flow: empty list still returns one row of height",
+      "kind": "element",
+      "surface": "s100",
+      "element": {
+        "type": "check_flow",
+        "ids": [],
+        "indent": 0
+      },
+      "x": 0,
+      "y": 0,
+      "width": 300,
+      "surface_def": {
+        "dx_mul": 3,
+        "dx_div": 2,
+        "dy_mul": 15,
+        "dy_div": 8,
+        "line_height": 16,
+        "field_height": 23,
+        "avg_char_width": 7
+      },
+      "height": 28,
+      "calls": [],
+      "control_ids": []
+    },
+    {
+      "name": "check_flow: hidden items are NOT skipped",
+      "kind": "element",
+      "surface": "s100",
+      "element": {
+        "type": "check_flow",
+        "ids": [
+          1,
+          2
+        ],
+        "indent": 0
+      },
+      "x": 0,
+      "y": 0,
+      "width": 400,
+      "hidden": [
+        1
+      ],
+      "texts": {
+        "1": "A",
+        "2": "B"
+      },
+      "surface_def": {
+        "dx_mul": 3,
+        "dx_div": 2,
+        "dy_mul": 15,
+        "dy_div": 8,
+        "line_height": 16,
+        "field_height": 23,
+        "avg_char_width": 7
+      },
+      "height": 28,
+      "calls": [
+        [
+          "place",
+          1,
+          0,
+          0,
+          31,
+          19
+        ],
+        [
+          "place",
+          2,
+          46,
+          0,
+          31,
+          19
+        ]
+      ],
+      "control_ids": [
+        1,
+        2
+      ]
+    },
+    {
+      "name": "check_flow: Visible=false",
+      "kind": "element",
+      "surface": "s100",
+      "element": {
+        "type": "check_flow",
+        "ids": [
+          1,
+          2
+        ],
+        "indent": 0,
+        "visible": false
+      },
+      "x": 0,
+      "y": 0,
+      "width": 400,
+      "texts": {
+        "1": "A",
+        "2": "B"
+      },
+      "surface_def": {
+        "dx_mul": 3,
+        "dx_div": 2,
+        "dy_mul": 15,
+        "dy_div": 8,
+        "line_height": 16,
+        "field_height": 23,
+        "avg_char_width": 7
+      },
+      "height": 0,
+      "calls": [
+        [
+          "hide",
+          1
+        ],
+        [
+          "hide",
+          2
+        ]
+      ],
+      "control_ids": [
+        1,
+        2
+      ]
+    },
+    {
+      "name": "group: empty",
+      "kind": "element",
+      "surface": "s100",
+      "element": {
+        "type": "group",
+        "title": 10,
+        "children": []
+      },
+      "x": 0,
+      "y": 0,
+      "width": 400,
+      "texts": {
+        "10": "Empty"
+      },
+      "surface_def": {
+        "dx_mul": 3,
+        "dx_div": 2,
+        "dy_mul": 15,
+        "dy_div": 8,
+        "line_height": 16,
+        "field_height": 23,
+        "avg_char_width": 7
+      },
+      "height": 43,
+      "calls": [
+        [
+          "place",
+          10,
+          0,
+          0,
+          400,
+          28
+        ]
+      ],
+      "control_ids": [
+        10
+      ]
+    },
+    {
+      "name": "group: check + row",
+      "kind": "element",
+      "surface": "s100",
+      "element": {
+        "type": "group",
+        "title": 10,
+        "children": [
+          {
+            "type": "check",
+            "id": 11,
+            "indent": 0
+          },
+          {
+            "type": "row",
+            "label": 12,
+            "control": 13,
+            "row_kind": "Edit",
+            "width_dlu": 60
+          }
+        ]
+      },
+      "x": 0,
+      "y": 0,
+      "width": 500,
+      "texts": {
+        "10": "General",
+        "11": "Open the last folder",
+        "12": "Pan step"
+      },
+      "surface_def": {
+        "dx_mul": 3,
+        "dx_div": 2,
+        "dy_mul": 15,
+        "dy_div": 8,
+        "line_height": 16,
+        "field_height": 23,
+        "avg_char_width": 7
+      },
+      "height": 101,
+      "calls": [
+        [
+          "place",
+          11,
+          12,
+          25,
+          476,
+          19
+        ],
+        [
+          "place",
+          12,
+          12,
+          54,
+          180,
+          16
+        ],
+        [
+          "place",
+          13,
+          201,
+          51,
+          90,
+          23
+        ],
+        [
+          "place",
+          10,
+          0,
+          0,
+          500,
+          86
+        ]
+      ],
+      "control_ids": [
+        10,
+        11,
+        12,
+        13
+      ]
+    },
+    {
+      "name": "group: nested group with a hidden inner group",
+      "kind": "element",
+      "surface": "s100",
+      "element": {
+        "type": "group",
+        "title": 10,
+        "children": [
+          {
+            "type": "check",
+            "id": 11,
+            "indent": 0
+          },
+          {
+            "type": "group",
+            "title": 20,
+            "children": [
+              {
+                "type": "check",
+                "id": 21,
+                "indent": 0
+              }
+            ],
+            "visible": false
+          },
+          {
+            "type": "check",
+            "id": 12,
+            "indent": 0
+          }
+        ]
+      },
+      "x": 0,
+      "y": 0,
+      "width": 500,
+      "texts": {
+        "10": "Outer",
+        "11": "a",
+        "12": "b",
+        "20": "Inner",
+        "21": "c"
+      },
+      "surface_def": {
+        "dx_mul": 3,
+        "dx_div": 2,
+        "dy_mul": 15,
+        "dy_div": 8,
+        "line_height": 16,
+        "field_height": 23,
+        "avg_char_width": 7
+      },
+      "height": 95,
+      "calls": [
+        [
+          "place",
+          11,
+          12,
+          25,
+          476,
+          19
+        ],
+        [
+          "hide",
+          20
+        ],
+        [
+          "hide",
+          21
+        ],
+        [
+          "place",
+          12,
+          12,
+          51,
+          476,
+          19
+        ],
+        [
+          "place",
+          10,
+          0,
+          0,
+          500,
+          80
+        ]
+      ],
+      "control_ids": [
+        10,
+        11,
+        20,
+        21,
+        12
+      ]
+    },
+    {
+      "name": "group: Visible=false hides the title first, then the children",
+      "kind": "element",
+      "surface": "s100",
+      "element": {
+        "type": "group",
+        "title": 10,
+        "children": [
+          {
+            "type": "check",
+            "id": 11,
+            "indent": 0
+          },
+          {
+            "type": "row",
+            "label": 12,
+            "control": 13,
+            "row_kind": "Combo",
+            "width_dlu": 0
+          }
+        ],
+        "visible": false
+      },
+      "x": 0,
+      "y": 0,
+      "width": 500,
+      "surface_def": {
+        "dx_mul": 3,
+        "dx_div": 2,
+        "dy_mul": 15,
+        "dy_div": 8,
+        "line_height": 16,
+        "field_height": 23,
+        "avg_char_width": 7
+      },
+      "height": 0,
+      "calls": [
+        [
+          "hide",
+          10
+        ],
+        [
+          "hide",
+          11
+        ],
+        [
+          "hide",
+          12
+        ],
+        [
+          "hide",
+          13
+        ]
+      ],
+      "control_ids": [
+        10,
+        11,
+        12,
+        13
+      ]
+    },
+    {
+      "name": "group: narrow page keeps a 40 dlu inner width",
+      "kind": "element",
+      "surface": "unit",
+      "element": {
+        "type": "group",
+        "title": 10,
+        "children": [
+          {
+            "type": "check",
+            "id": 11,
+            "indent": 0
+          }
+        ]
+      },
+      "x": 0,
+      "y": 0,
+      "width": 20,
+      "texts": {
+        "11": "abc"
+      },
+      "surface_def": {
+        "dx_mul": 1,
+        "dx_div": 1,
+        "dy_mul": 1,
+        "dy_div": 1,
+        "line_height": 10,
+        "field_height": 14,
+        "avg_char_width": 5
+      },
+      "height": 41,
+      "calls": [
+        [
+          "place",
+          11,
+          8,
+          15,
+          40,
+          12
+        ],
+        [
+          "place",
+          10,
+          0,
+          0,
+          20,
+          33
+        ]
+      ],
+      "control_ids": [
+        10,
+        11
+      ]
+    },
+    {
+      "name": "group: s150 with radios and hints",
+      "kind": "element",
+      "surface": "s150",
+      "element": {
+        "type": "group",
+        "title": 10,
+        "children": [
+          {
+            "type": "radio",
+            "id": 11,
+            "hint": 12,
+            "indent": 0
+          },
+          {
+            "type": "radio",
+            "id": 13,
+            "hint": null,
+            "indent": 0
+          }
+        ]
+      },
+      "x": 0,
+      "y": 0,
+      "width": 700,
+      "texts": {
+        "10": "Mode",
+        "11": "One",
+        "12": "first",
+        "13": "Two"
+      },
+      "surface_def": {
+        "dx_mul": 9,
+        "dx_div": 4,
+        "dy_mul": 45,
+        "dy_div": 16,
+        "line_height": 24,
+        "field_height": 34,
+        "avg_char_width": 10
+      },
+      "height": 184,
+      "calls": [
+        [
+          "place",
+          11,
+          18,
+          38,
+          664,
+          29
+        ],
+        [
+          "place",
+          12,
+          45,
+          72,
+          637,
+          24
+        ],
+        [
+          "place",
+          13,
+          18,
+          112,
+          664,
+          29
+        ],
+        [
+          "place",
+          10,
+          0,
+          0,
+          700,
+          162
+        ]
+      ],
+      "control_ids": [
+        10,
+        11,
+        12,
+        13
+      ]
+    },
+    {
+      "name": "key_grid: wide page, two columns, boxes aligned",
+      "kind": "element",
+      "surface": "s100",
+      "element": {
+        "type": "key_grid",
+        "cells": [
+          {
+            "label": 1,
+            "box": 2,
+            "clear": 3
+          },
+          {
+            "label": 4,
+            "box": 5,
+            "clear": 0
+          },
+          {
+            "label": 6,
+            "box": 7,
+            "clear": 8
+          },
+          {
+            "label": 9,
+            "box": 10,
+            "clear": 0
+          }
+        ]
+      },
+      "x": 0,
+      "y": 0,
+      "width": 700,
+      "texts": {
+        "1": "Next",
+        "4": "Previous",
+        "6": "First",
+        "9": "Last"
+      },
+      "surface_def": {
+        "dx_mul": 3,
+        "dx_div": 2,
+        "dy_mul": 15,
+        "dy_div": 8,
+        "line_height": 16,
+        "field_height": 23,
+        "avg_char_width": 7
+      },
+      "height": 64,
+      "calls": [
+        [
+          "place",
+          1,
+          0,
+          3,
+          210,
+          16
+        ],
+        [
+          "place",
+          2,
+          216,
+          0,
+          96,
+          23
+        ],
+        [
+          "place",
+          3,
+          318,
+          0,
+          23,
+          23
+        ],
+        [
+          "place",
+          4,
+          359,
+          3,
+          210,
+          16
+        ],
+        [
+          "place",
+          5,
+          575,
+          0,
+          96,
+          23
+        ],
+        [
+          "place",
+          6,
+          0,
+          35,
+          210,
+          16
+        ],
+        [
+          "place",
+          7,
+          216,
+          32,
+          96,
+          23
+        ],
+        [
+          "place",
+          8,
+          318,
+          32,
+          23,
+          23
+        ],
+        [
+          "place",
+          9,
+          359,
+          35,
+          210,
+          16
+        ],
+        [
+          "place",
+          10,
+          575,
+          32,
+          96,
+          23
+        ]
+      ],
+      "control_ids": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ]
+    },
+    {
+      "name": "key_grid: a tall wrapped label makes its row taller",
+      "kind": "element",
+      "surface": "s100",
+      "element": {
+        "type": "key_grid",
+        "cells": [
+          {
+            "label": 1,
+            "box": 2,
+            "clear": 3
+          },
+          {
+            "label": 4,
+            "box": 5,
+            "clear": 0
+          },
+          {
+            "label": 6,
+            "box": 7,
+            "clear": 8
+          },
+          {
+            "label": 9,
+            "box": 10,
+            "clear": 0
+          }
+        ]
+      },
+      "x": 0,
+      "y": 0,
+      "width": 700,
+      "heights": {
+        "4": 60
+      },
+      "texts": {
+        "1": "Next",
+        "4": "x",
+        "6": "First",
+        "9": "Last"
+      },
+      "surface_def": {
+        "dx_mul": 3,
+        "dx_div": 2,
+        "dy_mul": 15,
+        "dy_div": 8,
+        "line_height": 16,
+        "field_height": 23,
+        "avg_char_width": 7
+      },
+      "height": 101,
+      "calls": [
+        [
+          "place",
+          1,
+          0,
+          22,
+          210,
+          16
+        ],
+        [
+          "place",
+          2,
+          216,
+          18,
+          96,
+          23
+        ],
+        [
+          "place",
+          3,
+          318,
+          18,
+          23,
+          23
+        ],
+        [
+          "place",
+          4,
+          359,
+          0,
+          210,
+          60
+        ],
+        [
+          "place",
+          5,
+          575,
+          18,
+          96,
+          23
+        ],
+        [
+          "place",
+          6,
+          0,
+          72,
+          210,
+          16
+        ],
+        [
+          "place",
+          7,
+          216,
+          69,
+          96,
+          23
+        ],
+        [
+          "place",
+          8,
+          318,
+          69,
+          23,
+          23
+        ],
+        [
+          "place",
+          9,
+          359,
+          72,
+          210,
+          16
+        ],
+        [
+          "place",
+          10,
+          575,
+          69,
+          96,
+          23
+        ]
+      ],
+      "control_ids": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ]
+    },
+    {
+      "name": "key_grid: narrow page, one column",
+      "kind": "element",
+      "surface": "s100",
+      "element": {
+        "type": "key_grid",
+        "cells": [
+          {
+            "label": 1,
+            "box": 2,
+            "clear": 3
+          },
+          {
+            "label": 4,
+            "box": 5,
+            "clear": 0
+          },
+          {
+            "label": 6,
+            "box": 7,
+            "clear": 8
+          },
+          {
+            "label": 9,
+            "box": 10,
+            "clear": 0
+          }
+        ]
+      },
+      "x": 0,
+      "y": 0,
+      "width": 200,
+      "texts": {
+        "1": "Next",
+        "4": "Previous",
+        "6": "First",
+        "9": "Last"
+      },
+      "surface_def": {
+        "dx_mul": 3,
+        "dx_div": 2,
+        "dy_mul": 15,
+        "dy_div": 8,
+        "line_height": 16,
+        "field_height": 23,
+        "avg_char_width": 7
+      },
+      "height": 128,
+      "calls": [
+        [
+          "place",
+          1,
+          0,
+          3,
+          69,
+          16
+        ],
+        [
+          "place",
+          2,
+          75,
+          0,
+          96,
+          23
+        ],
+        [
+          "place",
+          3,
+          177,
+          0,
+          23,
+          23
+        ],
+        [
+          "place",
+          4,
+          0,
+          35,
+          69,
+          16
+        ],
+        [
+          "place",
+          5,
+          75,
+          32,
+          96,
+          23
+        ],
+        [
+          "place",
+          6,
+          0,
+          67,
+          69,
+          16
+        ],
+        [
+          "place",
+          7,
+          75,
+          64,
+          96,
+          23
+        ],
+        [
+          "place",
+          8,
+          177,
+          64,
+          23,
+          23
+        ],
+        [
+          "place",
+          9,
+          0,
+          99,
+          69,
+          16
+        ],
+        [
+          "place",
+          10,
+          75,
+          96,
+          96,
+          23
+        ]
+      ],
+      "control_ids": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ]
+    },
+    {
+      "name": "key_grid: odd cell count leaves the last row half empty",
+      "kind": "element",
+      "surface": "s100",
+      "element": {
+        "type": "key_grid",
+        "cells": [
+          {
+            "label": 1,
+            "box": 2,
+            "clear": 3
+          },
+          {
+            "label": 4,
+            "box": 5,
+            "clear": 0
+          },
+          {
+            "label": 6,
+            "box": 7,
+            "clear": 8
+          }
+        ]
+      },
+      "x": 0,
+      "y": 0,
+      "width": 700,
+      "texts": {
+        "1": "A",
+        "4": "B",
+        "6": "C"
+      },
+      "surface_def": {
+        "dx_mul": 3,
+        "dx_div": 2,
+        "dy_mul": 15,
+        "dy_div": 8,
+        "line_height": 16,
+        "field_height": 23,
+        "avg_char_width": 7
+      },
+      "height": 64,
+      "calls": [
+        [
+          "place",
+          1,
+          0,
+          3,
+          210,
+          16
+        ],
+        [
+          "place",
+          2,
+          216,
+          0,
+          96,
+          23
+        ],
+        [
+          "place",
+          3,
+          318,
+          0,
+          23,
+          23
+        ],
+        [
+          "place",
+          4,
+          359,
+          3,
+          210,
+          16
+        ],
+        [
+          "place",
+          5,
+          575,
+          0,
+          96,
+          23
+        ],
+        [
+          "place",
+          6,
+          0,
+          35,
+          210,
+          16
+        ],
+        [
+          "place",
+          7,
+          216,
+          32,
+          96,
+          23
+        ],
+        [
+          "place",
+          8,
+          318,
+          32,
+          23,
+          23
+        ]
+      ],
+      "control_ids": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ]
+    },
+    {
+      "name": "key_grid: threshold width for two columns (2*172-12 = 332 at unit scale)",
+      "kind": "element",
+      "surface": "unit",
+      "element": {
+        "type": "key_grid",
+        "cells": [
+          {
+            "label": 1,
+            "box": 2,
+            "clear": 0
+          },
+          {
+            "label": 3,
+            "box": 4,
+            "clear": 0
+          }
+        ]
+      },
+      "x": 0,
+      "y": 0,
+      "width": 332,
+      "surface_def": {
+        "dx_mul": 1,
+        "dx_div": 1,
+        "dy_mul": 1,
+        "dy_div": 1,
+        "line_height": 10,
+        "field_height": 14,
+        "avg_char_width": 5
+      },
+      "height": 19,
+      "calls": [
+        [
+          "place",
+          1,
+          0,
+          2,
+          74,
+          10
+        ],
+        [
+          "place",
+          2,
+          78,
+          0,
+          64,
+          14
+        ],
+        [
+          "place",
+          3,
+          172,
+          2,
+          74,
+          10
+        ],
+        [
+          "place",
+          4,
+          250,
+          0,
+          64,
+          14
+        ]
+      ],
+      "control_ids": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "name": "key_grid: one pixel less than the threshold",
+      "kind": "element",
+      "surface": "unit",
+      "element": {
+        "type": "key_grid",
+        "cells": [
+          {
+            "label": 1,
+            "box": 2,
+            "clear": 0
+          },
+          {
+            "label": 3,
+            "box": 4,
+            "clear": 0
+          }
+        ]
+      },
+      "x": 0,
+      "y": 0,
+      "width": 331,
+      "surface_def": {
+        "dx_mul": 1,
+        "dx_div": 1,
+        "dy_mul": 1,
+        "dy_div": 1,
+        "line_height": 10,
+        "field_height": 14,
+        "avg_char_width": 5
+      },
+      "height": 38,
+      "calls": [
+        [
+          "place",
+          1,
+          0,
+          2,
+          245,
+          10
+        ],
+        [
+          "place",
+          2,
+          249,
+          0,
+          64,
+          14
+        ],
+        [
+          "place",
+          3,
+          0,
+          21,
+          245,
+          10
+        ],
+        [
+          "place",
+          4,
+          249,
+          19,
+          64,
+          14
+        ]
+      ],
+      "control_ids": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "name": "key_grid: s100 threshold is 12*1.5 + 2*160*1.5 = 498",
+      "kind": "element",
+      "surface": "s100",
+      "element": {
+        "type": "key_grid",
+        "cells": [
+          {
+            "label": 1,
+            "box": 2,
+            "clear": 3
+          },
+          {
+            "label": 4,
+            "box": 5,
+            "clear": 0
+          }
+        ]
+      },
+      "x": 0,
+      "y": 0,
+      "width": 498,
+      "surface_def": {
+        "dx_mul": 3,
+        "dx_div": 2,
+        "dy_mul": 15,
+        "dy_div": 8,
+        "line_height": 16,
+        "field_height": 23,
+        "avg_char_width": 7
+      },
+      "height": 32,
+      "calls": [
+        [
+          "place",
+          1,
+          0,
+          3,
+          109,
+          16
+        ],
+        [
+          "place",
+          2,
+          115,
+          0,
+          96,
+          23
+        ],
+        [
+          "place",
+          3,
+          217,
+          0,
+          23,
+          23
+        ],
+        [
+          "place",
+          4,
+          258,
+          3,
+          109,
+          16
+        ],
+        [
+          "place",
+          5,
+          373,
+          0,
+          96,
+          23
+        ]
+      ],
+      "control_ids": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "name": "key_grid: s100 one pixel less than the threshold",
+      "kind": "element",
+      "surface": "s100",
+      "element": {
+        "type": "key_grid",
+        "cells": [
+          {
+            "label": 1,
+            "box": 2,
+            "clear": 3
+          },
+          {
+            "label": 4,
+            "box": 5,
+            "clear": 0
+          }
+        ]
+      },
+      "x": 0,
+      "y": 0,
+      "width": 497,
+      "surface_def": {
+        "dx_mul": 3,
+        "dx_div": 2,
+        "dy_mul": 15,
+        "dy_div": 8,
+        "line_height": 16,
+        "field_height": 23,
+        "avg_char_width": 7
+      },
+      "height": 64,
+      "calls": [
+        [
+          "place",
+          1,
+          0,
+          3,
+          366,
+          16
+        ],
+        [
+          "place",
+          2,
+          372,
+          0,
+          96,
+          23
+        ],
+        [
+          "place",
+          3,
+          474,
+          0,
+          23,
+          23
+        ],
+        [
+          "place",
+          4,
+          0,
+          35,
+          366,
+          16
+        ],
+        [
+          "place",
+          5,
+          372,
+          32,
+          96,
+          23
+        ]
+      ],
+      "control_ids": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "name": "key_grid: very narrow page",
+      "kind": "element",
+      "surface": "s100",
+      "element": {
+        "type": "key_grid",
+        "cells": [
+          {
+            "label": 1,
+            "box": 2,
+            "clear": 3
+          }
+        ]
+      },
+      "x": 0,
+      "y": 0,
+      "width": 50,
+      "texts": {
+        "1": "Next image"
+      },
+      "surface_def": {
+        "dx_mul": 3,
+        "dx_div": 2,
+        "dy_mul": 15,
+        "dy_div": 8,
+        "line_height": 16,
+        "field_height": 23,
+        "avg_char_width": 7
+      },
+      "height": 41,
+      "calls": [
+        [
+          "place",
+          1,
+          0,
+          0,
+          45,
+          32
+        ],
+        [
+          "place",
+          2,
+          51,
+          4,
+          75,
+          23
+        ],
+        [
+          "place",
+          3,
+          132,
+          4,
+          23,
+          23
+        ]
+      ],
+      "control_ids": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "name": "key_grid: empty",
+      "kind": "element",
+      "surface": "s100",
+      "element": {
+        "type": "key_grid",
+        "cells": []
+      },
+      "x": 0,
+      "y": 0,
+      "width": 700,
+      "surface_def": {
+        "dx_mul": 3,
+        "dx_div": 2,
+        "dy_mul": 15,
+        "dy_div": 8,
+        "line_height": 16,
+        "field_height": 23,
+        "avg_char_width": 7
+      },
+      "height": 0,
+      "calls": [],
+      "control_ids": []
+    },
+    {
+      "name": "key_grid: control ids include clear only when non-zero",
+      "kind": "element",
+      "surface": "s100",
+      "element": {
+        "type": "key_grid",
+        "cells": [
+          {
+            "label": 1,
+            "box": 2,
+            "clear": 3
+          },
+          {
+            "label": 4,
+            "box": 5,
+            "clear": 0
+          }
+        ]
+      },
+      "x": 0,
+      "y": 0,
+      "width": 700,
+      "surface_def": {
+        "dx_mul": 3,
+        "dx_div": 2,
+        "dy_mul": 15,
+        "dy_div": 8,
+        "line_height": 16,
+        "field_height": 23,
+        "avg_char_width": 7
+      },
+      "height": 32,
+      "calls": [
+        [
+          "place",
+          1,
+          0,
+          3,
+          210,
+          16
+        ],
+        [
+          "place",
+          2,
+          216,
+          0,
+          96,
+          23
+        ],
+        [
+          "place",
+          3,
+          318,
+          0,
+          23,
+          23
+        ],
+        [
+          "place",
+          4,
+          359,
+          3,
+          210,
+          16
+        ],
+        [
+          "place",
+          5,
+          575,
+          0,
+          96,
+          23
+        ]
+      ],
+      "control_ids": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "name": "key_grid: Vietnamese labels, s150",
+      "kind": "element",
+      "surface": "s150",
+      "element": {
+        "type": "key_grid",
+        "cells": [
+          {
+            "label": 1,
+            "box": 2,
+            "clear": 3
+          },
+          {
+            "label": 4,
+            "box": 5,
+            "clear": 0
+          }
+        ]
+      },
+      "x": 0,
+      "y": 0,
+      "width": 900,
+      "texts": {
+        "1": "Ảnh kế tiếp",
+        "4": "Ảnh trước"
+      },
+      "surface_def": {
+        "dx_mul": 9,
+        "dx_div": 4,
+        "dy_mul": 45,
+        "dy_div": 16,
+        "line_height": 24,
+        "field_height": 34,
+        "avg_char_width": 10
+      },
+      "height": 48,
+      "calls": [
+        [
+          "place",
+          1,
+          0,
+          5,
+          240,
+          24
+        ],
+        [
+          "place",
+          2,
+          249,
+          0,
+          144,
+          34
+        ],
+        [
+          "place",
+          3,
+          402,
+          0,
+          34,
+          34
+        ],
+        [
+          "place",
+          4,
+          463,
+          5,
+          240,
+          24
+        ],
+        [
+          "place",
+          5,
+          712,
+          0,
+          144,
+          34
+        ]
+      ],
+      "control_ids": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "name": "key_grid: Visible=false",
+      "kind": "element",
+      "surface": "s100",
+      "element": {
+        "type": "key_grid",
+        "cells": [
+          {
+            "label": 1,
+            "box": 2,
+            "clear": 3
+          },
+          {
+            "label": 4,
+            "box": 5,
+            "clear": 0
+          }
+        ],
+        "visible": false
+      },
+      "x": 0,
+      "y": 0,
+      "width": 700,
+      "surface_def": {
+        "dx_mul": 3,
+        "dx_div": 2,
+        "dy_mul": 15,
+        "dy_div": 8,
+        "line_height": 16,
+        "field_height": 23,
+        "avg_char_width": 7
+      },
+      "height": 0,
+      "calls": [
+        [
+          "hide",
+          1
+        ],
+        [
+          "hide",
+          2
+        ],
+        [
+          "hide",
+          3
+        ],
+        [
+          "hide",
+          4
+        ],
+        [
+          "hide",
+          5
+        ]
+      ],
+      "control_ids": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    }
+  ]
+}

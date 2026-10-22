@@ -1,0 +1,295 @@
+{
+  "generator": "oracle-cs settings-dialog-apply",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "focus_targets",
+      "kind": "focus_targets",
+      "targets": [
+        {
+          "field": "None",
+          "page": null,
+          "id": null
+        },
+        {
+          "field": "ArrowPanStep",
+          "page": 2,
+          "id": 3007
+        },
+        {
+          "field": "KeyboardZoomStep",
+          "page": 2,
+          "id": 3021
+        },
+        {
+          "field": "ImageTransitionMs",
+          "page": 2,
+          "id": 3045
+        },
+        {
+          "field": "TouchpadSwipeDistance",
+          "page": 2,
+          "id": 3049
+        },
+        {
+          "field": "PreloadForward",
+          "page": 3,
+          "id": 4010
+        },
+        {
+          "field": "PreloadBackward",
+          "page": 3,
+          "id": 4012
+        },
+        {
+          "field": "InfoOverlayAutoHideDelay",
+          "page": 1,
+          "id": 2020
+        }
+      ]
+    },
+    {
+      "name": "save_default",
+      "kind": "save_flow",
+      "calls": 1,
+      "pin_message": false,
+      "results": [
+        true
+      ],
+      "saved": true,
+      "warnings": []
+    },
+    {
+      "name": "save_changed_setting",
+      "kind": "save_flow",
+      "settings": {
+        "LoggingEnabled": true
+      },
+      "calls": 1,
+      "pin_message": false,
+      "results": [
+        true
+      ],
+      "saved": true,
+      "warnings": []
+    },
+    {
+      "name": "save_invalid_shortcut",
+      "kind": "save_flow",
+      "settings": {
+        "Shortcuts": {
+          "Next": "NotAKey"
+        }
+      },
+      "calls": 1,
+      "pin_message": true,
+      "results": [
+        false
+      ],
+      "saved": false,
+      "warnings": [
+        {
+          "title": "Invalid settings",
+          "message_nonempty": true,
+          "message": "Keys must be valid and must not repeat."
+        }
+      ]
+    },
+    {
+      "name": "save_invalid_shortcut_twice",
+      "kind": "save_flow",
+      "settings": {
+        "Shortcuts": {
+          "Next": "NotAKey"
+        }
+      },
+      "calls": 2,
+      "pin_message": true,
+      "results": [
+        false,
+        false
+      ],
+      "saved": false,
+      "warnings": [
+        {
+          "title": "Invalid settings",
+          "message_nonempty": true,
+          "message": "Keys must be valid and must not repeat."
+        },
+        {
+          "title": "Invalid settings",
+          "message_nonempty": true,
+          "message": "Keys must be valid and must not repeat."
+        }
+      ]
+    },
+    {
+      "name": "save_duplicate_shortcut",
+      "kind": "save_flow",
+      "settings": {
+        "Shortcuts": {
+          "Next": "Right",
+          "Previous": "right"
+        }
+      },
+      "calls": 1,
+      "pin_message": true,
+      "results": [
+        false
+      ],
+      "saved": false,
+      "warnings": [
+        {
+          "title": "Invalid settings",
+          "message_nonempty": true,
+          "message": "Keys must be valid and must not repeat."
+        }
+      ]
+    },
+    {
+      "name": "export_without_files",
+      "kind": "export",
+      "files": false,
+      "save_result": "none",
+      "calls": [],
+      "warnings": [],
+      "file_written": false,
+      "logging_enabled_in_file": null
+    },
+    {
+      "name": "export_cancelled",
+      "kind": "export",
+      "files": true,
+      "save_result": "none",
+      "calls": [
+        {
+          "call": "save",
+          "title": "Export settings",
+          "filters": [
+            {
+              "name": "JSON (*.json)",
+              "pattern": "*.json"
+            }
+          ],
+          "default_extension": "json",
+          "suggested_file_name": "PhotoReview-settings.json",
+          "initial_folder_set": true
+        }
+      ],
+      "warnings": [],
+      "file_written": false,
+      "logging_enabled_in_file": null
+    },
+    {
+      "name": "export_to_file",
+      "kind": "export",
+      "files": true,
+      "save_result": "file",
+      "settings": {
+        "LoggingEnabled": true
+      },
+      "calls": [
+        {
+          "call": "save",
+          "title": "Export settings",
+          "filters": [
+            {
+              "name": "JSON (*.json)",
+              "pattern": "*.json"
+            }
+          ],
+          "default_extension": "json",
+          "suggested_file_name": "PhotoReview-settings.json",
+          "initial_folder_set": true
+        }
+      ],
+      "warnings": [],
+      "file_written": true,
+      "logging_enabled_in_file": true
+    },
+    {
+      "name": "import_from_path_good",
+      "kind": "import",
+      "mode": "from_path",
+      "files": false,
+      "file_text": "{ \"LoggingEnabled\": true, \"InitialViewMode\": \"FitHeight\" }",
+      "calls": [],
+      "warnings": [],
+      "logging_enabled": true,
+      "file_read": true
+    },
+    {
+      "name": "import_from_path_broken",
+      "kind": "import",
+      "mode": "from_path",
+      "files": false,
+      "file_text": "{ not json",
+      "calls": [],
+      "warnings": [
+        {
+          "title": "Invalid settings",
+          "message_nonempty": true
+        }
+      ],
+      "logging_enabled": false,
+      "file_read": true
+    },
+    {
+      "name": "import_button_without_files",
+      "kind": "import",
+      "mode": "button",
+      "files": false,
+      "calls": [],
+      "warnings": [],
+      "logging_enabled": false,
+      "file_read": false
+    },
+    {
+      "name": "import_button_cancelled",
+      "kind": "import",
+      "mode": "button",
+      "files": true,
+      "pick": "cancel",
+      "calls": [
+        {
+          "call": "open",
+          "title": "Import settings",
+          "filters": [
+            {
+              "name": "JSON (*.json)",
+              "pattern": "*.json"
+            }
+          ],
+          "initial_folder_set": true
+        }
+      ],
+      "warnings": [],
+      "logging_enabled": false,
+      "file_read": false
+    },
+    {
+      "name": "import_button_file",
+      "kind": "import",
+      "mode": "button",
+      "files": true,
+      "pick": "file",
+      "file_text": "{ \"LoggingEnabled\": true }",
+      "calls": [
+        {
+          "call": "open",
+          "title": "Import settings",
+          "filters": [
+            {
+              "name": "JSON (*.json)",
+              "pattern": "*.json"
+            }
+          ],
+          "initial_folder_set": true
+        }
+      ],
+      "warnings": [],
+      "logging_enabled": true,
+      "file_read": true
+    }
+  ]
+}

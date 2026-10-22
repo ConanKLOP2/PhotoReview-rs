@@ -1,0 +1,782 @@
+{
+ "command": "dialog-benchmark-layout",
+ "notes": [
+  "Feeds W8-18r (dialogs::benchmark::{layout, state}). Reflection over the internal BenchmarkDialog of the PhotoReview (Shell.Win32) assembly, the public BenchmarkResultRow / BenchmarkPresenter of PhotoReview.App.Shared and the public BenchmarkProfiles / BenchmarkPhaseResult of PhotoReview.Benchmarking; no window is created. The language is the process default (English).",
+  "Output per kind: dialog -> title, items [{class, id, text, style, ex_style}], initial_focus_id, default_button_id, resizable, header_ids, uses_modal_frame, extra_window_style, initial_folder_text (only when initial_folder is not null); column_headers -> headers[10]; compare_rows -> sign (-1, 0, 1); sort_clicks -> states [[column, direction]] after each click; preferred -> preferred_width, preferred_height, minimum_width, minimum_height; metrics -> margin, field_height, button_height; constants -> the 19 control ids and column_count.",
+  "compare_rows: rows are built from the baseline registry (profile_id) and a phase (workload, samples, status). The text columns use pairs that differ in their first letter so the sign does not depend on the machine's collation; the Rust test passes an ordinal comparer for those columns, and the culture comparer (CompareStringEx) is covered by a separate native test. Empty samples give 0 for every percentile.",
+  "preferred and metrics use a window-less dialog (RuntimeHelpers.GetUninitializedObject with _avgCharWidth, _lineHeight, _childHosts set), so ButtonWidth is exactly Dx(50) and every measured height is 0. sort_clicks calls SortBy on a real dialog without a window: the grid and the header are absent, so only the (column, direction) state changes."
+ ],
+ "cases": [
+  {
+   "name": "dialog without a folder",
+   "kind": "dialog",
+   "initial_folder": null
+  },
+  {
+   "name": "dialog with a folder",
+   "kind": "dialog",
+   "initial_folder": "C:\bench"
+  },
+  {
+   "name": "column headers",
+   "kind": "column_headers"
+  },
+  {
+   "name": "column 0 best marker left",
+   "kind": "compare_rows",
+   "left": {
+    "profile_id": "fast-sequential",
+    "workload": "Sequential",
+    "samples": [
+     10,
+     20,
+     30
+    ],
+    "status": "Pass",
+    "is_best": true
+   },
+   "right": {
+    "profile_id": "preview-light",
+    "workload": "Sequential",
+    "samples": [
+     10,
+     20,
+     30
+    ],
+    "status": "Pass"
+   },
+   "column": 0
+  },
+  {
+   "name": "column 0 best marker right",
+   "kind": "compare_rows",
+   "left": {
+    "profile_id": "fast-sequential",
+    "workload": "Sequential",
+    "samples": [
+     10,
+     20,
+     30
+    ],
+    "status": "Pass"
+   },
+   "right": {
+    "profile_id": "preview-light",
+    "workload": "Sequential",
+    "samples": [
+     10,
+     20,
+     30
+    ],
+    "status": "Pass",
+    "is_best": true
+   },
+   "column": 0
+  },
+  {
+   "name": "column 0 none best",
+   "kind": "compare_rows",
+   "left": {
+    "profile_id": "fast-sequential",
+    "workload": "Sequential",
+    "samples": [
+     10,
+     20,
+     30
+    ],
+    "status": "Pass"
+   },
+   "right": {
+    "profile_id": "preview-light",
+    "workload": "Sequential",
+    "samples": [
+     10,
+     20,
+     30
+    ],
+    "status": "Pass"
+   },
+   "column": 0
+  },
+  {
+   "name": "column 1 name F before P",
+   "kind": "compare_rows",
+   "left": {
+    "profile_id": "fast-sequential",
+    "workload": "Sequential",
+    "samples": [
+     10,
+     20,
+     30
+    ],
+    "status": "Pass"
+   },
+   "right": {
+    "profile_id": "preview-light",
+    "workload": "Sequential",
+    "samples": [
+     10,
+     20,
+     30
+    ],
+    "status": "Pass"
+   },
+   "column": 1
+  },
+  {
+   "name": "column 1 name P after F",
+   "kind": "compare_rows",
+   "left": {
+    "profile_id": "preview-light",
+    "workload": "Sequential",
+    "samples": [
+     10,
+     20,
+     30
+    ],
+    "status": "Pass"
+   },
+   "right": {
+    "profile_id": "fast-sequential",
+    "workload": "Sequential",
+    "samples": [
+     10,
+     20,
+     30
+    ],
+    "status": "Pass"
+   },
+   "column": 1
+  },
+  {
+   "name": "column 1 same name",
+   "kind": "compare_rows",
+   "left": {
+    "profile_id": "fast-sequential",
+    "workload": "Sequential",
+    "samples": [
+     10,
+     20,
+     30
+    ],
+    "status": "Pass"
+   },
+   "right": {
+    "profile_id": "fast-sequential",
+    "workload": "Sequential",
+    "samples": [
+     10,
+     20,
+     30
+    ],
+    "status": "Pass"
+   },
+   "column": 1
+  },
+  {
+   "name": "column 2 loading mode Fast before Original",
+   "kind": "compare_rows",
+   "left": {
+    "profile_id": "fast-sequential",
+    "workload": "Sequential",
+    "samples": [
+     10,
+     20,
+     30
+    ],
+    "status": "Pass"
+   },
+   "right": {
+    "profile_id": "original-correctness",
+    "workload": "Correctness",
+    "samples": [
+     10,
+     20,
+     30
+    ],
+    "status": "Pass"
+   },
+   "column": 2
+  },
+  {
+   "name": "column 2 loading mode Preview after Fast",
+   "kind": "compare_rows",
+   "left": {
+    "profile_id": "preview-light",
+    "workload": "Sequential",
+    "samples": [
+     10,
+     20,
+     30
+    ],
+    "status": "Pass"
+   },
+   "right": {
+    "profile_id": "fast-sequential",
+    "workload": "Sequential",
+    "samples": [
+     10,
+     20,
+     30
+    ],
+    "status": "Pass"
+   },
+   "column": 2
+  },
+  {
+   "name": "column 3 workload Sequential after Random",
+   "kind": "compare_rows",
+   "left": {
+    "profile_id": "fast-sequential",
+    "workload": "Sequential",
+    "samples": [
+     10,
+     20,
+     30
+    ],
+    "status": "Pass"
+   },
+   "right": {
+    "profile_id": "random-navigation",
+    "workload": "Random",
+    "samples": [
+     10,
+     20,
+     30
+    ],
+    "status": "Pass"
+   },
+   "column": 3
+  },
+  {
+   "name": "column 3 workload Correctness before FirstFrame",
+   "kind": "compare_rows",
+   "left": {
+    "profile_id": "original-correctness",
+    "workload": "Correctness",
+    "samples": [
+     10,
+     20,
+     30
+    ],
+    "status": "Pass"
+   },
+   "right": {
+    "profile_id": "instant-review",
+    "workload": "FirstFrame",
+    "samples": [
+     10,
+     20,
+     30
+    ],
+    "status": "Pass"
+   },
+   "column": 3
+  },
+  {
+   "name": "column 4 count more",
+   "kind": "compare_rows",
+   "left": {
+    "profile_id": "fast-sequential",
+    "workload": "Sequential",
+    "samples": [
+     1,
+     2,
+     3
+    ],
+    "status": "Pass"
+   },
+   "right": {
+    "profile_id": "preview-light",
+    "workload": "Sequential",
+    "samples": [
+     1
+    ],
+    "status": "Pass"
+   },
+   "column": 4
+  },
+  {
+   "name": "column 4 count fewer",
+   "kind": "compare_rows",
+   "left": {
+    "profile_id": "fast-sequential",
+    "workload": "Sequential",
+    "samples": [
+     1
+    ],
+    "status": "Pass"
+   },
+   "right": {
+    "profile_id": "preview-light",
+    "workload": "Sequential",
+    "samples": [
+     1,
+     2,
+     3
+    ],
+    "status": "Pass"
+   },
+   "column": 4
+  },
+  {
+   "name": "column 4 count equal",
+   "kind": "compare_rows",
+   "left": {
+    "profile_id": "fast-sequential",
+    "workload": "Sequential",
+    "samples": [
+     1,
+     2
+    ],
+    "status": "Pass"
+   },
+   "right": {
+    "profile_id": "preview-light",
+    "workload": "Sequential",
+    "samples": [
+     5,
+     6
+    ],
+    "status": "Pass"
+   },
+   "column": 4
+  },
+  {
+   "name": "column 5 p50 greater",
+   "kind": "compare_rows",
+   "left": {
+    "profile_id": "fast-sequential",
+    "workload": "Sequential",
+    "samples": [
+     10,
+     20,
+     30
+    ],
+    "status": "Pass"
+   },
+   "right": {
+    "profile_id": "preview-light",
+    "workload": "Sequential",
+    "samples": [
+     5,
+     6,
+     7
+    ],
+    "status": "Pass"
+   },
+   "column": 5
+  },
+  {
+   "name": "column 5 p50 smaller",
+   "kind": "compare_rows",
+   "left": {
+    "profile_id": "fast-sequential",
+    "workload": "Sequential",
+    "samples": [
+     1,
+     2,
+     3
+    ],
+    "status": "Pass"
+   },
+   "right": {
+    "profile_id": "preview-light",
+    "workload": "Sequential",
+    "samples": [
+     5,
+     6,
+     7
+    ],
+    "status": "Pass"
+   },
+   "column": 5
+  },
+  {
+   "name": "column 5 p50 equal",
+   "kind": "compare_rows",
+   "left": {
+    "profile_id": "fast-sequential",
+    "workload": "Sequential",
+    "samples": [
+     2
+    ],
+    "status": "Pass"
+   },
+   "right": {
+    "profile_id": "preview-light",
+    "workload": "Sequential",
+    "samples": [
+     2
+    ],
+    "status": "Pass"
+   },
+   "column": 5
+  },
+  {
+   "name": "column 5 empty against zero",
+   "kind": "compare_rows",
+   "left": {
+    "profile_id": "fast-sequential",
+    "workload": "Sequential",
+    "samples": [],
+    "status": "Pass"
+   },
+   "right": {
+    "profile_id": "preview-light",
+    "workload": "Sequential",
+    "samples": [
+     0
+    ],
+    "status": "Pass"
+   },
+   "column": 5
+  },
+  {
+   "name": "column 6 p95 greater",
+   "kind": "compare_rows",
+   "left": {
+    "profile_id": "fast-sequential",
+    "workload": "Sequential",
+    "samples": [
+     1,
+     2,
+     100
+    ],
+    "status": "Pass"
+   },
+   "right": {
+    "profile_id": "preview-light",
+    "workload": "Sequential",
+    "samples": [
+     1,
+     2,
+     3
+    ],
+    "status": "Pass"
+   },
+   "column": 6
+  },
+  {
+   "name": "column 6 p95 numeric not text",
+   "kind": "compare_rows",
+   "left": {
+    "profile_id": "fast-sequential",
+    "workload": "Sequential",
+    "samples": [
+     9
+    ],
+    "status": "Pass"
+   },
+   "right": {
+    "profile_id": "preview-light",
+    "workload": "Sequential",
+    "samples": [
+     10
+    ],
+    "status": "Pass"
+   },
+   "column": 6
+  },
+  {
+   "name": "column 7 p99 smaller",
+   "kind": "compare_rows",
+   "left": {
+    "profile_id": "fast-sequential",
+    "workload": "Sequential",
+    "samples": [
+     1,
+     2,
+     3
+    ],
+    "status": "Pass"
+   },
+   "right": {
+    "profile_id": "preview-light",
+    "workload": "Sequential",
+    "samples": [
+     1,
+     2,
+     300
+    ],
+    "status": "Pass"
+   },
+   "column": 7
+  },
+  {
+   "name": "column 8 max greater",
+   "kind": "compare_rows",
+   "left": {
+    "profile_id": "fast-sequential",
+    "workload": "Sequential",
+    "samples": [
+     1,
+     50
+    ],
+    "status": "Pass"
+   },
+   "right": {
+    "profile_id": "preview-light",
+    "workload": "Sequential",
+    "samples": [
+     1,
+     2
+    ],
+    "status": "Pass"
+   },
+   "column": 8
+  },
+  {
+   "name": "column 8 max equal",
+   "kind": "compare_rows",
+   "left": {
+    "profile_id": "fast-sequential",
+    "workload": "Sequential",
+    "samples": [
+     7,
+     1
+    ],
+    "status": "Pass"
+   },
+   "right": {
+    "profile_id": "preview-light",
+    "workload": "Sequential",
+    "samples": [
+     7
+    ],
+    "status": "Pass"
+   },
+   "column": 8
+  },
+  {
+   "name": "column 9 status Pass after Error",
+   "kind": "compare_rows",
+   "left": {
+    "profile_id": "fast-sequential",
+    "workload": "Sequential",
+    "samples": [
+     10,
+     20,
+     30
+    ],
+    "status": "Pass"
+   },
+   "right": {
+    "profile_id": "preview-light",
+    "workload": "Sequential",
+    "samples": [
+     10,
+     20,
+     30
+    ],
+    "status": "Fail"
+   },
+   "column": 9
+  },
+  {
+   "name": "column 9 status Warning after Pass",
+   "kind": "compare_rows",
+   "left": {
+    "profile_id": "fast-sequential",
+    "workload": "Sequential",
+    "samples": [
+     10,
+     20,
+     30
+    ],
+    "status": "Warn"
+   },
+   "right": {
+    "profile_id": "preview-light",
+    "workload": "Sequential",
+    "samples": [
+     10,
+     20,
+     30
+    ],
+    "status": "Pass"
+   },
+   "column": 9
+  },
+  {
+   "name": "column 9 status equal",
+   "kind": "compare_rows",
+   "left": {
+    "profile_id": "fast-sequential",
+    "workload": "Sequential",
+    "samples": [
+     10,
+     20,
+     30
+    ],
+    "status": "Pass"
+   },
+   "right": {
+    "profile_id": "preview-light",
+    "workload": "Sequential",
+    "samples": [
+     10,
+     20,
+     30
+    ],
+    "status": "Pass"
+   },
+   "column": 9
+  },
+  {
+   "name": "column minus 3 clamps to the best marker column",
+   "kind": "compare_rows",
+   "left": {
+    "profile_id": "fast-sequential",
+    "workload": "Sequential",
+    "samples": [
+     10,
+     20,
+     30
+    ],
+    "status": "Pass",
+    "is_best": true
+   },
+   "right": {
+    "profile_id": "preview-light",
+    "workload": "Sequential",
+    "samples": [
+     10,
+     20,
+     30
+    ],
+    "status": "Pass"
+   },
+   "column": -3
+  },
+  {
+   "name": "column 99 clamps to the status column",
+   "kind": "compare_rows",
+   "left": {
+    "profile_id": "fast-sequential",
+    "workload": "Sequential",
+    "samples": [
+     10,
+     20,
+     30
+    ],
+    "status": "Pass"
+   },
+   "right": {
+    "profile_id": "preview-light",
+    "workload": "Sequential",
+    "samples": [
+     10,
+     20,
+     30
+    ],
+    "status": "Fail"
+   },
+   "column": 99
+  },
+  {
+   "name": "sort click sequence on one column",
+   "kind": "sort_clicks",
+   "clicks": [
+    6,
+    6,
+    6
+   ]
+  },
+  {
+   "name": "sort click other column after descending",
+   "kind": "sort_clicks",
+   "clicks": [
+    6,
+    6,
+    1
+   ]
+  },
+  {
+   "name": "sort click alternating columns",
+   "kind": "sort_clicks",
+   "clicks": [
+    1,
+    2,
+    1,
+    2,
+    2
+   ]
+  },
+  {
+   "name": "sort click column 0 and out of range",
+   "kind": "sort_clicks",
+   "clicks": [
+    0,
+    0,
+    -1,
+    -1,
+    12
+   ]
+  },
+  {
+   "name": "preferred avg 6 line 15",
+   "kind": "preferred",
+   "avg": 6,
+   "line": 15
+  },
+  {
+   "name": "metrics avg 6 line 15",
+   "kind": "metrics",
+   "avg": 6,
+   "line": 15
+  },
+  {
+   "name": "preferred avg 7 line 16",
+   "kind": "preferred",
+   "avg": 7,
+   "line": 16
+  },
+  {
+   "name": "metrics avg 7 line 16",
+   "kind": "metrics",
+   "avg": 7,
+   "line": 16
+  },
+  {
+   "name": "preferred avg 8 line 20",
+   "kind": "preferred",
+   "avg": 8,
+   "line": 20
+  },
+  {
+   "name": "metrics avg 8 line 20",
+   "kind": "metrics",
+   "avg": 8,
+   "line": 20
+  },
+  {
+   "name": "preferred avg 9 line 24",
+   "kind": "preferred",
+   "avg": 9,
+   "line": 24
+  },
+  {
+   "name": "metrics avg 9 line 24",
+   "kind": "metrics",
+   "avg": 9,
+   "line": 24
+  },
+  {
+   "name": "preferred avg 10 line 29",
+   "kind": "preferred",
+   "avg": 10,
+   "line": 29
+  },
+  {
+   "name": "metrics avg 10 line 29",
+   "kind": "metrics",
+   "avg": 10,
+   "line": 29
+  },
+  {
+   "name": "ids of the dialog",
+   "kind": "constants"
+  }
+ ]
+}

@@ -1,0 +1,1046 @@
+{
+  "generator": "oracle-cs settings-page-display",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "Display page declaration",
+      "kind": "declare",
+      "page": "Display",
+      "id_base": 2000,
+      "fields": [
+        "_showInfoOverlay",
+        "_showFileInfo",
+        "_showFolderInfo",
+        "_fontSize",
+        "_showZoomIndicator",
+        "_toolbarAutoHide",
+        "_toolbarDelay",
+        "_opacity",
+        "_opacityValue",
+        "_infoAutoHide",
+        "_infoDelay",
+        "_loadingMode",
+        "_scalingQuality",
+        "_showExif"
+      ],
+      "lists": [
+        "ExifChecks",
+        "TitleChecks"
+      ],
+      "key": "Display",
+      "title": "Display",
+      "items": [
+        {
+          "class": "Button",
+          "id": 2001,
+          "text": "Display",
+          "style": 1342177287,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 2002,
+          "text": "Show info overlays (shortcut: I)",
+          "style": 1342251011,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 2003,
+          "text": "Show file info",
+          "style": 1342251011,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 2004,
+          "text": "Show folder info",
+          "style": 1342251011,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 2005,
+          "text": "Info overlay font size",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Edit",
+          "id": 2006,
+          "text": "",
+          "style": 1342242944,
+          "ex_style": 512
+        },
+        {
+          "class": "Button",
+          "id": 2007,
+          "text": "Show current zoom percentage on the photo",
+          "style": 1342251011,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 2008,
+          "text": "Toolbar",
+          "style": 1342177287,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 2009,
+          "text": "Auto-hide toolbar",
+          "style": 1342251011,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 2010,
+          "text": "Hide delay (ms)",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Edit",
+          "id": 2011,
+          "text": "",
+          "style": 1342242944,
+          "ex_style": 512
+        },
+        {
+          "class": "Static",
+          "id": 2012,
+          "text": "The buttons hide completely after the delay and only reappear when the mouse comes back near them.",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 2013,
+          "text": "Toolbar opacity",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Trackbar",
+          "id": 2014,
+          "text": "",
+          "style": 1342242832,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 2015,
+          "text": "",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 2016,
+          "text": "How solid the toolbar looks while it is visible. Cannot go below 20% so the buttons stay usable.",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 2017,
+          "text": "Info over the photo",
+          "style": 1342177287,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 2018,
+          "text": "Auto-hide the info over the photo",
+          "style": 1342251011,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 2019,
+          "text": "Hide delay (ms)",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Edit",
+          "id": 2020,
+          "text": "",
+          "style": 1342242944,
+          "ex_style": 512
+        },
+        {
+          "class": "Static",
+          "id": 2021,
+          "text": "The info fades after the delay and reappears on mouse move, key press or when the photo changes.",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 2022,
+          "text": "Display && performance",
+          "style": 1342177287,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 2023,
+          "text": "Loading mode",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "ComboBox",
+          "id": 2024,
+          "text": "",
+          "style": 1344340483,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 2025,
+          "text": "Scaling quality",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "ComboBox",
+          "id": 2026,
+          "text": "",
+          "style": 1344340483,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 2027,
+          "text": "EXIF",
+          "style": 1342177287,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 2028,
+          "text": "Show photo information line",
+          "style": 1342251011,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 2029,
+          "text": "Hidden together with the info overlay above (shortcut: I).",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 2030,
+          "text": "File name",
+          "style": 1342242819,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 2031,
+          "text": "Date taken",
+          "style": 1342242819,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 2032,
+          "text": "Modified date",
+          "style": 1342242819,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 2033,
+          "text": "Dimensions",
+          "style": 1342242819,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 2034,
+          "text": "Camera",
+          "style": 1342242819,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 2035,
+          "text": "Lens",
+          "style": 1342242819,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 2036,
+          "text": "ISO",
+          "style": 1342242819,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 2037,
+          "text": "Focal length",
+          "style": 1342242819,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 2038,
+          "text": "Aperture",
+          "style": 1342242819,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 2039,
+          "text": "Shutter speed",
+          "style": 1342242819,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 2040,
+          "text": "Title bar",
+          "style": 1342177287,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 2041,
+          "text": "What the main window's title bar shows, in this order.",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 2042,
+          "text": "Folder name",
+          "style": 1342242819,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 2043,
+          "text": "Folder path",
+          "style": 1342242819,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 2044,
+          "text": "Position (12/340)",
+          "style": 1342242819,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 2045,
+          "text": "File name",
+          "style": 1342242819,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 2046,
+          "text": "File size",
+          "style": 1342242819,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 2047,
+          "text": "Dimensions",
+          "style": 1342242819,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 2048,
+          "text": "Modified date",
+          "style": 1342242819,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 2049,
+          "text": "Date taken",
+          "style": 1342242819,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 2050,
+          "text": "Camera",
+          "style": 1342242819,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 2051,
+          "text": "Lens",
+          "style": 1342242819,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 2052,
+          "text": "ISO",
+          "style": 1342242819,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 2053,
+          "text": "Focal length",
+          "style": 1342242819,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 2054,
+          "text": "Aperture",
+          "style": 1342242819,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 2055,
+          "text": "Shutter speed",
+          "style": 1342242819,
+          "ex_style": 0
+        }
+      ],
+      "texts": [
+        {
+          "id": 2001,
+          "text": "Display"
+        },
+        {
+          "id": 2002,
+          "text": "Show info overlays (shortcut: I)"
+        },
+        {
+          "id": 2003,
+          "text": "Show file info"
+        },
+        {
+          "id": 2004,
+          "text": "Show folder info"
+        },
+        {
+          "id": 2005,
+          "text": "Info overlay font size"
+        },
+        {
+          "id": 2007,
+          "text": "Show current zoom percentage on the photo"
+        },
+        {
+          "id": 2008,
+          "text": "Toolbar"
+        },
+        {
+          "id": 2009,
+          "text": "Auto-hide toolbar"
+        },
+        {
+          "id": 2010,
+          "text": "Hide delay (ms)"
+        },
+        {
+          "id": 2012,
+          "text": "The buttons hide completely after the delay and only reappear when the mouse comes back near them."
+        },
+        {
+          "id": 2013,
+          "text": "Toolbar opacity"
+        },
+        {
+          "id": 2016,
+          "text": "How solid the toolbar looks while it is visible. Cannot go below 20% so the buttons stay usable."
+        },
+        {
+          "id": 2017,
+          "text": "Info over the photo"
+        },
+        {
+          "id": 2018,
+          "text": "Auto-hide the info over the photo"
+        },
+        {
+          "id": 2019,
+          "text": "Hide delay (ms)"
+        },
+        {
+          "id": 2021,
+          "text": "The info fades after the delay and reappears on mouse move, key press or when the photo changes."
+        },
+        {
+          "id": 2022,
+          "text": "Display && performance"
+        },
+        {
+          "id": 2023,
+          "text": "Loading mode"
+        },
+        {
+          "id": 2025,
+          "text": "Scaling quality"
+        },
+        {
+          "id": 2027,
+          "text": "EXIF"
+        },
+        {
+          "id": 2028,
+          "text": "Show photo information line"
+        },
+        {
+          "id": 2029,
+          "text": "Hidden together with the info overlay above (shortcut: I)."
+        },
+        {
+          "id": 2030,
+          "text": "File name"
+        },
+        {
+          "id": 2031,
+          "text": "Date taken"
+        },
+        {
+          "id": 2032,
+          "text": "Modified date"
+        },
+        {
+          "id": 2033,
+          "text": "Dimensions"
+        },
+        {
+          "id": 2034,
+          "text": "Camera"
+        },
+        {
+          "id": 2035,
+          "text": "Lens"
+        },
+        {
+          "id": 2036,
+          "text": "ISO"
+        },
+        {
+          "id": 2037,
+          "text": "Focal length"
+        },
+        {
+          "id": 2038,
+          "text": "Aperture"
+        },
+        {
+          "id": 2039,
+          "text": "Shutter speed"
+        },
+        {
+          "id": 2040,
+          "text": "Title bar"
+        },
+        {
+          "id": 2041,
+          "text": "What the main window's title bar shows, in this order."
+        },
+        {
+          "id": 2042,
+          "text": "Folder name"
+        },
+        {
+          "id": 2043,
+          "text": "Folder path"
+        },
+        {
+          "id": 2044,
+          "text": "Position (12/340)"
+        },
+        {
+          "id": 2045,
+          "text": "File name"
+        },
+        {
+          "id": 2046,
+          "text": "File size"
+        },
+        {
+          "id": 2047,
+          "text": "Dimensions"
+        },
+        {
+          "id": 2048,
+          "text": "Modified date"
+        },
+        {
+          "id": 2049,
+          "text": "Date taken"
+        },
+        {
+          "id": 2050,
+          "text": "Camera"
+        },
+        {
+          "id": 2051,
+          "text": "Lens"
+        },
+        {
+          "id": 2052,
+          "text": "ISO"
+        },
+        {
+          "id": 2053,
+          "text": "Focal length"
+        },
+        {
+          "id": 2054,
+          "text": "Aperture"
+        },
+        {
+          "id": 2055,
+          "text": "Shutter speed"
+        }
+      ],
+      "notes": [
+        2012,
+        2016,
+        2021,
+        2029,
+        2041
+      ],
+      "key_boxes": [],
+      "warnings": [],
+      "combo_items": [
+        {
+          "id": 2024,
+          "items": [
+            "Fast",
+            "Preview",
+            "Original (highest quality)"
+          ]
+        },
+        {
+          "id": 2026,
+          "items": [
+            "High (HighQuality)",
+            "Fast (Linear, smoother while zooming)"
+          ]
+        }
+      ],
+      "sliders": [
+        {
+          "id": 2014,
+          "min": 20,
+          "max": 100
+        }
+      ],
+      "elements": [
+        {
+          "type": "SettingsGroupElement",
+          "control_ids": [
+            2001,
+            2002,
+            2003,
+            2004,
+            2005,
+            2006,
+            2007
+          ],
+          "children": [
+            {
+              "type": "SettingsCheckElement",
+              "control_ids": [
+                2002
+              ]
+            },
+            {
+              "type": "SettingsCheckElement",
+              "control_ids": [
+                2003
+              ]
+            },
+            {
+              "type": "SettingsCheckElement",
+              "control_ids": [
+                2004
+              ]
+            },
+            {
+              "type": "SettingsRowElement",
+              "control_ids": [
+                2005,
+                2006
+              ]
+            },
+            {
+              "type": "SettingsCheckElement",
+              "control_ids": [
+                2007
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SettingsGroupElement",
+          "control_ids": [
+            2008,
+            2009,
+            2010,
+            2011,
+            2012,
+            2013,
+            2014,
+            2015,
+            2016
+          ],
+          "children": [
+            {
+              "type": "SettingsCheckElement",
+              "control_ids": [
+                2009
+              ]
+            },
+            {
+              "type": "SettingsRowElement",
+              "control_ids": [
+                2010,
+                2011
+              ]
+            },
+            {
+              "type": "SettingsTextElement",
+              "control_ids": [
+                2012
+              ]
+            },
+            {
+              "type": "SettingsSliderElement",
+              "control_ids": [
+                2013,
+                2014,
+                2015
+              ]
+            },
+            {
+              "type": "SettingsTextElement",
+              "control_ids": [
+                2016
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SettingsGroupElement",
+          "control_ids": [
+            2017,
+            2018,
+            2019,
+            2020,
+            2021
+          ],
+          "children": [
+            {
+              "type": "SettingsCheckElement",
+              "control_ids": [
+                2018
+              ]
+            },
+            {
+              "type": "SettingsRowElement",
+              "control_ids": [
+                2019,
+                2020
+              ]
+            },
+            {
+              "type": "SettingsTextElement",
+              "control_ids": [
+                2021
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SettingsGroupElement",
+          "control_ids": [
+            2022,
+            2023,
+            2024,
+            2025,
+            2026
+          ],
+          "children": [
+            {
+              "type": "SettingsRowElement",
+              "control_ids": [
+                2023,
+                2024
+              ]
+            },
+            {
+              "type": "SettingsRowElement",
+              "control_ids": [
+                2025,
+                2026
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SettingsGroupElement",
+          "control_ids": [
+            2027,
+            2028,
+            2029,
+            2030,
+            2031,
+            2032,
+            2033,
+            2034,
+            2035,
+            2036,
+            2037,
+            2038,
+            2039
+          ],
+          "children": [
+            {
+              "type": "SettingsCheckElement",
+              "control_ids": [
+                2028
+              ]
+            },
+            {
+              "type": "SettingsTextElement",
+              "control_ids": [
+                2029
+              ]
+            },
+            {
+              "type": "SettingsCheckFlowElement",
+              "control_ids": [
+                2030,
+                2031,
+                2032,
+                2033,
+                2034,
+                2035,
+                2036,
+                2037,
+                2038,
+                2039
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SettingsGroupElement",
+          "control_ids": [
+            2040,
+            2041,
+            2042,
+            2043,
+            2044,
+            2045,
+            2046,
+            2047,
+            2048,
+            2049,
+            2050,
+            2051,
+            2052,
+            2053,
+            2054,
+            2055
+          ],
+          "children": [
+            {
+              "type": "SettingsTextElement",
+              "control_ids": [
+                2041
+              ]
+            },
+            {
+              "type": "SettingsCheckFlowElement",
+              "control_ids": [
+                2042,
+                2043,
+                2044,
+                2045,
+                2046,
+                2047,
+                2048,
+                2049,
+                2050,
+                2051,
+                2052,
+                2053,
+                2054,
+                2055
+              ]
+            }
+          ]
+        }
+      ],
+      "ids": {
+        "show_info_overlay": 2002,
+        "show_file_info": 2003,
+        "show_folder_info": 2004,
+        "font_size": 2006,
+        "show_zoom_indicator": 2007,
+        "toolbar_auto_hide": 2009,
+        "toolbar_delay": 2011,
+        "opacity": 2014,
+        "opacity_value": 2015,
+        "info_auto_hide": 2018,
+        "info_delay": 2020,
+        "loading_mode": 2024,
+        "scaling_quality": 2026,
+        "show_exif": 2028
+      },
+      "list_ids": {
+        "exif_checks": [
+          2030,
+          2031,
+          2032,
+          2033,
+          2034,
+          2035,
+          2036,
+          2037,
+          2038,
+          2039
+        ],
+        "title_checks": [
+          2042,
+          2043,
+          2044,
+          2045,
+          2046,
+          2047,
+          2048,
+          2049,
+          2050,
+          2051,
+          2052,
+          2053,
+          2054,
+          2055
+        ]
+      }
+    },
+    {
+      "name": "EXIF and title bar flag orders",
+      "kind": "orders",
+      "exif_order": [
+        {
+          "name": "FileName",
+          "value": 1
+        },
+        {
+          "name": "DateTaken",
+          "value": 2
+        },
+        {
+          "name": "ModifiedDate",
+          "value": 512
+        },
+        {
+          "name": "Dimensions",
+          "value": 4
+        },
+        {
+          "name": "Camera",
+          "value": 8
+        },
+        {
+          "name": "Lens",
+          "value": 16
+        },
+        {
+          "name": "Iso",
+          "value": 32
+        },
+        {
+          "name": "FocalLength",
+          "value": 64
+        },
+        {
+          "name": "Aperture",
+          "value": 128
+        },
+        {
+          "name": "ShutterSpeed",
+          "value": 256
+        }
+      ],
+      "title_order": [
+        {
+          "name": "FolderName",
+          "value": 1
+        },
+        {
+          "name": "FolderPath",
+          "value": 2
+        },
+        {
+          "name": "IndexCount",
+          "value": 4
+        },
+        {
+          "name": "FileName",
+          "value": 8
+        },
+        {
+          "name": "FileSize",
+          "value": 16
+        },
+        {
+          "name": "Dimensions",
+          "value": 32
+        },
+        {
+          "name": "ModifiedDate",
+          "value": 64
+        },
+        {
+          "name": "DateTaken",
+          "value": 128
+        },
+        {
+          "name": "Camera",
+          "value": 256
+        },
+        {
+          "name": "Lens",
+          "value": 512
+        },
+        {
+          "name": "Iso",
+          "value": 1024
+        },
+        {
+          "name": "FocalLength",
+          "value": 2048
+        },
+        {
+          "name": "Aperture",
+          "value": 4096
+        },
+        {
+          "name": "ShutterSpeed",
+          "value": 8192
+        }
+      ]
+    }
+  ]
+}

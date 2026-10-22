@@ -1,0 +1,817 @@
+{
+  "generator": "oracle-cs dialog-template",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "header only: Vietnamese title, style 0x80C80000, ex 1, no items",
+      "kind": "build",
+      "title": "Tiêu đề",
+      "style": 2160066560,
+      "ex_style": 1,
+      "items": [],
+      "bytes_length": 38,
+      "bytes_hex": "0000c08001000000000000000000000000000000000054006900ea00750020001101c11e0000"
+    },
+    {
+      "name": "the four items of DialogTemplateTests.Items_AreDwordAligned (atoms, ids, styles, ex style)",
+      "kind": "build",
+      "title": "T",
+      "style": 0,
+      "ex_style": 0,
+      "items": [
+        {
+          "class": "Static",
+          "id": 100,
+          "text": "Nhãn",
+          "style": 1342177280,
+          "ex_style": 0
+        },
+        {
+          "class": "Edit",
+          "id": 101,
+          "text": "",
+          "style": 1342242944,
+          "ex_style": 512
+        },
+        {
+          "class": "Button",
+          "id": 2,
+          "text": "Huỷ",
+          "style": 1342242816,
+          "ex_style": 0
+        },
+        {
+          "class": "ListBox",
+          "id": 302,
+          "text": "x",
+          "style": 1352990977,
+          "ex_style": 0
+        }
+      ],
+      "bytes_length": 152,
+      "bytes_hex": "00000000000000000400000000000000000000000000540000000000000000500000000000000000000000006400ffff82004e006800e3006e00000000000000800001500002000000000000000000006500ffff8100000000000000000001500000000000000000000000000200ffff800048007500f71e000000000101a5500000000000000000000000002e01ffff8300780000000000"
+    },
+    {
+      "name": "common-control classes are written by NAME, not by atom",
+      "kind": "build",
+      "title": "Controls",
+      "style": 1342177280,
+      "ex_style": 0,
+      "items": [
+        {
+          "class": "ListView",
+          "id": 400,
+          "text": "",
+          "style": 1342177280,
+          "ex_style": 0
+        },
+        {
+          "class": "Progress",
+          "id": 401,
+          "text": "p",
+          "style": 1342177280,
+          "ex_style": 0
+        },
+        {
+          "class": "Trackbar",
+          "id": 402,
+          "text": "",
+          "style": 1342177280,
+          "ex_style": 0
+        },
+        {
+          "class": "ComboBox",
+          "id": 403,
+          "text": "c",
+          "style": 1342177280,
+          "ex_style": 0
+        },
+        {
+          "class": "ScrollBar",
+          "id": 404,
+          "text": "",
+          "style": 1342177280,
+          "ex_style": 0
+        }
+      ],
+      "bytes_length": 266,
+      "bytes_hex": "0000005000000000050000000000000000000000000043006f006e00740072006f006c00730000000000005000000000000000000000000090015300790073004c0069007300740056006900650077003300320000000000000000000000005000000000000000000000000091016d007300630074006c0073005f00700072006f00670072006500730073003300320000007000000000000000005000000000000000000000000092016d007300630074006c0073005f0074007200610063006b00620061007200330032000000000000000000000000500000000000000000000000009301ffff8500630000000000000000500000000000000000000000009401ffff840000000000"
+    },
+    {
+      "name": "empty title and empty text are a single terminator",
+      "kind": "build",
+      "title": "",
+      "style": 0,
+      "ex_style": 0,
+      "items": [
+        {
+          "class": "Static",
+          "id": 1,
+          "text": "",
+          "style": 0,
+          "ex_style": 0
+        }
+      ],
+      "bytes_length": 50,
+      "bytes_hex": "000000000000000001000000000000000000000000000000000000000000000000000000000000000100ffff820000000000"
+    },
+    {
+      "name": "alignment: title and text of 0 UTF-16 units, so the item starts at 2 mod 4 or 0 mod 4",
+      "kind": "build",
+      "title": "",
+      "style": 0,
+      "ex_style": 0,
+      "items": [
+        {
+          "class": "Static",
+          "id": 7,
+          "text": "",
+          "style": 0,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 8,
+          "text": "",
+          "style": 0,
+          "ex_style": 0
+        }
+      ],
+      "bytes_length": 78,
+      "bytes_hex": "000000000000000002000000000000000000000000000000000000000000000000000000000000000700ffff8200000000000000000000000000000000000000000000000800ffff800000000000"
+    },
+    {
+      "name": "alignment: title and text of 1 UTF-16 units, so the item starts at 2 mod 4 or 0 mod 4",
+      "kind": "build",
+      "title": "a",
+      "style": 0,
+      "ex_style": 0,
+      "items": [
+        {
+          "class": "Static",
+          "id": 7,
+          "text": "b",
+          "style": 0,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 8,
+          "text": "c",
+          "style": 0,
+          "ex_style": 0
+        }
+      ],
+      "bytes_length": 84,
+      "bytes_hex": "00000000000000000200000000000000000000000000610000000000000000000000000000000000000000000700ffff8200620000000000000000000000000000000000000000000800ffff8000630000000000"
+    },
+    {
+      "name": "alignment: title and text of 2 UTF-16 units, so the item starts at 2 mod 4 or 0 mod 4",
+      "kind": "build",
+      "title": "aa",
+      "style": 0,
+      "ex_style": 0,
+      "items": [
+        {
+          "class": "Static",
+          "id": 7,
+          "text": "bb",
+          "style": 0,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 8,
+          "text": "cc",
+          "style": 0,
+          "ex_style": 0
+        }
+      ],
+      "bytes_length": 90,
+      "bytes_hex": "00000000000000000200000000000000000000000000610061000000000000000000000000000000000000000700ffff820062006200000000000000000000000000000000000000000000000800ffff80006300630000000000"
+    },
+    {
+      "name": "alignment: title and text of 3 UTF-16 units, so the item starts at 2 mod 4 or 0 mod 4",
+      "kind": "build",
+      "title": "aaa",
+      "style": 0,
+      "ex_style": 0,
+      "items": [
+        {
+          "class": "Static",
+          "id": 7,
+          "text": "bbb",
+          "style": 0,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 8,
+          "text": "ccc",
+          "style": 0,
+          "ex_style": 0
+        }
+      ],
+      "bytes_length": 96,
+      "bytes_hex": "0000000000000000020000000000000000000000000061006100610000000000000000000000000000000000000000000700ffff820062006200620000000000000000000000000000000000000000000800ffff800063006300630000000000"
+    },
+    {
+      "name": "surrogate pair is two UTF-16 units",
+      "kind": "build",
+      "title": "\uD83D\uDE00",
+      "style": 0,
+      "ex_style": 0,
+      "items": [
+        {
+          "class": "Static",
+          "id": 1,
+          "text": "\uD83D\uDE00x",
+          "style": 0,
+          "ex_style": 0
+        }
+      ],
+      "bytes_length": 60,
+      "bytes_hex": "000000000000000001000000000000000000000000003dd800de0000000000000000000000000000000000000100ffff82003dd800de780000000000"
+    },
+    {
+      "name": "id is truncated to 16 bits: -1, 65535, 65536, 70000",
+      "kind": "build",
+      "title": "ids",
+      "style": 0,
+      "ex_style": 0,
+      "items": [
+        {
+          "class": "Static",
+          "id": -1,
+          "text": "",
+          "style": 0,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 65535,
+          "text": "",
+          "style": 0,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 65536,
+          "text": "",
+          "style": 0,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 70000,
+          "text": "",
+          "style": 0,
+          "ex_style": 0
+        }
+      ],
+      "bytes_length": 142,
+      "bytes_hex": "000000000000000004000000000000000000000000006900640073000000000000000000000000000000000000000000ffffffff820000000000000000000000000000000000000000000000ffffffff8200000000000000000000000000000000000000000000000000ffff8200000000000000000000000000000000000000000000007011ffff820000000000"
+    },
+    {
+      "name": "styles keep all 32 bits (0xFFFFFFFF style and ex style)",
+      "kind": "build",
+      "title": "bits",
+      "style": 4294967295,
+      "ex_style": 4294967295,
+      "items": [
+        {
+          "class": "Edit",
+          "id": 1,
+          "text": "",
+          "style": 4294967295,
+          "ex_style": 4294967295
+        }
+      ],
+      "bytes_length": 58,
+      "bytes_hex": "ffffffffffffffff010000000000000000000000000062006900740073000000ffffffffffffffff00000000000000000100ffff810000000000"
+    },
+    {
+      "name": "65535 controls are accepted (only the length is recorded)",
+      "kind": "build",
+      "title": "max",
+      "style": 0,
+      "ex_style": 0,
+      "repeat": {
+        "class": "Static",
+        "count": 65535,
+        "text": ""
+      },
+      "bytes_length": 1835010
+    },
+    {
+      "name": "65536 controls are refused with ArgumentException",
+      "kind": "build",
+      "title": "max+1",
+      "style": 0,
+      "ex_style": 0,
+      "repeat": {
+        "class": "Static",
+        "count": 65536,
+        "text": ""
+      },
+      "threw": "ArgumentException"
+    },
+    {
+      "name": "class names of Button",
+      "kind": "class_name",
+      "class": "Button",
+      "value": 128,
+      "class_name": null,
+      "window_class_name": "Button"
+    },
+    {
+      "name": "class names of Edit",
+      "kind": "class_name",
+      "class": "Edit",
+      "value": 129,
+      "class_name": null,
+      "window_class_name": "Edit"
+    },
+    {
+      "name": "class names of Static",
+      "kind": "class_name",
+      "class": "Static",
+      "value": 130,
+      "class_name": null,
+      "window_class_name": "Static"
+    },
+    {
+      "name": "class names of ListBox",
+      "kind": "class_name",
+      "class": "ListBox",
+      "value": 131,
+      "class_name": null,
+      "window_class_name": "ListBox"
+    },
+    {
+      "name": "class names of ScrollBar",
+      "kind": "class_name",
+      "class": "ScrollBar",
+      "value": 132,
+      "class_name": null,
+      "window_class_name": "ScrollBar"
+    },
+    {
+      "name": "class names of ComboBox",
+      "kind": "class_name",
+      "class": "ComboBox",
+      "value": 133,
+      "class_name": null,
+      "window_class_name": "ComboBox"
+    },
+    {
+      "name": "class names of ListView",
+      "kind": "class_name",
+      "class": "ListView",
+      "value": 4097,
+      "class_name": "SysListView32",
+      "window_class_name": "SysListView32"
+    },
+    {
+      "name": "class names of Progress",
+      "kind": "class_name",
+      "class": "Progress",
+      "value": 4098,
+      "class_name": "msctls_progress32",
+      "window_class_name": "msctls_progress32"
+    },
+    {
+      "name": "class names of Trackbar",
+      "kind": "class_name",
+      "class": "Trackbar",
+      "value": 4099,
+      "class_name": "msctls_trackbar32",
+      "window_class_name": "msctls_trackbar32"
+    },
+    {
+      "name": "dark chrome theme of Button",
+      "kind": "theme_for",
+      "class": "Button",
+      "theme": ""
+    },
+    {
+      "name": "dark chrome theme of Edit",
+      "kind": "theme_for",
+      "class": "Edit",
+      "theme": ""
+    },
+    {
+      "name": "dark chrome theme of Static",
+      "kind": "theme_for",
+      "class": "Static",
+      "theme": null
+    },
+    {
+      "name": "dark chrome theme of ListBox",
+      "kind": "theme_for",
+      "class": "ListBox",
+      "theme": ""
+    },
+    {
+      "name": "dark chrome theme of ScrollBar",
+      "kind": "theme_for",
+      "class": "ScrollBar",
+      "theme": ""
+    },
+    {
+      "name": "dark chrome theme of ComboBox",
+      "kind": "theme_for",
+      "class": "ComboBox",
+      "theme": ""
+    },
+    {
+      "name": "dark chrome theme of ListView",
+      "kind": "theme_for",
+      "class": "ListView",
+      "theme": ""
+    },
+    {
+      "name": "dark chrome theme of Progress",
+      "kind": "theme_for",
+      "class": "Progress",
+      "theme": ""
+    },
+    {
+      "name": "dark chrome theme of Trackbar",
+      "kind": "theme_for",
+      "class": "Trackbar",
+      "theme": ""
+    },
+    {
+      "name": "to_color_ref(0,0,0)",
+      "kind": "color_ref",
+      "r": 0,
+      "g": 0,
+      "b": 0,
+      "value": 0
+    },
+    {
+      "name": "to_color_ref(1,1,1)",
+      "kind": "color_ref",
+      "r": 1,
+      "g": 1,
+      "b": 1,
+      "value": 16777215
+    },
+    {
+      "name": "to_color_ref(0.5,0.5,0.5)",
+      "kind": "color_ref",
+      "r": 0.5,
+      "g": 0.5,
+      "b": 0.5,
+      "value": 8421504
+    },
+    {
+      "name": "to_color_ref(0.09019608,0.09019608,0.09019608)",
+      "kind": "color_ref",
+      "r": 0.09019608,
+      "g": 0.09019608,
+      "b": 0.09019608,
+      "value": 1513239
+    },
+    {
+      "name": "to_color_ref(0.003921569,0.0078431375,0.011764706)",
+      "kind": "color_ref",
+      "r": 0.003921569,
+      "g": 0.0078431375,
+      "b": 0.011764706,
+      "value": 197121
+    },
+    {
+      "name": "to_color_ref(1,0,0)",
+      "kind": "color_ref",
+      "r": 1,
+      "g": 0,
+      "b": 0,
+      "value": 255
+    },
+    {
+      "name": "to_color_ref(0,1,0)",
+      "kind": "color_ref",
+      "r": 0,
+      "g": 1,
+      "b": 0,
+      "value": 65280
+    },
+    {
+      "name": "to_color_ref(0,0,1)",
+      "kind": "color_ref",
+      "r": 0,
+      "g": 0,
+      "b": 1,
+      "value": 16711680
+    },
+    {
+      "name": "to_color_ref(0.49803922,0.49803922,0.49803922)",
+      "kind": "color_ref",
+      "r": 0.49803922,
+      "g": 0.49803922,
+      "b": 0.49803922,
+      "value": 8355711
+    },
+    {
+      "name": "to_color_ref(1.0000001,0,0)",
+      "kind": "color_ref",
+      "r": 1.0000001,
+      "g": 0,
+      "b": 0,
+      "value": 255
+    },
+    {
+      "name": "to_color_ref(-0.001,0.2,0.4)",
+      "kind": "color_ref",
+      "r": -0.001,
+      "g": 0.2,
+      "b": 0.4,
+      "value": 6697728
+    },
+    {
+      "name": "DialogColors.FromKey('Dark.Text')",
+      "kind": "from_key",
+      "key": "Dark.Text",
+      "value": 15066597,
+      "found": true
+    },
+    {
+      "name": "DialogColors.FromKey('Dark.TextStrong')",
+      "kind": "from_key",
+      "key": "Dark.TextStrong",
+      "value": 16777215,
+      "found": true
+    },
+    {
+      "name": "DialogColors.FromKey('Dark.TextMuted')",
+      "kind": "from_key",
+      "key": "Dark.TextMuted",
+      "value": 10132122,
+      "found": true
+    },
+    {
+      "name": "DialogColors.FromKey('Dark.Input')",
+      "kind": "from_key",
+      "key": "Dark.Input",
+      "value": 2434341,
+      "found": true
+    },
+    {
+      "name": "DialogColors.FromKey('Dark.Panel')",
+      "kind": "from_key",
+      "key": "Dark.Panel",
+      "value": 1973790,
+      "found": true
+    },
+    {
+      "name": "DialogColors.FromKey('Dark.Border')",
+      "kind": "from_key",
+      "key": "Dark.Border",
+      "value": 3947580,
+      "found": true
+    },
+    {
+      "name": "DialogColors.FromKey('Dark.BorderStrong')",
+      "kind": "from_key",
+      "key": "Dark.BorderStrong",
+      "value": 5921370,
+      "found": true
+    },
+    {
+      "name": "DialogColors.FromKey('Dark.Button')",
+      "kind": "from_key",
+      "key": "Dark.Button",
+      "value": 2960685,
+      "found": true
+    },
+    {
+      "name": "DialogColors.FromKey('Dark.ButtonHover')",
+      "kind": "from_key",
+      "key": "Dark.ButtonHover",
+      "value": 3684408,
+      "found": true
+    },
+    {
+      "name": "DialogColors.FromKey('Dark.ButtonPressed')",
+      "kind": "from_key",
+      "key": "Dark.ButtonPressed",
+      "value": 4473924,
+      "found": true
+    },
+    {
+      "name": "DialogColors.FromKey('Dark.Accent')",
+      "kind": "from_key",
+      "key": "Dark.Accent",
+      "value": 13990714,
+      "found": true
+    },
+    {
+      "name": "DialogColors.FromKey('Dark.AccentHover')",
+      "kind": "from_key",
+      "key": "Dark.AccentHover",
+      "value": 15043402,
+      "found": true
+    },
+    {
+      "name": "DialogColors.FromKey('Dark.Window')",
+      "kind": "from_key",
+      "key": "Dark.Window",
+      "value": 1513239,
+      "found": true
+    },
+    {
+      "name": "DialogColors.FromKey('Dark.Backdrop')",
+      "kind": "from_key",
+      "key": "Dark.Backdrop",
+      "value": 1579032,
+      "found": true
+    },
+    {
+      "name": "DialogColors.FromKey('Dark.Canvas')",
+      "kind": "from_key",
+      "key": "Dark.Canvas",
+      "value": 1052688,
+      "found": true
+    },
+    {
+      "name": "DialogColors.FromKey('Dark.Tooltip')",
+      "kind": "from_key",
+      "key": "Dark.Tooltip",
+      "value": 2105376,
+      "found": true
+    },
+    {
+      "name": "DialogColors.FromKey('Dark.Surface')",
+      "kind": "from_key",
+      "key": "Dark.Surface",
+      "value": 2763306,
+      "found": true
+    },
+    {
+      "name": "DialogColors.FromKey('Dark.RowAlt')",
+      "kind": "from_key",
+      "key": "Dark.RowAlt",
+      "value": 2368548,
+      "found": true
+    },
+    {
+      "name": "DialogColors.FromKey('Dark.Overlay')",
+      "kind": "from_key",
+      "key": "Dark.Overlay",
+      "value": 1579032,
+      "found": true
+    },
+    {
+      "name": "DialogColors.FromKey('Dark.Selection')",
+      "kind": "from_key",
+      "key": "Dark.Selection",
+      "value": 8411706,
+      "found": true
+    },
+    {
+      "name": "DialogColors.FromKey('Dark.SuccessBackground')",
+      "kind": "from_key",
+      "key": "Dark.SuccessBackground",
+      "value": 2374430,
+      "found": true
+    },
+    {
+      "name": "DialogColors.FromKey('Dark.ErrorBackground')",
+      "kind": "from_key",
+      "key": "Dark.ErrorBackground",
+      "value": 1973819,
+      "found": true
+    },
+    {
+      "name": "DialogColors.FromKey('Dark.WindowText')",
+      "kind": "from_key",
+      "key": "Dark.WindowText",
+      "value": 16119285,
+      "found": true
+    },
+    {
+      "name": "DialogColors.FromKey('Dark.TextBright')",
+      "kind": "from_key",
+      "key": "Dark.TextBright",
+      "value": 15658734,
+      "found": true
+    },
+    {
+      "name": "DialogColors.FromKey('Dark.TextSoft')",
+      "kind": "from_key",
+      "key": "Dark.TextSoft",
+      "value": 13619151,
+      "found": true
+    },
+    {
+      "name": "DialogColors.FromKey('Dark.TextSecondary')",
+      "kind": "from_key",
+      "key": "Dark.TextSecondary",
+      "value": 12303291,
+      "found": true
+    },
+    {
+      "name": "DialogColors.FromKey('Dark.TextSubtle')",
+      "kind": "from_key",
+      "key": "Dark.TextSubtle",
+      "value": 11184810,
+      "found": true
+    },
+    {
+      "name": "DialogColors.FromKey('Dark.TextFaint')",
+      "kind": "from_key",
+      "key": "Dark.TextFaint",
+      "value": 7829367,
+      "found": true
+    },
+    {
+      "name": "DialogColors.FromKey('Dark.Warning')",
+      "kind": "from_key",
+      "key": "Dark.Warning",
+      "value": 5753087,
+      "found": true
+    },
+    {
+      "name": "DialogColors.FromKey('Dark.Caution')",
+      "kind": "from_key",
+      "key": "Dark.Caution",
+      "value": 4239600,
+      "found": true
+    },
+    {
+      "name": "DialogColors.FromKey('Dark.ErrorText')",
+      "kind": "from_key",
+      "key": "Dark.ErrorText",
+      "value": 10132223,
+      "found": true
+    },
+    {
+      "name": "DialogColors.FromKey('Dark.BorderSubtle')",
+      "kind": "from_key",
+      "key": "Dark.BorderSubtle",
+      "value": 3815994,
+      "found": true
+    },
+    {
+      "name": "DialogColors.FromKey('Dark.BorderToolbar')",
+      "kind": "from_key",
+      "key": "Dark.BorderToolbar",
+      "value": 4539717,
+      "found": true
+    },
+    {
+      "name": "DialogColors.FromKey('Dark.GridLine')",
+      "kind": "from_key",
+      "key": "Dark.GridLine",
+      "value": 3355443,
+      "found": true
+    },
+    {
+      "name": "DialogColors.FromKey('Dark.ScrollTrack')",
+      "kind": "from_key",
+      "key": "Dark.ScrollTrack",
+      "value": 1447446,
+      "found": true
+    },
+    {
+      "name": "DialogColors.FromKey('Dark.Nope')",
+      "kind": "from_key",
+      "key": "Dark.Nope",
+      "found": false,
+      "threw": "KeyNotFoundException"
+    },
+    {
+      "name": "DialogColors.FromKey('dark.window')",
+      "kind": "from_key",
+      "key": "dark.window",
+      "found": false,
+      "threw": "KeyNotFoundException"
+    },
+    {
+      "name": "DialogColors.FromKey('')",
+      "kind": "from_key",
+      "key": "",
+      "found": false,
+      "threw": "KeyNotFoundException"
+    },
+    {
+      "name": "the named accessors of DialogColors",
+      "kind": "named_colors",
+      "window": 1513239,
+      "input": 2434341,
+      "text": 16119285,
+      "text_strong": 16777215,
+      "text_secondary": 12303291,
+      "warning": 5753087
+    },
+    {
+      "name": "constants of DialogTemplate",
+      "kind": "constants",
+      "header_bytes": 22,
+      "atom_marker": 65535,
+      "classic_theme": ""
+    }
+  ]
+}

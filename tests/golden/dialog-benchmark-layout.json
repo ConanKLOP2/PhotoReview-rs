@@ -1,0 +1,1232 @@
+{
+  "generator": "oracle-cs dialog-benchmark-layout",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "dialog without a folder",
+      "kind": "dialog",
+      "initial_folder": null,
+      "title": "Photo Review · Benchmark",
+      "items": [
+        {
+          "class": "Static",
+          "id": 100,
+          "text": "Benchmark",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 101,
+          "text": "Compare image loading/decoding configurations on a real photo set to find the fastest and most stable configuration for this machine.",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Edit",
+          "id": 102,
+          "text": "",
+          "style": 1342242944,
+          "ex_style": 512
+        },
+        {
+          "class": "Button",
+          "id": 103,
+          "text": "Choose folder…",
+          "style": 1342242816,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 104,
+          "text": "Images to test (0 = all):",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Edit",
+          "id": 105,
+          "text": "",
+          "style": 1342242944,
+          "ex_style": 512
+        },
+        {
+          "class": "Static",
+          "id": 106,
+          "text": "Choose the configurations to compare (hold Ctrl to select several — only configurations with the same Workload can be compared directly):",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 107,
+          "text": "Select all",
+          "style": 1342242816,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 108,
+          "text": "Select none",
+          "style": 1342242816,
+          "ex_style": 0
+        },
+        {
+          "class": "ListBox",
+          "id": 109,
+          "text": "",
+          "style": 1344340313,
+          "ex_style": 512
+        },
+        {
+          "class": "Button",
+          "id": 110,
+          "text": "Run benchmark",
+          "style": 1342242817,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 111,
+          "text": "Quick check",
+          "style": 1342242816,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 112,
+          "text": "Cancel",
+          "style": 1476460544,
+          "ex_style": 0
+        },
+        {
+          "class": "Progress",
+          "id": 113,
+          "text": "",
+          "style": 1342177281,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 114,
+          "text": "",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "ListView",
+          "id": 115,
+          "text": "",
+          "style": 1350631437,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 116,
+          "text": "Open latest report",
+          "style": 1342242816,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 117,
+          "text": "Open results folder",
+          "style": 1342242816,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 118,
+          "text": "Close",
+          "style": 1342242816,
+          "ex_style": 0
+        }
+      ],
+      "initial_focus_id": 110,
+      "default_button_id": 110,
+      "resizable": true,
+      "header_ids": [
+        100
+      ],
+      "uses_modal_frame": false,
+      "extra_window_style": 196608
+    },
+    {
+      "name": "dialog with a folder",
+      "kind": "dialog",
+      "initial_folder": "C:\bench",
+      "title": "Photo Review · Benchmark",
+      "items": [
+        {
+          "class": "Static",
+          "id": 100,
+          "text": "Benchmark",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 101,
+          "text": "Compare image loading/decoding configurations on a real photo set to find the fastest and most stable configuration for this machine.",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Edit",
+          "id": 102,
+          "text": "",
+          "style": 1342242944,
+          "ex_style": 512
+        },
+        {
+          "class": "Button",
+          "id": 103,
+          "text": "Choose folder…",
+          "style": 1342242816,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 104,
+          "text": "Images to test (0 = all):",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Edit",
+          "id": 105,
+          "text": "",
+          "style": 1342242944,
+          "ex_style": 512
+        },
+        {
+          "class": "Static",
+          "id": 106,
+          "text": "Choose the configurations to compare (hold Ctrl to select several — only configurations with the same Workload can be compared directly):",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 107,
+          "text": "Select all",
+          "style": 1342242816,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 108,
+          "text": "Select none",
+          "style": 1342242816,
+          "ex_style": 0
+        },
+        {
+          "class": "ListBox",
+          "id": 109,
+          "text": "",
+          "style": 1344340313,
+          "ex_style": 512
+        },
+        {
+          "class": "Button",
+          "id": 110,
+          "text": "Run benchmark",
+          "style": 1342242817,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 111,
+          "text": "Quick check",
+          "style": 1342242816,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 112,
+          "text": "Cancel",
+          "style": 1476460544,
+          "ex_style": 0
+        },
+        {
+          "class": "Progress",
+          "id": 113,
+          "text": "",
+          "style": 1342177281,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 114,
+          "text": "",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "ListView",
+          "id": 115,
+          "text": "",
+          "style": 1350631437,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 116,
+          "text": "Open latest report",
+          "style": 1342242816,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 117,
+          "text": "Open results folder",
+          "style": 1342242816,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 118,
+          "text": "Close",
+          "style": 1342242816,
+          "ex_style": 0
+        }
+      ],
+      "initial_focus_id": 110,
+      "default_button_id": 110,
+      "resizable": true,
+      "header_ids": [
+        100
+      ],
+      "uses_modal_frame": false,
+      "extra_window_style": 196608,
+      "initial_folder_text": "C:\bench"
+    },
+    {
+      "name": "column headers",
+      "kind": "column_headers",
+      "headers": [
+        "\uD83C\uDFC6",
+        "Profile",
+        "Loading mode",
+        "Workload",
+        "Samples",
+        "P50",
+        "P95",
+        "P99",
+        "Max",
+        "Status"
+      ]
+    },
+    {
+      "name": "column 0 best marker left",
+      "kind": "compare_rows",
+      "left": {
+        "profile_id": "fast-sequential",
+        "workload": "Sequential",
+        "samples": [
+          10,
+          20,
+          30
+        ],
+        "status": "Pass",
+        "is_best": true
+      },
+      "right": {
+        "profile_id": "preview-light",
+        "workload": "Sequential",
+        "samples": [
+          10,
+          20,
+          30
+        ],
+        "status": "Pass"
+      },
+      "column": 0,
+      "sign": 1
+    },
+    {
+      "name": "column 0 best marker right",
+      "kind": "compare_rows",
+      "left": {
+        "profile_id": "fast-sequential",
+        "workload": "Sequential",
+        "samples": [
+          10,
+          20,
+          30
+        ],
+        "status": "Pass"
+      },
+      "right": {
+        "profile_id": "preview-light",
+        "workload": "Sequential",
+        "samples": [
+          10,
+          20,
+          30
+        ],
+        "status": "Pass",
+        "is_best": true
+      },
+      "column": 0,
+      "sign": -1
+    },
+    {
+      "name": "column 0 none best",
+      "kind": "compare_rows",
+      "left": {
+        "profile_id": "fast-sequential",
+        "workload": "Sequential",
+        "samples": [
+          10,
+          20,
+          30
+        ],
+        "status": "Pass"
+      },
+      "right": {
+        "profile_id": "preview-light",
+        "workload": "Sequential",
+        "samples": [
+          10,
+          20,
+          30
+        ],
+        "status": "Pass"
+      },
+      "column": 0,
+      "sign": 0
+    },
+    {
+      "name": "column 1 name F before P",
+      "kind": "compare_rows",
+      "left": {
+        "profile_id": "fast-sequential",
+        "workload": "Sequential",
+        "samples": [
+          10,
+          20,
+          30
+        ],
+        "status": "Pass"
+      },
+      "right": {
+        "profile_id": "preview-light",
+        "workload": "Sequential",
+        "samples": [
+          10,
+          20,
+          30
+        ],
+        "status": "Pass"
+      },
+      "column": 1,
+      "sign": -1
+    },
+    {
+      "name": "column 1 name P after F",
+      "kind": "compare_rows",
+      "left": {
+        "profile_id": "preview-light",
+        "workload": "Sequential",
+        "samples": [
+          10,
+          20,
+          30
+        ],
+        "status": "Pass"
+      },
+      "right": {
+        "profile_id": "fast-sequential",
+        "workload": "Sequential",
+        "samples": [
+          10,
+          20,
+          30
+        ],
+        "status": "Pass"
+      },
+      "column": 1,
+      "sign": 1
+    },
+    {
+      "name": "column 1 same name",
+      "kind": "compare_rows",
+      "left": {
+        "profile_id": "fast-sequential",
+        "workload": "Sequential",
+        "samples": [
+          10,
+          20,
+          30
+        ],
+        "status": "Pass"
+      },
+      "right": {
+        "profile_id": "fast-sequential",
+        "workload": "Sequential",
+        "samples": [
+          10,
+          20,
+          30
+        ],
+        "status": "Pass"
+      },
+      "column": 1,
+      "sign": 0
+    },
+    {
+      "name": "column 2 loading mode Fast before Original",
+      "kind": "compare_rows",
+      "left": {
+        "profile_id": "fast-sequential",
+        "workload": "Sequential",
+        "samples": [
+          10,
+          20,
+          30
+        ],
+        "status": "Pass"
+      },
+      "right": {
+        "profile_id": "original-correctness",
+        "workload": "Correctness",
+        "samples": [
+          10,
+          20,
+          30
+        ],
+        "status": "Pass"
+      },
+      "column": 2,
+      "sign": -1
+    },
+    {
+      "name": "column 2 loading mode Preview after Fast",
+      "kind": "compare_rows",
+      "left": {
+        "profile_id": "preview-light",
+        "workload": "Sequential",
+        "samples": [
+          10,
+          20,
+          30
+        ],
+        "status": "Pass"
+      },
+      "right": {
+        "profile_id": "fast-sequential",
+        "workload": "Sequential",
+        "samples": [
+          10,
+          20,
+          30
+        ],
+        "status": "Pass"
+      },
+      "column": 2,
+      "sign": 1
+    },
+    {
+      "name": "column 3 workload Sequential after Random",
+      "kind": "compare_rows",
+      "left": {
+        "profile_id": "fast-sequential",
+        "workload": "Sequential",
+        "samples": [
+          10,
+          20,
+          30
+        ],
+        "status": "Pass"
+      },
+      "right": {
+        "profile_id": "random-navigation",
+        "workload": "Random",
+        "samples": [
+          10,
+          20,
+          30
+        ],
+        "status": "Pass"
+      },
+      "column": 3,
+      "sign": 1
+    },
+    {
+      "name": "column 3 workload Correctness before FirstFrame",
+      "kind": "compare_rows",
+      "left": {
+        "profile_id": "original-correctness",
+        "workload": "Correctness",
+        "samples": [
+          10,
+          20,
+          30
+        ],
+        "status": "Pass"
+      },
+      "right": {
+        "profile_id": "instant-review",
+        "workload": "FirstFrame",
+        "samples": [
+          10,
+          20,
+          30
+        ],
+        "status": "Pass"
+      },
+      "column": 3,
+      "sign": -1
+    },
+    {
+      "name": "column 4 count more",
+      "kind": "compare_rows",
+      "left": {
+        "profile_id": "fast-sequential",
+        "workload": "Sequential",
+        "samples": [
+          1,
+          2,
+          3
+        ],
+        "status": "Pass"
+      },
+      "right": {
+        "profile_id": "preview-light",
+        "workload": "Sequential",
+        "samples": [
+          1
+        ],
+        "status": "Pass"
+      },
+      "column": 4,
+      "sign": 1
+    },
+    {
+      "name": "column 4 count fewer",
+      "kind": "compare_rows",
+      "left": {
+        "profile_id": "fast-sequential",
+        "workload": "Sequential",
+        "samples": [
+          1
+        ],
+        "status": "Pass"
+      },
+      "right": {
+        "profile_id": "preview-light",
+        "workload": "Sequential",
+        "samples": [
+          1,
+          2,
+          3
+        ],
+        "status": "Pass"
+      },
+      "column": 4,
+      "sign": -1
+    },
+    {
+      "name": "column 4 count equal",
+      "kind": "compare_rows",
+      "left": {
+        "profile_id": "fast-sequential",
+        "workload": "Sequential",
+        "samples": [
+          1,
+          2
+        ],
+        "status": "Pass"
+      },
+      "right": {
+        "profile_id": "preview-light",
+        "workload": "Sequential",
+        "samples": [
+          5,
+          6
+        ],
+        "status": "Pass"
+      },
+      "column": 4,
+      "sign": 0
+    },
+    {
+      "name": "column 5 p50 greater",
+      "kind": "compare_rows",
+      "left": {
+        "profile_id": "fast-sequential",
+        "workload": "Sequential",
+        "samples": [
+          10,
+          20,
+          30
+        ],
+        "status": "Pass"
+      },
+      "right": {
+        "profile_id": "preview-light",
+        "workload": "Sequential",
+        "samples": [
+          5,
+          6,
+          7
+        ],
+        "status": "Pass"
+      },
+      "column": 5,
+      "sign": 1
+    },
+    {
+      "name": "column 5 p50 smaller",
+      "kind": "compare_rows",
+      "left": {
+        "profile_id": "fast-sequential",
+        "workload": "Sequential",
+        "samples": [
+          1,
+          2,
+          3
+        ],
+        "status": "Pass"
+      },
+      "right": {
+        "profile_id": "preview-light",
+        "workload": "Sequential",
+        "samples": [
+          5,
+          6,
+          7
+        ],
+        "status": "Pass"
+      },
+      "column": 5,
+      "sign": -1
+    },
+    {
+      "name": "column 5 p50 equal",
+      "kind": "compare_rows",
+      "left": {
+        "profile_id": "fast-sequential",
+        "workload": "Sequential",
+        "samples": [
+          2
+        ],
+        "status": "Pass"
+      },
+      "right": {
+        "profile_id": "preview-light",
+        "workload": "Sequential",
+        "samples": [
+          2
+        ],
+        "status": "Pass"
+      },
+      "column": 5,
+      "sign": 0
+    },
+    {
+      "name": "column 5 empty against zero",
+      "kind": "compare_rows",
+      "left": {
+        "profile_id": "fast-sequential",
+        "workload": "Sequential",
+        "samples": [],
+        "status": "Pass"
+      },
+      "right": {
+        "profile_id": "preview-light",
+        "workload": "Sequential",
+        "samples": [
+          0
+        ],
+        "status": "Pass"
+      },
+      "column": 5,
+      "sign": 0
+    },
+    {
+      "name": "column 6 p95 greater",
+      "kind": "compare_rows",
+      "left": {
+        "profile_id": "fast-sequential",
+        "workload": "Sequential",
+        "samples": [
+          1,
+          2,
+          100
+        ],
+        "status": "Pass"
+      },
+      "right": {
+        "profile_id": "preview-light",
+        "workload": "Sequential",
+        "samples": [
+          1,
+          2,
+          3
+        ],
+        "status": "Pass"
+      },
+      "column": 6,
+      "sign": 1
+    },
+    {
+      "name": "column 6 p95 numeric not text",
+      "kind": "compare_rows",
+      "left": {
+        "profile_id": "fast-sequential",
+        "workload": "Sequential",
+        "samples": [
+          9
+        ],
+        "status": "Pass"
+      },
+      "right": {
+        "profile_id": "preview-light",
+        "workload": "Sequential",
+        "samples": [
+          10
+        ],
+        "status": "Pass"
+      },
+      "column": 6,
+      "sign": -1
+    },
+    {
+      "name": "column 7 p99 smaller",
+      "kind": "compare_rows",
+      "left": {
+        "profile_id": "fast-sequential",
+        "workload": "Sequential",
+        "samples": [
+          1,
+          2,
+          3
+        ],
+        "status": "Pass"
+      },
+      "right": {
+        "profile_id": "preview-light",
+        "workload": "Sequential",
+        "samples": [
+          1,
+          2,
+          300
+        ],
+        "status": "Pass"
+      },
+      "column": 7,
+      "sign": -1
+    },
+    {
+      "name": "column 8 max greater",
+      "kind": "compare_rows",
+      "left": {
+        "profile_id": "fast-sequential",
+        "workload": "Sequential",
+        "samples": [
+          1,
+          50
+        ],
+        "status": "Pass"
+      },
+      "right": {
+        "profile_id": "preview-light",
+        "workload": "Sequential",
+        "samples": [
+          1,
+          2
+        ],
+        "status": "Pass"
+      },
+      "column": 8,
+      "sign": 1
+    },
+    {
+      "name": "column 8 max equal",
+      "kind": "compare_rows",
+      "left": {
+        "profile_id": "fast-sequential",
+        "workload": "Sequential",
+        "samples": [
+          7,
+          1
+        ],
+        "status": "Pass"
+      },
+      "right": {
+        "profile_id": "preview-light",
+        "workload": "Sequential",
+        "samples": [
+          7
+        ],
+        "status": "Pass"
+      },
+      "column": 8,
+      "sign": 0
+    },
+    {
+      "name": "column 9 status Pass after Error",
+      "kind": "compare_rows",
+      "left": {
+        "profile_id": "fast-sequential",
+        "workload": "Sequential",
+        "samples": [
+          10,
+          20,
+          30
+        ],
+        "status": "Pass"
+      },
+      "right": {
+        "profile_id": "preview-light",
+        "workload": "Sequential",
+        "samples": [
+          10,
+          20,
+          30
+        ],
+        "status": "Fail"
+      },
+      "column": 9,
+      "sign": 1
+    },
+    {
+      "name": "column 9 status Warning after Pass",
+      "kind": "compare_rows",
+      "left": {
+        "profile_id": "fast-sequential",
+        "workload": "Sequential",
+        "samples": [
+          10,
+          20,
+          30
+        ],
+        "status": "Warn"
+      },
+      "right": {
+        "profile_id": "preview-light",
+        "workload": "Sequential",
+        "samples": [
+          10,
+          20,
+          30
+        ],
+        "status": "Pass"
+      },
+      "column": 9,
+      "sign": 1
+    },
+    {
+      "name": "column 9 status equal",
+      "kind": "compare_rows",
+      "left": {
+        "profile_id": "fast-sequential",
+        "workload": "Sequential",
+        "samples": [
+          10,
+          20,
+          30
+        ],
+        "status": "Pass"
+      },
+      "right": {
+        "profile_id": "preview-light",
+        "workload": "Sequential",
+        "samples": [
+          10,
+          20,
+          30
+        ],
+        "status": "Pass"
+      },
+      "column": 9,
+      "sign": 0
+    },
+    {
+      "name": "column minus 3 clamps to the best marker column",
+      "kind": "compare_rows",
+      "left": {
+        "profile_id": "fast-sequential",
+        "workload": "Sequential",
+        "samples": [
+          10,
+          20,
+          30
+        ],
+        "status": "Pass",
+        "is_best": true
+      },
+      "right": {
+        "profile_id": "preview-light",
+        "workload": "Sequential",
+        "samples": [
+          10,
+          20,
+          30
+        ],
+        "status": "Pass"
+      },
+      "column": -3,
+      "sign": 1
+    },
+    {
+      "name": "column 99 clamps to the status column",
+      "kind": "compare_rows",
+      "left": {
+        "profile_id": "fast-sequential",
+        "workload": "Sequential",
+        "samples": [
+          10,
+          20,
+          30
+        ],
+        "status": "Pass"
+      },
+      "right": {
+        "profile_id": "preview-light",
+        "workload": "Sequential",
+        "samples": [
+          10,
+          20,
+          30
+        ],
+        "status": "Fail"
+      },
+      "column": 99,
+      "sign": 1
+    },
+    {
+      "name": "sort click sequence on one column",
+      "kind": "sort_clicks",
+      "clicks": [
+        6,
+        6,
+        6
+      ],
+      "states": [
+        [
+          6,
+          1
+        ],
+        [
+          6,
+          2
+        ],
+        [
+          6,
+          1
+        ]
+      ]
+    },
+    {
+      "name": "sort click other column after descending",
+      "kind": "sort_clicks",
+      "clicks": [
+        6,
+        6,
+        1
+      ],
+      "states": [
+        [
+          6,
+          1
+        ],
+        [
+          6,
+          2
+        ],
+        [
+          1,
+          1
+        ]
+      ]
+    },
+    {
+      "name": "sort click alternating columns",
+      "kind": "sort_clicks",
+      "clicks": [
+        1,
+        2,
+        1,
+        2,
+        2
+      ],
+      "states": [
+        [
+          1,
+          1
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          2,
+          2
+        ]
+      ]
+    },
+    {
+      "name": "sort click column 0 and out of range",
+      "kind": "sort_clicks",
+      "clicks": [
+        0,
+        0,
+        -1,
+        -1,
+        12
+      ],
+      "states": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          -1,
+          1
+        ],
+        [
+          -1,
+          2
+        ],
+        [
+          12,
+          1
+        ]
+      ]
+    },
+    {
+      "name": "preferred avg 6 line 15",
+      "kind": "preferred",
+      "avg": 6,
+      "line": 15,
+      "preferred_width": 780,
+      "preferred_height": 619,
+      "minimum_width": 600,
+      "minimum_height": 525
+    },
+    {
+      "name": "metrics avg 6 line 15",
+      "kind": "metrics",
+      "avg": 6,
+      "line": 15,
+      "margin": 15,
+      "field_height": 26,
+      "button_height": 26
+    },
+    {
+      "name": "preferred avg 7 line 16",
+      "kind": "preferred",
+      "avg": 7,
+      "line": 16,
+      "preferred_width": 910,
+      "preferred_height": 660,
+      "minimum_width": 700,
+      "minimum_height": 560
+    },
+    {
+      "name": "metrics avg 7 line 16",
+      "kind": "metrics",
+      "avg": 7,
+      "line": 16,
+      "margin": 18,
+      "field_height": 28,
+      "button_height": 28
+    },
+    {
+      "name": "preferred avg 8 line 20",
+      "kind": "preferred",
+      "avg": 8,
+      "line": 20,
+      "preferred_width": 1040,
+      "preferred_height": 825,
+      "minimum_width": 800,
+      "minimum_height": 700
+    },
+    {
+      "name": "metrics avg 8 line 20",
+      "kind": "metrics",
+      "avg": 8,
+      "line": 20,
+      "margin": 20,
+      "field_height": 35,
+      "button_height": 35
+    },
+    {
+      "name": "preferred avg 9 line 24",
+      "kind": "preferred",
+      "avg": 9,
+      "line": 24,
+      "preferred_width": 1170,
+      "preferred_height": 990,
+      "minimum_width": 900,
+      "minimum_height": 840
+    },
+    {
+      "name": "metrics avg 9 line 24",
+      "kind": "metrics",
+      "avg": 9,
+      "line": 24,
+      "margin": 23,
+      "field_height": 42,
+      "button_height": 42
+    },
+    {
+      "name": "preferred avg 10 line 29",
+      "kind": "preferred",
+      "avg": 10,
+      "line": 29,
+      "preferred_width": 1300,
+      "preferred_height": 1196,
+      "minimum_width": 1000,
+      "minimum_height": 1015
+    },
+    {
+      "name": "metrics avg 10 line 29",
+      "kind": "metrics",
+      "avg": 10,
+      "line": 29,
+      "margin": 25,
+      "field_height": 51,
+      "button_height": 51
+    },
+    {
+      "name": "ids of the dialog",
+      "kind": "constants",
+      "header_id": 100,
+      "description_id": 101,
+      "folder_id": 102,
+      "browse_id": 103,
+      "limit_label_id": 104,
+      "limit_id": 105,
+      "profiles_label_id": 106,
+      "select_all_id": 107,
+      "select_none_id": 108,
+      "profiles_id": 109,
+      "run_id": 110,
+      "quick_check_id": 111,
+      "cancel_run_id": 112,
+      "progress_id": 113,
+      "status_id": 114,
+      "results_id": 115,
+      "open_report_id": 116,
+      "open_folder_id": 117,
+      "close_id": 118,
+      "column_count": 10
+    }
+  ]
+}

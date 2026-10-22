@@ -1,0 +1,3017 @@
+{
+ "command": "painter-kinds",
+ "notes": [
+  "Feeds W8-18l (dialogs::native::painter::geometry and mod). Reflection over the internal static class NativeDialogChromePainter, DialogColors, CommonControlsInit of the PhotoReview (Shell.Win32) assembly.",
+  "kind_for creates a REAL child window of the class (a hidden popup STATIC owner, WS_CHILD | style, 50x20) and calls KindFor(hwnd, class): outputs kind_name (enum name), value (int), style_read (the style the window reports back, uint). The window is destroyed afterwards.",
+  "predicates -> is_full_paint, has_flat_border, tracks_hover (private statics taking the int value of the kind); repaints -> value (RepaintsAfterSystemPaint(int kind, uint message)); scaled -> value (private S(double scale, int value); inputs scale and px); key_color -> found and value (DialogColors.FromKey, uint COLORREF) or threw.",
+  "custom_draw allocates a zeroed 136 byte NMLVCUSTOMDRAW, writes dwDrawStage at +24 and uItemState (item_state_in) at +64, hwndFrom = 0 (so LVM_GETITEMSTATE answers 0: the row is never selected here; the selected branch is a hand-written pure test) and calls AdjustListViewCustomDraw(ptr, result_in): outputs result (the returned nint as long), item_state (uint at +64 after the call), text_color (uint at +80), back_color (uint at +84).",
+  "constants -> control_subclass_id, dialog_subclass_id (private const nuint), control_prop, dialog_prop (private const string), kinds (object name -> int of ChromePaintKind)."
+ ],
+ "cases": [
+  {
+   "name": "kind_for Button type 0",
+   "kind": "kind_for",
+   "class": "Button",
+   "style": 0
+  },
+  {
+   "name": "kind_for Button type 1",
+   "kind": "kind_for",
+   "class": "Button",
+   "style": 1
+  },
+  {
+   "name": "kind_for Button type 2",
+   "kind": "kind_for",
+   "class": "Button",
+   "style": 2
+  },
+  {
+   "name": "kind_for Button type 3",
+   "kind": "kind_for",
+   "class": "Button",
+   "style": 3
+  },
+  {
+   "name": "kind_for Button type 4",
+   "kind": "kind_for",
+   "class": "Button",
+   "style": 4
+  },
+  {
+   "name": "kind_for Button type 5",
+   "kind": "kind_for",
+   "class": "Button",
+   "style": 5
+  },
+  {
+   "name": "kind_for Button type 6",
+   "kind": "kind_for",
+   "class": "Button",
+   "style": 6
+  },
+  {
+   "name": "kind_for Button type 7",
+   "kind": "kind_for",
+   "class": "Button",
+   "style": 7
+  },
+  {
+   "name": "kind_for Button type 8",
+   "kind": "kind_for",
+   "class": "Button",
+   "style": 8
+  },
+  {
+   "name": "kind_for Button type 9",
+   "kind": "kind_for",
+   "class": "Button",
+   "style": 9
+  },
+  {
+   "name": "kind_for Button type 10",
+   "kind": "kind_for",
+   "class": "Button",
+   "style": 10
+  },
+  {
+   "name": "kind_for Button type 11",
+   "kind": "kind_for",
+   "class": "Button",
+   "style": 11
+  },
+  {
+   "name": "kind_for Button type 12",
+   "kind": "kind_for",
+   "class": "Button",
+   "style": 12
+  },
+  {
+   "name": "kind_for Button type 13",
+   "kind": "kind_for",
+   "class": "Button",
+   "style": 13
+  },
+  {
+   "name": "kind_for Button type 14",
+   "kind": "kind_for",
+   "class": "Button",
+   "style": 14
+  },
+  {
+   "name": "kind_for Button type 15",
+   "kind": "kind_for",
+   "class": "Button",
+   "style": 15
+  },
+  {
+   "name": "kind_for Button type 2 push-like",
+   "kind": "kind_for",
+   "class": "Button",
+   "style": 4098
+  },
+  {
+   "name": "kind_for Button type 3 push-like",
+   "kind": "kind_for",
+   "class": "Button",
+   "style": 4099
+  },
+  {
+   "name": "kind_for Button type 4 push-like",
+   "kind": "kind_for",
+   "class": "Button",
+   "style": 4100
+  },
+  {
+   "name": "kind_for Button type 5 push-like",
+   "kind": "kind_for",
+   "class": "Button",
+   "style": 4101
+  },
+  {
+   "name": "kind_for Button type 6 push-like",
+   "kind": "kind_for",
+   "class": "Button",
+   "style": 4102
+  },
+  {
+   "name": "kind_for Button type 9 push-like",
+   "kind": "kind_for",
+   "class": "Button",
+   "style": 4105
+  },
+  {
+   "name": "kind_for Button type 0 icon",
+   "kind": "kind_for",
+   "class": "Button",
+   "style": 64
+  },
+  {
+   "name": "kind_for Button type 0 bitmap",
+   "kind": "kind_for",
+   "class": "Button",
+   "style": 128
+  },
+  {
+   "name": "kind_for Button type 1 icon",
+   "kind": "kind_for",
+   "class": "Button",
+   "style": 65
+  },
+  {
+   "name": "kind_for Button type 1 bitmap",
+   "kind": "kind_for",
+   "class": "Button",
+   "style": 129
+  },
+  {
+   "name": "kind_for Button type 3 icon",
+   "kind": "kind_for",
+   "class": "Button",
+   "style": 67
+  },
+  {
+   "name": "kind_for Button type 3 bitmap",
+   "kind": "kind_for",
+   "class": "Button",
+   "style": 131
+  },
+  {
+   "name": "kind_for Button type 9 icon",
+   "kind": "kind_for",
+   "class": "Button",
+   "style": 73
+  },
+  {
+   "name": "kind_for Button type 9 bitmap",
+   "kind": "kind_for",
+   "class": "Button",
+   "style": 137
+  },
+  {
+   "name": "kind_for Button owner-draw 0x100B",
+   "kind": "kind_for",
+   "class": "Button",
+   "style": 4107
+  },
+  {
+   "name": "kind_for Button multiline left-text check",
+   "kind": "kind_for",
+   "class": "Button",
+   "style": 8227
+  },
+  {
+   "name": "kind_for ComboBox 0x0",
+   "kind": "kind_for",
+   "class": "ComboBox",
+   "style": 0
+  },
+  {
+   "name": "kind_for ComboBox 0x1",
+   "kind": "kind_for",
+   "class": "ComboBox",
+   "style": 1
+  },
+  {
+   "name": "kind_for ComboBox 0x2",
+   "kind": "kind_for",
+   "class": "ComboBox",
+   "style": 2
+  },
+  {
+   "name": "kind_for ComboBox 0x3",
+   "kind": "kind_for",
+   "class": "ComboBox",
+   "style": 3
+  },
+  {
+   "name": "kind_for ComboBox 0x13",
+   "kind": "kind_for",
+   "class": "ComboBox",
+   "style": 19
+  },
+  {
+   "name": "kind_for ComboBox 0x23",
+   "kind": "kind_for",
+   "class": "ComboBox",
+   "style": 35
+  },
+  {
+   "name": "kind_for ComboBox 0x33",
+   "kind": "kind_for",
+   "class": "ComboBox",
+   "style": 51
+  },
+  {
+   "name": "kind_for ComboBox 0x203",
+   "kind": "kind_for",
+   "class": "ComboBox",
+   "style": 515
+  },
+  {
+   "name": "kind_for ComboBox 0x210",
+   "kind": "kind_for",
+   "class": "ComboBox",
+   "style": 528
+  },
+  {
+   "name": "kind_for ComboBox 0x220",
+   "kind": "kind_for",
+   "class": "ComboBox",
+   "style": 544
+  },
+  {
+   "name": "kind_for Edit 0x0",
+   "kind": "kind_for",
+   "class": "Edit",
+   "style": 0
+  },
+  {
+   "name": "kind_for Edit 0x1",
+   "kind": "kind_for",
+   "class": "Edit",
+   "style": 1
+  },
+  {
+   "name": "kind_for Edit 0x4",
+   "kind": "kind_for",
+   "class": "Edit",
+   "style": 4
+  },
+  {
+   "name": "kind_for ListBox 0x0",
+   "kind": "kind_for",
+   "class": "ListBox",
+   "style": 0
+  },
+  {
+   "name": "kind_for ListBox 0x1",
+   "kind": "kind_for",
+   "class": "ListBox",
+   "style": 1
+  },
+  {
+   "name": "kind_for ListBox 0x4",
+   "kind": "kind_for",
+   "class": "ListBox",
+   "style": 4
+  },
+  {
+   "name": "kind_for ScrollBar 0x0",
+   "kind": "kind_for",
+   "class": "ScrollBar",
+   "style": 0
+  },
+  {
+   "name": "kind_for ScrollBar 0x1",
+   "kind": "kind_for",
+   "class": "ScrollBar",
+   "style": 1
+  },
+  {
+   "name": "kind_for ScrollBar 0x4",
+   "kind": "kind_for",
+   "class": "ScrollBar",
+   "style": 4
+  },
+  {
+   "name": "kind_for ListView 0x0",
+   "kind": "kind_for",
+   "class": "ListView",
+   "style": 0
+  },
+  {
+   "name": "kind_for ListView 0x1",
+   "kind": "kind_for",
+   "class": "ListView",
+   "style": 1
+  },
+  {
+   "name": "kind_for ListView 0x8000",
+   "kind": "kind_for",
+   "class": "ListView",
+   "style": 32768
+  },
+  {
+   "name": "kind_for Progress 0x0",
+   "kind": "kind_for",
+   "class": "Progress",
+   "style": 0
+  },
+  {
+   "name": "kind_for Progress 0x1",
+   "kind": "kind_for",
+   "class": "Progress",
+   "style": 1
+  },
+  {
+   "name": "kind_for Progress 0x8",
+   "kind": "kind_for",
+   "class": "Progress",
+   "style": 8
+  },
+  {
+   "name": "kind_for Progress 0x9",
+   "kind": "kind_for",
+   "class": "Progress",
+   "style": 9
+  },
+  {
+   "name": "kind_for Trackbar 0x0",
+   "kind": "kind_for",
+   "class": "Trackbar",
+   "style": 0
+  },
+  {
+   "name": "kind_for Trackbar 0x1",
+   "kind": "kind_for",
+   "class": "Trackbar",
+   "style": 1
+  },
+  {
+   "name": "kind_for Trackbar 0x2",
+   "kind": "kind_for",
+   "class": "Trackbar",
+   "style": 2
+  },
+  {
+   "name": "kind_for Trackbar 0x3",
+   "kind": "kind_for",
+   "class": "Trackbar",
+   "style": 3
+  },
+  {
+   "name": "kind_for Trackbar 0x10",
+   "kind": "kind_for",
+   "class": "Trackbar",
+   "style": 16
+  },
+  {
+   "name": "kind_for Trackbar 0x100",
+   "kind": "kind_for",
+   "class": "Trackbar",
+   "style": 256
+  },
+  {
+   "name": "kind_for Static 0x0",
+   "kind": "kind_for",
+   "class": "Static",
+   "style": 0
+  },
+  {
+   "name": "kind_for Static 0xE",
+   "kind": "kind_for",
+   "class": "Static",
+   "style": 14
+  },
+  {
+   "name": "kind_for Static 0x10",
+   "kind": "kind_for",
+   "class": "Static",
+   "style": 16
+  },
+  {
+   "name": "kind_for Static 0x11",
+   "kind": "kind_for",
+   "class": "Static",
+   "style": 17
+  },
+  {
+   "name": "kind_for Static 0x12",
+   "kind": "kind_for",
+   "class": "Static",
+   "style": 18
+  },
+  {
+   "name": "kind_for Static 0x13",
+   "kind": "kind_for",
+   "class": "Static",
+   "style": 19
+  },
+  {
+   "name": "kind_for Static 0x80",
+   "kind": "kind_for",
+   "class": "Static",
+   "style": 128
+  },
+  {
+   "name": "kind_for Static 0x90",
+   "kind": "kind_for",
+   "class": "Static",
+   "style": 144
+  },
+  {
+   "name": "kind_for Static 0x200",
+   "kind": "kind_for",
+   "class": "Static",
+   "style": 512
+  },
+  {
+   "name": "predicates kind 0",
+   "kind": "predicates",
+   "paint_kind": 0
+  },
+  {
+   "name": "predicates kind 1",
+   "kind": "predicates",
+   "paint_kind": 1
+  },
+  {
+   "name": "predicates kind 2",
+   "kind": "predicates",
+   "paint_kind": 2
+  },
+  {
+   "name": "predicates kind 3",
+   "kind": "predicates",
+   "paint_kind": 3
+  },
+  {
+   "name": "predicates kind 4",
+   "kind": "predicates",
+   "paint_kind": 4
+  },
+  {
+   "name": "predicates kind 5",
+   "kind": "predicates",
+   "paint_kind": 5
+  },
+  {
+   "name": "predicates kind 6",
+   "kind": "predicates",
+   "paint_kind": 6
+  },
+  {
+   "name": "predicates kind 7",
+   "kind": "predicates",
+   "paint_kind": 7
+  },
+  {
+   "name": "predicates kind 8",
+   "kind": "predicates",
+   "paint_kind": 8
+  },
+  {
+   "name": "predicates kind 9",
+   "kind": "predicates",
+   "paint_kind": 9
+  },
+  {
+   "name": "predicates kind 10",
+   "kind": "predicates",
+   "paint_kind": 10
+  },
+  {
+   "name": "predicates kind 11",
+   "kind": "predicates",
+   "paint_kind": 11
+  },
+  {
+   "name": "predicates kind 12",
+   "kind": "predicates",
+   "paint_kind": 12
+  },
+  {
+   "name": "repaints kind 0 message 0x0",
+   "kind": "repaints",
+   "paint_kind": 0,
+   "message": 0
+  },
+  {
+   "name": "repaints kind 0 message 0x7",
+   "kind": "repaints",
+   "paint_kind": 0,
+   "message": 7
+  },
+  {
+   "name": "repaints kind 0 message 0x8",
+   "kind": "repaints",
+   "paint_kind": 0,
+   "message": 8
+  },
+  {
+   "name": "repaints kind 0 message 0xA",
+   "kind": "repaints",
+   "paint_kind": 0,
+   "message": 10
+  },
+  {
+   "name": "repaints kind 0 message 0xF",
+   "kind": "repaints",
+   "paint_kind": 0,
+   "message": 15
+  },
+  {
+   "name": "repaints kind 0 message 0x14",
+   "kind": "repaints",
+   "paint_kind": 0,
+   "message": 20
+  },
+  {
+   "name": "repaints kind 0 message 0x1F",
+   "kind": "repaints",
+   "paint_kind": 0,
+   "message": 31
+  },
+  {
+   "name": "repaints kind 0 message 0x30",
+   "kind": "repaints",
+   "paint_kind": 0,
+   "message": 48
+  },
+  {
+   "name": "repaints kind 0 message 0x82",
+   "kind": "repaints",
+   "paint_kind": 0,
+   "message": 130
+  },
+  {
+   "name": "repaints kind 0 message 0xF0",
+   "kind": "repaints",
+   "paint_kind": 0,
+   "message": 240
+  },
+  {
+   "name": "repaints kind 0 message 0xF1",
+   "kind": "repaints",
+   "paint_kind": 0,
+   "message": 241
+  },
+  {
+   "name": "repaints kind 0 message 0xF2",
+   "kind": "repaints",
+   "paint_kind": 0,
+   "message": 242
+  },
+  {
+   "name": "repaints kind 0 message 0xF3",
+   "kind": "repaints",
+   "paint_kind": 0,
+   "message": 243
+  },
+  {
+   "name": "repaints kind 0 message 0xF4",
+   "kind": "repaints",
+   "paint_kind": 0,
+   "message": 244
+  },
+  {
+   "name": "repaints kind 0 message 0x100",
+   "kind": "repaints",
+   "paint_kind": 0,
+   "message": 256
+  },
+  {
+   "name": "repaints kind 0 message 0x102",
+   "kind": "repaints",
+   "paint_kind": 0,
+   "message": 258
+  },
+  {
+   "name": "repaints kind 0 message 0x201",
+   "kind": "repaints",
+   "paint_kind": 0,
+   "message": 513
+  },
+  {
+   "name": "repaints kind 0 message 0x202",
+   "kind": "repaints",
+   "paint_kind": 0,
+   "message": 514
+  },
+  {
+   "name": "repaints kind 0 message 0x203",
+   "kind": "repaints",
+   "paint_kind": 0,
+   "message": 515
+  },
+  {
+   "name": "repaints kind 0 message 0x20A",
+   "kind": "repaints",
+   "paint_kind": 0,
+   "message": 522
+  },
+  {
+   "name": "repaints kind 0 message 0x14A",
+   "kind": "repaints",
+   "paint_kind": 0,
+   "message": 330
+  },
+  {
+   "name": "repaints kind 0 message 0x14B",
+   "kind": "repaints",
+   "paint_kind": 0,
+   "message": 331
+  },
+  {
+   "name": "repaints kind 0 message 0x14C",
+   "kind": "repaints",
+   "paint_kind": 0,
+   "message": 332
+  },
+  {
+   "name": "repaints kind 0 message 0x14D",
+   "kind": "repaints",
+   "paint_kind": 0,
+   "message": 333
+  },
+  {
+   "name": "repaints kind 0 message 0x14E",
+   "kind": "repaints",
+   "paint_kind": 0,
+   "message": 334
+  },
+  {
+   "name": "repaints kind 0 message 0x14F",
+   "kind": "repaints",
+   "paint_kind": 0,
+   "message": 335
+  },
+  {
+   "name": "repaints kind 0 message 0x150",
+   "kind": "repaints",
+   "paint_kind": 0,
+   "message": 336
+  },
+  {
+   "name": "repaints kind 1 message 0x0",
+   "kind": "repaints",
+   "paint_kind": 1,
+   "message": 0
+  },
+  {
+   "name": "repaints kind 1 message 0x7",
+   "kind": "repaints",
+   "paint_kind": 1,
+   "message": 7
+  },
+  {
+   "name": "repaints kind 1 message 0x8",
+   "kind": "repaints",
+   "paint_kind": 1,
+   "message": 8
+  },
+  {
+   "name": "repaints kind 1 message 0xA",
+   "kind": "repaints",
+   "paint_kind": 1,
+   "message": 10
+  },
+  {
+   "name": "repaints kind 1 message 0xF",
+   "kind": "repaints",
+   "paint_kind": 1,
+   "message": 15
+  },
+  {
+   "name": "repaints kind 1 message 0x14",
+   "kind": "repaints",
+   "paint_kind": 1,
+   "message": 20
+  },
+  {
+   "name": "repaints kind 1 message 0x1F",
+   "kind": "repaints",
+   "paint_kind": 1,
+   "message": 31
+  },
+  {
+   "name": "repaints kind 1 message 0x30",
+   "kind": "repaints",
+   "paint_kind": 1,
+   "message": 48
+  },
+  {
+   "name": "repaints kind 1 message 0x82",
+   "kind": "repaints",
+   "paint_kind": 1,
+   "message": 130
+  },
+  {
+   "name": "repaints kind 1 message 0xF0",
+   "kind": "repaints",
+   "paint_kind": 1,
+   "message": 240
+  },
+  {
+   "name": "repaints kind 1 message 0xF1",
+   "kind": "repaints",
+   "paint_kind": 1,
+   "message": 241
+  },
+  {
+   "name": "repaints kind 1 message 0xF2",
+   "kind": "repaints",
+   "paint_kind": 1,
+   "message": 242
+  },
+  {
+   "name": "repaints kind 1 message 0xF3",
+   "kind": "repaints",
+   "paint_kind": 1,
+   "message": 243
+  },
+  {
+   "name": "repaints kind 1 message 0xF4",
+   "kind": "repaints",
+   "paint_kind": 1,
+   "message": 244
+  },
+  {
+   "name": "repaints kind 1 message 0x100",
+   "kind": "repaints",
+   "paint_kind": 1,
+   "message": 256
+  },
+  {
+   "name": "repaints kind 1 message 0x102",
+   "kind": "repaints",
+   "paint_kind": 1,
+   "message": 258
+  },
+  {
+   "name": "repaints kind 1 message 0x201",
+   "kind": "repaints",
+   "paint_kind": 1,
+   "message": 513
+  },
+  {
+   "name": "repaints kind 1 message 0x202",
+   "kind": "repaints",
+   "paint_kind": 1,
+   "message": 514
+  },
+  {
+   "name": "repaints kind 1 message 0x203",
+   "kind": "repaints",
+   "paint_kind": 1,
+   "message": 515
+  },
+  {
+   "name": "repaints kind 1 message 0x20A",
+   "kind": "repaints",
+   "paint_kind": 1,
+   "message": 522
+  },
+  {
+   "name": "repaints kind 1 message 0x14A",
+   "kind": "repaints",
+   "paint_kind": 1,
+   "message": 330
+  },
+  {
+   "name": "repaints kind 1 message 0x14B",
+   "kind": "repaints",
+   "paint_kind": 1,
+   "message": 331
+  },
+  {
+   "name": "repaints kind 1 message 0x14C",
+   "kind": "repaints",
+   "paint_kind": 1,
+   "message": 332
+  },
+  {
+   "name": "repaints kind 1 message 0x14D",
+   "kind": "repaints",
+   "paint_kind": 1,
+   "message": 333
+  },
+  {
+   "name": "repaints kind 1 message 0x14E",
+   "kind": "repaints",
+   "paint_kind": 1,
+   "message": 334
+  },
+  {
+   "name": "repaints kind 1 message 0x14F",
+   "kind": "repaints",
+   "paint_kind": 1,
+   "message": 335
+  },
+  {
+   "name": "repaints kind 1 message 0x150",
+   "kind": "repaints",
+   "paint_kind": 1,
+   "message": 336
+  },
+  {
+   "name": "repaints kind 2 message 0x0",
+   "kind": "repaints",
+   "paint_kind": 2,
+   "message": 0
+  },
+  {
+   "name": "repaints kind 2 message 0x7",
+   "kind": "repaints",
+   "paint_kind": 2,
+   "message": 7
+  },
+  {
+   "name": "repaints kind 2 message 0x8",
+   "kind": "repaints",
+   "paint_kind": 2,
+   "message": 8
+  },
+  {
+   "name": "repaints kind 2 message 0xA",
+   "kind": "repaints",
+   "paint_kind": 2,
+   "message": 10
+  },
+  {
+   "name": "repaints kind 2 message 0xF",
+   "kind": "repaints",
+   "paint_kind": 2,
+   "message": 15
+  },
+  {
+   "name": "repaints kind 2 message 0x14",
+   "kind": "repaints",
+   "paint_kind": 2,
+   "message": 20
+  },
+  {
+   "name": "repaints kind 2 message 0x1F",
+   "kind": "repaints",
+   "paint_kind": 2,
+   "message": 31
+  },
+  {
+   "name": "repaints kind 2 message 0x30",
+   "kind": "repaints",
+   "paint_kind": 2,
+   "message": 48
+  },
+  {
+   "name": "repaints kind 2 message 0x82",
+   "kind": "repaints",
+   "paint_kind": 2,
+   "message": 130
+  },
+  {
+   "name": "repaints kind 2 message 0xF0",
+   "kind": "repaints",
+   "paint_kind": 2,
+   "message": 240
+  },
+  {
+   "name": "repaints kind 2 message 0xF1",
+   "kind": "repaints",
+   "paint_kind": 2,
+   "message": 241
+  },
+  {
+   "name": "repaints kind 2 message 0xF2",
+   "kind": "repaints",
+   "paint_kind": 2,
+   "message": 242
+  },
+  {
+   "name": "repaints kind 2 message 0xF3",
+   "kind": "repaints",
+   "paint_kind": 2,
+   "message": 243
+  },
+  {
+   "name": "repaints kind 2 message 0xF4",
+   "kind": "repaints",
+   "paint_kind": 2,
+   "message": 244
+  },
+  {
+   "name": "repaints kind 2 message 0x100",
+   "kind": "repaints",
+   "paint_kind": 2,
+   "message": 256
+  },
+  {
+   "name": "repaints kind 2 message 0x102",
+   "kind": "repaints",
+   "paint_kind": 2,
+   "message": 258
+  },
+  {
+   "name": "repaints kind 2 message 0x201",
+   "kind": "repaints",
+   "paint_kind": 2,
+   "message": 513
+  },
+  {
+   "name": "repaints kind 2 message 0x202",
+   "kind": "repaints",
+   "paint_kind": 2,
+   "message": 514
+  },
+  {
+   "name": "repaints kind 2 message 0x203",
+   "kind": "repaints",
+   "paint_kind": 2,
+   "message": 515
+  },
+  {
+   "name": "repaints kind 2 message 0x20A",
+   "kind": "repaints",
+   "paint_kind": 2,
+   "message": 522
+  },
+  {
+   "name": "repaints kind 2 message 0x14A",
+   "kind": "repaints",
+   "paint_kind": 2,
+   "message": 330
+  },
+  {
+   "name": "repaints kind 2 message 0x14B",
+   "kind": "repaints",
+   "paint_kind": 2,
+   "message": 331
+  },
+  {
+   "name": "repaints kind 2 message 0x14C",
+   "kind": "repaints",
+   "paint_kind": 2,
+   "message": 332
+  },
+  {
+   "name": "repaints kind 2 message 0x14D",
+   "kind": "repaints",
+   "paint_kind": 2,
+   "message": 333
+  },
+  {
+   "name": "repaints kind 2 message 0x14E",
+   "kind": "repaints",
+   "paint_kind": 2,
+   "message": 334
+  },
+  {
+   "name": "repaints kind 2 message 0x14F",
+   "kind": "repaints",
+   "paint_kind": 2,
+   "message": 335
+  },
+  {
+   "name": "repaints kind 2 message 0x150",
+   "kind": "repaints",
+   "paint_kind": 2,
+   "message": 336
+  },
+  {
+   "name": "repaints kind 3 message 0x0",
+   "kind": "repaints",
+   "paint_kind": 3,
+   "message": 0
+  },
+  {
+   "name": "repaints kind 3 message 0x7",
+   "kind": "repaints",
+   "paint_kind": 3,
+   "message": 7
+  },
+  {
+   "name": "repaints kind 3 message 0x8",
+   "kind": "repaints",
+   "paint_kind": 3,
+   "message": 8
+  },
+  {
+   "name": "repaints kind 3 message 0xA",
+   "kind": "repaints",
+   "paint_kind": 3,
+   "message": 10
+  },
+  {
+   "name": "repaints kind 3 message 0xF",
+   "kind": "repaints",
+   "paint_kind": 3,
+   "message": 15
+  },
+  {
+   "name": "repaints kind 3 message 0x14",
+   "kind": "repaints",
+   "paint_kind": 3,
+   "message": 20
+  },
+  {
+   "name": "repaints kind 3 message 0x1F",
+   "kind": "repaints",
+   "paint_kind": 3,
+   "message": 31
+  },
+  {
+   "name": "repaints kind 3 message 0x30",
+   "kind": "repaints",
+   "paint_kind": 3,
+   "message": 48
+  },
+  {
+   "name": "repaints kind 3 message 0x82",
+   "kind": "repaints",
+   "paint_kind": 3,
+   "message": 130
+  },
+  {
+   "name": "repaints kind 3 message 0xF0",
+   "kind": "repaints",
+   "paint_kind": 3,
+   "message": 240
+  },
+  {
+   "name": "repaints kind 3 message 0xF1",
+   "kind": "repaints",
+   "paint_kind": 3,
+   "message": 241
+  },
+  {
+   "name": "repaints kind 3 message 0xF2",
+   "kind": "repaints",
+   "paint_kind": 3,
+   "message": 242
+  },
+  {
+   "name": "repaints kind 3 message 0xF3",
+   "kind": "repaints",
+   "paint_kind": 3,
+   "message": 243
+  },
+  {
+   "name": "repaints kind 3 message 0xF4",
+   "kind": "repaints",
+   "paint_kind": 3,
+   "message": 244
+  },
+  {
+   "name": "repaints kind 3 message 0x100",
+   "kind": "repaints",
+   "paint_kind": 3,
+   "message": 256
+  },
+  {
+   "name": "repaints kind 3 message 0x102",
+   "kind": "repaints",
+   "paint_kind": 3,
+   "message": 258
+  },
+  {
+   "name": "repaints kind 3 message 0x201",
+   "kind": "repaints",
+   "paint_kind": 3,
+   "message": 513
+  },
+  {
+   "name": "repaints kind 3 message 0x202",
+   "kind": "repaints",
+   "paint_kind": 3,
+   "message": 514
+  },
+  {
+   "name": "repaints kind 3 message 0x203",
+   "kind": "repaints",
+   "paint_kind": 3,
+   "message": 515
+  },
+  {
+   "name": "repaints kind 3 message 0x20A",
+   "kind": "repaints",
+   "paint_kind": 3,
+   "message": 522
+  },
+  {
+   "name": "repaints kind 3 message 0x14A",
+   "kind": "repaints",
+   "paint_kind": 3,
+   "message": 330
+  },
+  {
+   "name": "repaints kind 3 message 0x14B",
+   "kind": "repaints",
+   "paint_kind": 3,
+   "message": 331
+  },
+  {
+   "name": "repaints kind 3 message 0x14C",
+   "kind": "repaints",
+   "paint_kind": 3,
+   "message": 332
+  },
+  {
+   "name": "repaints kind 3 message 0x14D",
+   "kind": "repaints",
+   "paint_kind": 3,
+   "message": 333
+  },
+  {
+   "name": "repaints kind 3 message 0x14E",
+   "kind": "repaints",
+   "paint_kind": 3,
+   "message": 334
+  },
+  {
+   "name": "repaints kind 3 message 0x14F",
+   "kind": "repaints",
+   "paint_kind": 3,
+   "message": 335
+  },
+  {
+   "name": "repaints kind 3 message 0x150",
+   "kind": "repaints",
+   "paint_kind": 3,
+   "message": 336
+  },
+  {
+   "name": "repaints kind 4 message 0x0",
+   "kind": "repaints",
+   "paint_kind": 4,
+   "message": 0
+  },
+  {
+   "name": "repaints kind 4 message 0x7",
+   "kind": "repaints",
+   "paint_kind": 4,
+   "message": 7
+  },
+  {
+   "name": "repaints kind 4 message 0x8",
+   "kind": "repaints",
+   "paint_kind": 4,
+   "message": 8
+  },
+  {
+   "name": "repaints kind 4 message 0xA",
+   "kind": "repaints",
+   "paint_kind": 4,
+   "message": 10
+  },
+  {
+   "name": "repaints kind 4 message 0xF",
+   "kind": "repaints",
+   "paint_kind": 4,
+   "message": 15
+  },
+  {
+   "name": "repaints kind 4 message 0x14",
+   "kind": "repaints",
+   "paint_kind": 4,
+   "message": 20
+  },
+  {
+   "name": "repaints kind 4 message 0x1F",
+   "kind": "repaints",
+   "paint_kind": 4,
+   "message": 31
+  },
+  {
+   "name": "repaints kind 4 message 0x30",
+   "kind": "repaints",
+   "paint_kind": 4,
+   "message": 48
+  },
+  {
+   "name": "repaints kind 4 message 0x82",
+   "kind": "repaints",
+   "paint_kind": 4,
+   "message": 130
+  },
+  {
+   "name": "repaints kind 4 message 0xF0",
+   "kind": "repaints",
+   "paint_kind": 4,
+   "message": 240
+  },
+  {
+   "name": "repaints kind 4 message 0xF1",
+   "kind": "repaints",
+   "paint_kind": 4,
+   "message": 241
+  },
+  {
+   "name": "repaints kind 4 message 0xF2",
+   "kind": "repaints",
+   "paint_kind": 4,
+   "message": 242
+  },
+  {
+   "name": "repaints kind 4 message 0xF3",
+   "kind": "repaints",
+   "paint_kind": 4,
+   "message": 243
+  },
+  {
+   "name": "repaints kind 4 message 0xF4",
+   "kind": "repaints",
+   "paint_kind": 4,
+   "message": 244
+  },
+  {
+   "name": "repaints kind 4 message 0x100",
+   "kind": "repaints",
+   "paint_kind": 4,
+   "message": 256
+  },
+  {
+   "name": "repaints kind 4 message 0x102",
+   "kind": "repaints",
+   "paint_kind": 4,
+   "message": 258
+  },
+  {
+   "name": "repaints kind 4 message 0x201",
+   "kind": "repaints",
+   "paint_kind": 4,
+   "message": 513
+  },
+  {
+   "name": "repaints kind 4 message 0x202",
+   "kind": "repaints",
+   "paint_kind": 4,
+   "message": 514
+  },
+  {
+   "name": "repaints kind 4 message 0x203",
+   "kind": "repaints",
+   "paint_kind": 4,
+   "message": 515
+  },
+  {
+   "name": "repaints kind 4 message 0x20A",
+   "kind": "repaints",
+   "paint_kind": 4,
+   "message": 522
+  },
+  {
+   "name": "repaints kind 4 message 0x14A",
+   "kind": "repaints",
+   "paint_kind": 4,
+   "message": 330
+  },
+  {
+   "name": "repaints kind 4 message 0x14B",
+   "kind": "repaints",
+   "paint_kind": 4,
+   "message": 331
+  },
+  {
+   "name": "repaints kind 4 message 0x14C",
+   "kind": "repaints",
+   "paint_kind": 4,
+   "message": 332
+  },
+  {
+   "name": "repaints kind 4 message 0x14D",
+   "kind": "repaints",
+   "paint_kind": 4,
+   "message": 333
+  },
+  {
+   "name": "repaints kind 4 message 0x14E",
+   "kind": "repaints",
+   "paint_kind": 4,
+   "message": 334
+  },
+  {
+   "name": "repaints kind 4 message 0x14F",
+   "kind": "repaints",
+   "paint_kind": 4,
+   "message": 335
+  },
+  {
+   "name": "repaints kind 4 message 0x150",
+   "kind": "repaints",
+   "paint_kind": 4,
+   "message": 336
+  },
+  {
+   "name": "repaints kind 5 message 0x0",
+   "kind": "repaints",
+   "paint_kind": 5,
+   "message": 0
+  },
+  {
+   "name": "repaints kind 5 message 0x7",
+   "kind": "repaints",
+   "paint_kind": 5,
+   "message": 7
+  },
+  {
+   "name": "repaints kind 5 message 0x8",
+   "kind": "repaints",
+   "paint_kind": 5,
+   "message": 8
+  },
+  {
+   "name": "repaints kind 5 message 0xA",
+   "kind": "repaints",
+   "paint_kind": 5,
+   "message": 10
+  },
+  {
+   "name": "repaints kind 5 message 0xF",
+   "kind": "repaints",
+   "paint_kind": 5,
+   "message": 15
+  },
+  {
+   "name": "repaints kind 5 message 0x14",
+   "kind": "repaints",
+   "paint_kind": 5,
+   "message": 20
+  },
+  {
+   "name": "repaints kind 5 message 0x1F",
+   "kind": "repaints",
+   "paint_kind": 5,
+   "message": 31
+  },
+  {
+   "name": "repaints kind 5 message 0x30",
+   "kind": "repaints",
+   "paint_kind": 5,
+   "message": 48
+  },
+  {
+   "name": "repaints kind 5 message 0x82",
+   "kind": "repaints",
+   "paint_kind": 5,
+   "message": 130
+  },
+  {
+   "name": "repaints kind 5 message 0xF0",
+   "kind": "repaints",
+   "paint_kind": 5,
+   "message": 240
+  },
+  {
+   "name": "repaints kind 5 message 0xF1",
+   "kind": "repaints",
+   "paint_kind": 5,
+   "message": 241
+  },
+  {
+   "name": "repaints kind 5 message 0xF2",
+   "kind": "repaints",
+   "paint_kind": 5,
+   "message": 242
+  },
+  {
+   "name": "repaints kind 5 message 0xF3",
+   "kind": "repaints",
+   "paint_kind": 5,
+   "message": 243
+  },
+  {
+   "name": "repaints kind 5 message 0xF4",
+   "kind": "repaints",
+   "paint_kind": 5,
+   "message": 244
+  },
+  {
+   "name": "repaints kind 5 message 0x100",
+   "kind": "repaints",
+   "paint_kind": 5,
+   "message": 256
+  },
+  {
+   "name": "repaints kind 5 message 0x102",
+   "kind": "repaints",
+   "paint_kind": 5,
+   "message": 258
+  },
+  {
+   "name": "repaints kind 5 message 0x201",
+   "kind": "repaints",
+   "paint_kind": 5,
+   "message": 513
+  },
+  {
+   "name": "repaints kind 5 message 0x202",
+   "kind": "repaints",
+   "paint_kind": 5,
+   "message": 514
+  },
+  {
+   "name": "repaints kind 5 message 0x203",
+   "kind": "repaints",
+   "paint_kind": 5,
+   "message": 515
+  },
+  {
+   "name": "repaints kind 5 message 0x20A",
+   "kind": "repaints",
+   "paint_kind": 5,
+   "message": 522
+  },
+  {
+   "name": "repaints kind 5 message 0x14A",
+   "kind": "repaints",
+   "paint_kind": 5,
+   "message": 330
+  },
+  {
+   "name": "repaints kind 5 message 0x14B",
+   "kind": "repaints",
+   "paint_kind": 5,
+   "message": 331
+  },
+  {
+   "name": "repaints kind 5 message 0x14C",
+   "kind": "repaints",
+   "paint_kind": 5,
+   "message": 332
+  },
+  {
+   "name": "repaints kind 5 message 0x14D",
+   "kind": "repaints",
+   "paint_kind": 5,
+   "message": 333
+  },
+  {
+   "name": "repaints kind 5 message 0x14E",
+   "kind": "repaints",
+   "paint_kind": 5,
+   "message": 334
+  },
+  {
+   "name": "repaints kind 5 message 0x14F",
+   "kind": "repaints",
+   "paint_kind": 5,
+   "message": 335
+  },
+  {
+   "name": "repaints kind 5 message 0x150",
+   "kind": "repaints",
+   "paint_kind": 5,
+   "message": 336
+  },
+  {
+   "name": "repaints kind 6 message 0x0",
+   "kind": "repaints",
+   "paint_kind": 6,
+   "message": 0
+  },
+  {
+   "name": "repaints kind 6 message 0x7",
+   "kind": "repaints",
+   "paint_kind": 6,
+   "message": 7
+  },
+  {
+   "name": "repaints kind 6 message 0x8",
+   "kind": "repaints",
+   "paint_kind": 6,
+   "message": 8
+  },
+  {
+   "name": "repaints kind 6 message 0xA",
+   "kind": "repaints",
+   "paint_kind": 6,
+   "message": 10
+  },
+  {
+   "name": "repaints kind 6 message 0xF",
+   "kind": "repaints",
+   "paint_kind": 6,
+   "message": 15
+  },
+  {
+   "name": "repaints kind 6 message 0x14",
+   "kind": "repaints",
+   "paint_kind": 6,
+   "message": 20
+  },
+  {
+   "name": "repaints kind 6 message 0x1F",
+   "kind": "repaints",
+   "paint_kind": 6,
+   "message": 31
+  },
+  {
+   "name": "repaints kind 6 message 0x30",
+   "kind": "repaints",
+   "paint_kind": 6,
+   "message": 48
+  },
+  {
+   "name": "repaints kind 6 message 0x82",
+   "kind": "repaints",
+   "paint_kind": 6,
+   "message": 130
+  },
+  {
+   "name": "repaints kind 6 message 0xF0",
+   "kind": "repaints",
+   "paint_kind": 6,
+   "message": 240
+  },
+  {
+   "name": "repaints kind 6 message 0xF1",
+   "kind": "repaints",
+   "paint_kind": 6,
+   "message": 241
+  },
+  {
+   "name": "repaints kind 6 message 0xF2",
+   "kind": "repaints",
+   "paint_kind": 6,
+   "message": 242
+  },
+  {
+   "name": "repaints kind 6 message 0xF3",
+   "kind": "repaints",
+   "paint_kind": 6,
+   "message": 243
+  },
+  {
+   "name": "repaints kind 6 message 0xF4",
+   "kind": "repaints",
+   "paint_kind": 6,
+   "message": 244
+  },
+  {
+   "name": "repaints kind 6 message 0x100",
+   "kind": "repaints",
+   "paint_kind": 6,
+   "message": 256
+  },
+  {
+   "name": "repaints kind 6 message 0x102",
+   "kind": "repaints",
+   "paint_kind": 6,
+   "message": 258
+  },
+  {
+   "name": "repaints kind 6 message 0x201",
+   "kind": "repaints",
+   "paint_kind": 6,
+   "message": 513
+  },
+  {
+   "name": "repaints kind 6 message 0x202",
+   "kind": "repaints",
+   "paint_kind": 6,
+   "message": 514
+  },
+  {
+   "name": "repaints kind 6 message 0x203",
+   "kind": "repaints",
+   "paint_kind": 6,
+   "message": 515
+  },
+  {
+   "name": "repaints kind 6 message 0x20A",
+   "kind": "repaints",
+   "paint_kind": 6,
+   "message": 522
+  },
+  {
+   "name": "repaints kind 6 message 0x14A",
+   "kind": "repaints",
+   "paint_kind": 6,
+   "message": 330
+  },
+  {
+   "name": "repaints kind 6 message 0x14B",
+   "kind": "repaints",
+   "paint_kind": 6,
+   "message": 331
+  },
+  {
+   "name": "repaints kind 6 message 0x14C",
+   "kind": "repaints",
+   "paint_kind": 6,
+   "message": 332
+  },
+  {
+   "name": "repaints kind 6 message 0x14D",
+   "kind": "repaints",
+   "paint_kind": 6,
+   "message": 333
+  },
+  {
+   "name": "repaints kind 6 message 0x14E",
+   "kind": "repaints",
+   "paint_kind": 6,
+   "message": 334
+  },
+  {
+   "name": "repaints kind 6 message 0x14F",
+   "kind": "repaints",
+   "paint_kind": 6,
+   "message": 335
+  },
+  {
+   "name": "repaints kind 6 message 0x150",
+   "kind": "repaints",
+   "paint_kind": 6,
+   "message": 336
+  },
+  {
+   "name": "repaints kind 7 message 0x0",
+   "kind": "repaints",
+   "paint_kind": 7,
+   "message": 0
+  },
+  {
+   "name": "repaints kind 7 message 0x7",
+   "kind": "repaints",
+   "paint_kind": 7,
+   "message": 7
+  },
+  {
+   "name": "repaints kind 7 message 0x8",
+   "kind": "repaints",
+   "paint_kind": 7,
+   "message": 8
+  },
+  {
+   "name": "repaints kind 7 message 0xA",
+   "kind": "repaints",
+   "paint_kind": 7,
+   "message": 10
+  },
+  {
+   "name": "repaints kind 7 message 0xF",
+   "kind": "repaints",
+   "paint_kind": 7,
+   "message": 15
+  },
+  {
+   "name": "repaints kind 7 message 0x14",
+   "kind": "repaints",
+   "paint_kind": 7,
+   "message": 20
+  },
+  {
+   "name": "repaints kind 7 message 0x1F",
+   "kind": "repaints",
+   "paint_kind": 7,
+   "message": 31
+  },
+  {
+   "name": "repaints kind 7 message 0x30",
+   "kind": "repaints",
+   "paint_kind": 7,
+   "message": 48
+  },
+  {
+   "name": "repaints kind 7 message 0x82",
+   "kind": "repaints",
+   "paint_kind": 7,
+   "message": 130
+  },
+  {
+   "name": "repaints kind 7 message 0xF0",
+   "kind": "repaints",
+   "paint_kind": 7,
+   "message": 240
+  },
+  {
+   "name": "repaints kind 7 message 0xF1",
+   "kind": "repaints",
+   "paint_kind": 7,
+   "message": 241
+  },
+  {
+   "name": "repaints kind 7 message 0xF2",
+   "kind": "repaints",
+   "paint_kind": 7,
+   "message": 242
+  },
+  {
+   "name": "repaints kind 7 message 0xF3",
+   "kind": "repaints",
+   "paint_kind": 7,
+   "message": 243
+  },
+  {
+   "name": "repaints kind 7 message 0xF4",
+   "kind": "repaints",
+   "paint_kind": 7,
+   "message": 244
+  },
+  {
+   "name": "repaints kind 7 message 0x100",
+   "kind": "repaints",
+   "paint_kind": 7,
+   "message": 256
+  },
+  {
+   "name": "repaints kind 7 message 0x102",
+   "kind": "repaints",
+   "paint_kind": 7,
+   "message": 258
+  },
+  {
+   "name": "repaints kind 7 message 0x201",
+   "kind": "repaints",
+   "paint_kind": 7,
+   "message": 513
+  },
+  {
+   "name": "repaints kind 7 message 0x202",
+   "kind": "repaints",
+   "paint_kind": 7,
+   "message": 514
+  },
+  {
+   "name": "repaints kind 7 message 0x203",
+   "kind": "repaints",
+   "paint_kind": 7,
+   "message": 515
+  },
+  {
+   "name": "repaints kind 7 message 0x20A",
+   "kind": "repaints",
+   "paint_kind": 7,
+   "message": 522
+  },
+  {
+   "name": "repaints kind 7 message 0x14A",
+   "kind": "repaints",
+   "paint_kind": 7,
+   "message": 330
+  },
+  {
+   "name": "repaints kind 7 message 0x14B",
+   "kind": "repaints",
+   "paint_kind": 7,
+   "message": 331
+  },
+  {
+   "name": "repaints kind 7 message 0x14C",
+   "kind": "repaints",
+   "paint_kind": 7,
+   "message": 332
+  },
+  {
+   "name": "repaints kind 7 message 0x14D",
+   "kind": "repaints",
+   "paint_kind": 7,
+   "message": 333
+  },
+  {
+   "name": "repaints kind 7 message 0x14E",
+   "kind": "repaints",
+   "paint_kind": 7,
+   "message": 334
+  },
+  {
+   "name": "repaints kind 7 message 0x14F",
+   "kind": "repaints",
+   "paint_kind": 7,
+   "message": 335
+  },
+  {
+   "name": "repaints kind 7 message 0x150",
+   "kind": "repaints",
+   "paint_kind": 7,
+   "message": 336
+  },
+  {
+   "name": "repaints kind 8 message 0x0",
+   "kind": "repaints",
+   "paint_kind": 8,
+   "message": 0
+  },
+  {
+   "name": "repaints kind 8 message 0x7",
+   "kind": "repaints",
+   "paint_kind": 8,
+   "message": 7
+  },
+  {
+   "name": "repaints kind 8 message 0x8",
+   "kind": "repaints",
+   "paint_kind": 8,
+   "message": 8
+  },
+  {
+   "name": "repaints kind 8 message 0xA",
+   "kind": "repaints",
+   "paint_kind": 8,
+   "message": 10
+  },
+  {
+   "name": "repaints kind 8 message 0xF",
+   "kind": "repaints",
+   "paint_kind": 8,
+   "message": 15
+  },
+  {
+   "name": "repaints kind 8 message 0x14",
+   "kind": "repaints",
+   "paint_kind": 8,
+   "message": 20
+  },
+  {
+   "name": "repaints kind 8 message 0x1F",
+   "kind": "repaints",
+   "paint_kind": 8,
+   "message": 31
+  },
+  {
+   "name": "repaints kind 8 message 0x30",
+   "kind": "repaints",
+   "paint_kind": 8,
+   "message": 48
+  },
+  {
+   "name": "repaints kind 8 message 0x82",
+   "kind": "repaints",
+   "paint_kind": 8,
+   "message": 130
+  },
+  {
+   "name": "repaints kind 8 message 0xF0",
+   "kind": "repaints",
+   "paint_kind": 8,
+   "message": 240
+  },
+  {
+   "name": "repaints kind 8 message 0xF1",
+   "kind": "repaints",
+   "paint_kind": 8,
+   "message": 241
+  },
+  {
+   "name": "repaints kind 8 message 0xF2",
+   "kind": "repaints",
+   "paint_kind": 8,
+   "message": 242
+  },
+  {
+   "name": "repaints kind 8 message 0xF3",
+   "kind": "repaints",
+   "paint_kind": 8,
+   "message": 243
+  },
+  {
+   "name": "repaints kind 8 message 0xF4",
+   "kind": "repaints",
+   "paint_kind": 8,
+   "message": 244
+  },
+  {
+   "name": "repaints kind 8 message 0x100",
+   "kind": "repaints",
+   "paint_kind": 8,
+   "message": 256
+  },
+  {
+   "name": "repaints kind 8 message 0x102",
+   "kind": "repaints",
+   "paint_kind": 8,
+   "message": 258
+  },
+  {
+   "name": "repaints kind 8 message 0x201",
+   "kind": "repaints",
+   "paint_kind": 8,
+   "message": 513
+  },
+  {
+   "name": "repaints kind 8 message 0x202",
+   "kind": "repaints",
+   "paint_kind": 8,
+   "message": 514
+  },
+  {
+   "name": "repaints kind 8 message 0x203",
+   "kind": "repaints",
+   "paint_kind": 8,
+   "message": 515
+  },
+  {
+   "name": "repaints kind 8 message 0x20A",
+   "kind": "repaints",
+   "paint_kind": 8,
+   "message": 522
+  },
+  {
+   "name": "repaints kind 8 message 0x14A",
+   "kind": "repaints",
+   "paint_kind": 8,
+   "message": 330
+  },
+  {
+   "name": "repaints kind 8 message 0x14B",
+   "kind": "repaints",
+   "paint_kind": 8,
+   "message": 331
+  },
+  {
+   "name": "repaints kind 8 message 0x14C",
+   "kind": "repaints",
+   "paint_kind": 8,
+   "message": 332
+  },
+  {
+   "name": "repaints kind 8 message 0x14D",
+   "kind": "repaints",
+   "paint_kind": 8,
+   "message": 333
+  },
+  {
+   "name": "repaints kind 8 message 0x14E",
+   "kind": "repaints",
+   "paint_kind": 8,
+   "message": 334
+  },
+  {
+   "name": "repaints kind 8 message 0x14F",
+   "kind": "repaints",
+   "paint_kind": 8,
+   "message": 335
+  },
+  {
+   "name": "repaints kind 8 message 0x150",
+   "kind": "repaints",
+   "paint_kind": 8,
+   "message": 336
+  },
+  {
+   "name": "repaints kind 9 message 0x0",
+   "kind": "repaints",
+   "paint_kind": 9,
+   "message": 0
+  },
+  {
+   "name": "repaints kind 9 message 0x7",
+   "kind": "repaints",
+   "paint_kind": 9,
+   "message": 7
+  },
+  {
+   "name": "repaints kind 9 message 0x8",
+   "kind": "repaints",
+   "paint_kind": 9,
+   "message": 8
+  },
+  {
+   "name": "repaints kind 9 message 0xA",
+   "kind": "repaints",
+   "paint_kind": 9,
+   "message": 10
+  },
+  {
+   "name": "repaints kind 9 message 0xF",
+   "kind": "repaints",
+   "paint_kind": 9,
+   "message": 15
+  },
+  {
+   "name": "repaints kind 9 message 0x14",
+   "kind": "repaints",
+   "paint_kind": 9,
+   "message": 20
+  },
+  {
+   "name": "repaints kind 9 message 0x1F",
+   "kind": "repaints",
+   "paint_kind": 9,
+   "message": 31
+  },
+  {
+   "name": "repaints kind 9 message 0x30",
+   "kind": "repaints",
+   "paint_kind": 9,
+   "message": 48
+  },
+  {
+   "name": "repaints kind 9 message 0x82",
+   "kind": "repaints",
+   "paint_kind": 9,
+   "message": 130
+  },
+  {
+   "name": "repaints kind 9 message 0xF0",
+   "kind": "repaints",
+   "paint_kind": 9,
+   "message": 240
+  },
+  {
+   "name": "repaints kind 9 message 0xF1",
+   "kind": "repaints",
+   "paint_kind": 9,
+   "message": 241
+  },
+  {
+   "name": "repaints kind 9 message 0xF2",
+   "kind": "repaints",
+   "paint_kind": 9,
+   "message": 242
+  },
+  {
+   "name": "repaints kind 9 message 0xF3",
+   "kind": "repaints",
+   "paint_kind": 9,
+   "message": 243
+  },
+  {
+   "name": "repaints kind 9 message 0xF4",
+   "kind": "repaints",
+   "paint_kind": 9,
+   "message": 244
+  },
+  {
+   "name": "repaints kind 9 message 0x100",
+   "kind": "repaints",
+   "paint_kind": 9,
+   "message": 256
+  },
+  {
+   "name": "repaints kind 9 message 0x102",
+   "kind": "repaints",
+   "paint_kind": 9,
+   "message": 258
+  },
+  {
+   "name": "repaints kind 9 message 0x201",
+   "kind": "repaints",
+   "paint_kind": 9,
+   "message": 513
+  },
+  {
+   "name": "repaints kind 9 message 0x202",
+   "kind": "repaints",
+   "paint_kind": 9,
+   "message": 514
+  },
+  {
+   "name": "repaints kind 9 message 0x203",
+   "kind": "repaints",
+   "paint_kind": 9,
+   "message": 515
+  },
+  {
+   "name": "repaints kind 9 message 0x20A",
+   "kind": "repaints",
+   "paint_kind": 9,
+   "message": 522
+  },
+  {
+   "name": "repaints kind 9 message 0x14A",
+   "kind": "repaints",
+   "paint_kind": 9,
+   "message": 330
+  },
+  {
+   "name": "repaints kind 9 message 0x14B",
+   "kind": "repaints",
+   "paint_kind": 9,
+   "message": 331
+  },
+  {
+   "name": "repaints kind 9 message 0x14C",
+   "kind": "repaints",
+   "paint_kind": 9,
+   "message": 332
+  },
+  {
+   "name": "repaints kind 9 message 0x14D",
+   "kind": "repaints",
+   "paint_kind": 9,
+   "message": 333
+  },
+  {
+   "name": "repaints kind 9 message 0x14E",
+   "kind": "repaints",
+   "paint_kind": 9,
+   "message": 334
+  },
+  {
+   "name": "repaints kind 9 message 0x14F",
+   "kind": "repaints",
+   "paint_kind": 9,
+   "message": 335
+  },
+  {
+   "name": "repaints kind 9 message 0x150",
+   "kind": "repaints",
+   "paint_kind": 9,
+   "message": 336
+  },
+  {
+   "name": "repaints kind 12 message 0x0",
+   "kind": "repaints",
+   "paint_kind": 12,
+   "message": 0
+  },
+  {
+   "name": "repaints kind 12 message 0x7",
+   "kind": "repaints",
+   "paint_kind": 12,
+   "message": 7
+  },
+  {
+   "name": "repaints kind 12 message 0x8",
+   "kind": "repaints",
+   "paint_kind": 12,
+   "message": 8
+  },
+  {
+   "name": "repaints kind 12 message 0xA",
+   "kind": "repaints",
+   "paint_kind": 12,
+   "message": 10
+  },
+  {
+   "name": "repaints kind 12 message 0xF",
+   "kind": "repaints",
+   "paint_kind": 12,
+   "message": 15
+  },
+  {
+   "name": "repaints kind 12 message 0x14",
+   "kind": "repaints",
+   "paint_kind": 12,
+   "message": 20
+  },
+  {
+   "name": "repaints kind 12 message 0x1F",
+   "kind": "repaints",
+   "paint_kind": 12,
+   "message": 31
+  },
+  {
+   "name": "repaints kind 12 message 0x30",
+   "kind": "repaints",
+   "paint_kind": 12,
+   "message": 48
+  },
+  {
+   "name": "repaints kind 12 message 0x82",
+   "kind": "repaints",
+   "paint_kind": 12,
+   "message": 130
+  },
+  {
+   "name": "repaints kind 12 message 0xF0",
+   "kind": "repaints",
+   "paint_kind": 12,
+   "message": 240
+  },
+  {
+   "name": "repaints kind 12 message 0xF1",
+   "kind": "repaints",
+   "paint_kind": 12,
+   "message": 241
+  },
+  {
+   "name": "repaints kind 12 message 0xF2",
+   "kind": "repaints",
+   "paint_kind": 12,
+   "message": 242
+  },
+  {
+   "name": "repaints kind 12 message 0xF3",
+   "kind": "repaints",
+   "paint_kind": 12,
+   "message": 243
+  },
+  {
+   "name": "repaints kind 12 message 0xF4",
+   "kind": "repaints",
+   "paint_kind": 12,
+   "message": 244
+  },
+  {
+   "name": "repaints kind 12 message 0x100",
+   "kind": "repaints",
+   "paint_kind": 12,
+   "message": 256
+  },
+  {
+   "name": "repaints kind 12 message 0x102",
+   "kind": "repaints",
+   "paint_kind": 12,
+   "message": 258
+  },
+  {
+   "name": "repaints kind 12 message 0x201",
+   "kind": "repaints",
+   "paint_kind": 12,
+   "message": 513
+  },
+  {
+   "name": "repaints kind 12 message 0x202",
+   "kind": "repaints",
+   "paint_kind": 12,
+   "message": 514
+  },
+  {
+   "name": "repaints kind 12 message 0x203",
+   "kind": "repaints",
+   "paint_kind": 12,
+   "message": 515
+  },
+  {
+   "name": "repaints kind 12 message 0x20A",
+   "kind": "repaints",
+   "paint_kind": 12,
+   "message": 522
+  },
+  {
+   "name": "repaints kind 12 message 0x14A",
+   "kind": "repaints",
+   "paint_kind": 12,
+   "message": 330
+  },
+  {
+   "name": "repaints kind 12 message 0x14B",
+   "kind": "repaints",
+   "paint_kind": 12,
+   "message": 331
+  },
+  {
+   "name": "repaints kind 12 message 0x14C",
+   "kind": "repaints",
+   "paint_kind": 12,
+   "message": 332
+  },
+  {
+   "name": "repaints kind 12 message 0x14D",
+   "kind": "repaints",
+   "paint_kind": 12,
+   "message": 333
+  },
+  {
+   "name": "repaints kind 12 message 0x14E",
+   "kind": "repaints",
+   "paint_kind": 12,
+   "message": 334
+  },
+  {
+   "name": "repaints kind 12 message 0x14F",
+   "kind": "repaints",
+   "paint_kind": 12,
+   "message": 335
+  },
+  {
+   "name": "repaints kind 12 message 0x150",
+   "kind": "repaints",
+   "paint_kind": 12,
+   "message": 336
+  },
+  {
+   "name": "scaled 0.5 x 0",
+   "kind": "scaled",
+   "scale": 0.5,
+   "px": 0
+  },
+  {
+   "name": "scaled 0.5 x 1",
+   "kind": "scaled",
+   "scale": 0.5,
+   "px": 1
+  },
+  {
+   "name": "scaled 0.5 x 2",
+   "kind": "scaled",
+   "scale": 0.5,
+   "px": 2
+  },
+  {
+   "name": "scaled 0.5 x 3",
+   "kind": "scaled",
+   "scale": 0.5,
+   "px": 3
+  },
+  {
+   "name": "scaled 0.5 x 4",
+   "kind": "scaled",
+   "scale": 0.5,
+   "px": 4
+  },
+  {
+   "name": "scaled 0.5 x 6",
+   "kind": "scaled",
+   "scale": 0.5,
+   "px": 6
+  },
+  {
+   "name": "scaled 0.5 x 8",
+   "kind": "scaled",
+   "scale": 0.5,
+   "px": 8
+  },
+  {
+   "name": "scaled 0.5 x 13",
+   "kind": "scaled",
+   "scale": 0.5,
+   "px": 13
+  },
+  {
+   "name": "scaled 0.5 x 18",
+   "kind": "scaled",
+   "scale": 0.5,
+   "px": 18
+  },
+  {
+   "name": "scaled 1.0 x 0",
+   "kind": "scaled",
+   "scale": 1.0,
+   "px": 0
+  },
+  {
+   "name": "scaled 1.0 x 1",
+   "kind": "scaled",
+   "scale": 1.0,
+   "px": 1
+  },
+  {
+   "name": "scaled 1.0 x 2",
+   "kind": "scaled",
+   "scale": 1.0,
+   "px": 2
+  },
+  {
+   "name": "scaled 1.0 x 3",
+   "kind": "scaled",
+   "scale": 1.0,
+   "px": 3
+  },
+  {
+   "name": "scaled 1.0 x 4",
+   "kind": "scaled",
+   "scale": 1.0,
+   "px": 4
+  },
+  {
+   "name": "scaled 1.0 x 6",
+   "kind": "scaled",
+   "scale": 1.0,
+   "px": 6
+  },
+  {
+   "name": "scaled 1.0 x 8",
+   "kind": "scaled",
+   "scale": 1.0,
+   "px": 8
+  },
+  {
+   "name": "scaled 1.0 x 13",
+   "kind": "scaled",
+   "scale": 1.0,
+   "px": 13
+  },
+  {
+   "name": "scaled 1.0 x 18",
+   "kind": "scaled",
+   "scale": 1.0,
+   "px": 18
+  },
+  {
+   "name": "scaled 1.1 x 0",
+   "kind": "scaled",
+   "scale": 1.1,
+   "px": 0
+  },
+  {
+   "name": "scaled 1.1 x 1",
+   "kind": "scaled",
+   "scale": 1.1,
+   "px": 1
+  },
+  {
+   "name": "scaled 1.1 x 2",
+   "kind": "scaled",
+   "scale": 1.1,
+   "px": 2
+  },
+  {
+   "name": "scaled 1.1 x 3",
+   "kind": "scaled",
+   "scale": 1.1,
+   "px": 3
+  },
+  {
+   "name": "scaled 1.1 x 4",
+   "kind": "scaled",
+   "scale": 1.1,
+   "px": 4
+  },
+  {
+   "name": "scaled 1.1 x 6",
+   "kind": "scaled",
+   "scale": 1.1,
+   "px": 6
+  },
+  {
+   "name": "scaled 1.1 x 8",
+   "kind": "scaled",
+   "scale": 1.1,
+   "px": 8
+  },
+  {
+   "name": "scaled 1.1 x 13",
+   "kind": "scaled",
+   "scale": 1.1,
+   "px": 13
+  },
+  {
+   "name": "scaled 1.1 x 18",
+   "kind": "scaled",
+   "scale": 1.1,
+   "px": 18
+  },
+  {
+   "name": "scaled 1.25 x 0",
+   "kind": "scaled",
+   "scale": 1.25,
+   "px": 0
+  },
+  {
+   "name": "scaled 1.25 x 1",
+   "kind": "scaled",
+   "scale": 1.25,
+   "px": 1
+  },
+  {
+   "name": "scaled 1.25 x 2",
+   "kind": "scaled",
+   "scale": 1.25,
+   "px": 2
+  },
+  {
+   "name": "scaled 1.25 x 3",
+   "kind": "scaled",
+   "scale": 1.25,
+   "px": 3
+  },
+  {
+   "name": "scaled 1.25 x 4",
+   "kind": "scaled",
+   "scale": 1.25,
+   "px": 4
+  },
+  {
+   "name": "scaled 1.25 x 6",
+   "kind": "scaled",
+   "scale": 1.25,
+   "px": 6
+  },
+  {
+   "name": "scaled 1.25 x 8",
+   "kind": "scaled",
+   "scale": 1.25,
+   "px": 8
+  },
+  {
+   "name": "scaled 1.25 x 13",
+   "kind": "scaled",
+   "scale": 1.25,
+   "px": 13
+  },
+  {
+   "name": "scaled 1.25 x 18",
+   "kind": "scaled",
+   "scale": 1.25,
+   "px": 18
+  },
+  {
+   "name": "scaled 1.5 x 0",
+   "kind": "scaled",
+   "scale": 1.5,
+   "px": 0
+  },
+  {
+   "name": "scaled 1.5 x 1",
+   "kind": "scaled",
+   "scale": 1.5,
+   "px": 1
+  },
+  {
+   "name": "scaled 1.5 x 2",
+   "kind": "scaled",
+   "scale": 1.5,
+   "px": 2
+  },
+  {
+   "name": "scaled 1.5 x 3",
+   "kind": "scaled",
+   "scale": 1.5,
+   "px": 3
+  },
+  {
+   "name": "scaled 1.5 x 4",
+   "kind": "scaled",
+   "scale": 1.5,
+   "px": 4
+  },
+  {
+   "name": "scaled 1.5 x 6",
+   "kind": "scaled",
+   "scale": 1.5,
+   "px": 6
+  },
+  {
+   "name": "scaled 1.5 x 8",
+   "kind": "scaled",
+   "scale": 1.5,
+   "px": 8
+  },
+  {
+   "name": "scaled 1.5 x 13",
+   "kind": "scaled",
+   "scale": 1.5,
+   "px": 13
+  },
+  {
+   "name": "scaled 1.5 x 18",
+   "kind": "scaled",
+   "scale": 1.5,
+   "px": 18
+  },
+  {
+   "name": "scaled 1.75 x 0",
+   "kind": "scaled",
+   "scale": 1.75,
+   "px": 0
+  },
+  {
+   "name": "scaled 1.75 x 1",
+   "kind": "scaled",
+   "scale": 1.75,
+   "px": 1
+  },
+  {
+   "name": "scaled 1.75 x 2",
+   "kind": "scaled",
+   "scale": 1.75,
+   "px": 2
+  },
+  {
+   "name": "scaled 1.75 x 3",
+   "kind": "scaled",
+   "scale": 1.75,
+   "px": 3
+  },
+  {
+   "name": "scaled 1.75 x 4",
+   "kind": "scaled",
+   "scale": 1.75,
+   "px": 4
+  },
+  {
+   "name": "scaled 1.75 x 6",
+   "kind": "scaled",
+   "scale": 1.75,
+   "px": 6
+  },
+  {
+   "name": "scaled 1.75 x 8",
+   "kind": "scaled",
+   "scale": 1.75,
+   "px": 8
+  },
+  {
+   "name": "scaled 1.75 x 13",
+   "kind": "scaled",
+   "scale": 1.75,
+   "px": 13
+  },
+  {
+   "name": "scaled 1.75 x 18",
+   "kind": "scaled",
+   "scale": 1.75,
+   "px": 18
+  },
+  {
+   "name": "scaled 2.0 x 0",
+   "kind": "scaled",
+   "scale": 2.0,
+   "px": 0
+  },
+  {
+   "name": "scaled 2.0 x 1",
+   "kind": "scaled",
+   "scale": 2.0,
+   "px": 1
+  },
+  {
+   "name": "scaled 2.0 x 2",
+   "kind": "scaled",
+   "scale": 2.0,
+   "px": 2
+  },
+  {
+   "name": "scaled 2.0 x 3",
+   "kind": "scaled",
+   "scale": 2.0,
+   "px": 3
+  },
+  {
+   "name": "scaled 2.0 x 4",
+   "kind": "scaled",
+   "scale": 2.0,
+   "px": 4
+  },
+  {
+   "name": "scaled 2.0 x 6",
+   "kind": "scaled",
+   "scale": 2.0,
+   "px": 6
+  },
+  {
+   "name": "scaled 2.0 x 8",
+   "kind": "scaled",
+   "scale": 2.0,
+   "px": 8
+  },
+  {
+   "name": "scaled 2.0 x 13",
+   "kind": "scaled",
+   "scale": 2.0,
+   "px": 13
+  },
+  {
+   "name": "scaled 2.0 x 18",
+   "kind": "scaled",
+   "scale": 2.0,
+   "px": 18
+  },
+  {
+   "name": "scaled 2.5 x 0",
+   "kind": "scaled",
+   "scale": 2.5,
+   "px": 0
+  },
+  {
+   "name": "scaled 2.5 x 1",
+   "kind": "scaled",
+   "scale": 2.5,
+   "px": 1
+  },
+  {
+   "name": "scaled 2.5 x 2",
+   "kind": "scaled",
+   "scale": 2.5,
+   "px": 2
+  },
+  {
+   "name": "scaled 2.5 x 3",
+   "kind": "scaled",
+   "scale": 2.5,
+   "px": 3
+  },
+  {
+   "name": "scaled 2.5 x 4",
+   "kind": "scaled",
+   "scale": 2.5,
+   "px": 4
+  },
+  {
+   "name": "scaled 2.5 x 6",
+   "kind": "scaled",
+   "scale": 2.5,
+   "px": 6
+  },
+  {
+   "name": "scaled 2.5 x 8",
+   "kind": "scaled",
+   "scale": 2.5,
+   "px": 8
+  },
+  {
+   "name": "scaled 2.5 x 13",
+   "kind": "scaled",
+   "scale": 2.5,
+   "px": 13
+  },
+  {
+   "name": "scaled 2.5 x 18",
+   "kind": "scaled",
+   "scale": 2.5,
+   "px": 18
+  },
+  {
+   "name": "scaled 3.0 x 0",
+   "kind": "scaled",
+   "scale": 3.0,
+   "px": 0
+  },
+  {
+   "name": "scaled 3.0 x 1",
+   "kind": "scaled",
+   "scale": 3.0,
+   "px": 1
+  },
+  {
+   "name": "scaled 3.0 x 2",
+   "kind": "scaled",
+   "scale": 3.0,
+   "px": 2
+  },
+  {
+   "name": "scaled 3.0 x 3",
+   "kind": "scaled",
+   "scale": 3.0,
+   "px": 3
+  },
+  {
+   "name": "scaled 3.0 x 4",
+   "kind": "scaled",
+   "scale": 3.0,
+   "px": 4
+  },
+  {
+   "name": "scaled 3.0 x 6",
+   "kind": "scaled",
+   "scale": 3.0,
+   "px": 6
+  },
+  {
+   "name": "scaled 3.0 x 8",
+   "kind": "scaled",
+   "scale": 3.0,
+   "px": 8
+  },
+  {
+   "name": "scaled 3.0 x 13",
+   "kind": "scaled",
+   "scale": 3.0,
+   "px": 13
+  },
+  {
+   "name": "scaled 3.0 x 18",
+   "kind": "scaled",
+   "scale": 3.0,
+   "px": 18
+  },
+  {
+   "name": "key_color Dark.Window",
+   "kind": "key_color",
+   "key": "Dark.Window"
+  },
+  {
+   "name": "key_color Dark.Input",
+   "kind": "key_color",
+   "key": "Dark.Input"
+  },
+  {
+   "name": "key_color Dark.Surface",
+   "kind": "key_color",
+   "key": "Dark.Surface"
+  },
+  {
+   "name": "key_color Dark.Button",
+   "kind": "key_color",
+   "key": "Dark.Button"
+  },
+  {
+   "name": "key_color Dark.ButtonHover",
+   "kind": "key_color",
+   "key": "Dark.ButtonHover"
+  },
+  {
+   "name": "key_color Dark.ButtonPressed",
+   "kind": "key_color",
+   "key": "Dark.ButtonPressed"
+  },
+  {
+   "name": "key_color Dark.Border",
+   "kind": "key_color",
+   "key": "Dark.Border"
+  },
+  {
+   "name": "key_color Dark.BorderStrong",
+   "kind": "key_color",
+   "key": "Dark.BorderStrong"
+  },
+  {
+   "name": "key_color Dark.BorderSubtle",
+   "kind": "key_color",
+   "key": "Dark.BorderSubtle"
+  },
+  {
+   "name": "key_color Dark.Accent",
+   "kind": "key_color",
+   "key": "Dark.Accent"
+  },
+  {
+   "name": "key_color Dark.AccentHover",
+   "kind": "key_color",
+   "key": "Dark.AccentHover"
+  },
+  {
+   "name": "key_color Dark.Selection",
+   "kind": "key_color",
+   "key": "Dark.Selection"
+  },
+  {
+   "name": "key_color Dark.TextStrong",
+   "kind": "key_color",
+   "key": "Dark.TextStrong"
+  },
+  {
+   "name": "key_color Dark.TextSoft",
+   "kind": "key_color",
+   "key": "Dark.TextSoft"
+  },
+  {
+   "name": "key_color Dark.TextSecondary",
+   "kind": "key_color",
+   "key": "Dark.TextSecondary"
+  },
+  {
+   "name": "key_color Dark.TextMuted",
+   "kind": "key_color",
+   "key": "Dark.TextMuted"
+  },
+  {
+   "name": "key_color Dark.TextFaint",
+   "kind": "key_color",
+   "key": "Dark.TextFaint"
+  },
+  {
+   "name": "key_color Dark.Nope",
+   "kind": "key_color",
+   "key": "Dark.Nope"
+  },
+  {
+   "name": "custom_draw prepaint result 0",
+   "kind": "custom_draw",
+   "stage": 1,
+   "result_in": 0,
+   "item_state_in": 513
+  },
+  {
+   "name": "custom_draw prepaint result 2",
+   "kind": "custom_draw",
+   "stage": 1,
+   "result_in": 2,
+   "item_state_in": 513
+  },
+  {
+   "name": "custom_draw prepaint result 4",
+   "kind": "custom_draw",
+   "stage": 1,
+   "result_in": 4,
+   "item_state_in": 513
+  },
+  {
+   "name": "custom_draw prepaint result 6",
+   "kind": "custom_draw",
+   "stage": 1,
+   "result_in": 6,
+   "item_state_in": 513
+  },
+  {
+   "name": "custom_draw prepaint result 32",
+   "kind": "custom_draw",
+   "stage": 1,
+   "result_in": 32,
+   "item_state_in": 513
+  },
+  {
+   "name": "custom_draw prepaint result 36",
+   "kind": "custom_draw",
+   "stage": 1,
+   "result_in": 36,
+   "item_state_in": 513
+  },
+  {
+   "name": "custom_draw stage 0x10001 result 0 (no list view: row not selected)",
+   "kind": "custom_draw",
+   "stage": 65537,
+   "result_in": 0,
+   "item_state_in": 513
+  },
+  {
+   "name": "custom_draw stage 0x10001 result 32 (no list view: row not selected)",
+   "kind": "custom_draw",
+   "stage": 65537,
+   "result_in": 32,
+   "item_state_in": 513
+  },
+  {
+   "name": "custom_draw stage 0x30001 result 0 (no list view: row not selected)",
+   "kind": "custom_draw",
+   "stage": 196609,
+   "result_in": 0,
+   "item_state_in": 513
+  },
+  {
+   "name": "custom_draw stage 0x30001 result 32 (no list view: row not selected)",
+   "kind": "custom_draw",
+   "stage": 196609,
+   "result_in": 32,
+   "item_state_in": 513
+  },
+  {
+   "name": "custom_draw stage 0x10002 result 0 (no list view: row not selected)",
+   "kind": "custom_draw",
+   "stage": 65538,
+   "result_in": 0,
+   "item_state_in": 513
+  },
+  {
+   "name": "custom_draw stage 0x10002 result 32 (no list view: row not selected)",
+   "kind": "custom_draw",
+   "stage": 65538,
+   "result_in": 32,
+   "item_state_in": 513
+  },
+  {
+   "name": "custom_draw stage 0x2 result 0 (no list view: row not selected)",
+   "kind": "custom_draw",
+   "stage": 2,
+   "result_in": 0,
+   "item_state_in": 513
+  },
+  {
+   "name": "custom_draw stage 0x2 result 32 (no list view: row not selected)",
+   "kind": "custom_draw",
+   "stage": 2,
+   "result_in": 32,
+   "item_state_in": 513
+  },
+  {
+   "name": "custom_draw stage 0x10000 result 0 (no list view: row not selected)",
+   "kind": "custom_draw",
+   "stage": 65536,
+   "result_in": 0,
+   "item_state_in": 513
+  },
+  {
+   "name": "custom_draw stage 0x10000 result 32 (no list view: row not selected)",
+   "kind": "custom_draw",
+   "stage": 65536,
+   "result_in": 32,
+   "item_state_in": 513
+  },
+  {
+   "name": "custom_draw stage 0x20001 result 0 (no list view: row not selected)",
+   "kind": "custom_draw",
+   "stage": 131073,
+   "result_in": 0,
+   "item_state_in": 513
+  },
+  {
+   "name": "custom_draw stage 0x20001 result 32 (no list view: row not selected)",
+   "kind": "custom_draw",
+   "stage": 131073,
+   "result_in": 32,
+   "item_state_in": 513
+  },
+  {
+   "name": "custom_draw stage 0x4 result 0 (no list view: row not selected)",
+   "kind": "custom_draw",
+   "stage": 4,
+   "result_in": 0,
+   "item_state_in": 513
+  },
+  {
+   "name": "custom_draw stage 0x4 result 32 (no list view: row not selected)",
+   "kind": "custom_draw",
+   "stage": 4,
+   "result_in": 32,
+   "item_state_in": 513
+  },
+  {
+   "name": "constants",
+   "kind": "constants"
+  }
+ ]
+}

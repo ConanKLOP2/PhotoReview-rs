@@ -1,0 +1,270 @@
+{
+ "command": "secondary-window-supports",
+ "notes": [
+  "Feeds W8-18o (dialogs::secondary_window_port). Reflection over the internal Win32SecondaryWindowPort and SecondaryWindowRouter of the PhotoReview (Shell.Win32) assembly; no window is created, no dialog is shown.",
+  "The port is built with an empty IServiceProvider (new ServiceCollection().BuildServiceProvider()) and settingsEnabled = () => true / () => false / null (default: SettingsPageCatalog.IsComplete). The router is built over that port with a null fallback.",
+  "Output per kind: supports -> value (Win32SecondaryWindowPort.Supports(kind)); router_supports -> value (SecondaryWindowRouter.Supports(kind)); initial -> open_count (OpenCount), is_benchmark_open, settings_enabled_value (SettingsEnabled); kinds -> names (the SecondaryWindowKind names in declaration order) and values (their ints).",
+  "The baseline enum has 8 members (no ExternalEditors / RenamePrompt: those are post-baseline, D-W8B5-415); the Rust enum has 2 more variants that the golden does not list."
+ ],
+ "cases": [
+  {
+   "name": "port supports Settings settings_enabled true",
+   "kind": "supports",
+   "settings_enabled": "true",
+   "window": "Settings"
+  },
+  {
+   "name": "port supports Recovery settings_enabled true",
+   "kind": "supports",
+   "settings_enabled": "true",
+   "window": "Recovery"
+  },
+  {
+   "name": "port supports Diagnostics settings_enabled true",
+   "kind": "supports",
+   "settings_enabled": "true",
+   "window": "Diagnostics"
+  },
+  {
+   "name": "port supports Benchmark settings_enabled true",
+   "kind": "supports",
+   "settings_enabled": "true",
+   "window": "Benchmark"
+  },
+  {
+   "name": "port supports SkippedFiles settings_enabled true",
+   "kind": "supports",
+   "settings_enabled": "true",
+   "window": "SkippedFiles"
+  },
+  {
+   "name": "port supports BatchReview settings_enabled true",
+   "kind": "supports",
+   "settings_enabled": "true",
+   "window": "BatchReview"
+  },
+  {
+   "name": "port supports ZoomPrompt settings_enabled true",
+   "kind": "supports",
+   "settings_enabled": "true",
+   "window": "ZoomPrompt"
+  },
+  {
+   "name": "port supports ActionProfiles settings_enabled true",
+   "kind": "supports",
+   "settings_enabled": "true",
+   "window": "ActionProfiles"
+  },
+  {
+   "name": "port supports Settings settings_enabled false",
+   "kind": "supports",
+   "settings_enabled": "false",
+   "window": "Settings"
+  },
+  {
+   "name": "port supports Recovery settings_enabled false",
+   "kind": "supports",
+   "settings_enabled": "false",
+   "window": "Recovery"
+  },
+  {
+   "name": "port supports Diagnostics settings_enabled false",
+   "kind": "supports",
+   "settings_enabled": "false",
+   "window": "Diagnostics"
+  },
+  {
+   "name": "port supports Benchmark settings_enabled false",
+   "kind": "supports",
+   "settings_enabled": "false",
+   "window": "Benchmark"
+  },
+  {
+   "name": "port supports SkippedFiles settings_enabled false",
+   "kind": "supports",
+   "settings_enabled": "false",
+   "window": "SkippedFiles"
+  },
+  {
+   "name": "port supports BatchReview settings_enabled false",
+   "kind": "supports",
+   "settings_enabled": "false",
+   "window": "BatchReview"
+  },
+  {
+   "name": "port supports ZoomPrompt settings_enabled false",
+   "kind": "supports",
+   "settings_enabled": "false",
+   "window": "ZoomPrompt"
+  },
+  {
+   "name": "port supports ActionProfiles settings_enabled false",
+   "kind": "supports",
+   "settings_enabled": "false",
+   "window": "ActionProfiles"
+  },
+  {
+   "name": "port supports Settings settings_enabled default",
+   "kind": "supports",
+   "settings_enabled": "default",
+   "window": "Settings"
+  },
+  {
+   "name": "port supports Recovery settings_enabled default",
+   "kind": "supports",
+   "settings_enabled": "default",
+   "window": "Recovery"
+  },
+  {
+   "name": "port supports Diagnostics settings_enabled default",
+   "kind": "supports",
+   "settings_enabled": "default",
+   "window": "Diagnostics"
+  },
+  {
+   "name": "port supports Benchmark settings_enabled default",
+   "kind": "supports",
+   "settings_enabled": "default",
+   "window": "Benchmark"
+  },
+  {
+   "name": "port supports SkippedFiles settings_enabled default",
+   "kind": "supports",
+   "settings_enabled": "default",
+   "window": "SkippedFiles"
+  },
+  {
+   "name": "port supports BatchReview settings_enabled default",
+   "kind": "supports",
+   "settings_enabled": "default",
+   "window": "BatchReview"
+  },
+  {
+   "name": "port supports ZoomPrompt settings_enabled default",
+   "kind": "supports",
+   "settings_enabled": "default",
+   "window": "ZoomPrompt"
+  },
+  {
+   "name": "port supports ActionProfiles settings_enabled default",
+   "kind": "supports",
+   "settings_enabled": "default",
+   "window": "ActionProfiles"
+  },
+  {
+   "name": "router supports Settings settings_enabled true",
+   "kind": "router_supports",
+   "settings_enabled": "true",
+   "window": "Settings"
+  },
+  {
+   "name": "router supports Recovery settings_enabled true",
+   "kind": "router_supports",
+   "settings_enabled": "true",
+   "window": "Recovery"
+  },
+  {
+   "name": "router supports Diagnostics settings_enabled true",
+   "kind": "router_supports",
+   "settings_enabled": "true",
+   "window": "Diagnostics"
+  },
+  {
+   "name": "router supports Benchmark settings_enabled true",
+   "kind": "router_supports",
+   "settings_enabled": "true",
+   "window": "Benchmark"
+  },
+  {
+   "name": "router supports SkippedFiles settings_enabled true",
+   "kind": "router_supports",
+   "settings_enabled": "true",
+   "window": "SkippedFiles"
+  },
+  {
+   "name": "router supports BatchReview settings_enabled true",
+   "kind": "router_supports",
+   "settings_enabled": "true",
+   "window": "BatchReview"
+  },
+  {
+   "name": "router supports ZoomPrompt settings_enabled true",
+   "kind": "router_supports",
+   "settings_enabled": "true",
+   "window": "ZoomPrompt"
+  },
+  {
+   "name": "router supports ActionProfiles settings_enabled true",
+   "kind": "router_supports",
+   "settings_enabled": "true",
+   "window": "ActionProfiles"
+  },
+  {
+   "name": "router supports Settings settings_enabled false",
+   "kind": "router_supports",
+   "settings_enabled": "false",
+   "window": "Settings"
+  },
+  {
+   "name": "router supports Recovery settings_enabled false",
+   "kind": "router_supports",
+   "settings_enabled": "false",
+   "window": "Recovery"
+  },
+  {
+   "name": "router supports Diagnostics settings_enabled false",
+   "kind": "router_supports",
+   "settings_enabled": "false",
+   "window": "Diagnostics"
+  },
+  {
+   "name": "router supports Benchmark settings_enabled false",
+   "kind": "router_supports",
+   "settings_enabled": "false",
+   "window": "Benchmark"
+  },
+  {
+   "name": "router supports SkippedFiles settings_enabled false",
+   "kind": "router_supports",
+   "settings_enabled": "false",
+   "window": "SkippedFiles"
+  },
+  {
+   "name": "router supports BatchReview settings_enabled false",
+   "kind": "router_supports",
+   "settings_enabled": "false",
+   "window": "BatchReview"
+  },
+  {
+   "name": "router supports ZoomPrompt settings_enabled false",
+   "kind": "router_supports",
+   "settings_enabled": "false",
+   "window": "ZoomPrompt"
+  },
+  {
+   "name": "router supports ActionProfiles settings_enabled false",
+   "kind": "router_supports",
+   "settings_enabled": "false",
+   "window": "ActionProfiles"
+  },
+  {
+   "name": "initial state settings_enabled true",
+   "kind": "initial",
+   "settings_enabled": "true"
+  },
+  {
+   "name": "initial state settings_enabled false",
+   "kind": "initial",
+   "settings_enabled": "false"
+  },
+  {
+   "name": "initial state settings_enabled default",
+   "kind": "initial",
+   "settings_enabled": "default"
+  },
+  {
+   "name": "kinds",
+   "kind": "kinds"
+  }
+ ]
+}

@@ -1,0 +1,381 @@
+{
+ "command": "dialog-zoom-diagnostics",
+ "notes": [
+  "Feeds W8-18p (dialogs::{zoom_prompt, diagnostics}). Reflection over the internal ZoomPromptDialog and DiagnosticsDialog of the PhotoReview (Shell.Win32) assembly and the internal DiagnosticsDisplay of PhotoReview.App.Shared; no window is created. The language is the process default (English), so the texts are the English catalog values.",
+  "Output per kind: zoom_dialog -> title, items [{class, id, text, style, ex_style}], initial_focus_id, default_button_id, resizable, header_ids, uses_modal_frame, extra_window_style, initial_text; diagnostics_dialog -> the same without initial_text; diagnostics_text -> labels[15], values[15], copy_text; diagnostics_row -> label and value, or threw (exception type name); preferred -> preferred_width, preferred_height, minimum_width, minimum_height; constants -> zoom_label_id, zoom_edit_id, zoom_error_id, zoom_cancel_id, zoom_apply_id, diagnostics_header_id, diagnostics_note_id, diagnostics_first_label_id, diagnostics_first_value_id, diagnostics_copy_id, diagnostics_close_id, diagnostics_row_count.",
+  "preferred: a window-less dialog (RuntimeHelpers.GetUninitializedObject with _avgCharWidth, _lineHeight, _childHosts set; zoom also _errorVisible), so every MeasureItemHeight is 0 and ButtonWidth is exactly Dx(50). It pins the dialog-unit arithmetic of PreferredClientSize and MinimumClientSize; the wrapped-text heights are hand-checked in the Rust tests with a fake measure.",
+  "display is the 15 strings of DiagnosticsDisplay in declaration order (CacheHits, CacheMisses, HitRate, SourceBytes, SourceReads, DecodeTime, PresentLatency, ExplorerOrder, ExplorerMetadata, SourceOpens, StatCount, SessionWrites, DecoderFallbacks, PresentHistogram, CrossThreadPresents). The odd display holds an empty string, a tab and a line break to show that BuildCopyText does not escape anything."
+ ],
+ "cases": [
+  {
+   "name": "zoom dialog current 100",
+   "kind": "zoom_dialog",
+   "current": 100
+  },
+  {
+   "name": "zoom dialog current 175",
+   "kind": "zoom_dialog",
+   "current": 175
+  },
+  {
+   "name": "zoom dialog current 10",
+   "kind": "zoom_dialog",
+   "current": 10
+  },
+  {
+   "name": "zoom dialog current 800",
+   "kind": "zoom_dialog",
+   "current": 800
+  },
+  {
+   "name": "zoom dialog current 9999",
+   "kind": "zoom_dialog",
+   "current": 9999
+  },
+  {
+   "name": "zoom dialog current 0",
+   "kind": "zoom_dialog",
+   "current": 0
+  },
+  {
+   "name": "zoom dialog current -5",
+   "kind": "zoom_dialog",
+   "current": -5
+  },
+  {
+   "name": "diagnostics dialog distinct values",
+   "kind": "diagnostics_dialog",
+   "display": [
+    "v00",
+    "v01",
+    "v02",
+    "v03",
+    "v04",
+    "v05",
+    "v06",
+    "v07",
+    "v08",
+    "v09",
+    "v10",
+    "v11",
+    "v12",
+    "v13",
+    "v14"
+   ]
+  },
+  {
+   "name": "diagnostics dialog odd values",
+   "kind": "diagnostics_dialog",
+   "display": [
+    "1,234",
+    "",
+    "98.5 %",
+    "1 234 567 bytes",
+    "12 ms",
+    "Biến đổi âm",
+    "a\tb",
+    "line1\nline2",
+    "IMG_0001.jpg (3), IMG_0002.jpg (2)",
+    "0",
+    "N/A",
+    "7",
+    "0",
+    "<1 ms: 3, <10 ms: 9",
+    "0"
+   ]
+  },
+  {
+   "name": "diagnostics text distinct values",
+   "kind": "diagnostics_text",
+   "display": [
+    "v00",
+    "v01",
+    "v02",
+    "v03",
+    "v04",
+    "v05",
+    "v06",
+    "v07",
+    "v08",
+    "v09",
+    "v10",
+    "v11",
+    "v12",
+    "v13",
+    "v14"
+   ]
+  },
+  {
+   "name": "diagnostics text odd values",
+   "kind": "diagnostics_text",
+   "display": [
+    "1,234",
+    "",
+    "98.5 %",
+    "1 234 567 bytes",
+    "12 ms",
+    "Biến đổi âm",
+    "a\tb",
+    "line1\nline2",
+    "IMG_0001.jpg (3), IMG_0002.jpg (2)",
+    "0",
+    "N/A",
+    "7",
+    "0",
+    "<1 ms: 3, <10 ms: 9",
+    "0"
+   ]
+  },
+  {
+   "name": "diagnostics row -1",
+   "kind": "diagnostics_row",
+   "row": -1,
+   "display": [
+    "v00",
+    "v01",
+    "v02",
+    "v03",
+    "v04",
+    "v05",
+    "v06",
+    "v07",
+    "v08",
+    "v09",
+    "v10",
+    "v11",
+    "v12",
+    "v13",
+    "v14"
+   ]
+  },
+  {
+   "name": "diagnostics row 0",
+   "kind": "diagnostics_row",
+   "row": 0,
+   "display": [
+    "v00",
+    "v01",
+    "v02",
+    "v03",
+    "v04",
+    "v05",
+    "v06",
+    "v07",
+    "v08",
+    "v09",
+    "v10",
+    "v11",
+    "v12",
+    "v13",
+    "v14"
+   ]
+  },
+  {
+   "name": "diagnostics row 2",
+   "kind": "diagnostics_row",
+   "row": 2,
+   "display": [
+    "v00",
+    "v01",
+    "v02",
+    "v03",
+    "v04",
+    "v05",
+    "v06",
+    "v07",
+    "v08",
+    "v09",
+    "v10",
+    "v11",
+    "v12",
+    "v13",
+    "v14"
+   ]
+  },
+  {
+   "name": "diagnostics row 14",
+   "kind": "diagnostics_row",
+   "row": 14,
+   "display": [
+    "v00",
+    "v01",
+    "v02",
+    "v03",
+    "v04",
+    "v05",
+    "v06",
+    "v07",
+    "v08",
+    "v09",
+    "v10",
+    "v11",
+    "v12",
+    "v13",
+    "v14"
+   ]
+  },
+  {
+   "name": "diagnostics row 15",
+   "kind": "diagnostics_row",
+   "row": 15,
+   "display": [
+    "v00",
+    "v01",
+    "v02",
+    "v03",
+    "v04",
+    "v05",
+    "v06",
+    "v07",
+    "v08",
+    "v09",
+    "v10",
+    "v11",
+    "v12",
+    "v13",
+    "v14"
+   ]
+  },
+  {
+   "name": "diagnostics row 100",
+   "kind": "diagnostics_row",
+   "row": 100,
+   "display": [
+    "v00",
+    "v01",
+    "v02",
+    "v03",
+    "v04",
+    "v05",
+    "v06",
+    "v07",
+    "v08",
+    "v09",
+    "v10",
+    "v11",
+    "v12",
+    "v13",
+    "v14"
+   ]
+  },
+  {
+   "name": "zoom preferred avg 6 line 15 error off",
+   "kind": "preferred",
+   "type": "zoom",
+   "avg": 6,
+   "line": 15,
+   "error_visible": false
+  },
+  {
+   "name": "zoom preferred avg 6 line 15 error on",
+   "kind": "preferred",
+   "type": "zoom",
+   "avg": 6,
+   "line": 15,
+   "error_visible": true
+  },
+  {
+   "name": "zoom preferred avg 7 line 16 error off",
+   "kind": "preferred",
+   "type": "zoom",
+   "avg": 7,
+   "line": 16,
+   "error_visible": false
+  },
+  {
+   "name": "zoom preferred avg 7 line 16 error on",
+   "kind": "preferred",
+   "type": "zoom",
+   "avg": 7,
+   "line": 16,
+   "error_visible": true
+  },
+  {
+   "name": "zoom preferred avg 8 line 20 error off",
+   "kind": "preferred",
+   "type": "zoom",
+   "avg": 8,
+   "line": 20,
+   "error_visible": false
+  },
+  {
+   "name": "zoom preferred avg 8 line 20 error on",
+   "kind": "preferred",
+   "type": "zoom",
+   "avg": 8,
+   "line": 20,
+   "error_visible": true
+  },
+  {
+   "name": "zoom preferred avg 9 line 24 error off",
+   "kind": "preferred",
+   "type": "zoom",
+   "avg": 9,
+   "line": 24,
+   "error_visible": false
+  },
+  {
+   "name": "zoom preferred avg 9 line 24 error on",
+   "kind": "preferred",
+   "type": "zoom",
+   "avg": 9,
+   "line": 24,
+   "error_visible": true
+  },
+  {
+   "name": "zoom preferred avg 10 line 29 error off",
+   "kind": "preferred",
+   "type": "zoom",
+   "avg": 10,
+   "line": 29,
+   "error_visible": false
+  },
+  {
+   "name": "zoom preferred avg 10 line 29 error on",
+   "kind": "preferred",
+   "type": "zoom",
+   "avg": 10,
+   "line": 29,
+   "error_visible": true
+  },
+  {
+   "name": "diagnostics preferred avg 6 line 15",
+   "kind": "preferred",
+   "type": "diagnostics",
+   "avg": 6,
+   "line": 15
+  },
+  {
+   "name": "diagnostics preferred avg 7 line 16",
+   "kind": "preferred",
+   "type": "diagnostics",
+   "avg": 7,
+   "line": 16
+  },
+  {
+   "name": "diagnostics preferred avg 8 line 20",
+   "kind": "preferred",
+   "type": "diagnostics",
+   "avg": 8,
+   "line": 20
+  },
+  {
+   "name": "diagnostics preferred avg 9 line 24",
+   "kind": "preferred",
+   "type": "diagnostics",
+   "avg": 9,
+   "line": 24
+  },
+  {
+   "name": "diagnostics preferred avg 10 line 29",
+   "kind": "preferred",
+   "type": "diagnostics",
+   "avg": 10,
+   "line": 29
+  },
+  {
+   "name": "ids of both dialogs",
+   "kind": "constants"
+  }
+ ]
+}

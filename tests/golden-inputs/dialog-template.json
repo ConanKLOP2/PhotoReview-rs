@@ -1,0 +1,665 @@
+{
+ "command": "dialog-template",
+ "notes": [
+  "Feeds W8-18d (dialogs::native::{template, chrome}). Reflection over the internal types of the PhotoReview (Shell.Win32) assembly: DialogTemplate, DialogItem, DialogControlClass, DialogColors, DarkDialogChrome.",
+  "Output per kind: build -> bytes_length, bytes_hex (only when the template is at most 4096 bytes), or threw (exception type name); class_name -> value (ushort), class_name (string or null), window_class_name (string); theme_for -> theme (string, may be empty, or null); color_ref -> value (uint); from_key -> found (bool) plus value, or threw; named_colors -> window, input, text, text_strong, text_secondary, warning (uint each); constants -> header_bytes, atom_marker.",
+  "Input floats are the exact decimal of a C# float (r,g,b are narrowed with a float cast before the call). A repeat object stands for count identical items (id 1..count, style 0)."
+ ],
+ "cases": [
+  {
+   "name": "header only: Vietnamese title, style 0x80C80000, ex 1, no items",
+   "kind": "build",
+   "title": "Tiêu đề",
+   "style": 2160066560,
+   "ex_style": 1,
+   "items": []
+  },
+  {
+   "name": "the four items of DialogTemplateTests.Items_AreDwordAligned (atoms, ids, styles, ex style)",
+   "kind": "build",
+   "title": "T",
+   "style": 0,
+   "ex_style": 0,
+   "items": [
+    {
+     "class": "Static",
+     "id": 100,
+     "text": "Nhãn",
+     "style": 1342177280,
+     "ex_style": 0
+    },
+    {
+     "class": "Edit",
+     "id": 101,
+     "text": "",
+     "style": 1342242944,
+     "ex_style": 512
+    },
+    {
+     "class": "Button",
+     "id": 2,
+     "text": "Huỷ",
+     "style": 1342242816,
+     "ex_style": 0
+    },
+    {
+     "class": "ListBox",
+     "id": 302,
+     "text": "x",
+     "style": 1352990977,
+     "ex_style": 0
+    }
+   ]
+  },
+  {
+   "name": "common-control classes are written by NAME, not by atom",
+   "kind": "build",
+   "title": "Controls",
+   "style": 1342177280,
+   "ex_style": 0,
+   "items": [
+    {
+     "class": "ListView",
+     "id": 400,
+     "text": "",
+     "style": 1342177280,
+     "ex_style": 0
+    },
+    {
+     "class": "Progress",
+     "id": 401,
+     "text": "p",
+     "style": 1342177280,
+     "ex_style": 0
+    },
+    {
+     "class": "Trackbar",
+     "id": 402,
+     "text": "",
+     "style": 1342177280,
+     "ex_style": 0
+    },
+    {
+     "class": "ComboBox",
+     "id": 403,
+     "text": "c",
+     "style": 1342177280,
+     "ex_style": 0
+    },
+    {
+     "class": "ScrollBar",
+     "id": 404,
+     "text": "",
+     "style": 1342177280,
+     "ex_style": 0
+    }
+   ]
+  },
+  {
+   "name": "empty title and empty text are a single terminator",
+   "kind": "build",
+   "title": "",
+   "style": 0,
+   "ex_style": 0,
+   "items": [
+    {
+     "class": "Static",
+     "id": 1,
+     "text": "",
+     "style": 0,
+     "ex_style": 0
+    }
+   ]
+  },
+  {
+   "name": "alignment: title and text of 0 UTF-16 units, so the item starts at 2 mod 4 or 0 mod 4",
+   "kind": "build",
+   "title": "",
+   "style": 0,
+   "ex_style": 0,
+   "items": [
+    {
+     "class": "Static",
+     "id": 7,
+     "text": "",
+     "style": 0,
+     "ex_style": 0
+    },
+    {
+     "class": "Button",
+     "id": 8,
+     "text": "",
+     "style": 0,
+     "ex_style": 0
+    }
+   ]
+  },
+  {
+   "name": "alignment: title and text of 1 UTF-16 units, so the item starts at 2 mod 4 or 0 mod 4",
+   "kind": "build",
+   "title": "a",
+   "style": 0,
+   "ex_style": 0,
+   "items": [
+    {
+     "class": "Static",
+     "id": 7,
+     "text": "b",
+     "style": 0,
+     "ex_style": 0
+    },
+    {
+     "class": "Button",
+     "id": 8,
+     "text": "c",
+     "style": 0,
+     "ex_style": 0
+    }
+   ]
+  },
+  {
+   "name": "alignment: title and text of 2 UTF-16 units, so the item starts at 2 mod 4 or 0 mod 4",
+   "kind": "build",
+   "title": "aa",
+   "style": 0,
+   "ex_style": 0,
+   "items": [
+    {
+     "class": "Static",
+     "id": 7,
+     "text": "bb",
+     "style": 0,
+     "ex_style": 0
+    },
+    {
+     "class": "Button",
+     "id": 8,
+     "text": "cc",
+     "style": 0,
+     "ex_style": 0
+    }
+   ]
+  },
+  {
+   "name": "alignment: title and text of 3 UTF-16 units, so the item starts at 2 mod 4 or 0 mod 4",
+   "kind": "build",
+   "title": "aaa",
+   "style": 0,
+   "ex_style": 0,
+   "items": [
+    {
+     "class": "Static",
+     "id": 7,
+     "text": "bbb",
+     "style": 0,
+     "ex_style": 0
+    },
+    {
+     "class": "Button",
+     "id": 8,
+     "text": "ccc",
+     "style": 0,
+     "ex_style": 0
+    }
+   ]
+  },
+  {
+   "name": "surrogate pair is two UTF-16 units",
+   "kind": "build",
+   "title": "😀",
+   "style": 0,
+   "ex_style": 0,
+   "items": [
+    {
+     "class": "Static",
+     "id": 1,
+     "text": "😀x",
+     "style": 0,
+     "ex_style": 0
+    }
+   ]
+  },
+  {
+   "name": "id is truncated to 16 bits: -1, 65535, 65536, 70000",
+   "kind": "build",
+   "title": "ids",
+   "style": 0,
+   "ex_style": 0,
+   "items": [
+    {
+     "class": "Static",
+     "id": -1,
+     "text": "",
+     "style": 0,
+     "ex_style": 0
+    },
+    {
+     "class": "Static",
+     "id": 65535,
+     "text": "",
+     "style": 0,
+     "ex_style": 0
+    },
+    {
+     "class": "Static",
+     "id": 65536,
+     "text": "",
+     "style": 0,
+     "ex_style": 0
+    },
+    {
+     "class": "Static",
+     "id": 70000,
+     "text": "",
+     "style": 0,
+     "ex_style": 0
+    }
+   ]
+  },
+  {
+   "name": "styles keep all 32 bits (0xFFFFFFFF style and ex style)",
+   "kind": "build",
+   "title": "bits",
+   "style": 4294967295,
+   "ex_style": 4294967295,
+   "items": [
+    {
+     "class": "Edit",
+     "id": 1,
+     "text": "",
+     "style": 4294967295,
+     "ex_style": 4294967295
+    }
+   ]
+  },
+  {
+   "name": "65535 controls are accepted (only the length is recorded)",
+   "kind": "build",
+   "title": "max",
+   "style": 0,
+   "ex_style": 0,
+   "repeat": {
+    "class": "Static",
+    "count": 65535,
+    "text": ""
+   }
+  },
+  {
+   "name": "65536 controls are refused with ArgumentException",
+   "kind": "build",
+   "title": "max+1",
+   "style": 0,
+   "ex_style": 0,
+   "repeat": {
+    "class": "Static",
+    "count": 65536,
+    "text": ""
+   }
+  },
+  {
+   "name": "class names of Button",
+   "kind": "class_name",
+   "class": "Button"
+  },
+  {
+   "name": "class names of Edit",
+   "kind": "class_name",
+   "class": "Edit"
+  },
+  {
+   "name": "class names of Static",
+   "kind": "class_name",
+   "class": "Static"
+  },
+  {
+   "name": "class names of ListBox",
+   "kind": "class_name",
+   "class": "ListBox"
+  },
+  {
+   "name": "class names of ScrollBar",
+   "kind": "class_name",
+   "class": "ScrollBar"
+  },
+  {
+   "name": "class names of ComboBox",
+   "kind": "class_name",
+   "class": "ComboBox"
+  },
+  {
+   "name": "class names of ListView",
+   "kind": "class_name",
+   "class": "ListView"
+  },
+  {
+   "name": "class names of Progress",
+   "kind": "class_name",
+   "class": "Progress"
+  },
+  {
+   "name": "class names of Trackbar",
+   "kind": "class_name",
+   "class": "Trackbar"
+  },
+  {
+   "name": "dark chrome theme of Button",
+   "kind": "theme_for",
+   "class": "Button"
+  },
+  {
+   "name": "dark chrome theme of Edit",
+   "kind": "theme_for",
+   "class": "Edit"
+  },
+  {
+   "name": "dark chrome theme of Static",
+   "kind": "theme_for",
+   "class": "Static"
+  },
+  {
+   "name": "dark chrome theme of ListBox",
+   "kind": "theme_for",
+   "class": "ListBox"
+  },
+  {
+   "name": "dark chrome theme of ScrollBar",
+   "kind": "theme_for",
+   "class": "ScrollBar"
+  },
+  {
+   "name": "dark chrome theme of ComboBox",
+   "kind": "theme_for",
+   "class": "ComboBox"
+  },
+  {
+   "name": "dark chrome theme of ListView",
+   "kind": "theme_for",
+   "class": "ListView"
+  },
+  {
+   "name": "dark chrome theme of Progress",
+   "kind": "theme_for",
+   "class": "Progress"
+  },
+  {
+   "name": "dark chrome theme of Trackbar",
+   "kind": "theme_for",
+   "class": "Trackbar"
+  },
+  {
+   "name": "to_color_ref(0,0,0)",
+   "kind": "color_ref",
+   "r": 0,
+   "g": 0,
+   "b": 0
+  },
+  {
+   "name": "to_color_ref(1,1,1)",
+   "kind": "color_ref",
+   "r": 1,
+   "g": 1,
+   "b": 1
+  },
+  {
+   "name": "to_color_ref(0.5,0.5,0.5)",
+   "kind": "color_ref",
+   "r": 0.5,
+   "g": 0.5,
+   "b": 0.5
+  },
+  {
+   "name": "to_color_ref(0.09019608,0.09019608,0.09019608)",
+   "kind": "color_ref",
+   "r": 0.09019608,
+   "g": 0.09019608,
+   "b": 0.09019608
+  },
+  {
+   "name": "to_color_ref(0.003921569,0.0078431375,0.011764706)",
+   "kind": "color_ref",
+   "r": 0.003921569,
+   "g": 0.0078431375,
+   "b": 0.011764706
+  },
+  {
+   "name": "to_color_ref(1,0,0)",
+   "kind": "color_ref",
+   "r": 1,
+   "g": 0,
+   "b": 0
+  },
+  {
+   "name": "to_color_ref(0,1,0)",
+   "kind": "color_ref",
+   "r": 0,
+   "g": 1,
+   "b": 0
+  },
+  {
+   "name": "to_color_ref(0,0,1)",
+   "kind": "color_ref",
+   "r": 0,
+   "g": 0,
+   "b": 1
+  },
+  {
+   "name": "to_color_ref(0.49803922,0.49803922,0.49803922)",
+   "kind": "color_ref",
+   "r": 0.49803922,
+   "g": 0.49803922,
+   "b": 0.49803922
+  },
+  {
+   "name": "to_color_ref(1.0000001,0,0)",
+   "kind": "color_ref",
+   "r": 1.0000001,
+   "g": 0,
+   "b": 0
+  },
+  {
+   "name": "to_color_ref(-0.001,0.2,0.4)",
+   "kind": "color_ref",
+   "r": -0.001,
+   "g": 0.2,
+   "b": 0.4
+  },
+  {
+   "name": "DialogColors.FromKey('Dark.Text')",
+   "kind": "from_key",
+   "key": "Dark.Text"
+  },
+  {
+   "name": "DialogColors.FromKey('Dark.TextStrong')",
+   "kind": "from_key",
+   "key": "Dark.TextStrong"
+  },
+  {
+   "name": "DialogColors.FromKey('Dark.TextMuted')",
+   "kind": "from_key",
+   "key": "Dark.TextMuted"
+  },
+  {
+   "name": "DialogColors.FromKey('Dark.Input')",
+   "kind": "from_key",
+   "key": "Dark.Input"
+  },
+  {
+   "name": "DialogColors.FromKey('Dark.Panel')",
+   "kind": "from_key",
+   "key": "Dark.Panel"
+  },
+  {
+   "name": "DialogColors.FromKey('Dark.Border')",
+   "kind": "from_key",
+   "key": "Dark.Border"
+  },
+  {
+   "name": "DialogColors.FromKey('Dark.BorderStrong')",
+   "kind": "from_key",
+   "key": "Dark.BorderStrong"
+  },
+  {
+   "name": "DialogColors.FromKey('Dark.Button')",
+   "kind": "from_key",
+   "key": "Dark.Button"
+  },
+  {
+   "name": "DialogColors.FromKey('Dark.ButtonHover')",
+   "kind": "from_key",
+   "key": "Dark.ButtonHover"
+  },
+  {
+   "name": "DialogColors.FromKey('Dark.ButtonPressed')",
+   "kind": "from_key",
+   "key": "Dark.ButtonPressed"
+  },
+  {
+   "name": "DialogColors.FromKey('Dark.Accent')",
+   "kind": "from_key",
+   "key": "Dark.Accent"
+  },
+  {
+   "name": "DialogColors.FromKey('Dark.AccentHover')",
+   "kind": "from_key",
+   "key": "Dark.AccentHover"
+  },
+  {
+   "name": "DialogColors.FromKey('Dark.Window')",
+   "kind": "from_key",
+   "key": "Dark.Window"
+  },
+  {
+   "name": "DialogColors.FromKey('Dark.Backdrop')",
+   "kind": "from_key",
+   "key": "Dark.Backdrop"
+  },
+  {
+   "name": "DialogColors.FromKey('Dark.Canvas')",
+   "kind": "from_key",
+   "key": "Dark.Canvas"
+  },
+  {
+   "name": "DialogColors.FromKey('Dark.Tooltip')",
+   "kind": "from_key",
+   "key": "Dark.Tooltip"
+  },
+  {
+   "name": "DialogColors.FromKey('Dark.Surface')",
+   "kind": "from_key",
+   "key": "Dark.Surface"
+  },
+  {
+   "name": "DialogColors.FromKey('Dark.RowAlt')",
+   "kind": "from_key",
+   "key": "Dark.RowAlt"
+  },
+  {
+   "name": "DialogColors.FromKey('Dark.Overlay')",
+   "kind": "from_key",
+   "key": "Dark.Overlay"
+  },
+  {
+   "name": "DialogColors.FromKey('Dark.Selection')",
+   "kind": "from_key",
+   "key": "Dark.Selection"
+  },
+  {
+   "name": "DialogColors.FromKey('Dark.SuccessBackground')",
+   "kind": "from_key",
+   "key": "Dark.SuccessBackground"
+  },
+  {
+   "name": "DialogColors.FromKey('Dark.ErrorBackground')",
+   "kind": "from_key",
+   "key": "Dark.ErrorBackground"
+  },
+  {
+   "name": "DialogColors.FromKey('Dark.WindowText')",
+   "kind": "from_key",
+   "key": "Dark.WindowText"
+  },
+  {
+   "name": "DialogColors.FromKey('Dark.TextBright')",
+   "kind": "from_key",
+   "key": "Dark.TextBright"
+  },
+  {
+   "name": "DialogColors.FromKey('Dark.TextSoft')",
+   "kind": "from_key",
+   "key": "Dark.TextSoft"
+  },
+  {
+   "name": "DialogColors.FromKey('Dark.TextSecondary')",
+   "kind": "from_key",
+   "key": "Dark.TextSecondary"
+  },
+  {
+   "name": "DialogColors.FromKey('Dark.TextSubtle')",
+   "kind": "from_key",
+   "key": "Dark.TextSubtle"
+  },
+  {
+   "name": "DialogColors.FromKey('Dark.TextFaint')",
+   "kind": "from_key",
+   "key": "Dark.TextFaint"
+  },
+  {
+   "name": "DialogColors.FromKey('Dark.Warning')",
+   "kind": "from_key",
+   "key": "Dark.Warning"
+  },
+  {
+   "name": "DialogColors.FromKey('Dark.Caution')",
+   "kind": "from_key",
+   "key": "Dark.Caution"
+  },
+  {
+   "name": "DialogColors.FromKey('Dark.ErrorText')",
+   "kind": "from_key",
+   "key": "Dark.ErrorText"
+  },
+  {
+   "name": "DialogColors.FromKey('Dark.BorderSubtle')",
+   "kind": "from_key",
+   "key": "Dark.BorderSubtle"
+  },
+  {
+   "name": "DialogColors.FromKey('Dark.BorderToolbar')",
+   "kind": "from_key",
+   "key": "Dark.BorderToolbar"
+  },
+  {
+   "name": "DialogColors.FromKey('Dark.GridLine')",
+   "kind": "from_key",
+   "key": "Dark.GridLine"
+  },
+  {
+   "name": "DialogColors.FromKey('Dark.ScrollTrack')",
+   "kind": "from_key",
+   "key": "Dark.ScrollTrack"
+  },
+  {
+   "name": "DialogColors.FromKey('Dark.Nope')",
+   "kind": "from_key",
+   "key": "Dark.Nope"
+  },
+  {
+   "name": "DialogColors.FromKey('dark.window')",
+   "kind": "from_key",
+   "key": "dark.window"
+  },
+  {
+   "name": "DialogColors.FromKey('')",
+   "kind": "from_key",
+   "key": ""
+  },
+  {
+   "name": "the named accessors of DialogColors",
+   "kind": "named_colors"
+  },
+  {
+   "name": "constants of DialogTemplate",
+   "kind": "constants"
+  }
+ ]
+}

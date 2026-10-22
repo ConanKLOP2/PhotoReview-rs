@@ -1,0 +1,27 @@
+{
+ "command": "settings-page-files",
+ "notes": [
+  "Feeds W8-19f (dialogs::settings::pages::files). Reflection over the internal FilesSettingsPage and SettingsPageBuilder of PhotoReview.dll; see tools/oracle-cs/Commands/W8-19f.cs for the case kinds and output fields.",
+  "id_base is SettingsDialog.PageIdBase(5) = 6000 (Files is the sixth navigation entry). English default localizer. Run against the C# baseline d92d6aae (the HEAD page has the external editors controls).",
+  "initial_folder: make=none uses the given path; temp_file / temp_dir make a temporary folder that the oracle deletes. The result is reported as result_kind (null | parent_dir | other)."
+ ],
+ "cases": [
+  {
+   "name": "Files page declaration",
+   "kind": "declare",
+   "page": "Files",
+   "id_base": 6000,
+   "fields": [
+    "_compareHash", "_compareSize", "_rawSupport", "_rawFullDecode", "_rawPairMode", "_webpHeic", "_codecStatus", "_allowPermanentDelete",
+    "_confirmBeforeDelete", "_editorPath", "_browse", "_journal", "_reuseLastFolder"
+   ],
+   "lists": [ "JournalRadios" ]
+  },
+  { "name": "initial folder of an empty path", "kind": "initial_folder", "make": "none", "path": "" },
+  { "name": "initial folder of a blank path", "kind": "initial_folder", "make": "none", "path": "   " },
+  { "name": "initial folder of a missing file", "kind": "initial_folder", "make": "none", "path": "C:\\w819f-definitely-missing\\editor.exe" },
+  { "name": "initial folder of a path with invalid characters", "kind": "initial_folder", "make": "none", "path": "C:\\a|b?.exe" },
+  { "name": "initial folder of an existing file is its folder", "kind": "initial_folder", "make": "temp_file" },
+  { "name": "initial folder of an existing directory is null", "kind": "initial_folder", "make": "temp_dir" }
+ ]
+}

@@ -1,0 +1,174 @@
+{
+ "command": "settings-dialog-state",
+ "notes": [
+  "Feeds W8-19k (dialogs::settings::dialog::{state, dirty, keybox}). Reflection over the internal SettingsDialog (real constructor, no window; see tools/oracle-cs/Commands/W8-19j.cs and W8-19k.cs) and over KeyIdMapping / SettingsPresenter.CaptureShortcut of PhotoReview.App.Shared at the baseline d92d6aae.",
+  "Output per kind: key_capture -> texts (null = the key is not swallowed) for virtual keys from..to; actions_json -> values (ActionsJson after each op); visibility -> group_ids, values (one per is/is_group op); key_boxes -> key_box_ids, results."
+ ],
+ "cases": [
+  {
+   "name": "key_capture_plain",
+   "kind": "key_capture",
+   "extended": false,
+   "from": 0,
+   "to": 255
+  },
+  {
+   "name": "key_capture_extended",
+   "kind": "key_capture",
+   "extended": true,
+   "from": 0,
+   "to": 255
+  },
+  {
+   "name": "actions_json_default",
+   "kind": "actions_json",
+   "ops": [
+    {
+     "op": "get"
+    },
+    {
+     "op": "refresh"
+    },
+    {
+     "op": "set",
+     "json": "[]"
+    },
+    {
+     "op": "get"
+    },
+    {
+     "op": "refresh"
+    },
+    {
+     "op": "set",
+     "json": "not json"
+    },
+    {
+     "op": "get"
+    },
+    {
+     "op": "set",
+     "json": ""
+    },
+    {
+     "op": "refresh"
+    }
+   ]
+  },
+  {
+   "name": "actions_json_empty_list",
+   "kind": "actions_json",
+   "settings": {
+    "ActionsText": "[]"
+   },
+   "ops": [
+    {
+     "op": "get"
+    },
+    {
+     "op": "refresh"
+    },
+    {
+     "op": "set",
+     "json": "[ ]"
+    },
+    {
+     "op": "get"
+    }
+   ]
+  },
+  {
+   "name": "visibility",
+   "kind": "visibility",
+   "ops": [
+    {
+     "op": "is",
+     "id": 5001
+    },
+    {
+     "op": "set",
+     "id": 5001,
+     "visible": false
+    },
+    {
+     "op": "is",
+     "id": 5001
+    },
+    {
+     "op": "set",
+     "id": 5001,
+     "visible": false
+    },
+    {
+     "op": "is",
+     "id": 5001
+    },
+    {
+     "op": "set",
+     "id": 5001,
+     "visible": true
+    },
+    {
+     "op": "is",
+     "id": 5001
+    },
+    {
+     "op": "is",
+     "id": 0
+    },
+    {
+     "op": "set",
+     "id": 0,
+     "visible": false
+    },
+    {
+     "op": "is",
+     "id": 0
+    },
+    {
+     "op": "is_group",
+     "group": 0
+    },
+    {
+     "op": "set_group",
+     "group": 0,
+     "visible": false
+    },
+    {
+     "op": "is_group",
+     "group": 0
+    },
+    {
+     "op": "is_group",
+     "group": 1
+    },
+    {
+     "op": "set_group",
+     "group": 0,
+     "visible": true
+    },
+    {
+     "op": "is_group",
+     "group": 0
+    }
+   ]
+  },
+  {
+   "name": "key_boxes",
+   "kind": "key_boxes",
+   "probes": [
+    0,
+    1,
+    100,
+    4999,
+    5001,
+    5002,
+    5027,
+    5028,
+    5050,
+    6000,
+    -1
+   ]
+  }
+ ]
+}

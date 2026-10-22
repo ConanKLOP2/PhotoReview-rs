@@ -1,0 +1,1596 @@
+{
+ "command": "settings-layout",
+ "notes": [
+  "Feeds W8-19b/W8-19c (dialogs::settings::builder::{rows, groups, layout}). Reflection over the internal SettingsLayoutElement family of PhotoReview.dll, run against a deterministic fake ISettingsLayoutSurface (DispatchProxy).",
+  "Surface formulas (also in tools/oracle-cs/Commands/W8-19b.cs): Dx(d)=d*dx_mul/dx_div, Dy(d)=d*dy_mul/dy_div (int, truncating); TextWidth(text)=UTF-16 length*avg_char_width; TextHeight(id,w)=heights[id] else max(1,ceil(TextWidth(TextOf(id))/max(1,w)))*line_height; TextOf(id)=texts[id] or empty; IsHidden(id) in hidden; ComboDropHeight(id)=combo_drop[id] or 0.",
+  "Output per element case: height (return of Place), calls (['place',id,x,y,w,h] or ['hide',id] in call order), control_ids. label_width -> values."
+ ],
+ "surfaces": {
+  "s100": {
+   "dx_mul": 3,
+   "dx_div": 2,
+   "dy_mul": 15,
+   "dy_div": 8,
+   "line_height": 16,
+   "field_height": 23,
+   "avg_char_width": 7
+  },
+  "s150": {
+   "dx_mul": 9,
+   "dx_div": 4,
+   "dy_mul": 45,
+   "dy_div": 16,
+   "line_height": 24,
+   "field_height": 34,
+   "avg_char_width": 10
+  },
+  "unit": {
+   "dx_mul": 1,
+   "dx_div": 1,
+   "dy_mul": 1,
+   "dy_div": 1,
+   "line_height": 10,
+   "field_height": 14,
+   "avg_char_width": 5
+  }
+ },
+ "cases": [
+  {
+   "name": "label_width: clamp to 80..140 dlu on s100",
+   "kind": "label_width",
+   "surface": "s100",
+   "widths": [
+    0,
+    100,
+    200,
+    300,
+    315,
+    316,
+    400,
+    500,
+    800,
+    2000,
+    -50
+   ]
+  },
+  {
+   "name": "label_width: s150",
+   "kind": "label_width",
+   "surface": "s150",
+   "widths": [
+    0,
+    300,
+    600,
+    900,
+    1400,
+    3000
+   ]
+  },
+  {
+   "name": "label_width: unit scale",
+   "kind": "label_width",
+   "surface": "unit",
+   "widths": [
+    0,
+    50,
+    100,
+    200,
+    500
+   ]
+  },
+  {
+   "name": "check: one line, no indent",
+   "kind": "element",
+   "surface": "s100",
+   "element": {
+    "type": "check",
+    "id": 1,
+    "indent": 0
+   },
+   "x": 0,
+   "y": 0,
+   "width": 400,
+   "texts": {
+    "1": "Show the grid"
+   }
+  },
+  {
+   "name": "check: indent 10 dlu wraps in a narrow column",
+   "kind": "element",
+   "surface": "s100",
+   "element": {
+    "type": "check",
+    "id": 1,
+    "indent": 10
+   },
+   "x": 0,
+   "y": 0,
+   "width": 120,
+   "texts": {
+    "1": "Move to the next image after a review action finishes"
+   }
+  },
+  {
+   "name": "check: Vietnamese text, scrolled origin y=-500",
+   "kind": "element",
+   "surface": "s100",
+   "element": {
+    "type": "check",
+    "id": 7,
+    "indent": 4
+   },
+   "x": 0,
+   "y": -500,
+   "width": 300,
+   "texts": {
+    "7": "Hỏi xác nhận trước khi chuyển ảnh vào Thùng rác"
+   }
+  },
+  {
+   "name": "check: hidden control is hidden and takes no room",
+   "kind": "element",
+   "surface": "s100",
+   "element": {
+    "type": "check",
+    "id": 1,
+    "indent": 0
+   },
+   "x": 0,
+   "y": 0,
+   "width": 400,
+   "hidden": [
+    1
+   ],
+   "texts": {
+    "1": "x"
+   }
+  },
+  {
+   "name": "check: Visible=false hides the control",
+   "kind": "element",
+   "surface": "s100",
+   "element": {
+    "type": "check",
+    "id": 1,
+    "indent": 0,
+    "visible": false
+   },
+   "x": 0,
+   "y": 0,
+   "width": 400,
+   "texts": {
+    "1": "x"
+   }
+  },
+  {
+   "name": "check: width smaller than the indent",
+   "kind": "element",
+   "surface": "unit",
+   "element": {
+    "type": "check",
+    "id": 1,
+    "indent": 50
+   },
+   "x": 0,
+   "y": 0,
+   "width": 30,
+   "texts": {
+    "1": "abcdefgh"
+   }
+  },
+  {
+   "name": "check: s150 two-line text",
+   "kind": "element",
+   "surface": "s150",
+   "element": {
+    "type": "check",
+    "id": 1,
+    "indent": 0
+   },
+   "x": 0,
+   "y": 0,
+   "width": 200,
+   "texts": {
+    "1": "Remember the last used folder between sessions"
+   }
+  },
+  {
+   "name": "check: non-BMP characters count two UTF-16 units",
+   "kind": "element",
+   "surface": "unit",
+   "element": {
+    "type": "check",
+    "id": 1,
+    "indent": 0
+   },
+   "x": 0,
+   "y": 0,
+   "width": 60,
+   "texts": {
+    "1": "😀😀😀😀😀"
+   }
+  },
+  {
+   "name": "row combo: default width (240 dlu cap) on a wide page",
+   "kind": "element",
+   "surface": "s100",
+   "element": {
+    "type": "row",
+    "label": 1,
+    "control": 2,
+    "row_kind": "Combo",
+    "width_dlu": 0
+   },
+   "x": 0,
+   "y": 0,
+   "width": 700,
+   "texts": {
+    "1": "Image transition",
+    "2": ""
+   },
+   "combo_drop": {
+    "2": 120
+   }
+  },
+  {
+   "name": "row combo: width 100 dlu",
+   "kind": "element",
+   "surface": "s100",
+   "element": {
+    "type": "row",
+    "label": 1,
+    "control": 2,
+    "row_kind": "Combo",
+    "width_dlu": 100
+   },
+   "x": 0,
+   "y": 0,
+   "width": 500,
+   "texts": {
+    "1": "Language"
+   },
+   "combo_drop": {
+    "2": 90
+   }
+  },
+  {
+   "name": "row edit: 60 dlu",
+   "kind": "element",
+   "surface": "s100",
+   "element": {
+    "type": "row",
+    "label": 1,
+    "control": 2,
+    "row_kind": "Edit",
+    "width_dlu": 60
+   },
+   "x": 0,
+   "y": 0,
+   "width": 500,
+   "texts": {
+    "1": "Pan step (px)"
+   }
+  },
+  {
+   "name": "row edit: width_dlu larger than the space available",
+   "kind": "element",
+   "surface": "s100",
+   "element": {
+    "type": "row",
+    "label": 1,
+    "control": 2,
+    "row_kind": "Edit",
+    "width_dlu": 400
+   },
+   "x": 0,
+   "y": 0,
+   "width": 300,
+   "texts": {
+    "1": "Editor path"
+   }
+  },
+  {
+   "name": "row edit: very narrow page keeps a 30 dlu control",
+   "kind": "element",
+   "surface": "s100",
+   "element": {
+    "type": "row",
+    "label": 1,
+    "control": 2,
+    "row_kind": "Edit",
+    "width_dlu": 60
+   },
+   "x": 0,
+   "y": 0,
+   "width": 40,
+   "texts": {
+    "1": "A"
+   }
+  },
+  {
+   "name": "row combo: long Vietnamese label wraps and centres the control",
+   "kind": "element",
+   "surface": "s100",
+   "element": {
+    "type": "row",
+    "label": 1,
+    "control": 2,
+    "row_kind": "Combo",
+    "width_dlu": 0
+   },
+   "x": 0,
+   "y": 0,
+   "width": 420,
+   "texts": {
+    "1": "Kiểu chuyển cảnh giữa hai ảnh khi duyệt nhanh bằng bàn phím"
+   },
+   "combo_drop": {
+    "2": 100
+   }
+  },
+  {
+   "name": "row edit: label taller than the field, explicit heights",
+   "kind": "element",
+   "surface": "unit",
+   "element": {
+    "type": "row",
+    "label": 1,
+    "control": 2,
+    "row_kind": "Edit",
+    "width_dlu": 20
+   },
+   "x": 0,
+   "y": 0,
+   "width": 300,
+   "heights": {
+    "1": 40
+   }
+  },
+  {
+   "name": "row: hidden control hides label and control",
+   "kind": "element",
+   "surface": "s100",
+   "element": {
+    "type": "row",
+    "label": 1,
+    "control": 2,
+    "row_kind": "Edit",
+    "width_dlu": 60
+   },
+   "x": 0,
+   "y": 0,
+   "width": 500,
+   "hidden": [
+    2
+   ],
+   "texts": {
+    "1": "x"
+   }
+  },
+  {
+   "name": "row: hidden label alone is still placed",
+   "kind": "element",
+   "surface": "s100",
+   "element": {
+    "type": "row",
+    "label": 1,
+    "control": 2,
+    "row_kind": "Edit",
+    "width_dlu": 60
+   },
+   "x": 0,
+   "y": 0,
+   "width": 500,
+   "hidden": [
+    1
+   ],
+   "texts": {
+    "1": "x"
+   }
+  },
+  {
+   "name": "row: Visible=false",
+   "kind": "element",
+   "surface": "s100",
+   "element": {
+    "type": "row",
+    "label": 1,
+    "control": 2,
+    "row_kind": "Combo",
+    "width_dlu": 0,
+    "visible": false
+   },
+   "x": 0,
+   "y": 0,
+   "width": 500
+  },
+  {
+   "name": "row combo: s150",
+   "kind": "element",
+   "surface": "s150",
+   "element": {
+    "type": "row",
+    "label": 1,
+    "control": 2,
+    "row_kind": "Combo",
+    "width_dlu": 120
+   },
+   "x": 0,
+   "y": 0,
+   "width": 900,
+   "texts": {
+    "1": "Decoder"
+   },
+   "combo_drop": {
+    "2": 150
+   }
+  },
+  {
+   "name": "slider: value text 37 percent",
+   "kind": "element",
+   "surface": "s100",
+   "element": {
+    "type": "slider",
+    "label": 1,
+    "slider": 2,
+    "value": 3
+   },
+   "x": 0,
+   "y": 0,
+   "width": 500,
+   "texts": {
+    "1": "RAM cache",
+    "3": "37 %"
+   }
+  },
+  {
+   "name": "slider: wide page clamps the track to 150 dlu",
+   "kind": "element",
+   "surface": "s100",
+   "element": {
+    "type": "slider",
+    "label": 1,
+    "slider": 2,
+    "value": 3
+   },
+   "x": 0,
+   "y": 0,
+   "width": 1200,
+   "texts": {
+    "1": "RAM cache",
+    "3": "5 %"
+   }
+  },
+  {
+   "name": "slider: narrow page clamps the track to 60 dlu",
+   "kind": "element",
+   "surface": "s100",
+   "element": {
+    "type": "slider",
+    "label": 1,
+    "slider": 2,
+    "value": 3
+   },
+   "x": 0,
+   "y": 0,
+   "width": 200,
+   "texts": {
+    "1": "Opacity",
+    "3": "100 %"
+   }
+  },
+  {
+   "name": "slider: long value text widens the value column",
+   "kind": "element",
+   "surface": "s100",
+   "element": {
+    "type": "slider",
+    "label": 1,
+    "slider": 2,
+    "value": 3
+   },
+   "x": 0,
+   "y": 0,
+   "width": 600,
+   "texts": {
+    "1": "Cache",
+    "3": "12,345 MB (about 3.5 % of RAM)"
+   }
+  },
+  {
+   "name": "slider: empty value text uses the 100 % minimum",
+   "kind": "element",
+   "surface": "unit",
+   "element": {
+    "type": "slider",
+    "label": 1,
+    "slider": 2,
+    "value": 3
+   },
+   "x": 0,
+   "y": 0,
+   "width": 400,
+   "texts": {
+    "1": "x"
+   }
+  },
+  {
+   "name": "slider: tall wrapped label",
+   "kind": "element",
+   "surface": "s100",
+   "element": {
+    "type": "slider",
+    "label": 1,
+    "slider": 2,
+    "value": 3
+   },
+   "x": 0,
+   "y": 0,
+   "width": 420,
+   "texts": {
+    "1": "Dung lượng bộ nhớ đệm ảnh tối đa theo phần trăm RAM",
+    "3": "50 %"
+   }
+  },
+  {
+   "name": "slider: Visible=false hides the three controls",
+   "kind": "element",
+   "surface": "s100",
+   "element": {
+    "type": "slider",
+    "label": 1,
+    "slider": 2,
+    "value": 3,
+    "visible": false
+   },
+   "x": 0,
+   "y": 0,
+   "width": 420
+  },
+  {
+   "name": "text: aligned note",
+   "kind": "element",
+   "surface": "s100",
+   "element": {
+    "type": "text",
+    "id": 1,
+    "aligned": true
+   },
+   "x": 0,
+   "y": 0,
+   "width": 500,
+   "texts": {
+    "1": "Smaller values save memory; larger values make switching faster."
+   }
+  },
+  {
+   "name": "text: full-width status",
+   "kind": "element",
+   "surface": "s100",
+   "element": {
+    "type": "text",
+    "id": 1,
+    "aligned": false
+   },
+   "x": 0,
+   "y": 0,
+   "width": 500,
+   "texts": {
+    "1": "Checking for updates..."
+   }
+  },
+  {
+   "name": "text: empty text hides the control and takes no room",
+   "kind": "element",
+   "surface": "s100",
+   "element": {
+    "type": "text",
+    "id": 1,
+    "aligned": false
+   },
+   "x": 0,
+   "y": 0,
+   "width": 500,
+   "texts": {
+    "1": ""
+   }
+  },
+  {
+   "name": "text: missing text counts as empty",
+   "kind": "element",
+   "surface": "s100",
+   "element": {
+    "type": "text",
+    "id": 1,
+    "aligned": true
+   },
+   "x": 0,
+   "y": 0,
+   "width": 500
+  },
+  {
+   "name": "text: hidden id",
+   "kind": "element",
+   "surface": "s100",
+   "element": {
+    "type": "text",
+    "id": 1,
+    "aligned": false
+   },
+   "x": 0,
+   "y": 0,
+   "width": 500,
+   "hidden": [
+    1
+   ],
+   "texts": {
+    "1": "x"
+   }
+  },
+  {
+   "name": "text: aligned note on a very narrow page keeps 30 dlu",
+   "kind": "element",
+   "surface": "unit",
+   "element": {
+    "type": "text",
+    "id": 1,
+    "aligned": true
+   },
+   "x": 0,
+   "y": 0,
+   "width": 100,
+   "texts": {
+    "1": "abc def ghi"
+   }
+  },
+  {
+   "name": "buttons: three, one line, not aligned",
+   "kind": "element",
+   "surface": "s100",
+   "element": {
+    "type": "buttons",
+    "ids": [
+     1,
+     2,
+     3
+    ],
+    "aligned": false
+   },
+   "x": 0,
+   "y": 0,
+   "width": 600,
+   "texts": {
+    "1": "Import",
+    "2": "Export settings",
+    "3": "Reset"
+   }
+  },
+  {
+   "name": "buttons: wrap to a second line",
+   "kind": "element",
+   "surface": "s100",
+   "element": {
+    "type": "buttons",
+    "ids": [
+     1,
+     2,
+     3
+    ],
+    "aligned": false
+   },
+   "x": 0,
+   "y": 0,
+   "width": 230,
+   "texts": {
+    "1": "Import",
+    "2": "Export settings",
+    "3": "Reset"
+   }
+  },
+  {
+   "name": "buttons: aligned with the control column",
+   "kind": "element",
+   "surface": "s100",
+   "element": {
+    "type": "buttons",
+    "ids": [
+     1,
+     2
+    ],
+    "aligned": true
+   },
+   "x": 0,
+   "y": 0,
+   "width": 500,
+   "texts": {
+    "1": "Browse...",
+    "2": "Clear"
+   }
+  },
+  {
+   "name": "buttons: a hidden button is skipped",
+   "kind": "element",
+   "surface": "s100",
+   "element": {
+    "type": "buttons",
+    "ids": [
+     1,
+     2,
+     3
+    ],
+    "aligned": false
+   },
+   "x": 0,
+   "y": 0,
+   "width": 600,
+   "hidden": [
+    2
+   ],
+   "texts": {
+    "1": "A",
+    "2": "B",
+    "3": "C"
+   }
+  },
+  {
+   "name": "buttons: all hidden returns 0",
+   "kind": "element",
+   "surface": "s100",
+   "element": {
+    "type": "buttons",
+    "ids": [
+     1,
+     2
+    ],
+    "aligned": false
+   },
+   "x": 0,
+   "y": 0,
+   "width": 600,
+   "hidden": [
+    1,
+    2
+   ],
+   "texts": {
+    "1": "A",
+    "2": "B"
+   }
+  },
+  {
+   "name": "buttons: minimum 50 dlu button width",
+   "kind": "element",
+   "surface": "unit",
+   "element": {
+    "type": "buttons",
+    "ids": [
+     1
+    ],
+    "aligned": false
+   },
+   "x": 0,
+   "y": 0,
+   "width": 300,
+   "texts": {
+    "1": "OK"
+   }
+  },
+  {
+   "name": "buttons: empty list",
+   "kind": "element",
+   "surface": "s100",
+   "element": {
+    "type": "buttons",
+    "ids": [],
+    "aligned": false
+   },
+   "x": 0,
+   "y": 0,
+   "width": 300
+  },
+  {
+   "name": "buttons: Visible=false hides every id",
+   "kind": "element",
+   "surface": "s100",
+   "element": {
+    "type": "buttons",
+    "ids": [
+     1,
+     2
+    ],
+    "aligned": true,
+    "visible": false
+   },
+   "x": 0,
+   "y": 0,
+   "width": 300,
+   "texts": {
+    "1": "A",
+    "2": "B"
+   }
+  },
+  {
+   "name": "radio: no hint",
+   "kind": "element",
+   "surface": "s100",
+   "element": {
+    "type": "radio",
+    "id": 1,
+    "hint": null,
+    "indent": 0
+   },
+   "x": 0,
+   "y": 0,
+   "width": 500,
+   "texts": {
+    "1": "Fade"
+   }
+  },
+  {
+   "name": "radio: with a hint, indent 6",
+   "kind": "element",
+   "surface": "s100",
+   "element": {
+    "type": "radio",
+    "id": 1,
+    "hint": 2,
+    "indent": 6
+   },
+   "x": 0,
+   "y": 0,
+   "width": 500,
+   "texts": {
+    "1": "Slide",
+    "2": "Images slide in from the side."
+   }
+  },
+  {
+   "name": "radio: wrapped text and a two-line hint",
+   "kind": "element",
+   "surface": "s100",
+   "element": {
+    "type": "radio",
+    "id": 1,
+    "hint": 2,
+    "indent": 0
+   },
+   "x": 0,
+   "y": 0,
+   "width": 180,
+   "texts": {
+    "1": "Keep the current zoom for the next image",
+    "2": "The zoom and the position stay when you move to the next image in the folder."
+   }
+  },
+  {
+   "name": "radio: hidden radio hides its hint",
+   "kind": "element",
+   "surface": "s100",
+   "element": {
+    "type": "radio",
+    "id": 1,
+    "hint": 2,
+    "indent": 0
+   },
+   "x": 0,
+   "y": 0,
+   "width": 500,
+   "hidden": [
+    1
+   ],
+   "texts": {
+    "1": "x",
+    "2": "y"
+   }
+  },
+  {
+   "name": "radio: hint hidden alone is still placed",
+   "kind": "element",
+   "surface": "s100",
+   "element": {
+    "type": "radio",
+    "id": 1,
+    "hint": 2,
+    "indent": 0
+   },
+   "x": 0,
+   "y": 0,
+   "width": 500,
+   "hidden": [
+    2
+   ],
+   "texts": {
+    "1": "x",
+    "2": "y"
+   }
+  },
+  {
+   "name": "radio: Visible=false",
+   "kind": "element",
+   "surface": "s100",
+   "element": {
+    "type": "radio",
+    "id": 1,
+    "hint": 2,
+    "indent": 0,
+    "visible": false
+   },
+   "x": 0,
+   "y": 0,
+   "width": 500,
+   "texts": {
+    "1": "x",
+    "2": "y"
+   }
+  },
+  {
+   "name": "radio: narrow page keeps the minimum widths",
+   "kind": "element",
+   "surface": "unit",
+   "element": {
+    "type": "radio",
+    "id": 1,
+    "hint": 2,
+    "indent": 30
+   },
+   "x": 0,
+   "y": 0,
+   "width": 40,
+   "texts": {
+    "1": "abcdef",
+    "2": "ghijkl"
+   }
+  },
+  {
+   "name": "check_flow: five boxes on a wide page",
+   "kind": "element",
+   "surface": "s100",
+   "element": {
+    "type": "check_flow",
+    "ids": [
+     1,
+     2,
+     3,
+     4,
+     5
+    ],
+    "indent": 0
+   },
+   "x": 0,
+   "y": 0,
+   "width": 900,
+   "texts": {
+    "1": "Name",
+    "2": "Date",
+    "3": "Size",
+    "4": "Type",
+    "5": "Dimensions"
+   }
+  },
+  {
+   "name": "check_flow: wraps",
+   "kind": "element",
+   "surface": "s100",
+   "element": {
+    "type": "check_flow",
+    "ids": [
+     1,
+     2,
+     3,
+     4,
+     5
+    ],
+    "indent": 4
+   },
+   "x": 0,
+   "y": 0,
+   "width": 260,
+   "texts": {
+    "1": "Name",
+    "2": "Date",
+    "3": "Size",
+    "4": "Type",
+    "5": "Dimensions"
+   }
+  },
+  {
+   "name": "check_flow: an item wider than the row is clipped to the row",
+   "kind": "element",
+   "surface": "unit",
+   "element": {
+    "type": "check_flow",
+    "ids": [
+     1,
+     2
+    ],
+    "indent": 0
+   },
+   "x": 0,
+   "y": 0,
+   "width": 60,
+   "texts": {
+    "1": "a very long item text here",
+    "2": "b"
+   }
+  },
+  {
+   "name": "check_flow: empty list still returns one row of height",
+   "kind": "element",
+   "surface": "s100",
+   "element": {
+    "type": "check_flow",
+    "ids": [],
+    "indent": 0
+   },
+   "x": 0,
+   "y": 0,
+   "width": 300
+  },
+  {
+   "name": "check_flow: hidden items are NOT skipped",
+   "kind": "element",
+   "surface": "s100",
+   "element": {
+    "type": "check_flow",
+    "ids": [
+     1,
+     2
+    ],
+    "indent": 0
+   },
+   "x": 0,
+   "y": 0,
+   "width": 400,
+   "hidden": [
+    1
+   ],
+   "texts": {
+    "1": "A",
+    "2": "B"
+   }
+  },
+  {
+   "name": "check_flow: Visible=false",
+   "kind": "element",
+   "surface": "s100",
+   "element": {
+    "type": "check_flow",
+    "ids": [
+     1,
+     2
+    ],
+    "indent": 0,
+    "visible": false
+   },
+   "x": 0,
+   "y": 0,
+   "width": 400,
+   "texts": {
+    "1": "A",
+    "2": "B"
+   }
+  },
+  {
+   "name": "group: empty",
+   "kind": "element",
+   "surface": "s100",
+   "element": {
+    "type": "group",
+    "title": 10,
+    "children": []
+   },
+   "x": 0,
+   "y": 0,
+   "width": 400,
+   "texts": {
+    "10": "Empty"
+   }
+  },
+  {
+   "name": "group: check + row",
+   "kind": "element",
+   "surface": "s100",
+   "element": {
+    "type": "group",
+    "title": 10,
+    "children": [
+     {
+      "type": "check",
+      "id": 11,
+      "indent": 0
+     },
+     {
+      "type": "row",
+      "label": 12,
+      "control": 13,
+      "row_kind": "Edit",
+      "width_dlu": 60
+     }
+    ]
+   },
+   "x": 0,
+   "y": 0,
+   "width": 500,
+   "texts": {
+    "10": "General",
+    "11": "Open the last folder",
+    "12": "Pan step"
+   }
+  },
+  {
+   "name": "group: nested group with a hidden inner group",
+   "kind": "element",
+   "surface": "s100",
+   "element": {
+    "type": "group",
+    "title": 10,
+    "children": [
+     {
+      "type": "check",
+      "id": 11,
+      "indent": 0
+     },
+     {
+      "type": "group",
+      "title": 20,
+      "children": [
+       {
+        "type": "check",
+        "id": 21,
+        "indent": 0
+       }
+      ],
+      "visible": false
+     },
+     {
+      "type": "check",
+      "id": 12,
+      "indent": 0
+     }
+    ]
+   },
+   "x": 0,
+   "y": 0,
+   "width": 500,
+   "texts": {
+    "10": "Outer",
+    "11": "a",
+    "12": "b",
+    "20": "Inner",
+    "21": "c"
+   }
+  },
+  {
+   "name": "group: Visible=false hides the title first, then the children",
+   "kind": "element",
+   "surface": "s100",
+   "element": {
+    "type": "group",
+    "title": 10,
+    "children": [
+     {
+      "type": "check",
+      "id": 11,
+      "indent": 0
+     },
+     {
+      "type": "row",
+      "label": 12,
+      "control": 13,
+      "row_kind": "Combo",
+      "width_dlu": 0
+     }
+    ],
+    "visible": false
+   },
+   "x": 0,
+   "y": 0,
+   "width": 500
+  },
+  {
+   "name": "group: narrow page keeps a 40 dlu inner width",
+   "kind": "element",
+   "surface": "unit",
+   "element": {
+    "type": "group",
+    "title": 10,
+    "children": [
+     {
+      "type": "check",
+      "id": 11,
+      "indent": 0
+     }
+    ]
+   },
+   "x": 0,
+   "y": 0,
+   "width": 20,
+   "texts": {
+    "11": "abc"
+   }
+  },
+  {
+   "name": "group: s150 with radios and hints",
+   "kind": "element",
+   "surface": "s150",
+   "element": {
+    "type": "group",
+    "title": 10,
+    "children": [
+     {
+      "type": "radio",
+      "id": 11,
+      "hint": 12,
+      "indent": 0
+     },
+     {
+      "type": "radio",
+      "id": 13,
+      "hint": null,
+      "indent": 0
+     }
+    ]
+   },
+   "x": 0,
+   "y": 0,
+   "width": 700,
+   "texts": {
+    "10": "Mode",
+    "11": "One",
+    "12": "first",
+    "13": "Two"
+   }
+  },
+  {
+   "name": "key_grid: wide page, two columns, boxes aligned",
+   "kind": "element",
+   "surface": "s100",
+   "element": {
+    "type": "key_grid",
+    "cells": [
+     {
+      "label": 1,
+      "box": 2,
+      "clear": 3
+     },
+     {
+      "label": 4,
+      "box": 5,
+      "clear": 0
+     },
+     {
+      "label": 6,
+      "box": 7,
+      "clear": 8
+     },
+     {
+      "label": 9,
+      "box": 10,
+      "clear": 0
+     }
+    ]
+   },
+   "x": 0,
+   "y": 0,
+   "width": 700,
+   "texts": {
+    "1": "Next",
+    "4": "Previous",
+    "6": "First",
+    "9": "Last"
+   }
+  },
+  {
+   "name": "key_grid: a tall wrapped label makes its row taller",
+   "kind": "element",
+   "surface": "s100",
+   "element": {
+    "type": "key_grid",
+    "cells": [
+     {
+      "label": 1,
+      "box": 2,
+      "clear": 3
+     },
+     {
+      "label": 4,
+      "box": 5,
+      "clear": 0
+     },
+     {
+      "label": 6,
+      "box": 7,
+      "clear": 8
+     },
+     {
+      "label": 9,
+      "box": 10,
+      "clear": 0
+     }
+    ]
+   },
+   "x": 0,
+   "y": 0,
+   "width": 700,
+   "heights": {
+    "4": 60
+   },
+   "texts": {
+    "1": "Next",
+    "4": "x",
+    "6": "First",
+    "9": "Last"
+   }
+  },
+  {
+   "name": "key_grid: narrow page, one column",
+   "kind": "element",
+   "surface": "s100",
+   "element": {
+    "type": "key_grid",
+    "cells": [
+     {
+      "label": 1,
+      "box": 2,
+      "clear": 3
+     },
+     {
+      "label": 4,
+      "box": 5,
+      "clear": 0
+     },
+     {
+      "label": 6,
+      "box": 7,
+      "clear": 8
+     },
+     {
+      "label": 9,
+      "box": 10,
+      "clear": 0
+     }
+    ]
+   },
+   "x": 0,
+   "y": 0,
+   "width": 200,
+   "texts": {
+    "1": "Next",
+    "4": "Previous",
+    "6": "First",
+    "9": "Last"
+   }
+  },
+  {
+   "name": "key_grid: odd cell count leaves the last row half empty",
+   "kind": "element",
+   "surface": "s100",
+   "element": {
+    "type": "key_grid",
+    "cells": [
+     {
+      "label": 1,
+      "box": 2,
+      "clear": 3
+     },
+     {
+      "label": 4,
+      "box": 5,
+      "clear": 0
+     },
+     {
+      "label": 6,
+      "box": 7,
+      "clear": 8
+     }
+    ]
+   },
+   "x": 0,
+   "y": 0,
+   "width": 700,
+   "texts": {
+    "1": "A",
+    "4": "B",
+    "6": "C"
+   }
+  },
+  {
+   "name": "key_grid: threshold width for two columns (2*172-12 = 332 at unit scale)",
+   "kind": "element",
+   "surface": "unit",
+   "element": {
+    "type": "key_grid",
+    "cells": [
+     {
+      "label": 1,
+      "box": 2,
+      "clear": 0
+     },
+     {
+      "label": 3,
+      "box": 4,
+      "clear": 0
+     }
+    ]
+   },
+   "x": 0,
+   "y": 0,
+   "width": 332
+  },
+  {
+   "name": "key_grid: one pixel less than the threshold",
+   "kind": "element",
+   "surface": "unit",
+   "element": {
+    "type": "key_grid",
+    "cells": [
+     {
+      "label": 1,
+      "box": 2,
+      "clear": 0
+     },
+     {
+      "label": 3,
+      "box": 4,
+      "clear": 0
+     }
+    ]
+   },
+   "x": 0,
+   "y": 0,
+   "width": 331
+  },
+  {
+   "name": "key_grid: s100 threshold is 12*1.5 + 2*160*1.5 = 498",
+   "kind": "element",
+   "surface": "s100",
+   "element": {
+    "type": "key_grid",
+    "cells": [
+     {
+      "label": 1,
+      "box": 2,
+      "clear": 3
+     },
+     {
+      "label": 4,
+      "box": 5,
+      "clear": 0
+     }
+    ]
+   },
+   "x": 0,
+   "y": 0,
+   "width": 498
+  },
+  {
+   "name": "key_grid: s100 one pixel less than the threshold",
+   "kind": "element",
+   "surface": "s100",
+   "element": {
+    "type": "key_grid",
+    "cells": [
+     {
+      "label": 1,
+      "box": 2,
+      "clear": 3
+     },
+     {
+      "label": 4,
+      "box": 5,
+      "clear": 0
+     }
+    ]
+   },
+   "x": 0,
+   "y": 0,
+   "width": 497
+  },
+  {
+   "name": "key_grid: very narrow page",
+   "kind": "element",
+   "surface": "s100",
+   "element": {
+    "type": "key_grid",
+    "cells": [
+     {
+      "label": 1,
+      "box": 2,
+      "clear": 3
+     }
+    ]
+   },
+   "x": 0,
+   "y": 0,
+   "width": 50,
+   "texts": {
+    "1": "Next image"
+   }
+  },
+  {
+   "name": "key_grid: empty",
+   "kind": "element",
+   "surface": "s100",
+   "element": {
+    "type": "key_grid",
+    "cells": []
+   },
+   "x": 0,
+   "y": 0,
+   "width": 700
+  },
+  {
+   "name": "key_grid: control ids include clear only when non-zero",
+   "kind": "element",
+   "surface": "s100",
+   "element": {
+    "type": "key_grid",
+    "cells": [
+     {
+      "label": 1,
+      "box": 2,
+      "clear": 3
+     },
+     {
+      "label": 4,
+      "box": 5,
+      "clear": 0
+     }
+    ]
+   },
+   "x": 0,
+   "y": 0,
+   "width": 700
+  },
+  {
+   "name": "key_grid: Vietnamese labels, s150",
+   "kind": "element",
+   "surface": "s150",
+   "element": {
+    "type": "key_grid",
+    "cells": [
+     {
+      "label": 1,
+      "box": 2,
+      "clear": 3
+     },
+     {
+      "label": 4,
+      "box": 5,
+      "clear": 0
+     }
+    ]
+   },
+   "x": 0,
+   "y": 0,
+   "width": 900,
+   "texts": {
+    "1": "Ảnh kế tiếp",
+    "4": "Ảnh trước"
+   }
+  },
+  {
+   "name": "key_grid: Visible=false",
+   "kind": "element",
+   "surface": "s100",
+   "element": {
+    "type": "key_grid",
+    "cells": [
+     {
+      "label": 1,
+      "box": 2,
+      "clear": 3
+     },
+     {
+      "label": 4,
+      "box": 5,
+      "clear": 0
+     }
+    ],
+    "visible": false
+   },
+   "x": 0,
+   "y": 0,
+   "width": 700
+  }
+ ]
+}

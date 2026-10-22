@@ -1,0 +1,23 @@
+{
+ "command": "settings-catalog",
+ "notes": [
+  "Feeds W8-19a (dialogs::settings::{catalog, page_view}). Reflection over the internal SettingsPageCatalog, PendingSettingsPage (PhotoReview.dll) and SettingsPresenter (PhotoReview.App.Shared.dll).",
+  "catalog -> implemented_keys (the C# Dictionary order: alphabetical), pending_keys, is_complete, nav_keys (SettingsPresenter.Pages order), created_keys, created_types. page_title -> title. pending_page -> page_key, title.",
+  "The English default localizer is active, so titles are the English settings.nav.* texts."
+ ],
+ "cases": [
+  { "name": "static facts of the catalog", "kind": "catalog" },
+  { "name": "title General", "kind": "page_title", "key": "General" },
+  { "name": "title Display", "kind": "page_title", "key": "Display" },
+  { "name": "title Mouse", "kind": "page_title", "key": "Mouse" },
+  { "name": "title Performance", "kind": "page_title", "key": "Performance" },
+  { "name": "title Shortcuts", "kind": "page_title", "key": "Shortcuts" },
+  { "name": "title Files", "kind": "page_title", "key": "Files" },
+  { "name": "title Diagnostics", "kind": "page_title", "key": "Diagnostics" },
+  { "name": "title of an unknown key is empty", "kind": "page_title", "key": "Nope" },
+  { "name": "title of an empty key is empty", "kind": "page_title", "key": "" },
+  { "name": "title lookup is case sensitive", "kind": "page_title", "key": "general" },
+  { "name": "pending page of a real key", "kind": "pending_page", "key": "Mouse" },
+  { "name": "pending page of an unknown key", "kind": "pending_page", "key": "Future" }
+ ]
+}

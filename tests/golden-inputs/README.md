@@ -114,3 +114,7 @@ Goldens for the merged W4 units (W4-01a, 01c, 02a, 03a, 05a/b, 06a, 07a/b, 08a/b
 ## Wave 7 (benchmarking)
 
 Goldens `bench-*`, `benchmark-*`, `slow-link-*`, `cli-arguments`, `cli-dataset-plan` and `cli-tool-path-guard` were merged with units W7-01a, 01b, 02a, 02b, 03a, 03b, 03c and 03d. The `cli-process` golden was not produced (needs the baseline WPF-bound Benchmark.Cli exe; D70). Units with FAIL verdicts or surviving mutants are Partial in `docs/PARITY.md`.
+
+## Wave 8 batch B5 (dialogs and settings UI)
+
+25 commands, one oracle file per unit in `tools/oracle-cs/Commands/W8-18*.cs` and `W8-19*.cs` (case counts of the goldens: `contracts/README.md`, D-W8B5-1002). Generated with `./tools/oracle.ps1 -Commit d92d6aae -Command <name>` (twice, byte-identical). Commands: `dialog-template`, `dialog-layout`, `folder-picker-policy`, `painter-kinds`, `secondary-window-supports`, `dialog-zoom-diagnostics`, `dialog-action-profiles`, `dialog-benchmark-layout`, `dialog-benchmark-results`, `recovery-dialog-layout`, `recovery-dialog-details`, `recovery-dialog-dismiss`, `settings-catalog`, `settings-layout`, `settings-builder`, `settings-pages-diag-perf`, `settings-page-display`, `settings-page-files`, `settings-page-general`, `settings-page-mouse`, `settings-page-shortcuts`, `settings-dialog-frame`, `settings-dialog-state`, `settings-dialog-apply`, `settings-dialog-layout`. `painter-kinds` needs an interactive desktop for its `kind_for` rows.

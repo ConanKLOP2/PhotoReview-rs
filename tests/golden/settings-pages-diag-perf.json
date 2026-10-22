@@ -1,0 +1,331 @@
+{
+  "generator": "oracle-cs settings-pages-diag-perf",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "Diagnostics page declaration",
+      "kind": "declare",
+      "page": "Diagnostics",
+      "id_base": 7000,
+      "fields": [
+        "_logging",
+        "_openLog"
+      ],
+      "key": "Diagnostics",
+      "title": "Diagnostics",
+      "items": [
+        {
+          "class": "Button",
+          "id": 7001,
+          "text": "Diagnostics",
+          "style": 1342177287,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 7002,
+          "text": "Enable diagnostic logging (off by default)",
+          "style": 1342251011,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 7003,
+          "text": "Open log file location",
+          "style": 1342242816,
+          "ex_style": 0
+        }
+      ],
+      "texts": [
+        {
+          "id": 7001,
+          "text": "Diagnostics"
+        },
+        {
+          "id": 7002,
+          "text": "Enable diagnostic logging (off by default)"
+        },
+        {
+          "id": 7003,
+          "text": "Open log file location"
+        }
+      ],
+      "notes": [],
+      "key_boxes": [],
+      "warnings": [],
+      "combo_items": [],
+      "sliders": [],
+      "elements": [
+        {
+          "type": "SettingsGroupElement",
+          "control_ids": [
+            7001,
+            7002,
+            7003
+          ],
+          "children": [
+            {
+              "type": "SettingsCheckElement",
+              "control_ids": [
+                7002
+              ]
+            },
+            {
+              "type": "SettingsButtonsElement",
+              "control_ids": [
+                7003
+              ]
+            }
+          ]
+        }
+      ],
+      "ids": {
+        "logging": 7002,
+        "open_log": 7003
+      }
+    },
+    {
+      "name": "Performance page declaration",
+      "kind": "declare",
+      "page": "Performance",
+      "id_base": 4000,
+      "fields": [
+        "_decoder",
+        "_turboNote",
+        "_ramSlider",
+        "_ramValue",
+        "_ramHint",
+        "_forward",
+        "_backward"
+      ],
+      "key": "Performance",
+      "title": "Performance",
+      "items": [
+        {
+          "class": "Button",
+          "id": 4001,
+          "text": "Performance",
+          "style": 1342177287,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 4002,
+          "text": "Decoder backend",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "ComboBox",
+          "id": 4003,
+          "text": "",
+          "style": 1344340483,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 4004,
+          "text": "",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 4005,
+          "text": "RAM cache size",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Trackbar",
+          "id": 4006,
+          "text": "",
+          "style": 1342242832,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 4007,
+          "text": "",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 4008,
+          "text": "",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 4009,
+          "text": "Preload ahead (images)",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Edit",
+          "id": 4010,
+          "text": "",
+          "style": 1342242944,
+          "ex_style": 512
+        },
+        {
+          "class": "Static",
+          "id": 4011,
+          "text": "Preload behind (images)",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Edit",
+          "id": 4012,
+          "text": "",
+          "style": 1342242944,
+          "ex_style": 512
+        },
+        {
+          "class": "Static",
+          "id": 4013,
+          "text": "Images decoded ahead of / behind the current one while you review. Allowed 0–500. A larger window needs more RAM (the RAM slider's minimum follows it). Applies after restarting PhotoReview.",
+          "style": 1342177408,
+          "ex_style": 0
+        }
+      ],
+      "texts": [
+        {
+          "id": 4001,
+          "text": "Performance"
+        },
+        {
+          "id": 4002,
+          "text": "Decoder backend"
+        },
+        {
+          "id": 4005,
+          "text": "RAM cache size"
+        },
+        {
+          "id": 4009,
+          "text": "Preload ahead (images)"
+        },
+        {
+          "id": 4011,
+          "text": "Preload behind (images)"
+        },
+        {
+          "id": 4013,
+          "text": "Images decoded ahead of / behind the current one while you review. Allowed 0–500. A larger window needs more RAM (the RAM slider's minimum follows it). Applies after restarting PhotoReview."
+        }
+      ],
+      "notes": [
+        4004,
+        4008,
+        4013
+      ],
+      "key_boxes": [],
+      "warnings": [],
+      "combo_items": [
+        {
+          "id": 4003,
+          "items": [
+            "WPF (default, safe)",
+            "WIC Direct (fast)",
+            "TurboJPEG (JPEG) (experimental)"
+          ]
+        }
+      ],
+      "sliders": [
+        {
+          "id": 4006,
+          "min": 1,
+          "max": 90
+        }
+      ],
+      "elements": [
+        {
+          "type": "SettingsGroupElement",
+          "control_ids": [
+            4001,
+            4002,
+            4003,
+            4004,
+            4005,
+            4006,
+            4007,
+            4008,
+            4009,
+            4010,
+            4011,
+            4012,
+            4013
+          ],
+          "children": [
+            {
+              "type": "SettingsRowElement",
+              "control_ids": [
+                4002,
+                4003
+              ]
+            },
+            {
+              "type": "SettingsTextElement",
+              "control_ids": [
+                4004
+              ]
+            },
+            {
+              "type": "SettingsSliderElement",
+              "control_ids": [
+                4005,
+                4006,
+                4007
+              ]
+            },
+            {
+              "type": "SettingsTextElement",
+              "control_ids": [
+                4008
+              ]
+            },
+            {
+              "type": "SettingsRowElement",
+              "control_ids": [
+                4009,
+                4010
+              ]
+            },
+            {
+              "type": "SettingsRowElement",
+              "control_ids": [
+                4011,
+                4012
+              ]
+            },
+            {
+              "type": "SettingsTextElement",
+              "control_ids": [
+                4013
+              ]
+            }
+          ]
+        }
+      ],
+      "ids": {
+        "decoder": 4003,
+        "turbo_note": 4004,
+        "ram_slider": 4006,
+        "ram_value": 4007,
+        "ram_hint": 4008,
+        "forward": 4010,
+        "backward": 4012
+      }
+    },
+    {
+      "name": "Performance constants",
+      "kind": "constants",
+      "turbo_jpeg_index": 2
+    }
+  ]
+}

@@ -1,0 +1,1371 @@
+{
+  "generator": "oracle-cs settings-page-mouse",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "Mouse page declaration",
+      "kind": "declare",
+      "page": "Mouse",
+      "id_base": 3000,
+      "fields": [
+        "_clickZoomPercent",
+        "_clickToZoom",
+        "_arrowPanStep",
+        "_keyboardZoomAnchor",
+        "_zoomShortcutsSummary",
+        "_fitWidthAnchor",
+        "_keepZoom",
+        "_keyboardZoomStep",
+        "_fitWidthAnchor2",
+        "_middleClick",
+        "_clickZoomKeyTogglesFit",
+        "_mouseWheel",
+        "_kineticPan",
+        "_kineticSmoothing",
+        "_arrowKeyAtEdge",
+        "_imageTransition",
+        "_imageTransitionMs",
+        "_touchpadSwipe",
+        "_touchpadDistance"
+      ],
+      "menu_checks": [
+        {
+          "item": "Undo",
+          "id": 3053
+        },
+        {
+          "item": "MoveToRecycleBin",
+          "id": 3054
+        },
+        {
+          "item": "Fit",
+          "id": 3055
+        },
+        {
+          "item": "ZoomToLevel",
+          "id": 3056
+        },
+        {
+          "item": "ZoomSubmenu",
+          "id": 3057
+        },
+        {
+          "item": "Refresh",
+          "id": 3058
+        },
+        {
+          "item": "OpenFolder",
+          "id": 3059
+        },
+        {
+          "item": "NextFolder",
+          "id": 3060
+        },
+        {
+          "item": "PreviousFolder",
+          "id": 3061
+        },
+        {
+          "item": "ExternalEditor",
+          "id": 3062
+        },
+        {
+          "item": "CopyFileName",
+          "id": 3063
+        },
+        {
+          "item": "CopyFullPath",
+          "id": 3064
+        },
+        {
+          "item": "Settings",
+          "id": 3065
+        },
+        {
+          "item": "ZoomFitWidth",
+          "id": 3066
+        },
+        {
+          "item": "ZoomFitWidth2",
+          "id": 3067
+        },
+        {
+          "item": "ZoomFitHeight",
+          "id": 3068
+        },
+        {
+          "item": "ZoomPresets",
+          "id": 3069
+        },
+        {
+          "item": "ZoomLevelOptions",
+          "id": 3070
+        }
+      ],
+      "key": "Mouse",
+      "title": "Mouse & zoom",
+      "items": [
+        {
+          "class": "Button",
+          "id": 3001,
+          "text": "Zoom",
+          "style": 1342177287,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 3002,
+          "text": "Click zoom level",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Edit",
+          "id": 3003,
+          "text": "",
+          "style": 1342242944,
+          "ex_style": 512
+        },
+        {
+          "class": "Static",
+          "id": 3004,
+          "text": "The zoom level used by click-to-zoom, the zoom shortcut and the right-click Zoom menu. It applies even when click-to-zoom is off.",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 3005,
+          "text": "Click to zoom",
+          "style": 1342251011,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 3006,
+          "text": "Arrow key step (zoomed image)",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Edit",
+          "id": 3007,
+          "text": "",
+          "style": 1342242944,
+          "ex_style": 512
+        },
+        {
+          "class": "Static",
+          "id": 3008,
+          "text": "How far one arrow press moves a zoomed image, in percent of the SHORTER side of the view; the same number of pixels horizontally and vertically (default 10).",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 3009,
+          "text": "Keyboard zoom anchors at",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "ComboBox",
+          "id": 3010,
+          "text": "",
+          "style": 1344340483,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 3011,
+          "text": "Where +/- keyboard zoom, 100 % and the click-zoom shortcut keep the image in place. Mouse wheel and click-to-zoom always anchor at the cursor.",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 3012,
+          "text": "Zoom shortcuts",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 3013,
+          "text": "",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 3014,
+          "text": "Read-only: change these keys on the Shortcuts page.",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 3015,
+          "text": "Fit width shows 1",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "ComboBox",
+          "id": 3016,
+          "text": "",
+          "style": 1344340483,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 3017,
+          "text": "Which part of the image stays at the centre of the view after Fit width: Centre (default), Top third (portraits usually have the face there) or Bottom third. Also used by the initial view when it is Fit width.",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 3018,
+          "text": "Keep zoom level when changing photo",
+          "style": 1342251011,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 3019,
+          "text": "On: the view (Fit or a zoom level) stays the same when you move to the next photo, instead of resetting to the initial view. Default off.",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 3020,
+          "text": "Keyboard zoom step (%)",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Edit",
+          "id": 3021,
+          "text": "",
+          "style": 1342242944,
+          "ex_style": 512
+        },
+        {
+          "class": "Static",
+          "id": 3022,
+          "text": "How far +/- keyboard zoom and mouse-wheel zoom move on each press, in percent of original size (5-100, default 10).",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 3023,
+          "text": "Fit width shows 2",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "ComboBox",
+          "id": 3024,
+          "text": "",
+          "style": 1344340483,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 3025,
+          "text": "Which part of the image stays at the centre of the view after the second Fit width command (shortcut, Zoom menu item or middle click): Centre, Top third or Bottom third (default). It does not affect the initial view.",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 3026,
+          "text": "Middle click action",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "ComboBox",
+          "id": 3027,
+          "text": "",
+          "style": 1344340483,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 3028,
+          "text": "What clicking the middle mouse button (wheel press) over the image does. Default: Fullsize (100 %). Fullsize and Click-to-zoom follow \"Keyboard zoom anchors at\".",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 3029,
+          "text": "Click-zoom key returns to Fit when already at the click zoom level",
+          "style": 1342251011,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 3030,
+          "text": "Off (default): the click-zoom key always goes to the click zoom level and does nothing when the image is already there; use the Fit key to go back. On: pressing it at the click zoom level goes back to Fit (like a mouse click).",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 3031,
+          "text": "Mouse && zoom",
+          "style": 1342177287,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 3032,
+          "text": "Mouse wheel",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "ComboBox",
+          "id": 3033,
+          "text": "",
+          "style": 1344340483,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 3034,
+          "text": "Ctrl+wheel always zooms.",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 3035,
+          "text": "Kinetic panning",
+          "style": 1342251011,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 3036,
+          "text": "Glide smoothing",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "ComboBox",
+          "id": 3037,
+          "text": "",
+          "style": 1344340483,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 3038,
+          "text": "Moves the glide in step with your monitor's refresh rate. Turn off to compare.",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 3039,
+          "text": "Arrow key at the edge of a zoomed image goes to the next/previous photo",
+          "style": 1342251011,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 3040,
+          "text": "Off (default): arrow keys only move around a zoomed image; go back to Fit to change photo. On: pressing an arrow key again at the edge changes photo.",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 3041,
+          "text": "Transition when changing photo",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "ComboBox",
+          "id": 3042,
+          "text": "",
+          "style": 1344340483,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 3043,
+          "text": "Only when navigating to a different photo; the thumbnail-to-full-quality upgrade of the same photo always stays instant.",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 3044,
+          "text": "Fade duration (ms)",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Edit",
+          "id": 3045,
+          "text": "",
+          "style": 1342242944,
+          "ex_style": 512
+        },
+        {
+          "class": "Button",
+          "id": 3046,
+          "text": "Touchpad two-finger swipe: pan a zoomed photo, change photo at Fit (up/down)",
+          "style": 1342251011,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 3047,
+          "text": "Pinch still zooms and an ordinary mouse wheel keeps the wheel setting above. A sideways swipe at Fit is ignored. Some smooth-scrolling mice look like a touchpad; turn this off if your mouse wheel stops zooming.",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 3048,
+          "text": "Touchpad swipe per photo",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Edit",
+          "id": 3049,
+          "text": "",
+          "style": 1342242944,
+          "ex_style": 512
+        },
+        {
+          "class": "Static",
+          "id": 3050,
+          "text": "Wheel units (120 = one mouse-wheel notch). The default 200 is roughly 1.5-2 cm on a typical precision touchpad; the exact distance depends on the touchpad driver. Larger = a longer swipe per photo. The first photo changes after half of it.",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 3051,
+          "text": "Right-click menu",
+          "style": 1342177287,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 3052,
+          "text": "Tick the items to show in the right-click menu; untick to hide one. Keyboard shortcuts keep working for hidden items. Separator lines disappear together with an empty group. Everything is saved with the other settings and travels with Export / Import.",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 3053,
+          "text": "Undo",
+          "style": 1342251011,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 3054,
+          "text": "Move to Recycle Bin",
+          "style": 1342251011,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 3055,
+          "text": "Fit to window",
+          "style": 1342251011,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 3056,
+          "text": "Zoom to N%",
+          "style": 1342251011,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 3057,
+          "text": "Zoom submenu",
+          "style": 1342251011,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 3058,
+          "text": "Refresh",
+          "style": 1342251011,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 3059,
+          "text": "Open folder",
+          "style": 1342251011,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 3060,
+          "text": "Next folder",
+          "style": 1342251011,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 3061,
+          "text": "Previous folder",
+          "style": 1342251011,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 3062,
+          "text": "Open in external editor",
+          "style": 1342251011,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 3063,
+          "text": "Copy File Name",
+          "style": 1342251011,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 3064,
+          "text": "Copy Full Pathname",
+          "style": 1342251011,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 3065,
+          "text": "Settings",
+          "style": 1342251011,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 3066,
+          "text": "Fit width",
+          "style": 1342251011,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 3067,
+          "text": "Fit width 2",
+          "style": 1342251011,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 3068,
+          "text": "Fit height",
+          "style": 1342251011,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 3069,
+          "text": "Zoom presets and Custom...",
+          "style": 1342251011,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 3070,
+          "text": "Click zoom level options (also set / set current)",
+          "style": 1342251011,
+          "ex_style": 0
+        }
+      ],
+      "texts": [
+        {
+          "id": 3001,
+          "text": "Zoom"
+        },
+        {
+          "id": 3002,
+          "text": "Click zoom level"
+        },
+        {
+          "id": 3004,
+          "text": "The zoom level used by click-to-zoom, the zoom shortcut and the right-click Zoom menu. It applies even when click-to-zoom is off."
+        },
+        {
+          "id": 3005,
+          "text": "Click to zoom"
+        },
+        {
+          "id": 3006,
+          "text": "Arrow key step (zoomed image)"
+        },
+        {
+          "id": 3008,
+          "text": "How far one arrow press moves a zoomed image, in percent of the SHORTER side of the view; the same number of pixels horizontally and vertically (default 10)."
+        },
+        {
+          "id": 3009,
+          "text": "Keyboard zoom anchors at"
+        },
+        {
+          "id": 3011,
+          "text": "Where +/- keyboard zoom, 100 % and the click-zoom shortcut keep the image in place. Mouse wheel and click-to-zoom always anchor at the cursor."
+        },
+        {
+          "id": 3012,
+          "text": "Zoom shortcuts"
+        },
+        {
+          "id": 3014,
+          "text": "Read-only: change these keys on the Shortcuts page."
+        },
+        {
+          "id": 3015,
+          "text": "Fit width shows 1"
+        },
+        {
+          "id": 3017,
+          "text": "Which part of the image stays at the centre of the view after Fit width: Centre (default), Top third (portraits usually have the face there) or Bottom third. Also used by the initial view when it is Fit width."
+        },
+        {
+          "id": 3018,
+          "text": "Keep zoom level when changing photo"
+        },
+        {
+          "id": 3019,
+          "text": "On: the view (Fit or a zoom level) stays the same when you move to the next photo, instead of resetting to the initial view. Default off."
+        },
+        {
+          "id": 3020,
+          "text": "Keyboard zoom step (%)"
+        },
+        {
+          "id": 3022,
+          "text": "How far +/- keyboard zoom and mouse-wheel zoom move on each press, in percent of original size (5-100, default 10)."
+        },
+        {
+          "id": 3023,
+          "text": "Fit width shows 2"
+        },
+        {
+          "id": 3025,
+          "text": "Which part of the image stays at the centre of the view after the second Fit width command (shortcut, Zoom menu item or middle click): Centre, Top third or Bottom third (default). It does not affect the initial view."
+        },
+        {
+          "id": 3026,
+          "text": "Middle click action"
+        },
+        {
+          "id": 3028,
+          "text": "What clicking the middle mouse button (wheel press) over the image does. Default: Fullsize (100 %). Fullsize and Click-to-zoom follow \"Keyboard zoom anchors at\"."
+        },
+        {
+          "id": 3029,
+          "text": "Click-zoom key returns to Fit when already at the click zoom level"
+        },
+        {
+          "id": 3030,
+          "text": "Off (default): the click-zoom key always goes to the click zoom level and does nothing when the image is already there; use the Fit key to go back. On: pressing it at the click zoom level goes back to Fit (like a mouse click)."
+        },
+        {
+          "id": 3031,
+          "text": "Mouse && zoom"
+        },
+        {
+          "id": 3032,
+          "text": "Mouse wheel"
+        },
+        {
+          "id": 3034,
+          "text": "Ctrl+wheel always zooms."
+        },
+        {
+          "id": 3035,
+          "text": "Kinetic panning"
+        },
+        {
+          "id": 3036,
+          "text": "Glide smoothing"
+        },
+        {
+          "id": 3038,
+          "text": "Moves the glide in step with your monitor's refresh rate. Turn off to compare."
+        },
+        {
+          "id": 3039,
+          "text": "Arrow key at the edge of a zoomed image goes to the next/previous photo"
+        },
+        {
+          "id": 3040,
+          "text": "Off (default): arrow keys only move around a zoomed image; go back to Fit to change photo. On: pressing an arrow key again at the edge changes photo."
+        },
+        {
+          "id": 3041,
+          "text": "Transition when changing photo"
+        },
+        {
+          "id": 3043,
+          "text": "Only when navigating to a different photo; the thumbnail-to-full-quality upgrade of the same photo always stays instant."
+        },
+        {
+          "id": 3044,
+          "text": "Fade duration (ms)"
+        },
+        {
+          "id": 3046,
+          "text": "Touchpad two-finger swipe: pan a zoomed photo, change photo at Fit (up/down)"
+        },
+        {
+          "id": 3047,
+          "text": "Pinch still zooms and an ordinary mouse wheel keeps the wheel setting above. A sideways swipe at Fit is ignored. Some smooth-scrolling mice look like a touchpad; turn this off if your mouse wheel stops zooming."
+        },
+        {
+          "id": 3048,
+          "text": "Touchpad swipe per photo"
+        },
+        {
+          "id": 3050,
+          "text": "Wheel units (120 = one mouse-wheel notch). The default 200 is roughly 1.5-2 cm on a typical precision touchpad; the exact distance depends on the touchpad driver. Larger = a longer swipe per photo. The first photo changes after half of it."
+        },
+        {
+          "id": 3051,
+          "text": "Right-click menu"
+        },
+        {
+          "id": 3052,
+          "text": "Tick the items to show in the right-click menu; untick to hide one. Keyboard shortcuts keep working for hidden items. Separator lines disappear together with an empty group. Everything is saved with the other settings and travels with Export / Import."
+        },
+        {
+          "id": 3053,
+          "text": "Undo"
+        },
+        {
+          "id": 3054,
+          "text": "Move to Recycle Bin"
+        },
+        {
+          "id": 3055,
+          "text": "Fit to window"
+        },
+        {
+          "id": 3056,
+          "text": "Zoom to N%"
+        },
+        {
+          "id": 3057,
+          "text": "Zoom submenu"
+        },
+        {
+          "id": 3058,
+          "text": "Refresh"
+        },
+        {
+          "id": 3059,
+          "text": "Open folder"
+        },
+        {
+          "id": 3060,
+          "text": "Next folder"
+        },
+        {
+          "id": 3061,
+          "text": "Previous folder"
+        },
+        {
+          "id": 3062,
+          "text": "Open in external editor"
+        },
+        {
+          "id": 3063,
+          "text": "Copy File Name"
+        },
+        {
+          "id": 3064,
+          "text": "Copy Full Pathname"
+        },
+        {
+          "id": 3065,
+          "text": "Settings"
+        },
+        {
+          "id": 3066,
+          "text": "Fit width"
+        },
+        {
+          "id": 3067,
+          "text": "Fit width 2"
+        },
+        {
+          "id": 3068,
+          "text": "Fit height"
+        },
+        {
+          "id": 3069,
+          "text": "Zoom presets and Custom..."
+        },
+        {
+          "id": 3070,
+          "text": "Click zoom level options (also set / set current)"
+        }
+      ],
+      "notes": [
+        3004,
+        3008,
+        3011,
+        3014,
+        3017,
+        3019,
+        3022,
+        3025,
+        3028,
+        3030,
+        3034,
+        3038,
+        3040,
+        3043,
+        3047,
+        3050,
+        3052
+      ],
+      "key_boxes": [],
+      "warnings": [],
+      "combo_items": [
+        {
+          "id": 3010,
+          "items": [
+            "Mouse position",
+            "Centre of the view"
+          ]
+        },
+        {
+          "id": 3016,
+          "items": [
+            "Centre",
+            "Top third",
+            "Bottom third"
+          ]
+        },
+        {
+          "id": 3024,
+          "items": [
+            "Centre",
+            "Top third",
+            "Bottom third"
+          ]
+        },
+        {
+          "id": 3027,
+          "items": [
+            "Do nothing",
+            "Click-to-zoom",
+            "Fullsize (100 %)",
+            "Fit",
+            "Fit width 1",
+            "Fit width 2",
+            "Previous image",
+            "Next image",
+            "Previous folder",
+            "Next folder",
+            "Open folder"
+          ]
+        },
+        {
+          "id": 3033,
+          "items": [
+            "Zoom",
+            "Navigate"
+          ]
+        },
+        {
+          "id": 3037,
+          "items": [
+            "Off",
+            "Match monitor refresh"
+          ]
+        },
+        {
+          "id": 3042,
+          "items": [
+            "None",
+            "Fade"
+          ]
+        }
+      ],
+      "sliders": [],
+      "elements": [
+        {
+          "type": "SettingsGroupElement",
+          "control_ids": [
+            3001,
+            3002,
+            3003,
+            3004,
+            3005,
+            3006,
+            3007,
+            3008,
+            3009,
+            3010,
+            3011,
+            3012,
+            3013,
+            3014,
+            3015,
+            3016,
+            3017,
+            3018,
+            3019,
+            3020,
+            3021,
+            3022,
+            3023,
+            3024,
+            3025,
+            3026,
+            3027,
+            3028,
+            3029,
+            3030
+          ],
+          "children": [
+            {
+              "type": "SettingsRowElement",
+              "control_ids": [
+                3002,
+                3003
+              ]
+            },
+            {
+              "type": "SettingsTextElement",
+              "control_ids": [
+                3004
+              ]
+            },
+            {
+              "type": "SettingsCheckElement",
+              "control_ids": [
+                3005
+              ]
+            },
+            {
+              "type": "SettingsRowElement",
+              "control_ids": [
+                3006,
+                3007
+              ]
+            },
+            {
+              "type": "SettingsTextElement",
+              "control_ids": [
+                3008
+              ]
+            },
+            {
+              "type": "SettingsRowElement",
+              "control_ids": [
+                3009,
+                3010
+              ]
+            },
+            {
+              "type": "SettingsTextElement",
+              "control_ids": [
+                3011
+              ]
+            },
+            {
+              "type": "SettingsTextElement",
+              "control_ids": [
+                3012
+              ]
+            },
+            {
+              "type": "SettingsTextElement",
+              "control_ids": [
+                3013
+              ]
+            },
+            {
+              "type": "SettingsTextElement",
+              "control_ids": [
+                3014
+              ]
+            },
+            {
+              "type": "SettingsRowElement",
+              "control_ids": [
+                3015,
+                3016
+              ]
+            },
+            {
+              "type": "SettingsTextElement",
+              "control_ids": [
+                3017
+              ]
+            },
+            {
+              "type": "SettingsCheckElement",
+              "control_ids": [
+                3018
+              ]
+            },
+            {
+              "type": "SettingsTextElement",
+              "control_ids": [
+                3019
+              ]
+            },
+            {
+              "type": "SettingsRowElement",
+              "control_ids": [
+                3020,
+                3021
+              ]
+            },
+            {
+              "type": "SettingsTextElement",
+              "control_ids": [
+                3022
+              ]
+            },
+            {
+              "type": "SettingsRowElement",
+              "control_ids": [
+                3023,
+                3024
+              ]
+            },
+            {
+              "type": "SettingsTextElement",
+              "control_ids": [
+                3025
+              ]
+            },
+            {
+              "type": "SettingsRowElement",
+              "control_ids": [
+                3026,
+                3027
+              ]
+            },
+            {
+              "type": "SettingsTextElement",
+              "control_ids": [
+                3028
+              ]
+            },
+            {
+              "type": "SettingsCheckElement",
+              "control_ids": [
+                3029
+              ]
+            },
+            {
+              "type": "SettingsTextElement",
+              "control_ids": [
+                3030
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SettingsGroupElement",
+          "control_ids": [
+            3031,
+            3032,
+            3033,
+            3034,
+            3035,
+            3036,
+            3037,
+            3038,
+            3039,
+            3040,
+            3041,
+            3042,
+            3043,
+            3044,
+            3045,
+            3046,
+            3047,
+            3048,
+            3049,
+            3050
+          ],
+          "children": [
+            {
+              "type": "SettingsRowElement",
+              "control_ids": [
+                3032,
+                3033
+              ]
+            },
+            {
+              "type": "SettingsTextElement",
+              "control_ids": [
+                3034
+              ]
+            },
+            {
+              "type": "SettingsCheckElement",
+              "control_ids": [
+                3035
+              ]
+            },
+            {
+              "type": "SettingsRowElement",
+              "control_ids": [
+                3036,
+                3037
+              ]
+            },
+            {
+              "type": "SettingsTextElement",
+              "control_ids": [
+                3038
+              ]
+            },
+            {
+              "type": "SettingsCheckElement",
+              "control_ids": [
+                3039
+              ]
+            },
+            {
+              "type": "SettingsTextElement",
+              "control_ids": [
+                3040
+              ]
+            },
+            {
+              "type": "SettingsRowElement",
+              "control_ids": [
+                3041,
+                3042
+              ]
+            },
+            {
+              "type": "SettingsTextElement",
+              "control_ids": [
+                3043
+              ]
+            },
+            {
+              "type": "SettingsRowElement",
+              "control_ids": [
+                3044,
+                3045
+              ]
+            },
+            {
+              "type": "SettingsCheckElement",
+              "control_ids": [
+                3046
+              ]
+            },
+            {
+              "type": "SettingsTextElement",
+              "control_ids": [
+                3047
+              ]
+            },
+            {
+              "type": "SettingsRowElement",
+              "control_ids": [
+                3048,
+                3049
+              ]
+            },
+            {
+              "type": "SettingsTextElement",
+              "control_ids": [
+                3050
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SettingsGroupElement",
+          "control_ids": [
+            3051,
+            3052,
+            3053,
+            3054,
+            3055,
+            3056,
+            3057,
+            3058,
+            3059,
+            3060,
+            3061,
+            3062,
+            3063,
+            3064,
+            3065,
+            3066,
+            3067,
+            3068,
+            3069,
+            3070
+          ],
+          "children": [
+            {
+              "type": "SettingsTextElement",
+              "control_ids": [
+                3052
+              ]
+            },
+            {
+              "type": "SettingsCheckElement",
+              "control_ids": [
+                3053
+              ]
+            },
+            {
+              "type": "SettingsCheckElement",
+              "control_ids": [
+                3054
+              ]
+            },
+            {
+              "type": "SettingsCheckElement",
+              "control_ids": [
+                3055
+              ]
+            },
+            {
+              "type": "SettingsCheckElement",
+              "control_ids": [
+                3056
+              ]
+            },
+            {
+              "type": "SettingsCheckElement",
+              "control_ids": [
+                3057
+              ]
+            },
+            {
+              "type": "SettingsCheckElement",
+              "control_ids": [
+                3058
+              ]
+            },
+            {
+              "type": "SettingsCheckElement",
+              "control_ids": [
+                3059
+              ]
+            },
+            {
+              "type": "SettingsCheckElement",
+              "control_ids": [
+                3060
+              ]
+            },
+            {
+              "type": "SettingsCheckElement",
+              "control_ids": [
+                3061
+              ]
+            },
+            {
+              "type": "SettingsCheckElement",
+              "control_ids": [
+                3062
+              ]
+            },
+            {
+              "type": "SettingsCheckElement",
+              "control_ids": [
+                3063
+              ]
+            },
+            {
+              "type": "SettingsCheckElement",
+              "control_ids": [
+                3064
+              ]
+            },
+            {
+              "type": "SettingsCheckElement",
+              "control_ids": [
+                3065
+              ]
+            },
+            {
+              "type": "SettingsCheckElement",
+              "control_ids": [
+                3066
+              ]
+            },
+            {
+              "type": "SettingsCheckElement",
+              "control_ids": [
+                3067
+              ]
+            },
+            {
+              "type": "SettingsCheckElement",
+              "control_ids": [
+                3068
+              ]
+            },
+            {
+              "type": "SettingsCheckElement",
+              "control_ids": [
+                3069
+              ]
+            },
+            {
+              "type": "SettingsCheckElement",
+              "control_ids": [
+                3070
+              ]
+            }
+          ]
+        }
+      ],
+      "ids": {
+        "click_zoom_percent": 3003,
+        "click_to_zoom": 3005,
+        "arrow_pan_step": 3007,
+        "keyboard_zoom_anchor": 3010,
+        "zoom_shortcuts_summary": 3013,
+        "fit_width_anchor": 3016,
+        "keep_zoom": 3018,
+        "keyboard_zoom_step": 3021,
+        "fit_width_anchor2": 3024,
+        "middle_click": 3027,
+        "click_zoom_key_toggles_fit": 3029,
+        "mouse_wheel": 3033,
+        "kinetic_pan": 3035,
+        "kinetic_smoothing": 3037,
+        "arrow_key_at_edge": 3039,
+        "image_transition": 3042,
+        "image_transition_ms": 3045,
+        "touchpad_swipe": 3046,
+        "touchpad_distance": 3049
+      }
+    }
+  ]
+}

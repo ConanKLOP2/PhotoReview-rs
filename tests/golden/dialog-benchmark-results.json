@@ -1,0 +1,1419 @@
+{
+  "generator": "oracle-cs dialog-benchmark-results",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "row colour best row first",
+      "kind": "row_color",
+      "rows": [
+        {
+          "profile_id": "fast-sequential",
+          "workload": "Sequential",
+          "samples": [
+            10,
+            20,
+            30
+          ],
+          "status": "Pass",
+          "is_best": true
+        },
+        {
+          "profile_id": "preview-light",
+          "workload": "Sequential",
+          "samples": [
+            10,
+            20,
+            30
+          ],
+          "status": "Pass"
+        },
+        {
+          "profile_id": "original-correctness",
+          "workload": "Correctness",
+          "samples": [],
+          "status": "Fail"
+        },
+        {
+          "profile_id": "instant-review",
+          "workload": "FirstFrame",
+          "samples": [
+            10,
+            20,
+            30
+          ],
+          "status": "Pass"
+        },
+        {
+          "profile_id": "logging-on",
+          "workload": "Sequential",
+          "samples": [
+            10,
+            20,
+            30
+          ],
+          "status": "InsufficientData"
+        },
+        {
+          "profile_id": "nearby-only",
+          "workload": "Preload",
+          "samples": [
+            10,
+            20,
+            30
+          ],
+          "status": "Warn"
+        },
+        {
+          "profile_id": "hdd-conservative",
+          "workload": "Sequential",
+          "samples": [
+            10,
+            20,
+            30
+          ],
+          "status": "Fail",
+          "is_best": true
+        }
+      ],
+      "displayed_row": 0,
+      "source": 0,
+      "back": 2374430,
+      "text": 16119285
+    },
+    {
+      "name": "row colour best row displayed lower",
+      "kind": "row_color",
+      "rows": [
+        {
+          "profile_id": "fast-sequential",
+          "workload": "Sequential",
+          "samples": [
+            10,
+            20,
+            30
+          ],
+          "status": "Pass",
+          "is_best": true
+        },
+        {
+          "profile_id": "preview-light",
+          "workload": "Sequential",
+          "samples": [
+            10,
+            20,
+            30
+          ],
+          "status": "Pass"
+        },
+        {
+          "profile_id": "original-correctness",
+          "workload": "Correctness",
+          "samples": [],
+          "status": "Fail"
+        },
+        {
+          "profile_id": "instant-review",
+          "workload": "FirstFrame",
+          "samples": [
+            10,
+            20,
+            30
+          ],
+          "status": "Pass"
+        },
+        {
+          "profile_id": "logging-on",
+          "workload": "Sequential",
+          "samples": [
+            10,
+            20,
+            30
+          ],
+          "status": "InsufficientData"
+        },
+        {
+          "profile_id": "nearby-only",
+          "workload": "Preload",
+          "samples": [
+            10,
+            20,
+            30
+          ],
+          "status": "Warn"
+        },
+        {
+          "profile_id": "hdd-conservative",
+          "workload": "Sequential",
+          "samples": [
+            10,
+            20,
+            30
+          ],
+          "status": "Fail",
+          "is_best": true
+        }
+      ],
+      "displayed_row": 5,
+      "source": 0,
+      "back": 2374430,
+      "text": 16119285
+    },
+    {
+      "name": "row colour second row odd",
+      "kind": "row_color",
+      "rows": [
+        {
+          "profile_id": "fast-sequential",
+          "workload": "Sequential",
+          "samples": [
+            10,
+            20,
+            30
+          ],
+          "status": "Pass",
+          "is_best": true
+        },
+        {
+          "profile_id": "preview-light",
+          "workload": "Sequential",
+          "samples": [
+            10,
+            20,
+            30
+          ],
+          "status": "Pass"
+        },
+        {
+          "profile_id": "original-correctness",
+          "workload": "Correctness",
+          "samples": [],
+          "status": "Fail"
+        },
+        {
+          "profile_id": "instant-review",
+          "workload": "FirstFrame",
+          "samples": [
+            10,
+            20,
+            30
+          ],
+          "status": "Pass"
+        },
+        {
+          "profile_id": "logging-on",
+          "workload": "Sequential",
+          "samples": [
+            10,
+            20,
+            30
+          ],
+          "status": "InsufficientData"
+        },
+        {
+          "profile_id": "nearby-only",
+          "workload": "Preload",
+          "samples": [
+            10,
+            20,
+            30
+          ],
+          "status": "Warn"
+        },
+        {
+          "profile_id": "hdd-conservative",
+          "workload": "Sequential",
+          "samples": [
+            10,
+            20,
+            30
+          ],
+          "status": "Fail",
+          "is_best": true
+        }
+      ],
+      "displayed_row": 1,
+      "source": 1,
+      "back": 2368548,
+      "text": 16119285
+    },
+    {
+      "name": "row colour second row displayed even",
+      "kind": "row_color",
+      "rows": [
+        {
+          "profile_id": "fast-sequential",
+          "workload": "Sequential",
+          "samples": [
+            10,
+            20,
+            30
+          ],
+          "status": "Pass",
+          "is_best": true
+        },
+        {
+          "profile_id": "preview-light",
+          "workload": "Sequential",
+          "samples": [
+            10,
+            20,
+            30
+          ],
+          "status": "Pass"
+        },
+        {
+          "profile_id": "original-correctness",
+          "workload": "Correctness",
+          "samples": [],
+          "status": "Fail"
+        },
+        {
+          "profile_id": "instant-review",
+          "workload": "FirstFrame",
+          "samples": [
+            10,
+            20,
+            30
+          ],
+          "status": "Pass"
+        },
+        {
+          "profile_id": "logging-on",
+          "workload": "Sequential",
+          "samples": [
+            10,
+            20,
+            30
+          ],
+          "status": "InsufficientData"
+        },
+        {
+          "profile_id": "nearby-only",
+          "workload": "Preload",
+          "samples": [
+            10,
+            20,
+            30
+          ],
+          "status": "Warn"
+        },
+        {
+          "profile_id": "hdd-conservative",
+          "workload": "Sequential",
+          "samples": [
+            10,
+            20,
+            30
+          ],
+          "status": "Fail",
+          "is_best": true
+        }
+      ],
+      "displayed_row": 2,
+      "source": 1,
+      "back": 1973790,
+      "text": 16119285
+    },
+    {
+      "name": "row colour failed row",
+      "kind": "row_color",
+      "rows": [
+        {
+          "profile_id": "fast-sequential",
+          "workload": "Sequential",
+          "samples": [
+            10,
+            20,
+            30
+          ],
+          "status": "Pass",
+          "is_best": true
+        },
+        {
+          "profile_id": "preview-light",
+          "workload": "Sequential",
+          "samples": [
+            10,
+            20,
+            30
+          ],
+          "status": "Pass"
+        },
+        {
+          "profile_id": "original-correctness",
+          "workload": "Correctness",
+          "samples": [],
+          "status": "Fail"
+        },
+        {
+          "profile_id": "instant-review",
+          "workload": "FirstFrame",
+          "samples": [
+            10,
+            20,
+            30
+          ],
+          "status": "Pass"
+        },
+        {
+          "profile_id": "logging-on",
+          "workload": "Sequential",
+          "samples": [
+            10,
+            20,
+            30
+          ],
+          "status": "InsufficientData"
+        },
+        {
+          "profile_id": "nearby-only",
+          "workload": "Preload",
+          "samples": [
+            10,
+            20,
+            30
+          ],
+          "status": "Warn"
+        },
+        {
+          "profile_id": "hdd-conservative",
+          "workload": "Sequential",
+          "samples": [
+            10,
+            20,
+            30
+          ],
+          "status": "Fail",
+          "is_best": true
+        }
+      ],
+      "displayed_row": 0,
+      "source": 2,
+      "back": 1973819,
+      "text": 16119285
+    },
+    {
+      "name": "row colour failed row odd",
+      "kind": "row_color",
+      "rows": [
+        {
+          "profile_id": "fast-sequential",
+          "workload": "Sequential",
+          "samples": [
+            10,
+            20,
+            30
+          ],
+          "status": "Pass",
+          "is_best": true
+        },
+        {
+          "profile_id": "preview-light",
+          "workload": "Sequential",
+          "samples": [
+            10,
+            20,
+            30
+          ],
+          "status": "Pass"
+        },
+        {
+          "profile_id": "original-correctness",
+          "workload": "Correctness",
+          "samples": [],
+          "status": "Fail"
+        },
+        {
+          "profile_id": "instant-review",
+          "workload": "FirstFrame",
+          "samples": [
+            10,
+            20,
+            30
+          ],
+          "status": "Pass"
+        },
+        {
+          "profile_id": "logging-on",
+          "workload": "Sequential",
+          "samples": [
+            10,
+            20,
+            30
+          ],
+          "status": "InsufficientData"
+        },
+        {
+          "profile_id": "nearby-only",
+          "workload": "Preload",
+          "samples": [
+            10,
+            20,
+            30
+          ],
+          "status": "Warn"
+        },
+        {
+          "profile_id": "hdd-conservative",
+          "workload": "Sequential",
+          "samples": [
+            10,
+            20,
+            30
+          ],
+          "status": "Fail",
+          "is_best": true
+        }
+      ],
+      "displayed_row": 3,
+      "source": 2,
+      "back": 1973819,
+      "text": 16119285
+    },
+    {
+      "name": "row colour fourth row odd",
+      "kind": "row_color",
+      "rows": [
+        {
+          "profile_id": "fast-sequential",
+          "workload": "Sequential",
+          "samples": [
+            10,
+            20,
+            30
+          ],
+          "status": "Pass",
+          "is_best": true
+        },
+        {
+          "profile_id": "preview-light",
+          "workload": "Sequential",
+          "samples": [
+            10,
+            20,
+            30
+          ],
+          "status": "Pass"
+        },
+        {
+          "profile_id": "original-correctness",
+          "workload": "Correctness",
+          "samples": [],
+          "status": "Fail"
+        },
+        {
+          "profile_id": "instant-review",
+          "workload": "FirstFrame",
+          "samples": [
+            10,
+            20,
+            30
+          ],
+          "status": "Pass"
+        },
+        {
+          "profile_id": "logging-on",
+          "workload": "Sequential",
+          "samples": [
+            10,
+            20,
+            30
+          ],
+          "status": "InsufficientData"
+        },
+        {
+          "profile_id": "nearby-only",
+          "workload": "Preload",
+          "samples": [
+            10,
+            20,
+            30
+          ],
+          "status": "Warn"
+        },
+        {
+          "profile_id": "hdd-conservative",
+          "workload": "Sequential",
+          "samples": [
+            10,
+            20,
+            30
+          ],
+          "status": "Fail",
+          "is_best": true
+        }
+      ],
+      "displayed_row": 3,
+      "source": 3,
+      "back": 2368548,
+      "text": 16119285
+    },
+    {
+      "name": "row colour insufficient data even",
+      "kind": "row_color",
+      "rows": [
+        {
+          "profile_id": "fast-sequential",
+          "workload": "Sequential",
+          "samples": [
+            10,
+            20,
+            30
+          ],
+          "status": "Pass",
+          "is_best": true
+        },
+        {
+          "profile_id": "preview-light",
+          "workload": "Sequential",
+          "samples": [
+            10,
+            20,
+            30
+          ],
+          "status": "Pass"
+        },
+        {
+          "profile_id": "original-correctness",
+          "workload": "Correctness",
+          "samples": [],
+          "status": "Fail"
+        },
+        {
+          "profile_id": "instant-review",
+          "workload": "FirstFrame",
+          "samples": [
+            10,
+            20,
+            30
+          ],
+          "status": "Pass"
+        },
+        {
+          "profile_id": "logging-on",
+          "workload": "Sequential",
+          "samples": [
+            10,
+            20,
+            30
+          ],
+          "status": "InsufficientData"
+        },
+        {
+          "profile_id": "nearby-only",
+          "workload": "Preload",
+          "samples": [
+            10,
+            20,
+            30
+          ],
+          "status": "Warn"
+        },
+        {
+          "profile_id": "hdd-conservative",
+          "workload": "Sequential",
+          "samples": [
+            10,
+            20,
+            30
+          ],
+          "status": "Fail",
+          "is_best": true
+        }
+      ],
+      "displayed_row": 4,
+      "source": 4,
+      "back": 1973790,
+      "text": 16119285
+    },
+    {
+      "name": "row colour warning odd",
+      "kind": "row_color",
+      "rows": [
+        {
+          "profile_id": "fast-sequential",
+          "workload": "Sequential",
+          "samples": [
+            10,
+            20,
+            30
+          ],
+          "status": "Pass",
+          "is_best": true
+        },
+        {
+          "profile_id": "preview-light",
+          "workload": "Sequential",
+          "samples": [
+            10,
+            20,
+            30
+          ],
+          "status": "Pass"
+        },
+        {
+          "profile_id": "original-correctness",
+          "workload": "Correctness",
+          "samples": [],
+          "status": "Fail"
+        },
+        {
+          "profile_id": "instant-review",
+          "workload": "FirstFrame",
+          "samples": [
+            10,
+            20,
+            30
+          ],
+          "status": "Pass"
+        },
+        {
+          "profile_id": "logging-on",
+          "workload": "Sequential",
+          "samples": [
+            10,
+            20,
+            30
+          ],
+          "status": "InsufficientData"
+        },
+        {
+          "profile_id": "nearby-only",
+          "workload": "Preload",
+          "samples": [
+            10,
+            20,
+            30
+          ],
+          "status": "Warn"
+        },
+        {
+          "profile_id": "hdd-conservative",
+          "workload": "Sequential",
+          "samples": [
+            10,
+            20,
+            30
+          ],
+          "status": "Fail",
+          "is_best": true
+        }
+      ],
+      "displayed_row": 5,
+      "source": 5,
+      "back": 2368548,
+      "text": 16119285
+    },
+    {
+      "name": "row colour best and failed",
+      "kind": "row_color",
+      "rows": [
+        {
+          "profile_id": "fast-sequential",
+          "workload": "Sequential",
+          "samples": [
+            10,
+            20,
+            30
+          ],
+          "status": "Pass",
+          "is_best": true
+        },
+        {
+          "profile_id": "preview-light",
+          "workload": "Sequential",
+          "samples": [
+            10,
+            20,
+            30
+          ],
+          "status": "Pass"
+        },
+        {
+          "profile_id": "original-correctness",
+          "workload": "Correctness",
+          "samples": [],
+          "status": "Fail"
+        },
+        {
+          "profile_id": "instant-review",
+          "workload": "FirstFrame",
+          "samples": [
+            10,
+            20,
+            30
+          ],
+          "status": "Pass"
+        },
+        {
+          "profile_id": "logging-on",
+          "workload": "Sequential",
+          "samples": [
+            10,
+            20,
+            30
+          ],
+          "status": "InsufficientData"
+        },
+        {
+          "profile_id": "nearby-only",
+          "workload": "Preload",
+          "samples": [
+            10,
+            20,
+            30
+          ],
+          "status": "Warn"
+        },
+        {
+          "profile_id": "hdd-conservative",
+          "workload": "Sequential",
+          "samples": [
+            10,
+            20,
+            30
+          ],
+          "status": "Fail",
+          "is_best": true
+        }
+      ],
+      "displayed_row": 6,
+      "source": 6,
+      "back": 2374430,
+      "text": 16119285
+    },
+    {
+      "name": "row colour source past the end even",
+      "kind": "row_color",
+      "rows": [
+        {
+          "profile_id": "fast-sequential",
+          "workload": "Sequential",
+          "samples": [
+            10,
+            20,
+            30
+          ],
+          "status": "Pass",
+          "is_best": true
+        },
+        {
+          "profile_id": "preview-light",
+          "workload": "Sequential",
+          "samples": [
+            10,
+            20,
+            30
+          ],
+          "status": "Pass"
+        },
+        {
+          "profile_id": "original-correctness",
+          "workload": "Correctness",
+          "samples": [],
+          "status": "Fail"
+        },
+        {
+          "profile_id": "instant-review",
+          "workload": "FirstFrame",
+          "samples": [
+            10,
+            20,
+            30
+          ],
+          "status": "Pass"
+        },
+        {
+          "profile_id": "logging-on",
+          "workload": "Sequential",
+          "samples": [
+            10,
+            20,
+            30
+          ],
+          "status": "InsufficientData"
+        },
+        {
+          "profile_id": "nearby-only",
+          "workload": "Preload",
+          "samples": [
+            10,
+            20,
+            30
+          ],
+          "status": "Warn"
+        },
+        {
+          "profile_id": "hdd-conservative",
+          "workload": "Sequential",
+          "samples": [
+            10,
+            20,
+            30
+          ],
+          "status": "Fail",
+          "is_best": true
+        }
+      ],
+      "displayed_row": 0,
+      "source": 7,
+      "back": 1973790,
+      "text": 16119285
+    },
+    {
+      "name": "row colour source past the end odd",
+      "kind": "row_color",
+      "rows": [
+        {
+          "profile_id": "fast-sequential",
+          "workload": "Sequential",
+          "samples": [
+            10,
+            20,
+            30
+          ],
+          "status": "Pass",
+          "is_best": true
+        },
+        {
+          "profile_id": "preview-light",
+          "workload": "Sequential",
+          "samples": [
+            10,
+            20,
+            30
+          ],
+          "status": "Pass"
+        },
+        {
+          "profile_id": "original-correctness",
+          "workload": "Correctness",
+          "samples": [],
+          "status": "Fail"
+        },
+        {
+          "profile_id": "instant-review",
+          "workload": "FirstFrame",
+          "samples": [
+            10,
+            20,
+            30
+          ],
+          "status": "Pass"
+        },
+        {
+          "profile_id": "logging-on",
+          "workload": "Sequential",
+          "samples": [
+            10,
+            20,
+            30
+          ],
+          "status": "InsufficientData"
+        },
+        {
+          "profile_id": "nearby-only",
+          "workload": "Preload",
+          "samples": [
+            10,
+            20,
+            30
+          ],
+          "status": "Warn"
+        },
+        {
+          "profile_id": "hdd-conservative",
+          "workload": "Sequential",
+          "samples": [
+            10,
+            20,
+            30
+          ],
+          "status": "Fail",
+          "is_best": true
+        }
+      ],
+      "displayed_row": 1,
+      "source": 7,
+      "back": 2368548,
+      "text": 16119285
+    },
+    {
+      "name": "row colour negative source even",
+      "kind": "row_color",
+      "rows": [
+        {
+          "profile_id": "fast-sequential",
+          "workload": "Sequential",
+          "samples": [
+            10,
+            20,
+            30
+          ],
+          "status": "Pass",
+          "is_best": true
+        },
+        {
+          "profile_id": "preview-light",
+          "workload": "Sequential",
+          "samples": [
+            10,
+            20,
+            30
+          ],
+          "status": "Pass"
+        },
+        {
+          "profile_id": "original-correctness",
+          "workload": "Correctness",
+          "samples": [],
+          "status": "Fail"
+        },
+        {
+          "profile_id": "instant-review",
+          "workload": "FirstFrame",
+          "samples": [
+            10,
+            20,
+            30
+          ],
+          "status": "Pass"
+        },
+        {
+          "profile_id": "logging-on",
+          "workload": "Sequential",
+          "samples": [
+            10,
+            20,
+            30
+          ],
+          "status": "InsufficientData"
+        },
+        {
+          "profile_id": "nearby-only",
+          "workload": "Preload",
+          "samples": [
+            10,
+            20,
+            30
+          ],
+          "status": "Warn"
+        },
+        {
+          "profile_id": "hdd-conservative",
+          "workload": "Sequential",
+          "samples": [
+            10,
+            20,
+            30
+          ],
+          "status": "Fail",
+          "is_best": true
+        }
+      ],
+      "displayed_row": 0,
+      "source": -1,
+      "back": 1973790,
+      "text": 16119285
+    },
+    {
+      "name": "row colour negative source odd",
+      "kind": "row_color",
+      "rows": [
+        {
+          "profile_id": "fast-sequential",
+          "workload": "Sequential",
+          "samples": [
+            10,
+            20,
+            30
+          ],
+          "status": "Pass",
+          "is_best": true
+        },
+        {
+          "profile_id": "preview-light",
+          "workload": "Sequential",
+          "samples": [
+            10,
+            20,
+            30
+          ],
+          "status": "Pass"
+        },
+        {
+          "profile_id": "original-correctness",
+          "workload": "Correctness",
+          "samples": [],
+          "status": "Fail"
+        },
+        {
+          "profile_id": "instant-review",
+          "workload": "FirstFrame",
+          "samples": [
+            10,
+            20,
+            30
+          ],
+          "status": "Pass"
+        },
+        {
+          "profile_id": "logging-on",
+          "workload": "Sequential",
+          "samples": [
+            10,
+            20,
+            30
+          ],
+          "status": "InsufficientData"
+        },
+        {
+          "profile_id": "nearby-only",
+          "workload": "Preload",
+          "samples": [
+            10,
+            20,
+            30
+          ],
+          "status": "Warn"
+        },
+        {
+          "profile_id": "hdd-conservative",
+          "workload": "Sequential",
+          "samples": [
+            10,
+            20,
+            30
+          ],
+          "status": "Fail",
+          "is_best": true
+        }
+      ],
+      "displayed_row": 1,
+      "source": -1,
+      "back": 2368548,
+      "text": 16119285
+    },
+    {
+      "name": "row colour far source",
+      "kind": "row_color",
+      "rows": [
+        {
+          "profile_id": "fast-sequential",
+          "workload": "Sequential",
+          "samples": [
+            10,
+            20,
+            30
+          ],
+          "status": "Pass",
+          "is_best": true
+        },
+        {
+          "profile_id": "preview-light",
+          "workload": "Sequential",
+          "samples": [
+            10,
+            20,
+            30
+          ],
+          "status": "Pass"
+        },
+        {
+          "profile_id": "original-correctness",
+          "workload": "Correctness",
+          "samples": [],
+          "status": "Fail"
+        },
+        {
+          "profile_id": "instant-review",
+          "workload": "FirstFrame",
+          "samples": [
+            10,
+            20,
+            30
+          ],
+          "status": "Pass"
+        },
+        {
+          "profile_id": "logging-on",
+          "workload": "Sequential",
+          "samples": [
+            10,
+            20,
+            30
+          ],
+          "status": "InsufficientData"
+        },
+        {
+          "profile_id": "nearby-only",
+          "workload": "Preload",
+          "samples": [
+            10,
+            20,
+            30
+          ],
+          "status": "Warn"
+        },
+        {
+          "profile_id": "hdd-conservative",
+          "workload": "Sequential",
+          "samples": [
+            10,
+            20,
+            30
+          ],
+          "status": "Fail",
+          "is_best": true
+        }
+      ],
+      "displayed_row": 0,
+      "source": 100,
+      "back": 1973790,
+      "text": 16119285
+    },
+    {
+      "name": "row colour with no rows",
+      "kind": "row_color",
+      "rows": [],
+      "displayed_row": 2,
+      "source": 0,
+      "back": 1973790,
+      "text": 16119285
+    },
+    {
+      "name": "profile list text and badge",
+      "kind": "profile_list",
+      "items": [
+        {
+          "id": "instant-review",
+          "text": "Instant Review",
+          "badge": "Fast"
+        },
+        {
+          "id": "fast-sequential",
+          "text": "Fast Sequential",
+          "badge": "Fast"
+        },
+        {
+          "id": "fast-balanced",
+          "text": "Fast Balanced",
+          "badge": "Fast"
+        },
+        {
+          "id": "fast-aggressive",
+          "text": "Fast Aggressive",
+          "badge": "Fast"
+        },
+        {
+          "id": "preview-light",
+          "text": "Preview Light",
+          "badge": "Preview"
+        },
+        {
+          "id": "preview-balanced",
+          "text": "Preview Balanced",
+          "badge": "Preview"
+        },
+        {
+          "id": "preview-quality",
+          "text": "Preview Quality",
+          "badge": "Preview"
+        },
+        {
+          "id": "preview-high-quality",
+          "text": "Preview High Quality",
+          "badge": "Preview"
+        },
+        {
+          "id": "no-preload-baseline",
+          "text": "No Preload Baseline",
+          "badge": "Preview"
+        },
+        {
+          "id": "nearby-only",
+          "text": "Nearby Only",
+          "badge": "Preview"
+        },
+        {
+          "id": "full-folder-warm",
+          "text": "Full Folder Warm",
+          "badge": "Preview"
+        },
+        {
+          "id": "large-folder-safe",
+          "text": "Large Folder Safe",
+          "badge": "Preview"
+        },
+        {
+          "id": "huge-image-safe",
+          "text": "Huge Image Safe",
+          "badge": "Preview"
+        },
+        {
+          "id": "ssd-throughput",
+          "text": "SSD High Throughput",
+          "badge": "Preview"
+        },
+        {
+          "id": "hdd-conservative",
+          "text": "HDD Conservative",
+          "badge": "Preview"
+        },
+        {
+          "id": "network-safe",
+          "text": "Network Safe",
+          "badge": "Preview"
+        },
+        {
+          "id": "low-memory",
+          "text": "Low Memory",
+          "badge": "Preview"
+        },
+        {
+          "id": "ram-maximizer",
+          "text": "RAM Maximizer",
+          "badge": "Preview"
+        },
+        {
+          "id": "rapid-key-press",
+          "text": "Rapid Key Press",
+          "badge": "Preview"
+        },
+        {
+          "id": "random-navigation",
+          "text": "Random Navigation",
+          "badge": "Preview"
+        },
+        {
+          "id": "cache-recovery",
+          "text": "Cache Recovery",
+          "badge": "Preview"
+        },
+        {
+          "id": "explorer-reindex",
+          "text": "Explorer Reindex",
+          "badge": "Preview"
+        },
+        {
+          "id": "logging-on",
+          "text": "Logging On",
+          "badge": "Preview"
+        },
+        {
+          "id": "logging-off",
+          "text": "Logging Off",
+          "badge": "Preview"
+        },
+        {
+          "id": "recommended-auto",
+          "text": "Recommended Auto",
+          "badge": "Preview"
+        },
+        {
+          "id": "action-move",
+          "text": "Move Race",
+          "badge": "Preview"
+        },
+        {
+          "id": "action-delete",
+          "text": "Delete To Recycle Bin Race",
+          "badge": "Preview"
+        },
+        {
+          "id": "action-copy",
+          "text": "Copy During Decode",
+          "badge": "Preview"
+        },
+        {
+          "id": "action-interleaved",
+          "text": "Interleaved Actions",
+          "badge": "Preview"
+        },
+        {
+          "id": "original-correctness",
+          "text": "Original Correctness",
+          "badge": "Original"
+        }
+      ]
+    },
+    {
+      "name": "static colour of control 100",
+      "kind": "static_color",
+      "id": 100,
+      "value": 16119285
+    },
+    {
+      "name": "static colour of control 101",
+      "kind": "static_color",
+      "id": 101,
+      "value": 11184810
+    },
+    {
+      "name": "static colour of control 102",
+      "kind": "static_color",
+      "id": 102,
+      "value": 16119285
+    },
+    {
+      "name": "static colour of control 114",
+      "kind": "static_color",
+      "id": 114,
+      "value": 12303291
+    },
+    {
+      "name": "static colour of control 115",
+      "kind": "static_color",
+      "id": 115,
+      "value": 16119285
+    },
+    {
+      "name": "static colour of control 0",
+      "kind": "static_color",
+      "id": 0,
+      "value": 16119285
+    },
+    {
+      "name": "static colour of control 118",
+      "kind": "static_color",
+      "id": 118,
+      "value": 16119285
+    },
+    {
+      "name": "palette Dark.SuccessBackground",
+      "kind": "palette",
+      "key": "Dark.SuccessBackground",
+      "value": 2374430
+    },
+    {
+      "name": "palette Dark.ErrorBackground",
+      "kind": "palette",
+      "key": "Dark.ErrorBackground",
+      "value": 1973819
+    },
+    {
+      "name": "palette Dark.Panel",
+      "kind": "palette",
+      "key": "Dark.Panel",
+      "value": 1973790
+    },
+    {
+      "name": "palette Dark.RowAlt",
+      "kind": "palette",
+      "key": "Dark.RowAlt",
+      "value": 2368548
+    },
+    {
+      "name": "palette Dark.TextSubtle",
+      "kind": "palette",
+      "key": "Dark.TextSubtle",
+      "value": 11184810
+    },
+    {
+      "name": "palette Dark.Window",
+      "kind": "palette",
+      "key": "Dark.Window",
+      "value": 1513239
+    }
+  ]
+}

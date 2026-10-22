@@ -1,0 +1,90 @@
+{
+ "command": "settings-dialog-frame",
+ "notes": [
+  "Feeds W8-19j (dialogs::settings::dialog::{frame, nav}). Reflection over the internal SettingsDialog of the PhotoReview (Shell.Win32) assembly at the baseline d92d6aae, built with its real constructor and NO window (see tools/oracle-cs/Commands/W8-19j.cs). The language is the process default (English); Options.Version is 9.9.9+oracle.",
+  "Output per kind: frame -> title, resizable, header_ids, initial_focus_id, default_button_id, items [{class, id, text, style, ex_style}], page_keys, page_types, page_item_counts, active_page_index, active_page_key, saved; constants -> the frame ids, WM_APP ids and subclass ids; page_math -> page_id_base, viewport_id per index; page_of -> results per id; dialog_key -> handled, active_page_index, active_page_key."
+ ],
+ "cases": [
+  {
+   "name": "frame",
+   "kind": "frame"
+  },
+  {
+   "name": "constants",
+   "kind": "constants"
+  },
+  {
+   "name": "page_math",
+   "kind": "page_math",
+   "indices": [
+    -1,
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    100
+   ]
+  },
+  {
+   "name": "page_of",
+   "kind": "page_of",
+   "ids": [
+    -5,
+    0,
+    99,
+    100,
+    124,
+    999,
+    1000,
+    1001,
+    1999,
+    2000,
+    5013,
+    6999,
+    7000,
+    7999,
+    8000,
+    12345
+   ]
+  },
+  {
+   "name": "dialog_key_ctrl_tab",
+   "kind": "dialog_key",
+   "control": true,
+   "message": "keydown",
+   "vk": 9
+  },
+  {
+   "name": "dialog_key_plain_tab",
+   "kind": "dialog_key",
+   "control": false,
+   "message": "keydown",
+   "vk": 9
+  },
+  {
+   "name": "dialog_key_ctrl_tab_sys",
+   "kind": "dialog_key",
+   "control": true,
+   "message": "syskeydown",
+   "vk": 9
+  },
+  {
+   "name": "dialog_key_ctrl_tab_up",
+   "kind": "dialog_key",
+   "control": true,
+   "message": "keyup",
+   "vk": 9
+  },
+  {
+   "name": "dialog_key_ctrl_a",
+   "kind": "dialog_key",
+   "control": true,
+   "message": "keydown",
+   "vk": 65
+  }
+ ]
+}

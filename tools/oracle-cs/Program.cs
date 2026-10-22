@@ -406,6 +406,56 @@ JsonArray cases = command switch
     // Commands\W8-16e
     "scrollbar-geometry" => Commands.W816eScrollBarGeometryCases(inputs),
     "scrollbar-repeat-timing" => Commands.W816eRepeatTimingCases(inputs),
+    // Commands\Commands\W8-18b
+    "folder-picker-policy" => Commands.W818bFolderPickerPolicyCases(inputs),
+    // Commands\Commands\W8-18d
+    "dialog-template" => Commands.W818dDialogTemplateCases(inputs),
+    // Commands\Commands\W8-18i
+    "dialog-layout" => Commands.W818iDialogLayoutCases(inputs),
+    // Commands\Commands\W8-18l
+    "painter-kinds" => Commands.W818lPainterKindsCases(inputs),
+    // Commands\Commands\W8-18o
+    "secondary-window-supports" => Commands.W818oSupportsCases(inputs),
+    // Commands\Commands\W8-18p
+    "dialog-zoom-diagnostics" => Commands.W818pZoomDiagnosticsCases(inputs),
+    // Commands\Commands\W8-18q
+    "dialog-action-profiles" => Commands.W818qActionProfilesCases(inputs),
+    // Commands\Commands\W8-18r
+    "dialog-benchmark-layout" => Commands.W818rBenchmarkLayoutCases(inputs),
+    // Commands\Commands\W8-18s
+    "dialog-benchmark-results" => Commands.W818sBenchmarkResultsCases(inputs),
+    // Commands\Commands\W8-18t
+    "recovery-dialog-layout" => Commands.W818tRecoveryDialogLayoutCases(inputs),
+    // Commands\Commands\W8-18u
+    "recovery-dialog-details" => Commands.W818uRecoveryDialogDetailsCases(inputs),
+    // Commands\Commands\W8-18v
+    "recovery-dialog-dismiss" => Commands.W818vRecoveryDialogDismissCases(inputs),
+    // Commands\Commands\W8-19a
+    "settings-catalog" => Commands.W819aSettingsCatalogCases(inputs),
+    // Commands\Commands\W8-19b
+    "settings-layout" => Commands.W819bSettingsLayoutCases(inputs),
+    // Commands\Commands\W8-19c
+    "settings-builder" => Commands.W819cSettingsBuilderCases(inputs),
+    // Commands\Commands\W8-19d
+    "settings-pages-diag-perf" => Commands.W819dSettingsPagesCases(inputs),
+    // Commands\Commands\W8-19e
+    "settings-page-display" => Commands.W819eSettingsPageDisplayCases(inputs),
+    // Commands\Commands\W8-19f
+    "settings-page-files" => Commands.W819fSettingsPageFilesCases(inputs),
+    // Commands\Commands\W8-19g
+    "settings-page-general" => Commands.W819gSettingsPageGeneralCases(inputs),
+    // Commands\Commands\W8-19h
+    "settings-page-mouse" => Commands.W819hSettingsPageMouseCases(inputs),
+    // Commands\Commands\W8-19i
+    "settings-page-shortcuts" => Commands.W819iSettingsPageShortcutsCases(inputs),
+    // Commands\Commands\W8-19j
+    "settings-dialog-frame" => Commands.W819jSettingsDialogFrameCases(inputs),
+    // Commands\Commands\W8-19k
+    "settings-dialog-state" => Commands.W819kSettingsDialogStateCases(inputs),
+    // Commands\Commands\W8-19l
+    "settings-dialog-apply" => Commands.W819lSettingsDialogApplyCases(inputs),
+    // Commands\Commands\W8-19m
+    "settings-dialog-layout" => Commands.W819mSettingsDialogLayoutCases(inputs),
     _ => throw new ArgumentException($"unknown command '{command}'"),
 };
 
