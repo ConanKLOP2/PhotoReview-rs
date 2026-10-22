@@ -7,15 +7,15 @@
 //! `SettingsFormState` (an index), so a page must declare the items in the order of the WPF page.
 //!
 //! The C# abstract base class becomes the default methods of the trait plus [`PageContextSlot`] (the C# `protected Context` property).
-#![allow(unused_variables, dead_code)] // stub: the porter removes this line with the last `todo!()`
-
 use std::fmt;
 use std::rc::Rc;
 
+use pr_app::presenters::settings::SettingsPresenter;
 use pr_app::presenters::settings_form_state::{SettingsFocusField, SettingsFormState};
 
 use super::builder::inputs::SettingsPageBuilder;
 use super::context::SettingsPageContext;
+use super::context::with_field_context;
 
 /// C# `Func<string>`: a text provider evaluated again whenever the text is needed (a language change changes the answer). UI-thread only, hence `Rc`.
 pub type TextFn = Rc<dyn Fn() -> String>;
@@ -34,7 +34,7 @@ pub fn fixed_text(text: impl Into<String>) -> TextFn {
 /// C# `SettingsPresenter.PageTitle(key)` with the ambient language: the localized heading of the page `key` (`settings.nav.*`), `""` for a key that is not one of
 /// the seven pages. Uses `Localizer::current()` and the current number culture (D-W8-4).
 pub fn page_title(key: &str) -> String {
-    todo!()
+    with_field_context(|context| SettingsPresenter::page_title(key, context))
 }
 
 /// C# `ISettingsPageView` + the defaults of `SettingsPageBase`. One implementation per page (`pages::*`), plus the catalog's [`PendingSettingsPage`](super::catalog).
@@ -64,19 +64,19 @@ pub trait SettingsPageView {
     fn collect(&mut self, state: &mut SettingsFormState);
 
     /// C# `OnCommand(id, notification)`: `WM_COMMAND` of a control of this page (`BN_CLICKED`, `CBN_SELCHANGE`, `EN_CHANGE`...). `true` = handled. Default `false`.
-    fn on_command(&mut self, id: i32, notification: u32) -> bool {
+    fn on_command(&mut self, _id: i32, _notification: u32) -> bool {
         false
     }
 
     /// C# `OnScroll(id)`: `WM_HSCROLL` of the trackbar `id` of this page. Default: nothing.
-    fn on_scroll(&mut self, id: i32) {}
+    fn on_scroll(&mut self, _id: i32) {}
 
     /// C# `OnLanguageChanged()`: the language changed; set again the texts the code sets (hints, values, status). Texts declared with the builder follow by
     /// themselves. Default: nothing.
     fn on_language_changed(&mut self) {}
 
     /// C# `FocusTarget(field)`: the control that gets the focus when Save is refused at `field`; `None` = this page has no such field. Default `None`.
-    fn focus_target(&self, field: SettingsFocusField) -> Option<i32> {
+    fn focus_target(&self, _field: SettingsFocusField) -> Option<i32> {
         None
     }
 
@@ -119,7 +119,7 @@ impl PageContextSlot {
 
     /// C# `Attach` of the base class: stores the context.
     pub fn attach(&mut self, context: SettingsPageContext) {
-        todo!()
+        self.context = Some(context);
     }
 
     /// True after [`attach`](Self::attach).
@@ -129,6 +129,6 @@ impl PageContextSlot {
 
     /// The attached context (a cheap clone: it shares the host), or [`SettingsPageContext::detached`] before `attach`.
     pub fn context(&self) -> SettingsPageContext {
-        todo!()
+        self.context.clone().unwrap_or_else(SettingsPageContext::detached)
     }
 }
