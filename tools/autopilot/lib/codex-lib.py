@@ -63,13 +63,20 @@ def cmd_deps(plan, uid):
             print("\n".join(expand_deps(r["deps_raw"], uid))); return
 
 def owned(contract):
-    res, on = [], False
+    res, on, fenced = [], False, False
     for line in read(contract).splitlines():
         if not on:
             if re.search(r"Owned files", line) and re.search(r"only", line, re.I):
                 on = True
             continue
+        if line.strip().startswith("```"):
+            if fenced or res:
+                break
+            fenced = True
+            continue
         m = re.match(r"^\s{2,}`?([\w./-]+\.\w+)`?(\s|$)", line)
+        if not m and fenced:
+            m = re.match(r"^`?([\w./-]+\.\w+)`?(\s|$)", line)
         if m and "/" in m.group(1):
             res.append(m.group(1)); continue
         if line.strip() == "":

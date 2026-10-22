@@ -108,3 +108,8 @@ What Claude (or you) must still do: write the contracts, stubs and goldens (Code
 - cargo may not be on PATH in the Bash tool: use `$HOME/.cargo/bin`. Build with `CARGO_PROFILE_DEV_DEBUG=line-tables-only`
   `CARGO_INCREMENTAL=0`; per-worktree `CARGO_TARGET_DIR`; cargo-mutants copies the workspace to `%TEMP%` (~2 GB each).
 - A workflow that hits the account usage limit fails its remaining agents; resume it later with `resumeFromRunId`.
+
+### Codex sandbox and the target dir
+The Codex Windows sandbox writes only to its working directory (`-C`); it gets a per-workspace random SID, so an ACL grant on a shared
+dir does not help (tested). Each unit therefore builds in `<worktree>/target` (git-ignored) and cargo-mutants in `<worktree>/target-mut`;
+the cost is a cold build per unit (disk is plentiful). Without this Codex's own `cargo` failed with `Access is denied (os error 5)`.
