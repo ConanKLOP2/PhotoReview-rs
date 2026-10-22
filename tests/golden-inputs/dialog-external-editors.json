@@ -1,0 +1,24 @@
+{
+ "command": "dialog-external-editors",
+ "notes": [
+  "Feeds W9-E2. Reflection over internal ExternalEditorsDialog in PhotoReview and public ExternalEditor in PhotoReview.Core; no window is created. Process language is English.",
+  "Kinds: dialog -> title/items/focus/default/resizable/headers/modal-frame/style; row_text -> display text/default badge; preferred -> preferred/minimum sizes; metrics -> margin/field/button/left widths; constants -> all *Id constants; effective_default -> effective id and index.",
+  "preferred and metrics use a window-less dialog with _avgCharWidth, _lineHeight, and _childHosts initialized. Wrapped-text heights via a fake DialogMeasure and all window behaviour stay hand-written."
+ ],
+ "cases": [
+  {"name":"dialog with named and blank editor","kind":"dialog","default_id":"ed-2","editors":[{"id":"ed-1","name":"Photoshop","path":"C:\\Program Files\\Adobe\\Photoshop.exe","arguments":"\"{file}\""},{"id":"ed-2","name":"   ","path":"D:\\Tools\\Photo Editor.exe","arguments":"--open {file}"},{"id":"ed-3","name":"写真編集","path":"C:\\写真\\編集.exe","arguments":"{file}"}]},
+  {"name":"empty dialog","kind":"dialog","default_id":"missing","editors":[]},
+  {"name":"default row","kind":"row_text","default_id":"ed-2","index":1,"editors":[{"id":"ed-1","name":"Photoshop","path":"C:\\Program Files\\Adobe\\Photoshop.exe"},{"id":"ed-2","name":"Pixel Lab","path":"C:\\Pixel.exe"}]},
+  {"name":"blank name uses executable filename","kind":"row_text","default_id":"absent","index":0,"editors":[{"id":"ed-1","name":" ","path":"C:\\Program Files\\Photo Editor.exe"}]},
+  {"name":"empty row list fallback","kind":"row_text","default_id":"absent","index":0,"editors":[]},
+  {"name":"known default","kind":"effective_default","default_id":"ed-2","editors":[{"id":"ed-1","name":"One","path":"one.exe"},{"id":"ed-2","name":"Two","path":"two.exe"}]},
+  {"name":"unknown default falls back to first","kind":"effective_default","default_id":"missing","editors":[{"id":"ed-1","name":"One","path":"one.exe"},{"id":"ed-2","name":"Two","path":"two.exe"}]},
+  {"name":"duplicate ids use first matching index","kind":"effective_default","default_id":"dup","editors":[{"id":"dup","name":"One","path":"one.exe"},{"id":"dup","name":"Two","path":"two.exe"}]},
+  {"name":"empty default","kind":"effective_default","default_id":"missing","editors":[]},
+  {"name":"preferred 6 15","kind":"preferred","avg":6,"line":15},
+  {"name":"preferred 9 24","kind":"preferred","avg":9,"line":24},
+  {"name":"metrics narrow width","kind":"metrics","avg":6,"line":15,"client_width":299},
+  {"name":"metrics wide width","kind":"metrics","avg":10,"line":29,"client_width":1000},
+  {"name":"all dialog ids","kind":"constants"}
+ ]
+}
