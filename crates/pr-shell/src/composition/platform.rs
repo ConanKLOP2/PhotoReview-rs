@@ -7,8 +7,6 @@
 //! compile error, the Rust form of C# "fails loudly when missing"). `registry::SharedServices::build` takes one by value and never builds an OS object itself.
 //!
 //! Everything here is `Send + Sync` (the preview service, the decoders and the journal run these on workers).
-#![allow(unused_variables, dead_code)] // stub: the porter removes this line with the last `todo!()`
-
 use std::error::Error;
 use std::fmt;
 use std::sync::Arc;
@@ -119,7 +117,56 @@ impl PlatformServices {
     /// Every field from its "Production" line above, in field order, except the ones `overrides` replaces. `log` is the log the OS adapters report to (the process log). Creates no
     /// window, reads no file, touches no user data; the one side effect is the Explorer STA pump thread (only when not overridden). `Err` names the field that failed.
     pub fn production(log: Arc<dyn Log>, overrides: PlatformOverrides) -> Result<PlatformServices, PlatformError> {
-        todo!()
+        use pr_platform_win::{
+            culture::{WindowsCultureLookup, installed_ui_culture},
+            display_clock::WindowsDisplayClock,
+            explorer_order_provider::production_explorer_order,
+            live_operation_registry::WindowsLiveOperationRegistry,
+            memory_probe::WindowsMemoryProbe,
+            natural_comparer::WindowsNaturalComparer,
+            physical_memory::WindowsPhysicalMemory,
+            recycle_bin::WindowsRecycleBin,
+            recycle_restore::WindowsRecycleBinRestoreBackend,
+            shell_integration::WindowsShellIntegration,
+            wic::cache_adapters::{WicCacheImageReader, WicPreviewPayloadCodec},
+        };
+        let live_operations = Arc::new(WindowsLiveOperationRegistry::new(
+            Arc::clone(&log),
+            pr_core::identity::INSTANCE_PREFIX,
+        ));
+        let memory = Arc::new(WindowsPhysicalMemory);
+        let recycle_bin = match overrides.recycle_bin {
+            Some(value) => value,
+            None => Arc::new(WindowsRecycleBin::new(Arc::new(WindowsRecycleBinRestoreBackend::new(
+                Arc::clone(&log),
+            )))),
+        };
+        let explorer_order = match overrides.explorer_order {
+            Some(value) => value,
+            None => production_explorer_order(Arc::clone(&log)).map_err(|error| PlatformError {
+                service: "explorer_order",
+                message: error.to_string(),
+            })?,
+        };
+        Ok(Self {
+            recycle_bin,
+            live_operations,
+            memory_probe: Arc::new(WindowsMemoryProbe::new(Arc::clone(&log))),
+            natural_comparer: Arc::new(WindowsNaturalComparer::INSTANCE),
+            display_clock: Arc::new(WindowsDisplayClock::new()),
+            explorer_order,
+            physical_memory: memory.clone(),
+            memory_info: memory,
+            shell_integration: Arc::new(WindowsShellIntegration::new()),
+            payload_codec: Arc::new(WicPreviewPayloadCodec),
+            cache_image_reader: Arc::new(WicCacheImageReader),
+            embedded_thumbnails: Arc::new(UnavailableEmbeddedThumbnails),
+            fine_scaler: Arc::new(WicFineScaler),
+            libraw_api: Arc::new(pr_libraw::decoder::NativeLibRaw),
+            cultures: Arc::new(WindowsCultureLookup),
+            installed_ui_culture: installed_ui_culture(),
+            codec: pr_imaging::pixel_memory::PixelBufferImageCodec::shared(),
+        })
     }
 }
 
@@ -134,7 +181,8 @@ impl EmbeddedThumbnailBackend for UnavailableEmbeddedThumbnails {
         &self,
         stream: Box<dyn pr_core::abstractions::ReadSeek>,
     ) -> Result<Option<Box<dyn EmbeddedThumbnailFrame>>, ThumbnailBackendError> {
-        todo!()
+        let _ = stream;
+        Ok(None)
     }
 }
 
@@ -146,6 +194,14 @@ pub struct WicFineScaler;
 
 impl FineScaler for WicFineScaler {
     fn resize(&self, source: &PixelBuffer, width: i32, height: i32) -> Result<PixelBuffer, FineScaleError> {
-        todo!()
+        pr_platform_win::wic::scaler::resize(source, width, height).map_err(|error| match error {
+            pr_platform_win::wic::scaler::ScaleError::InsufficientMemory { .. }
+            | pr_platform_win::wic::scaler::ScaleError::Pixels(pr_imaging::pixels::PixelBufferError::OutOfMemory {
+                ..
+            }) => FineScaleError::OutOfMemory,
+            other => FineScaleError::Failed(pr_imaging::decoder_traits::DecodeError::InvalidData {
+                message: other.to_string(),
+            }),
+        })
     }
 }
