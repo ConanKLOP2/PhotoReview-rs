@@ -18,11 +18,13 @@
 //! | `frame` | 18n | `DrawGroupBox`, `DrawEtched`, `PaintHeaderFiller`, `BorderThickness`, `PaintBorder` |
 //!
 //! Lead-owned index: this file declares the submodules (the porter of 18l fills the bodies below it; 18m and 18n never edit it).
-#![allow(unused_variables, dead_code)] // stub: the porter removes this line with the last `todo!()`
 
 use std::cell::Cell;
+use std::panic::AssertUnwindSafe;
 use std::rc::Rc;
 use std::sync::atomic::{AtomicUsize, Ordering};
+
+use windows::Win32::UI::Controls::{NMHDR, NMLVCUSTOMDRAW};
 
 pub mod controls;
 pub mod frame;
@@ -33,7 +35,16 @@ pub use geometry::ChromePaintKind;
 
 use super::chrome::ChromePainter;
 use super::template::DialogControlClass;
-use crate::win32::structs::Hwnd;
+use crate::host::pending_panic;
+use crate::win32::comctl::common_controls::{def_subclass_proc, remove_window_subclass, set_window_subclass};
+use crate::win32::comctl::user32::get_class_name;
+use crate::win32::control_constants::{NM_CUSTOMDRAW, WC_LISTVIEW, WM_NOTIFY};
+use crate::win32::dialog_chrome::{
+    TME_LEAVE, WM_NCDESTROY, get_prop, get_window_dc, remove_prop, set_prop, track_mouse_event,
+};
+use crate::win32::dialog_native::user32::{get_dc, invalidate_rect, is_window, release_dc};
+use crate::win32::structs::{Hdc, Hwnd};
+use geometry::{ControlMessageAction, control_message_action};
 
 /// C# `ControlSubclassId` = `0x43484D50` ("CHMP").
 pub const CONTROL_SUBCLASS_ID: usize = 0x4348_4D50;
@@ -96,7 +107,7 @@ pub struct NativeDialogChromePainter;
 impl NativeDialogChromePainter {
     /// C# `KindFor(hwnd, controlClass)`: `geometry::kind_for`.
     pub fn kind_for(hwnd: Hwnd, class: DialogControlClass) -> ChromePaintKind {
-        todo!()
+        geometry::kind_for(hwnd, class)
     }
 
     /// C# `Attach(hwnd, kind)` (lines 129-153): `false` when `hwnd == 0`, `kind == None`, or `!is_window(hwnd)`. Already attached (`get_prop(hwnd,
@@ -104,41 +115,69 @@ impl NativeDialogChromePainter {
     /// control_proc, CONTROL_SUBCLASS_ID, ptr)`; on failure drop the box and answer `false`; else `set_prop(hwnd, CONTROL_PROP, ptr)`, `invalidate_rect(hwnd,
     /// None, true)` (erase: the first paint is ours) and `true`.
     pub fn attach(hwnd: Hwnd, kind: ChromePaintKind) -> bool {
-        todo!()
+        if hwnd == 0 || kind == ChromePaintKind::None || !is_window(hwnd) {
+            return false;
+        }
+        if get_prop(hwnd, CONTROL_PROP) != 0 {
+            return true;
+        }
+        let state = Box::into_raw(Box::new(PaintState::new(kind)));
+        // SAFETY: `control_proc` is a `static` function that stays valid for the process; `ref_data` is the address of the box leaked just above, which
+        // `WM_NCDESTROY` frees exactly once (or this function, when the subclass is refused).
+        let attached = unsafe { set_window_subclass(hwnd, control_proc, CONTROL_SUBCLASS_ID, state as usize) };
+        if !attached {
+            // SAFETY: the box was leaked by `Box::into_raw` above and no subclass holds it (the call failed), so it is freed once here.
+            drop(unsafe { Box::from_raw(state) });
+            return false;
+        }
+        set_prop(hwnd, CONTROL_PROP, state as isize);
+        invalidate_rect(hwnd, None, true);
+        true
     }
 
     /// C# `IsAttached(hwnd)` (test hook): `hwnd != 0 && get_prop(hwnd, CONTROL_PROP) != 0`.
     pub fn is_attached(hwnd: Hwnd) -> bool {
-        todo!()
+        hwnd != 0 && get_prop(hwnd, CONTROL_PROP) != 0
     }
 
     /// C# `AttachDialog(dialog)` (lines 162-181): `false` for `0` or a dead window; already marked (`DIALOG_PROP`) -> `true`; else `set_window_subclass(dialog,
     /// dialog_proc, DIALOG_SUBCLASS_ID, 0)` (failure -> `false`), `set_prop(dialog, DIALOG_PROP, 1)`, `true`.
     pub fn attach_dialog(dialog: Hwnd) -> bool {
-        todo!()
+        if dialog == 0 || !is_window(dialog) {
+            return false;
+        }
+        if get_prop(dialog, DIALOG_PROP) != 0 {
+            return true;
+        }
+        // SAFETY: `dialog_proc` is a `static` function that stays valid for the process; it uses no `ref_data` (0).
+        if !unsafe { set_window_subclass(dialog, dialog_proc, DIALOG_SUBCLASS_ID, 0) } {
+            return false;
+        }
+        set_prop(dialog, DIALOG_PROP, 1);
+        true
     }
 }
 
 impl ChromePainter for NativeDialogChromePainter {
     /// `NativeDialogChromePainter::attach_dialog`.
     fn attach_dialog(&self, dialog: Hwnd) -> bool {
-        todo!()
+        Self::attach_dialog(dialog)
     }
 
     /// C# `Attach(hwnd, KindFor(hwnd, class))`: the kind is chosen at attach time from the CURRENT window style.
     fn attach_control(&self, hwnd: Hwnd, class: DialogControlClass) -> bool {
-        todo!()
+        Self::attach(hwnd, Self::kind_for(hwnd, class))
     }
 
     /// C# `Attach(header, ChromePaintKind.HeaderFiller)`.
     fn attach_header_filler(&self, header: Hwnd) -> bool {
-        todo!()
+        Self::attach(header, ChromePaintKind::HeaderFiller)
     }
 }
 
 /// The shared painter for the production chrome: `Rc<dyn ChromePainter>` of the unit struct (`DarkDialogChrome::new(production_painter())`).
 pub fn production_painter() -> Rc<dyn ChromePainter> {
-    todo!()
+    Rc::new(NativeDialogChromePainter)
 }
 
 /// C# `[UnmanagedCallersOnly] ControlProc` (lines 186-295) as a `SubclassProc`. Algorithm: `state = &*(ref_data as *const PaintState)`; the body runs inside
@@ -164,7 +203,103 @@ pub(crate) unsafe extern "system" fn control_proc(
     id: usize,
     ref_data: usize,
 ) -> isize {
-    todo!()
+    if ref_data == 0 {
+        // SAFETY: called from a subclass procedure with its own message parameters.
+        return unsafe { def_subclass_proc(hwnd, message, wparam, lparam) };
+    }
+    let state_ptr = ref_data as *const PaintState;
+    // SAFETY: `ref_data` is the address of the `PaintState` boxed by `attach` for this subclass, alive until `WM_NCDESTROY` frees it. The kind is copied
+    // before any message is handled (T3: nothing reads the state after `Destroy` freed it).
+    let kind = unsafe { (*state_ptr).kind };
+    let action = control_message_action(kind, message, lparam);
+    // `None` = the message goes to `def_subclass_proc` (also after a captured panic, D-W8B5-410); `Some(r)` = answer `r`.
+    let answer = pending_panic::guarded(
+        None,
+        AssertUnwindSafe(|| {
+            // SAFETY: as above; the reference is read only while this message is processed, and not created for `Destroy`.
+            let state = || unsafe { &*state_ptr };
+            let default = || {
+                // SAFETY: called from a subclass procedure with its own message parameters.
+                unsafe { def_subclass_proc(hwnd, message, wparam, lparam) }
+            };
+            match action {
+                ControlMessageAction::PassThrough => None,
+                ControlMessageAction::EraseBackgroundHandled => Some(1),
+                ControlMessageAction::PaintWindow => {
+                    controls::paint_window(hwnd, state());
+                    Some(0)
+                }
+                ControlMessageAction::PrintClient => {
+                    controls::paint_to(hwnd, wparam as Hdc, state());
+                    Some(0)
+                }
+                ControlMessageAction::TrackHover => {
+                    let state = state();
+                    if !state.hot.get() {
+                        state.hot.set(true);
+                        let _ = track_mouse_event(TME_LEAVE, hwnd, 0);
+                        invalidate_rect(hwnd, None, false);
+                    }
+                    None
+                }
+                ControlMessageAction::LeaveHover => {
+                    state().hot.set(false);
+                    invalidate_rect(hwnd, None, false);
+                    None
+                }
+                ControlMessageAction::PaintNonClientBorder => {
+                    let result = default();
+                    let hdc = get_window_dc(hwnd);
+                    if hdc != 0 {
+                        let _release = ReleaseDcOnDrop { hwnd, hdc };
+                        frame::paint_border(hwnd, hdc, kind);
+                    }
+                    Some(result)
+                }
+                ControlMessageAction::PrintNonClientBorder => {
+                    let result = default();
+                    frame::paint_border(hwnd, wparam as Hdc, kind);
+                    Some(result)
+                }
+                ControlMessageAction::PaintHeaderFiller => {
+                    let result = default();
+                    let hdc = get_dc(hwnd);
+                    if hdc != 0 {
+                        let _release = ReleaseDcOnDrop { hwnd, hdc };
+                        frame::paint_header_filler(hwnd, hdc);
+                    }
+                    Some(result)
+                }
+                ControlMessageAction::PrintHeaderFiller => {
+                    let result = default();
+                    frame::paint_header_filler(hwnd, wparam as Hdc);
+                    Some(result)
+                }
+                ControlMessageAction::InvalidateAfterDefault => {
+                    let result = default();
+                    invalidate_rect(hwnd, None, false);
+                    Some(result)
+                }
+                ControlMessageAction::RepaintAfterDefault => {
+                    let result = default();
+                    controls::repaint_now(hwnd, state());
+                    Some(result)
+                }
+                ControlMessageAction::Destroy => {
+                    remove_window_subclass(hwnd, control_proc, id);
+                    remove_prop(hwnd, CONTROL_PROP);
+                    // SAFETY: the box was leaked by `attach` for this window and is freed once here; nothing reads the state afterwards.
+                    drop(unsafe { Box::from_raw(ref_data as *mut PaintState) });
+                    None
+                }
+            }
+        }),
+    );
+    match answer {
+        Some(result) => result,
+        // SAFETY: called from a subclass procedure with its own message parameters.
+        None => unsafe { def_subclass_proc(hwnd, message, wparam, lparam) },
+    }
 }
 
 /// C# `[UnmanagedCallersOnly] DialogProc` (lines 298-321) as a `SubclassProc`. Inside `pending_panic::guarded` (the same rule as `control_proc`):
@@ -181,13 +316,50 @@ pub(crate) unsafe extern "system" fn dialog_proc(
     wparam: usize,
     lparam: isize,
     id: usize,
-    ref_data: usize,
+    _ref_data: usize,
 ) -> isize {
-    todo!()
+    let answer = pending_panic::guarded(
+        None,
+        AssertUnwindSafe(|| {
+            if message == WM_NOTIFY && lparam != 0 {
+                // SAFETY: for `WM_NOTIFY` the `lparam` points to a notification structure (it starts with an `NMHDR`) valid for the duration of the message.
+                let header = unsafe { &*(lparam as *const NMHDR) };
+                if header.code as i32 == NM_CUSTOMDRAW && is_list_view(header.hwndFrom.0 as isize) {
+                    // SAFETY: called from a subclass procedure with its own message parameters.
+                    let result = unsafe { def_subclass_proc(hwnd, message, wparam, lparam) };
+                    // SAFETY: a list view sends `NM_CUSTOMDRAW` with an `NMLVCUSTOMDRAW` (`is_list_view(hwndFrom)` was checked) valid and writable for the message.
+                    let custom_draw = unsafe { &mut *(lparam as *mut NMLVCUSTOMDRAW) };
+                    return Some(controls::adjust_list_view_custom_draw(custom_draw, result));
+                }
+            }
+            if message == WM_NCDESTROY {
+                remove_window_subclass(hwnd, dialog_proc, id);
+                remove_prop(hwnd, DIALOG_PROP);
+            }
+            None
+        }),
+    );
+    match answer {
+        Some(result) => result,
+        // SAFETY: called from a subclass procedure with its own message parameters.
+        None => unsafe { def_subclass_proc(hwnd, message, wparam, lparam) },
+    }
 }
 
 /// C# `IsListView(hwnd)`: `hwnd != 0` and the class name is `SysListView32` ignoring ASCII case (the C# compares a 13 unit buffer, so a longer name never
 /// matches: `eq_ignore_ascii_case` on the whole name has the same result).
 pub fn is_list_view(hwnd: Hwnd) -> bool {
-    todo!()
+    hwnd != 0 && get_class_name(hwnd).is_some_and(|name| name.eq_ignore_ascii_case(WC_LISTVIEW))
+}
+
+/// Releases a window DC on every exit of a drawing arm, also when the drawing panics.
+struct ReleaseDcOnDrop {
+    hwnd: Hwnd,
+    hdc: Hdc,
+}
+
+impl Drop for ReleaseDcOnDrop {
+    fn drop(&mut self) {
+        release_dc(self.hwnd, self.hdc);
+    }
 }

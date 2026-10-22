@@ -1,9 +1,14 @@
+#![allow(dead_code)] // each test crate that includes this file uses a different part
+
 use pr_platform_win::dialogs::native::{
     chrome::{ChromeOs, ChromePainter},
     template::DialogControlClass,
 };
 use std::{cell::RefCell, rc::Rc};
 type Hwnd = isize;
+
+/// The shared, ordered log of everything the fakes and the theme recorder see.
+pub type Events = Rc<RefCell<Vec<Event>>>;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum Event {
@@ -13,6 +18,18 @@ pub enum Event {
     Header(Hwnd),
     ComboList(Hwnd),
     ListHeader(Hwnd),
+    /// `SetWindowTheme(hwnd, app, ids)` as seen by the recorder.
+    Theme(Hwnd, String, Option<String>),
+}
+
+/// A `SetThemeFn` that records `Event::Theme` into `events` (it never calls the OS).
+pub fn theme_recorder(events: &Events) -> pr_platform_win::dialogs::native::chrome::SetThemeFn {
+    let events = events.clone();
+    Box::new(move |hwnd, app, ids| {
+        events
+            .borrow_mut()
+            .push(Event::Theme(hwnd, app.to_owned(), ids.map(str::to_owned)))
+    })
 }
 
 pub struct RecordingPainter(pub Rc<RefCell<Vec<Event>>>);

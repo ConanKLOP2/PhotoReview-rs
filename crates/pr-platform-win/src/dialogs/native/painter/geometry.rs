@@ -4,10 +4,52 @@
 //!
 //! Pure except [`kind_for`] (reads the window style) and nothing here calls GDI. The drawing is `painter::controls` (W8-18m) and `painter::{widgets, frame}`
 //! (W8-18n); the window procedures and the attach/detach are `painter::mod` (also W8-18l).
-#![allow(unused_variables, dead_code)] // stub: the porter removes this line with the last `todo!()`
 
+use crate::dialogs::native::chrome::DialogColors;
 use crate::dialogs::native::template::DialogControlClass;
+use crate::win32::api::user32::get_window_long_ptr;
+use crate::win32::control_constants::{CDDS_ITEM, CDDS_PREPAINT, CDRF_NEWFONT, CDRF_NOTIFYITEMDRAW, CDRF_SKIPDEFAULT};
+use crate::win32::dialog_chrome::{
+    BS_BITMAP, BS_ICON, BS_PUSHLIKE, BS_TYPEMASK, CBS_OWNERDRAWFIXED, CBS_OWNERDRAWVARIABLE, CBS_TYPE_MASK,
+    PBS_MARQUEE, PRF_NONCLIENT, SS_ETCHEDFRAME, SS_ETCHEDHORZ, SS_ETCHEDVERT, SS_TYPEMASK, TBS_VERT, UISF_HIDEACCEL,
+    UISF_HIDEFOCUS, WM_ERASEBKGND, WM_KILLFOCUS, WM_MOUSELEAVE, WM_MOUSEMOVE, WM_NCDESTROY, WM_NCPAINT, WM_PAINT,
+    WM_PRINT, WM_PRINTCLIENT, WM_SETFOCUS, WM_UPDATEUISTATE,
+};
+use crate::win32::messages::GWL_STYLE;
 use crate::win32::structs::Hwnd;
+
+/// `WM_ENABLE`.
+const WM_ENABLE: u32 = 0x000A;
+/// `WM_SETFONT`.
+const WM_SETFONT: u32 = 0x0030;
+/// `WM_CANCELMODE`.
+const WM_CANCELMODE: u32 = 0x001F;
+/// `WM_KEYDOWN`.
+const WM_KEYDOWN: u32 = 0x0100;
+/// `WM_CHAR`.
+const WM_CHAR: u32 = 0x0102;
+/// `WM_LBUTTONDOWN`.
+const WM_LBUTTONDOWN: u32 = 0x0201;
+/// `WM_LBUTTONUP`.
+const WM_LBUTTONUP: u32 = 0x0202;
+/// `WM_LBUTTONDBLCLK`.
+const WM_LBUTTONDBLCLK: u32 = 0x0203;
+/// `WM_MOUSEWHEEL`.
+const WM_MOUSEWHEEL: u32 = 0x020A;
+/// `CB_RESETCONTENT`.
+const CB_RESETCONTENT: u32 = 0x014B;
+/// `CB_SELECTSTRING`.
+const CB_SELECTSTRING: u32 = 0x014D;
+/// `CB_SETCURSEL`.
+const CB_SETCURSEL: u32 = 0x014E;
+/// `CB_SHOWDROPDOWN`.
+const CB_SHOWDROPDOWN: u32 = 0x014F;
+/// `BM_SETCHECK`.
+const BM_SETCHECK: u32 = 0x00F1;
+/// `BM_SETSTATE`.
+const BM_SETSTATE: u32 = 0x00F3;
+/// `BM_SETSTYLE`.
+const BM_SETSTYLE: u32 = 0x00F4;
 
 /// C# `ChromePaintKind` (how the painter draws a control). The `i32` values are the C# enum values (`None = 0` .. `HeaderFiller = 12`); the range tests of
 /// the predicates below depend on the order.
@@ -42,7 +84,22 @@ impl ChromePaintKind {
 
     /// The kind with this C# value, `None` for a value outside `0..=12` (the C# `(ChromePaintKind)state->Kind` cast cannot fail; Rust never stores another value).
     pub fn from_value(value: i32) -> Option<Self> {
-        todo!()
+        match value {
+            0 => Some(Self::None),
+            1 => Some(Self::PushButton),
+            2 => Some(Self::CheckBox),
+            3 => Some(Self::RadioButton),
+            4 => Some(Self::GroupBox),
+            5 => Some(Self::ComboBox),
+            6 => Some(Self::Progress),
+            7 => Some(Self::Trackbar),
+            8 => Some(Self::EtchedStatic),
+            9 => Some(Self::EditBorder),
+            10 => Some(Self::ListBoxBorder),
+            11 => Some(Self::ListViewBorder),
+            12 => Some(Self::HeaderFiller),
+            _ => Option::None,
+        }
     }
 }
 
@@ -50,7 +107,9 @@ impl ChromePaintKind {
 
 /// C# `KindFor(hwnd, controlClass)` (lines 65-114) with the style read from the window: `kind_for_style(class, GetWindowLongPtr(hwnd, GWL_STYLE) as u32)`.
 pub fn kind_for(hwnd: Hwnd, class: DialogControlClass) -> ChromePaintKind {
-    todo!()
+    // The C# cast `(uint)GetWindowLongPtr(..)` keeps the low 32 bits.
+    let style = get_window_long_ptr(hwnd, GWL_STYLE) as u32;
+    kind_for_style(class, style)
 }
 
 /// The pure core of `KindFor`. Button: `BS_ICON | BS_BITMAP` set -> `None`; else by `style & BS_TYPEMASK` (0x000F): 0 and 1 -> `PushButton`; 2, 3, 5, 6 ->
@@ -60,22 +119,85 @@ pub fn kind_for(hwnd: Hwnd, class: DialogControlClass) -> ChromePaintKind {
 /// `PBS_MARQUEE` -> `Progress`, else `None`. Trackbar: no `TBS_VERT` -> `Trackbar`, else `None`. Static: `style & SS_TYPEMASK` is `SS_ETCHEDHORZ`,
 /// `SS_ETCHEDVERT` or `SS_ETCHEDFRAME` -> `EtchedStatic`, else `None`. ScrollBar -> `None`.
 pub fn kind_for_style(class: DialogControlClass, style: u32) -> ChromePaintKind {
-    todo!()
+    match class {
+        DialogControlClass::Button => {
+            if style & (BS_ICON | BS_BITMAP) != 0 {
+                return ChromePaintKind::None;
+            }
+            let push_like = style & BS_PUSHLIKE != 0;
+            match style & BS_TYPEMASK {
+                0 | 1 => ChromePaintKind::PushButton,
+                2 | 3 | 5 | 6 => {
+                    if push_like {
+                        ChromePaintKind::PushButton
+                    } else {
+                        ChromePaintKind::CheckBox
+                    }
+                }
+                4 | 9 => {
+                    if push_like {
+                        ChromePaintKind::PushButton
+                    } else {
+                        ChromePaintKind::RadioButton
+                    }
+                }
+                7 => ChromePaintKind::GroupBox,
+                _ => ChromePaintKind::None,
+            }
+        }
+        DialogControlClass::ComboBox => {
+            if style & CBS_TYPE_MASK == 3 && style & (CBS_OWNERDRAWFIXED | CBS_OWNERDRAWVARIABLE) == 0 {
+                ChromePaintKind::ComboBox
+            } else {
+                ChromePaintKind::None
+            }
+        }
+        DialogControlClass::Edit => ChromePaintKind::EditBorder,
+        DialogControlClass::ListBox => ChromePaintKind::ListBoxBorder,
+        DialogControlClass::ListView => ChromePaintKind::ListViewBorder,
+        DialogControlClass::Progress => {
+            if style & PBS_MARQUEE == 0 {
+                ChromePaintKind::Progress
+            } else {
+                ChromePaintKind::None
+            }
+        }
+        DialogControlClass::Trackbar => {
+            if style & TBS_VERT == 0 {
+                ChromePaintKind::Trackbar
+            } else {
+                ChromePaintKind::None
+            }
+        }
+        DialogControlClass::Static => match style & SS_TYPEMASK {
+            SS_ETCHEDHORZ | SS_ETCHEDVERT | SS_ETCHEDFRAME => ChromePaintKind::EtchedStatic,
+            _ => ChromePaintKind::None,
+        },
+        DialogControlClass::ScrollBar => ChromePaintKind::None,
+    }
 }
 
 /// C# `IsFullPaint(kind)`: `PushButton ..= EtchedStatic` (values 1 to 8): the hand painter draws the whole client area.
 pub fn is_full_paint(kind: ChromePaintKind) -> bool {
-    todo!()
+    (ChromePaintKind::PushButton.value()..=ChromePaintKind::EtchedStatic.value()).contains(&kind.value())
 }
 
 /// C# `HasFlatBorder(kind)`: `EditBorder ..= ListViewBorder` (9 to 11) or `Progress`: the border is repainted flat at `WM_NCPAINT` / `WM_PRINT`.
 pub fn has_flat_border(kind: ChromePaintKind) -> bool {
-    todo!()
+    (ChromePaintKind::EditBorder.value()..=ChromePaintKind::ListViewBorder.value()).contains(&kind.value())
+        || kind == ChromePaintKind::Progress
 }
 
 /// C# `TracksHover(kind)`: `PushButton`, `CheckBox`, `RadioButton`, `ComboBox`, `Trackbar`.
 pub fn tracks_hover(kind: ChromePaintKind) -> bool {
-    todo!()
+    matches!(
+        kind,
+        ChromePaintKind::PushButton
+            | ChromePaintKind::CheckBox
+            | ChromePaintKind::RadioButton
+            | ChromePaintKind::ComboBox
+            | ChromePaintKind::Trackbar
+    )
 }
 
 /// C# `RepaintsAfterSystemPaint(kind, message)` (lines 375-393): the messages after which the SYSTEM control has painted by itself (`GetDC`, outside
@@ -84,7 +206,31 @@ pub fn tracks_hover(kind: ChromePaintKind) -> bool {
 /// `CB_RESETCONTENT 0x14B`, `CB_SELECTSTRING 0x14D`, `CB_SETCURSEL 0x14E`, `CB_SHOWDROPDOWN 0x14F`. PushButton, CheckBox, RadioButton: `WM_SETFOCUS`,
 /// `WM_KILLFOCUS`, `WM_ENABLE`, `BM_SETCHECK 0xF1`, `BM_SETSTATE 0xF3`, `BM_SETSTYLE 0xF4`. Every other kind: `false`.
 pub fn repaints_after_system_paint(kind: ChromePaintKind, message: u32) -> bool {
-    todo!()
+    match kind {
+        ChromePaintKind::ComboBox => matches!(
+            message,
+            WM_SETFOCUS
+                | WM_KILLFOCUS
+                | WM_ENABLE
+                | WM_SETFONT
+                | WM_CANCELMODE
+                | WM_KEYDOWN
+                | WM_CHAR
+                | WM_LBUTTONDOWN
+                | WM_LBUTTONUP
+                | WM_LBUTTONDBLCLK
+                | WM_MOUSEWHEEL
+                | CB_RESETCONTENT
+                | CB_SELECTSTRING
+                | CB_SETCURSEL
+                | CB_SHOWDROPDOWN
+        ),
+        ChromePaintKind::PushButton | ChromePaintKind::CheckBox | ChromePaintKind::RadioButton => matches!(
+            message,
+            WM_SETFOCUS | WM_KILLFOCUS | WM_ENABLE | BM_SETCHECK | BM_SETSTATE | BM_SETSTYLE
+        ),
+        _ => false,
+    }
 }
 
 // ---- what the control procedure does with a message ------------------------------------------------------------------------------------------------------------
@@ -126,20 +272,40 @@ pub enum ControlMessageAction {
 /// `WM_PRINT` and flat border and `(lparam as u32) & PRF_NONCLIENT != 0`; `WM_PAINT` and `HeaderFiller`; `WM_PRINTCLIENT` and `HeaderFiller`;
 /// `WM_UPDATEUISTATE` and full paint; `repaints_after_system_paint(kind, message)`; `WM_NCDESTROY`; else `PassThrough`.
 pub fn control_message_action(kind: ChromePaintKind, message: u32, lparam: isize) -> ControlMessageAction {
-    todo!()
+    let full = is_full_paint(kind);
+    let flat = has_flat_border(kind);
+    let hover = tracks_hover(kind);
+    let header = kind == ChromePaintKind::HeaderFiller;
+    match message {
+        WM_ERASEBKGND if full => ControlMessageAction::EraseBackgroundHandled,
+        WM_PAINT if full => ControlMessageAction::PaintWindow,
+        WM_PRINTCLIENT if full => ControlMessageAction::PrintClient,
+        WM_MOUSEMOVE if hover => ControlMessageAction::TrackHover,
+        WM_MOUSELEAVE if hover => ControlMessageAction::LeaveHover,
+        WM_NCPAINT if flat => ControlMessageAction::PaintNonClientBorder,
+        // C# `((uint)lParam & PrfNonClient) != 0`: only the low 32 bits count.
+        WM_PRINT if flat && (lparam as u32) & PRF_NONCLIENT != 0 => ControlMessageAction::PrintNonClientBorder,
+        WM_PAINT if header => ControlMessageAction::PaintHeaderFiller,
+        WM_PRINTCLIENT if header => ControlMessageAction::PrintHeaderFiller,
+        WM_UPDATEUISTATE if full => ControlMessageAction::InvalidateAfterDefault,
+        m if repaints_after_system_paint(kind, m) => ControlMessageAction::RepaintAfterDefault,
+        WM_NCDESTROY => ControlMessageAction::Destroy,
+        _ => ControlMessageAction::PassThrough,
+    }
 }
 
 // ---- scale, colours ---------------------------------------------------------------------------------------------------------------------------------------
 
 /// C# `Math.Max(1.0, User32.GetDpiForWindow(hwnd) / 96.0)` of `Draw`: never below `1.0` (a window at 0 dpi, the OS answer for a dead window, paints at 1.0).
 pub fn paint_scale(dpi: u32) -> f64 {
-    todo!()
+    (f64::from(dpi) / 96.0).max(1.0)
 }
 
 /// C# `S(scale, value)`: `Math.Max(1, (int)Math.Round(value * scale))` (`Math.Round` of a `double` is to even: `round_ties_even`). Saturating cast (a huge value
 /// cannot panic).
 pub fn scaled(scale: f64, value: i32) -> i32 {
-    todo!()
+    // `as i32` from a float saturates (and maps NaN to 0), so a huge value cannot panic.
+    ((f64::from(value) * scale).round_ties_even() as i32).max(1)
 }
 
 /// C# `UiState(hwnd)` decoded: the two bits of the answer to `WM_QUERYUISTATE`.
@@ -153,7 +319,10 @@ pub struct UiState {
 
 /// The decoding of the `WM_QUERYUISTATE` answer (the low 32 bits).
 pub fn ui_state_from_flags(raw: u32) -> UiState {
-    todo!()
+    UiState {
+        hide_focus: raw & UISF_HIDEFOCUS != 0,
+        hide_accel: raw & UISF_HIDEACCEL != 0,
+    }
 }
 
 /// The `Dark.*` keys the painter uses (C# `Key("...")` strings), one constant each so no literal is repeated.
@@ -203,7 +372,7 @@ pub const MISSING_COLOR: u32 = 0x00FF_00FF;
 
 /// C# `Key(key)` = `DialogColors.FromKey(key)`: the `COLORREF` of a `Dark.*` key, `MISSING_COLOR` when unknown. Forwards to `chrome::DialogColors::from_key`.
 pub fn color(key: &str) -> u32 {
-    todo!()
+    DialogColors::from_key(key).unwrap_or(MISSING_COLOR)
 }
 
 // ---- list view custom draw ----------------------------------------------------------------------------------------------------------------------------------------
@@ -226,5 +395,31 @@ pub struct CustomDrawAdjustment {
 /// `stage & CDDS_ITEM (0x10000) != 0 && stage & 0xFFFF == 1` (item pre-paint, also the sub-item one `0x30001`): when `selected()`: `clear_selected_flag`,
 /// `text_color = TextStrong`, `back_color = Dark.Selection` and `result | CDRF_NEWFONT (2)`. Anything else: `result` unchanged and nothing else.
 pub fn adjust_custom_draw(stage: u32, result: isize, selected: impl FnOnce() -> bool) -> CustomDrawAdjustment {
-    todo!()
+    if stage == CDDS_PREPAINT {
+        let result = if result & CDRF_SKIPDEFAULT == 0 {
+            result | CDRF_NOTIFYITEMDRAW
+        } else {
+            result
+        };
+        return CustomDrawAdjustment {
+            result,
+            clear_selected_flag: false,
+            text_color: None,
+            back_color: None,
+        };
+    }
+    if stage & CDDS_ITEM != 0 && stage & 0xFFFF == 1 && selected() {
+        return CustomDrawAdjustment {
+            result: result | CDRF_NEWFONT,
+            clear_selected_flag: true,
+            text_color: Some(color(keys::TEXT_STRONG)),
+            back_color: Some(color(keys::SELECTION)),
+        };
+    }
+    CustomDrawAdjustment {
+        result,
+        clear_selected_flag: false,
+        text_color: None,
+        back_color: None,
+    }
 }
