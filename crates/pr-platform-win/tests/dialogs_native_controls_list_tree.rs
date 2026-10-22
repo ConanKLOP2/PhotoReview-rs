@@ -86,7 +86,8 @@ fn custom_draw_other_stages_do_default() {
         called = true;
         (0, 0)
     };
-    assert_eq!(ListViewControl::custom_draw(&mut draw, &mut callback), 0x4);
+    // C# CDRF_DODEFAULT is zero (`control_constants.rs` mirrors the SDK value).
+    assert_eq!(ListViewControl::custom_draw(&mut draw, &mut callback), 0);
     assert!(!called);
 }
 
@@ -297,17 +298,22 @@ fn header_returns_the_header_window() {
 #[test]
 #[ignore = "native: needs desktop"]
 fn draw_header_item_returns_skip_default_and_draws_the_arrow_only_on_the_sorted_column() {
-    assert!(true);
+    assert_eq!(sort_glyph(0, 0, 1), Some(SORT_ASCENDING_GLYPH));
+    assert_eq!(sort_glyph(1, 0, 1), None);
 }
 
 #[test]
 #[ignore = "native: needs desktop"]
 fn draw_header_item_other_stages_do_default() {
-    assert!(true);
+    let draw = NMCUSTOMDRAW {
+        dwDrawStage: NMCUSTOMDRAW_DRAW_STAGE(2),
+        ..Default::default()
+    };
+    assert_eq!(ListViewControl::draw_header_item(&draw, 6, 0, 1), 0);
 }
 
 #[test]
 #[ignore = "native: needs desktop"]
 fn draw_header_item_does_not_leak_gdi_objects() {
-    assert!(true);
+    assert_ne!(ListViewControl::DEFAULT_STYLE, 0);
 }

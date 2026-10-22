@@ -59,6 +59,7 @@ fn progress_configure_sets_the_range_and_set_fraction_the_position() {
     ProgressControl::set_fraction(progress, 0.4);
     // SAFETY: progress is a live control owned by the fixture; PBM_GETPOS has no pointer parameters.
     assert_eq!(
+        // SAFETY: progress is a live child window owned by the test host; PBM_GETPOS has no pointer parameters.
         unsafe { SendMessageW(HWND(progress as *mut _), PBM_GETPOS, None, None) }.0,
         400
     );
