@@ -6,7 +6,7 @@
 # Env: CODEX_BIN, CODEX_USAGE_SH, PLAN_REL, CODEX_TIMEOUT (s per Codex call, default 2400), SKIP_MUTANTS=1, PIPELINE_NO_PR=1,
 #      MUT_JOBS (cargo-mutants --jobs, default 4), MUT_BUDGET_YELLOW (s, default 900), MUT_BUDGET_RED (s, default 1800),
 #      MUTANTS_TIMEOUT (s; overrides both budgets), MUT_TEST_TIMEOUT (s per mutant test run, default 90),
-#      MIN_DISK_GB (default 20), QUOTA_MAX (percent of the 5 h window never exceeded, default 99), QUOTA_MARGIN (default 1.2),
+#      MIN_DISK_GB (default 20), QUOTA_MAX (percent of the 5 h window never exceeded, default 95), QUOTA_MARGIN (default 1.2),
 #      CS_REPO (C# checkout), GATE_NEXTEST=0 (never use cargo-nextest).
 set -u
 export PATH="$HOME/.cargo/bin:$PATH"
@@ -34,7 +34,7 @@ UCACHE="$STATE_DIR/usage.cache"
 IBR="integration/$TAG"; INT="$REPO/.claude/worktrees/int-$TAG"
 TDB="$REPO/target-wave-pipe-$TAG"
 CODEX_TIMEOUT="${CODEX_TIMEOUT:-2400}"; MUT_JOBS="${MUT_JOBS:-4}"
-QUOTA_MAX="${QUOTA_MAX:-99}"; QUOTA_MARGIN="${QUOTA_MARGIN:-1.2}"
+QUOTA_MAX="${QUOTA_MAX:-95}"; QUOTA_MARGIN="${QUOTA_MARGIN:-1.2}"
 PLAN="$SELF/../../$PLAN_REL"; [ -f "$INT/$PLAN_REL" ] && PLAN="$INT/$PLAN_REL"
 say() { local m; m="[$(date +%H:%M:%S)] $*"; echo "$m"; mkdir -p "$LOGDIR"; echo "$m" >> "$LOGDIR/pipeline-${TAG:-smoke}.log"; }
 now() { date +%s; }

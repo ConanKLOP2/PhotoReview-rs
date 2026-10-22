@@ -77,7 +77,7 @@ Savings built in:
   `-j` `MUT_JOBS` (default 3), only the unit's test binaries, Debug/Display/`fmt`/`Default` impls excluded, re-runs only the survivors
   (`-F`). Budget exhausted = status `partial` (not failure). Note: with `-j > 1` cargo-mutants builds share the dedicated target dir; set `MUT_JOBS=1` if you ever see odd mutant results.
 - **Quota**: tokens, seconds and 5 h-quota percent are recorded per unit; a unit is not started when `100 - used%` is below the average
-  cost per unit x `QUOTA_MARGIN` (1.2); the 99 % ceiling (`QUOTA_MAX`) is never crossed; waits sleep until the reset (+2 min), no busy loops.
+  cost per unit x `QUOTA_MARGIN` (1.2); the 95 % ceiling (`QUOTA_MAX`) is never crossed; waits sleep until the reset (+2 min), no busy loops.
 - **Parallelism**: `--jobs N` runs independent units (dependencies merged) concurrently in separate worktrees with separate target dirs.
 - **Deterministic review gates** (no LLM, in `codex-gate.sh`): files outside Owned files, `unwrap()`/`expect(` on file-system/user-data lines
   (`// allow-unwrap` opts out), `unsafe` outside `pr-platform-win`, `unsafe` blocks without `// SAFETY:`, `todo!()`/`unimplemented!()`
