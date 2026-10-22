@@ -227,6 +227,56 @@ fn post_after_runs_the_job_on_the_ui_thread_after_the_delay() {
     finish(ui);
 }
 
+#[test]
+#[ignore = "native: needs desktop"]
+fn post_after_orders_by_due_time_then_fifo_for_equal_delays() {
+    let ui = start_ui();
+    let (tx, rx) = channel::<&'static str>();
+    run(&ui, move || {
+        let poster = UiLocalPoster::new(dispatcher());
+        // Equal delays are scheduled consecutively; timer ordering uses due, then sequence.
+        poster.post_after(
+            std::time::Duration::from_millis(250),
+            UiPriority::Normal,
+            Box::new({
+                let tx = tx.clone();
+                move || tx.send("long").unwrap()
+            }),
+        );
+        poster.post_after(
+            std::time::Duration::from_millis(20),
+            UiPriority::Normal,
+            Box::new({
+                let tx = tx.clone();
+                move || tx.send("short").unwrap()
+            }),
+        );
+        poster.post_after(
+            std::time::Duration::from_millis(40),
+            UiPriority::Normal,
+            Box::new({
+                let tx = tx.clone();
+                move || tx.send("equal-1").unwrap()
+            }),
+        );
+        poster.post_after(
+            std::time::Duration::from_millis(40),
+            UiPriority::Normal,
+            Box::new(move || tx.send("equal-2").unwrap()),
+        );
+    });
+    let deadline = std::time::Instant::now() + ui_thread::BOUND;
+    let seen: Vec<_> = (0..4)
+        .map(|_| {
+            let remaining = deadline.saturating_duration_since(std::time::Instant::now());
+            rx.recv_timeout(remaining)
+                .expect("all delayed jobs run before deadline")
+        })
+        .collect();
+    assert_eq!(seen, ["short", "equal-1", "equal-2", "long"]);
+    finish(ui);
+}
+
 // "The wake is dropped while no window is registered, and the flag is cleared when the queued job ran."
 #[test]
 #[ignore = "native: needs desktop"]
@@ -395,6 +445,101 @@ fn attach_renderer_resizes_a_surface_whose_size_differs() {
     assert!(client.0 > 10 && client.1 > 10);
     assert_eq!(surface_size, client);
     finish(ui);
+}
+
+#[test]
+#[ignore = "native: needs desktop"]
+fn attach_renderer_forwards_prefer_warp_to_surface_factory() {
+    for prefer_warp in [true, false] {
+        let ui = start_ui();
+        let observed = run(&ui, move || {
+            let mut options = BuildOptions::default();
+            options.options.prefer_warp = prefer_warp;
+            let b = build(options);
+            let hook = WarpHook::new(10, 10);
+            b.window.attach_renderer(Some(&hook)).expect("attach");
+            hook.options.borrow()[0].prefer_warp
+        });
+        assert_eq!(observed, prefer_warp);
+        finish(ui);
+    }
+}
+
+#[test]
+#[ignore = "native: needs desktop"]
+fn attach_renderer_resizes_for_each_dimension_mismatch_and_skips_equal_or_zero_client() {
+    #[derive(Clone, Copy)]
+    enum Case {
+        WidthDiffers,
+        HeightDiffers,
+        BothDiffer,
+        EqualAtChangedDpi,
+    }
+
+    for case in [
+        Case::WidthDiffers,
+        Case::HeightDiffers,
+        Case::BothDiffer,
+        Case::EqualAtChangedDpi,
+    ] {
+        let ui = start_ui();
+        let (client, surface, window_dpi, factory_options) = run(&ui, move || {
+            let build_options = BuildOptions::default();
+            let b = build(build_options);
+            if matches!(case, Case::EqualAtChangedDpi) {
+                crate::shell_window_fixture::send_dpi_changed(
+                    b.shell.hwnd(),
+                    192,
+                    crate::shell_window_fixture::window_rect(b.shell.hwnd()),
+                );
+            }
+            let client = b.shell.client_size_pixels();
+            let surface_size = match case {
+                Case::WidthDiffers => (client.0 - 1, client.1),
+                Case::HeightDiffers => (client.0, client.1 - 1),
+                Case::BothDiffer => (client.0 - 1, client.1 - 1),
+                Case::EqualAtChangedDpi => client,
+            };
+            let hook = WarpHook::new(surface_size.0, surface_size.1);
+            b.window.attach_renderer(Some(&hook)).expect("attach");
+            let surface = b
+                .window
+                .with_surface(|surface| (surface.pixel_width(), surface.pixel_height(), surface.dpi_scale()))
+                .expect("surface stored");
+            (
+                client,
+                surface,
+                b.shell.dpi_scale(),
+                hook.options.borrow()[0].prefer_warp,
+            )
+        });
+
+        match case {
+            Case::WidthDiffers => {
+                assert_eq!(client.0, surface.0);
+                assert_eq!(client.1, surface.1);
+                assert_eq!(surface.2, window_dpi);
+            }
+            Case::HeightDiffers => {
+                assert_eq!(client.0, surface.0);
+                assert_eq!(client.1, surface.1);
+                assert_eq!(surface.2, window_dpi);
+            }
+            Case::BothDiffer => {
+                assert_eq!(client.0, surface.0);
+                assert_eq!(client.1, surface.1);
+                assert_eq!(surface.2, window_dpi);
+            }
+            Case::EqualAtChangedDpi => {
+                assert!(client.0 > 0 && client.1 > 0);
+                assert_eq!((surface.0, surface.1), client);
+                assert_eq!(window_dpi, 2.0);
+                assert_eq!(surface.2, 1.0, "equal dimensions must not trigger resize");
+            }
+        }
+        assert!(factory_options, "fixture defaults to prefer_warp=true");
+        finish(ui);
+    }
 }
 
 #[test]
