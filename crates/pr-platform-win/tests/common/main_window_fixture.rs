@@ -312,6 +312,7 @@ pub struct WarpHook {
     pub width: i32,
     pub height: i32,
     pub calls: Cell<u32>,
+    pub options: RefCell<Vec<SurfaceOptions>>,
 }
 
 impl WarpHook {
@@ -320,13 +321,15 @@ impl WarpHook {
             width,
             height,
             calls: Cell::new(0),
+            options: RefCell::new(Vec::new()),
         }
     }
 }
 
 impl RenderSurfaceFactoryHook for WarpHook {
-    fn create(&self, _hwnd: Hwnd, _options: SurfaceOptions) -> Result<D2dRenderSurface, RenderFault> {
+    fn create(&self, _hwnd: Hwnd, options: SurfaceOptions) -> Result<D2dRenderSurface, RenderFault> {
         self.calls.set(self.calls.get() + 1);
+        self.options.borrow_mut().push(options);
         D2dRenderSurfaceFactory.create_offscreen(self.width, self.height, 1.0)
     }
 }
