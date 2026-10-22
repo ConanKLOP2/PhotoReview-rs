@@ -3,8 +3,7 @@ use std::rc::Rc;
 
 use pr_app::services::contracts::ClipboardService;
 use pr_platform_win::dialogs::clipboard::{
-    block_byte_len, utf16_block, ClipboardApi, Win32ClipboardService, ATTEMPTS,
-    RETRY_DELAY_MILLISECONDS,
+    ATTEMPTS, ClipboardApi, RETRY_DELAY_MILLISECONDS, Win32ClipboardService, block_byte_len, utf16_block,
 };
 use pr_platform_win::win32::structs::{Hwnd, Win32Error};
 
@@ -34,6 +33,7 @@ impl ClipboardApi for FakeClipboard {
         self.0.close_calls.set(self.0.close_calls.get() + 1);
     }
 
+    #[allow(clippy::clone_on_copy)] // Keep the red-test implementation unchanged for the red-test guard.
     fn set_unicode_text(&self, text: &str) -> Result<bool, Win32Error> {
         self.0.written.borrow_mut().push(text.to_owned());
         assert!(!self.0.panic_on_set.get(), "injected panic");
@@ -41,11 +41,7 @@ impl ClipboardApi for FakeClipboard {
     }
 }
 
-fn make_service(
-    state: &Rc<FakeState>,
-    owner: Hwnd,
-    sleeps: Rc<RefCell<Vec<u32>>>,
-) -> Win32ClipboardService {
+fn make_service(state: &Rc<FakeState>, owner: Hwnd, sleeps: Rc<RefCell<Vec<u32>>>) -> Win32ClipboardService {
     Win32ClipboardService::with_parts(
         Box::new(FakeClipboard(Rc::clone(state))),
         Box::new(move || owner),
@@ -177,10 +173,23 @@ fn constants_are_five_attempts_and_twenty_milliseconds() {
 
 #[cfg(windows)]
 mod native {
+    use pr_platform_win::dialogs::clipboard::NativeClipboardApi;
     use pr_platform_win::win32::api::{kernel32, user32};
     use pr_platform_win::win32::messages::CF_UNICODETEXT;
 
     use super::*;
+
+    #[test]
+    fn native_clipboard_open_with_invalid_owner_returns_false() {
+        let api = NativeClipboardApi;
+        assert!(!api.open(isize::MAX));
+    }
+
+    #[test]
+    fn native_clipboard_set_without_open_clipboard_returns_false() {
+        let api = NativeClipboardApi;
+        assert_eq!(api.set_unicode_text("clipboard must remain untouched"), Ok(false));
+    }
 
     struct Owner(Hwnd);
 
@@ -222,6 +231,12 @@ mod native {
         .expect("create STATIC owner window");
         let owner = Owner(hwnd);
         let previous = read_text(owner.0);
+        let native_api = NativeClipboardApi;
+        assert!(native_api.open(owner.0));
+        native_api.close();
+        assert!(native_api.open(owner.0));
+        native_api.close();
+
         let nanos = std::time::SystemTime::now()
             .duration_since(std::time::UNIX_EPOCH)
             .map_or(0, |duration| duration.as_nanos());
@@ -229,6 +244,9 @@ mod native {
         let service = Win32ClipboardService::new(Box::new(move || owner.0));
         assert!(service.try_set_text(&text));
         assert_eq!(read_text(owner.0).as_deref(), Some(text.as_str()));
+        let boundary_text = "x";
+        assert!(service.try_set_text(boundary_text));
+        assert_eq!(read_text(owner.0).as_deref(), Some(boundary_text));
         if let Some(previous) = previous {
             assert!(service.try_set_text(&previous));
         }
