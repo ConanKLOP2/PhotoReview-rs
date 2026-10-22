@@ -1,0 +1,36 @@
+# Proposal fragment for .github/workflows/ci.yml. Install pin is deliberately unresolved.
+# Add to existing jobs, then add `schedule: [{cron: '0 3 * * *'}]` under the containing workflow's `on`.
+deny:
+  if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' || github.event_name == 'pull_request'
+  runs-on: windows-latest
+  timeout-minutes: 15
+  steps:
+    - name: Checkout
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # from this repo ci.yml
+    - name: Toolchain
+      run: rustup show
+    - name: Detect Cargo changes
+      id: scope
+      shell: pwsh
+      env:
+        BASE_REF: ${{ github.base_ref }}
+      run: |
+        $runAudit = $env:GITHUB_EVENT_NAME -ne 'pull_request'
+        if (-not $runAudit) {
+          git fetch --no-tags origin $env:BASE_REF
+          if ($LASTEXITCODE -ne 0) { throw 'Cannot fetch PR base' }
+          $changed = git diff --name-only "origin/$($env:BASE_REF)...HEAD"
+          if ($LASTEXITCODE -ne 0) { throw 'Cannot inspect changed files' }
+          $runAudit = @($changed | Where-Object { $_ -match '(^|/)(Cargo\.toml|Cargo\.lock)$' }).Count -gt 0
+        }
+        "audit=$($runAudit.ToString().ToLowerInvariant())" >> $env:GITHUB_OUTPUT
+    - name: Install pinned cargo-deny
+      if: steps.scope.outputs.audit == 'true'
+      shell: pwsh
+      run: |
+        # NEW INTEGRATION STEP: replace this throw with cargo install --locked cargo-deny --version <reviewed-version>.
+        throw 'Choose and pin cargo-deny version before enabling this job'
+    - name: Audit dependency graph
+      if: steps.scope.outputs.audit == 'true'
+      shell: pwsh
+      run: cargo deny --config deny.toml check advisories licenses bans sources
