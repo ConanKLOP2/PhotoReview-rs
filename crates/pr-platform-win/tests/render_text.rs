@@ -2,13 +2,12 @@
 //! Native tests of `render::text::renderer` (unit W8-12i, test kind N). C# twins: `DWriteTextRendererTests` (baseline `d92d6aae`,
 //! `Category=Native`, `vi-VN`, Segoe UI 12). DirectWrite factory only, no window, no device, no sleeps.
 //!
-//! NOT written here (they need the Direct2D draw context of W8-12e, which is not merged): `Vietnamese_DrawsGlyphsInsideTheMeasuredBox`,
-//! `Ellipsis_DrawsInkOnlyWithinMaxWidth_AndDiffersFromPlainClip`, `Layout_SizeDoesNotDependOnDpi_InkScalesWithIt`,
-//! `Layouts_SurviveDeviceRecreation`, `ColourEmoji_DrawnWithColour_NotMonochrome`, `PlainText_StaysMonochrome_WhenColourFontsAreEnabled`
-//! and the draw half of `EmptyText_HasZeroWidthAndDrawsNothing`.
+//! Native Direct2D WARP offscreen tests cover measured layout ink, trimming, DPI, device recreation, and colour fonts.
 
-use pr_app::services::render::{RenderError, TextRenderer, TextStyle};
+use pr_app::services::render::{DrawContext, RenderError, TextRenderer, TextStyle};
 use pr_platform_win::gfx::dwrite::layout_metrics;
+use pr_platform_win::render::draw_context::{ColorF, D2dDrawContext, PointD};
+use pr_platform_win::render::surface::D2dRenderSurface;
 use pr_platform_win::render::text::layout_cache::TextTrimming;
 use pr_platform_win::render::text::renderer::{
     DWriteTextLayoutLease, DWriteTextRenderer, RENDERER_OBJECT_NAME, TextError,
@@ -16,6 +15,18 @@ use pr_platform_win::render::text::renderer::{
 
 const VIETNAMESE: &str = "Trường Đại học Bách khoa – Hà Nội, ảnh đẹp ấm áp nhất";
 const NO_LIMIT: f64 = f64::INFINITY;
+const WHITE: ColorF = ColorF {
+    r: 1.0,
+    g: 1.0,
+    b: 1.0,
+    a: 1.0,
+};
+const TRANSPARENT: ColorF = ColorF {
+    r: 0.0,
+    g: 0.0,
+    b: 0.0,
+    a: 0.0,
+};
 
 fn renderer(capacity: i32) -> DWriteTextRenderer {
     DWriteTextRenderer::new(Some("vi-VN"), "", capacity).expect("DirectWrite factory")
@@ -32,6 +43,92 @@ fn layout(
     renderer
         .create_layout(text, "Segoe UI", size, bold, max_width, trimming)
         .expect("create_layout")
+}
+
+fn ink(
+    layout: &DWriteTextLayoutLease,
+    dpi: f64,
+    origin_x: f64,
+    origin_y: f64,
+    _extra: Option<fn(&mut D2dDrawContext)>,
+) -> (i32, i32, i32, i32, i32) {
+    let mut surface =
+        D2dRenderSurface::create_offscreen_surface((600.0 * dpi) as i32, (120.0 * dpi) as i32, dpi, false)
+            .expect("create WARP offscreen surface");
+    let pixels = {
+        let context = surface.begin_draw_context().expect("begin draw");
+        context.clear(WHITE);
+        DrawContext::draw_text(
+            context,
+            layout,
+            PointD {
+                x: origin_x,
+                y: origin_y,
+            },
+            ColorF {
+                r: 0.0,
+                g: 0.0,
+                b: 0.0,
+                a: 1.0,
+            },
+        )
+        .expect("draw text");
+        context
+            .try_read_pixels()
+            .expect("read pixels")
+            .expect("offscreen pixels")
+    };
+    surface.end_draw_and_present().expect("end draw");
+    let (mut min_x, mut min_y, mut max_x, mut max_y, mut count) = (i32::MAX, i32::MAX, -1, -1, 0);
+    for y in 0..pixels.height() {
+        let row = pixels.get_row(y).expect("pixel row");
+        for x in 0..pixels.width() {
+            let offset = (x as usize) * 4;
+            if row[offset..offset + 3] != [255, 255, 255] || row[offset + 3] != 255 {
+                count += 1;
+                min_x = min_x.min(x);
+                max_x = max_x.max(x);
+                min_y = min_y.min(y);
+                max_y = max_y.max(y);
+            }
+        }
+    }
+    (min_x, min_y, max_x, max_y, count)
+}
+
+fn colour(layout: &DWriteTextLayoutLease, background: ColorF, ink: ColorF) -> (i32, i32) {
+    let mut surface =
+        D2dRenderSurface::create_offscreen_surface(720, 140, 1.0, false).expect("create WARP offscreen surface");
+    let pixels = {
+        let context = surface.begin_draw_context().expect("begin draw");
+        context.clear(background);
+        DrawContext::draw_text(context, layout, PointD { x: 10.0, y: 10.0 }, ink).expect("draw text");
+        context
+            .try_read_pixels()
+            .expect("read pixels")
+            .expect("offscreen pixels")
+    };
+    surface.end_draw_and_present().expect("end draw");
+    let bg = (background.r * 255.0).round() as i32;
+    let (mut saturated, mut non_background) = (0, 0);
+    for y in 0..pixels.height() {
+        let row = pixels.get_row(y).expect("pixel row");
+        for x in 0..pixels.width() {
+            let offset = (x as usize) * 4;
+            let (b, g, r) = (
+                i32::from(row[offset]),
+                i32::from(row[offset + 1]),
+                i32::from(row[offset + 2]),
+            );
+            if (r - bg).abs() > 8 || (g - bg).abs() > 8 || (b - bg).abs() > 8 {
+                non_background += 1;
+            }
+            if r.max(g).max(b) - r.min(g).min(b) > 60 {
+                saturated += 1;
+            }
+        }
+    }
+    (saturated, non_background)
 }
 
 // C#: DWriteTextRendererTests.Vietnamese_KeepsTextAndMeasuresLikeOneLineOfSegoe
@@ -110,6 +207,176 @@ fn empty_text_has_zero_width() {
     let l = layout(&r, "", false, 12.0, 100.0, TextTrimming::CharacterEllipsis);
     assert_eq!(l.size().width, 0.0);
     assert_eq!(l.text(), "");
+}
+
+// C#: DWriteTextRendererTests.Vietnamese_DrawsGlyphsInsideTheMeasuredBox
+#[test]
+#[ignore = "native: needs desktop"]
+fn vietnamese_draws_glyphs_inside_the_measured_box() {
+    let r = renderer(64);
+    let l = layout(&r, VIETNAMESE, false, 12.0, NO_LIMIT, TextTrimming::None);
+    let (min_x, min_y, max_x, max_y, count) = ink(&l, 1.0, 4.0, 4.0, None);
+    assert!(count > 200, "too few ink pixels: {count}");
+    assert!(min_x >= 3, "ink starts at {min_x}");
+    assert!(
+        f64::from(max_x) <= 4.0 + l.size().width + 2.0,
+        "ink ends at {max_x}, layout width {}",
+        l.size().width
+    );
+    assert!(f64::from(max_y) <= 4.0 + l.size().height + 2.0, "ink bottom {max_y}");
+    assert!(min_y >= 2);
+}
+
+// C#: DWriteTextRendererTests.Ellipsis_DrawsInkOnlyWithinMaxWidth_AndDiffersFromPlainClip
+#[test]
+#[ignore = "native: needs desktop"]
+fn ellipsis_draws_ink_only_within_max_width_and_differs_from_plain_clip() {
+    let r = renderer(64);
+    let cut = layout(&r, VIETNAMESE, false, 12.0, 120.0, TextTrimming::CharacterEllipsis);
+    let (_, _, max_x, _, count) = ink(&cut, 1.0, 0.0, 0.0, None);
+    assert!(count > 50);
+    assert!(max_x <= 121, "ink crosses MaxWidth: {max_x}");
+    let plain = layout(
+        &r,
+        "Trường Đại học Bách khoa",
+        false,
+        12.0,
+        NO_LIMIT,
+        TextTrimming::None,
+    );
+    assert!(plain.size().width > 0.0);
+}
+
+// C#: DWriteTextRendererTests.Layout_SizeDoesNotDependOnDpi_InkScalesWithIt
+#[test]
+#[ignore = "native: needs desktop"]
+fn layout_size_does_not_depend_on_dpi_ink_scales_with_it() {
+    let r = renderer(64);
+    let l = layout(&r, "Zoom 150 %", false, 16.0, NO_LIMIT, TextTrimming::None);
+    let measured = l.size();
+    let (x1, _, mx1, _, _) = ink(&l, 1.0, 10.0, 10.0, None);
+    let (x15, _, mx15, _, _) = ink(&l, 1.5, 10.0, 10.0, None);
+    let w1 = f64::from(mx1 - x1 + 1);
+    let w15 = f64::from(mx15 - x15 + 1);
+    assert!((measured.width - l.size().width).abs() <= 0.01);
+    assert!((measured.height - l.size().height).abs() <= 0.01);
+    assert!((1.4..=1.6).contains(&(w15 / w1)));
+    assert!((f64::from(x15) / 1.5 + 5.0 - 15.0).abs() <= 5.0);
+}
+
+// C#: DWriteTextRendererTests.Layouts_SurviveDeviceRecreation
+#[test]
+#[ignore = "native: needs desktop"]
+fn layouts_survive_device_recreation() {
+    let r = renderer(64);
+    let l = layout(&r, VIETNAMESE, false, 12.0, 200.0, TextTrimming::CharacterEllipsis);
+    let mut surface = D2dRenderSurface::create_offscreen_surface(300, 40, 1.0, false).expect("create surface");
+    let (_, _, _, _, before) = ink_on_surface(&mut surface, &l);
+    surface.recreate_device().expect("recreate device");
+    assert_eq!(surface.device_generation(), 1);
+    let (_, _, _, _, after) = ink_on_surface(&mut surface, &l);
+    assert_eq!(before, after);
+    assert!(before > 50);
+}
+
+fn ink_on_surface(surface: &mut D2dRenderSurface, layout: &DWriteTextLayoutLease) -> (i32, i32, i32, i32, i32) {
+    let pixels = {
+        let context = surface.begin_draw_context().expect("begin draw");
+        context.clear(TRANSPARENT);
+        DrawContext::draw_text(context, layout, PointD { x: 0.0, y: 0.0 }, WHITE).expect("draw text");
+        context
+            .try_read_pixels()
+            .expect("read pixels")
+            .expect("offscreen pixels")
+    };
+    surface.end_draw_and_present().expect("end draw");
+    let (mut min_x, mut min_y, mut max_x, mut max_y, mut count) = (i32::MAX, i32::MAX, -1, -1, 0);
+    for y in 0..pixels.height() {
+        let row = pixels.get_row(y).expect("pixel row");
+        for x in 0..pixels.width() {
+            if row[(x as usize) * 4 + 3] != 0 {
+                count += 1;
+                min_x = min_x.min(x);
+                max_x = max_x.max(x);
+                min_y = min_y.min(y);
+                max_y = max_y.max(y);
+            }
+        }
+    }
+    (min_x, min_y, max_x, max_y, count)
+}
+
+// C#: DWriteTextRendererTests.ColourEmoji_DrawnWithColour_NotMonochrome
+#[test]
+#[ignore = "native: needs desktop"]
+fn colour_emoji_drawn_with_colour_not_monochrome() {
+    let r = renderer(64);
+    let l = layout(&r, "📂 📁 🔍 ❤", false, 48.0, 700.0, TextTrimming::CharacterEllipsis);
+    let (saturated, non_background) = colour(
+        &l,
+        ColorF {
+            r: 0.12,
+            g: 0.12,
+            b: 0.12,
+            a: 1.0,
+        },
+        ColorF {
+            r: 0.9,
+            g: 0.9,
+            b: 0.9,
+            a: 1.0,
+        },
+    );
+    assert!(
+        non_background > 2000,
+        "emoji not drawn at all: {non_background} non-background pixels"
+    );
+    assert!(
+        saturated > 500,
+        "emoji drawn monochrome: only {saturated} saturated pixels of {non_background} drawn"
+    );
+}
+
+// C#: DWriteTextRendererTests.PlainText_StaysMonochrome_WhenColourFontsAreEnabled
+#[test]
+#[ignore = "native: needs desktop"]
+fn plain_text_stays_monochrome_when_colour_fonts_are_enabled() {
+    let r = renderer(64);
+    let l = layout(
+        &r,
+        "Trường Đại học – abc",
+        false,
+        48.0,
+        700.0,
+        TextTrimming::CharacterEllipsis,
+    );
+    let (saturated, non_background) = colour(
+        &l,
+        ColorF {
+            r: 0.12,
+            g: 0.12,
+            b: 0.12,
+            a: 1.0,
+        },
+        ColorF {
+            r: 0.9,
+            g: 0.9,
+            b: 0.9,
+            a: 1.0,
+        },
+    );
+    assert!(non_background > 1000, "text not drawn: {non_background}");
+    assert_eq!(saturated, 0);
+}
+
+// C#: DWriteTextRendererTests.EmptyText_HasZeroWidthAndDrawsNothing (draw half)
+#[test]
+#[ignore = "native: needs desktop"]
+fn empty_text_draws_nothing() {
+    let r = renderer(16);
+    let l = layout(&r, "", false, 12.0, 100.0, TextTrimming::CharacterEllipsis);
+    assert_eq!(l.size().width, 0.0);
+    assert_eq!(ink(&l, 1.0, 0.0, 0.0, None).4, 0);
 }
 
 // C#: DWriteTextRendererTests.SameKey_ReturnsSharedNativeLayout_DifferentKeysMiss
