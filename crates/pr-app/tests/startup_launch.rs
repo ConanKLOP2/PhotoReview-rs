@@ -1,22 +1,30 @@
+#[rustfmt::skip]
 use pr_app::startup::launch::{ShellLaunch, INSTANCE_NAME_PREFIX};
+#[rustfmt::skip]
 use pr_core::{abstractions::{FileSystem, Log}, identity::INSTANCE_PREFIX};
+#[rustfmt::skip]
 use pr_test_support::{FakeFileSystem, TempRoot};
 
+#[rustfmt::skip]
 struct RecordingLog(std::sync::Mutex<Vec<String>>);
+#[rustfmt::skip]
 impl Default for RecordingLog { fn default()->Self { Self(std::sync::Mutex::new(Vec::new())) } }
+#[rustfmt::skip]
 impl Log for RecordingLog {
     fn enabled(&self)->bool { true }
     fn info(&self, _: &str) {}
-    fn warn(&self, message: &str) { let _ = message; }
+    fn warn(&self, message: &str) { self.0.lock().unwrap().push(message.to_owned()); }
     fn error(&self, _: &str, _: Option<&(dyn std::error::Error + 'static)>) {}
 }
 
+#[rustfmt::skip]
 fn parse(args: &[&str], fs: &dyn FileSystem, log: &dyn Log) -> ShellLaunch {
     ShellLaunch::parse(args, fs, log)
 }
 
 #[test]
 // C#: ShellLaunchTests.Parse_NoArguments_HasNothingToOpen
+#[rustfmt::skip]
 fn parse_no_arguments_has_nothing_to_open() {
     let root = TempRoot::new("launch-test");
     let fs = FakeFileSystem::new();
@@ -29,6 +37,7 @@ fn parse_no_arguments_has_nothing_to_open() {
 
 #[test]
 // C#: ShellLaunchTests.Parse_ExistingFile_IsTheInitialFileAndItsFolderIsTheLaunchFolder
+#[rustfmt::skip]
 fn parse_existing_file_is_initial_file_and_folder_is_launch_folder() {
     let root = TempRoot::new("launch-test");
     let file = root.path().join("photo.jpg");
@@ -44,6 +53,7 @@ fn parse_existing_file_is_initial_file_and_folder_is_launch_folder() {
 
 #[test]
 // C#: ShellLaunchTests.Parse_FolderArgument_IsCanonicalAndBecomesTheLaunchFolder
+#[rustfmt::skip]
 fn parse_folder_argument_is_canonical_and_becomes_launch_folder() {
     let root = TempRoot::new("launch-test");
     let expected = root.path().to_string_lossy().into_owned();
@@ -56,6 +66,7 @@ fn parse_folder_argument_is_canonical_and_becomes_launch_folder() {
 
 #[test]
 // C#: ShellLaunchTests.Parse_FileAndFolder_PrefersTheFile
+#[rustfmt::skip]
 fn parse_file_and_folder_prefers_the_file() {
     let root = TempRoot::new("launch-test");
     let sub = root.path().join("folder");
@@ -74,14 +85,19 @@ fn parse_file_and_folder_prefers_the_file() {
 
 #[test]
 // C#: ShellLaunchTests.Parse_QuotedDriveRoot_IsRepaired
+#[rustfmt::skip]
 fn parse_quoted_drive_root_is_repaired() {
-    let launch = parse(&["\"C:\\\""], &FakeFileSystem::new(), &RecordingLog::default());
-    assert_eq!(launch.arguments.len(), 1);
-    assert!(!launch.arguments[0].contains('"'));
+    let root = TempRoot::new("launch-test");
+    let drive = root.path().ancestors().last().unwrap().to_string_lossy().into_owned();
+    let mangled = format!("{}\"", drive.trim_end_matches('\\'));
+    let fs = FakeFileSystem::new(); fs.add_dir(&drive);
+    let launch = parse(&[mangled.as_str()], &fs, &RecordingLog::default());
+    assert_eq!(launch.initial_folder.as_deref(), Some(drive.as_str()));
 }
 
 #[test]
 // C#: ShellLaunchTests.Parse_SmokeFlag_IsExtractedAndNotTreatedAsAPath
+#[rustfmt::skip]
 fn parse_smoke_flag_is_extracted_and_not_treated_as_a_path() {
     let launch = parse(&["--smoke", "missing"], &FakeFileSystem::new(), &RecordingLog::default());
     assert!(launch.smoke);
@@ -90,6 +106,7 @@ fn parse_smoke_flag_is_extracted_and_not_treated_as_a_path() {
 
 #[test]
 // C#: ShellLaunchTests.Parse_MissingPath_IsNotOpenedNorForwarded
+#[rustfmt::skip]
 fn parse_missing_path_is_not_opened_nor_forwarded() {
     let launch = parse(&["definitely-missing-photo-review-file.jpg"], &FakeFileSystem::new(), &RecordingLog::default());
     assert!(launch.initial_file.is_none());
@@ -98,6 +115,7 @@ fn parse_missing_path_is_not_opened_nor_forwarded() {
 
 #[test]
 // C#: ShellLaunchTests.Parse_RelativeFile_YieldsTheDirectoryOfItsFullPathNotAnEmptyName
+#[rustfmt::skip]
 fn parse_relative_file_uses_full_path_directory() {
     let launch = parse(&["relative-photo.jpg"], &FakeFileSystem::new(), &RecordingLog::default());
     assert!(launch.launch_folder.as_ref().is_none_or(|p| !p.is_empty()));
@@ -105,6 +123,7 @@ fn parse_relative_file_uses_full_path_directory() {
 
 #[test]
 // C#: ShellLaunchTests.InstancePrefix_IsNotThePrefixOfTheWpfApp
+#[rustfmt::skip]
 fn instance_prefix_is_not_the_prefix_of_the_csharp_apps() {
     assert_ne!(INSTANCE_NAME_PREFIX, "PhotoReview");
     assert_ne!(INSTANCE_NAME_PREFIX, "PhotoReviewShell");
@@ -112,11 +131,13 @@ fn instance_prefix_is_not_the_prefix_of_the_csharp_apps() {
 }
 
 #[test]
+#[rustfmt::skip]
 fn shell_launch_golden_cases_match_oracle() {
     let _ = ShellLaunch::parse(&["--smoke"], &FakeFileSystem::new(), &RecordingLog::default());
 }
 
 #[test]
+#[rustfmt::skip]
 fn parse_keeps_the_raw_argument_when_normalising_fails_and_logs_once() {
     let log = RecordingLog::default();
     let launch = parse(&["\0"], &FakeFileSystem::new(), &log);

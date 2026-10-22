@@ -3,8 +3,6 @@
 //!
 //! PerMonitorV2 (NO-WPF-EXEC-PLAN section 3, NE-2): the exe manifest declares it at load; this is the safety net for a process created by a host (a test host, an odd
 //! loader) without the exe manifest. It must run BEFORE the first window (changing the awareness after a window exists has no effect). Never fails.
-#![allow(unused_variables, dead_code)] // stub: the porter removes this line with the last `todo!()`
-
 use crate::win32::startup::DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2;
 
 /// `DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2` (-4), the context both calls of the bootstrap use.
@@ -30,16 +28,27 @@ pub struct NativeDpiAwareness;
 impl DpiAwarenessNative for NativeDpiAwareness {
     /// `are_dpi_awareness_contexts_equal(user32::get_thread_dpi_awareness_context(), DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2)`.
     fn is_per_monitor_v2(&self) -> Result<bool, DpiApiMissing> {
-        todo!()
+        Ok(crate::win32::startup::are_dpi_awareness_contexts_equal(
+            crate::win32::api::user32::get_thread_dpi_awareness_context(),
+            TARGET_CONTEXT,
+        ))
     }
 
     /// `set_process_dpi_awareness_context(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2).is_ok()`.
     fn try_set_per_monitor_v2(&self) -> Result<bool, DpiApiMissing> {
-        todo!()
+        Ok(crate::win32::startup::set_process_dpi_awareness_context(TARGET_CONTEXT).is_ok())
     }
 }
 
 /// C# `DpiAwarenessBootstrap.EnsurePerMonitorV2(native)`: `true` when PerMonitorV2 is in effect afterwards. `None` = [`NativeDpiAwareness`].
 pub fn ensure_per_monitor_v2(native: Option<&dyn DpiAwarenessNative>) -> bool {
-    todo!()
+    let native = native.unwrap_or(&NativeDpiAwareness);
+    match native.is_per_monitor_v2() {
+        Err(_) => false,
+        Ok(true) => true,
+        Ok(false) => match native.try_set_per_monitor_v2() {
+            Err(_) | Ok(false) => false,
+            Ok(true) => native.is_per_monitor_v2().unwrap_or(false),
+        },
+    }
 }

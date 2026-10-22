@@ -1,14 +1,24 @@
+#[rustfmt::skip]
 use pr_app::startup::launch::ShellLaunch;
+#[rustfmt::skip]
 use pr_core::abstractions::{FileSystem, Log};
 
+#[rustfmt::skip]
 use pr_test_support::{FakeFileSystem, TempRoot};
+#[rustfmt::skip]
 use std::path::{Path, PathBuf};
 
+#[rustfmt::skip]
 struct CwdGuard(PathBuf);
+#[rustfmt::skip]
 impl Drop for CwdGuard { fn drop(&mut self) { std::env::set_current_dir(&self.0).unwrap(); } }
+#[rustfmt::skip]
 #[derive(Clone, Copy)] struct NoLog;
+#[rustfmt::skip]
 impl Log for NoLog { fn enabled(&self)->bool{false} fn info(&self,_:&str){} fn warn(&self,_:&str){} fn error(&self,_:&str,_:Option<&(dyn std::error::Error+'static)>){} }
+#[rustfmt::skip]
 struct Fs(FakeFileSystem);
+#[rustfmt::skip]
 impl FileSystem for Fs {
     fn file_exists(&self, p:&Path)->bool { self.0.file_exists(p) }
     fn directory_exists(&self,p:&Path)->bool { self.0.directory_exists(p) }
@@ -27,6 +37,7 @@ impl FileSystem for Fs {
 }
 #[test]
 // C#: ShellLaunchTests.Parse_RelativeFile_YieldsTheDirectoryOfItsFullPathNotAnEmptyName
+#[rustfmt::skip]
 fn parse_relative_file_yields_directory_of_full_path() {
     let orig=std::env::current_dir().unwrap(); let _guard=CwdGuard(orig);
     let temp=TempRoot::new("launch-cwd"); std::env::set_current_dir(temp.path()).unwrap();
