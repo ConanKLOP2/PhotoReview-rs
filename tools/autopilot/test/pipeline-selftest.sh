@@ -36,7 +36,7 @@ printf 'pub fn run(_x: i32) -> i32 {\n    todo!()\n}\n' > crates/demo/src/u90a.r
 printf 'pub fn run(_a: i32, _b: i32) -> i32 {\n    todo!()\n}\n' > crates/demo/src/u90b.rs
 for n in 90c 90e 90f 90g 90h 90i; do printf 'pub fn run(_a: i32) -> i32 {\n    todo!()\n}\n' > crates/demo/src/u$n.rs; done
 printf 'pub fn run(_a: i32) -> i32 {\n    0\n}\n' > crates/demo/src/u90j.rs   # stub that does NOT call todo!()
-printf 'target/\n.claude/worktrees/\n/target-wave-*/\ntools/autopilot/state/\n.codex-*\n' > .gitignore
+printf 'target/\ntarget-mut/\n.claude/worktrees/\n/target-wave-*/\ntools/autopilot/state/\n.codex-*\n' > .gitignore
 mkc() { # id title
   cat > "contracts/$1.md" <<X
 # $1: $2
@@ -165,6 +165,13 @@ fn wrong_value() {
     assert_eq!(demo::u90j::run(1), 2);
 }';;   # compiles, but fails by assertion (stub returns 0), not through todo!()
   red-repair:90j) :;;
+  implement:90j) src 90j 'pub fn run(_a: i32) -> i32 {
+    0
+}';;
+  fixup:90j) tst 90j '#[test]
+fn wrong_value() {
+    assert_eq!(demo::u90j::run(1), 0);
+}'; echo 'C# oracle: Oracle.cs CSharpCase; changed Rust test: wrong_value' > "$O";;
   implement:90h) src 90h 'pub fn run(a: i32) -> i32 {
     a + 10
 }';;
@@ -176,7 +183,7 @@ fn triple() {
     a * 3
 }';;
 esac
-echo "summary: done" > "$O"
+if [ "$TASK" = fixup ]; then echo 'C# oracle: Oracle.cs CSharpCase; changed Rust test: wrong_value' > "$O"; else echo "summary: done" > "$O"; fi
 echo '{"type":"turn.completed","usage":{"input_tokens":1000,"cached_input_tokens":200,"output_tokens":50}}'
 X
 cat > "$T/fake-usage" <<'X'
@@ -191,7 +198,7 @@ echo "{\"ok\":true,\"five_hour_used\":$used,\"five_hour_resets_at\":\"2000-01-01
 X
 chmod +x "$T/fake-codex" "$T/fake-usage"
 export CODEX_BIN="$T/fake-codex" CODEX_USAGE_SH="$T/fake-usage" FAKE_STATE="$FS" QUOTA_SLEEP_OVERRIDE=1 PIPELINE_NO_PR=1 USAGE_CACHE_TTL=0
-export MUTANTS_TIMEOUT=600 CODEX_TIMEOUT=120 CS_REPO="$T/cs"
+export MUTANTS_TIMEOUT=600 CODEX_TIMEOUT=120 CS_REPO="$T/cs" MIN_DISK_GB=0
 P="bash tools/autopilot/codex-pipeline.sh test-b9"
 STATE="tools/autopilot/state/test-b9.json"; LOGS="tools/autopilot/state/logs"; SF="python $LIBPY sfield $STATE"; SG="python $LIBPY sget $STATE"
 
@@ -260,7 +267,7 @@ check "90b done after a repair round on the same session" '[ "$($SG W8-90b)" = d
 check "repair prompt carried the gate error tail (<= 60 lines + header)" 'grep -q "GATE FAIL" $LOGS/W8-90b.repair1.prompt.md && [ "$(wc -l < $LOGS/W8-90b.repair1.prompt.md)" -le 66 ]'
 check "repair rounds use the fast gate" 'grep -q "^TASK: repair. The machine gate (fast)" $LOGS/W8-90b.repair1.prompt.md'
 check "failed resume fell back to a fresh session" 'grep -q "falling back to a fresh session" "$T/run2.out" && grep -q "^resume-failed" $FS/calls'
-check "90c failed (stray edit never fixed, 3 repair rounds)" '[ "$($SG W8-90c)" = failed ] && [ "$(grep -c "^repair 90c" $FS/calls)" = 3 ]'
+check "90c failed after its fixup also left the stray edit" '[ "$($SG W8-90c)" = failed ] && [ "$(grep -c "^repair 90c" $FS/calls)" = 6 ] && [ "$(grep -c "^fixup 90c" $FS/calls)" = 1 ]'
 check "gate error mentions the owned-files check" 'grep -q "owned-files check" $LOGS/W8-90c.gate-error.txt'
 check "needs-claude triage note exists and is <= 3 KB" 'N=tools/autopilot/state/needs-claude/W8-90c.md; [ -f $N ] && [ "$(wc -c < $N)" -le 3072 ] && grep -q "Error tail" $N && grep -q "git diff --stat" $N && grep -q "Last Codex message" $N'
 check "90d skipped because 90c failed" '[ "$($SG W8-90d)" = skipped ]'
@@ -279,6 +286,7 @@ check "precondition: wu/W8-90c is checked out in a worktree at another path" 'gi
 $P --only W8-90c --jobs 1 > "$T/run2b.out" 2>&1; rc=$?
 check "rerun reset the unit instead of failing on the worktree" '! grep -q "worktree add failed" tools/autopilot/state/test-b9.json && [ ! -d .claude/worktrees/elsewhere ]'
 check "rerun really started the unit again (Codex red/implement calls, fresh telemetry: rounds < 10)" '[ "$(grep -c "^implement 90c" $FS/calls)" = 2 ] && [ "$($SF W8-90c rounds)" -lt 10 ]'
+check "the rerun also gets one failed fixup after three gate repairs" '[ "$(grep -c "^repair 90c" $FS/calls)" = 12 ] && [ "$(grep -c "^fixup 90c" $FS/calls)" = 2 ]'
 check "the unit's old unmerged tip was kept under refs/pipeline-old" 'git show-ref --verify -q refs/pipeline-old/W8-90c'
 check "the stale triage note was replaced by the new one" '[ -f tools/autopilot/state/needs-claude/W8-90c.md ]'
 check "the rerun left other units untouched" '[ "$($SG W8-90b)" = done ] && [ "$($SG W8-90a)" = done ]'
@@ -304,17 +312,21 @@ else ok "tdir_free lock-held case skipped (not Windows)"; fi
 check "each parallel slot gets its own target dir (-s<slot>) and mutants its own -mut" 'grep -q "TDB-s\$slot" tools/autopilot/codex-pipeline.sh && grep -q "CARGO_TARGET_DIR}-mut" tools/autopilot/codex-pipeline.sh'
 
 echo "== red tests: compile gate with repair rounds, pre-existing red tests, units already merged on the integration branch"
-git branch side master && git checkout -q side && printf '#[test]\nfn pre_existing() {\n    assert_eq!(demo::u90h::run(1), 11);\n}\n' > crates/demo/tests/u90h.rs && git add crates/demo/tests/u90h.rs && git commit -q -m 'test(W8-90h): red tests (pre-existing)' && git checkout -q -b integration/test-b7 master && git merge -q --no-ff side -m 'merge(W8-90g)' && git checkout -q master
+git branch side master && git checkout -q side && mkdir -p crates/demo/tests && printf '#[test]\nfn pre_existing() {\n    assert_eq!(demo::u90h::run(1), 11);\n}\n' > crates/demo/tests/u90h.rs && git add crates/demo/tests/u90h.rs && git commit -q -m 'test(W8-90h): red tests (pre-existing)' && git checkout -q -b integration/test-b7 master && git merge -q --no-ff side -m 'merge(W8-90g)' && git checkout -q master
 bash tools/autopilot/codex-pipeline.sh test-b7 --jobs 1 > "$T/run5.out" 2>&1; rc=$?
 check "unit merged on the integration branch (merge commit) is marked done without a state file" 'grep -q "W8-90g: found merged on integration/test-b7" "$T/run5.out" && [ "$(python $LIBPY sget tools/autopilot/state/test-b7.json W8-90g)" = done ] && ! grep -q " 90g" $FS/calls'
 check "red tests already on the integration branch: no Codex red step, the unit is implemented and merged" '! grep -q "^red-tests 90h" $FS/calls && grep -q "^implement 90h" $FS/calls && [ "$(python $LIBPY sget tools/autopilot/state/test-b7.json W8-90h)" = done ]'
-bash tools/autopilot/codex-pipeline.sh test-b6 --jobs 1 > "$T/run6.out" 2>&1; rc=$?
+export FIXUP=0; bash tools/autopilot/codex-pipeline.sh test-b6 --jobs 1 > "$T/run6.out" 2>&1; rc=$?; unset FIXUP
 check "red tests that do not compile get a repair round and then pass the gate" 'grep -q "^red-tests 90i" $FS/calls && [ "$(grep -c "^red-repair 90i" $FS/calls)" = 1 ] && [ "$(python $LIBPY sget tools/autopilot/state/test-b6.json W8-90i)" = done ]'
 check "the repair prompt carried the compiler error" 'grep -q "RED TESTS DO NOT COMPILE" $LOGS/W8-90i.redrepair1.prompt.md && grep -q "TASK: red-repair" $LOGS/W8-90i.redrepair1.prompt.md'
 check "red tests are committed on their own after the gate" 'git log integration/test-b6 --format=%s | grep -q "test(W8-90i): red tests"'
-check "red tests that fail by assertion (not todo!()) fail the unit after 3 repair rounds" '[ "$(python $LIBPY sget tools/autopilot/state/test-b6.json W8-90j)" = failed ] && [ "$(grep -c "^red-repair 90j" $FS/calls)" = 3 ] && ! grep -q "^implement 90j" $FS/calls'
-check "triage note for the invalid red tests exists and explains why" 'grep -q "not through todo" tools/autopilot/state/needs-claude/W8-90j.md'
+check "FIXUP=0 preserves invalid-red failure after 3 repair rounds" '[ "$(python $LIBPY sget tools/autopilot/state/test-b6.json W8-90j)" = failed ] && [ "$(grep -c "^red-repair 90j" $FS/calls)" = 3 ] && ! grep -q "^implement 90j" $FS/calls'
+check "triage note for invalid red tests explains why" 'grep -q "not through todo" tools/autopilot/state/needs-claude/W8-90j.md'
 check "the red-test guard was not applied during the red phase (no 'red-test guard' failure)" '! grep -q "red-test guard" $LOGS/W8-90i.log $LOGS/W8-90j.log'
+FIXUP=1 bash tools/autopilot/codex-pipeline.sh test-b6 --only W8-90j --redo W8-90j --jobs 1 > "$T/run6-fixup.out" 2>&1; rc=$?
+check "fixup corrects a red test against the fake C# oracle and completes" '[ "$(python $LIBPY sget tools/autopilot/state/test-b6.json W8-90j)" = done ] && [ "$(python $LIBPY sfield tools/autopilot/state/test-b6.json W8-90j fixup)" = 1 ] && grep -q "^fixup 90j" $FS/calls'
+check "fixup correction is its own commit and names the changed test" 'git log integration/test-b6 --format=%s | grep -q "test(W8-90j): corrected tests (Codex fixup)" && [ "$(python $LIBPY sfield tools/autopilot/state/test-b6.json W8-90j fixup_tests)" = wrong_value ]'
+check "fixup relaxed guard retains the test and assert counts" '! grep -q "number of test functions decreased\|assert macro occurrences decreased\|marked #\[ignore\]" $LOGS/W8-90j.fixup-guard.txt'
 
 echo "== quota estimate: do not start a unit that may not fit"
 git -C "$W" fetch -q origin 2>/dev/null
