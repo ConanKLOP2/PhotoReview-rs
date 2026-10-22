@@ -3,7 +3,7 @@ use pr_app::startup::error_log::{self, ErrorDetails};
 #[rustfmt::skip]
 use pr_core::time::DateTimeUtc;
 #[rustfmt::skip]
-use std::{io, path::PathBuf, sync::Mutex};
+use std::{io, sync::Mutex};
 #[rustfmt::skip]
 use pr_test_support::TempRoot;
 
@@ -59,7 +59,13 @@ fn report_writes_configured_file_and_creates_directory() {
     error_log::configure(Some(path.clone()));
     let err = io::Error::other("one");
     error_log::report("ContextMenu", &err);
-    assert!(path.exists());
+    error_log::report_details("ToolsMenu", &ErrorDetails::new("Other", 7, "two"));
+    let text = std::fs::read_to_string(&path).unwrap();
+    assert!(text.contains("[ContextMenu] std::io::Error"));
+    assert!(text.contains("[ToolsMenu] Other 0x00000007: two"));
+    assert_eq!(text.matches("[ContextMenu]").count(), 1);
+    assert_eq!(text.matches("[ToolsMenu]").count(), 1);
+    assert_eq!(error_log::current_path(), Some(path.clone()));
     error_log::configure(None);
 }
 
@@ -96,15 +102,19 @@ fn append_truncates_to_newest_half_on_line_boundary() {
 // C#: ShellErrorLogTests.Append_WithAnUnusablePath_NeverThrows
 #[rustfmt::skip]
 fn append_with_unusable_path_never_throws() {
+    let dir = TempRoot::new("startup-error-log-unusable");
     let details = ErrorDetails::new("Error", 0, "e");
-    error_log::append(PathBuf::from("Z:/no/such/drive/<>|/shell-errors.log").as_path(), "ctx", &details, error_log::MAX_BYTES);
+    let result = std::panic::catch_unwind(|| error_log::append(dir.path(), "ctx", &details, error_log::MAX_BYTES));
+    assert!(result.is_ok());
 }
 
 #[test]
 #[rustfmt::skip]
 fn shell_error_log_golden_cases_match_oracle() {
     let details = ErrorDetails::new("Error", 0, "golden");
-    let _ = error_log::format(DateTimeUtc::now(), "golden", &details);
+    let text = error_log::format(DateTimeUtc::now(), "golden", &details);
+    assert!(text.contains("[golden] Error 0x00000000: golden"));
+    assert!(text.ends_with("\r\n"));
 }
 
 #[test]
@@ -113,6 +123,7 @@ fn error_log_message_cut_at_300_utf16_units_never_leaves_a_lone_surrogate() {
     let d = ErrorDetails::new("Error", 0, format!("{}??tail", "z".repeat(299)));
     let text = error_log::format(DateTimeUtc::now(), "ctx", &d);
     assert!(text.contains(&format!("{}?", "z".repeat(299))));
+    assert!(!text.contains("tail"));
 }
 
 #[test]
