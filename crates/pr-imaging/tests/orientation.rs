@@ -236,7 +236,7 @@ fn create_transform_agrees_with_map_pixel() {
 #[test]
 fn golden_orientation_values_match_csharp() {
     let gold = golden::load("orientation-values");
-    assert_eq!(gold.csharp_commit, "d92d6aae639a40eede232948f9bce97ecfd02c10");
+    assert_eq!(gold.csharp_commit, "7eaee2a2b071c7ca05291c86fb78a347f9e6a15f");
     for case in &gold.cases {
         let name = str_of(case, "name");
         let values = int_list(case, "values");
@@ -270,7 +270,7 @@ fn golden_orientation_values_match_csharp() {
 #[test]
 fn golden_orientation_read_wic_matches_csharp() {
     let gold = golden::load("orientation-read-wic");
-    assert_eq!(gold.csharp_commit, "d92d6aae639a40eede232948f9bce97ecfd02c10");
+    assert_eq!(gold.csharp_commit, "7eaee2a2b071c7ca05291c86fb78a347f9e6a15f");
     for case in &gold.cases {
         let name = str_of(case, "name");
         let exif = &case["exif"];
@@ -310,7 +310,7 @@ fn golden_orientation_read_wic_matches_csharp() {
 #[test]
 fn golden_orientation_pixels_match_csharp() {
     let gold = golden::load("orientation-pixels");
-    assert_eq!(gold.csharp_commit, "d92d6aae639a40eede232948f9bce97ecfd02c10");
+    assert_eq!(gold.csharp_commit, "7eaee2a2b071c7ca05291c86fb78a347f9e6a15f");
     for case in &gold.cases {
         let name = str_of(case, "name");
         let orientation = i32::try_from(i64_of(case, "orientation")).expect("golden orientation fits i32");

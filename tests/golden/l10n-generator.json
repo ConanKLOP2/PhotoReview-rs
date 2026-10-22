@@ -1,6 +1,6 @@
 {
   "generator": "oracle-cs l10n-generator",
-  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "csharp_commit": "7eaee2a2b071c7ca05291c86fb78a347f9e6a15f",
   "cases": [
     {
       "id": "shipped-en-json-assets-languages",
@@ -3876,6 +3876,218 @@
         {
           "ident": "SettingsShortcutsResetKeys",
           "key": "settings.shortcuts.resetKeys"
+        },
+        {
+          "ident": "CoreFileActionRenameInvalidName",
+          "key": "core.fileAction.renameInvalidName"
+        },
+        {
+          "ident": "MainMenuExternalEditorAdd",
+          "key": "main.menu.externalEditor.add"
+        },
+        {
+          "ident": "MainMenuExternalEditorAddAutomationName",
+          "key": "main.menu.externalEditor.add.automationName"
+        },
+        {
+          "ident": "MainMenuExternalEditorSetDefault",
+          "key": "main.menu.externalEditor.setDefault"
+        },
+        {
+          "ident": "MainMenuExternalEditorSetDefaultAutomationName",
+          "key": "main.menu.externalEditor.setDefault.automationName"
+        },
+        {
+          "ident": "MainMenuExternalEditorItemAutomationName",
+          "key": "main.menu.externalEditor.item.automationName"
+        },
+        {
+          "ident": "DialogExternalEditorExeMissing",
+          "key": "dialog.externalEditor.exeMissing"
+        },
+        {
+          "ident": "DialogExternalEditorAddTitle",
+          "key": "dialog.externalEditor.addTitle"
+        },
+        {
+          "ident": "DialogExternalEditorNameTitle",
+          "key": "dialog.externalEditor.nameTitle"
+        },
+        {
+          "ident": "DialogExternalEditorNameLabel",
+          "key": "dialog.externalEditor.nameLabel"
+        },
+        {
+          "ident": "DialogExternalEditorSetDefaultTitle",
+          "key": "dialog.externalEditor.setDefaultTitle"
+        },
+        {
+          "ident": "DialogExternalEditorSetDefaultIntro",
+          "key": "dialog.externalEditor.setDefaultIntro"
+        },
+        {
+          "ident": "DialogExternalEditorSetDefaultConfirm",
+          "key": "dialog.externalEditor.setDefaultConfirm"
+        },
+        {
+          "ident": "SettingsExternalEditorsManage",
+          "key": "settings.externalEditors.manage"
+        },
+        {
+          "ident": "SettingsExternalEditorsManageAutomationName",
+          "key": "settings.externalEditors.manage.automationName"
+        },
+        {
+          "ident": "SettingsExternalEditorsSendRaw",
+          "key": "settings.externalEditors.sendRaw"
+        },
+        {
+          "ident": "SettingsExternalEditorsSendRawHint",
+          "key": "settings.externalEditors.sendRawHint"
+        },
+        {
+          "ident": "SettingsExternalEditorsSummary",
+          "key": "settings.externalEditors.summary"
+        },
+        {
+          "ident": "SettingsExternalEditorsSummaryNone",
+          "key": "settings.externalEditors.summaryNone"
+        },
+        {
+          "ident": "SettingsShortcutOpenInDefaultEditor",
+          "key": "settings.shortcut.openInDefaultEditor"
+        },
+        {
+          "ident": "SettingsShortcutOpenInDefaultEditorClearAutomationName",
+          "key": "settings.shortcut.openInDefaultEditor.clearAutomationName"
+        },
+        {
+          "ident": "ExternalEditorsTitle",
+          "key": "externalEditors.title"
+        },
+        {
+          "ident": "ExternalEditorsListHeader",
+          "key": "externalEditors.listHeader"
+        },
+        {
+          "ident": "ExternalEditorsAdd",
+          "key": "externalEditors.add"
+        },
+        {
+          "ident": "ExternalEditorsRemove",
+          "key": "externalEditors.remove"
+        },
+        {
+          "ident": "ExternalEditorsSetDefault",
+          "key": "externalEditors.setDefault"
+        },
+        {
+          "ident": "ExternalEditorsDetailsHeader",
+          "key": "externalEditors.detailsHeader"
+        },
+        {
+          "ident": "ExternalEditorsNameLabel",
+          "key": "externalEditors.nameLabel"
+        },
+        {
+          "ident": "ExternalEditorsPathLabel",
+          "key": "externalEditors.pathLabel"
+        },
+        {
+          "ident": "ExternalEditorsBrowse",
+          "key": "externalEditors.browse"
+        },
+        {
+          "ident": "ExternalEditorsArgumentsLabel",
+          "key": "externalEditors.argumentsLabel"
+        },
+        {
+          "ident": "ExternalEditorsArgumentsHint",
+          "key": "externalEditors.argumentsHint"
+        },
+        {
+          "ident": "ExternalEditorsDefaultBadge",
+          "key": "externalEditors.defaultBadge"
+        },
+        {
+          "ident": "StatusRenamed",
+          "key": "status.renamed"
+        },
+        {
+          "ident": "StatusRenameFailed",
+          "key": "status.renameFailed"
+        },
+        {
+          "ident": "StatusRenameUnchanged",
+          "key": "status.renameUnchanged"
+        },
+        {
+          "ident": "StatusRenameUndone",
+          "key": "status.renameUndone"
+        },
+        {
+          "ident": "MainMenuRenameFile",
+          "key": "main.menu.renameFile"
+        },
+        {
+          "ident": "MainMenuRenameFileAutomationName",
+          "key": "main.menu.renameFile.automationName"
+        },
+        {
+          "ident": "SettingsContextMenuItemRenameFile",
+          "key": "settings.contextMenu.item.renameFile"
+        },
+        {
+          "ident": "SettingsShortcutRenameFile",
+          "key": "settings.shortcut.renameFile"
+        },
+        {
+          "ident": "SettingsShortcutRenameFileClearAutomationName",
+          "key": "settings.shortcut.renameFile.clearAutomationName"
+        },
+        {
+          "ident": "DialogRenameTitle",
+          "key": "dialog.rename.title"
+        },
+        {
+          "ident": "DialogRenameLabel",
+          "key": "dialog.rename.label"
+        },
+        {
+          "ident": "DialogRenameOk",
+          "key": "dialog.rename.ok"
+        },
+        {
+          "ident": "DialogRenameErrorEmpty",
+          "key": "dialog.rename.error.empty"
+        },
+        {
+          "ident": "DialogRenameErrorInvalidCharacter",
+          "key": "dialog.rename.error.invalidCharacter"
+        },
+        {
+          "ident": "DialogRenameErrorTrailingDot",
+          "key": "dialog.rename.error.trailingDot"
+        },
+        {
+          "ident": "DialogRenameErrorReservedName",
+          "key": "dialog.rename.error.reservedName"
+        },
+        {
+          "ident": "DialogRenameErrorTooLong",
+          "key": "dialog.rename.error.tooLong"
+        },
+        {
+          "ident": "DialogRenameErrorPathTooLong",
+          "key": "dialog.rename.error.pathTooLong"
+        },
+        {
+          "ident": "DialogRenameErrorSidecarNotMappable",
+          "key": "dialog.rename.error.sidecarNotMappable"
+        },
+        {
+          "ident": "DialogRenameErrorExists",
+          "key": "dialog.rename.error.exists"
         }
       ],
       "members": [
@@ -10108,6 +10320,345 @@
           "kind": "simple",
           "key": "settings.shortcuts.resetKeys",
           "params": []
+        },
+        {
+          "ident": "CoreFileActionRenameInvalidName",
+          "kind": "simple",
+          "key": "core.fileAction.renameInvalidName",
+          "params": [
+            "name"
+          ]
+        },
+        {
+          "ident": "MainMenuExternalEditorAdd",
+          "kind": "simple",
+          "key": "main.menu.externalEditor.add",
+          "params": []
+        },
+        {
+          "ident": "MainMenuExternalEditorAddAutomationName",
+          "kind": "simple",
+          "key": "main.menu.externalEditor.add.automationName",
+          "params": []
+        },
+        {
+          "ident": "MainMenuExternalEditorSetDefault",
+          "kind": "simple",
+          "key": "main.menu.externalEditor.setDefault",
+          "params": []
+        },
+        {
+          "ident": "MainMenuExternalEditorSetDefaultAutomationName",
+          "kind": "simple",
+          "key": "main.menu.externalEditor.setDefault.automationName",
+          "params": []
+        },
+        {
+          "ident": "MainMenuExternalEditorItemAutomationName",
+          "kind": "simple",
+          "key": "main.menu.externalEditor.item.automationName",
+          "params": [
+            "name"
+          ]
+        },
+        {
+          "ident": "DialogExternalEditorExeMissing",
+          "kind": "simple",
+          "key": "dialog.externalEditor.exeMissing",
+          "params": [
+            "path"
+          ]
+        },
+        {
+          "ident": "DialogExternalEditorAddTitle",
+          "kind": "simple",
+          "key": "dialog.externalEditor.addTitle",
+          "params": []
+        },
+        {
+          "ident": "DialogExternalEditorNameTitle",
+          "kind": "simple",
+          "key": "dialog.externalEditor.nameTitle",
+          "params": []
+        },
+        {
+          "ident": "DialogExternalEditorNameLabel",
+          "kind": "simple",
+          "key": "dialog.externalEditor.nameLabel",
+          "params": []
+        },
+        {
+          "ident": "DialogExternalEditorSetDefaultTitle",
+          "kind": "simple",
+          "key": "dialog.externalEditor.setDefaultTitle",
+          "params": []
+        },
+        {
+          "ident": "DialogExternalEditorSetDefaultIntro",
+          "kind": "simple",
+          "key": "dialog.externalEditor.setDefaultIntro",
+          "params": []
+        },
+        {
+          "ident": "DialogExternalEditorSetDefaultConfirm",
+          "kind": "simple",
+          "key": "dialog.externalEditor.setDefaultConfirm",
+          "params": []
+        },
+        {
+          "ident": "SettingsExternalEditorsManage",
+          "kind": "simple",
+          "key": "settings.externalEditors.manage",
+          "params": []
+        },
+        {
+          "ident": "SettingsExternalEditorsManageAutomationName",
+          "kind": "simple",
+          "key": "settings.externalEditors.manage.automationName",
+          "params": []
+        },
+        {
+          "ident": "SettingsExternalEditorsSendRaw",
+          "kind": "simple",
+          "key": "settings.externalEditors.sendRaw",
+          "params": []
+        },
+        {
+          "ident": "SettingsExternalEditorsSendRawHint",
+          "kind": "simple",
+          "key": "settings.externalEditors.sendRawHint",
+          "params": []
+        },
+        {
+          "ident": "SettingsExternalEditorsSummary",
+          "kind": "simple",
+          "key": "settings.externalEditors.summary",
+          "params": [
+            "count",
+            "name"
+          ]
+        },
+        {
+          "ident": "SettingsExternalEditorsSummaryNone",
+          "kind": "simple",
+          "key": "settings.externalEditors.summaryNone",
+          "params": []
+        },
+        {
+          "ident": "SettingsShortcutOpenInDefaultEditor",
+          "kind": "simple",
+          "key": "settings.shortcut.openInDefaultEditor",
+          "params": []
+        },
+        {
+          "ident": "SettingsShortcutOpenInDefaultEditorClearAutomationName",
+          "kind": "simple",
+          "key": "settings.shortcut.openInDefaultEditor.clearAutomationName",
+          "params": []
+        },
+        {
+          "ident": "ExternalEditorsTitle",
+          "kind": "simple",
+          "key": "externalEditors.title",
+          "params": []
+        },
+        {
+          "ident": "ExternalEditorsListHeader",
+          "kind": "simple",
+          "key": "externalEditors.listHeader",
+          "params": []
+        },
+        {
+          "ident": "ExternalEditorsAdd",
+          "kind": "simple",
+          "key": "externalEditors.add",
+          "params": []
+        },
+        {
+          "ident": "ExternalEditorsRemove",
+          "kind": "simple",
+          "key": "externalEditors.remove",
+          "params": []
+        },
+        {
+          "ident": "ExternalEditorsSetDefault",
+          "kind": "simple",
+          "key": "externalEditors.setDefault",
+          "params": []
+        },
+        {
+          "ident": "ExternalEditorsDetailsHeader",
+          "kind": "simple",
+          "key": "externalEditors.detailsHeader",
+          "params": []
+        },
+        {
+          "ident": "ExternalEditorsNameLabel",
+          "kind": "simple",
+          "key": "externalEditors.nameLabel",
+          "params": []
+        },
+        {
+          "ident": "ExternalEditorsPathLabel",
+          "kind": "simple",
+          "key": "externalEditors.pathLabel",
+          "params": []
+        },
+        {
+          "ident": "ExternalEditorsBrowse",
+          "kind": "simple",
+          "key": "externalEditors.browse",
+          "params": []
+        },
+        {
+          "ident": "ExternalEditorsArgumentsLabel",
+          "kind": "simple",
+          "key": "externalEditors.argumentsLabel",
+          "params": []
+        },
+        {
+          "ident": "ExternalEditorsArgumentsHint",
+          "kind": "simple",
+          "key": "externalEditors.argumentsHint",
+          "params": []
+        },
+        {
+          "ident": "ExternalEditorsDefaultBadge",
+          "kind": "simple",
+          "key": "externalEditors.defaultBadge",
+          "params": []
+        },
+        {
+          "ident": "StatusRenamed",
+          "kind": "simple",
+          "key": "status.renamed",
+          "params": [
+            "oldName",
+            "newName"
+          ]
+        },
+        {
+          "ident": "StatusRenameFailed",
+          "kind": "simple",
+          "key": "status.renameFailed",
+          "params": [
+            "fileName",
+            "message"
+          ]
+        },
+        {
+          "ident": "StatusRenameUnchanged",
+          "kind": "simple",
+          "key": "status.renameUnchanged",
+          "params": [
+            "fileName"
+          ]
+        },
+        {
+          "ident": "StatusRenameUndone",
+          "kind": "simple",
+          "key": "status.renameUndone",
+          "params": [
+            "fileName"
+          ]
+        },
+        {
+          "ident": "MainMenuRenameFile",
+          "kind": "simple",
+          "key": "main.menu.renameFile",
+          "params": []
+        },
+        {
+          "ident": "MainMenuRenameFileAutomationName",
+          "kind": "simple",
+          "key": "main.menu.renameFile.automationName",
+          "params": []
+        },
+        {
+          "ident": "SettingsContextMenuItemRenameFile",
+          "kind": "simple",
+          "key": "settings.contextMenu.item.renameFile",
+          "params": []
+        },
+        {
+          "ident": "SettingsShortcutRenameFile",
+          "kind": "simple",
+          "key": "settings.shortcut.renameFile",
+          "params": []
+        },
+        {
+          "ident": "SettingsShortcutRenameFileClearAutomationName",
+          "kind": "simple",
+          "key": "settings.shortcut.renameFile.clearAutomationName",
+          "params": []
+        },
+        {
+          "ident": "DialogRenameTitle",
+          "kind": "simple",
+          "key": "dialog.rename.title",
+          "params": []
+        },
+        {
+          "ident": "DialogRenameLabel",
+          "kind": "simple",
+          "key": "dialog.rename.label",
+          "params": []
+        },
+        {
+          "ident": "DialogRenameOk",
+          "kind": "simple",
+          "key": "dialog.rename.ok",
+          "params": []
+        },
+        {
+          "ident": "DialogRenameErrorEmpty",
+          "kind": "simple",
+          "key": "dialog.rename.error.empty",
+          "params": []
+        },
+        {
+          "ident": "DialogRenameErrorInvalidCharacter",
+          "kind": "simple",
+          "key": "dialog.rename.error.invalidCharacter",
+          "params": []
+        },
+        {
+          "ident": "DialogRenameErrorTrailingDot",
+          "kind": "simple",
+          "key": "dialog.rename.error.trailingDot",
+          "params": []
+        },
+        {
+          "ident": "DialogRenameErrorReservedName",
+          "kind": "simple",
+          "key": "dialog.rename.error.reservedName",
+          "params": []
+        },
+        {
+          "ident": "DialogRenameErrorTooLong",
+          "kind": "simple",
+          "key": "dialog.rename.error.tooLong",
+          "params": []
+        },
+        {
+          "ident": "DialogRenameErrorPathTooLong",
+          "kind": "simple",
+          "key": "dialog.rename.error.pathTooLong",
+          "params": []
+        },
+        {
+          "ident": "DialogRenameErrorSidecarNotMappable",
+          "kind": "simple",
+          "key": "dialog.rename.error.sidecarNotMappable",
+          "params": []
+        },
+        {
+          "ident": "DialogRenameErrorExists",
+          "kind": "simple",
+          "key": "dialog.rename.error.exists",
+          "params": [
+            "name"
+          ]
         }
       ]
     },

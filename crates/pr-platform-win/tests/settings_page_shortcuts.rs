@@ -140,20 +140,20 @@ fn page_has_one_key_box_per_field_map_shortcut_only_optional_rows_have_clear_but
     let properties: BTreeSet<_> = rows.iter().map(|row| row.property).collect();
     let expected: BTreeSet<_> = shortcut_properties().iter().copied().collect();
 
-    assert_eq!(rows.len(), 27);
+    assert_eq!(rows.len(), 29);
     assert_eq!(properties, expected);
-    assert_eq!(rows.iter().filter(|row| row.clear_tip.is_some()).count(), 14);
+    assert_eq!(rows.iter().filter(|row| row.clear_tip.is_some()).count(), 16);
     for row in rows {
         assert_eq!(row.clear_tip.is_some(), ShortcutMappings::is_optional(row.property));
     }
 }
 
-// C#: SettingsShortcutsPageTests.RowOrder_IsTheDocumentedReadingOrder_OfThe27Commands
+// C#: SettingsShortcutsPageTests.RowOrder_IsTheDocumentedReadingOrder_OfThe29Commands
 #[test]
-fn row_order_is_the_documented_reading_order_of_the_27_commands() {
+fn row_order_is_the_documented_reading_order_of_the_29_commands() {
     assert_eq!(NAVIGATION_ROWS.len(), 8);
     assert_eq!(VIEW_ROWS.len(), 13);
-    assert_eq!(ACTION_ROWS.len(), 6);
+    assert_eq!(ACTION_ROWS.len(), 8);
     let rows: Vec<_> = all_rows().map(|row| row.property).collect();
     let expected: Vec<_> = NAVIGATION_ROWS
         .iter()
@@ -281,7 +281,7 @@ fn attach_registers_each_nonzero_optional_clear_tooltip() {
         })
         .collect();
     let actual: BTreeMap<_, _> = host.tooltips.borrow().iter().cloned().collect();
-    assert_eq!(actual.len(), 14);
+    assert_eq!(actual.len(), 16);
     assert_eq!(actual, expected);
 }
 

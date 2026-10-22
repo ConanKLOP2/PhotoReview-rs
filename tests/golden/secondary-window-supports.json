@@ -1,6 +1,6 @@
 {
   "generator": "oracle-cs secondary-window-supports",
-  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "csharp_commit": "7eaee2a2b071c7ca05291c86fb78a347f9e6a15f",
   "cases": [
     {
       "name": "port supports Settings settings_enabled true",
@@ -317,7 +317,9 @@
         "SkippedFiles",
         "BatchReview",
         "ZoomPrompt",
-        "ActionProfiles"
+        "ActionProfiles",
+        "ExternalEditors",
+        "RenamePrompt"
       ],
       "values": [
         0,
@@ -327,7 +329,9 @@
         4,
         5,
         6,
-        7
+        7,
+        8,
+        9
       ]
     }
   ]

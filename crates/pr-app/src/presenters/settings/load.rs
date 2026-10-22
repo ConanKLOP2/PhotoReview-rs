@@ -432,6 +432,9 @@ impl SettingsPresenter {
         s.confirm_before_delete = false;
         s.show_zoom_indicator = false;
         s.external_editor_path = String::new();
+        s.external_editors.clear();
+        s.default_external_editor_id.clear();
+        s.external_editor_sends_raw_original = true;
         s.image_cache_capacity_bytes = perf::IMAGE_CACHE_CAPACITY_BYTES;
         s.image_cache_ram_percent = perf::IMAGE_CACHE_RAM_PERCENT;
         s.memory_reserve_bytes = perf::MEMORY_RESERVE_BYTES;

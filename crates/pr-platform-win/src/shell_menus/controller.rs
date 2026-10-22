@@ -210,6 +210,7 @@ impl ContextMenuController {
             "NextFolder" => actions.execute(ReviewCommand::NEXT_FOLDER),
             "PreviousFolder" => actions.execute(ReviewCommand::PREVIOUS_FOLDER),
             "ExternalEditor" => self.run(|| actions.open_in_external_editor()),
+            "RenameFile" => actions.execute(ReviewCommand::RENAME_FILE),
             "CopyFileName" => self.run(|| actions.copy_file_name()),
             "CopyFullPath" => self.run(|| actions.copy_full_pathname()),
             "Settings" => self.run(|| actions.show_settings()),

@@ -118,6 +118,7 @@ scalar_codec! {
     str: [
         "actionsJson" => actions_json,
         "externalEditorPath" => external_editor_path,
+        "defaultExternalEditorId" => default_external_editor_id,
         "infoOverlayFontSizeText" => info_overlay_font_size_text,
         "toolbarAutoHideDelayText" => toolbar_auto_hide_delay_text,
         "infoOverlayAutoHideDelayText" => info_overlay_auto_hide_delay_text,
@@ -154,6 +155,7 @@ scalar_codec! {
         "loggingEnabled" => logging_enabled,
         "allowPermanentDelete" => allow_permanent_delete,
         "confirmBeforeDelete" => confirm_before_delete,
+        "externalEditorSendsRawOriginal" => external_editor_sends_raw_original,
         "journalSafe" => journal_safe,
         "moveCopyReuseLastFolder" => move_copy_reuse_last_folder,
         "showInfoOverlay" => show_info_overlay,
@@ -183,6 +185,11 @@ fn form_json(s: &SettingsFormState) -> Value {
     m.insert("exifInfoFields".to_owned(), json!(s.exif_info_fields.bits()));
     m.insert("titleBarFields".to_owned(), json!(s.title_bar_fields.bits()));
     m.insert("shortcutTexts".to_owned(), json!(s.shortcut_texts));
+    // The C# oracle's generic form-value writer calls List<ExternalEditor>.ToString(), not JSON serialization.
+    m.insert(
+        "externalEditors".to_owned(),
+        json!("System.Collections.Generic.List`1[PhotoReview.Core.Settings.ExternalEditor]"),
+    );
     let mut shown: Vec<&str> = s.context_menu_shown.iter().map(|i| i.name()).collect();
     shown.sort_unstable();
     m.insert("contextMenuShown".to_owned(), json!(shown));
@@ -598,8 +605,8 @@ fn bindings_are_nonempty_and_own_distinct_properties() {
     assert_eq!(owned.len(), distinct.len());
     assert_eq!(
         owned.len(),
-        58,
-        "58 row properties plus UiLanguage make the 59 covered names"
+        61,
+        "61 row properties plus UiLanguage make the 62 covered names"
     );
 }
 
@@ -607,7 +614,7 @@ fn bindings_are_nonempty_and_own_distinct_properties() {
 #[test]
 fn shortcut_properties_are_every_box_except_move_to_folder2() {
     let mapped = shortcut_properties();
-    assert_eq!(mapped.len(), 27);
+    assert_eq!(mapped.len(), 29);
     let distinct: HashSet<&str> = mapped.iter().copied().collect();
     assert_eq!(mapped.len(), distinct.len(), "duplicate box");
     let mut expected: Vec<&str> = ShortcutMappings::PROPERTY_NAMES
@@ -650,12 +657,12 @@ fn shortcut_get_and_set_touch_only_their_property() {
 }
 
 // C#: SettingsFieldMapTests.Shortcuts_RoundTripEachProperty (pure half; the presenter half moves to W8-10d)
-// Distinct valid key names for the 27 boxes; MoveToFolder2 is carried over, not shown.
+// Distinct valid key names for the 29 boxes; MoveToFolder2 is carried over, not shown.
 #[test]
 fn shortcut_round_trip_load_read() {
     let keys = [
         "A", "B", "C", "D", "E", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W",
-        "X", "Y", "Z", "F1", "F2",
+        "X", "Y", "Z", "F1", "F2", "F3", "F4",
     ];
     let properties = shortcut_properties();
     assert_eq!(properties.len(), keys.len());
@@ -979,7 +986,7 @@ fn golden_settings_field_map_tables() {
 
     let covered: Vec<String> = covered_properties().into_iter().map(str::to_owned).collect();
     assert_eq!(covered, strings("covered_sorted"));
-    assert_eq!(covered.len(), 59);
+    assert_eq!(covered.len(), 62);
 
     let shortcut_names: Vec<String> = shortcut_properties().iter().map(|s| (*s).to_owned()).collect();
     assert_eq!(shortcut_names, strings("shortcut_names_in_order"));

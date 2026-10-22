@@ -1,6 +1,6 @@
 {
   "generator": "oracle-cs settings-page-files",
-  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "csharp_commit": "7eaee2a2b071c7ca05291c86fb78a347f9e6a15f",
   "cases": [
     {
       "name": "Files page declaration",
@@ -213,62 +213,90 @@
         {
           "class": "Button",
           "id": 6027,
-          "text": "Operation journal",
-          "style": 1342177287,
+          "text": "Manage editors…",
+          "style": 1342242816,
           "ex_style": 0
         },
         {
           "class": "Static",
           "id": 6028,
-          "text": "Operation journal durability",
+          "text": "",
           "style": 1342177408,
           "ex_style": 0
         },
         {
           "class": "Button",
           "id": 6029,
-          "text": "Fast (default)",
-          "style": 1342382089,
-          "ex_style": 0
-        },
-        {
-          "class": "Button",
-          "id": 6030,
-          "text": "Power-loss safe",
-          "style": 1342185481,
+          "text": "Send the RAW original when the photo has one",
+          "style": 1342251011,
           "ex_style": 0
         },
         {
           "class": "Static",
+          "id": 6030,
+          "text": "A JPEG that is paired with a RAW file (same name, same folder) opens the RAW in the editor instead. Turn off to always send the file shown.",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
           "id": 6031,
-          "text": "Records reach the OS cache before each file operation. Survives an app crash; after a power loss or OS crash the last few records may be lost, so Undo/Recovery may not know about a very recent move.",
-          "style": 1342308480,
+          "text": "Operation journal",
+          "style": 1342177287,
           "ex_style": 0
         },
         {
           "class": "Static",
           "id": 6032,
-          "text": "Every record is forced to disk before the file operation starts. Safest, but about 4x slower per record (still off the UI thread, so the app stays responsive).",
+          "text": "Operation journal durability",
           "style": 1342177408,
           "ex_style": 0
         },
         {
           "class": "Button",
           "id": 6033,
+          "text": "Fast (default)",
+          "style": 1342382089,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 6034,
+          "text": "Power-loss safe",
+          "style": 1342185481,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 6035,
+          "text": "Records reach the OS cache before each file operation. Survives an app crash; after a power loss or OS crash the last few records may be lost, so Undo/Recovery may not know about a very recent move.",
+          "style": 1342308480,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 6036,
+          "text": "Every record is forced to disk before the file operation starts. Safest, but about 4x slower per record (still off the UI thread, so the app stays responsive).",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 6037,
           "text": "Actions",
           "style": 1342177287,
           "ex_style": 0
         },
         {
           "class": "Button",
-          "id": 6034,
+          "id": 6038,
           "text": "Reuse the last folder",
           "style": 1342251011,
           "ex_style": 0
         },
         {
           "class": "Static",
-          "id": 6035,
+          "id": 6039,
           "text": "Shift always asks.",
           "style": 1342177408,
           "ex_style": 0
@@ -365,38 +393,50 @@
         },
         {
           "id": 6027,
-          "text": "Operation journal"
-        },
-        {
-          "id": 6028,
-          "text": "Operation journal durability"
+          "text": "Manage editors…"
         },
         {
           "id": 6029,
-          "text": "Fast (default)"
+          "text": "Send the RAW original when the photo has one"
         },
         {
           "id": 6030,
-          "text": "Power-loss safe"
+          "text": "A JPEG that is paired with a RAW file (same name, same folder) opens the RAW in the editor instead. Turn off to always send the file shown."
         },
         {
           "id": 6031,
-          "text": "Records reach the OS cache before each file operation. Survives an app crash; after a power loss or OS crash the last few records may be lost, so Undo/Recovery may not know about a very recent move."
+          "text": "Operation journal"
         },
         {
           "id": 6032,
-          "text": "Every record is forced to disk before the file operation starts. Safest, but about 4x slower per record (still off the UI thread, so the app stays responsive)."
+          "text": "Operation journal durability"
         },
         {
           "id": 6033,
-          "text": "Actions"
+          "text": "Fast (default)"
         },
         {
           "id": 6034,
-          "text": "Reuse the last folder"
+          "text": "Power-loss safe"
         },
         {
           "id": 6035,
+          "text": "Records reach the OS cache before each file operation. Survives an app crash; after a power loss or OS crash the last few records may be lost, so Undo/Recovery may not know about a very recent move."
+        },
+        {
+          "id": 6036,
+          "text": "Every record is forced to disk before the file operation starts. Safest, but about 4x slower per record (still off the UI thread, so the app stays responsive)."
+        },
+        {
+          "id": 6037,
+          "text": "Actions"
+        },
+        {
+          "id": 6038,
+          "text": "Reuse the last folder"
+        },
+        {
+          "id": 6039,
           "text": "Shift always asks."
         }
       ],
@@ -410,9 +450,11 @@
         6019,
         6021,
         6026,
-        6031,
-        6032,
-        6035
+        6028,
+        6030,
+        6035,
+        6036,
+        6039
       ],
       "key_boxes": [],
       "warnings": [],
@@ -578,7 +620,11 @@
             6023,
             6024,
             6025,
-            6026
+            6026,
+            6027,
+            6028,
+            6029,
+            6030
           ],
           "children": [
             {
@@ -599,20 +645,13 @@
               "control_ids": [
                 6026
               ]
-            }
-          ]
-        },
-        {
-          "type": "SettingsGroupElement",
-          "control_ids": [
-            6027,
-            6028,
-            6029,
-            6031,
-            6030,
-            6032
-          ],
-          "children": [
+            },
+            {
+              "type": "SettingsButtonsElement",
+              "control_ids": [
+                6027
+              ]
+            },
             {
               "type": "SettingsTextElement",
               "control_ids": [
@@ -620,17 +659,15 @@
               ]
             },
             {
-              "type": "SettingsRadioElement",
+              "type": "SettingsCheckElement",
               "control_ids": [
-                6029,
-                6031
+                6029
               ]
             },
             {
-              "type": "SettingsRadioElement",
+              "type": "SettingsTextElement",
               "control_ids": [
-                6030,
-                6032
+                6030
               ]
             }
           ]
@@ -638,21 +675,54 @@
         {
           "type": "SettingsGroupElement",
           "control_ids": [
+            6031,
+            6032,
             6033,
+            6035,
             6034,
-            6035
+            6036
+          ],
+          "children": [
+            {
+              "type": "SettingsTextElement",
+              "control_ids": [
+                6032
+              ]
+            },
+            {
+              "type": "SettingsRadioElement",
+              "control_ids": [
+                6033,
+                6035
+              ]
+            },
+            {
+              "type": "SettingsRadioElement",
+              "control_ids": [
+                6034,
+                6036
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SettingsGroupElement",
+          "control_ids": [
+            6037,
+            6038,
+            6039
           ],
           "children": [
             {
               "type": "SettingsCheckElement",
               "control_ids": [
-                6034
+                6038
               ]
             },
             {
               "type": "SettingsTextElement",
               "control_ids": [
-                6035
+                6039
               ]
             }
           ]
@@ -670,13 +740,13 @@
         "confirm_before_delete": 6020,
         "editor_path": 6024,
         "browse": 6025,
-        "journal": 6028,
-        "reuse_last_folder": 6034
+        "journal": 6032,
+        "reuse_last_folder": 6038
       },
       "list_ids": {
         "journal_radios": [
-          6029,
-          6030
+          6033,
+          6034
         ]
       }
     },

@@ -30,6 +30,7 @@ pub const DM_SETDEFID: u32 = 0x0401; // DmSetDefId
 pub const BM_SETSTYLE: u32 = 0x00F4; // BmSetStyle
 pub const EM_SETSEL: u32 = 0x00B1; // EmSetSel
 pub const EM_GETSEL: u32 = 0x00B0; // EmGetSel
+pub const EN_CHANGE: i32 = 0x0300; // EnChange
 pub const EM_SETLIMITTEXT: u32 = 0x00C5; // EmSetLimitText
 pub const EM_GETRECT: u32 = 0x00B2; // EmGetRect
 pub const EM_SETRECT: u32 = 0x00B3; // EmSetRect

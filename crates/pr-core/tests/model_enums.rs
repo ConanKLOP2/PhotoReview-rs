@@ -12,7 +12,7 @@ use pr_test_support::golden;
 use serde_json::Value;
 
 /// The C# commit the golden file `model-enums.json` was generated from.
-const GOLDEN_COMMIT: &str = "d92d6aae639a40eede232948f9bce97ecfd02c10";
+const GOLDEN_COMMIT: &str = "7eaee2a2b071c7ca05291c86fb78a347f9e6a15f";
 
 /// Asserts the member names (declaration order) and that the numeric values are `0..n-1`.
 fn assert_specification<T: LenientEnum>(expected_names: &[&str]) {
