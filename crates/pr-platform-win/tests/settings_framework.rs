@@ -1,5 +1,6 @@
 //! Pure tests for the settings page framework contract.
 
+#[rustfmt::skip]
 use pr_platform_win::dialogs::settings::page_view::{
     SettingsPageView, fixed_text, page_title, text_fn,
 };
@@ -26,6 +27,7 @@ impl SettingsPageView for MinimalPage {
 }
 
 #[test]
+#[rustfmt::skip]
 fn default_methods_do_nothing_and_answer_false_or_none() {
     let mut page = MinimalPage {
         key: "Nope".to_owned(),
@@ -64,6 +66,7 @@ fn title_of_an_unknown_key_is_empty() {
 
 struct OverriddenPage(MinimalPage);
 
+#[rustfmt::skip]
 impl SettingsPageView for OverriddenPage {
     fn key(&self) -> &str { &self.0.key }
     fn title(&self) -> String { "custom title".to_owned() }
@@ -74,6 +77,7 @@ impl SettingsPageView for OverriddenPage {
 }
 
 #[test]
+#[rustfmt::skip]
 fn title_can_be_overridden() {
     let page = OverriddenPage(MinimalPage { key: "General".to_owned() });
     assert_eq!(page.title(), "custom title");
