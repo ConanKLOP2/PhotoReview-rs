@@ -7,7 +7,7 @@
 #      MUT_JOBS (cargo-mutants --jobs, default 4), MUT_BUDGET_YELLOW (s, default 900), MUT_BUDGET_RED (s, default 1800),
 #      MUTANTS_TIMEOUT (s; overrides both budgets), MUT_TEST_TIMEOUT (s per mutant test run, default 90),
 #      MIN_DISK_GB (default 20), QUOTA_MAX (percent of the 5 h window never exceeded, default 95), QUOTA_MARGIN (default 1.2),
-#      CS_REPO (C# checkout), GATE_NEXTEST=0 (never use cargo-nextest).
+#      CS_REPO (C# checkout), GATE_NEXTEST=0 (never use cargo-nextest), FIXUP=0 (disable one final repair round).
 set -u
 export PATH="$HOME/.cargo/bin:$PATH"
 SELF="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -198,7 +198,7 @@ codex_call() {
 gate_loop() {
   local u="$1" wt="$2" crate="$3" mode="$4" stop="$5" round=0 out rc pf
   while :; do
-    out="$(GATE_TEST_BASE="${REDBASE:-}" bash "$SELF/codex-gate.sh" "$u" "$wt" "$crate" "$mode" 2>&1 </dev/null)"; rc=$?
+    out="$(GATE_TEST_BASE="${REDBASE:-}" GATE_TEST_RELAXED="${FIXUP_GUARD:-0}" bash "$SELF/codex-gate.sh" "$u" "$wt" "$crate" "$mode" 2>&1 </dev/null)"; rc=$?
     if [ "$rc" = 0 ]; then
       [ "$mode" = "$stop" ] && return 0
       mode="$stop"; continue
@@ -210,6 +210,24 @@ gate_loop() {
     codex_call "$wt" "$pf" "$u" "repair$round"
     mode=fast
   done
+}
+
+# fixup_once <unit> <wt> <crate> <phase> <error>: one final Codex attempt; changed tests must preserve counts.
+fixup_once() {
+  local u="$1" wt="$2" crate="$3" phase="$4" err="$5" pf="$LOGDIR/$1.fixup.prompt.md" base changed
+  [ "${FIXUP:-1}" != 0 ] && [ "${FIXUP_USED:-0}" = 0 ] || return 1
+  FIXUP_USED=1
+  base="${REDBASE:-$(git -C "$wt" rev-parse HEAD)}"
+  { printf 'TASK: fixup. This is the one final fixup round after %s failed. Read the pack. You may edit owned test files only when the test contradicts the C# oracle; cite the exact C# file and test in your final message and list every changed Rust test function. Never weaken tests, reduce test functions/assert macro occurrences, or add #[ignore]. You may fix rustfmt-only test formatting. If the implementation is wrong, fix owned source. Tail (<= 60 lines):\n\n```\n' "$phase"; printf '%s\n' "$err" | tail -n 60; printf '```\n'; } > "$pf"
+  codex_call "$wt" "$pf" "$u" fixup || return 1
+  printf '%s\n' "${OWN[@]}" > "$LOGDIR/$u.owned.txt"
+  $LIB testguard "$wt" "$base" "$LOGDIR/$u.owned.txt" relaxed > "$LOGDIR/$u.fixup-guard.txt" 2>&1 || return 1
+  $LIB fixupreport "$wt" "$base" "$LOGDIR/$u.owned.txt" "$wt/.codex-last-message.txt" "$LOGDIR/$u.fixup-tests.txt" > "$LOGDIR/$u.fixup-report.txt" 2>&1 || return 1
+  changed="$(cat "$LOGDIR/$u.fixup-tests.txt")"
+  [ -n "$changed" ] || changed="none"
+  $LIB supd "$STATE" "$u" "fixup=1" "fixup_tests=$changed" >/dev/null
+  FIXUP_GUARD=1
+  return 0
 }
 
 # ---------------------------------------------------------------- mutation (cargo mutants --in-diff, owned src files only)
@@ -340,8 +358,8 @@ red_loop() {
 # ---------------------------------------------------------------- one unit
 # run_unit <unit> <slot> : state done/partial = merged, failed otherwise. Runs in a subshell (its variables are private).
 run_unit() {
-  local u="$1" slot="$2" lcu wt br crate c pf has_t=0 f round tier pct0 pct1 packout pb
-  UNIT_T0=$(now); SID=""; CUR_CRATE=""; REDBASE=""
+  local u="$1" slot="$2" lcu wt br crate c pf has_t=0 f round tier pct0 pct1 packout pb RED_COMMITTED=0
+  UNIT_T0=$(now); SID=""; CUR_CRATE=""; REDBASE=""; FIXUP_USED=0; FIXUP_GUARD=0
   lcu="$(echo "$u" | tr A-Z a-z)"; wt="$REPO/.claude/worktrees/wu-$lcu"; br="wu/$u"
   # one target dir per integration tag, shared by units run one after another (deps compile once); one per slot when jobs > 1
   pick_target_dir "$slot"
@@ -372,10 +390,25 @@ run_unit() {
     # compile gate: the red tests must compile and fail only through todo!() (up to 3 repair rounds; no red-test guard in this phase)
     RED_ERR=""
     if ! red_loop "$u" "$wt" "$crate"; then
-      printf '%s\n' "$RED_ERR" > "$LOGDIR/$u.gate-error.txt"; fail_unit "$u" "$wt" "red tests invalid after 3 repair rounds" "$LOGDIR/$u.gate-error.txt"; return 1
+      printf '%s\n' "$RED_ERR" > "$LOGDIR/$u.gate-error.txt"
+      if [ "${FIXUP:-1}" != 0 ]; then
+        ( cd "$wt" && git add -A -- . ':!.codex-*' && git commit -q --allow-empty -m "test($u): red tests (Codex pipeline)" ) >>"$LOGDIR/$u.log" 2>&1
+        RED_COMMITTED=1
+        REDBASE="$(git -C "$wt" rev-parse HEAD)"
+        if fixup_once "$u" "$wt" "$crate" red-tests "$RED_ERR" && red_loop "$u" "$wt" "$crate"; then
+          ( cd "$wt" && git add -A -- '*/tests/*.rs' && git commit -q -m "test($u): corrected tests (Codex fixup)" ) >>"$LOGDIR/$u.log" 2>&1
+          REDBASE="$(git -C "$wt" rev-parse HEAD)"
+        else
+          fail_unit "$u" "$wt" "red tests invalid after 3 repair rounds" "$LOGDIR/$u.gate-error.txt"; return 1
+        fi
+      else
+        fail_unit "$u" "$wt" "red tests invalid after 3 repair rounds" "$LOGDIR/$u.gate-error.txt"; return 1
+      fi
     fi
     # freeze the red tests in their own commit: later gates verify they are only ever extended, never weakened
-    ( cd "$wt" && git add -A -- . ':!.codex-*' && git commit -q --allow-empty -m "test($u): red tests (Codex pipeline)" ) >>"$LOGDIR/$u.log" 2>&1
+    if [ "$RED_COMMITTED" = 0 ]; then
+      ( cd "$wt" && git add -A -- . ':!.codex-*' && git commit -q --allow-empty -m "test($u): red tests (Codex pipeline)" ) >>"$LOGDIR/$u.log" 2>&1
+    fi
   fi
   REDBASE="$(git -C "$wt" rev-parse HEAD)"
   pf="$LOGDIR/$u.impl.prompt.md"
@@ -384,14 +417,24 @@ run_unit() {
 
   GATE_ERR=""
   if ! gate_loop "$u" "$wt" "$crate" fast fast; then
-    printf '%s\n' "$GATE_ERR" > "$LOGDIR/$u.gate-error.txt"; fail_unit "$u" "$wt" "gate failed after 3 repair rounds" "$LOGDIR/$u.gate-error.txt"; return 1
+    if fixup_once "$u" "$wt" "$crate" fast-gate "$GATE_ERR" && gate_loop "$u" "$wt" "$crate" fast fast; then
+      ( cd "$wt" && git add -A -- '*/tests/*.rs' && git diff --cached --quiet || git commit -q -m "test($u): corrected tests (Codex fixup)" ) >>"$LOGDIR/$u.log" 2>&1
+      REDBASE="$(git -C "$wt" rev-parse HEAD)"
+    else
+      printf '%s\n' "$GATE_ERR" > "$LOGDIR/$u.gate-error.txt"; fail_unit "$u" "$wt" "gate failed after 3 repair rounds" "$LOGDIR/$u.gate-error.txt"; return 1
+    fi
   fi
 
   # full gate (clippy + the unit's own test binaries) BEFORE mutants: when it fails, the ~15 min mutants run is not wasted on code
   # that is about to change. It runs again after the mutant rounds only if those rounds changed the tests.
   GATE_ERR=""
   if ! gate_loop "$u" "$wt" "$crate" full full; then
-    printf '%s\n' "$GATE_ERR" > "$LOGDIR/$u.gate-error.txt"; fail_unit "$u" "$wt" "gate (clippy + crate tests) failed after 3 repair rounds" "$LOGDIR/$u.gate-error.txt"; return 1
+    if fixup_once "$u" "$wt" "$crate" full-gate "$GATE_ERR" && gate_loop "$u" "$wt" "$crate" full full; then
+      ( cd "$wt" && git add -A -- '*/tests/*.rs' && git diff --cached --quiet || git commit -q -m "test($u): corrected tests (Codex fixup)" ) >>"$LOGDIR/$u.log" 2>&1
+      REDBASE="$(git -C "$wt" rev-parse HEAD)"
+    else
+      printf '%s\n' "$GATE_ERR" > "$LOGDIR/$u.gate-error.txt"; fail_unit "$u" "$wt" "gate (clippy + crate tests) failed after 3 repair rounds" "$LOGDIR/$u.gate-error.txt"; return 1
+    fi
   fi
 
   run_mutants "$u" "$wt" "$crate" "$tier"; round=0
@@ -414,11 +457,16 @@ run_unit() {
   if [ "$round" -gt 0 ]; then
     GATE_ERR=""
     if ! gate_loop "$u" "$wt" "$crate" full full; then
-      printf '%s\n' "$GATE_ERR" > "$LOGDIR/$u.gate-error.txt"; fail_unit "$u" "$wt" "final gate (clippy + crate tests) failed after 3 repair rounds" "$LOGDIR/$u.gate-error.txt"; return 1
+      if fixup_once "$u" "$wt" "$crate" final-gate "$GATE_ERR" && gate_loop "$u" "$wt" "$crate" full full; then
+        ( cd "$wt" && git add -A -- '*/tests/*.rs' && git diff --cached --quiet || git commit -q -m "test($u): corrected tests (Codex fixup)" ) >>"$LOGDIR/$u.log" 2>&1
+        REDBASE="$(git -C "$wt" rev-parse HEAD)"
+      else
+        printf '%s\n' "$GATE_ERR" > "$LOGDIR/$u.gate-error.txt"; fail_unit "$u" "$wt" "final gate (clippy + crate tests) failed after 3 repair rounds" "$LOGDIR/$u.gate-error.txt"; return 1
+      fi
     fi
   fi
 
-  ( cd "$wt" && git add -A -- . ':!.codex-*' && git commit -q -m "feat($u): port $u via Codex pipeline" -m "Co-Authored-By: Codex gpt-6-luna <noreply@openai.com>" ) >>"$LOGDIR/$u.log" 2>&1 \
+  ( cd "$wt" && git add -A -- . ':!.codex-*' && git commit -q --allow-empty -m "feat($u): port $u via Codex pipeline" -m "Co-Authored-By: Codex gpt-6-luna <noreply@openai.com>" ) >>"$LOGDIR/$u.log" 2>&1 \
     || { fail_unit "$u" "$wt" "commit failed"; return 1; }
   merge_unit() { git -C "$INT" merge --no-ff -q "$br" -m "Merge $u (Codex pipeline)" >>"$LOGDIR/$u.log" 2>&1 || { git -C "$INT" merge --abort >/dev/null 2>&1; return 1; }; }
   if ! with_merge_lock merge_unit; then
