@@ -114,3 +114,14 @@ pub mod shell_menus;
 /// Wave 8 batch B4 overlay Win32 parts (W8-15f to 15j stubs): host, message handler, tooltips, `ShellOverlay` (layout, hit test, input, paint), main window glue.
 #[cfg(windows)]
 pub mod shell_overlay;
+
+/// Wave 8 batch B6 native start-up parts (W8-17a DPI, W8-17b placement and cloak, W8-17c warm-ups): see `shell_startup/mod.rs`.
+#[cfg(windows)]
+pub mod shell_startup;
+
+/// Wave 8 batch B6 test drivers (W8-20a/20b stubs): a reader of the resources of a built exe and a poster of input messages to a window of the SAME machine. Only
+/// `pr-shell`'s integration tests use them (`features = ["test-support"]` in its dev-dependencies); the unsafe code stays in this crate (AGENTS.md).
+#[cfg(all(windows, feature = "test-support"))]
+pub mod exe_resources;
+#[cfg(all(windows, feature = "test-support"))]
+pub mod ui_driver;

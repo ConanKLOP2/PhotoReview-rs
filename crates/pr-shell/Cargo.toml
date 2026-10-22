@@ -19,6 +19,8 @@ pr-app.workspace = true
 pr-core.workspace = true
 pr-imaging.workspace = true
 pr-imaging-raw.workspace = true
+# W8-17c: the production dialog factory builds `Localizer` based texts (RecoveryTextSource, list dialogs, diagnostics); D-W8B6-10.
+pr-l10n.workspace = true
 pr-libraw.workspace = true
 pr-turbojpeg.workspace = true
 pr-platform-win.workspace = true
@@ -34,3 +36,5 @@ required-features = ["ui-spike"]
 
 [dev-dependencies]
 pr-test-support.workspace = true
+# W8-20a/20b: safe test drivers (exe resource reader, input poster) live in pr-platform-win behind this feature, so pr-shell tests need no unsafe (D-W8B6-43).
+pr-platform-win = { workspace = true, features = ["test-support"] }

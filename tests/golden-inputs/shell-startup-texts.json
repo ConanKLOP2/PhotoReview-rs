@@ -1,0 +1,22 @@
+{
+  "failed": [
+    { "id": "plain-message", "message": "Disk is full" },
+    { "id": "empty-message", "message": "" },
+    { "id": "braces-in-the-message", "message": "bad {name} and {0}" },
+    { "id": "multi-line-message", "message": "first line\r\nsecond line" },
+    { "id": "unicode-message", "message": "Không tìm thấy tệp" }
+  ],
+  "recovery": [
+    { "id": "count-0", "count": 0 },
+    { "id": "count-1", "count": 1 },
+    { "id": "count-2", "count": 2 },
+    { "id": "count-3", "count": 3 },
+    { "id": "count-21", "count": 21 },
+    { "id": "count-1000", "count": 1000 },
+    { "id": "count-1234567", "count": 1234567 }
+  ],
+  "closing": [
+    { "id": "not-cancelled-closes", "cancel": false },
+    { "id": "cancelled-keeps-the-secondary-windows", "cancel": true }
+  ]
+}

@@ -13,6 +13,8 @@ pub mod misc;
 pub mod overlay;
 pub mod presenters;
 pub mod services;
+// Wave 8 batch B6 (W8-17a..17e start-up logic; index lead-owned, contracts/W8-17a.md).
+pub mod startup;
 pub mod viewing;
 pub mod viewmodels;
 pub mod viewport;

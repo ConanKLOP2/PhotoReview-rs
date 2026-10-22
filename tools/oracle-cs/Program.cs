@@ -456,6 +456,18 @@ JsonArray cases = command switch
     "settings-dialog-apply" => Commands.W819lSettingsDialogApplyCases(inputs),
     // Commands\Commands\W8-19m
     "settings-dialog-layout" => Commands.W819mSettingsDialogLayoutCases(inputs),
+    // Commands\Commands\W8-17a
+    "shell-launch" => Commands.W817aShellLaunchCases(inputs),
+    "shell-error-log" => Commands.W817aShellErrorLogCases(inputs),
+    // Commands\Commands\W8-17b
+    "startup-cloak" => Commands.W817bStartupCloakCases(inputs),
+    "shell-show-command" => Commands.W817bShowCommandCases(inputs),
+    // Commands\Commands\W8-17c
+    "shell-composition-registrations" => Commands.W817cRegistrationsCases(inputs),
+    // Commands\Commands\W8-17d
+    "shell-startup-options" => Commands.W817dStartupOptionsCases(inputs),
+    // Commands\Commands\W8-17e
+    "shell-startup-texts" => Commands.W817eStartupTextsCases(inputs),
     _ => throw new ArgumentException($"unknown command '{command}'"),
 };
 
