@@ -7,10 +7,12 @@
 #        claim.sh list                  every claim: unit, machine, time, note
 #        claim.sh who <unit>            machine name that holds the claim (empty = none)
 #        claim.sh gc                    delete claims whose unit already appears on origin/master (merged PR) or that are older than 14 days
-# The machine name is $PR_MACHINE (set it once per machine, e.g. A or B), default the host name.
+# The machine name is $PR_MACHINE (set it once per machine, e.g. A or B), else the local file tools/autopilot/state/machine, else the host name.
 set -u
 REPO="$(cd "$(dirname "$0")/../.." && pwd)"
-M="${PR_MACHINE:-$(hostname)}"
+# machine name: $PR_MACHINE, else the file tools/autopilot/state/machine (local, git-ignored), else the host name
+M="${PR_MACHINE:-$(cat "$REPO/tools/autopilot/state/machine" 2>/dev/null | tr -d '
+ ')}"; M="${M:-$(hostname)}"
 EMPTY=4b825dc642cb6eb9a060e54bf8d69288fbee4904
 g() { git -C "$REPO" "$@"; }
 cmd="${1:-}"; u="${2:-}"; note="${3:-}"
@@ -32,10 +34,12 @@ case "$cmd" in
 machine: $M
 time: $(date -u +%Y-%m-%dT%H:%M:%SZ)
 note: $note")" || exit 2
-    if g push -q origin "$c:refs/claims/$u" 2>/dev/null; then g update-ref "refs/claims/$u" "$c"; echo "claim: $u claimed by $M"; exit 0; fi
+    perr="$(g push -q origin "$c:refs/claims/$u" 2>&1)" && { g update-ref "refs/claims/$u" "$c"; echo "claim: $u claimed by $M"; exit 0; }
     fetch_claims || exit 2
     h="$(holder "$u")"; [ "$h" = "$M" ] && exit 0
-    echo "claim: $u was just claimed by ${h:-another machine}"; exit 1 ;;
+    # a failed push is "held by another machine" ONLY when the ref now exists; otherwise it was a push error (network, auth): exit 2
+    if [ -z "$h" ]; then echo "claim: push of $u failed and no claim exists: $perr" >&2; exit 2; fi
+    echo "claim: $u was just claimed by $h"; exit 1 ;;
   release)
     [ -n "$u" ] || { echo "usage: claim.sh release <unit> [--force]" >&2; exit 2; }
     fetch_claims || exit 2
