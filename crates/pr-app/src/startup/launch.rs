@@ -3,9 +3,8 @@
 //!
 //! The command line of the shell after the shell-only flag (`--smoke`) is removed: folders are made canonical (`misc::launch_args`), the first existing
 //! FILE is the image to open, otherwise the first existing FOLDER; the folder of that file (or the folder itself) is the single-instance lock folder.
-#![allow(unused_variables, dead_code)] // stub: the porter removes this line with the last `todo!()`
-
 use pr_core::abstractions::{FileSystem, Log};
+use pr_core::text::dotnet_path::{get_directory_name, get_full_path};
 
 /// C# `ShellLaunch.SmokeArgument`.
 pub const SMOKE_ARGUMENT: &str = "--smoke";
@@ -33,17 +32,66 @@ pub struct ShellLaunch {
 impl ShellLaunch {
     /// C# `InitialPath`: the file wins over the folder.
     pub fn initial_path(&self) -> Option<&str> {
-        todo!()
+        self.initial_file.as_deref().or(self.initial_folder.as_deref())
     }
 
     /// C# `ExistingPaths`: the FULL path of every argument that is an existing file or folder (what a second instance forwards).
     pub fn existing_paths(&self) -> &[String] {
-        todo!()
+        &self.existing_paths
     }
 
     /// C# `ShellLaunch.Parse(args)` with the file system and the log as arguments. `normalize` failures (`PathError`) keep the raw argument and are logged once
     /// (W8-04d open question 3); see the contract for the exact order.
     pub fn parse<S: AsRef<str>>(args: &[S], fs: &dyn FileSystem, log: &dyn Log) -> ShellLaunch {
-        todo!()
+        let smoke = args.iter().any(|arg| arg.as_ref() == SMOKE_ARGUMENT);
+        let mut arguments = Vec::with_capacity(args.len());
+        let mut failed = 0usize;
+        for arg in args.iter().map(AsRef::as_ref).filter(|arg| *arg != SMOKE_ARGUMENT) {
+            match crate::misc::launch_args::normalize_one(fs, arg) {
+                Ok(normalized) => arguments.push(normalized),
+                Err(_) => {
+                    failed += 1;
+                    arguments.push(arg.to_owned());
+                }
+            }
+        }
+        if failed != 0 {
+            log.warn(&format!(
+                "Launch arguments could not be normalised and were kept as given: {failed}"
+            ));
+        }
+
+        let initial_file = arguments
+            .iter()
+            .find(|arg| fs.file_exists(std::path::Path::new(arg)))
+            .cloned();
+        let initial_folder = arguments
+            .iter()
+            .find(|arg| fs.directory_exists(std::path::Path::new(arg)))
+            .cloned();
+        let launch_folder = initial_file
+            .as_deref()
+            .and_then(|file| {
+                let full = get_full_path(file).unwrap_or_else(|_| file.to_owned());
+                get_directory_name(&full)
+            })
+            .or_else(|| initial_folder.clone());
+        let existing_paths = arguments
+            .iter()
+            .filter(|arg| {
+                let path = std::path::Path::new(arg.as_str());
+                fs.file_exists(path) || fs.directory_exists(path)
+            })
+            .map(|arg| get_full_path(arg).unwrap_or_else(|_| arg.clone()))
+            .collect();
+
+        ShellLaunch {
+            arguments,
+            initial_file,
+            initial_folder,
+            launch_folder,
+            smoke,
+            existing_paths,
+        }
     }
 }

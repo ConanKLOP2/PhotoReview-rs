@@ -9,7 +9,7 @@ use std::path::{Path, PathBuf};
 use std::rc::Rc;
 use std::sync::Arc;
 
-use pr_core::abstractions::{BatchReviewItem, DialogService, Log, SettingsTarget, SkippedEntry};
+use pr_core::abstractions::{BatchReviewItem, DialogService, Log, RenamePromptRequest, SettingsTarget, SkippedEntry};
 use pr_core::settings::external_editors::ExternalEditor;
 use pr_core::settings::shortcuts::ReviewAction;
 use pr_l10n::localizer::Localizer;
@@ -83,6 +83,11 @@ pub trait SecondaryWindowPort {
         _editors: &[ExternalEditor],
         _current_id: Option<&str>,
     ) -> Option<String> {
+        None
+    }
+    /// FEAT-RENAME (C# `PromptRename(nint, RenamePromptRequest)`, W9-R8 stub): the modal one-line rename box over `owner`.
+    /// The typed name part when accepted, `None` when cancelled or when the port does not have it (C# default `null`).
+    fn prompt_rename(&self, _owner: Hwnd, _request: &RenamePromptRequest) -> Option<String> {
         None
     }
     /// C# `IDisposable.Dispose` of the router (`SecondaryWindowPortHost` calls it when the port was created): closes every secondary dialog that is still open. Default: nothing.

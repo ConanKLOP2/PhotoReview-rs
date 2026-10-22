@@ -2,8 +2,6 @@
 //!
 //! C-16 shell part: the inputs of the start-up, handed to the feature packages and to diagnostics. The C# `Task<T>` members become [`StartupTask`] (a named
 //! worker thread whose result is taken once, D-W8-2).
-#![allow(unused_variables, dead_code)] // stub: the porter removes this line with the last `todo!()`
-
 use std::thread::JoinHandle;
 use std::time::Instant;
 
@@ -20,12 +18,13 @@ pub struct StartupTask<T> {
 impl<T: Send + 'static> StartupTask<T> {
     /// Starts `work` on a thread named `name`. When the thread cannot be started the task holds nothing and [`join`](Self::join) answers `None`.
     pub fn spawn(name: &str, work: impl FnOnce() -> T + Send + 'static) -> Self {
-        todo!()
+        let handle = std::thread::Builder::new().name(name.to_owned()).spawn(work).ok();
+        Self { handle }
     }
 
     /// Waits for the result. `None` when the thread could not be started or panicked.
     pub fn join(self) -> Option<T> {
-        todo!()
+        self.handle?.join().ok()
     }
 }
 

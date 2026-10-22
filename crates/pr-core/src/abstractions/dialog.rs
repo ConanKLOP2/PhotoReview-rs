@@ -1,9 +1,30 @@
 //! Port of `IDialogService.cs`. Implemented by `pr-app`; core code only asks through this seam.
 
 use std::path::{Path, PathBuf};
+use std::sync::Arc;
 
 use super::SkippedEntry;
 use crate::settings::external_editors::ExternalEditor;
+
+/// Validation callback for a rename prompt; `is_commit` permits one disk probe.
+pub type RenameValidateFn = Arc<dyn Fn(&str, bool) -> Option<String>>;
+
+/// FEAT-RENAME prompt data: shown stem, fixed extension, and a cheap validation callback.
+pub struct RenamePromptRequest {
+    pub initial_name: String,
+    pub extension: String,
+    /// Returns localized refusal text, or None when valid; `is_commit` permits one disk probe.
+    pub validate: RenameValidateFn,
+}
+
+impl std::fmt::Debug for RenamePromptRequest {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("RenamePromptRequest")
+            .field("initial_name", &self.initial_name)
+            .field("extension", &self.extension)
+            .finish_non_exhaustive()
+    }
+}
 
 /// One line of the batch-review dialog: the file and its size in bytes when known (`None` = unknown or gone).
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -24,6 +45,11 @@ pub enum SettingsTarget {
 
 /// Confirmation prompts and secondary windows.
 pub trait DialogService {
+    /// C# `PromptRename`: None means cancel or unsupported port (the WPF fallback).
+    fn prompt_rename(&self, request: &RenamePromptRequest) -> Option<String> {
+        let _ = request;
+        None
+    }
     /// Yes/No or OK/Cancel question; `true` = confirmed.
     fn show_confirmation(&self, title: &str, message: &str) -> bool;
     fn show_message(&self, title: &str, message: &str);

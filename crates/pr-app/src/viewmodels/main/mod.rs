@@ -14,6 +14,8 @@
 pub mod commands;
 pub mod navigation;
 pub mod notify_move;
+pub mod rename;
+pub mod rename_prompt;
 pub mod session;
 pub mod state;
 

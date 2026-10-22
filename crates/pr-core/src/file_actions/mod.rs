@@ -1,5 +1,6 @@
 //! Port target: `PhotoReview.Core/FileActions` (W1-09, W1-13, W1-14; services in Wave 3).
 
+pub mod case_only_rename;
 pub mod compaction;
 pub mod destination_policy;
 pub mod duplicates;
@@ -11,6 +12,8 @@ pub mod partial_cleanup;
 pub mod reconcile;
 pub mod recovery_check;
 pub mod recovery_retry;
+pub mod rename;
+pub mod rename_service;
 pub mod service;
 pub mod startup_recovery;
 pub mod transaction;

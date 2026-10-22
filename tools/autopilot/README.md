@@ -46,6 +46,9 @@ Claude tokens, not for wall-clock time. Files: `codex-pipeline.sh` (driver), `co
 checks), `codex-run.sh` (one Codex call, `--json`, `resume`), `CODEX-RULES.md`, `lib/codex-lib.py` (plan/contract/state/lint/telemetry
 helpers), `test/pipeline-selftest.sh` (fake-Codex control-flow test, also covers every gate and helper).
 
+## Routing
+Follow [AGENTS.md](../../AGENTS.md#who-does-what-codex-first): use `codex-pipeline.sh` for units, `codex-run.sh` for one-off tasks, and `claim.sh` for coordination.
+
 Run (terminal, main checkout, contracts of the batch already merged to `master`):
 ```
 bash tools/autopilot/codex-pipeline.sh --smoke                     # env checks + 1 tiny real Codex call + gate on a throwaway unit
@@ -59,6 +62,7 @@ its own commit; later gates verify the tests are only extended), Codex "implemen
 
 Pipeline hardening:
 - **Red-test compile gate**: after the Codex red step the owned test files must pass `cargo test --no-run` and every failing test must fail only through `todo!()` (`codex-lib.py redcheck`); up to 3 `red-repair` Codex rounds, the red-test guard is not applied in this phase; invalid after 3 rounds = failed unit with triage note. If the red tests already exist on the integration branch (written by Claude) the Codex red step is skipped.
+- **Fixup**: after a red-test or fast/full gate failure exhausts its 3 repair rounds, one final Codex fixup is attempted per unit. It may correct owned tests only when they contradict the C# oracle (the final message must cite the C# test and name changed Rust test functions), or fix implementation/rustfmt issues. The relaxed guard still forbids reducing test-function/assert counts or adding `#[ignore]`; a passing test correction is committed separately and recorded in telemetry. Set `FIXUP=0` to preserve the old fail behavior.
 - **Rerun of a failed unit**: the unit is reset first (any worktree holding `wu/<id>`, the branch, triage note and state/telemetry removed; an unmerged old tip is kept under `refs/pipeline-old/<id>`), no more `worktree add failed`.
 - **Merged units**: at start, units with a merge commit on `integration/<tag>` (since `origin/master`) are marked done, no seeded state file.
 - **Target dirs**: one per slot (`-s<slot>`), mutants `-mut`; a dir whose `.cargo-build-lock` is held by a stray process (`Access is denied`) is skipped for an alternate `-x<n>` dir. At the end: workspace gate, telemetry table, push, PR,

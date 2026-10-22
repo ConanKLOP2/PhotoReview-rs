@@ -1,0 +1,214 @@
+{
+  "single": [
+    {
+      "path": "C:\\photos\\a.JPG",
+      "typed": " b "
+    },
+    {
+      "path": "C:\\photos\\a.JPG",
+      "typed": "b.jpg"
+    },
+    {
+      "path": "C:\\photos\\a.JPG",
+      "typed": "a"
+    },
+    {
+      "path": "C:\\photos\\a.JPG",
+      "typed": "A"
+    },
+    {
+      "path": "C:\\photos\\a.JPG",
+      "typed": "a.v2"
+    },
+    {
+      "path": "C:\\photos\\a.JPG",
+      "typed": "a."
+    },
+    {
+      "path": "C:\\photos\\a.JPG",
+      "typed": "CON"
+    },
+    {
+      "path": "C:\\photos\\a.JPG",
+      "typed": "COM¹"
+    },
+    {
+      "path": "C:\\photos\\a.JPG",
+      "typed": "bad:name"
+    },
+    {
+      "path": "C:\\photos\\é.JPG",
+      "typed": "é"
+    },
+    {
+      "path": "C:\\photos\\a.JPG",
+      "typed": ""
+    },
+    {
+      "path": "C:\\photos\\a.JPG",
+      "typed": "A.JPG"
+    },
+    {
+      "path": "C:\\photos\\a.JPG",
+      "typed": "a.jpg"
+    },
+    {
+      "path": "C:\\photos\\a.JPG",
+      "typed": ".JPG"
+    },
+    {
+      "path": "C:\\photos\\a.JPG",
+      "typed": "   "
+    },
+    {
+      "path": "C:\\photos\\a.JPG",
+      "typed": "a "
+    },
+    {
+      "path": "C:\\photos\\a.JPG",
+      "typed": "a. "
+    },
+    {
+      "path": "C:\\photos\\a.JPG",
+      "typed": "CON.txt"
+    },
+    {
+      "path": "C:\\photos\\a.JPG",
+      "typed": "CONIN$"
+    },
+    {
+      "path": "C:\\photos\\a.JPG",
+      "typed": "COM0"
+    },
+    {
+      "path": "C:\\photos\\a.JPG",
+      "typed": "LPT¹"
+    },
+    {
+      "path": "C:\\photos\\a.JPG",
+      "typed": "NUL."
+    },
+    {
+      "path": "C:\\photos\\a.JPG",
+      "typed": "COM10"
+    },
+    {
+      "path": "C:\\photos\\a.JPG",
+      "typed": "a\u0001b"
+    },
+    {
+      "path": "C:\\photos\\a.JPG",
+      "typed": "a<b>c"
+    },
+    {
+      "path": "C:\\photos\\é.JPG",
+      "typed": "é"
+    },
+    {
+      "path": "C:\\photos\\a.JPG"
+    },
+    {
+      "path": "C:\\photos\\a.JPG",
+      "typed_fill": {
+        "text": "x",
+        "count": 251
+      }
+    },
+    {
+      "path": "C:\\photos\\a.JPG",
+      "typed_fill": {
+        "text": "x",
+        "count": 252
+      }
+    },
+    {
+      "path": "C:\\fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff\\a.JPG",
+      "typed_fill": {
+        "text": "x",
+        "count": 8
+      }
+    },
+    {
+      "path": "C:\\fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff\\a.JPG",
+      "typed_fill": {
+        "text": "x",
+        "count": 9
+      }
+    },
+    {
+      "path": "C:\\fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff\\a.JPG",
+      "typed_fill": {
+        "text": "x",
+        "count": 9
+      },
+      "long_path_aware": true
+    },
+    {
+      "path": "C:\\fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff\\xxxxxxxxxxxxxxxxxxxx.JPG",
+      "typed": "y"
+    }
+  ],
+  "group": [
+    {
+      "jpeg": "C:\\photos\\a.jpg",
+      "raw": "C:\\photos\\a.cr3",
+      "xmp": "C:\\photos\\a.xmp",
+      "typed": "b"
+    },
+    {
+      "jpeg": "C:\\photos\\a.jpg",
+      "raw": "C:\\photos\\a.cr3",
+      "xmp": "C:\\photos\\a.cr3.xmp",
+      "typed": "b"
+    },
+    {
+      "jpeg": "C:\\photos\\a.jpg",
+      "raw": "C:\\photos\\a.cr3",
+      "xmp": "C:\\photos\\other.xmp",
+      "typed": "b"
+    },
+    {
+      "jpeg": "C:\\photos\\a.jpg",
+      "raw": "C:\\photos\\a.cr3",
+      "typed": "A"
+    },
+    {
+      "jpeg": "C:\\photos\\a.jpg",
+      "raw": "C:\\photos\\a.cr3",
+      "typed": "a.cr3"
+    },
+    {
+      "jpeg": "C:\\photos\\a.jpg",
+      "raw": "C:\\photos\\a.cr3",
+      "xmp": "C:\\photos\\A.xmp",
+      "typed": "b"
+    },
+    {
+      "jpeg": "C:\\photos\\a.jpg",
+      "raw": "C:\\photos\\a.cr3",
+      "xmp": "C:\\photos\\a.jpg.xmp",
+      "typed": "b"
+    },
+    {
+      "jpeg": "C:\\photos\\a.JPG",
+      "raw": "C:\\photos\\a.CR3",
+      "typed": "b.jpg"
+    },
+    {
+      "jpeg": "C:\\photos\\a.jpg",
+      "raw": "C:\\photos\\a.cr3",
+      "typed": "a"
+    },
+    {
+      "jpeg": "C:\\fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff\\a.jpg",
+      "raw": "C:\\fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff\\a.cr3",
+      "typed": "xxxxxxxxx"
+    },
+    {
+      "jpeg": "C:\\fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff\\a.jpg",
+      "raw": "C:\\fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff\\a.cr3",
+      "typed": "xxxxxxxxx",
+      "long_path_aware": true
+    }
+  ]
+}
