@@ -58,6 +58,12 @@ the C# code at the baseline in [`docs/SYNC-LEDGER.md`](docs/SYNC-LEDGER.md) deci
 - A squash-merged branch head is NOT an ancestor of master (merge-base check says no). Confirm the content is in master (`git diff <head> origin/master` shows only unrelated files), then delete branch and worktree.
 - Worktrees: every worktree builds in its own cargo target dir (`tools/wave.ps1` does it); a shared one hands one worktree another one's stale artifacts.
 
+## Several machines
+
+When more than one machine works on the port, read [`docs/MULTI-MACHINE.md`](docs/MULTI-MACHINE.md) first: set `PR_MACHINE`, claim every unit with 
+`bash tools/autopilot/claim.sh claim <unit>` before the first edit (the pipeline does it for you), work only on the units of your machine, and keep 
+the state of `tools/autopilot/state/` local.
+
 ## Pull requests: auto-fix and auto-merge (do this every time, without being asked)
 
 - Open ONE PR per wave/change (base `master`, never stacked) with `gh pr create`, then immediately call

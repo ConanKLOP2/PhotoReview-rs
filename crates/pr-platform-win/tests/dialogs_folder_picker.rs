@@ -88,6 +88,14 @@ fn pick_calls_the_owner_provider_on_every_call() {
     assert_eq!(dialog.calls.borrow()[1].0, Hwnd::default());
 }
 
+// Rust-only: the hand-written Debug impl of FolderPicker.
+#[test]
+fn folder_picker_debug_output_names_the_type() {
+    let dialog = Rc::new(RecordingDialog { calls: RefCell::new(Vec::new()) });
+    let picker = FolderPicker::new(dialog, Box::new(Hwnd::default));
+    assert!(format!("{picker:?}").starts_with("FolderPicker"));
+}
+
 // C#: UnwiredShellFolderDialog.Show
 #[test]
 fn unwired_dialog_answers_cancelled() {
