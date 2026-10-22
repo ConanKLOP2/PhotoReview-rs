@@ -1716,3 +1716,47 @@ Written by the contract writer of W8-09b (`contracts/W8-09b.md`) AFTER the B6 re
 
 #### Not done and out of scope here
 No unit is ported; no stub body exists. S2's native tests, the desktop runs, the mutation runs and the IDs of the new PARITY rows' tests are unrecorded. The oracle was not run (D-W8B6-156).
+
+## Wave 9 sync (EXTERNAL-EDITORS UI)
+
+Contract-only lane E of Wave 9 (plan: `docs/WAVE-9-PLAN-edt.md`; C# baseline `7eaee2a2`, feature commit `d9623945`): 9 contracts (`contracts/W9-E1.md` .. `W9-E9.md`), stubs in `pr-core` settings, `pr-app` menus/input/presenters/viewmodels and `pr-platform-win` dialogs/shell, three oracle commands with goldens. No unit is ported; no stub body is implemented.
+
+| Unit | Contract | Kind | Oracle command (golden cases) | Depends on |
+|---|---|---|---|---|
+| W9-E1 settings: `ExternalEditor` and its rules, `AppSettings`/normalizer/store v3 to v4, `ShortcutMappings.open_in_default_editor`, `DialogService` trait members | `contracts/W9-E1.md` | G + F | `external-editor-rules` | none |
+| W9-E2 `ExternalEditorsDialog` (native) | `contracts/W9-E2.md` | N | none | E1, W8-18p, W8-18q |
+| W9-E3 `ExternalEditorProductName`, `TextPromptDialog`, `ListDialog` choice list | `contracts/W9-E3.md` | F + N | none (machine dependent, D-W9E-3) | E1, W8-18p |
+| W9-E4 settings field map, form state, presenter, Files and Shortcuts pages | `contracts/W9-E4.md` | F + N | none | E1, W8-19f, W8-19i, W8-19j..m |
+| W9-E5 `MainViewModel` editor members, launcher seam | `contracts/W9-E5.md` | F | none (fakes) | E1 |
+| W9-E6 `ContextMenuModelBuilder` editors submenu | `contracts/W9-E6.md` | G | `external-editor-menu` | E1 |
+| W9-E7 `ReviewCommand`, `ShortcutRouter` default-editor shortcut | `contracts/W9-E7.md` | G | `open-in-default-editor-shortcut` | E1 |
+| W9-E8 `SecondaryWindowPort` and `DialogService` members | `contracts/W9-E8.md` | F | none | E1, E2, E3, E4, W8-18o |
+| W9-E9 `ContextMenuController`, `ShellMainWindow` Menus and Input | `contracts/W9-E9.md` | F + N | none | E5, E6, E7 |
+
+### Unconfirmed sources
+- The C# `FEAT-EXTERNAL-EDITORS.md` design describes the proposal for editor records, list editing, name suggestion, and shortcut/default-editor behaviour; it is marked unconfirmed in the C# repository. The contracts take behaviour from the implementation and its tests, not from the proposal. `ExternalEditors.Reconcile`, `ApplyLegacyPath` and `BuildArguments` decide repair, migration and quoting where the proposal is silent. No other code/design conflict is asserted without evidence.
+- C# `FEAT-RENAME*.md` is also unconfirmed. `RenamePromptDialog`, F2 rename, the rename menu entry, `RenameFile` shortcut and rename localization are excluded (another lane).
+
+### Wave 9 lane E decisions (D-W9E-1..12; P-48 in `docs/PROPOSED-DECISIONS.md`)
+- **D-W9E-1 persisted settings (W9-E1).** List plus default id plus RAW switch with the v3 -> v4 migration, config version 4, `external_editor_path` kept as a mirror of the default editor's path (the frozen WPF build reads it). Alternatives: keep only the legacy path; materialise lazily after launch.
+- **D-W9E-2 repair and launch arguments (W9-E1).** C# repair rules, cap 32, arguments longer than 4000 UTF-16 units reset, default falls back to the first valid editor, `{file}` replaced in one left-to-right pass with Windows argument escaping. Alternatives: reject the file; accept raw values.
+- **D-W9E-3 product-name lookup (W9-E3).** OS version-resource lookup stays in `pr-platform-win` (`ExternalEditorProductName::suggest`, ProductName then FileDescription, the caller falls back to the file name). No oracle (machine dependent); the pure choice `first_non_blank` is a unit test.
+- **D-W9E-4 dialog capability (W9-E2/E3/E8). CORRECTED.** The first draft said `Supports(ExternalEditors)` stays false until dispatch is wired. In C# it is `true` in the same commit (`Win32SecondaryWindowPort.Supports`); the optional members of `ISecondaryWindowPort` default to `None` only for ports that do not implement them. W9-E8 makes it `true` and updates the golden `secondary-window-supports`.
+- **D-W9E-5 shortcut and duplicate rules (W9-E1/E7).** The default-editor key is optional (empty = disabled), part of `OPTIONAL_NAMES`, and takes part in the duplicate check; the router resolves it at step 12f with no modifier, independent of fullscreen (the shared no-image early return still applies); the command ignores key auto-repeat; enum value 30. The first draft put the `ShortcutMappings` field in E7: moved to E1 because persistence and validation need it first.
+- **D-W9E-6 menu structure and command ids (W9-E6/E9).** Submenu in list order, ids `ExternalEditor.Open.<id>` / `ExternalEditor.Add` / `ExternalEditor.SetDefault`, separator `Separator.ExternalEditor`, the default is checked and alone carries the default-editor key (an unknown default id marks the first editor). With no editor the entry is the single command it was.
+- **D-W9E-7 language catalogs (W9-E2/E4/E6/E8).** The new en/vi keys (34 at `7eaee2a2`) come from a separate asset synchronisation at the new baseline; the synced JSON is never hand-edited by these contracts. Tests that read texts are blocked on it.
+- **D-W9E-8 unit order.** E1 (Core) first; then E2, E3, E5, E6, E7; then E4, E8, E9. Each downstream unit consumes compiled upstream stubs.
+- **D-W9E-9 JSON `null` elements in `ExternalEditors` (W9-E1).** C# keeps a `null` list element and `Reconcile` counts dropping it as a repair; `Vec<ExternalEditor>` cannot hold it. Recommended: the Rust reader drops `null` elements silently (no `repaired` flag, so `last_load_repairs` omits `ExternalEditors` for that one corner); alternative: `Vec<Option<ExternalEditor>>` like `hidden_context_menu_items`. Needs a product/lead call.
+- **D-W9E-10 where `ExternalEditorsEdit` lives (W9-E2).** `pr_platform_win::dialogs::native::external_editors_dialog`, as in C# (internal to `Shell.Win32`). The first draft put it in `pr-core` and added a `show_external_editors` method to `pr_core::abstractions::DialogService`; the C# `IDialogService` has only the two `Prompt*` methods, so the third was invented and is removed.
+- **D-W9E-11 the `SecondaryWindowDialogs` seam grows (W9-E8).** Five additive members with default bodies (`settings_with_editors`, `external_editors`, `pick_executable`, `text_prompt`, `choice_list`) and an `ExternalEditorsOpener` alias, so the W8-18o fakes keep compiling. Alternative: change `settings(...)` itself and update the W8-18o tests (the porter may fold `settings_with_editors` into `settings` once nothing depends on the old signature).
+- **D-W9E-12 launcher seam (W9-E5).** `ExternalEditorLauncher::launch` gets a third `command_line` argument (C# `Action<string,string,string>`); the production launcher passes it with `raw_arg` and uses the editor's folder as the working directory. The merged test that asserted "one argument without a shell" is renamed: the contract is now the C# command-line text.
+
+### Needs a human or product decision (acted on as recommended, P-48)
+1. Move the spec baseline in `docs/SYNC-LEDGER.md` to `7eaee2a2` and regenerate the existing goldens (settings-*, shortcut-canonical, secondary-window-supports, settings-page-*): the diff must contain only version 4, three new keys, one more shortcut, plus the FEAT-RENAME effects.
+2. Run the catalog sync (en/vi, 34 keys at `7eaee2a2`, about 29 for this lane) before porting E2, E4, E6, E8.
+3. Order of the two lanes (external editors, rename): they edit the same files on disjoint lines; decide which merges first (the enum value 31 of `RenameFile` and the config version 4 are identical in both).
+4. D-W9E-9 above (null list elements).
+5. Whether the native dialogs of W9-E2/E3 may be ported before W8-18p/18q merge (they need `DialogMeasure`, `DialogWarningSink` and `FileFilterText`); the plan says no.
+
+### Not verified
+The three new oracle commands were run twice at `7eaee2a2` with byte-identical goldens. No oracle exists for E2, E3, E4, E5, E8 and E9. The mutation runs, the native tests and the desktop run are not done. The en/vi catalog keys are not synced. No unit is ported.

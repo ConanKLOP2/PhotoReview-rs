@@ -468,6 +468,10 @@ JsonArray cases = command switch
     "shell-startup-options" => Commands.W817dStartupOptionsCases(inputs),
     // Commands\Commands\W8-17e
     "shell-startup-texts" => Commands.W817eStartupTextsCases(inputs),
+    // Commands\Commands\W9-E1, W9-E6, W9-E7 (lane W9-E external editors)
+    "external-editor-rules" => Commands.W9E1ExternalEditorRulesCases(inputs),
+    "external-editor-menu" => Commands.W9E6ExternalEditorMenuCases(inputs),
+    "open-in-default-editor-shortcut" => Commands.W9E7OpenInDefaultEditorCases(inputs),
     _ => throw new ArgumentException($"unknown command '{command}'"),
 };
 

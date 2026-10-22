@@ -1,0 +1,1191 @@
+{
+  "generator": "oracle-cs external-editor-rules",
+  "csharp_commit": "7eaee2a2b071c7ca05291c86fb78a347f9e6a15f",
+  "cases": [
+    {
+      "kind": "constants",
+      "name": "constants",
+      "max_editors": 32,
+      "default_arguments": "\"{file}\"",
+      "legacy_editor_id": "legacy"
+    },
+    {
+      "kind": "name",
+      "name": "name: exe path",
+      "value": "Photoshop"
+    },
+    {
+      "kind": "name",
+      "name": "name: blank",
+      "value": ""
+    },
+    {
+      "kind": "name",
+      "name": "name: empty",
+      "value": ""
+    },
+    {
+      "kind": "name",
+      "name": "name: null",
+      "value": ""
+    },
+    {
+      "kind": "name",
+      "name": "name: no extension",
+      "value": "Editor"
+    },
+    {
+      "kind": "name",
+      "name": "name: trailing separator",
+      "value": "C:\\Apps\\"
+    },
+    {
+      "kind": "name",
+      "name": "name: dot only stem",
+      "value": "C:\\Apps\\.exe"
+    },
+    {
+      "kind": "name",
+      "name": "name: spaces around",
+      "value": "DxO PhotoLab"
+    },
+    {
+      "kind": "name",
+      "name": "name: two extensions",
+      "value": "a.b"
+    },
+    {
+      "kind": "name",
+      "name": "name: invalid char in name",
+      "value": "Aff|inity"
+    },
+    {
+      "kind": "name",
+      "name": "name: unc",
+      "value": "Tool"
+    },
+    {
+      "kind": "display_name",
+      "name": "display: name wins, trimmed",
+      "value": "Lightroom"
+    },
+    {
+      "kind": "display_name",
+      "name": "display: blank name uses file",
+      "value": "Topaz AI"
+    },
+    {
+      "kind": "display_name",
+      "name": "display: empty name and path",
+      "value": ""
+    },
+    {
+      "kind": "arguments",
+      "name": "arguments: '\"{file}\"' 'C:\\\\Photos\\\\My Trip\\\\a b.jpg'",
+      "value": "\"C:\\Photos\\My Trip\\a b.jpg\""
+    },
+    {
+      "kind": "arguments",
+      "name": "arguments: '{file}' 'C:\\\\Photos\\\\My Trip\\\\a b.jpg'",
+      "value": "\"C:\\Photos\\My Trip\\a b.jpg\""
+    },
+    {
+      "kind": "arguments",
+      "name": "arguments: '' 'C:\\\\p\\\\a.jpg'",
+      "value": "\"C:\\p\\a.jpg\""
+    },
+    {
+      "kind": "arguments",
+      "name": "arguments: '   ' 'C:\\\\p\\\\a.jpg'",
+      "value": "\"C:\\p\\a.jpg\""
+    },
+    {
+      "kind": "arguments",
+      "name": "arguments: None 'C:\\\\p\\\\a.jpg'",
+      "value": "\"C:\\p\\a.jpg\""
+    },
+    {
+      "kind": "arguments",
+      "name": "arguments: '-open {file} -fast' 'C:\\\\p\\\\a.jpg'",
+      "value": "-open \"C:\\p\\a.jpg\" -fast"
+    },
+    {
+      "kind": "arguments",
+      "name": "arguments: '--file=\"{file}\" --x' 'C:\\\\p\\\\a.jpg'",
+      "value": "--file=\"C:\\p\\a.jpg\" --x"
+    },
+    {
+      "kind": "arguments",
+      "name": "arguments: '/edit' 'C:\\\\p\\\\a.jpg'",
+      "value": "/edit \"C:\\p\\a.jpg\""
+    },
+    {
+      "kind": "arguments",
+      "name": "arguments: '\"{file}\"' 'D:\\\\Ảnh đẹp\\\\Chuyến đi (2026) [final]\\\\Hà Nội #1.jpg'",
+      "value": "\"D:\\Ảnh đẹp\\Chuyến đi (2026) [final]\\Hà Nội #1.jpg\""
+    },
+    {
+      "kind": "arguments",
+      "name": "arguments: '-a {file} -b \"{file}\"' 'C:\\\\p\\\\{file}.jpg'",
+      "value": "-a \"C:\\p\\{file}.jpg\" -b \"C:\\p\\{file}.jpg\""
+    },
+    {
+      "kind": "arguments",
+      "name": "arguments: '\"{file}\"' 'C:\\\\p\\\\\"x.jpg'",
+      "value": "\"C:\\p\\\\\\\"x.jpg\""
+    },
+    {
+      "kind": "arguments",
+      "name": "arguments: '{file}' 'C:\\\\dir\\\\'",
+      "value": "\"C:\\dir\\\\\""
+    },
+    {
+      "kind": "arguments",
+      "name": "arguments: '  {file}  ' 'C:\\\\p\\\\a.jpg'",
+      "value": "\"C:\\p\\a.jpg\""
+    },
+    {
+      "kind": "arguments",
+      "name": "arguments: '\"{file}' 'C:\\\\p\\\\a.jpg'",
+      "value": "\"C:\\p\\a.jpg"
+    },
+    {
+      "kind": "arguments",
+      "name": "arguments: '{file}{file}' 'C:\\\\p\\\\a.jpg'",
+      "value": "\"C:\\p\\a.jpg\"\"C:\\p\\a.jpg\""
+    },
+    {
+      "kind": "arguments",
+      "name": "arguments: '{FILE}' 'C:\\\\p\\\\a.jpg'",
+      "value": "{FILE} \"C:\\p\\a.jpg\""
+    },
+    {
+      "kind": "arguments",
+      "name": "arguments: '\"a {file}\" {file}' 'C:\\\\p\\\\a.jpg'",
+      "value": "\"a C:\\p\\a.jpg\" \"C:\\p\\a.jpg\""
+    },
+    {
+      "kind": "arguments",
+      "name": "arguments: '\"{file}\"' 'C:\\\\p\\\\\\\\\"x.jpg'",
+      "value": "\"C:\\p\\\\\\\\\\\"x.jpg\""
+    },
+    {
+      "kind": "arguments",
+      "name": "arguments: '\"{file}\"' ''",
+      "error": "ArgumentException"
+    },
+    {
+      "kind": "reconcile",
+      "name": "legacy path without list",
+      "repaired": false,
+      "settings": {
+        "editors": [
+          {
+            "id": "<fresh>",
+            "name": "DxO PhotoLab",
+            "path": "C:\\Program Files\\DxO\\DxO PhotoLab.exe",
+            "arguments": "\"{file}\""
+          }
+        ],
+        "default_index": 0,
+        "default_id_blank": false,
+        "legacy_path": "C:\\Program Files\\DxO\\DxO PhotoLab.exe"
+      }
+    },
+    {
+      "kind": "reconcile",
+      "name": "nothing declared, ghost default",
+      "repaired": true,
+      "settings": {
+        "editors": [],
+        "default_index": -1,
+        "default_id_blank": true,
+        "legacy_path": ""
+      }
+    },
+    {
+      "kind": "reconcile",
+      "name": "blank paths, repeated ids, unknown default",
+      "repaired": true,
+      "settings": {
+        "editors": [
+          {
+            "id": "a",
+            "name": "Lightroom",
+            "path": "C:\\lr.exe",
+            "arguments": "\"{file}\""
+          },
+          {
+            "id": "<fresh>",
+            "name": "Topaz",
+            "path": "C:\\topaz.exe",
+            "arguments": "\"{file}\""
+          }
+        ],
+        "default_index": 0,
+        "default_id_blank": false,
+        "legacy_path": "C:\\lr.exe"
+      }
+    },
+    {
+      "kind": "reconcile",
+      "name": "valid default kept, path mirrors it",
+      "repaired": false,
+      "settings": {
+        "editors": [
+          {
+            "id": "a",
+            "name": "",
+            "path": "C:\\a.exe",
+            "arguments": "\"{file}\""
+          },
+          {
+            "id": "b",
+            "name": "",
+            "path": "C:\\b.exe",
+            "arguments": "\"{file}\""
+          }
+        ],
+        "default_index": 1,
+        "default_id_blank": false,
+        "legacy_path": "C:\\b.exe"
+      }
+    },
+    {
+      "kind": "reconcile",
+      "name": "cap at 32",
+      "repaired": true,
+      "settings": {
+        "editors": [
+          {
+            "id": "e0",
+            "name": "",
+            "path": "C:\\e0.exe",
+            "arguments": "\"{file}\""
+          },
+          {
+            "id": "e1",
+            "name": "",
+            "path": "C:\\e1.exe",
+            "arguments": "\"{file}\""
+          },
+          {
+            "id": "e2",
+            "name": "",
+            "path": "C:\\e2.exe",
+            "arguments": "\"{file}\""
+          },
+          {
+            "id": "e3",
+            "name": "",
+            "path": "C:\\e3.exe",
+            "arguments": "\"{file}\""
+          },
+          {
+            "id": "e4",
+            "name": "",
+            "path": "C:\\e4.exe",
+            "arguments": "\"{file}\""
+          },
+          {
+            "id": "e5",
+            "name": "",
+            "path": "C:\\e5.exe",
+            "arguments": "\"{file}\""
+          },
+          {
+            "id": "e6",
+            "name": "",
+            "path": "C:\\e6.exe",
+            "arguments": "\"{file}\""
+          },
+          {
+            "id": "e7",
+            "name": "",
+            "path": "C:\\e7.exe",
+            "arguments": "\"{file}\""
+          },
+          {
+            "id": "e8",
+            "name": "",
+            "path": "C:\\e8.exe",
+            "arguments": "\"{file}\""
+          },
+          {
+            "id": "e9",
+            "name": "",
+            "path": "C:\\e9.exe",
+            "arguments": "\"{file}\""
+          },
+          {
+            "id": "e10",
+            "name": "",
+            "path": "C:\\e10.exe",
+            "arguments": "\"{file}\""
+          },
+          {
+            "id": "e11",
+            "name": "",
+            "path": "C:\\e11.exe",
+            "arguments": "\"{file}\""
+          },
+          {
+            "id": "e12",
+            "name": "",
+            "path": "C:\\e12.exe",
+            "arguments": "\"{file}\""
+          },
+          {
+            "id": "e13",
+            "name": "",
+            "path": "C:\\e13.exe",
+            "arguments": "\"{file}\""
+          },
+          {
+            "id": "e14",
+            "name": "",
+            "path": "C:\\e14.exe",
+            "arguments": "\"{file}\""
+          },
+          {
+            "id": "e15",
+            "name": "",
+            "path": "C:\\e15.exe",
+            "arguments": "\"{file}\""
+          },
+          {
+            "id": "e16",
+            "name": "",
+            "path": "C:\\e16.exe",
+            "arguments": "\"{file}\""
+          },
+          {
+            "id": "e17",
+            "name": "",
+            "path": "C:\\e17.exe",
+            "arguments": "\"{file}\""
+          },
+          {
+            "id": "e18",
+            "name": "",
+            "path": "C:\\e18.exe",
+            "arguments": "\"{file}\""
+          },
+          {
+            "id": "e19",
+            "name": "",
+            "path": "C:\\e19.exe",
+            "arguments": "\"{file}\""
+          },
+          {
+            "id": "e20",
+            "name": "",
+            "path": "C:\\e20.exe",
+            "arguments": "\"{file}\""
+          },
+          {
+            "id": "e21",
+            "name": "",
+            "path": "C:\\e21.exe",
+            "arguments": "\"{file}\""
+          },
+          {
+            "id": "e22",
+            "name": "",
+            "path": "C:\\e22.exe",
+            "arguments": "\"{file}\""
+          },
+          {
+            "id": "e23",
+            "name": "",
+            "path": "C:\\e23.exe",
+            "arguments": "\"{file}\""
+          },
+          {
+            "id": "e24",
+            "name": "",
+            "path": "C:\\e24.exe",
+            "arguments": "\"{file}\""
+          },
+          {
+            "id": "e25",
+            "name": "",
+            "path": "C:\\e25.exe",
+            "arguments": "\"{file}\""
+          },
+          {
+            "id": "e26",
+            "name": "",
+            "path": "C:\\e26.exe",
+            "arguments": "\"{file}\""
+          },
+          {
+            "id": "e27",
+            "name": "",
+            "path": "C:\\e27.exe",
+            "arguments": "\"{file}\""
+          },
+          {
+            "id": "e28",
+            "name": "",
+            "path": "C:\\e28.exe",
+            "arguments": "\"{file}\""
+          },
+          {
+            "id": "e29",
+            "name": "",
+            "path": "C:\\e29.exe",
+            "arguments": "\"{file}\""
+          },
+          {
+            "id": "e30",
+            "name": "",
+            "path": "C:\\e30.exe",
+            "arguments": "\"{file}\""
+          },
+          {
+            "id": "e31",
+            "name": "",
+            "path": "C:\\e31.exe",
+            "arguments": "\"{file}\""
+          }
+        ],
+        "default_index": 0,
+        "default_id_blank": false,
+        "legacy_path": "C:\\e0.exe"
+      }
+    },
+    {
+      "kind": "reconcile",
+      "name": "exactly 32 is not a repair",
+      "repaired": false,
+      "settings": {
+        "editors": [
+          {
+            "id": "e0",
+            "name": "",
+            "path": "C:\\e0.exe",
+            "arguments": "\"{file}\""
+          },
+          {
+            "id": "e1",
+            "name": "",
+            "path": "C:\\e1.exe",
+            "arguments": "\"{file}\""
+          },
+          {
+            "id": "e2",
+            "name": "",
+            "path": "C:\\e2.exe",
+            "arguments": "\"{file}\""
+          },
+          {
+            "id": "e3",
+            "name": "",
+            "path": "C:\\e3.exe",
+            "arguments": "\"{file}\""
+          },
+          {
+            "id": "e4",
+            "name": "",
+            "path": "C:\\e4.exe",
+            "arguments": "\"{file}\""
+          },
+          {
+            "id": "e5",
+            "name": "",
+            "path": "C:\\e5.exe",
+            "arguments": "\"{file}\""
+          },
+          {
+            "id": "e6",
+            "name": "",
+            "path": "C:\\e6.exe",
+            "arguments": "\"{file}\""
+          },
+          {
+            "id": "e7",
+            "name": "",
+            "path": "C:\\e7.exe",
+            "arguments": "\"{file}\""
+          },
+          {
+            "id": "e8",
+            "name": "",
+            "path": "C:\\e8.exe",
+            "arguments": "\"{file}\""
+          },
+          {
+            "id": "e9",
+            "name": "",
+            "path": "C:\\e9.exe",
+            "arguments": "\"{file}\""
+          },
+          {
+            "id": "e10",
+            "name": "",
+            "path": "C:\\e10.exe",
+            "arguments": "\"{file}\""
+          },
+          {
+            "id": "e11",
+            "name": "",
+            "path": "C:\\e11.exe",
+            "arguments": "\"{file}\""
+          },
+          {
+            "id": "e12",
+            "name": "",
+            "path": "C:\\e12.exe",
+            "arguments": "\"{file}\""
+          },
+          {
+            "id": "e13",
+            "name": "",
+            "path": "C:\\e13.exe",
+            "arguments": "\"{file}\""
+          },
+          {
+            "id": "e14",
+            "name": "",
+            "path": "C:\\e14.exe",
+            "arguments": "\"{file}\""
+          },
+          {
+            "id": "e15",
+            "name": "",
+            "path": "C:\\e15.exe",
+            "arguments": "\"{file}\""
+          },
+          {
+            "id": "e16",
+            "name": "",
+            "path": "C:\\e16.exe",
+            "arguments": "\"{file}\""
+          },
+          {
+            "id": "e17",
+            "name": "",
+            "path": "C:\\e17.exe",
+            "arguments": "\"{file}\""
+          },
+          {
+            "id": "e18",
+            "name": "",
+            "path": "C:\\e18.exe",
+            "arguments": "\"{file}\""
+          },
+          {
+            "id": "e19",
+            "name": "",
+            "path": "C:\\e19.exe",
+            "arguments": "\"{file}\""
+          },
+          {
+            "id": "e20",
+            "name": "",
+            "path": "C:\\e20.exe",
+            "arguments": "\"{file}\""
+          },
+          {
+            "id": "e21",
+            "name": "",
+            "path": "C:\\e21.exe",
+            "arguments": "\"{file}\""
+          },
+          {
+            "id": "e22",
+            "name": "",
+            "path": "C:\\e22.exe",
+            "arguments": "\"{file}\""
+          },
+          {
+            "id": "e23",
+            "name": "",
+            "path": "C:\\e23.exe",
+            "arguments": "\"{file}\""
+          },
+          {
+            "id": "e24",
+            "name": "",
+            "path": "C:\\e24.exe",
+            "arguments": "\"{file}\""
+          },
+          {
+            "id": "e25",
+            "name": "",
+            "path": "C:\\e25.exe",
+            "arguments": "\"{file}\""
+          },
+          {
+            "id": "e26",
+            "name": "",
+            "path": "C:\\e26.exe",
+            "arguments": "\"{file}\""
+          },
+          {
+            "id": "e27",
+            "name": "",
+            "path": "C:\\e27.exe",
+            "arguments": "\"{file}\""
+          },
+          {
+            "id": "e28",
+            "name": "",
+            "path": "C:\\e28.exe",
+            "arguments": "\"{file}\""
+          },
+          {
+            "id": "e29",
+            "name": "",
+            "path": "C:\\e29.exe",
+            "arguments": "\"{file}\""
+          },
+          {
+            "id": "e30",
+            "name": "",
+            "path": "C:\\e30.exe",
+            "arguments": "\"{file}\""
+          },
+          {
+            "id": "e31",
+            "name": "",
+            "path": "C:\\e31.exe",
+            "arguments": "\"{file}\""
+          }
+        ],
+        "default_index": 0,
+        "default_id_blank": false,
+        "legacy_path": "C:\\e0.exe"
+      }
+    },
+    {
+      "kind": "reconcile",
+      "name": "null entry in the list",
+      "repaired": true,
+      "settings": {
+        "editors": [
+          {
+            "id": "a",
+            "name": "",
+            "path": "C:\\a.exe",
+            "arguments": "\"{file}\""
+          }
+        ],
+        "default_index": 0,
+        "default_id_blank": false,
+        "legacy_path": "C:\\a.exe"
+      }
+    },
+    {
+      "kind": "reconcile",
+      "name": "blank id gets a fresh one",
+      "repaired": true,
+      "settings": {
+        "editors": [
+          {
+            "id": "<fresh>",
+            "name": "",
+            "path": "C:\\a.exe",
+            "arguments": "\"{file}\""
+          }
+        ],
+        "default_index": 0,
+        "default_id_blank": false,
+        "legacy_path": "C:\\a.exe"
+      }
+    },
+    {
+      "kind": "reconcile",
+      "name": "null id",
+      "repaired": true,
+      "settings": {
+        "editors": [
+          {
+            "id": "<fresh>",
+            "name": "",
+            "path": "C:\\a.exe",
+            "arguments": "\"{file}\""
+          }
+        ],
+        "default_index": 0,
+        "default_id_blank": false,
+        "legacy_path": "C:\\a.exe"
+      }
+    },
+    {
+      "kind": "reconcile",
+      "name": "arguments over 4000 reset",
+      "repaired": true,
+      "settings": {
+        "editors": [
+          {
+            "id": "a",
+            "name": "",
+            "path": "C:\\a.exe",
+            "arguments": "\"{file}\""
+          }
+        ],
+        "default_index": 0,
+        "default_id_blank": false,
+        "legacy_path": "C:\\a.exe"
+      }
+    },
+    {
+      "kind": "reconcile",
+      "name": "arguments of exactly 4000 kept",
+      "repaired": false,
+      "settings": {
+        "editors": [
+          {
+            "id": "a",
+            "name": "",
+            "path": "C:\\a.exe",
+            "arguments": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+          }
+        ],
+        "default_index": 0,
+        "default_id_blank": false,
+        "legacy_path": "C:\\a.exe"
+      }
+    },
+    {
+      "kind": "reconcile",
+      "name": "path and name are trimmed",
+      "repaired": false,
+      "settings": {
+        "editors": [
+          {
+            "id": "a",
+            "name": "N",
+            "path": "C:\\a.exe",
+            "arguments": "\"{file}\""
+          }
+        ],
+        "default_index": 0,
+        "default_id_blank": false,
+        "legacy_path": "C:\\a.exe"
+      }
+    },
+    {
+      "kind": "reconcile",
+      "name": "null list property",
+      "repaired": false,
+      "settings": {
+        "editors": [
+          {
+            "id": "<fresh>",
+            "name": "only",
+            "path": "C:\\only.exe",
+            "arguments": "\"{file}\""
+          }
+        ],
+        "default_index": 0,
+        "default_id_blank": false,
+        "legacy_path": "C:\\only.exe"
+      }
+    },
+    {
+      "kind": "reconcile",
+      "name": "list wins over legacy path",
+      "repaired": false,
+      "settings": {
+        "editors": [
+          {
+            "id": "a",
+            "name": "",
+            "path": "C:\\a.exe",
+            "arguments": "\"{file}\""
+          }
+        ],
+        "default_index": 0,
+        "default_id_blank": false,
+        "legacy_path": "C:\\a.exe"
+      }
+    },
+    {
+      "kind": "reconcile",
+      "name": "legacy path of blanks",
+      "repaired": false,
+      "settings": {
+        "editors": [],
+        "default_index": -1,
+        "default_id_blank": true,
+        "legacy_path": ""
+      }
+    },
+    {
+      "kind": "reconcile",
+      "name": "blank default and a valid list",
+      "repaired": false,
+      "settings": {
+        "editors": [
+          {
+            "id": "a",
+            "name": "",
+            "path": "C:\\a.exe",
+            "arguments": "\"{file}\""
+          }
+        ],
+        "default_index": 0,
+        "default_id_blank": false,
+        "legacy_path": "C:\\a.exe"
+      }
+    },
+    {
+      "kind": "reconcile",
+      "name": "every entry invalid with legacy path",
+      "repaired": true,
+      "settings": {
+        "editors": [
+          {
+            "id": "<fresh>",
+            "name": "leg",
+            "path": "C:\\leg.exe",
+            "arguments": "\"{file}\""
+          }
+        ],
+        "default_index": 0,
+        "default_id_blank": false,
+        "legacy_path": "C:\\leg.exe"
+      }
+    },
+    {
+      "kind": "reconcile",
+      "name": "repeated ids both kept, default points at the first",
+      "repaired": true,
+      "settings": {
+        "editors": [
+          {
+            "id": "a",
+            "name": "",
+            "path": "C:\\1.exe",
+            "arguments": "\"{file}\""
+          },
+          {
+            "id": "<fresh>",
+            "name": "",
+            "path": "C:\\2.exe",
+            "arguments": "\"{file}\""
+          }
+        ],
+        "default_index": 0,
+        "default_id_blank": false,
+        "legacy_path": "C:\\1.exe"
+      }
+    },
+    {
+      "kind": "apply_legacy",
+      "name": "changed path moves the default editor and renames an auto name",
+      "settings": {
+        "editors": [
+          {
+            "id": "a",
+            "name": "New",
+            "path": "C:\\New.exe",
+            "arguments": "\"{file}\""
+          },
+          {
+            "id": "b",
+            "name": "",
+            "path": "C:\\b.exe",
+            "arguments": "\"{file}\""
+          }
+        ],
+        "default_index": 0,
+        "default_id_blank": false,
+        "legacy_path": "C:\\New.exe"
+      }
+    },
+    {
+      "kind": "apply_legacy",
+      "name": "changed path keeps a custom name",
+      "settings": {
+        "editors": [
+          {
+            "id": "a",
+            "name": "Custom",
+            "path": "C:\\New.exe",
+            "arguments": "\"{file}\""
+          }
+        ],
+        "default_index": 0,
+        "default_id_blank": false,
+        "legacy_path": "C:\\New.exe"
+      }
+    },
+    {
+      "kind": "apply_legacy",
+      "name": "cleared path removes the default editor",
+      "settings": {
+        "editors": [
+          {
+            "id": "b",
+            "name": "",
+            "path": "C:\\b.exe",
+            "arguments": "\"{file}\""
+          }
+        ],
+        "default_index": 0,
+        "default_id_blank": false,
+        "legacy_path": "C:\\b.exe"
+      }
+    },
+    {
+      "kind": "apply_legacy",
+      "name": "null path removes the default editor",
+      "settings": {
+        "editors": [
+          {
+            "id": "b",
+            "name": "",
+            "path": "C:\\b.exe",
+            "arguments": "\"{file}\""
+          }
+        ],
+        "default_index": 0,
+        "default_id_blank": false,
+        "legacy_path": "C:\\b.exe"
+      }
+    },
+    {
+      "kind": "apply_legacy",
+      "name": "same path is a no-op",
+      "settings": {
+        "editors": [
+          {
+            "id": "a",
+            "name": "Old",
+            "path": "C:\\Old.exe",
+            "arguments": "\"{file}\""
+          },
+          {
+            "id": "b",
+            "name": "",
+            "path": "C:\\b.exe",
+            "arguments": "\"{file}\""
+          }
+        ],
+        "default_index": 0,
+        "default_id_blank": false,
+        "legacy_path": ""
+      }
+    },
+    {
+      "kind": "apply_legacy",
+      "name": "same path with spaces is a no-op",
+      "settings": {
+        "editors": [
+          {
+            "id": "a",
+            "name": "Old",
+            "path": "C:\\Old.exe",
+            "arguments": "\"{file}\""
+          },
+          {
+            "id": "b",
+            "name": "",
+            "path": "C:\\b.exe",
+            "arguments": "\"{file}\""
+          }
+        ],
+        "default_index": 0,
+        "default_id_blank": false,
+        "legacy_path": ""
+      }
+    },
+    {
+      "kind": "apply_legacy",
+      "name": "new path with no editor creates one",
+      "settings": {
+        "editors": [
+          {
+            "id": "<fresh>",
+            "name": "Z",
+            "path": "C:\\Z.exe",
+            "arguments": "\"{file}\""
+          }
+        ],
+        "default_index": 0,
+        "default_id_blank": false,
+        "legacy_path": "C:\\Z.exe"
+      }
+    },
+    {
+      "kind": "apply_legacy",
+      "name": "new path, list without a valid default",
+      "settings": {
+        "editors": [
+          {
+            "id": "a",
+            "name": "",
+            "path": "C:\\a2.exe",
+            "arguments": "\"{file}\""
+          }
+        ],
+        "default_index": 0,
+        "default_id_blank": false,
+        "legacy_path": "C:\\a2.exe"
+      }
+    },
+    {
+      "kind": "apply_legacy",
+      "name": "empty path, nothing declared",
+      "settings": {
+        "editors": [],
+        "default_index": -1,
+        "default_id_blank": true,
+        "legacy_path": ""
+      }
+    },
+    {
+      "kind": "effective",
+      "name": "legacy only is one implicit editor",
+      "effective": [
+        {
+          "id": "legacy",
+          "name": "only",
+          "path": "C:\\only.exe",
+          "arguments": "\"{file}\""
+        }
+      ],
+      "effective_default_index": -2,
+      "default_index": -1,
+      "find": {
+        "legacy": -1,
+        "x": -1,
+        "<null>": -1
+      }
+    },
+    {
+      "kind": "effective",
+      "name": "nothing",
+      "effective": [],
+      "effective_default_index": -1,
+      "default_index": -1,
+      "find": {
+        "a": -1
+      }
+    },
+    {
+      "kind": "effective",
+      "name": "a list wins",
+      "effective": [
+        {
+          "id": "a",
+          "name": "A",
+          "path": "C:\\listed.exe",
+          "arguments": "\"{file}\""
+        },
+        {
+          "id": "b",
+          "name": "B",
+          "path": "C:\\b.exe",
+          "arguments": "\"{file}\""
+        }
+      ],
+      "effective_default_index": 1,
+      "default_index": 1,
+      "find": {
+        "a": 0,
+        "b": 1,
+        "B": -1,
+        "": -1,
+        "<null>": -1
+      }
+    },
+    {
+      "kind": "effective",
+      "name": "unknown default falls to the first",
+      "effective": [
+        {
+          "id": "a",
+          "name": "",
+          "path": "C:\\a.exe",
+          "arguments": "\"{file}\""
+        },
+        {
+          "id": "b",
+          "name": "",
+          "path": "C:\\b.exe",
+          "arguments": "\"{file}\""
+        }
+      ],
+      "effective_default_index": 0,
+      "default_index": 0,
+      "find": {
+        "zz": -1
+      }
+    },
+    {
+      "kind": "effective",
+      "name": "null list property with legacy",
+      "effective": [
+        {
+          "id": "legacy",
+          "name": "only",
+          "path": "C:\\only.exe",
+          "arguments": "\"{file}\""
+        }
+      ],
+      "effective_default_index": -2,
+      "default_index": -1,
+      "find": {}
+    },
+    {
+      "kind": "resolve",
+      "name": "raw off sends the shown file",
+      "value": "C:\\p\\a.jpg"
+    },
+    {
+      "kind": "resolve",
+      "name": "paired raw wins",
+      "value": "C:\\p\\a.CR3"
+    },
+    {
+      "kind": "resolve",
+      "name": "sidecar by name",
+      "value": "C:\\p\\b.arw"
+    },
+    {
+      "kind": "resolve",
+      "name": "no raw",
+      "value": "C:\\p\\c.jpg"
+    },
+    {
+      "kind": "resolve",
+      "name": "pair missing on disk",
+      "value": "C:\\p\\a.JPG"
+    },
+    {
+      "kind": "resolve",
+      "name": "already raw",
+      "value": "C:\\p\\a.dng"
+    },
+    {
+      "kind": "resolve",
+      "name": "two sidecars: the first in ordinal-ignore-case order",
+      "value": "C:\\p\\e.cr2"
+    },
+    {
+      "kind": "resolve",
+      "name": "blank paired path is ignored",
+      "value": "C:\\p\\b.arw"
+    },
+    {
+      "kind": "resolve",
+      "name": "a path without a folder",
+      "value": "a.jpg"
+    },
+    {
+      "kind": "resolve",
+      "name": "upper-case extension is raw",
+      "value": "C:\\p\\X.NEF"
+    },
+    {
+      "kind": "resolve",
+      "name": "sidecar case as found on disk",
+      "value": "C:\\p\\d.dng"
+    }
+  ]
+}

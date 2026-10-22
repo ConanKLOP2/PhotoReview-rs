@@ -16,6 +16,7 @@ use std::collections::{BTreeMap, BTreeSet};
 
 use pr_core::model::fields::{ExifInfoFields, TitleBarFields};
 use pr_core::settings::context_menu::ContextMenuItemId;
+use pr_core::settings::external_editors::ExternalEditor;
 
 /// C# `SettingsFormState`. Every field is public and plain; the struct has no behaviour of its own.
 #[derive(Debug, Clone, PartialEq)]
@@ -51,6 +52,12 @@ pub struct SettingsFormState {
     pub allow_permanent_delete: bool,
     pub confirm_before_delete: bool,
     pub external_editor_path: String,
+    /// W9-E4 (C# `ExternalEditors`): working copy of `AppSettings::external_editors` (the editors dialog edits it). Default empty.
+    pub external_editors: Vec<ExternalEditor>,
+    /// W9-E4 (C# `DefaultExternalEditorId`): id of the default editor in `external_editors`. Default `""`.
+    pub default_external_editor_id: String,
+    /// W9-E4 (C# `ExternalEditorSendsRawOriginal`): send the paired RAW instead of the JPEG. Default `true`.
+    pub external_editor_sends_raw_original: bool,
     pub journal_safe: bool,
     pub move_copy_reuse_last_folder: bool,
 
@@ -129,6 +136,9 @@ impl Default for SettingsFormState {
             allow_permanent_delete: false,
             confirm_before_delete: false,
             external_editor_path: String::new(),
+            external_editors: Vec::new(),
+            default_external_editor_id: String::new(),
+            external_editor_sends_raw_original: true,
             journal_safe: false,
             move_copy_reuse_last_folder: false,
             show_info_overlay: false,

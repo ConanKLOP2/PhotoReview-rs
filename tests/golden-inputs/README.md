@@ -100,6 +100,9 @@ Rules (docs/MULTI-AGENT-PLAN.md §4):
 | `recovery-decide` | W3-07 `RecoveryFileCheck` decision | 720 verdict cases |
 | `recovery-check` | W3-07 `RecoveryFileCheck` | virtual 715 cases + 20 native physical `p-*` cases |
 | `partial-cleanup` | W3-08 `remove_if_partial` / `is_same_file` | 26 cases: 17 cleanup, 9 same-file |
+| `external-editor-rules` | W9-E1 `ExternalEditor` / `ExternalEditors` | name, display name, `{file}` arguments, reconcile, apply-legacy, effective/default/find, RAW pairing (77 cases, `7eaee2a2`) |
+| `external-editor-menu` | W9-E6 `ContextMenuModelBuilder.ExternalEditorItem` | the editors submenu tree per settings (18 cases, `7eaee2a2`) |
+| `open-in-default-editor-shortcut` | W9-E7 `ShortcutRouter` step 12f, `ReviewCommand` | bound/rebound/shared keys, `IgnoresAutoRepeat` table and enum values (`7eaee2a2`) |
 
 Fixtures synced by `tools/sync-from-csharp.ps1` at `d92d6aae` (never hand-edited, P-15): `operations-legacy.jsonl`, `journal-older-build/*.jsonl`, `config-v1.json`, `config-v2.json`.
 
