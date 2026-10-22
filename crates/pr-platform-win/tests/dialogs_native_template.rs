@@ -192,3 +192,125 @@ fn golden_build_matches_csharp_bytes() {
     }
     assert_eq!(compared, 13);
 }
+
+#[test]
+fn golden_class_names() {
+    // Oracle `dialog-template`, kind `class_name`: the atom value, `ClassName` (null for the six predefined atoms) and `WindowClassName` of all nine classes.
+    let golden = pr_test_support::golden::load("dialog-template");
+    let mut compared = 0;
+    for case in golden.cases.iter().filter(|c| c["kind"] == "class_name") {
+        let name = case["name"].as_str().expect("name");
+        let class = class_of(case["class"].as_str().expect("class"));
+        assert_eq!(
+            u64::from(class.value()),
+            case["value"].as_u64().expect("value"),
+            "{name}: value"
+        );
+        assert_eq!(class as u16, class.value(), "{name}: repr");
+        assert_eq!(class_name(class), case["class_name"].as_str(), "{name}: class_name");
+        assert_eq!(
+            window_class_name(class),
+            case["window_class_name"].as_str().expect("window_class_name"),
+            "{name}: window_class_name"
+        );
+        compared += 1;
+    }
+    assert_eq!(compared, 9);
+}
+
+#[test]
+fn golden_constants() {
+    let golden = pr_test_support::golden::load("dialog-template");
+    let case = golden
+        .cases
+        .iter()
+        .find(|c| c["kind"] == "constants")
+        .expect("the constants row");
+    assert_eq!(
+        HEADER_BYTES as u64,
+        case["header_bytes"].as_u64().expect("header_bytes")
+    );
+    assert_eq!(
+        u64::from(ATOM_MARKER),
+        case["atom_marker"].as_u64().expect("atom_marker")
+    );
+}
+
+#[test]
+fn id_is_truncated_to_sixteen_bits() {
+    // Golden `build` row "the id truncation row" is compared by `golden_build_matches_csharp_bytes`; this checks the three cases directly at the id offset.
+    for (id, expected) in [(-1, 0xFFFF), (65_536, 0), (65_537, 1), (0x1_0042, 0x42)] {
+        let bytes = build("", 0, 0, &[DialogItem::new(C::Button, id, "", 0)]).expect("one item");
+        // header (22) + empty title terminator (2) = 24, already DWORD aligned; the id sits after style, ex style and four geometry shorts.
+        assert_eq!(u16le(&bytes, 24 + 16), expected, "id {id}");
+    }
+}
+
+// ---------------------------------------------------------------- native
+
+mod native {
+    use super::*;
+    use pr_platform_win::win32::api::{kernel32 as api_kernel32, user32 as api_user32};
+    use pr_platform_win::win32::comctl::common_controls;
+    use pr_platform_win::win32::comctl::user32 as comctl_user32;
+    use pr_platform_win::win32::control_constants::{ICC_BAR_CLASSES, ICC_LISTVIEW_CLASSES, ICC_PROGRESS_CLASS};
+    use pr_platform_win::win32::dialog_native::user32;
+    use pr_platform_win::win32::messages::{WS_CAPTION, WS_POPUP};
+    use pr_platform_win::win32::structs::{Hwnd, Lparam, Lresult, Wparam};
+
+    /// The dialog procedure of the test: "not handled", so the dialog manager does its default work.
+    unsafe extern "system" fn trivial_dialog_proc(
+        _hwnd: Hwnd,
+        _message: u32,
+        _wparam: Wparam,
+        _lparam: Lparam,
+    ) -> Lresult {
+        0
+    }
+
+    #[test]
+    #[ignore = "native: needs desktop"]
+    fn template_creates_every_control_class() {
+        // C#: NativeControlsTests.EveryNewControlClass_IsCreatedFromTheTemplate (the idea, without ControlGalleryDialog): a template with one item per class
+        // creates a hidden dialog whose children have the Win32 class names; the three common controls are written by NAME.
+        // ICC_STANDARD_CLASSES needs a comctl32 v6 manifest, which a test exe has not: the three common classes are enough.
+        assert!(common_controls::init_common_controls_ex(
+            ICC_LISTVIEW_CLASSES | ICC_BAR_CLASSES | ICC_PROGRESS_CLASS
+        ));
+        let classes = [
+            (C::Button, "Button"),
+            (C::Edit, "Edit"),
+            (C::Static, "Static"),
+            (C::ListBox, "ListBox"),
+            (C::ScrollBar, "ScrollBar"),
+            (C::ComboBox, "ComboBox"),
+            (C::ListView, "SysListView32"),
+            (C::Progress, "msctls_progress32"),
+            (C::Trackbar, "msctls_trackbar32"),
+        ];
+        let items: Vec<DialogItem> = classes
+            .iter()
+            .enumerate()
+            .map(|(index, (class, _))| DialogItem::new(*class, 100 + index as i32, "x", DIALOG_STYLE_CHILD))
+            .collect();
+        // Hidden: no WS_VISIBLE on the dialog itself.
+        let template = build("native template", WS_POPUP | WS_CAPTION, 0, &items).expect("template");
+        let instance = api_kernel32::get_module_handle().expect("module handle");
+        // SAFETY: `template` comes from `build`, so it is complete and well-formed; the procedure does not unwind.
+        let dialog = unsafe { user32::create_dialog_indirect_param(instance, &template, 0, trivial_dialog_proc, 0) }
+            .expect("dialog from the template");
+        let mut seen = Vec::new();
+        for (index, (class, expected)) in classes.iter().enumerate() {
+            let child = user32::get_dlg_item(dialog, 100 + index as i32);
+            seen.push((*class, child != 0, comctl_user32::get_class_name(child)));
+            let _ = expected;
+        }
+        let destroyed = api_user32::destroy_window(dialog);
+        for ((class, expected), (_, created, name)) in classes.iter().zip(&seen) {
+            assert!(*created, "{class:?}: no child window");
+            assert_eq!(name.as_deref(), Some(*expected), "{class:?}");
+            assert_eq!(window_class_name(*class), *expected);
+        }
+        assert!(destroyed.is_ok());
+    }
+}
