@@ -6,7 +6,9 @@
 //! `impl DialogService for Rc<Win32DialogService>` (neither the trait nor `Rc` is local), so each gets a one-field newtype in this crate. `Arc::new(SharedDialogService(..))`
 //! holds an `Rc`, which `clippy::arc_with_non_send_sync` reports: the construction site carries `#[allow(clippy::arc_with_non_send_sync)]` with the justification "the view model
 //! and every coordinator that holds the `Arc` live on the UI thread only (`MainViewModel` is `!Send`)".
-#![allow(unused_variables, dead_code)] // stub: the porter removes this line with the last `todo!()`
+//!
+//! C# source: none of its own. `LazyPrewarmPreviews` and `LazyDecoderFactory` stand for the lazy `GetRequiredService<PreviewImageService>()` / `GetService<IImageDecoderFactory>()`
+//! of the C# container; `LocalizedFormat` stands for the `FormatContext` the C# formatters built from `Localizer.Current` and `CultureInfo.CurrentCulture` (baseline `d92d6aae`).
 
 use std::path::{Path, PathBuf};
 use std::rc::Rc;
@@ -25,8 +27,11 @@ use pr_imaging::cache_key::{CacheKeyError, ImageCacheKey};
 use pr_imaging::decode_types::DecodeBox;
 use pr_imaging::decoder_traits::{ImageDecoder, ImageDecoderFactory};
 use pr_imaging::service::handle::PreviewHandle;
+use pr_l10n::localizer::{Localizer, number_culture};
+use pr_platform_win::culture::{WindowsDateText, utc_to_local};
 use pr_platform_win::dialogs::dialog_service::Win32DialogService;
-use pr_platform_win::shell_viewing::presentation_sink::Win32PresentationSinkFactory;
+use pr_platform_win::shell_startup::locale::group_separator;
+use pr_platform_win::shell_viewing::presentation_sink::{SinkCallbacks, Win32PresentationSinkFactory};
 
 use super::registry::SharedServices;
 
@@ -41,48 +46,48 @@ impl std::fmt::Debug for SharedDialogService {
 
 impl DialogService for SharedDialogService {
     fn show_confirmation(&self, title: &str, message: &str) -> bool {
-        todo!()
+        self.0.show_confirmation(title, message)
     }
 
     fn show_message(&self, title: &str, message: &str) {
-        todo!()
+        self.0.show_message(title, message);
     }
 
     fn show_error(&self, title: &str, message: &str) {
-        todo!()
+        self.0.show_error(title, message);
     }
 
     fn pick_folder(&self, initial_folder: Option<&Path>) -> Option<PathBuf> {
-        todo!()
+        self.0.pick_folder(initial_folder)
     }
 
     fn show_batch_review(&self, items: &[BatchReviewItem]) -> bool {
-        todo!()
+        self.0.show_batch_review(items)
     }
 
     fn show_recovery(&self) {
-        todo!()
+        self.0.show_recovery();
     }
 
     fn show_diagnostics(&self) {
-        todo!()
+        self.0.show_diagnostics();
     }
 
     fn show_settings(&self) -> bool {
-        todo!()
+        self.0.show_settings()
     }
 
     /// MUST forward (the trait default would drop `target`, e.g. `ExternalEditor`).
     fn show_settings_at(&self, target: SettingsTarget) -> bool {
-        todo!()
+        self.0.show_settings_at(target)
     }
 
     fn show_benchmark(&self, folder: Option<&Path>) {
-        todo!()
+        self.0.show_benchmark(folder);
     }
 
     fn show_skipped_files(&self, entries: &[SkippedEntry]) {
-        todo!()
+        self.0.show_skipped_files(entries);
     }
 }
 
@@ -98,7 +103,7 @@ impl std::fmt::Debug for SharedClipboard {
 
 impl ClipboardService for SharedClipboard {
     fn try_set_text(&self, text: &str) -> bool {
-        todo!()
+        self.0.try_set_text(text)
     }
 }
 
@@ -116,7 +121,20 @@ impl std::fmt::Debug for Win32SinkFactoryAdapter {
 
 impl PresentationSinkFactory for Win32SinkFactoryAdapter {
     fn create(&self, callbacks: MainViewModelSinkCallbacks) -> Box<dyn IPresentationSink> {
-        todo!()
+        let MainViewModelSinkCallbacks {
+            set_current_image,
+            set_status_text,
+            apply_initial_view_mode,
+            on_presented,
+            take_viewer_zoom_change,
+        } = callbacks;
+        self.0.create(SinkCallbacks {
+            set_current_image,
+            set_status_text,
+            apply_initial_view_mode,
+            on_presented,
+            take_viewer_zoom_change,
+        })
     }
 }
 
@@ -149,11 +167,26 @@ impl PrewarmPreviews for LazyPrewarmPreviews {
         full_path: &str,
         target_box: Option<DecodeBox>,
     ) -> Result<ImageCacheKey, CacheKeyError> {
-        todo!()
+        match self.services.preview_service() {
+            Ok(service) => PrewarmPreviews::current_cache_key(service.as_ref(), full_path, target_box),
+            Err(error) => {
+                self.services.log().error(
+                    "Prewarm: the preview service could not be created, so the early decode is skipped",
+                    Some(&error),
+                );
+                Err(CacheKeyError::SourceNoLongerExists {
+                    full_name: full_path.to_owned(),
+                })
+            }
+        }
     }
 
     fn start_viewer_preview(&self, full_path: &str, key: &ImageCacheKey) -> PreviewHandle {
-        todo!()
+        match self.services.preview_service() {
+            Ok(service) => PrewarmPreviews::start_viewer_preview(service.as_ref(), full_path, key),
+            // Unreachable by contract: `key` came from `current_cache_key`, which only answers `Ok` after the service was built.
+            Err(error) => panic!("{error}"),
+        }
     }
 }
 
@@ -176,15 +209,28 @@ impl LazyDecoderFactory {
     pub fn new(services: SharedServices) -> Self {
         Self { services }
     }
+
+    /// The real factory (the registry builds it once).
+    fn resolve(&self) -> Arc<dyn ImageDecoderFactory> {
+        match self.services.decoder_factory() {
+            Ok(factory) => factory,
+            Err(error) => {
+                self.services
+                    .log()
+                    .error("The decoder factory could not be created", Some(&error));
+                panic!("{error}")
+            }
+        }
+    }
 }
 
 impl ImageDecoderFactory for LazyDecoderFactory {
     fn create(&self, backend: DecoderBackend) -> Arc<dyn ImageDecoder> {
-        todo!()
+        self.resolve().create(backend)
     }
 
     fn is_registered(&self, backend: DecoderBackend) -> bool {
-        todo!()
+        self.resolve().is_registered(backend)
     }
 }
 
@@ -205,7 +251,9 @@ impl std::fmt::Debug for LocalizedFormat {
 impl LocalizedFormat {
     /// Reads the group separator of the user locale.
     pub fn new() -> Self {
-        todo!()
+        Self {
+            group_separator: group_separator(),
+        }
     }
 
     /// For tests: a fixed separator (no Win32 call).
@@ -222,10 +270,18 @@ impl Default for LocalizedFormat {
 
 impl FormatContextSource for LocalizedFormat {
     fn with_context(&self, run: &mut dyn FnMut(&FormatContext<'_>)) {
-        todo!()
+        let localizer = Localizer::current();
+        let numbers = number_culture();
+        let context = FormatContext {
+            texts: &localizer,
+            numbers: &numbers,
+            group_separator: &self.group_separator,
+            dates: &WindowsDateText,
+        };
+        run(&context);
     }
 
     fn to_local_time(&self, utc: DateTimeUtc) -> DateTimeUtc {
-        todo!()
+        utc_to_local(utc)
     }
 }
