@@ -21,7 +21,7 @@ mod source_reader;
 mod ui;
 
 pub use clock::{Clock, SystemClock};
-pub use dialog::{BatchReviewItem, DialogService, SettingsTarget};
+pub use dialog::{BatchReviewItem, DialogService, RenamePromptRequest, RenameValidateFn, SettingsTarget};
 pub use display::{DisplayClock, DisplayTiming};
 pub use explorer::ExplorerOrderProvider;
 pub use file_system::{AppendStream, CopyCreationProof, FileStat, FileSystem, ReadSeek, SkippedEntry, SkippedKind};
