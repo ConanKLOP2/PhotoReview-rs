@@ -5,8 +5,6 @@
 //! [`SettingsPageHost`], which the dialog (W8-19j..19m) implements; every method of the context that is a one-liner in C# stays a one-liner here, the few with logic
 //! (`radio_index`, `set_radio_index`, `run_explorer`, `edit_action_profiles`) are pure and tested with a fake host. The C# `SettingsDialogOptions` record is NOT
 //! visible to pages: what pages read from it (`OpenUrl`, `StartExplorer`, `ShowActionProfiles`, `Version`, `Files`) is a method of the host (D-W8B5-707).
-#![allow(unused_variables, dead_code)] // stub: the porter removes this line with the last `todo!()`
-
 use std::cell::RefCell;
 use std::collections::BTreeMap;
 use std::fmt;
@@ -15,8 +13,14 @@ use std::sync::Arc;
 
 use pr_app::presenters::settings::{SettingsExplorerRequest, SettingsPresenter};
 use pr_app::presenters::settings_field_map::FieldContext;
+use pr_core::abstractions::{ShellIntegration, ShellMenuState};
+use pr_core::settings::app_settings::{AppSettings, EnglishSettingsTexts};
 use pr_core::settings::shortcuts::ReviewAction;
 use pr_imaging::decoder_traits::ImageDecoderFactory;
+use pr_l10n::{
+    keys,
+    localizer::{Localizer, number_culture},
+};
 
 use super::page_view::TextFn;
 use crate::dialogs::file_dialog::ShellFileDialog;
@@ -134,186 +138,328 @@ impl SettingsPageContext {
     /// A context that is not attached to any dialog: reads answer `""`, `false`, `0`, `-1` (combo), empty collections or `None`; writes do nothing; `ui_post` drops
     /// the action. Used by [`PageContextSlot`](super::page_view::PageContextSlot) before `attach` (D-W8B5-705).
     pub fn detached() -> Self {
-        todo!()
+        thread_local! {
+            static PRESENTER: SharedSettingsPresenter = {
+                let texts = EnglishSettingsTexts;
+                let settings = AppSettings::new(&texts);
+                let options = pr_app::presenters::settings::SettingsPresenterOptions::new(
+                    0, Arc::new(EnglishSettingsTexts), Arc::new(InertShellIntegration));
+                Rc::new(RefCell::new(SettingsPresenter::new(&settings, options)))
+            };
+        }
+        let presenter = PRESENTER.with(Rc::clone);
+        Self::new(Rc::new(DetachedHost { presenter }))
     }
 
     /// C# `Presenter`.
     pub fn presenter(&self) -> SharedSettingsPresenter {
-        todo!()
+        self.host.presenter()
     }
 
     /// C# `Owner` (`_dialog.Hwnd`).
     pub fn owner(&self) -> Hwnd {
-        todo!()
+        self.host.hwnd()
     }
 
     /// C# `Files`.
     pub fn files(&self) -> Option<Rc<dyn ShellFileDialog>> {
-        todo!()
+        self.host.files()
     }
 
     /// C# `DecoderFactory`.
     pub fn decoder_factory(&self) -> Option<Arc<dyn ImageDecoderFactory>> {
-        todo!()
+        self.host.decoder_factory()
     }
 
     /// C# `Version`.
     pub fn version(&self) -> Option<String> {
-        todo!()
+        self.host.version()
     }
 
     /// C# `Options.OpenUrl ?? DefaultOpenUrl` (the General page passes it to `SettingsPresenter::open_update_page`).
     pub fn open_url(&self, url: &str) -> Result<(), String> {
-        todo!()
+        self.host.open_url(url)
     }
 
     /// C# `Text(id)`.
     pub fn text(&self, id: i32) -> String {
-        todo!()
+        self.host.control_text(id)
     }
 
     /// C# `SetText(id, text)`.
     pub fn set_text(&self, id: i32, text: &str) {
-        todo!()
+        self.host.set_control_text(id, text)
     }
 
     /// C# `IsChecked(id)`.
     pub fn is_checked(&self, id: i32) -> bool {
-        todo!()
+        self.host.is_control_checked(id)
     }
 
     /// C# `SetChecked(id, value)`.
     pub fn set_checked(&self, id: i32, value: bool) {
-        todo!()
+        self.host.set_control_checked(id, value)
     }
 
     /// C# `RadioIndex(ids)`: the index (in declaration order) of the first checked radio of the group `ids`, `-1` when none is checked.
     pub fn radio_index(&self, ids: &[i32]) -> i32 {
-        todo!()
+        for (index, id) in ids.iter().enumerate() {
+            if self.host.is_control_checked(*id) {
+                return i32::try_from(index).unwrap_or(-1);
+            }
+        }
+        -1
     }
 
     /// C# `SetRadioIndex(ids, index)`: for EVERY id of the group, in order, `set_control_checked(id, i == index)` (`BM_SETCHECK` does not clear the sibling radios);
     /// an index outside `0..ids.len()` (also negative) checks none.
     pub fn set_radio_index(&self, ids: &[i32], index: i32) {
-        todo!()
+        for (i, id) in ids.iter().enumerate() {
+            self.host.set_control_checked(*id, i32::try_from(i).ok() == Some(index));
+        }
     }
 
     /// C# `ComboIndex(id)`.
     pub fn combo_index(&self, id: i32) -> i32 {
-        todo!()
+        self.host.combo_selected_index(id)
     }
 
     /// C# `SetComboIndex(id, index)`.
     pub fn set_combo_index(&self, id: i32, index: i32) {
-        todo!()
+        self.host.set_combo_selected_index(id, index)
     }
 
     /// C# `SetComboItems(id, items, selected)`: reload a dynamic list (the languages) and select `selected`.
     pub fn set_combo_items(&self, id: i32, items: &[String], selected: i32) {
-        todo!()
+        self.host.set_combo_items(id, items, selected)
     }
 
     /// C# `SliderValue(id)`.
     pub fn slider_value(&self, id: i32) -> i32 {
-        todo!()
+        self.host.slider_value(id)
     }
 
     /// C# `SetSliderValue(id, value)`.
     pub fn set_slider_value(&self, id: i32, value: i32) {
-        todo!()
+        self.host.set_slider_value(id, value)
     }
 
     /// C# `SetSliderRange(id, min, max)`.
     pub fn set_slider_range(&self, id: i32, min: i32, max: i32) {
-        todo!()
+        self.host.set_slider_range(id, min, max)
     }
 
     /// C# `SetTooltip(id, Func<string>)`: shown on hover; the text is asked again each time so it follows the language.
     pub fn set_tooltip(&self, id: i32, text: TextFn) {
-        todo!()
+        self.host.set_control_tooltip(id, text)
     }
 
     /// C# `SetTooltip(id, string)` (the overload with a fixed text): set once at `attach`, does not follow the language. A different name because Rust has no overloads.
     pub fn set_tooltip_text(&self, id: i32, text: &str) {
-        todo!()
+        self.host.set_control_tooltip(id, super::page_view::fixed_text(text))
     }
 
     /// C# `CurrentShortcutTexts()`.
     pub fn current_shortcut_texts(&self) -> BTreeMap<String, String> {
-        todo!()
+        self.host.current_shortcut_texts()
     }
 
     /// C# `SetEnabled(id, enabled)`.
     pub fn set_enabled(&self, id: i32, enabled: bool) {
-        todo!()
+        self.host.set_control_enabled(id, enabled)
     }
 
     /// C# `IsEnabled(id)`.
     pub fn is_enabled(&self, id: i32) -> bool {
-        todo!()
+        self.host.is_control_enabled(id)
     }
 
     /// C# `SetVisible(id, visible)`.
     pub fn set_visible(&self, id: i32, visible: bool) {
-        todo!()
+        self.host.set_control_visible(id, visible)
     }
 
     /// C# `Focus(id)`.
     pub fn focus(&self, id: i32) {
-        todo!()
+        self.host.focus_control(id)
     }
 
     /// C# `Relayout()`.
     pub fn relayout(&self) {
-        todo!()
+        self.host.relayout_active_page()
     }
 
     /// C# `ShowWarning(title, message)`.
     pub fn show_warning(&self, title: &str, message: &str) {
-        todo!()
+        self.host.warn(title, message)
     }
 
     /// C# `PostToUi(action)` from the UI thread or a worker: `action` runs later on the Settings window's UI thread with the window's context. Equal to
     /// `self.ui_post().post(action)`.
     pub fn post_to_ui(&self, action: ContextUiAction) {
-        todo!()
+        self.ui_post().post(action)
     }
 
     /// The `Send + Sync` poster a worker thread holds (a page cannot move `self` to a worker: `Rc`).
     pub fn ui_post(&self) -> Arc<dyn SettingsUiPost> {
-        todo!()
+        self.host.ui_post()
     }
 
     /// C# `RunExplorer(request)`: `request.error_message` set -> `show_warning(dialog.settingsOpenFailed.title, message)` and stop; `arguments` `None` -> nothing;
     /// else `error = host.start_explorer(arguments)` and, when `Some`, the same warning with the error.
     pub fn run_explorer(&self, request: &SettingsExplorerRequest) {
-        todo!()
+        if let Some(message) = request.error_message.as_deref() {
+            self.show_warning(
+                &Localizer::current().get(keys::DIALOG_SETTINGS_OPEN_FAILED_TITLE),
+                message,
+            );
+            return;
+        }
+        if let Some(arguments) = request.arguments.as_deref() {
+            if let Some(error) = self.host.start_explorer(arguments) {
+                self.show_warning(
+                    &Localizer::current().get(keys::DIALOG_SETTINGS_OPEN_FAILED_TITLE),
+                    &error,
+                );
+            }
+        }
     }
 
     /// C# `ActionsJson`.
     pub fn actions_json(&self) -> String {
-        todo!()
+        self.host.actions_json()
     }
 
     /// C# `CollectActionsJson()`.
     pub fn collect_actions_json(&self) -> String {
-        todo!()
+        self.host.refresh_actions_json_from_pages()
     }
 
     /// C# `CommitActionsJson(json, source)`; `source_key` = `SettingsPageView::key` of the calling page.
     pub fn commit_actions_json(&self, json: &str, source_key: &str) {
-        todo!()
+        self.host.set_actions_json(json, source_key)
     }
 
     /// C# `EditActionProfiles(actions)`: opens the editor modally over the Settings window. `Ok(Some(list))` -> `Some(list)`; `Ok(None)` (cancelled) -> `None` with NO
     /// notice; `Err(ActionProfilesUnavailable)` -> `show_warning(dialog.openEditorFailed.title, dialog.openEditorFailed.message)` and `None`.
     pub fn edit_action_profiles(&self, actions: &[ReviewAction]) -> Option<Vec<ReviewAction>> {
-        todo!()
+        match self.host.show_action_profiles(self.owner(), actions) {
+            Ok(result) => result,
+            Err(_) => {
+                let localizer = Localizer::current();
+                self.show_warning(
+                    &localizer.get(keys::DIALOG_OPEN_EDITOR_FAILED_TITLE),
+                    &localizer.get(keys::DIALOG_OPEN_EDITOR_FAILED_MESSAGE),
+                );
+                None
+            }
+        }
+    }
+}
+
+struct DetachedHost {
+    presenter: SharedSettingsPresenter,
+}
+
+impl SettingsPageHost for DetachedHost {
+    fn presenter(&self) -> SharedSettingsPresenter {
+        Rc::clone(&self.presenter)
+    }
+    fn hwnd(&self) -> Hwnd {
+        0
+    }
+    fn files(&self) -> Option<Rc<dyn ShellFileDialog>> {
+        None
+    }
+    fn decoder_factory(&self) -> Option<Arc<dyn ImageDecoderFactory>> {
+        None
+    }
+    fn version(&self) -> Option<String> {
+        None
+    }
+    fn open_url(&self, _url: &str) -> Result<(), String> {
+        Err("detached".to_owned())
+    }
+    fn start_explorer(&self, _arguments: &str) -> Option<String> {
+        Some("detached".to_owned())
+    }
+    fn show_action_profiles(
+        &self,
+        _owner: Hwnd,
+        _actions: &[ReviewAction],
+    ) -> Result<Option<Vec<ReviewAction>>, ActionProfilesUnavailable> {
+        Err(ActionProfilesUnavailable)
+    }
+    fn control_text(&self, _id: i32) -> String {
+        String::new()
+    }
+    fn set_control_text(&self, _id: i32, _text: &str) {}
+    fn is_control_checked(&self, _id: i32) -> bool {
+        false
+    }
+    fn set_control_checked(&self, _id: i32, _value: bool) {}
+    fn combo_selected_index(&self, _id: i32) -> i32 {
+        -1
+    }
+    fn set_combo_selected_index(&self, _id: i32, _index: i32) {}
+    fn set_combo_items(&self, _id: i32, _items: &[String], _selected: i32) {}
+    fn slider_value(&self, _id: i32) -> i32 {
+        0
+    }
+    fn set_slider_value(&self, _id: i32, _value: i32) {}
+    fn set_slider_range(&self, _id: i32, _min: i32, _max: i32) {}
+    fn set_control_tooltip(&self, _id: i32, _text: TextFn) {}
+    fn current_shortcut_texts(&self) -> BTreeMap<String, String> {
+        BTreeMap::new()
+    }
+    fn set_control_enabled(&self, _id: i32, _enabled: bool) {}
+    fn is_control_enabled(&self, _id: i32) -> bool {
+        false
+    }
+    fn set_control_visible(&self, _id: i32, _visible: bool) {}
+    fn focus_control(&self, _id: i32) {}
+    fn relayout_active_page(&self) {}
+    fn warn(&self, _title: &str, _message: &str) {}
+    fn ui_post(&self) -> Arc<dyn SettingsUiPost> {
+        Arc::new(DetachedPost)
+    }
+    fn actions_json(&self) -> String {
+        String::new()
+    }
+    fn refresh_actions_json_from_pages(&self) -> String {
+        String::new()
+    }
+    fn set_actions_json(&self, _json: &str, _source_key: &str) {}
+}
+
+struct DetachedPost;
+
+impl SettingsUiPost for DetachedPost {
+    fn post(&self, _action: ContextUiAction) {}
+}
+
+#[derive(Debug)]
+struct InertShellIntegration;
+
+impl ShellIntegration for InertShellIntegration {
+    fn get_state(&self, _executable_path: &str) -> ShellMenuState {
+        ShellMenuState::NotRegistered
+    }
+    fn register(&self, _executable_path: &str) -> std::io::Result<()> {
+        Ok(())
+    }
+    fn unregister(&self) -> std::io::Result<()> {
+        Ok(())
     }
 }
 
 /// The `FieldContext` of the ambient language for the presenter calls that need one (C# reads the ambient `Tr`): builds `FieldContext { texts, numbers }` from
 /// `Localizer::current()` and `pr_l10n::localizer::number_culture()` and runs `f` with it (D-W8-4).
 pub fn with_field_context<R>(f: impl FnOnce(&FieldContext<'_>) -> R) -> R {
-    todo!()
+    let texts = Localizer::current();
+    let numbers = number_culture();
+    f(&FieldContext {
+        texts: &texts,
+        numbers: &numbers,
+    })
 }

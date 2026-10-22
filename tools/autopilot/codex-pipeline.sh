@@ -350,6 +350,8 @@ run_unit() {
   usage_call fresh; quota_used; pct0="$QUSED"
   reset_unit "$u" "$wt" "$br"
   git -C "$REPO" worktree add -q -b "$br" "$wt" "$IBR" >>"$LOGDIR/$u.log" 2>&1 || { fail_unit "$u" "$wt" "worktree add failed"; return 1; }
+  # the Codex sandbox may write only to its cwd (per-workspace SID, an ACL grant on a shared dir does not work): per-unit target INSIDE the worktree
+  export CARGO_TARGET_DIR="$wt/target"
   c="$wt/contracts/$u.md"; [ -f "$c" ] || { fail_unit "$u" "$wt" "no contract $c"; return 1; }
   mapfile -t OWN < <($LIB owned "$c" | tr -d '\r')
   [ "${#OWN[@]}" -gt 0 ] || { fail_unit "$u" "$wt" "contract lists no owned files"; return 1; }

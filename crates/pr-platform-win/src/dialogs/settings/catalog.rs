@@ -3,8 +3,6 @@
 //!
 //! ADDING A PAGE = one line in [`FACTORIES`], kept in ALPHABETICAL order of the key so merges do not conflict (the C# comment). The seven pages exist in the baseline,
 //! so [`is_complete`] is `true` and the secondary window router (W8-18o) opens Settings through this catalog.
-#![allow(unused_variables, dead_code)] // stub: the porter removes this line with the last `todo!()`
-
 use std::fmt;
 
 use super::builder::inputs::SettingsPageBuilder;
@@ -17,7 +15,9 @@ use super::pages::general::GeneralSettingsPage;
 use super::pages::mouse::MouseSettingsPage;
 use super::pages::performance::PerformanceSettingsPage;
 use super::pages::shortcuts::ShortcutsSettingsPage;
+use pr_app::presenters::settings::load::PAGES;
 use pr_app::presenters::settings_form_state::SettingsFormState;
+use pr_l10n::{keys, localizer::Localizer};
 
 /// A page constructor (C# `Func<ISettingsPageView>`): a plain function pointer, no captures.
 pub type PageFactory = fn() -> Box<dyn SettingsPageView>;
@@ -39,32 +39,50 @@ pub const FACTORIES: &[(&str, PageFactory)] = &[
 
 /// C# `ImplementedKeys`: the keys that have a Win32 page, in [`FACTORIES`] order.
 pub fn implemented_keys() -> Vec<&'static str> {
-    todo!()
+    FACTORIES.iter().map(|(key, _)| *key).collect()
 }
 
 /// C# `PendingKeys`: the keys of `pr_app::presenters::settings::load::PAGES` (navigation order) that have no factory.
 pub fn pending_keys() -> Vec<&'static str> {
-    todo!()
+    PAGES
+        .iter()
+        .map(|page| page.key)
+        .filter(|key| !FACTORIES.iter().any(|(factory_key, _)| factory_key == key))
+        .collect()
 }
 
 /// C# `IsComplete`: `pending_keys().is_empty()`.
 pub fn is_complete() -> bool {
-    todo!()
+    pending_keys().is_empty()
 }
 
 /// C# `CreatePages()`: one page per entry of `pr_app::presenters::settings::load::PAGES`, in that order; a key without a factory gets a [`PendingSettingsPage`].
 pub fn create_pages() -> Vec<Box<dyn SettingsPageView>> {
-    todo!()
+    let nav_keys: Vec<&str> = PAGES.iter().map(|page| page.key).collect();
+    create_pages_with(&nav_keys, FACTORIES)
 }
 
 /// [`create_pages`] over an explicit table and navigation list (the testable core; the production call passes [`FACTORIES`] and `PAGES`' keys).
 pub fn create_pages_with(nav_keys: &[&str], factories: &[(&str, PageFactory)]) -> Vec<Box<dyn SettingsPageView>> {
-    todo!()
+    nav_keys
+        .iter()
+        .map(|key| {
+            factories
+                .iter()
+                .find(|(factory_key, _)| factory_key == key)
+                .map(|(_, factory)| factory())
+                .unwrap_or_else(|| Box::new(PendingSettingsPage::new(*key)))
+        })
+        .collect()
 }
 
 /// [`pending_keys`] over an explicit table and navigation list.
 pub fn pending_keys_with(nav_keys: &[&str], factories: &[(&str, PageFactory)]) -> Vec<String> {
-    todo!()
+    nav_keys
+        .iter()
+        .filter(|key| !factories.iter().any(|(factory_key, _)| factory_key == *key))
+        .map(|key| (*key).to_owned())
+        .collect()
 }
 
 /// C# `PendingSettingsPage(key)`: the placeholder of a page that has no Win32 view yet. It declares ONE full-width note with the text of
@@ -84,7 +102,10 @@ impl fmt::Debug for PendingSettingsPage {
 
 impl PendingSettingsPage {
     pub fn new(key: impl Into<String>) -> Self {
-        todo!()
+        Self {
+            key: key.into(),
+            context: PageContextSlot::new(),
+        }
     }
 }
 
@@ -95,20 +116,24 @@ impl SettingsPageView for PendingSettingsPage {
 
     /// `page.note(Some(text_fn(|| Localizer::current().get(keys::SETTINGS_PAGE_PENDING))), false)`.
     fn declare(&mut self, page: &mut SettingsPageBuilder) {
-        todo!()
+        use super::page_view::text_fn;
+        page.note(
+            Some(text_fn(|| Localizer::current().get(keys::SETTINGS_PAGE_PENDING))),
+            false,
+        );
     }
 
     fn attach(&mut self, context: SettingsPageContext) {
-        todo!()
+        self.context.attach(context);
     }
 
     /// Nothing (C# empty body).
     fn load(&mut self, state: &SettingsFormState) {
-        todo!()
+        let _ = state;
     }
 
     /// Nothing (C# empty body).
     fn collect(&mut self, state: &mut SettingsFormState) {
-        todo!()
+        let _ = state;
     }
 }
