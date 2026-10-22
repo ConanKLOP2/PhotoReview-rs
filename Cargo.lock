@@ -149,6 +149,7 @@ dependencies = [
  "pr-core",
  "pr-imaging",
  "pr-imaging-raw",
+ "pr-l10n",
  "pr-libraw",
  "pr-platform-win",
  "pr-test-support",

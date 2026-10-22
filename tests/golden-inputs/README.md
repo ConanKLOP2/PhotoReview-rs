@@ -118,3 +118,7 @@ Goldens `bench-*`, `benchmark-*`, `slow-link-*`, `cli-arguments`, `cli-dataset-p
 ## Wave 8 batch B5 (dialogs and settings UI)
 
 25 commands, one oracle file per unit in `tools/oracle-cs/Commands/W8-18*.cs` and `W8-19*.cs` (case counts of the goldens: `contracts/README.md`, D-W8B5-1002). Generated with `./tools/oracle.ps1 -Commit d92d6aae -Command <name>` (twice, byte-identical). Commands: `dialog-template`, `dialog-layout`, `folder-picker-policy`, `painter-kinds`, `secondary-window-supports`, `dialog-zoom-diagnostics`, `dialog-action-profiles`, `dialog-benchmark-layout`, `dialog-benchmark-results`, `recovery-dialog-layout`, `recovery-dialog-details`, `recovery-dialog-dismiss`, `settings-catalog`, `settings-layout`, `settings-builder`, `settings-pages-diag-perf`, `settings-page-display`, `settings-page-files`, `settings-page-general`, `settings-page-mouse`, `settings-page-shortcuts`, `settings-dialog-frame`, `settings-dialog-state`, `settings-dialog-apply`, `settings-dialog-layout`. `painter-kinds` needs an interactive desktop for its `kind_for` rows.
+
+## Wave 8 batch B6 (shell start-up)
+
+7 commands, one oracle file per unit in `tools/oracle-cs/Commands/W8-17*.cs` (case counts: `contracts/README.md`, D-W8B6-102). Generated with `./tools/oracle.ps1 -Commit d92d6aae -Command <name>` (twice, byte-identical). Commands: `shell-launch`, `shell-error-log` (17a), `startup-cloak`, `shell-show-command` (17b), `shell-composition-registrations` (17c), `shell-startup-options` (17d), `shell-startup-texts` (17e). 20a and 20b have no oracle command (D-W8B6-51).

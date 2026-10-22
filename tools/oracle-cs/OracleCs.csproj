@@ -87,6 +87,9 @@
     <Compile Include="$(CSharpSrcDir)\src\PhotoReview.Shell.Win32\Viewing\ScrollBarGeometry.cs" Link="cs-baseline\ScrollBarGeometry.cs" />
     <Compile Include="$(CSharpSrcDir)\src\PhotoReview.Shell.Win32\Viewing\ScrollBarNative.cs" Link="cs-baseline\ScrollBarNative.cs" />
     <Compile Include="$(CSharpSrcDir)\src\PhotoReview.Shell.Win32\Dialogs\FolderPicker.cs" Link="cs-baseline\FolderPicker.cs" />
+    <Compile Include="$(CSharpSrcDir)\src\PhotoReview.App.Shared\LaunchArguments.cs" Link="cs-baseline\LaunchArguments.cs" />
+    <Compile Include="$(CSharpSrcDir)\src\PhotoReview.Shell.Win32\Startup\ShellLaunch.cs" Link="cs-baseline\ShellLaunch.cs" />
+    <Compile Include="$(CSharpSrcDir)\src\PhotoReview.Shell.Win32\Startup\ShellErrorLog.cs" Link="cs-baseline\ShellErrorLog.cs" />
   </ItemGroup>
 
   <ItemGroup>

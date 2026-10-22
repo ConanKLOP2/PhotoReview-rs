@@ -1,0 +1,322 @@
+{
+  "generator": "oracle-cs shell-error-log",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "id": "invalid-operation",
+      "utc": "2026-10-13T06:07:08Z",
+      "context": "ToolsMenu",
+      "exception": {
+        "type": "InvalidOperationException",
+        "message": "hộp thoại hỏng"
+      },
+      "kind": "format",
+      "text": "2026-10-13T06:07:08Z [ToolsMenu] System.InvalidOperationException 0x80131509: hộp thoại hỏng\r\n"
+    },
+    {
+      "id": "io-exception-hresult",
+      "utc": "2026-01-02T03:04:05Z",
+      "context": "ContextMenu",
+      "exception": {
+        "type": "IOException",
+        "message": "disk gone"
+      },
+      "kind": "format",
+      "text": "2026-01-02T03:04:05Z [ContextMenu] System.IO.IOException 0x80131620: disk gone\r\n"
+    },
+    {
+      "id": "argument-exception-hresult",
+      "utc": "2026-12-31T23:59:59Z",
+      "context": "ctx",
+      "exception": {
+        "type": "ArgumentException",
+        "message": "bad value"
+      },
+      "kind": "format",
+      "text": "2026-12-31T23:59:59Z [ctx] System.ArgumentException 0x80070057: bad value\r\n"
+    },
+    {
+      "id": "plain-exception-hresult",
+      "utc": "2026-10-13T06:07:08Z",
+      "context": "ctx",
+      "exception": {
+        "type": "Exception",
+        "message": "plain"
+      },
+      "kind": "format",
+      "text": "2026-10-13T06:07:08Z [ctx] System.Exception 0x80131500: plain\r\n"
+    },
+    {
+      "id": "unauthorized-hresult",
+      "utc": "2026-10-13T06:07:08Z",
+      "context": "ctx",
+      "exception": {
+        "type": "UnauthorizedAccessException",
+        "message": "denied"
+      },
+      "kind": "format",
+      "text": "2026-10-13T06:07:08Z [ctx] System.UnauthorizedAccessException 0x80070005: denied\r\n"
+    },
+    {
+      "id": "empty-message",
+      "utc": "2026-10-13T06:07:08Z",
+      "context": "ctx",
+      "exception": {
+        "type": "InvalidOperationException",
+        "message": ""
+      },
+      "kind": "format",
+      "text": "2026-10-13T06:07:08Z [ctx] System.InvalidOperationException 0x80131509: \r\n"
+    },
+    {
+      "id": "message-with-crlf-and-lf-and-cr",
+      "utc": "2026-10-13T06:07:08Z",
+      "context": "ctx",
+      "exception": {
+        "type": "InvalidOperationException",
+        "message": "one\r\ntwo\nthree\rfour"
+      },
+      "kind": "format",
+      "text": "2026-10-13T06:07:08Z [ctx] System.InvalidOperationException 0x80131509: one two three four\r\n"
+    },
+    {
+      "id": "message-with-unicode-line-separators",
+      "utc": "2026-10-13T06:07:08Z",
+      "context": "ctx",
+      "exception": {
+        "type": "InvalidOperationException",
+        "message": "a\u2028b\u2029c\u0085d"
+      },
+      "kind": "format",
+      "text": "2026-10-13T06:07:08Z [ctx] System.InvalidOperationException 0x80131509: a b c d\r\n"
+    },
+    {
+      "id": "message-with-form-feed-and-vertical-tab",
+      "utc": "2026-10-13T06:07:08Z",
+      "context": "ctx",
+      "exception": {
+        "type": "InvalidOperationException",
+        "message": "a\fb\u000Bc"
+      },
+      "kind": "format",
+      "text": "2026-10-13T06:07:08Z [ctx] System.InvalidOperationException 0x80131509: a b\u000Bc\r\n"
+    },
+    {
+      "id": "message-exactly-300-chars",
+      "utc": "2026-10-13T06:07:08Z",
+      "context": "ctx",
+      "exception": {
+        "type": "InvalidOperationException",
+        "message": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+      },
+      "kind": "format",
+      "text": "2026-10-13T06:07:08Z [ctx] System.InvalidOperationException 0x80131509: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\r\n"
+    },
+    {
+      "id": "message-301-chars-is-cut-to-300",
+      "utc": "2026-10-13T06:07:08Z",
+      "context": "ctx",
+      "exception": {
+        "type": "InvalidOperationException",
+        "message": "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy"
+      },
+      "kind": "format",
+      "text": "2026-10-13T06:07:08Z [ctx] System.InvalidOperationException 0x80131509: yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy\r\n"
+    },
+    {
+      "id": "inner-exception-is-brief",
+      "utc": "2026-10-13T06:07:08Z",
+      "context": "c",
+      "exception": {
+        "type": "InvalidOperationException",
+        "message": "outer",
+        "inner": {
+          "type": "IOException",
+          "message": "disk gone"
+        }
+      },
+      "kind": "format",
+      "text": "2026-10-13T06:07:08Z [c] System.InvalidOperationException 0x80131509: outer\r\n  inner: System.IO.IOException: disk gone\r\n"
+    },
+    {
+      "id": "inner-message-with-newlines-and-long",
+      "utc": "2026-10-13T06:07:08Z",
+      "context": "c",
+      "exception": {
+        "type": "InvalidOperationException",
+        "message": "outer",
+        "inner": {
+          "type": "Exception",
+          "message": "line1\nline2 qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq"
+        }
+      },
+      "kind": "format",
+      "text": "2026-10-13T06:07:08Z [c] System.InvalidOperationException 0x80131509: outer\r\n  inner: System.Exception: line1 line2 qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq\r\n"
+    },
+    {
+      "id": "empty-context",
+      "utc": "2026-10-13T06:07:08Z",
+      "context": "",
+      "exception": {
+        "type": "InvalidOperationException",
+        "message": "m"
+      },
+      "kind": "format",
+      "text": "2026-10-13T06:07:08Z [] System.InvalidOperationException 0x80131509: m\r\n"
+    },
+    {
+      "id": "depth-0",
+      "depth": 0,
+      "message": "shallow",
+      "kind": "thrown",
+      "frame_lines": 2,
+      "max_frames": 12,
+      "header_line": "2026-10-13T06:07:08Z [deep] System.InvalidOperationException 0x80131509: shallow"
+    },
+    {
+      "id": "depth-5",
+      "depth": 5,
+      "message": "few frames",
+      "kind": "thrown",
+      "frame_lines": 7,
+      "max_frames": 12,
+      "header_line": "2026-10-13T06:07:08Z [deep] System.InvalidOperationException 0x80131509: few frames"
+    },
+    {
+      "id": "depth-40-keeps-exactly-twelve-frames",
+      "depth": 40,
+      "message": "deep",
+      "kind": "thrown",
+      "frame_lines": 12,
+      "max_frames": 12,
+      "header_line": "2026-10-13T06:07:08Z [deep] System.InvalidOperationException 0x80131509: deep"
+    },
+    {
+      "id": "over-the-limit-keeps-the-newest-half-on-a-line-boundary",
+      "lines": 200,
+      "pad": 42,
+      "limit": 2002,
+      "kind": "truncate",
+      "text_length": 1081,
+      "under_limit": true,
+      "starts_with_old": true,
+      "has_after_tag": true,
+      "first_old": 180,
+      "last_old": 199,
+      "kept_old_lines": 20
+    },
+    {
+      "id": "cut-point-on-a-line-boundary",
+      "lines": 200,
+      "pad": 42,
+      "limit": 2000,
+      "kind": "truncate",
+      "text_length": 1081,
+      "under_limit": true,
+      "starts_with_old": true,
+      "has_after_tag": true,
+      "first_old": 180,
+      "last_old": 199,
+      "kept_old_lines": 20
+    },
+    {
+      "id": "under-the-limit-keeps-everything",
+      "lines": 10,
+      "pad": 42,
+      "limit": 100000,
+      "kind": "truncate",
+      "text_length": 581,
+      "under_limit": true,
+      "starts_with_old": true,
+      "has_after_tag": true,
+      "first_old": 0,
+      "last_old": 9,
+      "kept_old_lines": 10
+    },
+    {
+      "id": "exactly-at-the-limit-is-not-cut",
+      "lines": 10,
+      "pad": 42,
+      "limit": 500,
+      "kind": "truncate",
+      "text_length": 581,
+      "under_limit": false,
+      "starts_with_old": true,
+      "has_after_tag": true,
+      "first_old": 0,
+      "last_old": 9,
+      "kept_old_lines": 10
+    },
+    {
+      "id": "one-byte-over-the-limit-is-cut",
+      "lines": 10,
+      "pad": 42,
+      "limit": 499,
+      "kind": "truncate",
+      "text_length": 281,
+      "under_limit": true,
+      "starts_with_old": true,
+      "has_after_tag": true,
+      "first_old": 6,
+      "last_old": 9,
+      "kept_old_lines": 4
+    },
+    {
+      "id": "drive-that-does-not-exist",
+      "path_kind": "bad-drive",
+      "kind": "unusable",
+      "threw": false
+    },
+    {
+      "id": "path-that-is-too-long",
+      "path_kind": "long-name",
+      "kind": "unusable",
+      "threw": false
+    },
+    {
+      "id": "not-configured-does-nothing",
+      "configure": null,
+      "reports": [
+        "x"
+      ],
+      "kind": "report",
+      "current_path_set": false,
+      "file_exists": false,
+      "folder_created": false,
+      "lines": []
+    },
+    {
+      "id": "configured-writes-and-creates-the-folder",
+      "configure": "$ROOT\\sub\\shell-errors.log",
+      "reports": [
+        "ContextMenu",
+        "ToolsMenu"
+      ],
+      "kind": "report",
+      "current_path_set": true,
+      "file_exists": true,
+      "folder_created": true,
+      "lines": [
+        "<utc> [ContextMenu] System.InvalidOperationException 0x80131509: boom",
+        "<utc> [ToolsMenu] System.InvalidOperationException 0x80131509: boom"
+      ]
+    },
+    {
+      "id": "configured-but-no-report-writes-nothing",
+      "configure": "$ROOT\\none\\shell-errors.log",
+      "reports": [],
+      "kind": "report",
+      "current_path_set": true,
+      "file_exists": false,
+      "folder_created": false,
+      "lines": []
+    },
+    {
+      "kind": "constants",
+      "max_bytes": 262144,
+      "max_message_chars": 300,
+      "max_stack_frames": 12,
+      "file_name": "shell-errors.log"
+    }
+  ]
+}

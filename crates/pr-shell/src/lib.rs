@@ -4,6 +4,14 @@
 
 pub mod composition;
 
+/// Wave 8 batch B6 composition root and production dialog adapter (W8-17c; 17d/17e append theirs): see `startup/mod.rs`.
+#[cfg(windows)]
+pub mod startup;
+
 /// Phase 0 UI spike (docs/adr/R0001): Win32 window + Direct2D viewer used to measure switch time.
 #[cfg(all(windows, feature = "ui-spike"))]
 pub mod spike;
+
+/// Wave 8 batch B6 process entry point (W8-20a): the Rust `Program.cs`. `main.rs` is a three-line call into it (`contracts/W8-20a.md`).
+#[cfg(windows)]
+pub mod entry;

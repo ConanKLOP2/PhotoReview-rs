@@ -1,0 +1,227 @@
+{
+  "generator": "oracle-cs shell-startup-options",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "id": "no-environment",
+      "env": {},
+      "kind": "options",
+      "instance_name_prefix": "PhotoReviewShell",
+      "prefer_warp": false,
+      "warm_graphics": true,
+      "activate": true,
+      "install_process_hooks": true,
+      "start_perf_listener": true,
+      "smoke_timeout_ms": 30000
+    },
+    {
+      "id": "prefix-set",
+      "env": {
+        "PHOTOREVIEW_SHELL_INSTANCE_PREFIX": "TestPrefix123"
+      },
+      "kind": "options",
+      "instance_name_prefix": "TestPrefix123",
+      "prefer_warp": false,
+      "warm_graphics": true,
+      "activate": true,
+      "install_process_hooks": true,
+      "start_perf_listener": true,
+      "smoke_timeout_ms": 30000
+    },
+    {
+      "id": "prefix-empty-uses-the-default",
+      "env": {
+        "PHOTOREVIEW_SHELL_INSTANCE_PREFIX": ""
+      },
+      "kind": "options",
+      "instance_name_prefix": "PhotoReviewShell",
+      "prefer_warp": false,
+      "warm_graphics": true,
+      "activate": true,
+      "install_process_hooks": true,
+      "start_perf_listener": true,
+      "smoke_timeout_ms": 30000
+    },
+    {
+      "id": "prefix-whitespace-is-kept",
+      "env": {
+        "PHOTOREVIEW_SHELL_INSTANCE_PREFIX": "  "
+      },
+      "kind": "options",
+      "instance_name_prefix": "  ",
+      "prefer_warp": false,
+      "warm_graphics": true,
+      "activate": true,
+      "install_process_hooks": true,
+      "start_perf_listener": true,
+      "smoke_timeout_ms": 30000
+    },
+    {
+      "id": "warp-1",
+      "env": {
+        "PHOTOREVIEW_SHELL_WARP": "1"
+      },
+      "kind": "options",
+      "instance_name_prefix": "PhotoReviewShell",
+      "prefer_warp": true,
+      "warm_graphics": true,
+      "activate": true,
+      "install_process_hooks": true,
+      "start_perf_listener": true,
+      "smoke_timeout_ms": 30000
+    },
+    {
+      "id": "warp-0",
+      "env": {
+        "PHOTOREVIEW_SHELL_WARP": "0"
+      },
+      "kind": "options",
+      "instance_name_prefix": "PhotoReviewShell",
+      "prefer_warp": false,
+      "warm_graphics": true,
+      "activate": true,
+      "install_process_hooks": true,
+      "start_perf_listener": true,
+      "smoke_timeout_ms": 30000
+    },
+    {
+      "id": "warp-true-is-not-one",
+      "env": {
+        "PHOTOREVIEW_SHELL_WARP": "true"
+      },
+      "kind": "options",
+      "instance_name_prefix": "PhotoReviewShell",
+      "prefer_warp": false,
+      "warm_graphics": true,
+      "activate": true,
+      "install_process_hooks": true,
+      "start_perf_listener": true,
+      "smoke_timeout_ms": 30000
+    },
+    {
+      "id": "warp-padded-one-is-not-one",
+      "env": {
+        "PHOTOREVIEW_SHELL_WARP": " 1"
+      },
+      "kind": "options",
+      "instance_name_prefix": "PhotoReviewShell",
+      "prefer_warp": false,
+      "warm_graphics": true,
+      "activate": true,
+      "install_process_hooks": true,
+      "start_perf_listener": true,
+      "smoke_timeout_ms": 30000
+    },
+    {
+      "id": "warp-empty",
+      "env": {
+        "PHOTOREVIEW_SHELL_WARP": ""
+      },
+      "kind": "options",
+      "instance_name_prefix": "PhotoReviewShell",
+      "prefer_warp": false,
+      "warm_graphics": true,
+      "activate": true,
+      "install_process_hooks": true,
+      "start_perf_listener": true,
+      "smoke_timeout_ms": 30000
+    },
+    {
+      "id": "nowarm-1",
+      "env": {
+        "PHOTOREVIEW_SHELL_NOWARM": "1"
+      },
+      "kind": "options",
+      "instance_name_prefix": "PhotoReviewShell",
+      "prefer_warp": false,
+      "warm_graphics": false,
+      "activate": true,
+      "install_process_hooks": true,
+      "start_perf_listener": true,
+      "smoke_timeout_ms": 30000
+    },
+    {
+      "id": "nowarm-0",
+      "env": {
+        "PHOTOREVIEW_SHELL_NOWARM": "0"
+      },
+      "kind": "options",
+      "instance_name_prefix": "PhotoReviewShell",
+      "prefer_warp": false,
+      "warm_graphics": true,
+      "activate": true,
+      "install_process_hooks": true,
+      "start_perf_listener": true,
+      "smoke_timeout_ms": 30000
+    },
+    {
+      "id": "nowarm-true-is-not-one",
+      "env": {
+        "PHOTOREVIEW_SHELL_NOWARM": "true"
+      },
+      "kind": "options",
+      "instance_name_prefix": "PhotoReviewShell",
+      "prefer_warp": false,
+      "warm_graphics": true,
+      "activate": true,
+      "install_process_hooks": true,
+      "start_perf_listener": true,
+      "smoke_timeout_ms": 30000
+    },
+    {
+      "id": "nowarm-empty",
+      "env": {
+        "PHOTOREVIEW_SHELL_NOWARM": ""
+      },
+      "kind": "options",
+      "instance_name_prefix": "PhotoReviewShell",
+      "prefer_warp": false,
+      "warm_graphics": true,
+      "activate": true,
+      "install_process_hooks": true,
+      "start_perf_listener": true,
+      "smoke_timeout_ms": 30000
+    },
+    {
+      "id": "all-three-set",
+      "env": {
+        "PHOTOREVIEW_SHELL_INSTANCE_PREFIX": "P",
+        "PHOTOREVIEW_SHELL_WARP": "1",
+        "PHOTOREVIEW_SHELL_NOWARM": "1"
+      },
+      "kind": "options",
+      "instance_name_prefix": "P",
+      "prefer_warp": true,
+      "warm_graphics": false,
+      "activate": true,
+      "install_process_hooks": true,
+      "start_perf_listener": true,
+      "smoke_timeout_ms": 30000
+    },
+    {
+      "id": "folder-already-open",
+      "kind": "text",
+      "text": "This folder is already open in another Photo Review window."
+    },
+    {
+      "id": "app-already-running",
+      "kind": "text",
+      "text": "Photo Review is already running but did not respond. Close it and try again."
+    },
+    {
+      "id": "app-title",
+      "kind": "text",
+      "text": "Photo Review"
+    },
+    {
+      "id": "constants",
+      "kind": "constants",
+      "exit_startup_failed": 1,
+      "exit_smoke_timeout": 7,
+      "max_loop_faults": 50,
+      "explorer_prefetch_timeout_ms": 3000,
+      "forward_coalesce_window_ms": 750,
+      "instance_prefix": "PhotoReviewShell"
+    }
+  ]
+}

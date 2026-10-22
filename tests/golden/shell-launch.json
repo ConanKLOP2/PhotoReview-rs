@@ -1,0 +1,408 @@
+{
+  "generator": "oracle-cs shell-launch",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "id": "no-arguments",
+      "args": [],
+      "cwd": null,
+      "kind": "launch",
+      "arguments": [],
+      "initial_file": null,
+      "initial_folder": null,
+      "launch_folder": null,
+      "initial_path": null,
+      "smoke": false,
+      "existing_paths": []
+    },
+    {
+      "id": "existing-file",
+      "args": [
+        "$ROOT\\a.jpg"
+      ],
+      "cwd": null,
+      "kind": "launch",
+      "arguments": [
+        "$ROOT\\a.jpg"
+      ],
+      "initial_file": "$ROOT\\a.jpg",
+      "initial_folder": null,
+      "launch_folder": "$ROOT",
+      "initial_path": "$ROOT\\a.jpg",
+      "smoke": false,
+      "existing_paths": [
+        "$ROOT\\a.jpg"
+      ]
+    },
+    {
+      "id": "folder-with-trailing-separator",
+      "args": [
+        "$ROOT\\photos\\"
+      ],
+      "cwd": null,
+      "kind": "launch",
+      "arguments": [
+        "$ROOT\\photos"
+      ],
+      "initial_file": null,
+      "initial_folder": "$ROOT\\photos",
+      "launch_folder": "$ROOT\\photos",
+      "initial_path": "$ROOT\\photos",
+      "smoke": false,
+      "existing_paths": [
+        "$ROOT\\photos"
+      ]
+    },
+    {
+      "id": "folder-with-dot-dot-segment",
+      "args": [
+        "$ROOT\\photos\\sub\\.."
+      ],
+      "cwd": null,
+      "kind": "launch",
+      "arguments": [
+        "$ROOT\\photos"
+      ],
+      "initial_file": null,
+      "initial_folder": "$ROOT\\photos",
+      "launch_folder": "$ROOT\\photos",
+      "initial_path": "$ROOT\\photos",
+      "smoke": false,
+      "existing_paths": [
+        "$ROOT\\photos"
+      ]
+    },
+    {
+      "id": "folder-other-case",
+      "args": [
+        "$ROOT\\PHOTOS"
+      ],
+      "cwd": null,
+      "kind": "launch",
+      "arguments": [
+        "$ROOT\\PHOTOS"
+      ],
+      "initial_file": null,
+      "initial_folder": "$ROOT\\PHOTOS",
+      "launch_folder": "$ROOT\\PHOTOS",
+      "initial_path": "$ROOT\\PHOTOS",
+      "smoke": false,
+      "existing_paths": [
+        "$ROOT\\PHOTOS"
+      ]
+    },
+    {
+      "id": "folder-then-file-prefers-the-file",
+      "args": [
+        "$ROOT\\photos",
+        "$ROOT\\a.jpg"
+      ],
+      "cwd": null,
+      "kind": "launch",
+      "arguments": [
+        "$ROOT\\photos",
+        "$ROOT\\a.jpg"
+      ],
+      "initial_file": "$ROOT\\a.jpg",
+      "initial_folder": "$ROOT\\photos",
+      "launch_folder": "$ROOT",
+      "initial_path": "$ROOT\\a.jpg",
+      "smoke": false,
+      "existing_paths": [
+        "$ROOT\\photos",
+        "$ROOT\\a.jpg"
+      ]
+    },
+    {
+      "id": "file-in-subfolder-then-folder",
+      "args": [
+        "$ROOT\\photos\\b.jpg",
+        "$ROOT\\photos\\sub"
+      ],
+      "cwd": null,
+      "kind": "launch",
+      "arguments": [
+        "$ROOT\\photos\\b.jpg",
+        "$ROOT\\photos\\sub"
+      ],
+      "initial_file": "$ROOT\\photos\\b.jpg",
+      "initial_folder": "$ROOT\\photos\\sub",
+      "launch_folder": "$ROOT\\photos",
+      "initial_path": "$ROOT\\photos\\b.jpg",
+      "smoke": false,
+      "existing_paths": [
+        "$ROOT\\photos\\b.jpg",
+        "$ROOT\\photos\\sub"
+      ]
+    },
+    {
+      "id": "file-then-file-keeps-the-first",
+      "args": [
+        "$ROOT\\a.jpg",
+        "$ROOT\\photos\\b.jpg"
+      ],
+      "cwd": null,
+      "kind": "launch",
+      "arguments": [
+        "$ROOT\\a.jpg",
+        "$ROOT\\photos\\b.jpg"
+      ],
+      "initial_file": "$ROOT\\a.jpg",
+      "initial_folder": null,
+      "launch_folder": "$ROOT",
+      "initial_path": "$ROOT\\a.jpg",
+      "smoke": false,
+      "existing_paths": [
+        "$ROOT\\a.jpg",
+        "$ROOT\\photos\\b.jpg"
+      ]
+    },
+    {
+      "id": "quoted-drive-root-is-repaired",
+      "args": [
+        "$DRIVE\""
+      ],
+      "cwd": null,
+      "kind": "launch",
+      "arguments": [
+        "$DRIVEROOT"
+      ],
+      "initial_file": null,
+      "initial_folder": "$DRIVEROOT",
+      "launch_folder": "$DRIVEROOT",
+      "initial_path": "$DRIVEROOT",
+      "smoke": false,
+      "existing_paths": [
+        "$DRIVEROOT"
+      ]
+    },
+    {
+      "id": "smoke-flag-is-extracted",
+      "args": [
+        "--smoke",
+        "$ROOT\\a.jpg"
+      ],
+      "cwd": null,
+      "kind": "launch",
+      "arguments": [
+        "$ROOT\\a.jpg"
+      ],
+      "initial_file": "$ROOT\\a.jpg",
+      "initial_folder": null,
+      "launch_folder": "$ROOT",
+      "initial_path": "$ROOT\\a.jpg",
+      "smoke": true,
+      "existing_paths": [
+        "$ROOT\\a.jpg"
+      ]
+    },
+    {
+      "id": "smoke-flag-only",
+      "args": [
+        "--smoke"
+      ],
+      "cwd": null,
+      "kind": "launch",
+      "arguments": [],
+      "initial_file": null,
+      "initial_folder": null,
+      "launch_folder": null,
+      "initial_path": null,
+      "smoke": true,
+      "existing_paths": []
+    },
+    {
+      "id": "smoke-flag-other-case-is-a-path",
+      "args": [
+        "--SMOKE"
+      ],
+      "cwd": null,
+      "kind": "launch",
+      "arguments": [
+        "--SMOKE"
+      ],
+      "initial_file": null,
+      "initial_folder": null,
+      "launch_folder": null,
+      "initial_path": null,
+      "smoke": false,
+      "existing_paths": []
+    },
+    {
+      "id": "smoke-flag-twice",
+      "args": [
+        "--smoke",
+        "--smoke",
+        "$ROOT\\photos"
+      ],
+      "cwd": null,
+      "kind": "launch",
+      "arguments": [
+        "$ROOT\\photos"
+      ],
+      "initial_file": null,
+      "initial_folder": "$ROOT\\photos",
+      "launch_folder": "$ROOT\\photos",
+      "initial_path": "$ROOT\\photos",
+      "smoke": true,
+      "existing_paths": [
+        "$ROOT\\photos"
+      ]
+    },
+    {
+      "id": "missing-path-is-kept-but-not-opened",
+      "args": [
+        "$ROOT\\nope.jpg"
+      ],
+      "cwd": null,
+      "kind": "launch",
+      "arguments": [
+        "$ROOT\\nope.jpg"
+      ],
+      "initial_file": null,
+      "initial_folder": null,
+      "launch_folder": null,
+      "initial_path": null,
+      "smoke": false,
+      "existing_paths": []
+    },
+    {
+      "id": "missing-then-existing-file",
+      "args": [
+        "$ROOT\\nope.jpg",
+        "$ROOT\\a.jpg"
+      ],
+      "cwd": null,
+      "kind": "launch",
+      "arguments": [
+        "$ROOT\\nope.jpg",
+        "$ROOT\\a.jpg"
+      ],
+      "initial_file": "$ROOT\\a.jpg",
+      "initial_folder": null,
+      "launch_folder": "$ROOT",
+      "initial_path": "$ROOT\\a.jpg",
+      "smoke": false,
+      "existing_paths": [
+        "$ROOT\\a.jpg"
+      ]
+    },
+    {
+      "id": "relative-file-uses-the-full-path-folder",
+      "args": [
+        "a.jpg"
+      ],
+      "cwd": "$ROOT",
+      "kind": "launch",
+      "arguments": [
+        "a.jpg"
+      ],
+      "initial_file": "a.jpg",
+      "initial_folder": null,
+      "launch_folder": "$ROOT",
+      "initial_path": "a.jpg",
+      "smoke": false,
+      "existing_paths": [
+        "$ROOT\\a.jpg"
+      ]
+    },
+    {
+      "id": "relative-folder-is-made-canonical",
+      "args": [
+        "photos"
+      ],
+      "cwd": "$ROOT",
+      "kind": "launch",
+      "arguments": [
+        "$ROOT\\photos"
+      ],
+      "initial_file": null,
+      "initial_folder": "$ROOT\\photos",
+      "launch_folder": "$ROOT\\photos",
+      "initial_path": "$ROOT\\photos",
+      "smoke": false,
+      "existing_paths": [
+        "$ROOT\\photos"
+      ]
+    },
+    {
+      "id": "relative-subfolder-file",
+      "args": [
+        "photos\\b.jpg"
+      ],
+      "cwd": "$ROOT",
+      "kind": "launch",
+      "arguments": [
+        "photos\\b.jpg"
+      ],
+      "initial_file": "photos\\b.jpg",
+      "initial_folder": null,
+      "launch_folder": "$ROOT\\photos",
+      "initial_path": "photos\\b.jpg",
+      "smoke": false,
+      "existing_paths": [
+        "$ROOT\\photos\\b.jpg"
+      ]
+    },
+    {
+      "id": "empty-argument-is-kept",
+      "args": [
+        ""
+      ],
+      "cwd": null,
+      "kind": "launch",
+      "arguments": [
+        ""
+      ],
+      "initial_file": null,
+      "initial_folder": null,
+      "launch_folder": null,
+      "initial_path": null,
+      "smoke": false,
+      "existing_paths": []
+    },
+    {
+      "id": "whitespace-argument-is-kept",
+      "args": [
+        "   "
+      ],
+      "cwd": null,
+      "kind": "launch",
+      "arguments": [
+        "   "
+      ],
+      "initial_file": null,
+      "initial_folder": null,
+      "launch_folder": null,
+      "initial_path": null,
+      "smoke": false,
+      "existing_paths": []
+    },
+    {
+      "id": "file-and-missing-folder-forward-only-the-file",
+      "args": [
+        "$ROOT\\a.jpg",
+        "$ROOT\\missing-folder\\"
+      ],
+      "cwd": null,
+      "kind": "launch",
+      "arguments": [
+        "$ROOT\\a.jpg",
+        "$ROOT\\missing-folder\\"
+      ],
+      "initial_file": "$ROOT\\a.jpg",
+      "initial_folder": null,
+      "launch_folder": "$ROOT",
+      "initial_path": "$ROOT\\a.jpg",
+      "smoke": false,
+      "existing_paths": [
+        "$ROOT\\a.jpg"
+      ]
+    },
+    {
+      "kind": "constants",
+      "prefix": "PhotoReviewShell",
+      "smoke_argument": "--smoke"
+    }
+  ]
+}

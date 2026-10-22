@@ -1,0 +1,328 @@
+{
+  "generator": "oracle-cs shell-composition-registrations",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "kind": "registrations",
+      "id": "shell-composition-root-baseline",
+      "count": 50,
+      "descriptors": [
+        {
+          "index": 0,
+          "service_type": "PhotoReview.Shell.Win32.Startup.ShellPresentationHub",
+          "lifetime": "Singleton",
+          "shape": "instance"
+        },
+        {
+          "index": 1,
+          "service_type": "PhotoReview.Shell.Win32.Startup.ShellNoticeSink",
+          "lifetime": "Singleton",
+          "shape": "type",
+          "implementation_type": "PhotoReview.Shell.Win32.Startup.ShellNoticeSink"
+        },
+        {
+          "index": 2,
+          "service_type": "PhotoReview.Core.Abstractions.IUiScheduler",
+          "lifetime": "Singleton",
+          "shape": "instance"
+        },
+        {
+          "index": 3,
+          "service_type": "PhotoReview.Core.Abstractions.IUiDispatcher",
+          "lifetime": "Singleton",
+          "shape": "instance"
+        },
+        {
+          "index": 4,
+          "service_type": "PhotoReview.App.Services.IClipboardService",
+          "lifetime": "Singleton",
+          "shape": "factory"
+        },
+        {
+          "index": 5,
+          "service_type": "PhotoReview.Shell.Win32.Dialogs.FolderPicker",
+          "lifetime": "Singleton",
+          "shape": "factory"
+        },
+        {
+          "index": 6,
+          "service_type": "PhotoReview.App.Coordinators.IFolderPicker",
+          "lifetime": "Singleton",
+          "shape": "type",
+          "implementation_type": "PhotoReview.Shell.Win32.Startup.ShellFolderPickerAdapter"
+        },
+        {
+          "index": 7,
+          "service_type": "PhotoReview.Shell.Win32.Dialogs.SecondaryWindowFallback",
+          "lifetime": "Singleton",
+          "shape": "factory"
+        },
+        {
+          "index": 8,
+          "service_type": "PhotoReview.Shell.Win32.Dialogs.IShellFileDialog",
+          "lifetime": "Singleton",
+          "shape": "type",
+          "implementation_type": "PhotoReview.Shell.Win32.Dialogs.NativeShellFileDialog"
+        },
+        {
+          "index": 9,
+          "service_type": "PhotoReview.Shell.Win32.Dialogs.SecondaryWindowPortHost",
+          "lifetime": "Singleton",
+          "shape": "factory"
+        },
+        {
+          "index": 10,
+          "service_type": "PhotoReview.App.Services.IZoomPromptService",
+          "lifetime": "Singleton",
+          "shape": "factory"
+        },
+        {
+          "index": 11,
+          "service_type": "PhotoReview.Core.Abstractions.IDialogService",
+          "lifetime": "Singleton",
+          "shape": "factory"
+        },
+        {
+          "index": 12,
+          "service_type": "PhotoReview.Core.Abstractions.IAppPaths",
+          "lifetime": "Singleton",
+          "shape": "factory"
+        },
+        {
+          "index": 13,
+          "service_type": "PhotoReview.Core.Abstractions.IFileSystem",
+          "lifetime": "Singleton",
+          "shape": "factory"
+        },
+        {
+          "index": 14,
+          "service_type": "PhotoReview.Core.Abstractions.ISourceReader",
+          "lifetime": "Singleton",
+          "shape": "factory"
+        },
+        {
+          "index": 15,
+          "service_type": "PhotoReview.Core.Abstractions.IClock",
+          "lifetime": "Singleton",
+          "shape": "type",
+          "implementation_type": "PhotoReview.Core.Abstractions.SystemClock"
+        },
+        {
+          "index": 16,
+          "service_type": "PhotoReview.Core.Abstractions.ILog",
+          "lifetime": "Singleton",
+          "shape": "instance"
+        },
+        {
+          "index": 17,
+          "service_type": "PhotoReview.Core.Settings.SettingsStore",
+          "lifetime": "Singleton",
+          "shape": "factory"
+        },
+        {
+          "index": 18,
+          "service_type": "PhotoReview.Core.Session.SessionStore",
+          "lifetime": "Singleton",
+          "shape": "factory"
+        },
+        {
+          "index": 19,
+          "service_type": "PhotoReview.Core.Session.SessionWriter",
+          "lifetime": "Singleton",
+          "shape": "factory"
+        },
+        {
+          "index": 20,
+          "service_type": "PhotoReview.App.Localization.LocalizationService",
+          "lifetime": "Singleton",
+          "shape": "factory"
+        },
+        {
+          "index": 21,
+          "service_type": "PhotoReview.Core.FileActions.OperationJournal",
+          "lifetime": "Singleton",
+          "shape": "factory"
+        },
+        {
+          "index": 22,
+          "service_type": "PhotoReview.Core.FileActions.RecoveryRetryService",
+          "lifetime": "Singleton",
+          "shape": "factory"
+        },
+        {
+          "index": 23,
+          "service_type": "PhotoReview.App.FileHashService",
+          "lifetime": "Singleton",
+          "shape": "factory"
+        },
+        {
+          "index": 24,
+          "service_type": "PhotoReview.Core.FileActions.FileActionService",
+          "lifetime": "Singleton",
+          "shape": "factory"
+        },
+        {
+          "index": 25,
+          "service_type": "PhotoReview.Core.FileActions.UndoService",
+          "lifetime": "Singleton",
+          "shape": "factory"
+        },
+        {
+          "index": 26,
+          "service_type": "PhotoReview.Core.Diagnostics.ReviewMetrics",
+          "lifetime": "Singleton",
+          "shape": "type",
+          "implementation_type": "PhotoReview.Core.Diagnostics.ReviewMetrics"
+        },
+        {
+          "index": 27,
+          "service_type": "PhotoReview.Core.Catalog.LatestExplorerSnapshot",
+          "lifetime": "Singleton",
+          "shape": "type",
+          "implementation_type": "PhotoReview.Core.Catalog.LatestExplorerSnapshot"
+        },
+        {
+          "index": 28,
+          "service_type": "PhotoReview.Core.Abstractions.IExplorerOrderProvider",
+          "lifetime": "Singleton",
+          "shape": "type",
+          "implementation_type": "PhotoReview.Platform.Windows.Explorer.ExplorerOrderService"
+        },
+        {
+          "index": 29,
+          "service_type": "PhotoReview.Core.Abstractions.IRecycleBin",
+          "lifetime": "Singleton",
+          "shape": "factory"
+        },
+        {
+          "index": 30,
+          "service_type": "PhotoReview.Core.Abstractions.ILiveOperationRegistry",
+          "lifetime": "Singleton",
+          "shape": "factory"
+        },
+        {
+          "index": 31,
+          "service_type": "PhotoReview.Core.Abstractions.IMemoryProbe",
+          "lifetime": "Singleton",
+          "shape": "factory"
+        },
+        {
+          "index": 32,
+          "service_type": "PhotoReview.Core.Abstractions.INaturalComparer",
+          "lifetime": "Singleton",
+          "shape": "factory"
+        },
+        {
+          "index": 33,
+          "service_type": "PhotoReview.Core.Abstractions.IDisplayClock",
+          "lifetime": "Singleton",
+          "shape": "factory"
+        },
+        {
+          "index": 34,
+          "service_type": "PhotoReview.Core.Abstractions.IKeyNameValidator",
+          "lifetime": "Singleton",
+          "shape": "type",
+          "implementation_type": "PhotoReview.App.Services.WpfKeyNameValidator"
+        },
+        {
+          "index": 35,
+          "service_type": "PhotoReview.App.Services.ViewportSizeSource",
+          "lifetime": "Singleton",
+          "shape": "type",
+          "implementation_type": "PhotoReview.App.Services.ViewportSizeSource"
+        },
+        {
+          "index": 36,
+          "service_type": "PhotoReview.App.Services.IPresentationObserver",
+          "lifetime": "Singleton",
+          "shape": "factory"
+        },
+        {
+          "index": 37,
+          "service_type": "PhotoReview.Imaging.Decoding.IImageDecoderFactory",
+          "lifetime": "Singleton",
+          "shape": "factory"
+        },
+        {
+          "index": 38,
+          "service_type": "PhotoReview.Imaging.Caching.ThumbnailCache",
+          "lifetime": "Singleton",
+          "shape": "factory"
+        },
+        {
+          "index": 39,
+          "service_type": "PhotoReview.Imaging.Caching.SourceBytesCachePolicy",
+          "lifetime": "Singleton",
+          "shape": "factory"
+        },
+        {
+          "index": 40,
+          "service_type": "PhotoReview.App.Services.PreviewStateContext",
+          "lifetime": "Singleton",
+          "shape": "type",
+          "implementation_type": "PhotoReview.App.Services.PreviewStateContext"
+        },
+        {
+          "index": 41,
+          "service_type": "PhotoReview.Imaging.Caching.PreviewImageService",
+          "lifetime": "Singleton",
+          "shape": "factory"
+        },
+        {
+          "index": 42,
+          "service_type": "System.Func",
+          "lifetime": "Singleton",
+          "shape": "factory"
+        },
+        {
+          "index": 43,
+          "service_type": "PhotoReview.App.ViewModels.ViewerState",
+          "lifetime": "Transient",
+          "shape": "type",
+          "implementation_type": "PhotoReview.App.ViewModels.ViewerState"
+        },
+        {
+          "index": 44,
+          "service_type": "PhotoReview.App.ViewModels.CompareViewModel",
+          "lifetime": "Transient",
+          "shape": "type",
+          "implementation_type": "PhotoReview.App.ViewModels.CompareViewModel"
+        },
+        {
+          "index": 45,
+          "service_type": "PhotoReview.Core.Catalog.ReviewCatalog",
+          "lifetime": "Transient",
+          "shape": "type",
+          "implementation_type": "PhotoReview.Core.Catalog.ReviewCatalog"
+        },
+        {
+          "index": 46,
+          "service_type": "PhotoReview.Core.Catalog.GenerationClock",
+          "lifetime": "Transient",
+          "shape": "type",
+          "implementation_type": "PhotoReview.Core.Catalog.GenerationClock"
+        },
+        {
+          "index": 47,
+          "service_type": "PhotoReview.App.ViewModels.MainViewModel",
+          "lifetime": "Transient",
+          "shape": "factory"
+        },
+        {
+          "index": 48,
+          "service_type": "PhotoReview.App.Composition.IPresentationSinkFactory",
+          "lifetime": "Singleton",
+          "shape": "factory"
+        },
+        {
+          "index": 49,
+          "service_type": "PhotoReview.Shell.Win32.Dialogs.IShellFolderDialog",
+          "lifetime": "Singleton",
+          "shape": "type",
+          "implementation_type": "PhotoReview.Shell.Win32.Dialogs.NativeShellFolderDialog"
+        }
+      ]
+    }
+  ]
+}

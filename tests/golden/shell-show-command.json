@@ -1,0 +1,62 @@
+{
+  "generator": "oracle-cs shell-show-command",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "id": "maximized-activate",
+      "state": "Maximized",
+      "activate": true,
+      "kind": "show_command",
+      "result": 3
+    },
+    {
+      "id": "maximized-no-activate",
+      "state": "Maximized",
+      "activate": false,
+      "kind": "show_command",
+      "result": 3
+    },
+    {
+      "id": "normal-activate",
+      "state": "Normal",
+      "activate": true,
+      "kind": "show_command",
+      "result": 1
+    },
+    {
+      "id": "normal-no-activate",
+      "state": "Normal",
+      "activate": false,
+      "kind": "show_command",
+      "result": 4
+    },
+    {
+      "id": "minimized-activate",
+      "state": "Minimized",
+      "activate": true,
+      "kind": "show_command",
+      "result": 1
+    },
+    {
+      "id": "minimized-no-activate",
+      "state": "Minimized",
+      "activate": false,
+      "kind": "show_command",
+      "result": 4
+    },
+    {
+      "id": "none-activate",
+      "state": null,
+      "activate": true,
+      "kind": "show_command",
+      "result": 1
+    },
+    {
+      "id": "none-no-activate",
+      "state": null,
+      "activate": false,
+      "kind": "show_command",
+      "result": 4
+    }
+  ]
+}
