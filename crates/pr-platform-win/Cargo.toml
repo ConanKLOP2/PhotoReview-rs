@@ -19,6 +19,8 @@ workspace = true
 pr-core.workspace = true
 pr-imaging.workspace = true
 pr-perf.workspace = true
+# D-W8B5-512: the Benchmark dialog (W8-18r/18s) names `pr_bench` profiles and results (`pr-bench` has no dependency on this crate).
+pr-bench.workspace = true
 # D-W8B1-1: the Direct2D/host types implement the `pr_app::services::render` and host traits (`pr-app` no longer depends on this crate).
 pr-app.workspace = true
 # D-W8B4O-11: `shell_overlay` names `pr_l10n::localizer::Localizer` (the overlay panels take `&Localizer`, W8-15e); `pr-l10n` has no dependency on this crate.

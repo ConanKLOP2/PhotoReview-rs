@@ -1,0 +1,122 @@
+{
+  "generator": "oracle-cs settings-catalog",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "static facts of the catalog",
+      "kind": "catalog",
+      "implemented_keys": [
+        "Diagnostics",
+        "Display",
+        "Files",
+        "General",
+        "Mouse",
+        "Performance",
+        "Shortcuts"
+      ],
+      "pending_keys": [],
+      "is_complete": true,
+      "nav_keys": [
+        "General",
+        "Display",
+        "Mouse",
+        "Performance",
+        "Shortcuts",
+        "Files",
+        "Diagnostics"
+      ],
+      "created_keys": [
+        "General",
+        "Display",
+        "Mouse",
+        "Performance",
+        "Shortcuts",
+        "Files",
+        "Diagnostics"
+      ],
+      "created_types": [
+        "GeneralSettingsPage",
+        "DisplaySettingsPage",
+        "MouseSettingsPage",
+        "PerformanceSettingsPage",
+        "ShortcutsSettingsPage",
+        "FilesSettingsPage",
+        "DiagnosticsSettingsPage"
+      ]
+    },
+    {
+      "name": "title General",
+      "kind": "page_title",
+      "key": "General",
+      "title": "General"
+    },
+    {
+      "name": "title Display",
+      "kind": "page_title",
+      "key": "Display",
+      "title": "Display"
+    },
+    {
+      "name": "title Mouse",
+      "kind": "page_title",
+      "key": "Mouse",
+      "title": "Mouse & zoom"
+    },
+    {
+      "name": "title Performance",
+      "kind": "page_title",
+      "key": "Performance",
+      "title": "Performance"
+    },
+    {
+      "name": "title Shortcuts",
+      "kind": "page_title",
+      "key": "Shortcuts",
+      "title": "Shortcuts"
+    },
+    {
+      "name": "title Files",
+      "kind": "page_title",
+      "key": "Files",
+      "title": "Files & safety"
+    },
+    {
+      "name": "title Diagnostics",
+      "kind": "page_title",
+      "key": "Diagnostics",
+      "title": "Diagnostics"
+    },
+    {
+      "name": "title of an unknown key is empty",
+      "kind": "page_title",
+      "key": "Nope",
+      "title": ""
+    },
+    {
+      "name": "title of an empty key is empty",
+      "kind": "page_title",
+      "key": "",
+      "title": ""
+    },
+    {
+      "name": "title lookup is case sensitive",
+      "kind": "page_title",
+      "key": "general",
+      "title": ""
+    },
+    {
+      "name": "pending page of a real key",
+      "kind": "pending_page",
+      "key": "Mouse",
+      "page_key": "Mouse",
+      "title": "Mouse & zoom"
+    },
+    {
+      "name": "pending page of an unknown key",
+      "kind": "pending_page",
+      "key": "Future",
+      "page_key": "Future",
+      "title": ""
+    }
+  ]
+}

@@ -1,0 +1,572 @@
+{
+ "command": "recovery-dialog-details",
+ "notes": [
+  "Feeds W8-18u (dialogs::recovery::path_panel). Reflection over RecoveryDialog; internal records of PhotoReview.App.Shared built with Activator; no window.",
+  "details_text -> text (BuildDetailsText) and action_label (Tr.RecoveryDetailAction, English). text_color -> color (TextColorOf). explorer_args -> args (what the Explorer seam received; $ROOT and $NODRIVE tokens). copy -> calls.",
+  "The Win32Exception branch of ShowInExplorer is not here (needs the message-box seam): hand-written Rust test."
+ ],
+ "cases": [
+  {
+   "name": "explain only",
+   "kind": "details_text",
+   "explain": "Explain.",
+   "action": "",
+   "source": null,
+   "destination": null,
+   "source_visible": false,
+   "destination_visible": false,
+   "group_heading": null,
+   "group_members": null
+  },
+  {
+   "name": "with action",
+   "kind": "details_text",
+   "explain": "Explain.",
+   "action": "Press Retry.",
+   "source": null,
+   "destination": null,
+   "source_visible": false,
+   "destination_visible": false,
+   "group_heading": null,
+   "group_members": null
+  },
+  {
+   "name": "source only",
+   "kind": "details_text",
+   "explain": "Explain.",
+   "action": "",
+   "source": {
+    "title": "Source",
+    "path": "C:\\src\\a.jpg",
+    "status_text": "Exists",
+    "status_tone": "Good",
+    "now": "Now: 4 bytes",
+    "journal": "Journal: 4 bytes",
+    "note": null
+   },
+   "destination": null,
+   "source_visible": true,
+   "destination_visible": false,
+   "group_heading": null,
+   "group_members": null
+  },
+  {
+   "name": "source and destination",
+   "kind": "details_text",
+   "explain": "Explain.",
+   "action": "Press Retry.",
+   "source": {
+    "title": "Source",
+    "path": "C:\\src\\a.jpg",
+    "status_text": "Exists",
+    "status_tone": "Good",
+    "now": "Now: 4 bytes",
+    "journal": "Journal: 4 bytes",
+    "note": null
+   },
+   "destination": {
+    "title": "Destination",
+    "path": "C:\\dst\\a.jpg",
+    "status_text": "Missing",
+    "status_tone": "Neutral",
+    "now": "",
+    "journal": "Journal: 4 bytes",
+    "note": "The destination folder is missing"
+   },
+   "source_visible": true,
+   "destination_visible": true,
+   "group_heading": null,
+   "group_members": null
+  },
+  {
+   "name": "destination with empty note",
+   "kind": "details_text",
+   "explain": "Explain.",
+   "action": "",
+   "source": {
+    "title": "Source",
+    "path": "C:\\src\\a.jpg",
+    "status_text": "Exists",
+    "status_tone": "Good",
+    "now": "Now: 4 bytes",
+    "journal": "Journal: 4 bytes",
+    "note": null
+   },
+   "destination": {
+    "title": "Destination",
+    "path": "C:\\dst\\a.jpg",
+    "status_text": "Exists",
+    "status_tone": "Warn",
+    "now": "Now: 9 bytes",
+    "journal": "Journal: 4 bytes",
+    "note": ""
+   },
+   "source_visible": true,
+   "destination_visible": true,
+   "group_heading": null,
+   "group_members": null
+  },
+  {
+   "name": "source hidden by flag",
+   "kind": "details_text",
+   "explain": "Explain.",
+   "action": "",
+   "source": {
+    "title": "Source",
+    "path": "C:\\src\\a.jpg",
+    "status_text": "Exists",
+    "status_tone": "Good",
+    "now": "Now: 4 bytes",
+    "journal": "Journal: 4 bytes",
+    "note": null
+   },
+   "destination": {
+    "title": "Destination",
+    "path": "C:\\dst\\a.jpg",
+    "status_text": "Missing",
+    "status_tone": "Neutral",
+    "now": "",
+    "journal": "Journal: 4 bytes",
+    "note": "The destination folder is missing"
+   },
+   "source_visible": false,
+   "destination_visible": true,
+   "group_heading": null,
+   "group_members": null
+  },
+  {
+   "name": "destination flag without destination",
+   "kind": "details_text",
+   "explain": "Explain.",
+   "action": "",
+   "source": {
+    "title": "Source",
+    "path": "C:\\src\\a.jpg",
+    "status_text": "Exists",
+    "status_tone": "Good",
+    "now": "Now: 4 bytes",
+    "journal": "Journal: 4 bytes",
+    "note": null
+   },
+   "destination": null,
+   "source_visible": true,
+   "destination_visible": true,
+   "group_heading": null,
+   "group_members": null
+  },
+  {
+   "name": "path without now and journal",
+   "kind": "details_text",
+   "explain": "Explain.",
+   "action": "",
+   "source": {
+    "title": "Source",
+    "path": "C:\\x.jpg",
+    "status_text": "Exists",
+    "status_tone": "Good",
+    "now": "",
+    "journal": "",
+    "note": null
+   },
+   "destination": null,
+   "source_visible": true,
+   "destination_visible": false,
+   "group_heading": null,
+   "group_members": null
+  },
+  {
+   "name": "group of two",
+   "kind": "details_text",
+   "explain": "Explain.",
+   "action": "",
+   "source": null,
+   "destination": null,
+   "source_visible": false,
+   "destination_visible": false,
+   "group_heading": "2 files in this group",
+   "group_members": [
+    {
+     "status": "Missing",
+     "source": "C:\\s\\1.jpg",
+     "destination": "C:\\d\\1.jpg"
+    },
+    {
+     "status": "Exists",
+     "source": "C:\\s\\2.jpg",
+     "destination": "(no destination)"
+    }
+   ]
+  },
+  {
+   "name": "group heading null with a member",
+   "kind": "details_text",
+   "explain": "Explain.",
+   "action": "",
+   "source": null,
+   "destination": null,
+   "source_visible": false,
+   "destination_visible": false,
+   "group_heading": null,
+   "group_members": [
+    {
+     "status": "Lost",
+     "source": "C:\\s\\1.jpg",
+     "destination": "C:\\d\\1.jpg"
+    }
+   ]
+  },
+  {
+   "name": "group with no members",
+   "kind": "details_text",
+   "explain": "Explain.",
+   "action": "",
+   "source": null,
+   "destination": null,
+   "source_visible": false,
+   "destination_visible": false,
+   "group_heading": "Heading",
+   "group_members": []
+  },
+  {
+   "name": "action and group",
+   "kind": "details_text",
+   "explain": "Explain.",
+   "action": "Do it.",
+   "source": null,
+   "destination": null,
+   "source_visible": false,
+   "destination_visible": false,
+   "group_heading": "Group",
+   "group_members": [
+    {
+     "status": "Exists",
+     "source": "s",
+     "destination": "d"
+    }
+   ]
+  },
+  {
+   "name": "text_color VerdictBadgeId good/warn/bad",
+   "kind": "text_color",
+   "verdict_tone": "Good",
+   "source_tone": "Warn",
+   "destination_tone": "Bad",
+   "id_name": "VerdictBadgeId"
+  },
+  {
+   "name": "text_color SourceStatusId good/warn/bad",
+   "kind": "text_color",
+   "verdict_tone": "Good",
+   "source_tone": "Warn",
+   "destination_tone": "Bad",
+   "id_name": "SourceStatusId"
+  },
+  {
+   "name": "text_color DestinationStatusId good/warn/bad",
+   "kind": "text_color",
+   "verdict_tone": "Good",
+   "source_tone": "Warn",
+   "destination_tone": "Bad",
+   "id_name": "DestinationStatusId"
+  },
+  {
+   "name": "text_color ErrorId good/warn/bad",
+   "kind": "text_color",
+   "verdict_tone": "Good",
+   "source_tone": "Warn",
+   "destination_tone": "Bad",
+   "id_name": "ErrorId"
+  },
+  {
+   "name": "text_color SummaryId good/warn/bad",
+   "kind": "text_color",
+   "verdict_tone": "Good",
+   "source_tone": "Warn",
+   "destination_tone": "Bad",
+   "id_name": "SummaryId"
+  },
+  {
+   "name": "text_color CheckStatusId good/warn/bad",
+   "kind": "text_color",
+   "verdict_tone": "Good",
+   "source_tone": "Warn",
+   "destination_tone": "Bad",
+   "id_name": "CheckStatusId"
+  },
+  {
+   "name": "text_color VerdictLabelId good/warn/bad",
+   "kind": "text_color",
+   "verdict_tone": "Good",
+   "source_tone": "Warn",
+   "destination_tone": "Bad",
+   "id_name": "VerdictLabelId"
+  },
+  {
+   "name": "text_color FilterEmptyId good/warn/bad",
+   "kind": "text_color",
+   "verdict_tone": "Good",
+   "source_tone": "Warn",
+   "destination_tone": "Bad",
+   "id_name": "FilterEmptyId"
+  },
+  {
+   "name": "text_color DetailsEmptyId good/warn/bad",
+   "kind": "text_color",
+   "verdict_tone": "Good",
+   "source_tone": "Warn",
+   "destination_tone": "Bad",
+   "id_name": "DetailsEmptyId"
+  },
+  {
+   "name": "text_color NoDestinationId good/warn/bad",
+   "kind": "text_color",
+   "verdict_tone": "Good",
+   "source_tone": "Warn",
+   "destination_tone": "Bad",
+   "id_name": "NoDestinationId"
+  },
+  {
+   "name": "text_color SourcePathId good/warn/bad",
+   "kind": "text_color",
+   "verdict_tone": "Good",
+   "source_tone": "Warn",
+   "destination_tone": "Bad",
+   "id_name": "SourcePathId"
+  },
+  {
+   "name": "text_color DestinationPathId good/warn/bad",
+   "kind": "text_color",
+   "verdict_tone": "Good",
+   "source_tone": "Warn",
+   "destination_tone": "Bad",
+   "id_name": "DestinationPathId"
+  },
+  {
+   "name": "text_color DetailsId good/warn/bad",
+   "kind": "text_color",
+   "verdict_tone": "Good",
+   "source_tone": "Warn",
+   "destination_tone": "Bad",
+   "id_name": "DetailsId"
+  },
+  {
+   "name": "text_color HeaderId good/warn/bad",
+   "kind": "text_color",
+   "verdict_tone": "Good",
+   "source_tone": "Warn",
+   "destination_tone": "Bad",
+   "id_name": "HeaderId"
+  },
+  {
+   "name": "text_color ListId good/warn/bad",
+   "kind": "text_color",
+   "verdict_tone": "Good",
+   "source_tone": "Warn",
+   "destination_tone": "Bad",
+   "id_name": "ListId"
+  },
+  {
+   "name": "text_color CloseId good/warn/bad",
+   "kind": "text_color",
+   "verdict_tone": "Good",
+   "source_tone": "Warn",
+   "destination_tone": "Bad",
+   "id_name": "CloseId"
+  },
+  {
+   "name": "text_color verdict tone Neutral",
+   "kind": "text_color",
+   "verdict_tone": "Neutral",
+   "source_tone": "Neutral",
+   "destination_tone": "Good",
+   "id_name": "VerdictBadgeId"
+  },
+  {
+   "name": "text_color source tone Neutral",
+   "kind": "text_color",
+   "verdict_tone": "Neutral",
+   "source_tone": "Neutral",
+   "destination_tone": "Neutral",
+   "id_name": "SourceStatusId"
+  },
+  {
+   "name": "text_color destination tone Neutral",
+   "kind": "text_color",
+   "verdict_tone": "Neutral",
+   "source_tone": "Neutral",
+   "destination_tone": "Neutral",
+   "id_name": "DestinationStatusId"
+  },
+  {
+   "name": "text_color verdict tone Good",
+   "kind": "text_color",
+   "verdict_tone": "Good",
+   "source_tone": "Good",
+   "destination_tone": "Info",
+   "id_name": "VerdictBadgeId"
+  },
+  {
+   "name": "text_color source tone Good",
+   "kind": "text_color",
+   "verdict_tone": "Neutral",
+   "source_tone": "Good",
+   "destination_tone": "Neutral",
+   "id_name": "SourceStatusId"
+  },
+  {
+   "name": "text_color destination tone Good",
+   "kind": "text_color",
+   "verdict_tone": "Neutral",
+   "source_tone": "Neutral",
+   "destination_tone": "Good",
+   "id_name": "DestinationStatusId"
+  },
+  {
+   "name": "text_color verdict tone Info",
+   "kind": "text_color",
+   "verdict_tone": "Info",
+   "source_tone": "Info",
+   "destination_tone": "Warn",
+   "id_name": "VerdictBadgeId"
+  },
+  {
+   "name": "text_color source tone Info",
+   "kind": "text_color",
+   "verdict_tone": "Neutral",
+   "source_tone": "Info",
+   "destination_tone": "Neutral",
+   "id_name": "SourceStatusId"
+  },
+  {
+   "name": "text_color destination tone Info",
+   "kind": "text_color",
+   "verdict_tone": "Neutral",
+   "source_tone": "Neutral",
+   "destination_tone": "Info",
+   "id_name": "DestinationStatusId"
+  },
+  {
+   "name": "text_color verdict tone Warn",
+   "kind": "text_color",
+   "verdict_tone": "Warn",
+   "source_tone": "Warn",
+   "destination_tone": "Bad",
+   "id_name": "VerdictBadgeId"
+  },
+  {
+   "name": "text_color source tone Warn",
+   "kind": "text_color",
+   "verdict_tone": "Neutral",
+   "source_tone": "Warn",
+   "destination_tone": "Neutral",
+   "id_name": "SourceStatusId"
+  },
+  {
+   "name": "text_color destination tone Warn",
+   "kind": "text_color",
+   "verdict_tone": "Neutral",
+   "source_tone": "Neutral",
+   "destination_tone": "Warn",
+   "id_name": "DestinationStatusId"
+  },
+  {
+   "name": "text_color verdict tone Bad",
+   "kind": "text_color",
+   "verdict_tone": "Bad",
+   "source_tone": "Bad",
+   "destination_tone": "Neutral",
+   "id_name": "VerdictBadgeId"
+  },
+  {
+   "name": "text_color source tone Bad",
+   "kind": "text_color",
+   "verdict_tone": "Neutral",
+   "source_tone": "Bad",
+   "destination_tone": "Neutral",
+   "id_name": "SourceStatusId"
+  },
+  {
+   "name": "text_color destination tone Bad",
+   "kind": "text_color",
+   "verdict_tone": "Neutral",
+   "source_tone": "Neutral",
+   "destination_tone": "Bad",
+   "id_name": "DestinationStatusId"
+  },
+  {
+   "name": "explorer_args \"$ROOT\\\\a.jpg\"",
+   "kind": "explorer_args",
+   "path": "$ROOT\\a.jpg"
+  },
+  {
+   "name": "explorer_args \"$ROOT\\\\with space.jpg\"",
+   "kind": "explorer_args",
+   "path": "$ROOT\\with space.jpg"
+  },
+  {
+   "name": "explorer_args \"$ROOT\\\\sub\\\\b.jpg\"",
+   "kind": "explorer_args",
+   "path": "$ROOT\\sub\\b.jpg"
+  },
+  {
+   "name": "explorer_args \"$ROOT\\\\missing.jpg\"",
+   "kind": "explorer_args",
+   "path": "$ROOT\\missing.jpg"
+  },
+  {
+   "name": "explorer_args \"$ROOT\\\\sub\\\\gone\\\\deeper\\\\x.jpg\"",
+   "kind": "explorer_args",
+   "path": "$ROOT\\sub\\gone\\deeper\\x.jpg"
+  },
+  {
+   "name": "explorer_args \"$ROOT\\\\sub\"",
+   "kind": "explorer_args",
+   "path": "$ROOT\\sub"
+  },
+  {
+   "name": "explorer_args \"$ROOT\\\\sub\\\\\"",
+   "kind": "explorer_args",
+   "path": "$ROOT\\sub\\"
+  },
+  {
+   "name": "explorer_args \"$ROOT\"",
+   "kind": "explorer_args",
+   "path": "$ROOT"
+  },
+  {
+   "name": "explorer_args \"$NODRIVE\\\\a\\\\b.jpg\"",
+   "kind": "explorer_args",
+   "path": "$NODRIVE\\a\\b.jpg"
+  },
+  {
+   "name": "explorer_args \"\"",
+   "kind": "explorer_args",
+   "path": ""
+  },
+  {
+   "name": "explorer_args \"   \"",
+   "kind": "explorer_args",
+   "path": "   "
+  },
+  {
+   "name": "explorer_args \"\\t\"",
+   "kind": "explorer_args",
+   "path": "\t"
+  },
+  {
+   "name": "copy \"C:\\\\a\\\\b.jpg\"",
+   "kind": "copy",
+   "path": "C:\\a\\b.jpg"
+  },
+  {
+   "name": "copy \"\"",
+   "kind": "copy",
+   "path": ""
+  },
+  {
+   "name": "copy \"D:\\\\x y\\\\z.jpg\"",
+   "kind": "copy",
+   "path": "D:\\x y\\z.jpg"
+  }
+ ]
+}

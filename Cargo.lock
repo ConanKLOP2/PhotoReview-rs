@@ -129,6 +129,7 @@ name = "pr-platform-win"
 version = "0.1.0"
 dependencies = [
  "pr-app",
+ "pr-bench",
  "pr-core",
  "pr-imaging",
  "pr-l10n",

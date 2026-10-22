@@ -1,0 +1,1226 @@
+{
+ "command": "dialog-benchmark-results",
+ "notes": [
+  "Feeds W8-18s (dialogs::benchmark::{results, run}). Reflection over the internal BenchmarkDialog and DialogColors of the PhotoReview (Shell.Win32) assembly, the public BenchmarkResultRow of PhotoReview.App.Shared and the public BenchmarkProfiles / BenchmarkPhaseResult of PhotoReview.Benchmarking; no window is created. The language is the process default (English).",
+  "Output per kind: row_color -> back, text (uint, the RowColors tuple); profile_list -> items [{id, text, badge}] (ListItemText(ProfilesId, index) for every registry profile in order); static_color -> value (uint); palette -> value (uint).",
+  "row_color: the rows are added to Presenter.Rows in the given order; source is the lParam of the list view row (its index in Rows), displayed_row the row position on screen. The Rust test maps the golden colours to palette keys (the palette cases give the values) and checks the key chosen by row_color_key. The 'best and failed' row (last) pins that IsBest wins over Fail."
+ ],
+ "cases": [
+  {
+   "name": "row colour best row first",
+   "kind": "row_color",
+   "rows": [
+    {
+     "profile_id": "fast-sequential",
+     "workload": "Sequential",
+     "samples": [
+      10,
+      20,
+      30
+     ],
+     "status": "Pass",
+     "is_best": true
+    },
+    {
+     "profile_id": "preview-light",
+     "workload": "Sequential",
+     "samples": [
+      10,
+      20,
+      30
+     ],
+     "status": "Pass"
+    },
+    {
+     "profile_id": "original-correctness",
+     "workload": "Correctness",
+     "samples": [],
+     "status": "Fail"
+    },
+    {
+     "profile_id": "instant-review",
+     "workload": "FirstFrame",
+     "samples": [
+      10,
+      20,
+      30
+     ],
+     "status": "Pass"
+    },
+    {
+     "profile_id": "logging-on",
+     "workload": "Sequential",
+     "samples": [
+      10,
+      20,
+      30
+     ],
+     "status": "InsufficientData"
+    },
+    {
+     "profile_id": "nearby-only",
+     "workload": "Preload",
+     "samples": [
+      10,
+      20,
+      30
+     ],
+     "status": "Warn"
+    },
+    {
+     "profile_id": "hdd-conservative",
+     "workload": "Sequential",
+     "samples": [
+      10,
+      20,
+      30
+     ],
+     "status": "Fail",
+     "is_best": true
+    }
+   ],
+   "displayed_row": 0,
+   "source": 0
+  },
+  {
+   "name": "row colour best row displayed lower",
+   "kind": "row_color",
+   "rows": [
+    {
+     "profile_id": "fast-sequential",
+     "workload": "Sequential",
+     "samples": [
+      10,
+      20,
+      30
+     ],
+     "status": "Pass",
+     "is_best": true
+    },
+    {
+     "profile_id": "preview-light",
+     "workload": "Sequential",
+     "samples": [
+      10,
+      20,
+      30
+     ],
+     "status": "Pass"
+    },
+    {
+     "profile_id": "original-correctness",
+     "workload": "Correctness",
+     "samples": [],
+     "status": "Fail"
+    },
+    {
+     "profile_id": "instant-review",
+     "workload": "FirstFrame",
+     "samples": [
+      10,
+      20,
+      30
+     ],
+     "status": "Pass"
+    },
+    {
+     "profile_id": "logging-on",
+     "workload": "Sequential",
+     "samples": [
+      10,
+      20,
+      30
+     ],
+     "status": "InsufficientData"
+    },
+    {
+     "profile_id": "nearby-only",
+     "workload": "Preload",
+     "samples": [
+      10,
+      20,
+      30
+     ],
+     "status": "Warn"
+    },
+    {
+     "profile_id": "hdd-conservative",
+     "workload": "Sequential",
+     "samples": [
+      10,
+      20,
+      30
+     ],
+     "status": "Fail",
+     "is_best": true
+    }
+   ],
+   "displayed_row": 5,
+   "source": 0
+  },
+  {
+   "name": "row colour second row odd",
+   "kind": "row_color",
+   "rows": [
+    {
+     "profile_id": "fast-sequential",
+     "workload": "Sequential",
+     "samples": [
+      10,
+      20,
+      30
+     ],
+     "status": "Pass",
+     "is_best": true
+    },
+    {
+     "profile_id": "preview-light",
+     "workload": "Sequential",
+     "samples": [
+      10,
+      20,
+      30
+     ],
+     "status": "Pass"
+    },
+    {
+     "profile_id": "original-correctness",
+     "workload": "Correctness",
+     "samples": [],
+     "status": "Fail"
+    },
+    {
+     "profile_id": "instant-review",
+     "workload": "FirstFrame",
+     "samples": [
+      10,
+      20,
+      30
+     ],
+     "status": "Pass"
+    },
+    {
+     "profile_id": "logging-on",
+     "workload": "Sequential",
+     "samples": [
+      10,
+      20,
+      30
+     ],
+     "status": "InsufficientData"
+    },
+    {
+     "profile_id": "nearby-only",
+     "workload": "Preload",
+     "samples": [
+      10,
+      20,
+      30
+     ],
+     "status": "Warn"
+    },
+    {
+     "profile_id": "hdd-conservative",
+     "workload": "Sequential",
+     "samples": [
+      10,
+      20,
+      30
+     ],
+     "status": "Fail",
+     "is_best": true
+    }
+   ],
+   "displayed_row": 1,
+   "source": 1
+  },
+  {
+   "name": "row colour second row displayed even",
+   "kind": "row_color",
+   "rows": [
+    {
+     "profile_id": "fast-sequential",
+     "workload": "Sequential",
+     "samples": [
+      10,
+      20,
+      30
+     ],
+     "status": "Pass",
+     "is_best": true
+    },
+    {
+     "profile_id": "preview-light",
+     "workload": "Sequential",
+     "samples": [
+      10,
+      20,
+      30
+     ],
+     "status": "Pass"
+    },
+    {
+     "profile_id": "original-correctness",
+     "workload": "Correctness",
+     "samples": [],
+     "status": "Fail"
+    },
+    {
+     "profile_id": "instant-review",
+     "workload": "FirstFrame",
+     "samples": [
+      10,
+      20,
+      30
+     ],
+     "status": "Pass"
+    },
+    {
+     "profile_id": "logging-on",
+     "workload": "Sequential",
+     "samples": [
+      10,
+      20,
+      30
+     ],
+     "status": "InsufficientData"
+    },
+    {
+     "profile_id": "nearby-only",
+     "workload": "Preload",
+     "samples": [
+      10,
+      20,
+      30
+     ],
+     "status": "Warn"
+    },
+    {
+     "profile_id": "hdd-conservative",
+     "workload": "Sequential",
+     "samples": [
+      10,
+      20,
+      30
+     ],
+     "status": "Fail",
+     "is_best": true
+    }
+   ],
+   "displayed_row": 2,
+   "source": 1
+  },
+  {
+   "name": "row colour failed row",
+   "kind": "row_color",
+   "rows": [
+    {
+     "profile_id": "fast-sequential",
+     "workload": "Sequential",
+     "samples": [
+      10,
+      20,
+      30
+     ],
+     "status": "Pass",
+     "is_best": true
+    },
+    {
+     "profile_id": "preview-light",
+     "workload": "Sequential",
+     "samples": [
+      10,
+      20,
+      30
+     ],
+     "status": "Pass"
+    },
+    {
+     "profile_id": "original-correctness",
+     "workload": "Correctness",
+     "samples": [],
+     "status": "Fail"
+    },
+    {
+     "profile_id": "instant-review",
+     "workload": "FirstFrame",
+     "samples": [
+      10,
+      20,
+      30
+     ],
+     "status": "Pass"
+    },
+    {
+     "profile_id": "logging-on",
+     "workload": "Sequential",
+     "samples": [
+      10,
+      20,
+      30
+     ],
+     "status": "InsufficientData"
+    },
+    {
+     "profile_id": "nearby-only",
+     "workload": "Preload",
+     "samples": [
+      10,
+      20,
+      30
+     ],
+     "status": "Warn"
+    },
+    {
+     "profile_id": "hdd-conservative",
+     "workload": "Sequential",
+     "samples": [
+      10,
+      20,
+      30
+     ],
+     "status": "Fail",
+     "is_best": true
+    }
+   ],
+   "displayed_row": 0,
+   "source": 2
+  },
+  {
+   "name": "row colour failed row odd",
+   "kind": "row_color",
+   "rows": [
+    {
+     "profile_id": "fast-sequential",
+     "workload": "Sequential",
+     "samples": [
+      10,
+      20,
+      30
+     ],
+     "status": "Pass",
+     "is_best": true
+    },
+    {
+     "profile_id": "preview-light",
+     "workload": "Sequential",
+     "samples": [
+      10,
+      20,
+      30
+     ],
+     "status": "Pass"
+    },
+    {
+     "profile_id": "original-correctness",
+     "workload": "Correctness",
+     "samples": [],
+     "status": "Fail"
+    },
+    {
+     "profile_id": "instant-review",
+     "workload": "FirstFrame",
+     "samples": [
+      10,
+      20,
+      30
+     ],
+     "status": "Pass"
+    },
+    {
+     "profile_id": "logging-on",
+     "workload": "Sequential",
+     "samples": [
+      10,
+      20,
+      30
+     ],
+     "status": "InsufficientData"
+    },
+    {
+     "profile_id": "nearby-only",
+     "workload": "Preload",
+     "samples": [
+      10,
+      20,
+      30
+     ],
+     "status": "Warn"
+    },
+    {
+     "profile_id": "hdd-conservative",
+     "workload": "Sequential",
+     "samples": [
+      10,
+      20,
+      30
+     ],
+     "status": "Fail",
+     "is_best": true
+    }
+   ],
+   "displayed_row": 3,
+   "source": 2
+  },
+  {
+   "name": "row colour fourth row odd",
+   "kind": "row_color",
+   "rows": [
+    {
+     "profile_id": "fast-sequential",
+     "workload": "Sequential",
+     "samples": [
+      10,
+      20,
+      30
+     ],
+     "status": "Pass",
+     "is_best": true
+    },
+    {
+     "profile_id": "preview-light",
+     "workload": "Sequential",
+     "samples": [
+      10,
+      20,
+      30
+     ],
+     "status": "Pass"
+    },
+    {
+     "profile_id": "original-correctness",
+     "workload": "Correctness",
+     "samples": [],
+     "status": "Fail"
+    },
+    {
+     "profile_id": "instant-review",
+     "workload": "FirstFrame",
+     "samples": [
+      10,
+      20,
+      30
+     ],
+     "status": "Pass"
+    },
+    {
+     "profile_id": "logging-on",
+     "workload": "Sequential",
+     "samples": [
+      10,
+      20,
+      30
+     ],
+     "status": "InsufficientData"
+    },
+    {
+     "profile_id": "nearby-only",
+     "workload": "Preload",
+     "samples": [
+      10,
+      20,
+      30
+     ],
+     "status": "Warn"
+    },
+    {
+     "profile_id": "hdd-conservative",
+     "workload": "Sequential",
+     "samples": [
+      10,
+      20,
+      30
+     ],
+     "status": "Fail",
+     "is_best": true
+    }
+   ],
+   "displayed_row": 3,
+   "source": 3
+  },
+  {
+   "name": "row colour insufficient data even",
+   "kind": "row_color",
+   "rows": [
+    {
+     "profile_id": "fast-sequential",
+     "workload": "Sequential",
+     "samples": [
+      10,
+      20,
+      30
+     ],
+     "status": "Pass",
+     "is_best": true
+    },
+    {
+     "profile_id": "preview-light",
+     "workload": "Sequential",
+     "samples": [
+      10,
+      20,
+      30
+     ],
+     "status": "Pass"
+    },
+    {
+     "profile_id": "original-correctness",
+     "workload": "Correctness",
+     "samples": [],
+     "status": "Fail"
+    },
+    {
+     "profile_id": "instant-review",
+     "workload": "FirstFrame",
+     "samples": [
+      10,
+      20,
+      30
+     ],
+     "status": "Pass"
+    },
+    {
+     "profile_id": "logging-on",
+     "workload": "Sequential",
+     "samples": [
+      10,
+      20,
+      30
+     ],
+     "status": "InsufficientData"
+    },
+    {
+     "profile_id": "nearby-only",
+     "workload": "Preload",
+     "samples": [
+      10,
+      20,
+      30
+     ],
+     "status": "Warn"
+    },
+    {
+     "profile_id": "hdd-conservative",
+     "workload": "Sequential",
+     "samples": [
+      10,
+      20,
+      30
+     ],
+     "status": "Fail",
+     "is_best": true
+    }
+   ],
+   "displayed_row": 4,
+   "source": 4
+  },
+  {
+   "name": "row colour warning odd",
+   "kind": "row_color",
+   "rows": [
+    {
+     "profile_id": "fast-sequential",
+     "workload": "Sequential",
+     "samples": [
+      10,
+      20,
+      30
+     ],
+     "status": "Pass",
+     "is_best": true
+    },
+    {
+     "profile_id": "preview-light",
+     "workload": "Sequential",
+     "samples": [
+      10,
+      20,
+      30
+     ],
+     "status": "Pass"
+    },
+    {
+     "profile_id": "original-correctness",
+     "workload": "Correctness",
+     "samples": [],
+     "status": "Fail"
+    },
+    {
+     "profile_id": "instant-review",
+     "workload": "FirstFrame",
+     "samples": [
+      10,
+      20,
+      30
+     ],
+     "status": "Pass"
+    },
+    {
+     "profile_id": "logging-on",
+     "workload": "Sequential",
+     "samples": [
+      10,
+      20,
+      30
+     ],
+     "status": "InsufficientData"
+    },
+    {
+     "profile_id": "nearby-only",
+     "workload": "Preload",
+     "samples": [
+      10,
+      20,
+      30
+     ],
+     "status": "Warn"
+    },
+    {
+     "profile_id": "hdd-conservative",
+     "workload": "Sequential",
+     "samples": [
+      10,
+      20,
+      30
+     ],
+     "status": "Fail",
+     "is_best": true
+    }
+   ],
+   "displayed_row": 5,
+   "source": 5
+  },
+  {
+   "name": "row colour best and failed",
+   "kind": "row_color",
+   "rows": [
+    {
+     "profile_id": "fast-sequential",
+     "workload": "Sequential",
+     "samples": [
+      10,
+      20,
+      30
+     ],
+     "status": "Pass",
+     "is_best": true
+    },
+    {
+     "profile_id": "preview-light",
+     "workload": "Sequential",
+     "samples": [
+      10,
+      20,
+      30
+     ],
+     "status": "Pass"
+    },
+    {
+     "profile_id": "original-correctness",
+     "workload": "Correctness",
+     "samples": [],
+     "status": "Fail"
+    },
+    {
+     "profile_id": "instant-review",
+     "workload": "FirstFrame",
+     "samples": [
+      10,
+      20,
+      30
+     ],
+     "status": "Pass"
+    },
+    {
+     "profile_id": "logging-on",
+     "workload": "Sequential",
+     "samples": [
+      10,
+      20,
+      30
+     ],
+     "status": "InsufficientData"
+    },
+    {
+     "profile_id": "nearby-only",
+     "workload": "Preload",
+     "samples": [
+      10,
+      20,
+      30
+     ],
+     "status": "Warn"
+    },
+    {
+     "profile_id": "hdd-conservative",
+     "workload": "Sequential",
+     "samples": [
+      10,
+      20,
+      30
+     ],
+     "status": "Fail",
+     "is_best": true
+    }
+   ],
+   "displayed_row": 6,
+   "source": 6
+  },
+  {
+   "name": "row colour source past the end even",
+   "kind": "row_color",
+   "rows": [
+    {
+     "profile_id": "fast-sequential",
+     "workload": "Sequential",
+     "samples": [
+      10,
+      20,
+      30
+     ],
+     "status": "Pass",
+     "is_best": true
+    },
+    {
+     "profile_id": "preview-light",
+     "workload": "Sequential",
+     "samples": [
+      10,
+      20,
+      30
+     ],
+     "status": "Pass"
+    },
+    {
+     "profile_id": "original-correctness",
+     "workload": "Correctness",
+     "samples": [],
+     "status": "Fail"
+    },
+    {
+     "profile_id": "instant-review",
+     "workload": "FirstFrame",
+     "samples": [
+      10,
+      20,
+      30
+     ],
+     "status": "Pass"
+    },
+    {
+     "profile_id": "logging-on",
+     "workload": "Sequential",
+     "samples": [
+      10,
+      20,
+      30
+     ],
+     "status": "InsufficientData"
+    },
+    {
+     "profile_id": "nearby-only",
+     "workload": "Preload",
+     "samples": [
+      10,
+      20,
+      30
+     ],
+     "status": "Warn"
+    },
+    {
+     "profile_id": "hdd-conservative",
+     "workload": "Sequential",
+     "samples": [
+      10,
+      20,
+      30
+     ],
+     "status": "Fail",
+     "is_best": true
+    }
+   ],
+   "displayed_row": 0,
+   "source": 7
+  },
+  {
+   "name": "row colour source past the end odd",
+   "kind": "row_color",
+   "rows": [
+    {
+     "profile_id": "fast-sequential",
+     "workload": "Sequential",
+     "samples": [
+      10,
+      20,
+      30
+     ],
+     "status": "Pass",
+     "is_best": true
+    },
+    {
+     "profile_id": "preview-light",
+     "workload": "Sequential",
+     "samples": [
+      10,
+      20,
+      30
+     ],
+     "status": "Pass"
+    },
+    {
+     "profile_id": "original-correctness",
+     "workload": "Correctness",
+     "samples": [],
+     "status": "Fail"
+    },
+    {
+     "profile_id": "instant-review",
+     "workload": "FirstFrame",
+     "samples": [
+      10,
+      20,
+      30
+     ],
+     "status": "Pass"
+    },
+    {
+     "profile_id": "logging-on",
+     "workload": "Sequential",
+     "samples": [
+      10,
+      20,
+      30
+     ],
+     "status": "InsufficientData"
+    },
+    {
+     "profile_id": "nearby-only",
+     "workload": "Preload",
+     "samples": [
+      10,
+      20,
+      30
+     ],
+     "status": "Warn"
+    },
+    {
+     "profile_id": "hdd-conservative",
+     "workload": "Sequential",
+     "samples": [
+      10,
+      20,
+      30
+     ],
+     "status": "Fail",
+     "is_best": true
+    }
+   ],
+   "displayed_row": 1,
+   "source": 7
+  },
+  {
+   "name": "row colour negative source even",
+   "kind": "row_color",
+   "rows": [
+    {
+     "profile_id": "fast-sequential",
+     "workload": "Sequential",
+     "samples": [
+      10,
+      20,
+      30
+     ],
+     "status": "Pass",
+     "is_best": true
+    },
+    {
+     "profile_id": "preview-light",
+     "workload": "Sequential",
+     "samples": [
+      10,
+      20,
+      30
+     ],
+     "status": "Pass"
+    },
+    {
+     "profile_id": "original-correctness",
+     "workload": "Correctness",
+     "samples": [],
+     "status": "Fail"
+    },
+    {
+     "profile_id": "instant-review",
+     "workload": "FirstFrame",
+     "samples": [
+      10,
+      20,
+      30
+     ],
+     "status": "Pass"
+    },
+    {
+     "profile_id": "logging-on",
+     "workload": "Sequential",
+     "samples": [
+      10,
+      20,
+      30
+     ],
+     "status": "InsufficientData"
+    },
+    {
+     "profile_id": "nearby-only",
+     "workload": "Preload",
+     "samples": [
+      10,
+      20,
+      30
+     ],
+     "status": "Warn"
+    },
+    {
+     "profile_id": "hdd-conservative",
+     "workload": "Sequential",
+     "samples": [
+      10,
+      20,
+      30
+     ],
+     "status": "Fail",
+     "is_best": true
+    }
+   ],
+   "displayed_row": 0,
+   "source": -1
+  },
+  {
+   "name": "row colour negative source odd",
+   "kind": "row_color",
+   "rows": [
+    {
+     "profile_id": "fast-sequential",
+     "workload": "Sequential",
+     "samples": [
+      10,
+      20,
+      30
+     ],
+     "status": "Pass",
+     "is_best": true
+    },
+    {
+     "profile_id": "preview-light",
+     "workload": "Sequential",
+     "samples": [
+      10,
+      20,
+      30
+     ],
+     "status": "Pass"
+    },
+    {
+     "profile_id": "original-correctness",
+     "workload": "Correctness",
+     "samples": [],
+     "status": "Fail"
+    },
+    {
+     "profile_id": "instant-review",
+     "workload": "FirstFrame",
+     "samples": [
+      10,
+      20,
+      30
+     ],
+     "status": "Pass"
+    },
+    {
+     "profile_id": "logging-on",
+     "workload": "Sequential",
+     "samples": [
+      10,
+      20,
+      30
+     ],
+     "status": "InsufficientData"
+    },
+    {
+     "profile_id": "nearby-only",
+     "workload": "Preload",
+     "samples": [
+      10,
+      20,
+      30
+     ],
+     "status": "Warn"
+    },
+    {
+     "profile_id": "hdd-conservative",
+     "workload": "Sequential",
+     "samples": [
+      10,
+      20,
+      30
+     ],
+     "status": "Fail",
+     "is_best": true
+    }
+   ],
+   "displayed_row": 1,
+   "source": -1
+  },
+  {
+   "name": "row colour far source",
+   "kind": "row_color",
+   "rows": [
+    {
+     "profile_id": "fast-sequential",
+     "workload": "Sequential",
+     "samples": [
+      10,
+      20,
+      30
+     ],
+     "status": "Pass",
+     "is_best": true
+    },
+    {
+     "profile_id": "preview-light",
+     "workload": "Sequential",
+     "samples": [
+      10,
+      20,
+      30
+     ],
+     "status": "Pass"
+    },
+    {
+     "profile_id": "original-correctness",
+     "workload": "Correctness",
+     "samples": [],
+     "status": "Fail"
+    },
+    {
+     "profile_id": "instant-review",
+     "workload": "FirstFrame",
+     "samples": [
+      10,
+      20,
+      30
+     ],
+     "status": "Pass"
+    },
+    {
+     "profile_id": "logging-on",
+     "workload": "Sequential",
+     "samples": [
+      10,
+      20,
+      30
+     ],
+     "status": "InsufficientData"
+    },
+    {
+     "profile_id": "nearby-only",
+     "workload": "Preload",
+     "samples": [
+      10,
+      20,
+      30
+     ],
+     "status": "Warn"
+    },
+    {
+     "profile_id": "hdd-conservative",
+     "workload": "Sequential",
+     "samples": [
+      10,
+      20,
+      30
+     ],
+     "status": "Fail",
+     "is_best": true
+    }
+   ],
+   "displayed_row": 0,
+   "source": 100
+  },
+  {
+   "name": "row colour with no rows",
+   "kind": "row_color",
+   "rows": [],
+   "displayed_row": 2,
+   "source": 0
+  },
+  {
+   "name": "profile list text and badge",
+   "kind": "profile_list"
+  },
+  {
+   "name": "static colour of control 100",
+   "kind": "static_color",
+   "id": 100
+  },
+  {
+   "name": "static colour of control 101",
+   "kind": "static_color",
+   "id": 101
+  },
+  {
+   "name": "static colour of control 102",
+   "kind": "static_color",
+   "id": 102
+  },
+  {
+   "name": "static colour of control 114",
+   "kind": "static_color",
+   "id": 114
+  },
+  {
+   "name": "static colour of control 115",
+   "kind": "static_color",
+   "id": 115
+  },
+  {
+   "name": "static colour of control 0",
+   "kind": "static_color",
+   "id": 0
+  },
+  {
+   "name": "static colour of control 118",
+   "kind": "static_color",
+   "id": 118
+  },
+  {
+   "name": "palette Dark.SuccessBackground",
+   "kind": "palette",
+   "key": "Dark.SuccessBackground"
+  },
+  {
+   "name": "palette Dark.ErrorBackground",
+   "kind": "palette",
+   "key": "Dark.ErrorBackground"
+  },
+  {
+   "name": "palette Dark.Panel",
+   "kind": "palette",
+   "key": "Dark.Panel"
+  },
+  {
+   "name": "palette Dark.RowAlt",
+   "kind": "palette",
+   "key": "Dark.RowAlt"
+  },
+  {
+   "name": "palette Dark.TextSubtle",
+   "kind": "palette",
+   "key": "Dark.TextSubtle"
+  },
+  {
+   "name": "palette Dark.Window",
+   "kind": "palette",
+   "key": "Dark.Window"
+  }
+ ]
+}

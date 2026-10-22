@@ -1,0 +1,1052 @@
+{
+  "generator": "oracle-cs dialog-action-profiles",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "dialog with five actions",
+      "kind": "dialog",
+      "actions": [
+        {
+          "name": "Keep",
+          "shortcut": "F6",
+          "operation": "Move",
+          "destination": "Keep",
+          "confirm": false
+        },
+        {
+          "name": "Copy out",
+          "shortcut": "F7",
+          "operation": "Copy",
+          "destination": "Out",
+          "confirm": true
+        },
+        {
+          "name": "Trash",
+          "shortcut": "F8",
+          "operation": "Recycle",
+          "destination": "x",
+          "confirm": false
+        },
+        {
+          "name": "No key",
+          "shortcut": "",
+          "operation": "Move",
+          "destination": "Group-2",
+          "confirm": false
+        },
+        {
+          "name": "Blank key",
+          "shortcut": " ",
+          "operation": "Copy",
+          "destination": "B",
+          "confirm": false
+        }
+      ],
+      "title": "Action profiles",
+      "items": [
+        {
+          "class": "Static",
+          "id": 100,
+          "text": "Actions",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "ListBox",
+          "id": 101,
+          "text": "",
+          "style": 1344340305,
+          "ex_style": 512
+        },
+        {
+          "class": "Button",
+          "id": 102,
+          "text": "+ Add",
+          "style": 1342242816,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 103,
+          "text": "Remove",
+          "style": 1342242816,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 104,
+          "text": "Import",
+          "style": 1342242816,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 105,
+          "text": "Export",
+          "style": 1342242816,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 106,
+          "text": "Action details",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 110,
+          "text": "Display name",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Edit",
+          "id": 111,
+          "text": "",
+          "style": 1342242944,
+          "ex_style": 512
+        },
+        {
+          "class": "Static",
+          "id": 112,
+          "text": "Shortcut",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Edit",
+          "id": 113,
+          "text": "",
+          "style": 1342242944,
+          "ex_style": 512
+        },
+        {
+          "class": "Static",
+          "id": 114,
+          "text": "Operation",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "ComboBox",
+          "id": 115,
+          "text": "",
+          "style": 1344340483,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 116,
+          "text": "Destination folder (relative or absolute)",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Edit",
+          "id": 117,
+          "text": "",
+          "style": 1342242944,
+          "ex_style": 512
+        },
+        {
+          "class": "Button",
+          "id": 118,
+          "text": "Always ask for confirmation before running",
+          "style": 1342251011,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 2,
+          "text": "Cancel",
+          "style": 1342242816,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 1,
+          "text": "Apply",
+          "style": 1342242817,
+          "ex_style": 0
+        }
+      ],
+      "initial_focus_id": 101,
+      "default_button_id": 1,
+      "resizable": true,
+      "header_ids": [
+        100,
+        106
+      ],
+      "uses_modal_frame": true,
+      "extra_window_style": 0
+    },
+    {
+      "name": "dialog with no actions",
+      "kind": "dialog",
+      "actions": [],
+      "title": "Action profiles",
+      "items": [
+        {
+          "class": "Static",
+          "id": 100,
+          "text": "Actions",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "ListBox",
+          "id": 101,
+          "text": "",
+          "style": 1344340305,
+          "ex_style": 512
+        },
+        {
+          "class": "Button",
+          "id": 102,
+          "text": "+ Add",
+          "style": 1342242816,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 103,
+          "text": "Remove",
+          "style": 1342242816,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 104,
+          "text": "Import",
+          "style": 1342242816,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 105,
+          "text": "Export",
+          "style": 1342242816,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 106,
+          "text": "Action details",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 110,
+          "text": "Display name",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Edit",
+          "id": 111,
+          "text": "",
+          "style": 1342242944,
+          "ex_style": 512
+        },
+        {
+          "class": "Static",
+          "id": 112,
+          "text": "Shortcut",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Edit",
+          "id": 113,
+          "text": "",
+          "style": 1342242944,
+          "ex_style": 512
+        },
+        {
+          "class": "Static",
+          "id": 114,
+          "text": "Operation",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "ComboBox",
+          "id": 115,
+          "text": "",
+          "style": 1344340483,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 116,
+          "text": "Destination folder (relative or absolute)",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Edit",
+          "id": 117,
+          "text": "",
+          "style": 1342242944,
+          "ex_style": 512
+        },
+        {
+          "class": "Button",
+          "id": 118,
+          "text": "Always ask for confirmation before running",
+          "style": 1342251011,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 2,
+          "text": "Cancel",
+          "style": 1342242816,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 1,
+          "text": "Apply",
+          "style": 1342242817,
+          "ex_style": 0
+        }
+      ],
+      "initial_focus_id": 101,
+      "default_button_id": 1,
+      "resizable": true,
+      "header_ids": [
+        100,
+        106
+      ],
+      "uses_modal_frame": true,
+      "extra_window_style": 0
+    },
+    {
+      "name": "row text of row 0",
+      "kind": "row_text",
+      "actions": [
+        {
+          "name": "Keep",
+          "shortcut": "F6",
+          "operation": "Move",
+          "destination": "Keep",
+          "confirm": false
+        },
+        {
+          "name": "Copy out",
+          "shortcut": "F7",
+          "operation": "Copy",
+          "destination": "Out",
+          "confirm": true
+        },
+        {
+          "name": "Trash",
+          "shortcut": "F8",
+          "operation": "Recycle",
+          "destination": "x",
+          "confirm": false
+        },
+        {
+          "name": "No key",
+          "shortcut": "",
+          "operation": "Move",
+          "destination": "Group-2",
+          "confirm": false
+        },
+        {
+          "name": "Blank key",
+          "shortcut": " ",
+          "operation": "Copy",
+          "destination": "B",
+          "confirm": false
+        }
+      ],
+      "index": 0,
+      "text": "Keep",
+      "badge": "F6"
+    },
+    {
+      "name": "row text of row 1",
+      "kind": "row_text",
+      "actions": [
+        {
+          "name": "Keep",
+          "shortcut": "F6",
+          "operation": "Move",
+          "destination": "Keep",
+          "confirm": false
+        },
+        {
+          "name": "Copy out",
+          "shortcut": "F7",
+          "operation": "Copy",
+          "destination": "Out",
+          "confirm": true
+        },
+        {
+          "name": "Trash",
+          "shortcut": "F8",
+          "operation": "Recycle",
+          "destination": "x",
+          "confirm": false
+        },
+        {
+          "name": "No key",
+          "shortcut": "",
+          "operation": "Move",
+          "destination": "Group-2",
+          "confirm": false
+        },
+        {
+          "name": "Blank key",
+          "shortcut": " ",
+          "operation": "Copy",
+          "destination": "B",
+          "confirm": false
+        }
+      ],
+      "index": 1,
+      "text": "Copy out",
+      "badge": "F7"
+    },
+    {
+      "name": "row text of row 2",
+      "kind": "row_text",
+      "actions": [
+        {
+          "name": "Keep",
+          "shortcut": "F6",
+          "operation": "Move",
+          "destination": "Keep",
+          "confirm": false
+        },
+        {
+          "name": "Copy out",
+          "shortcut": "F7",
+          "operation": "Copy",
+          "destination": "Out",
+          "confirm": true
+        },
+        {
+          "name": "Trash",
+          "shortcut": "F8",
+          "operation": "Recycle",
+          "destination": "x",
+          "confirm": false
+        },
+        {
+          "name": "No key",
+          "shortcut": "",
+          "operation": "Move",
+          "destination": "Group-2",
+          "confirm": false
+        },
+        {
+          "name": "Blank key",
+          "shortcut": " ",
+          "operation": "Copy",
+          "destination": "B",
+          "confirm": false
+        }
+      ],
+      "index": 2,
+      "text": "Trash",
+      "badge": "F8"
+    },
+    {
+      "name": "row text of row 3",
+      "kind": "row_text",
+      "actions": [
+        {
+          "name": "Keep",
+          "shortcut": "F6",
+          "operation": "Move",
+          "destination": "Keep",
+          "confirm": false
+        },
+        {
+          "name": "Copy out",
+          "shortcut": "F7",
+          "operation": "Copy",
+          "destination": "Out",
+          "confirm": true
+        },
+        {
+          "name": "Trash",
+          "shortcut": "F8",
+          "operation": "Recycle",
+          "destination": "x",
+          "confirm": false
+        },
+        {
+          "name": "No key",
+          "shortcut": "",
+          "operation": "Move",
+          "destination": "Group-2",
+          "confirm": false
+        },
+        {
+          "name": "Blank key",
+          "shortcut": " ",
+          "operation": "Copy",
+          "destination": "B",
+          "confirm": false
+        }
+      ],
+      "index": 3,
+      "text": "No key",
+      "badge": null
+    },
+    {
+      "name": "row text of row 4",
+      "kind": "row_text",
+      "actions": [
+        {
+          "name": "Keep",
+          "shortcut": "F6",
+          "operation": "Move",
+          "destination": "Keep",
+          "confirm": false
+        },
+        {
+          "name": "Copy out",
+          "shortcut": "F7",
+          "operation": "Copy",
+          "destination": "Out",
+          "confirm": true
+        },
+        {
+          "name": "Trash",
+          "shortcut": "F8",
+          "operation": "Recycle",
+          "destination": "x",
+          "confirm": false
+        },
+        {
+          "name": "No key",
+          "shortcut": "",
+          "operation": "Move",
+          "destination": "Group-2",
+          "confirm": false
+        },
+        {
+          "name": "Blank key",
+          "shortcut": " ",
+          "operation": "Copy",
+          "destination": "B",
+          "confirm": false
+        }
+      ],
+      "index": 4,
+      "text": "Blank key",
+      "badge": " "
+    },
+    {
+      "name": "file filter \"\"",
+      "kind": "file_filter_parse",
+      "text": "",
+      "filters": []
+    },
+    {
+      "name": "file filter \"A\"",
+      "kind": "file_filter_parse",
+      "text": "A",
+      "filters": []
+    },
+    {
+      "name": "file filter \"A|*.a\"",
+      "kind": "file_filter_parse",
+      "text": "A|*.a",
+      "filters": [
+        {
+          "name": "A",
+          "pattern": "*.a"
+        }
+      ]
+    },
+    {
+      "name": "file filter \"A|*.a|B|*.b;*.c\"",
+      "kind": "file_filter_parse",
+      "text": "A|*.a|B|*.b;*.c",
+      "filters": [
+        {
+          "name": "A",
+          "pattern": "*.a"
+        },
+        {
+          "name": "B",
+          "pattern": "*.b;*.c"
+        }
+      ]
+    },
+    {
+      "name": "file filter \"A|*.a|B\"",
+      "kind": "file_filter_parse",
+      "text": "A|*.a|B",
+      "filters": [
+        {
+          "name": "A",
+          "pattern": "*.a"
+        }
+      ]
+    },
+    {
+      "name": "file filter \"|\"",
+      "kind": "file_filter_parse",
+      "text": "|",
+      "filters": [
+        {
+          "name": "",
+          "pattern": ""
+        }
+      ]
+    },
+    {
+      "name": "file filter \"||\"",
+      "kind": "file_filter_parse",
+      "text": "||",
+      "filters": [
+        {
+          "name": "",
+          "pattern": ""
+        }
+      ]
+    },
+    {
+      "name": "file filter \"A|*.a|\"",
+      "kind": "file_filter_parse",
+      "text": "A|*.a|",
+      "filters": [
+        {
+          "name": "A",
+          "pattern": "*.a"
+        }
+      ]
+    },
+    {
+      "name": "file filter \" A | *.a \"",
+      "kind": "file_filter_parse",
+      "text": " A | *.a ",
+      "filters": [
+        {
+          "name": " A ",
+          "pattern": " *.a "
+        }
+      ]
+    },
+    {
+      "name": "file filter \"JSON (*.json)|*.json\"",
+      "kind": "file_filter_parse",
+      "text": "JSON (*.json)|*.json",
+      "filters": [
+        {
+          "name": "JSON (*.json)",
+          "pattern": "*.json"
+        }
+      ]
+    },
+    {
+      "name": "file filter \"JSON (*.json)|*.json|All files (*.*)|*.*\"",
+      "kind": "file_filter_parse",
+      "text": "JSON (*.json)|*.json|All files (*.*)|*.*",
+      "filters": [
+        {
+          "name": "JSON (*.json)",
+          "pattern": "*.json"
+        },
+        {
+          "name": "All files (*.*)",
+          "pattern": "*.*"
+        }
+      ]
+    },
+    {
+      "name": "file filter \"Executable (*.exe)|*.exe|All files (*.*)|*.*\"",
+      "kind": "file_filter_parse",
+      "text": "Executable (*.exe)|*.exe|All files (*.*)|*.*",
+      "filters": [
+        {
+          "name": "Executable (*.exe)",
+          "pattern": "*.exe"
+        },
+        {
+          "name": "All files (*.*)",
+          "pattern": "*.*"
+        }
+      ]
+    },
+    {
+      "name": "file filter \"A|B|C|D|E|F\"",
+      "kind": "file_filter_parse",
+      "text": "A|B|C|D|E|F",
+      "filters": [
+        {
+          "name": "A",
+          "pattern": "B"
+        },
+        {
+          "name": "C",
+          "pattern": "D"
+        },
+        {
+          "name": "E",
+          "pattern": "F"
+        }
+      ]
+    },
+    {
+      "name": "file filter \"A||B|\"",
+      "kind": "file_filter_parse",
+      "text": "A||B|",
+      "filters": [
+        {
+          "name": "A",
+          "pattern": ""
+        },
+        {
+          "name": "B",
+          "pattern": ""
+        }
+      ]
+    },
+    {
+      "name": "preferred avg 6 line 15",
+      "kind": "preferred",
+      "avg": 6,
+      "line": 15,
+      "preferred_width": 660,
+      "preferred_height": 431,
+      "minimum_width": 510,
+      "minimum_height": 394
+    },
+    {
+      "name": "preferred avg 7 line 16",
+      "kind": "preferred",
+      "avg": 7,
+      "line": 16,
+      "preferred_width": 770,
+      "preferred_height": 460,
+      "minimum_width": 595,
+      "minimum_height": 420
+    },
+    {
+      "name": "preferred avg 8 line 20",
+      "kind": "preferred",
+      "avg": 8,
+      "line": 20,
+      "preferred_width": 880,
+      "preferred_height": 575,
+      "minimum_width": 680,
+      "minimum_height": 525
+    },
+    {
+      "name": "preferred avg 9 line 24",
+      "kind": "preferred",
+      "avg": 9,
+      "line": 24,
+      "preferred_width": 990,
+      "preferred_height": 690,
+      "minimum_width": 765,
+      "minimum_height": 630
+    },
+    {
+      "name": "preferred avg 10 line 29",
+      "kind": "preferred",
+      "avg": 10,
+      "line": 29,
+      "preferred_width": 1100,
+      "preferred_height": 834,
+      "minimum_width": 850,
+      "minimum_height": 761
+    },
+    {
+      "name": "metrics avg 6 line 15 client 0",
+      "kind": "metrics",
+      "avg": 6,
+      "line": 15,
+      "client_width": 0,
+      "margin": 15,
+      "field_height": 26,
+      "button_height": 26,
+      "left_width": 150
+    },
+    {
+      "name": "metrics avg 6 line 15 client 299",
+      "kind": "metrics",
+      "avg": 6,
+      "line": 15,
+      "client_width": 299,
+      "margin": 15,
+      "field_height": 26,
+      "button_height": 26,
+      "left_width": 150
+    },
+    {
+      "name": "metrics avg 6 line 15 client 300",
+      "kind": "metrics",
+      "avg": 6,
+      "line": 15,
+      "client_width": 300,
+      "margin": 15,
+      "field_height": 26,
+      "button_height": 26,
+      "left_width": 150
+    },
+    {
+      "name": "metrics avg 6 line 15 client 301",
+      "kind": "metrics",
+      "avg": 6,
+      "line": 15,
+      "client_width": 301,
+      "margin": 15,
+      "field_height": 26,
+      "button_height": 26,
+      "left_width": 150
+    },
+    {
+      "name": "metrics avg 6 line 15 client 420",
+      "kind": "metrics",
+      "avg": 6,
+      "line": 15,
+      "client_width": 420,
+      "margin": 15,
+      "field_height": 26,
+      "button_height": 26,
+      "left_width": 150
+    },
+    {
+      "name": "metrics avg 6 line 15 client 510",
+      "kind": "metrics",
+      "avg": 6,
+      "line": 15,
+      "client_width": 510,
+      "margin": 15,
+      "field_height": 26,
+      "button_height": 26,
+      "left_width": 170
+    },
+    {
+      "name": "metrics avg 6 line 15 client 600",
+      "kind": "metrics",
+      "avg": 6,
+      "line": 15,
+      "client_width": 600,
+      "margin": 15,
+      "field_height": 26,
+      "button_height": 26,
+      "left_width": 200
+    },
+    {
+      "name": "metrics avg 6 line 15 client 1000",
+      "kind": "metrics",
+      "avg": 6,
+      "line": 15,
+      "client_width": 1000,
+      "margin": 15,
+      "field_height": 26,
+      "button_height": 26,
+      "left_width": 255
+    },
+    {
+      "name": "metrics avg 8 line 20 client 0",
+      "kind": "metrics",
+      "avg": 8,
+      "line": 20,
+      "client_width": 0,
+      "margin": 20,
+      "field_height": 35,
+      "button_height": 35,
+      "left_width": 200
+    },
+    {
+      "name": "metrics avg 8 line 20 client 299",
+      "kind": "metrics",
+      "avg": 8,
+      "line": 20,
+      "client_width": 299,
+      "margin": 20,
+      "field_height": 35,
+      "button_height": 35,
+      "left_width": 200
+    },
+    {
+      "name": "metrics avg 8 line 20 client 300",
+      "kind": "metrics",
+      "avg": 8,
+      "line": 20,
+      "client_width": 300,
+      "margin": 20,
+      "field_height": 35,
+      "button_height": 35,
+      "left_width": 200
+    },
+    {
+      "name": "metrics avg 8 line 20 client 301",
+      "kind": "metrics",
+      "avg": 8,
+      "line": 20,
+      "client_width": 301,
+      "margin": 20,
+      "field_height": 35,
+      "button_height": 35,
+      "left_width": 200
+    },
+    {
+      "name": "metrics avg 8 line 20 client 420",
+      "kind": "metrics",
+      "avg": 8,
+      "line": 20,
+      "client_width": 420,
+      "margin": 20,
+      "field_height": 35,
+      "button_height": 35,
+      "left_width": 200
+    },
+    {
+      "name": "metrics avg 8 line 20 client 510",
+      "kind": "metrics",
+      "avg": 8,
+      "line": 20,
+      "client_width": 510,
+      "margin": 20,
+      "field_height": 35,
+      "button_height": 35,
+      "left_width": 200
+    },
+    {
+      "name": "metrics avg 8 line 20 client 600",
+      "kind": "metrics",
+      "avg": 8,
+      "line": 20,
+      "client_width": 600,
+      "margin": 20,
+      "field_height": 35,
+      "button_height": 35,
+      "left_width": 200
+    },
+    {
+      "name": "metrics avg 8 line 20 client 1000",
+      "kind": "metrics",
+      "avg": 8,
+      "line": 20,
+      "client_width": 1000,
+      "margin": 20,
+      "field_height": 35,
+      "button_height": 35,
+      "left_width": 333
+    },
+    {
+      "name": "metrics avg 10 line 29 client 0",
+      "kind": "metrics",
+      "avg": 10,
+      "line": 29,
+      "client_width": 0,
+      "margin": 25,
+      "field_height": 51,
+      "button_height": 51,
+      "left_width": 250
+    },
+    {
+      "name": "metrics avg 10 line 29 client 299",
+      "kind": "metrics",
+      "avg": 10,
+      "line": 29,
+      "client_width": 299,
+      "margin": 25,
+      "field_height": 51,
+      "button_height": 51,
+      "left_width": 250
+    },
+    {
+      "name": "metrics avg 10 line 29 client 300",
+      "kind": "metrics",
+      "avg": 10,
+      "line": 29,
+      "client_width": 300,
+      "margin": 25,
+      "field_height": 51,
+      "button_height": 51,
+      "left_width": 250
+    },
+    {
+      "name": "metrics avg 10 line 29 client 301",
+      "kind": "metrics",
+      "avg": 10,
+      "line": 29,
+      "client_width": 301,
+      "margin": 25,
+      "field_height": 51,
+      "button_height": 51,
+      "left_width": 250
+    },
+    {
+      "name": "metrics avg 10 line 29 client 420",
+      "kind": "metrics",
+      "avg": 10,
+      "line": 29,
+      "client_width": 420,
+      "margin": 25,
+      "field_height": 51,
+      "button_height": 51,
+      "left_width": 250
+    },
+    {
+      "name": "metrics avg 10 line 29 client 510",
+      "kind": "metrics",
+      "avg": 10,
+      "line": 29,
+      "client_width": 510,
+      "margin": 25,
+      "field_height": 51,
+      "button_height": 51,
+      "left_width": 250
+    },
+    {
+      "name": "metrics avg 10 line 29 client 600",
+      "kind": "metrics",
+      "avg": 10,
+      "line": 29,
+      "client_width": 600,
+      "margin": 25,
+      "field_height": 51,
+      "button_height": 51,
+      "left_width": 250
+    },
+    {
+      "name": "metrics avg 10 line 29 client 1000",
+      "kind": "metrics",
+      "avg": 10,
+      "line": 29,
+      "client_width": 1000,
+      "margin": 25,
+      "field_height": 51,
+      "button_height": 51,
+      "left_width": 333
+    },
+    {
+      "name": "ids of the dialog",
+      "kind": "constants",
+      "list_header_id": 100,
+      "list_id": 101,
+      "add_id": 102,
+      "remove_id": 103,
+      "import_id": 104,
+      "export_id": 105,
+      "details_header_id": 106,
+      "name_label_id": 110,
+      "name_id": 111,
+      "shortcut_label_id": 112,
+      "shortcut_id": 113,
+      "operation_label_id": 114,
+      "operation_id": 115,
+      "destination_label_id": 116,
+      "destination_id": 117,
+      "confirm_id": 118,
+      "cancel_id": 2,
+      "apply_id": 1
+    }
+  ]
+}

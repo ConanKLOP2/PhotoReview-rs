@@ -1,0 +1,1399 @@
+{
+  "generator": "oracle-cs settings-page-shortcuts",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "Shortcuts page declaration",
+      "kind": "declare",
+      "page": "Shortcuts",
+      "id_base": 5000,
+      "fields": [
+        "_warning",
+        "_resetKeys",
+        "_editActions"
+      ],
+      "cells": [
+        {
+          "property": "Next",
+          "label": 5005,
+          "box": 5006,
+          "clear": 0
+        },
+        {
+          "property": "Previous",
+          "label": 5007,
+          "box": 5008,
+          "clear": 0
+        },
+        {
+          "property": "FirstImage",
+          "label": 5009,
+          "box": 5010,
+          "clear": 0
+        },
+        {
+          "property": "LastImage",
+          "label": 5011,
+          "box": 5012,
+          "clear": 5013
+        },
+        {
+          "property": "NextFolder",
+          "label": 5014,
+          "box": 5015,
+          "clear": 0
+        },
+        {
+          "property": "PreviousFolder",
+          "label": 5016,
+          "box": 5017,
+          "clear": 0
+        },
+        {
+          "property": "OpenFolder",
+          "label": 5018,
+          "box": 5019,
+          "clear": 5020
+        },
+        {
+          "property": "ToggleCaptureMember",
+          "label": 5021,
+          "box": 5022,
+          "clear": 5023
+        },
+        {
+          "property": "ZoomIn",
+          "label": 5025,
+          "box": 5026,
+          "clear": 0
+        },
+        {
+          "property": "ZoomOut",
+          "label": 5027,
+          "box": 5028,
+          "clear": 0
+        },
+        {
+          "property": "ZoomActualSize",
+          "label": 5029,
+          "box": 5030,
+          "clear": 5031
+        },
+        {
+          "property": "ToggleFit",
+          "label": 5032,
+          "box": 5033,
+          "clear": 0
+        },
+        {
+          "property": "Fullscreen",
+          "label": 5034,
+          "box": 5035,
+          "clear": 0
+        },
+        {
+          "property": "ToggleInfoOverlay",
+          "label": 5036,
+          "box": 5037,
+          "clear": 5038
+        },
+        {
+          "property": "ClickZoom",
+          "label": 5039,
+          "box": 5040,
+          "clear": 5041
+        },
+        {
+          "property": "FitWidth",
+          "label": 5042,
+          "box": 5043,
+          "clear": 5044
+        },
+        {
+          "property": "FitHeight",
+          "label": 5045,
+          "box": 5046,
+          "clear": 5047
+        },
+        {
+          "property": "FitWidth2",
+          "label": 5048,
+          "box": 5049,
+          "clear": 5050
+        },
+        {
+          "property": "ToggleKeepZoom",
+          "label": 5051,
+          "box": 5052,
+          "clear": 5053
+        },
+        {
+          "property": "CustomZoom",
+          "label": 5054,
+          "box": 5055,
+          "clear": 5056
+        },
+        {
+          "property": "Refresh",
+          "label": 5057,
+          "box": 5058,
+          "clear": 5059
+        },
+        {
+          "property": "Skip",
+          "label": 5061,
+          "box": 5062,
+          "clear": 0
+        },
+        {
+          "property": "Undo",
+          "label": 5063,
+          "box": 5064,
+          "clear": 0
+        },
+        {
+          "property": "Compare",
+          "label": 5065,
+          "box": 5066,
+          "clear": 0
+        },
+        {
+          "property": "MoveToFolder",
+          "label": 5067,
+          "box": 5068,
+          "clear": 5069
+        },
+        {
+          "property": "CopyToFolder",
+          "label": 5070,
+          "box": 5071,
+          "clear": 5072
+        },
+        {
+          "property": "SendToRecycleBin",
+          "label": 5073,
+          "box": 5074,
+          "clear": 0
+        }
+      ],
+      "key": "Shortcuts",
+      "title": "Shortcuts",
+      "items": [
+        {
+          "class": "Static",
+          "id": 5001,
+          "text": "press a key directly in a box to set it",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 5002,
+          "text": "",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 5003,
+          "text": "Restore default keys",
+          "style": 1342242816,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 5004,
+          "text": "Navigation",
+          "style": 1342177287,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 5005,
+          "text": "Next image",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Edit",
+          "id": 5006,
+          "text": "",
+          "style": 1342244992,
+          "ex_style": 512
+        },
+        {
+          "class": "Static",
+          "id": 5007,
+          "text": "Previous image",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Edit",
+          "id": 5008,
+          "text": "",
+          "style": 1342244992,
+          "ex_style": 512
+        },
+        {
+          "class": "Static",
+          "id": 5009,
+          "text": "First image",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Edit",
+          "id": 5010,
+          "text": "",
+          "style": 1342244992,
+          "ex_style": 512
+        },
+        {
+          "class": "Static",
+          "id": 5011,
+          "text": "Last image",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Edit",
+          "id": 5012,
+          "text": "",
+          "style": 1342244992,
+          "ex_style": 512
+        },
+        {
+          "class": "Button",
+          "id": 5013,
+          "text": "×",
+          "style": 1342242816,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 5014,
+          "text": "Next folder",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Edit",
+          "id": 5015,
+          "text": "",
+          "style": 1342244992,
+          "ex_style": 512
+        },
+        {
+          "class": "Static",
+          "id": 5016,
+          "text": "Previous folder",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Edit",
+          "id": 5017,
+          "text": "",
+          "style": 1342244992,
+          "ex_style": 512
+        },
+        {
+          "class": "Static",
+          "id": 5018,
+          "text": "Open folder (Ctrl+)",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Edit",
+          "id": 5019,
+          "text": "",
+          "style": 1342244992,
+          "ex_style": 512
+        },
+        {
+          "class": "Button",
+          "id": 5020,
+          "text": "×",
+          "style": 1342242816,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 5021,
+          "text": "Switch JPEG / RAW member",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Edit",
+          "id": 5022,
+          "text": "",
+          "style": 1342244992,
+          "ex_style": 512
+        },
+        {
+          "class": "Button",
+          "id": 5023,
+          "text": "×",
+          "style": 1342242816,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 5024,
+          "text": "View",
+          "style": 1342177287,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 5025,
+          "text": "Zoom in",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Edit",
+          "id": 5026,
+          "text": "",
+          "style": 1342244992,
+          "ex_style": 512
+        },
+        {
+          "class": "Static",
+          "id": 5027,
+          "text": "Zoom out",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Edit",
+          "id": 5028,
+          "text": "",
+          "style": 1342244992,
+          "ex_style": 512
+        },
+        {
+          "class": "Static",
+          "id": 5029,
+          "text": "Zoom 100%",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Edit",
+          "id": 5030,
+          "text": "",
+          "style": 1342244992,
+          "ex_style": 512
+        },
+        {
+          "class": "Button",
+          "id": 5031,
+          "text": "×",
+          "style": 1342242816,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 5032,
+          "text": "Fit image",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Edit",
+          "id": 5033,
+          "text": "",
+          "style": 1342244992,
+          "ex_style": 512
+        },
+        {
+          "class": "Static",
+          "id": 5034,
+          "text": "Fullscreen",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Edit",
+          "id": 5035,
+          "text": "",
+          "style": 1342244992,
+          "ex_style": 512
+        },
+        {
+          "class": "Static",
+          "id": 5036,
+          "text": "Toggle info overlay",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Edit",
+          "id": 5037,
+          "text": "",
+          "style": 1342244992,
+          "ex_style": 512
+        },
+        {
+          "class": "Button",
+          "id": 5038,
+          "text": "×",
+          "style": 1342242816,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 5039,
+          "text": "Click zoom toggle",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Edit",
+          "id": 5040,
+          "text": "",
+          "style": 1342244992,
+          "ex_style": 512
+        },
+        {
+          "class": "Button",
+          "id": 5041,
+          "text": "×",
+          "style": 1342242816,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 5042,
+          "text": "Fit width",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Edit",
+          "id": 5043,
+          "text": "",
+          "style": 1342244992,
+          "ex_style": 512
+        },
+        {
+          "class": "Button",
+          "id": 5044,
+          "text": "×",
+          "style": 1342242816,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 5045,
+          "text": "Fit height",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Edit",
+          "id": 5046,
+          "text": "",
+          "style": 1342244992,
+          "ex_style": 512
+        },
+        {
+          "class": "Button",
+          "id": 5047,
+          "text": "×",
+          "style": 1342242816,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 5048,
+          "text": "Fit width 2",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Edit",
+          "id": 5049,
+          "text": "",
+          "style": 1342244992,
+          "ex_style": 512
+        },
+        {
+          "class": "Button",
+          "id": 5050,
+          "text": "×",
+          "style": 1342242816,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 5051,
+          "text": "Toggle keep zoom",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Edit",
+          "id": 5052,
+          "text": "",
+          "style": 1342244992,
+          "ex_style": 512
+        },
+        {
+          "class": "Button",
+          "id": 5053,
+          "text": "×",
+          "style": 1342242816,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 5054,
+          "text": "Custom zoom…",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Edit",
+          "id": 5055,
+          "text": "",
+          "style": 1342244992,
+          "ex_style": 512
+        },
+        {
+          "class": "Button",
+          "id": 5056,
+          "text": "×",
+          "style": 1342242816,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 5057,
+          "text": "Refresh",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Edit",
+          "id": 5058,
+          "text": "",
+          "style": 1342244992,
+          "ex_style": 512
+        },
+        {
+          "class": "Button",
+          "id": 5059,
+          "text": "×",
+          "style": 1342242816,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 5060,
+          "text": "Actions",
+          "style": 1342177287,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 5061,
+          "text": "Skip image",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Edit",
+          "id": 5062,
+          "text": "",
+          "style": 1342244992,
+          "ex_style": 512
+        },
+        {
+          "class": "Static",
+          "id": 5063,
+          "text": "Undo (Ctrl + key)",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Edit",
+          "id": 5064,
+          "text": "",
+          "style": 1342244992,
+          "ex_style": 512
+        },
+        {
+          "class": "Static",
+          "id": 5065,
+          "text": "Compare",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Edit",
+          "id": 5066,
+          "text": "",
+          "style": 1342244992,
+          "ex_style": 512
+        },
+        {
+          "class": "Static",
+          "id": 5067,
+          "text": "Move to…",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Edit",
+          "id": 5068,
+          "text": "",
+          "style": 1342244992,
+          "ex_style": 512
+        },
+        {
+          "class": "Button",
+          "id": 5069,
+          "text": "×",
+          "style": 1342242816,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 5070,
+          "text": "Copy to…",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Edit",
+          "id": 5071,
+          "text": "",
+          "style": 1342244992,
+          "ex_style": 512
+        },
+        {
+          "class": "Button",
+          "id": 5072,
+          "text": "×",
+          "style": 1342242816,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 5073,
+          "text": "Move to Recycle Bin key",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Edit",
+          "id": 5074,
+          "text": "",
+          "style": 1342244992,
+          "ex_style": 512
+        },
+        {
+          "class": "Static",
+          "id": 5075,
+          "text": "Default action profiles: Enter moves the photo into the \"Group-2\" subfolder, F3 / F4 into \"Group-3\" / \"Group-4\", F5 copies it into \"Backup\". Change or remove them with the button below.",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 5076,
+          "text": "Edit action profiles…",
+          "style": 1342242816,
+          "ex_style": 0
+        }
+      ],
+      "texts": [
+        {
+          "id": 5001,
+          "text": "press a key directly in a box to set it"
+        },
+        {
+          "id": 5003,
+          "text": "Restore default keys"
+        },
+        {
+          "id": 5004,
+          "text": "Navigation"
+        },
+        {
+          "id": 5005,
+          "text": "Next image"
+        },
+        {
+          "id": 5007,
+          "text": "Previous image"
+        },
+        {
+          "id": 5009,
+          "text": "First image"
+        },
+        {
+          "id": 5011,
+          "text": "Last image"
+        },
+        {
+          "id": 5013,
+          "text": "×"
+        },
+        {
+          "id": 5014,
+          "text": "Next folder"
+        },
+        {
+          "id": 5016,
+          "text": "Previous folder"
+        },
+        {
+          "id": 5018,
+          "text": "Open folder (Ctrl+)"
+        },
+        {
+          "id": 5020,
+          "text": "×"
+        },
+        {
+          "id": 5021,
+          "text": "Switch JPEG / RAW member"
+        },
+        {
+          "id": 5023,
+          "text": "×"
+        },
+        {
+          "id": 5024,
+          "text": "View"
+        },
+        {
+          "id": 5025,
+          "text": "Zoom in"
+        },
+        {
+          "id": 5027,
+          "text": "Zoom out"
+        },
+        {
+          "id": 5029,
+          "text": "Zoom 100%"
+        },
+        {
+          "id": 5031,
+          "text": "×"
+        },
+        {
+          "id": 5032,
+          "text": "Fit image"
+        },
+        {
+          "id": 5034,
+          "text": "Fullscreen"
+        },
+        {
+          "id": 5036,
+          "text": "Toggle info overlay"
+        },
+        {
+          "id": 5038,
+          "text": "×"
+        },
+        {
+          "id": 5039,
+          "text": "Click zoom toggle"
+        },
+        {
+          "id": 5041,
+          "text": "×"
+        },
+        {
+          "id": 5042,
+          "text": "Fit width"
+        },
+        {
+          "id": 5044,
+          "text": "×"
+        },
+        {
+          "id": 5045,
+          "text": "Fit height"
+        },
+        {
+          "id": 5047,
+          "text": "×"
+        },
+        {
+          "id": 5048,
+          "text": "Fit width 2"
+        },
+        {
+          "id": 5050,
+          "text": "×"
+        },
+        {
+          "id": 5051,
+          "text": "Toggle keep zoom"
+        },
+        {
+          "id": 5053,
+          "text": "×"
+        },
+        {
+          "id": 5054,
+          "text": "Custom zoom…"
+        },
+        {
+          "id": 5056,
+          "text": "×"
+        },
+        {
+          "id": 5057,
+          "text": "Refresh"
+        },
+        {
+          "id": 5059,
+          "text": "×"
+        },
+        {
+          "id": 5060,
+          "text": "Actions"
+        },
+        {
+          "id": 5061,
+          "text": "Skip image"
+        },
+        {
+          "id": 5063,
+          "text": "Undo (Ctrl + key)"
+        },
+        {
+          "id": 5065,
+          "text": "Compare"
+        },
+        {
+          "id": 5067,
+          "text": "Move to…"
+        },
+        {
+          "id": 5069,
+          "text": "×"
+        },
+        {
+          "id": 5070,
+          "text": "Copy to…"
+        },
+        {
+          "id": 5072,
+          "text": "×"
+        },
+        {
+          "id": 5073,
+          "text": "Move to Recycle Bin key"
+        },
+        {
+          "id": 5075,
+          "text": "Default action profiles: Enter moves the photo into the \"Group-2\" subfolder, F3 / F4 into \"Group-3\" / \"Group-4\", F5 copies it into \"Backup\". Change or remove them with the button below."
+        },
+        {
+          "id": 5076,
+          "text": "Edit action profiles…"
+        }
+      ],
+      "notes": [
+        5001,
+        5075
+      ],
+      "key_boxes": [
+        5006,
+        5008,
+        5010,
+        5012,
+        5015,
+        5017,
+        5019,
+        5022,
+        5026,
+        5028,
+        5030,
+        5033,
+        5035,
+        5037,
+        5040,
+        5043,
+        5046,
+        5049,
+        5052,
+        5055,
+        5058,
+        5062,
+        5064,
+        5066,
+        5068,
+        5071,
+        5074
+      ],
+      "warnings": [
+        5002
+      ],
+      "combo_items": [],
+      "sliders": [],
+      "elements": [
+        {
+          "type": "SettingsTextElement",
+          "control_ids": [
+            5001
+          ]
+        },
+        {
+          "type": "SettingsTextElement",
+          "control_ids": [
+            5002
+          ]
+        },
+        {
+          "type": "SettingsButtonsElement",
+          "control_ids": [
+            5003
+          ]
+        },
+        {
+          "type": "SettingsGroupElement",
+          "control_ids": [
+            5004,
+            5005,
+            5006,
+            5007,
+            5008,
+            5009,
+            5010,
+            5011,
+            5012,
+            5013,
+            5014,
+            5015,
+            5016,
+            5017,
+            5018,
+            5019,
+            5020,
+            5021,
+            5022,
+            5023
+          ],
+          "children": [
+            {
+              "type": "SettingsKeyGridElement",
+              "control_ids": [
+                5005,
+                5006,
+                5007,
+                5008,
+                5009,
+                5010,
+                5011,
+                5012,
+                5013,
+                5014,
+                5015,
+                5016,
+                5017,
+                5018,
+                5019,
+                5020,
+                5021,
+                5022,
+                5023
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SettingsGroupElement",
+          "control_ids": [
+            5024,
+            5025,
+            5026,
+            5027,
+            5028,
+            5029,
+            5030,
+            5031,
+            5032,
+            5033,
+            5034,
+            5035,
+            5036,
+            5037,
+            5038,
+            5039,
+            5040,
+            5041,
+            5042,
+            5043,
+            5044,
+            5045,
+            5046,
+            5047,
+            5048,
+            5049,
+            5050,
+            5051,
+            5052,
+            5053,
+            5054,
+            5055,
+            5056,
+            5057,
+            5058,
+            5059
+          ],
+          "children": [
+            {
+              "type": "SettingsKeyGridElement",
+              "control_ids": [
+                5025,
+                5026,
+                5027,
+                5028,
+                5029,
+                5030,
+                5031,
+                5032,
+                5033,
+                5034,
+                5035,
+                5036,
+                5037,
+                5038,
+                5039,
+                5040,
+                5041,
+                5042,
+                5043,
+                5044,
+                5045,
+                5046,
+                5047,
+                5048,
+                5049,
+                5050,
+                5051,
+                5052,
+                5053,
+                5054,
+                5055,
+                5056,
+                5057,
+                5058,
+                5059
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SettingsGroupElement",
+          "control_ids": [
+            5060,
+            5061,
+            5062,
+            5063,
+            5064,
+            5065,
+            5066,
+            5067,
+            5068,
+            5069,
+            5070,
+            5071,
+            5072,
+            5073,
+            5074,
+            5075,
+            5076
+          ],
+          "children": [
+            {
+              "type": "SettingsKeyGridElement",
+              "control_ids": [
+                5061,
+                5062,
+                5063,
+                5064,
+                5065,
+                5066,
+                5067,
+                5068,
+                5069,
+                5070,
+                5071,
+                5072,
+                5073,
+                5074
+              ]
+            },
+            {
+              "type": "SettingsTextElement",
+              "control_ids": [
+                5075
+              ]
+            },
+            {
+              "type": "SettingsButtonsElement",
+              "control_ids": [
+                5076
+              ]
+            }
+          ]
+        }
+      ],
+      "ids": {
+        "warning": 5002,
+        "reset_keys": 5003,
+        "edit_actions": 5076
+      }
+    },
+    {
+      "name": "row tables",
+      "kind": "rows",
+      "rows": [
+        {
+          "property": "Next",
+          "label": "Next image",
+          "clear_tip": null
+        },
+        {
+          "property": "Previous",
+          "label": "Previous image",
+          "clear_tip": null
+        },
+        {
+          "property": "FirstImage",
+          "label": "First image",
+          "clear_tip": null
+        },
+        {
+          "property": "LastImage",
+          "label": "Last image",
+          "clear_tip": "Clear the Last image shortcut"
+        },
+        {
+          "property": "NextFolder",
+          "label": "Next folder",
+          "clear_tip": null
+        },
+        {
+          "property": "PreviousFolder",
+          "label": "Previous folder",
+          "clear_tip": null
+        },
+        {
+          "property": "OpenFolder",
+          "label": "Open folder (Ctrl+)",
+          "clear_tip": "Clear the Open folder shortcut"
+        },
+        {
+          "property": "ToggleCaptureMember",
+          "label": "Switch JPEG / RAW member",
+          "clear_tip": "Clear the Switch JPEG / RAW member shortcut"
+        },
+        {
+          "property": "ZoomIn",
+          "label": "Zoom in",
+          "clear_tip": null
+        },
+        {
+          "property": "ZoomOut",
+          "label": "Zoom out",
+          "clear_tip": null
+        },
+        {
+          "property": "ZoomActualSize",
+          "label": "Zoom 100%",
+          "clear_tip": "Clear the Zoom 100% shortcut"
+        },
+        {
+          "property": "ToggleFit",
+          "label": "Fit image",
+          "clear_tip": null
+        },
+        {
+          "property": "Fullscreen",
+          "label": "Fullscreen",
+          "clear_tip": null
+        },
+        {
+          "property": "ToggleInfoOverlay",
+          "label": "Toggle info overlay",
+          "clear_tip": "Clear the Toggle info overlay shortcut"
+        },
+        {
+          "property": "ClickZoom",
+          "label": "Click zoom toggle",
+          "clear_tip": "Clear the click zoom toggle shortcut"
+        },
+        {
+          "property": "FitWidth",
+          "label": "Fit width",
+          "clear_tip": "Clear the Fit width shortcut"
+        },
+        {
+          "property": "FitHeight",
+          "label": "Fit height",
+          "clear_tip": "Clear the Fit height shortcut"
+        },
+        {
+          "property": "FitWidth2",
+          "label": "Fit width 2",
+          "clear_tip": "Clear the Fit width 2 shortcut"
+        },
+        {
+          "property": "ToggleKeepZoom",
+          "label": "Toggle keep zoom",
+          "clear_tip": "Clear the Toggle keep zoom shortcut"
+        },
+        {
+          "property": "CustomZoom",
+          "label": "Custom zoom…",
+          "clear_tip": "Clear the Custom zoom shortcut"
+        },
+        {
+          "property": "Refresh",
+          "label": "Refresh",
+          "clear_tip": "Clear the Refresh shortcut"
+        },
+        {
+          "property": "Skip",
+          "label": "Skip image",
+          "clear_tip": null
+        },
+        {
+          "property": "Undo",
+          "label": "Undo (Ctrl + key)",
+          "clear_tip": null
+        },
+        {
+          "property": "Compare",
+          "label": "Compare",
+          "clear_tip": null
+        },
+        {
+          "property": "MoveToFolder",
+          "label": "Move to…",
+          "clear_tip": "Clear the Move to… shortcut"
+        },
+        {
+          "property": "CopyToFolder",
+          "label": "Copy to…",
+          "clear_tip": "Clear the Copy to… shortcut"
+        },
+        {
+          "property": "SendToRecycleBin",
+          "label": "Move to Recycle Bin key",
+          "clear_tip": null
+        }
+      ],
+      "marker": "⚠ "
+    },
+    {
+      "name": "no texts have no problems",
+      "kind": "find_problems",
+      "texts": {},
+      "problems": []
+    },
+    {
+      "name": "empty mandatory, invalid name and refused key are problems; empty optional and padded valid are not",
+      "kind": "find_problems",
+      "texts": {
+        "Next": "",
+        "Previous": "NotAKey",
+        "LastImage": "",
+        "Refresh": "Tab",
+        "Skip": "  Space "
+      },
+      "problems": [
+        "Next",
+        "Previous",
+        "Refresh"
+      ]
+    },
+    {
+      "name": "alias spellings count as the same key",
+      "kind": "find_problems",
+      "texts": {
+        "Next": "Return",
+        "Previous": "enter",
+        "FirstImage": "PageUp",
+        "NextFolder": "Prior",
+        "Skip": "Space",
+        "Compare": "c",
+        "Undo": "C"
+      },
+      "problems": [
+        "Compare",
+        "FirstImage",
+        "Next",
+        "NextFolder",
+        "Previous",
+        "Undo"
+      ]
+    },
+    {
+      "name": "two empty optional boxes are not a conflict",
+      "kind": "find_problems",
+      "texts": {
+        "Refresh": "",
+        "CustomZoom": "",
+        "LastImage": ""
+      },
+      "problems": []
+    },
+    {
+      "name": "two optional boxes with the same key are a conflict",
+      "kind": "find_problems",
+      "texts": {
+        "Refresh": "Q",
+        "CustomZoom": "q",
+        "Skip": "S"
+      },
+      "problems": [
+        "CustomZoom",
+        "Refresh"
+      ]
+    },
+    {
+      "name": "an optional key equal to a mandatory one marks both",
+      "kind": "find_problems",
+      "texts": {
+        "Next": "Right",
+        "LastImage": "Right",
+        "Previous": "Left"
+      },
+      "problems": [
+        "LastImage",
+        "Next"
+      ]
+    },
+    {
+      "name": "three boxes with one key are all marked",
+      "kind": "find_problems",
+      "texts": {
+        "ZoomIn": "F5",
+        "ZoomOut": "f5",
+        "ToggleFit": "F5",
+        "Fullscreen": "F11"
+      },
+      "problems": [
+        "ToggleFit",
+        "ZoomIn",
+        "ZoomOut"
+      ]
+    }
+  ]
+}

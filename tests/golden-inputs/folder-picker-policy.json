@@ -1,0 +1,29 @@
+{
+  "usable": [
+    { "id": "null", "folder": null },
+    { "id": "empty", "folder": "" },
+    { "id": "space-only", "folder": "  " },
+    { "id": "existing-root", "folder": "$ROOT" },
+    { "id": "existing-subfolder", "folder": "$ROOT\\photos" },
+    { "id": "existing-trailing-separator", "folder": "$ROOT\\photos\\" },
+    { "id": "existing-dot-dot-segment", "folder": "$ROOT\\photos\\sub\\.." },
+    { "id": "existing-other-case", "folder": "$ROOT\\PHOTOS" },
+    { "id": "existing-trailing-spaces", "folder": "$ROOT\\photos  " },
+    { "id": "existing-extended-prefix", "folder": "\\\\?\\$ROOT\\photos" },
+    { "id": "existing-forward-slashes", "folder": "$ROOT/photos/sub" },
+    { "id": "existing-drive-root", "folder": "C:\\" },
+    { "id": "existing-current-folder", "folder": "." },
+    { "id": "file-not-folder", "folder": "$ROOT\\a.jpg" },
+    { "id": "missing-folder", "folder": "$ROOT\\missing" },
+    { "id": "missing-relative", "folder": "oracle-w8-18b-no-such-folder" },
+    { "id": "invalid-character", "folder": "$ROOT\\photos|x" },
+    { "id": "embedded-nul", "folder": "$ROOT\\photos\u0000x" }
+  ],
+  "pick": [
+    { "id": "existing-initial-is-forwarded-unchanged", "owner": 4660, "title": "Choose", "folder": "$ROOT\\photos\\", "answer": "D:\\Photos" },
+    { "id": "missing-initial-is-dropped", "owner": 4660, "title": "Choose", "folder": "$ROOT\\missing", "answer": "D:\\Photos" },
+    { "id": "empty-initial-is-dropped", "owner": 77, "title": "Chọn thư mục ảnh", "folder": "", "answer": null },
+    { "id": "null-initial", "owner": 0, "title": "", "folder": null, "answer": null },
+    { "id": "cancelled-is-null", "owner": 1, "title": "T", "folder": "$ROOT", "answer": null }
+  ]
+}

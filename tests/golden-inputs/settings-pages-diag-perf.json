@@ -1,0 +1,28 @@
+{
+ "command": "settings-pages-diag-perf",
+ "notes": [
+  "Feeds W8-19d (dialogs::settings::pages::{diagnostics, performance}). Reflection over the internal DiagnosticsSettingsPage / PerformanceSettingsPage and SettingsPageBuilder of PhotoReview.dll; see tools/oracle-cs/Commands/W8-19d.cs for the case kinds and output fields.",
+  "id_base is SettingsDialog.PageIdBase(index of the page in the navigation order): Performance index 3 -> 4000, Diagnostics index 6 -> 7000. The English default localizer is active, so texts are English.",
+  "Run against the C# baseline d92d6aae."
+ ],
+ "cases": [
+  {
+   "name": "Diagnostics page declaration",
+   "kind": "declare",
+   "page": "Diagnostics",
+   "id_base": 7000,
+   "fields": [ "_logging", "_openLog" ]
+  },
+  {
+   "name": "Performance page declaration",
+   "kind": "declare",
+   "page": "Performance",
+   "id_base": 4000,
+   "fields": [ "_decoder", "_turboNote", "_ramSlider", "_ramValue", "_ramHint", "_forward", "_backward" ]
+  },
+  {
+   "name": "Performance constants",
+   "kind": "constants"
+  }
+ ]
+}

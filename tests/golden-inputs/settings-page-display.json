@@ -1,0 +1,24 @@
+{
+ "command": "settings-page-display",
+ "notes": [
+  "Feeds W8-19e (dialogs::settings::pages::display). Reflection over the internal DisplaySettingsPage and SettingsPageBuilder of PhotoReview.dll; see tools/oracle-cs/Commands/W8-19e.cs for the case kinds and output fields.",
+  "id_base is SettingsDialog.PageIdBase(1) = 2000 (Display is the second navigation entry). English default localizer. Run against the C# baseline d92d6aae."
+ ],
+ "cases": [
+  {
+   "name": "Display page declaration",
+   "kind": "declare",
+   "page": "Display",
+   "id_base": 2000,
+   "fields": [
+    "_showInfoOverlay", "_showFileInfo", "_showFolderInfo", "_fontSize", "_showZoomIndicator", "_toolbarAutoHide", "_toolbarDelay",
+    "_opacity", "_opacityValue", "_infoAutoHide", "_infoDelay", "_loadingMode", "_scalingQuality", "_showExif"
+   ],
+   "lists": [ "ExifChecks", "TitleChecks" ]
+  },
+  {
+   "name": "EXIF and title bar flag orders",
+   "kind": "orders"
+  }
+ ]
+}

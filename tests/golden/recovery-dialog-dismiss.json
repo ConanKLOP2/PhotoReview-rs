@@ -1,0 +1,359 @@
+{
+  "generator": "oracle-cs recovery-dialog-dismiss",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "declined",
+      "entries": [
+        "e1",
+        "e2",
+        "e3"
+      ],
+      "rows": [
+        0,
+        1
+      ],
+      "has_delegate": true,
+      "answer": false,
+      "mode": "ok",
+      "skip": [],
+      "messages": [
+        {
+          "title": "Confirm clearing",
+          "message": "Clear 2 entries from the Recovery list?\n\nThis only removes them from the list; no file is moved or deleted. Cleared entries can no longer be retried.",
+          "kind": "Confirmation"
+        }
+      ],
+      "delegate_calls": [],
+      "rows_left": [
+        "e1",
+        "e2",
+        "e3"
+      ]
+    },
+    {
+      "name": "confirmed one row",
+      "entries": [
+        "e1",
+        "e2",
+        "e3"
+      ],
+      "rows": [
+        1
+      ],
+      "has_delegate": true,
+      "answer": true,
+      "mode": "ok",
+      "skip": [],
+      "messages": [
+        {
+          "title": "Confirm clearing",
+          "message": "Clear 1 entries from the Recovery list?\n\nThis only removes them from the list; no file is moved or deleted. Cleared entries can no longer be retried.",
+          "kind": "Confirmation"
+        }
+      ],
+      "delegate_calls": [
+        [
+          "e2"
+        ]
+      ],
+      "rows_left": [
+        "e1",
+        "e3"
+      ]
+    },
+    {
+      "name": "confirmed two rows",
+      "entries": [
+        "e1",
+        "e2",
+        "e3"
+      ],
+      "rows": [
+        0,
+        2
+      ],
+      "has_delegate": true,
+      "answer": true,
+      "mode": "ok",
+      "skip": [],
+      "messages": [
+        {
+          "title": "Confirm clearing",
+          "message": "Clear 2 entries from the Recovery list?\n\nThis only removes them from the list; no file is moved or deleted. Cleared entries can no longer be retried.",
+          "kind": "Confirmation"
+        }
+      ],
+      "delegate_calls": [
+        [
+          "e1",
+          "e3"
+        ]
+      ],
+      "rows_left": [
+        "e2"
+      ]
+    },
+    {
+      "name": "confirmed all rows",
+      "entries": [
+        "e1",
+        "e2",
+        "e3"
+      ],
+      "rows": [
+        0,
+        1,
+        2
+      ],
+      "has_delegate": true,
+      "answer": true,
+      "mode": "ok",
+      "skip": [],
+      "messages": [
+        {
+          "title": "Confirm clearing",
+          "message": "Clear 3 entries from the Recovery list?\n\nThis only removes them from the list; no file is moved or deleted. Cleared entries can no longer be retried.",
+          "kind": "Confirmation"
+        }
+      ],
+      "delegate_calls": [
+        [
+          "e1",
+          "e2",
+          "e3"
+        ]
+      ],
+      "rows_left": []
+    },
+    {
+      "name": "no rows selected",
+      "entries": [
+        "e1",
+        "e2",
+        "e3"
+      ],
+      "rows": [],
+      "has_delegate": true,
+      "answer": true,
+      "mode": "ok",
+      "skip": [],
+      "messages": [],
+      "delegate_calls": [],
+      "rows_left": [
+        "e1",
+        "e2",
+        "e3"
+      ]
+    },
+    {
+      "name": "no delegate",
+      "entries": [
+        "e1",
+        "e2",
+        "e3"
+      ],
+      "rows": [
+        0,
+        1
+      ],
+      "has_delegate": false,
+      "answer": true,
+      "mode": "ok",
+      "skip": [],
+      "messages": [],
+      "delegate_calls": [],
+      "rows_left": [
+        "e1",
+        "e2",
+        "e3"
+      ]
+    },
+    {
+      "name": "no delegate no rows",
+      "entries": [
+        "e1",
+        "e2",
+        "e3"
+      ],
+      "rows": [],
+      "has_delegate": false,
+      "answer": true,
+      "mode": "ok",
+      "skip": [],
+      "messages": [],
+      "delegate_calls": [],
+      "rows_left": [
+        "e1",
+        "e2",
+        "e3"
+      ]
+    },
+    {
+      "name": "delegate throws",
+      "entries": [
+        "e1",
+        "e2",
+        "e3"
+      ],
+      "rows": [
+        0,
+        1
+      ],
+      "has_delegate": true,
+      "answer": true,
+      "mode": "throws",
+      "skip": [],
+      "messages": [
+        {
+          "title": "Confirm clearing",
+          "message": "Clear 2 entries from the Recovery list?\n\nThis only removes them from the list; no file is moved or deleted. Cleared entries can no longer be retried.",
+          "kind": "Confirmation"
+        },
+        {
+          "title": "Could not clear",
+          "message": "journal locked",
+          "kind": "Error"
+        }
+      ],
+      "delegate_calls": [
+        [
+          "e1",
+          "e2"
+        ]
+      ],
+      "rows_left": [
+        "e1",
+        "e2",
+        "e3"
+      ]
+    },
+    {
+      "name": "journal reports one stale",
+      "entries": [
+        "e1",
+        "e2",
+        "e3"
+      ],
+      "rows": [
+        0,
+        1
+      ],
+      "has_delegate": true,
+      "answer": true,
+      "mode": "ok",
+      "skip": [
+        "e2"
+      ],
+      "messages": [
+        {
+          "title": "Confirm clearing",
+          "message": "Clear 2 entries from the Recovery list?\n\nThis only removes them from the list; no file is moved or deleted. Cleared entries can no longer be retried.",
+          "kind": "Confirmation"
+        }
+      ],
+      "delegate_calls": [
+        [
+          "e1",
+          "e2"
+        ]
+      ],
+      "rows_left": [
+        "e3"
+      ]
+    },
+    {
+      "name": "journal reports all stale",
+      "entries": [
+        "e1",
+        "e2",
+        "e3"
+      ],
+      "rows": [
+        0,
+        1
+      ],
+      "has_delegate": true,
+      "answer": true,
+      "mode": "ok",
+      "skip": [
+        "e1",
+        "e2"
+      ],
+      "messages": [
+        {
+          "title": "Confirm clearing",
+          "message": "Clear 2 entries from the Recovery list?\n\nThis only removes them from the list; no file is moved or deleted. Cleared entries can no longer be retried.",
+          "kind": "Confirmation"
+        }
+      ],
+      "delegate_calls": [
+        [
+          "e1",
+          "e2"
+        ]
+      ],
+      "rows_left": [
+        "e3"
+      ]
+    },
+    {
+      "name": "single entry",
+      "entries": [
+        "e1"
+      ],
+      "rows": [
+        0
+      ],
+      "has_delegate": true,
+      "answer": true,
+      "mode": "ok",
+      "skip": [],
+      "messages": [
+        {
+          "title": "Confirm clearing",
+          "message": "Clear 1 entries from the Recovery list?\n\nThis only removes them from the list; no file is moved or deleted. Cleared entries can no longer be retried.",
+          "kind": "Confirmation"
+        }
+      ],
+      "delegate_calls": [
+        [
+          "e1"
+        ]
+      ],
+      "rows_left": []
+    },
+    {
+      "name": "rows in reverse order",
+      "entries": [
+        "e1",
+        "e2",
+        "e3"
+      ],
+      "rows": [
+        2,
+        0
+      ],
+      "has_delegate": true,
+      "answer": true,
+      "mode": "ok",
+      "skip": [],
+      "messages": [
+        {
+          "title": "Confirm clearing",
+          "message": "Clear 2 entries from the Recovery list?\n\nThis only removes them from the list; no file is moved or deleted. Cleared entries can no longer be retried.",
+          "kind": "Confirmation"
+        }
+      ],
+      "delegate_calls": [
+        [
+          "e3",
+          "e1"
+        ]
+      ],
+      "rows_left": [
+        "e2"
+      ]
+    }
+  ]
+}

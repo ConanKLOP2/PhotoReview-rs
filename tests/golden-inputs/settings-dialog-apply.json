@@ -1,0 +1,118 @@
+{
+ "command": "settings-dialog-apply",
+ "notes": [
+  "Feeds W8-19l (dialogs::settings::dialog::{apply, validate, messages}). Reflection over the internal SettingsDialog (real constructor, no window, recording DispatchProxy implementations of IDialogWarningSink and IShellFileDialog; see tools/oracle-cs/Commands/W8-19l.cs) at the baseline d92d6aae. Settings overrides use the property names of AppSettings (the SettingsFrom helper of W8-10b.cs).",
+  "Output per kind: focus_targets -> targets [{field, page, id}]; save_flow -> results, saved, warnings [{title, message_nonempty, message?}]; export -> calls, warnings, file_written, logging_enabled_in_file; import -> calls, warnings, logging_enabled, file_read."
+ ],
+ "cases": [
+  {
+   "name": "focus_targets",
+   "kind": "focus_targets"
+  },
+  {
+   "name": "save_default",
+   "kind": "save_flow",
+   "calls": 1,
+   "pin_message": false
+  },
+  {
+   "name": "save_changed_setting",
+   "kind": "save_flow",
+   "settings": {
+    "LoggingEnabled": true
+   },
+   "calls": 1,
+   "pin_message": false
+  },
+  {
+   "name": "save_invalid_shortcut",
+   "kind": "save_flow",
+   "settings": {
+    "Shortcuts": {
+     "Next": "NotAKey"
+    }
+   },
+   "calls": 1,
+   "pin_message": true
+  },
+  {
+   "name": "save_invalid_shortcut_twice",
+   "kind": "save_flow",
+   "settings": {
+    "Shortcuts": {
+     "Next": "NotAKey"
+    }
+   },
+   "calls": 2,
+   "pin_message": true
+  },
+  {
+   "name": "save_duplicate_shortcut",
+   "kind": "save_flow",
+   "settings": {
+    "Shortcuts": {
+     "Next": "Right",
+     "Previous": "right"
+    }
+   },
+   "calls": 1,
+   "pin_message": true
+  },
+  {
+   "name": "export_without_files",
+   "kind": "export",
+   "files": false,
+   "save_result": "none"
+  },
+  {
+   "name": "export_cancelled",
+   "kind": "export",
+   "files": true,
+   "save_result": "none"
+  },
+  {
+   "name": "export_to_file",
+   "kind": "export",
+   "files": true,
+   "save_result": "file",
+   "settings": {
+    "LoggingEnabled": true
+   }
+  },
+  {
+   "name": "import_from_path_good",
+   "kind": "import",
+   "mode": "from_path",
+   "files": false,
+   "file_text": "{ \"LoggingEnabled\": true, \"InitialViewMode\": \"FitHeight\" }"
+  },
+  {
+   "name": "import_from_path_broken",
+   "kind": "import",
+   "mode": "from_path",
+   "files": false,
+   "file_text": "{ not json"
+  },
+  {
+   "name": "import_button_without_files",
+   "kind": "import",
+   "mode": "button",
+   "files": false
+  },
+  {
+   "name": "import_button_cancelled",
+   "kind": "import",
+   "mode": "button",
+   "files": true,
+   "pick": "cancel"
+  },
+  {
+   "name": "import_button_file",
+   "kind": "import",
+   "mode": "button",
+   "files": true,
+   "pick": "file",
+   "file_text": "{ \"LoggingEnabled\": true }"
+  }
+ ]
+}

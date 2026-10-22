@@ -1,0 +1,724 @@
+{
+  "generator": "oracle-cs settings-page-files",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "Files page declaration",
+      "kind": "declare",
+      "page": "Files",
+      "id_base": 6000,
+      "fields": [
+        "_compareHash",
+        "_compareSize",
+        "_rawSupport",
+        "_rawFullDecode",
+        "_rawPairMode",
+        "_webpHeic",
+        "_codecStatus",
+        "_allowPermanentDelete",
+        "_confirmBeforeDelete",
+        "_editorPath",
+        "_browse",
+        "_journal",
+        "_reuseLastFolder"
+      ],
+      "lists": [
+        "JournalRadios"
+      ],
+      "key": "Files",
+      "title": "Files & safety",
+      "items": [
+        {
+          "class": "Button",
+          "id": 6001,
+          "text": "Duplicate comparison",
+          "style": 1342177287,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 6002,
+          "text": "Compare hash (reads the files to confirm the bytes are identical)",
+          "style": 1342251011,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 6003,
+          "text": "Compare file size",
+          "style": 1342251011,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 6004,
+          "text": "Camera RAW",
+          "style": 1342177287,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 6005,
+          "text": "Enable Camera RAW support (.cr2, .cr3, .nef, .arw, .dng, .raf, .orf, .rw2)",
+          "style": 1342251011,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 6006,
+          "text": "Loads embedded JPEG previews from camera RAW files for fast viewing and navigation.",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 6007,
+          "text": "RAW full decode (demosaic)",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "ComboBox",
+          "id": 6008,
+          "text": "",
+          "style": 1344340483,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 6009,
+          "text": "Never: always shows the fast embedded preview and never decodes the sensor data, even when zoomed in. On zoom: decodes the sensor data at full resolution when you zoom in beyond the preview.",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 6010,
+          "text": "JPEG+RAW pairs",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "ComboBox",
+          "id": 6011,
+          "text": "",
+          "style": 1344340483,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 6012,
+          "text": "How pairs with matching names in the same folder are grouped.",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 6013,
+          "text": "In the stacked modes only one file of a pair is shown. To see the other one, assign a key to \"Switch JPEG / RAW member\" under Shortcuts (no key is assigned by default), or open Compare.",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 6014,
+          "text": "WebP and HEIC/HEIF",
+          "style": 1342177287,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 6015,
+          "text": "Enable WebP and HEIC/HEIF images (.webp, .heic, .heif) through the Windows codecs",
+          "style": 1342251011,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 6016,
+          "text": "Uses the codecs Windows provides; nothing is bundled with PhotoReview. An animated WebP shows its first frame only.",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 6017,
+          "text": "",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 6018,
+          "text": "Allow permanent delete on drives without a Recycle Bin",
+          "style": 1342251011,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 6019,
+          "text": "Off by default: Delete is refused on removable, network and unknown drives because they have no Recycle Bin. When on, Delete removes the file permanently after a confirmation. Deleted files cannot be restored, not even with Undo.",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 6020,
+          "text": "Confirm before Delete/Recycle",
+          "style": 1342251011,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 6021,
+          "text": "Off by default. When on, a Yes/No prompt is shown every time before a photo is sent to the Recycle Bin (on top of the permanent-delete warning above, which is unaffected).",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 6022,
+          "text": "External editor",
+          "style": 1342177287,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 6023,
+          "text": "Editor executable path",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Edit",
+          "id": 6024,
+          "text": "",
+          "style": 1342242944,
+          "ex_style": 512
+        },
+        {
+          "class": "Button",
+          "id": 6025,
+          "text": "Browse…",
+          "style": 1342242816,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 6026,
+          "text": "Right-click a photo > Open in External Editor launches this executable with the photo's path as argument. Leave empty to hide that menu item.",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 6027,
+          "text": "Operation journal",
+          "style": 1342177287,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 6028,
+          "text": "Operation journal durability",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 6029,
+          "text": "Fast (default)",
+          "style": 1342382089,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 6030,
+          "text": "Power-loss safe",
+          "style": 1342185481,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 6031,
+          "text": "Records reach the OS cache before each file operation. Survives an app crash; after a power loss or OS crash the last few records may be lost, so Undo/Recovery may not know about a very recent move.",
+          "style": 1342308480,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 6032,
+          "text": "Every record is forced to disk before the file operation starts. Safest, but about 4x slower per record (still off the UI thread, so the app stays responsive).",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 6033,
+          "text": "Actions",
+          "style": 1342177287,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 6034,
+          "text": "Reuse the last folder",
+          "style": 1342251011,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 6035,
+          "text": "Shift always asks.",
+          "style": 1342177408,
+          "ex_style": 0
+        }
+      ],
+      "texts": [
+        {
+          "id": 6001,
+          "text": "Duplicate comparison"
+        },
+        {
+          "id": 6002,
+          "text": "Compare hash (reads the files to confirm the bytes are identical)"
+        },
+        {
+          "id": 6003,
+          "text": "Compare file size"
+        },
+        {
+          "id": 6004,
+          "text": "Camera RAW"
+        },
+        {
+          "id": 6005,
+          "text": "Enable Camera RAW support (.cr2, .cr3, .nef, .arw, .dng, .raf, .orf, .rw2)"
+        },
+        {
+          "id": 6006,
+          "text": "Loads embedded JPEG previews from camera RAW files for fast viewing and navigation."
+        },
+        {
+          "id": 6007,
+          "text": "RAW full decode (demosaic)"
+        },
+        {
+          "id": 6009,
+          "text": "Never: always shows the fast embedded preview and never decodes the sensor data, even when zoomed in. On zoom: decodes the sensor data at full resolution when you zoom in beyond the preview."
+        },
+        {
+          "id": 6010,
+          "text": "JPEG+RAW pairs"
+        },
+        {
+          "id": 6012,
+          "text": "How pairs with matching names in the same folder are grouped."
+        },
+        {
+          "id": 6013,
+          "text": "In the stacked modes only one file of a pair is shown. To see the other one, assign a key to \"Switch JPEG / RAW member\" under Shortcuts (no key is assigned by default), or open Compare."
+        },
+        {
+          "id": 6014,
+          "text": "WebP and HEIC/HEIF"
+        },
+        {
+          "id": 6015,
+          "text": "Enable WebP and HEIC/HEIF images (.webp, .heic, .heif) through the Windows codecs"
+        },
+        {
+          "id": 6016,
+          "text": "Uses the codecs Windows provides; nothing is bundled with PhotoReview. An animated WebP shows its first frame only."
+        },
+        {
+          "id": 6018,
+          "text": "Allow permanent delete on drives without a Recycle Bin"
+        },
+        {
+          "id": 6019,
+          "text": "Off by default: Delete is refused on removable, network and unknown drives because they have no Recycle Bin. When on, Delete removes the file permanently after a confirmation. Deleted files cannot be restored, not even with Undo."
+        },
+        {
+          "id": 6020,
+          "text": "Confirm before Delete/Recycle"
+        },
+        {
+          "id": 6021,
+          "text": "Off by default. When on, a Yes/No prompt is shown every time before a photo is sent to the Recycle Bin (on top of the permanent-delete warning above, which is unaffected)."
+        },
+        {
+          "id": 6022,
+          "text": "External editor"
+        },
+        {
+          "id": 6023,
+          "text": "Editor executable path"
+        },
+        {
+          "id": 6025,
+          "text": "Browse…"
+        },
+        {
+          "id": 6026,
+          "text": "Right-click a photo > Open in External Editor launches this executable with the photo's path as argument. Leave empty to hide that menu item."
+        },
+        {
+          "id": 6027,
+          "text": "Operation journal"
+        },
+        {
+          "id": 6028,
+          "text": "Operation journal durability"
+        },
+        {
+          "id": 6029,
+          "text": "Fast (default)"
+        },
+        {
+          "id": 6030,
+          "text": "Power-loss safe"
+        },
+        {
+          "id": 6031,
+          "text": "Records reach the OS cache before each file operation. Survives an app crash; after a power loss or OS crash the last few records may be lost, so Undo/Recovery may not know about a very recent move."
+        },
+        {
+          "id": 6032,
+          "text": "Every record is forced to disk before the file operation starts. Safest, but about 4x slower per record (still off the UI thread, so the app stays responsive)."
+        },
+        {
+          "id": 6033,
+          "text": "Actions"
+        },
+        {
+          "id": 6034,
+          "text": "Reuse the last folder"
+        },
+        {
+          "id": 6035,
+          "text": "Shift always asks."
+        }
+      ],
+      "notes": [
+        6006,
+        6009,
+        6012,
+        6013,
+        6016,
+        6017,
+        6019,
+        6021,
+        6026,
+        6031,
+        6032,
+        6035
+      ],
+      "key_boxes": [],
+      "warnings": [],
+      "combo_items": [
+        {
+          "id": 6008,
+          "items": [
+            "Never (fast embedded preview)",
+            "On zoom (full resolution)"
+          ]
+        },
+        {
+          "id": 6011,
+          "items": [
+            "Separate (treat each as independent photo)",
+            "Prefer JPEG (stack, show JPEG)",
+            "Prefer RAW (stack, show RAW)"
+          ]
+        }
+      ],
+      "sliders": [],
+      "elements": [
+        {
+          "type": "SettingsGroupElement",
+          "control_ids": [
+            6001,
+            6002,
+            6003
+          ],
+          "children": [
+            {
+              "type": "SettingsCheckElement",
+              "control_ids": [
+                6002
+              ]
+            },
+            {
+              "type": "SettingsCheckElement",
+              "control_ids": [
+                6003
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SettingsGroupElement",
+          "control_ids": [
+            6004,
+            6005,
+            6006,
+            6007,
+            6008,
+            6009,
+            6010,
+            6011,
+            6012,
+            6013
+          ],
+          "children": [
+            {
+              "type": "SettingsCheckElement",
+              "control_ids": [
+                6005
+              ]
+            },
+            {
+              "type": "SettingsTextElement",
+              "control_ids": [
+                6006
+              ]
+            },
+            {
+              "type": "SettingsRowElement",
+              "control_ids": [
+                6007,
+                6008
+              ]
+            },
+            {
+              "type": "SettingsTextElement",
+              "control_ids": [
+                6009
+              ]
+            },
+            {
+              "type": "SettingsRowElement",
+              "control_ids": [
+                6010,
+                6011
+              ]
+            },
+            {
+              "type": "SettingsTextElement",
+              "control_ids": [
+                6012
+              ]
+            },
+            {
+              "type": "SettingsTextElement",
+              "control_ids": [
+                6013
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SettingsGroupElement",
+          "control_ids": [
+            6014,
+            6015,
+            6016,
+            6017
+          ],
+          "children": [
+            {
+              "type": "SettingsCheckElement",
+              "control_ids": [
+                6015
+              ]
+            },
+            {
+              "type": "SettingsTextElement",
+              "control_ids": [
+                6016
+              ]
+            },
+            {
+              "type": "SettingsTextElement",
+              "control_ids": [
+                6017
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SettingsCheckElement",
+          "control_ids": [
+            6018
+          ]
+        },
+        {
+          "type": "SettingsTextElement",
+          "control_ids": [
+            6019
+          ]
+        },
+        {
+          "type": "SettingsCheckElement",
+          "control_ids": [
+            6020
+          ]
+        },
+        {
+          "type": "SettingsTextElement",
+          "control_ids": [
+            6021
+          ]
+        },
+        {
+          "type": "SettingsGroupElement",
+          "control_ids": [
+            6022,
+            6023,
+            6024,
+            6025,
+            6026
+          ],
+          "children": [
+            {
+              "type": "SettingsRowElement",
+              "control_ids": [
+                6023,
+                6024
+              ]
+            },
+            {
+              "type": "SettingsButtonsElement",
+              "control_ids": [
+                6025
+              ]
+            },
+            {
+              "type": "SettingsTextElement",
+              "control_ids": [
+                6026
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SettingsGroupElement",
+          "control_ids": [
+            6027,
+            6028,
+            6029,
+            6031,
+            6030,
+            6032
+          ],
+          "children": [
+            {
+              "type": "SettingsTextElement",
+              "control_ids": [
+                6028
+              ]
+            },
+            {
+              "type": "SettingsRadioElement",
+              "control_ids": [
+                6029,
+                6031
+              ]
+            },
+            {
+              "type": "SettingsRadioElement",
+              "control_ids": [
+                6030,
+                6032
+              ]
+            }
+          ]
+        },
+        {
+          "type": "SettingsGroupElement",
+          "control_ids": [
+            6033,
+            6034,
+            6035
+          ],
+          "children": [
+            {
+              "type": "SettingsCheckElement",
+              "control_ids": [
+                6034
+              ]
+            },
+            {
+              "type": "SettingsTextElement",
+              "control_ids": [
+                6035
+              ]
+            }
+          ]
+        }
+      ],
+      "ids": {
+        "compare_hash": 6002,
+        "compare_size": 6003,
+        "raw_support": 6005,
+        "raw_full_decode": 6008,
+        "raw_pair_mode": 6011,
+        "webp_heic": 6015,
+        "codec_status": 6017,
+        "allow_permanent_delete": 6018,
+        "confirm_before_delete": 6020,
+        "editor_path": 6024,
+        "browse": 6025,
+        "journal": 6028,
+        "reuse_last_folder": 6034
+      },
+      "list_ids": {
+        "journal_radios": [
+          6029,
+          6030
+        ]
+      }
+    },
+    {
+      "name": "initial folder of an empty path",
+      "kind": "initial_folder",
+      "make": "none",
+      "path": "",
+      "result_kind": "null"
+    },
+    {
+      "name": "initial folder of a blank path",
+      "kind": "initial_folder",
+      "make": "none",
+      "path": "   ",
+      "result_kind": "null"
+    },
+    {
+      "name": "initial folder of a missing file",
+      "kind": "initial_folder",
+      "make": "none",
+      "path": "C:\\w819f-definitely-missing\\editor.exe",
+      "result_kind": "null"
+    },
+    {
+      "name": "initial folder of a path with invalid characters",
+      "kind": "initial_folder",
+      "make": "none",
+      "path": "C:\\a|b?.exe",
+      "result_kind": "null"
+    },
+    {
+      "name": "initial folder of an existing file is its folder",
+      "kind": "initial_folder",
+      "make": "temp_file",
+      "result_kind": "parent_dir"
+    },
+    {
+      "name": "initial folder of an existing directory is null",
+      "kind": "initial_folder",
+      "make": "temp_dir",
+      "result_kind": "null"
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+ "command": "settings-page-shortcuts",
+ "notes": [
+  "Feeds W8-19i (dialogs::settings::pages::shortcuts). Reflection over the internal ShortcutsSettingsPage and SettingsPageBuilder of PhotoReview.dll; see tools/oracle-cs/Commands/W8-19i.cs for the case kinds and output fields.",
+  "id_base is SettingsDialog.PageIdBase(4) = 5000 (Shortcuts is the fifth navigation entry). English default localizer. Run against the C# baseline d92d6aae (the HEAD page has two more Action rows).",
+  "find_problems texts: property name -> typed text. The expected sets are the ones of the C# tests AnAliasSpelling_CountsAsTheSameKey and FindProblems_FlagsEmptyMandatory_AndInvalidNames_ButNotEmptyOptional plus the cases below."
+ ],
+ "cases": [
+  {
+   "name": "Shortcuts page declaration",
+   "kind": "declare",
+   "page": "Shortcuts",
+   "id_base": 5000,
+   "fields": [ "_warning", "_resetKeys", "_editActions" ],
+   "cells": true
+  },
+  { "name": "row tables", "kind": "rows" },
+  { "name": "no texts have no problems", "kind": "find_problems", "texts": {} },
+  {
+   "name": "empty mandatory, invalid name and refused key are problems; empty optional and padded valid are not",
+   "kind": "find_problems",
+   "texts": { "Next": "", "Previous": "NotAKey", "LastImage": "", "Refresh": "Tab", "Skip": "  Space " }
+  },
+  {
+   "name": "alias spellings count as the same key",
+   "kind": "find_problems",
+   "texts": { "Next": "Return", "Previous": "enter", "FirstImage": "PageUp", "NextFolder": "Prior", "Skip": "Space", "Compare": "c", "Undo": "C" }
+  },
+  {
+   "name": "two empty optional boxes are not a conflict",
+   "kind": "find_problems",
+   "texts": { "Refresh": "", "CustomZoom": "", "LastImage": "" }
+  },
+  {
+   "name": "two optional boxes with the same key are a conflict",
+   "kind": "find_problems",
+   "texts": { "Refresh": "Q", "CustomZoom": "q", "Skip": "S" }
+  },
+  {
+   "name": "an optional key equal to a mandatory one marks both",
+   "kind": "find_problems",
+   "texts": { "Next": "Right", "LastImage": "Right", "Previous": "Left" }
+  },
+  {
+   "name": "three boxes with one key are all marked",
+   "kind": "find_problems",
+   "texts": { "ZoomIn": "F5", "ZoomOut": "f5", "ToggleFit": "F5", "Fullscreen": "F11" }
+  }
+ ]
+}

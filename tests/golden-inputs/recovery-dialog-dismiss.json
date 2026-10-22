@@ -1,0 +1,198 @@
+{
+ "command": "recovery-dialog-dismiss",
+ "notes": [
+  "Feeds W8-18v (dialogs::recovery::{restore, dismiss}). Reflection over the window-less RecoveryDialog (Hwnd 0): the Clear flow up to the presenter call; the message boxes are a DispatchProxy over the internal ITaskDialogPort.",
+  "Output: messages[] (title, message, kind in the order shown), delegate_calls[] (entry ids per delegate call), rows_left[]. With Hwnd == 0 the C# returns before RefreshEntries and before the stale notice (line 690): the golden records that, the Rust test drives the same window-less state.",
+  "Retry has no golden (RetryAsync starts from the selected list row, which needs the list window)."
+ ],
+ "cases": [
+  {
+   "name": "declined",
+   "entries": [
+    "e1",
+    "e2",
+    "e3"
+   ],
+   "rows": [
+    0,
+    1
+   ],
+   "has_delegate": true,
+   "answer": false,
+   "mode": "ok",
+   "skip": []
+  },
+  {
+   "name": "confirmed one row",
+   "entries": [
+    "e1",
+    "e2",
+    "e3"
+   ],
+   "rows": [
+    1
+   ],
+   "has_delegate": true,
+   "answer": true,
+   "mode": "ok",
+   "skip": []
+  },
+  {
+   "name": "confirmed two rows",
+   "entries": [
+    "e1",
+    "e2",
+    "e3"
+   ],
+   "rows": [
+    0,
+    2
+   ],
+   "has_delegate": true,
+   "answer": true,
+   "mode": "ok",
+   "skip": []
+  },
+  {
+   "name": "confirmed all rows",
+   "entries": [
+    "e1",
+    "e2",
+    "e3"
+   ],
+   "rows": [
+    0,
+    1,
+    2
+   ],
+   "has_delegate": true,
+   "answer": true,
+   "mode": "ok",
+   "skip": []
+  },
+  {
+   "name": "no rows selected",
+   "entries": [
+    "e1",
+    "e2",
+    "e3"
+   ],
+   "rows": [],
+   "has_delegate": true,
+   "answer": true,
+   "mode": "ok",
+   "skip": []
+  },
+  {
+   "name": "no delegate",
+   "entries": [
+    "e1",
+    "e2",
+    "e3"
+   ],
+   "rows": [
+    0,
+    1
+   ],
+   "has_delegate": false,
+   "answer": true,
+   "mode": "ok",
+   "skip": []
+  },
+  {
+   "name": "no delegate no rows",
+   "entries": [
+    "e1",
+    "e2",
+    "e3"
+   ],
+   "rows": [],
+   "has_delegate": false,
+   "answer": true,
+   "mode": "ok",
+   "skip": []
+  },
+  {
+   "name": "delegate throws",
+   "entries": [
+    "e1",
+    "e2",
+    "e3"
+   ],
+   "rows": [
+    0,
+    1
+   ],
+   "has_delegate": true,
+   "answer": true,
+   "mode": "throws",
+   "skip": []
+  },
+  {
+   "name": "journal reports one stale",
+   "entries": [
+    "e1",
+    "e2",
+    "e3"
+   ],
+   "rows": [
+    0,
+    1
+   ],
+   "has_delegate": true,
+   "answer": true,
+   "mode": "ok",
+   "skip": [
+    "e2"
+   ]
+  },
+  {
+   "name": "journal reports all stale",
+   "entries": [
+    "e1",
+    "e2",
+    "e3"
+   ],
+   "rows": [
+    0,
+    1
+   ],
+   "has_delegate": true,
+   "answer": true,
+   "mode": "ok",
+   "skip": [
+    "e1",
+    "e2"
+   ]
+  },
+  {
+   "name": "single entry",
+   "entries": [
+    "e1"
+   ],
+   "rows": [
+    0
+   ],
+   "has_delegate": true,
+   "answer": true,
+   "mode": "ok",
+   "skip": []
+  },
+  {
+   "name": "rows in reverse order",
+   "entries": [
+    "e1",
+    "e2",
+    "e3"
+   ],
+   "rows": [
+    2,
+    0
+   ],
+   "has_delegate": true,
+   "answer": true,
+   "mode": "ok",
+   "skip": []
+  }
+ ]
+}

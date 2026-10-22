@@ -1,0 +1,23 @@
+{
+ "command": "settings-page-general",
+ "notes": [
+  "Feeds W8-19g (dialogs::settings::pages::general). Reflection over the internal GeneralSettingsPage and SettingsPageBuilder of PhotoReview.dll; see tools/oracle-cs/Commands/W8-19g.cs for the case kinds and output fields.",
+  "id_base is SettingsDialog.PageIdBase(0) = 1000 (General is the first navigation entry). English default localizer. Run against the C# baseline d92d6aae."
+ ],
+ "cases": [
+  {
+   "name": "General page declaration",
+   "kind": "declare",
+   "page": "General",
+   "id_base": 1000,
+   "fields": [
+    "_language", "_sortMode", "_viewMode", "_instanceMode", "_checkUpdate", "_openUpdatePage", "_updateStatus", "_shellStatus", "_shellAdd",
+    "_shellRemove", "_languageGroup", "_openFolder", "_reload", "_export"
+   ]
+  },
+  {
+   "name": "sort mode tags",
+   "kind": "sort_tags"
+  }
+ ]
+}

@@ -1,0 +1,610 @@
+{
+  "generator": "oracle-cs settings-dialog-layout",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "metrics_6_15",
+      "kind": "metrics",
+      "avg": 6,
+      "line": 15,
+      "margin": 15,
+      "field_height": 26,
+      "button_height": 26,
+      "scroll_bar_width": 16
+    },
+    {
+      "name": "sizes_6_15",
+      "kind": "sizes",
+      "avg": 6,
+      "line": 15,
+      "preferred_width": 810,
+      "preferred_height": 619,
+      "minimum_width": 540,
+      "minimum_height": 431
+    },
+    {
+      "name": "metrics_7_16",
+      "kind": "metrics",
+      "avg": 7,
+      "line": 16,
+      "margin": 18,
+      "field_height": 28,
+      "button_height": 28,
+      "scroll_bar_width": 18
+    },
+    {
+      "name": "sizes_7_16",
+      "kind": "sizes",
+      "avg": 7,
+      "line": 16,
+      "preferred_width": 945,
+      "preferred_height": 660,
+      "minimum_width": 630,
+      "minimum_height": 460
+    },
+    {
+      "name": "metrics_8_18",
+      "kind": "metrics",
+      "avg": 8,
+      "line": 18,
+      "margin": 20,
+      "field_height": 32,
+      "button_height": 32,
+      "scroll_bar_width": 20
+    },
+    {
+      "name": "sizes_8_18",
+      "kind": "sizes",
+      "avg": 8,
+      "line": 18,
+      "preferred_width": 1080,
+      "preferred_height": 743,
+      "minimum_width": 720,
+      "minimum_height": 518
+    },
+    {
+      "name": "metrics_10_22",
+      "kind": "metrics",
+      "avg": 10,
+      "line": 22,
+      "margin": 25,
+      "field_height": 39,
+      "button_height": 39,
+      "scroll_bar_width": 25
+    },
+    {
+      "name": "sizes_10_22",
+      "kind": "sizes",
+      "avg": 10,
+      "line": 22,
+      "preferred_width": 1350,
+      "preferred_height": 908,
+      "minimum_width": 900,
+      "minimum_height": 633
+    },
+    {
+      "name": "metrics_4_8",
+      "kind": "metrics",
+      "avg": 4,
+      "line": 8,
+      "margin": 10,
+      "field_height": 14,
+      "button_height": 14,
+      "scroll_bar_width": 16
+    },
+    {
+      "name": "sizes_4_8",
+      "kind": "sizes",
+      "avg": 4,
+      "line": 8,
+      "preferred_width": 540,
+      "preferred_height": 330,
+      "minimum_width": 360,
+      "minimum_height": 230
+    },
+    {
+      "name": "metrics_12_30",
+      "kind": "metrics",
+      "avg": 12,
+      "line": 30,
+      "margin": 30,
+      "field_height": 53,
+      "button_height": 53,
+      "scroll_bar_width": 30
+    },
+    {
+      "name": "sizes_12_30",
+      "kind": "sizes",
+      "avg": 12,
+      "line": 30,
+      "preferred_width": 1620,
+      "preferred_height": 1238,
+      "minimum_width": 1080,
+      "minimum_height": 863
+    },
+    {
+      "name": "metrics_1_1",
+      "kind": "metrics",
+      "avg": 1,
+      "line": 1,
+      "margin": 3,
+      "field_height": 2,
+      "button_height": 2,
+      "scroll_bar_width": 16
+    },
+    {
+      "name": "sizes_1_1",
+      "kind": "sizes",
+      "avg": 1,
+      "line": 1,
+      "preferred_width": 135,
+      "preferred_height": 41,
+      "minimum_width": 90,
+      "minimum_height": 29
+    },
+    {
+      "name": "layout_6_15_700x500",
+      "kind": "layout",
+      "avg": 6,
+      "line": 15,
+      "width": 700,
+      "height": 500,
+      "viewport_width": 458,
+      "viewport_height": 418
+    },
+    {
+      "name": "layout_6_15_900x700",
+      "kind": "layout",
+      "avg": 6,
+      "line": 15,
+      "width": 900,
+      "height": 700,
+      "viewport_width": 638,
+      "viewport_height": 618
+    },
+    {
+      "name": "layout_6_15_400x300",
+      "kind": "layout",
+      "avg": 6,
+      "line": 15,
+      "width": 400,
+      "height": 300,
+      "viewport_width": 198,
+      "viewport_height": 184
+    },
+    {
+      "name": "layout_6_15_1200x800",
+      "kind": "layout",
+      "avg": 6,
+      "line": 15,
+      "width": 1200,
+      "height": 800,
+      "viewport_width": 938,
+      "viewport_height": 718
+    },
+    {
+      "name": "layout_6_15_300x200",
+      "kind": "layout",
+      "avg": 6,
+      "line": 15,
+      "width": 300,
+      "height": 200,
+      "viewport_width": 150,
+      "viewport_height": 84
+    },
+    {
+      "name": "layout_8_18_700x500",
+      "kind": "layout",
+      "avg": 8,
+      "line": 18,
+      "width": 700,
+      "height": 500,
+      "viewport_width": 432,
+      "viewport_height": 355
+    },
+    {
+      "name": "layout_8_18_900x700",
+      "kind": "layout",
+      "avg": 8,
+      "line": 18,
+      "width": 900,
+      "height": 700,
+      "viewport_width": 587,
+      "viewport_height": 596
+    },
+    {
+      "name": "layout_8_18_400x300",
+      "kind": "layout",
+      "avg": 8,
+      "line": 18,
+      "width": 400,
+      "height": 300,
+      "viewport_width": 200,
+      "viewport_height": 155
+    },
+    {
+      "name": "layout_8_18_1200x800",
+      "kind": "layout",
+      "avg": 8,
+      "line": 18,
+      "width": 1200,
+      "height": 800,
+      "viewport_width": 852,
+      "viewport_height": 696
+    },
+    {
+      "name": "layout_8_18_300x200",
+      "kind": "layout",
+      "avg": 8,
+      "line": 18,
+      "width": 300,
+      "height": 200,
+      "viewport_width": 200,
+      "viewport_height": 90
+    },
+    {
+      "name": "layout_12_30_700x500",
+      "kind": "layout",
+      "avg": 12,
+      "line": 30,
+      "width": 700,
+      "height": 500,
+      "viewport_width": 300,
+      "viewport_height": 266
+    },
+    {
+      "name": "layout_12_30_900x700",
+      "kind": "layout",
+      "avg": 12,
+      "line": 30,
+      "width": 900,
+      "height": 700,
+      "viewport_width": 498,
+      "viewport_height": 466
+    },
+    {
+      "name": "layout_12_30_400x300",
+      "kind": "layout",
+      "avg": 12,
+      "line": 30,
+      "width": 400,
+      "height": 300,
+      "viewport_width": 300,
+      "viewport_height": 150
+    },
+    {
+      "name": "layout_12_30_1200x800",
+      "kind": "layout",
+      "avg": 12,
+      "line": 30,
+      "width": 1200,
+      "height": 800,
+      "viewport_width": 768,
+      "viewport_height": 566
+    },
+    {
+      "name": "layout_12_30_300x200",
+      "kind": "layout",
+      "avg": 12,
+      "line": 30,
+      "width": 300,
+      "height": 200,
+      "viewport_width": 300,
+      "viewport_height": 150
+    },
+    {
+      "name": "scroll_set_clamps",
+      "kind": "scroll",
+      "line": 15,
+      "content": 1000,
+      "viewport": 400,
+      "start": 0,
+      "ops": [
+        {
+          "op": "set",
+          "value": 100
+        },
+        {
+          "op": "set",
+          "value": -50
+        },
+        {
+          "op": "set",
+          "value": 10000
+        },
+        {
+          "op": "set",
+          "value": 600
+        },
+        {
+          "op": "set",
+          "value": 601
+        },
+        {
+          "op": "set",
+          "value": 0
+        }
+      ],
+      "offsets": [
+        100,
+        0,
+        600,
+        600,
+        600,
+        0
+      ]
+    },
+    {
+      "name": "scroll_wheel",
+      "kind": "scroll",
+      "line": 15,
+      "content": 1000,
+      "viewport": 400,
+      "start": 300,
+      "ops": [
+        {
+          "op": "wheel",
+          "delta": -120
+        },
+        {
+          "op": "wheel",
+          "delta": 120
+        },
+        {
+          "op": "wheel",
+          "delta": 60
+        },
+        {
+          "op": "wheel",
+          "delta": -60
+        },
+        {
+          "op": "wheel",
+          "delta": 30
+        },
+        {
+          "op": "wheel",
+          "delta": -30
+        },
+        {
+          "op": "wheel",
+          "delta": 1
+        },
+        {
+          "op": "wheel",
+          "delta": -1
+        },
+        {
+          "op": "wheel",
+          "delta": 0
+        },
+        {
+          "op": "wheel",
+          "delta": -1200
+        },
+        {
+          "op": "wheel",
+          "delta": 1200
+        },
+        {
+          "op": "wheel",
+          "delta": 240
+        }
+      ],
+      "offsets": [
+        345,
+        300,
+        278,
+        300,
+        289,
+        300,
+        300,
+        300,
+        300,
+        600,
+        150,
+        60
+      ]
+    },
+    {
+      "name": "scroll_wheel_odd_line",
+      "kind": "scroll",
+      "line": 17,
+      "content": 1000,
+      "viewport": 400,
+      "start": 200,
+      "ops": [
+        {
+          "op": "wheel",
+          "delta": -40
+        },
+        {
+          "op": "wheel",
+          "delta": -80
+        },
+        {
+          "op": "wheel",
+          "delta": 40
+        },
+        {
+          "op": "wheel",
+          "delta": 20
+        },
+        {
+          "op": "wheel",
+          "delta": -20
+        }
+      ],
+      "offsets": [
+        217,
+        251,
+        234,
+        226,
+        234
+      ]
+    },
+    {
+      "name": "scroll_bar_codes",
+      "kind": "scroll",
+      "line": 15,
+      "content": 1000,
+      "viewport": 400,
+      "start": 300,
+      "ops": [
+        {
+          "op": "bar",
+          "code": 0
+        },
+        {
+          "op": "bar",
+          "code": 1
+        },
+        {
+          "op": "bar",
+          "code": 2
+        },
+        {
+          "op": "bar",
+          "code": 3
+        },
+        {
+          "op": "bar",
+          "code": 4
+        },
+        {
+          "op": "bar",
+          "code": 5
+        },
+        {
+          "op": "bar",
+          "code": 6
+        },
+        {
+          "op": "bar",
+          "code": 1
+        },
+        {
+          "op": "bar",
+          "code": 7
+        },
+        {
+          "op": "bar",
+          "code": 8
+        },
+        {
+          "op": "bar",
+          "code": 9
+        },
+        {
+          "op": "bar",
+          "code": -1
+        }
+      ],
+      "offsets": [
+        270,
+        300,
+        0,
+        370,
+        0,
+        0,
+        0,
+        30,
+        600,
+        600,
+        600,
+        600
+      ]
+    },
+    {
+      "name": "scroll_bar_page_small_viewport",
+      "kind": "scroll",
+      "line": 15,
+      "content": 1000,
+      "viewport": 20,
+      "start": 300,
+      "ops": [
+        {
+          "op": "bar",
+          "code": 2
+        },
+        {
+          "op": "bar",
+          "code": 3
+        },
+        {
+          "op": "bar",
+          "code": 0
+        },
+        {
+          "op": "bar",
+          "code": 1
+        }
+      ],
+      "offsets": [
+        270,
+        300,
+        270,
+        300
+      ]
+    },
+    {
+      "name": "scroll_content_fits",
+      "kind": "scroll",
+      "line": 15,
+      "content": 300,
+      "viewport": 400,
+      "start": 0,
+      "ops": [
+        {
+          "op": "set",
+          "value": 50
+        },
+        {
+          "op": "wheel",
+          "delta": -120
+        },
+        {
+          "op": "bar",
+          "code": 7
+        },
+        {
+          "op": "bar",
+          "code": 3
+        }
+      ],
+      "offsets": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "name": "scroll_start_beyond_max",
+      "kind": "scroll",
+      "line": 15,
+      "content": 1000,
+      "viewport": 400,
+      "start": 900,
+      "ops": [
+        {
+          "op": "set",
+          "value": 900
+        },
+        {
+          "op": "bar",
+          "code": 8
+        },
+        {
+          "op": "set",
+          "value": 700
+        }
+      ],
+      "offsets": [
+        600,
+        600,
+        600
+      ]
+    }
+  ]
+}

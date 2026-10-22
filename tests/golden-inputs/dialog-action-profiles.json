@@ -1,0 +1,539 @@
+{
+ "command": "dialog-action-profiles",
+ "notes": [
+  "Feeds W8-18q (dialogs::action_profiles). Reflection over the internal ActionProfilesDialog and FileFilterText of the PhotoReview (Shell.Win32) assembly and the public ReviewAction / FileOperationType of PhotoReview.Core; no window is created. The language is the process default (English).",
+  "Output per kind: dialog -> title, items [{class, id, text, style, ex_style}], initial_focus_id, default_button_id, resizable, header_ids, uses_modal_frame, extra_window_style; row_text -> text, badge (string or null); file_filter_parse -> filters [{name, pattern}]; preferred -> preferred_width, preferred_height, minimum_width, minimum_height; metrics -> margin, field_height, button_height, left_width; constants -> list_header_id ... apply_id.",
+  "preferred and metrics use a window-less dialog (RuntimeHelpers.GetUninitializedObject with _avgCharWidth, _lineHeight, _childHosts set), so ButtonWidth is exactly Dx(50) and every measured height is 0. The wrapped-text heights of LayoutControls are hand-checked in the Rust tests with a fake measure.",
+  "operation is the C# enum member name (Move, Copy, Recycle). The 'No key' action pins the badge rule (an empty shortcut gives a null badge); the 'Blank key' action pins that a blank shortcut still gives a badge (string.IsNullOrEmpty, not IsNullOrWhiteSpace)."
+ ],
+ "cases": [
+  {
+   "name": "dialog with five actions",
+   "kind": "dialog",
+   "actions": [
+    {
+     "name": "Keep",
+     "shortcut": "F6",
+     "operation": "Move",
+     "destination": "Keep",
+     "confirm": false
+    },
+    {
+     "name": "Copy out",
+     "shortcut": "F7",
+     "operation": "Copy",
+     "destination": "Out",
+     "confirm": true
+    },
+    {
+     "name": "Trash",
+     "shortcut": "F8",
+     "operation": "Recycle",
+     "destination": "x",
+     "confirm": false
+    },
+    {
+     "name": "No key",
+     "shortcut": "",
+     "operation": "Move",
+     "destination": "Group-2",
+     "confirm": false
+    },
+    {
+     "name": "Blank key",
+     "shortcut": " ",
+     "operation": "Copy",
+     "destination": "B",
+     "confirm": false
+    }
+   ]
+  },
+  {
+   "name": "dialog with no actions",
+   "kind": "dialog",
+   "actions": []
+  },
+  {
+   "name": "row text of row 0",
+   "kind": "row_text",
+   "actions": [
+    {
+     "name": "Keep",
+     "shortcut": "F6",
+     "operation": "Move",
+     "destination": "Keep",
+     "confirm": false
+    },
+    {
+     "name": "Copy out",
+     "shortcut": "F7",
+     "operation": "Copy",
+     "destination": "Out",
+     "confirm": true
+    },
+    {
+     "name": "Trash",
+     "shortcut": "F8",
+     "operation": "Recycle",
+     "destination": "x",
+     "confirm": false
+    },
+    {
+     "name": "No key",
+     "shortcut": "",
+     "operation": "Move",
+     "destination": "Group-2",
+     "confirm": false
+    },
+    {
+     "name": "Blank key",
+     "shortcut": " ",
+     "operation": "Copy",
+     "destination": "B",
+     "confirm": false
+    }
+   ],
+   "index": 0
+  },
+  {
+   "name": "row text of row 1",
+   "kind": "row_text",
+   "actions": [
+    {
+     "name": "Keep",
+     "shortcut": "F6",
+     "operation": "Move",
+     "destination": "Keep",
+     "confirm": false
+    },
+    {
+     "name": "Copy out",
+     "shortcut": "F7",
+     "operation": "Copy",
+     "destination": "Out",
+     "confirm": true
+    },
+    {
+     "name": "Trash",
+     "shortcut": "F8",
+     "operation": "Recycle",
+     "destination": "x",
+     "confirm": false
+    },
+    {
+     "name": "No key",
+     "shortcut": "",
+     "operation": "Move",
+     "destination": "Group-2",
+     "confirm": false
+    },
+    {
+     "name": "Blank key",
+     "shortcut": " ",
+     "operation": "Copy",
+     "destination": "B",
+     "confirm": false
+    }
+   ],
+   "index": 1
+  },
+  {
+   "name": "row text of row 2",
+   "kind": "row_text",
+   "actions": [
+    {
+     "name": "Keep",
+     "shortcut": "F6",
+     "operation": "Move",
+     "destination": "Keep",
+     "confirm": false
+    },
+    {
+     "name": "Copy out",
+     "shortcut": "F7",
+     "operation": "Copy",
+     "destination": "Out",
+     "confirm": true
+    },
+    {
+     "name": "Trash",
+     "shortcut": "F8",
+     "operation": "Recycle",
+     "destination": "x",
+     "confirm": false
+    },
+    {
+     "name": "No key",
+     "shortcut": "",
+     "operation": "Move",
+     "destination": "Group-2",
+     "confirm": false
+    },
+    {
+     "name": "Blank key",
+     "shortcut": " ",
+     "operation": "Copy",
+     "destination": "B",
+     "confirm": false
+    }
+   ],
+   "index": 2
+  },
+  {
+   "name": "row text of row 3",
+   "kind": "row_text",
+   "actions": [
+    {
+     "name": "Keep",
+     "shortcut": "F6",
+     "operation": "Move",
+     "destination": "Keep",
+     "confirm": false
+    },
+    {
+     "name": "Copy out",
+     "shortcut": "F7",
+     "operation": "Copy",
+     "destination": "Out",
+     "confirm": true
+    },
+    {
+     "name": "Trash",
+     "shortcut": "F8",
+     "operation": "Recycle",
+     "destination": "x",
+     "confirm": false
+    },
+    {
+     "name": "No key",
+     "shortcut": "",
+     "operation": "Move",
+     "destination": "Group-2",
+     "confirm": false
+    },
+    {
+     "name": "Blank key",
+     "shortcut": " ",
+     "operation": "Copy",
+     "destination": "B",
+     "confirm": false
+    }
+   ],
+   "index": 3
+  },
+  {
+   "name": "row text of row 4",
+   "kind": "row_text",
+   "actions": [
+    {
+     "name": "Keep",
+     "shortcut": "F6",
+     "operation": "Move",
+     "destination": "Keep",
+     "confirm": false
+    },
+    {
+     "name": "Copy out",
+     "shortcut": "F7",
+     "operation": "Copy",
+     "destination": "Out",
+     "confirm": true
+    },
+    {
+     "name": "Trash",
+     "shortcut": "F8",
+     "operation": "Recycle",
+     "destination": "x",
+     "confirm": false
+    },
+    {
+     "name": "No key",
+     "shortcut": "",
+     "operation": "Move",
+     "destination": "Group-2",
+     "confirm": false
+    },
+    {
+     "name": "Blank key",
+     "shortcut": " ",
+     "operation": "Copy",
+     "destination": "B",
+     "confirm": false
+    }
+   ],
+   "index": 4
+  },
+  {
+   "name": "file filter \"\"",
+   "kind": "file_filter_parse",
+   "text": ""
+  },
+  {
+   "name": "file filter \"A\"",
+   "kind": "file_filter_parse",
+   "text": "A"
+  },
+  {
+   "name": "file filter \"A|*.a\"",
+   "kind": "file_filter_parse",
+   "text": "A|*.a"
+  },
+  {
+   "name": "file filter \"A|*.a|B|*.b;*.c\"",
+   "kind": "file_filter_parse",
+   "text": "A|*.a|B|*.b;*.c"
+  },
+  {
+   "name": "file filter \"A|*.a|B\"",
+   "kind": "file_filter_parse",
+   "text": "A|*.a|B"
+  },
+  {
+   "name": "file filter \"|\"",
+   "kind": "file_filter_parse",
+   "text": "|"
+  },
+  {
+   "name": "file filter \"||\"",
+   "kind": "file_filter_parse",
+   "text": "||"
+  },
+  {
+   "name": "file filter \"A|*.a|\"",
+   "kind": "file_filter_parse",
+   "text": "A|*.a|"
+  },
+  {
+   "name": "file filter \" A | *.a \"",
+   "kind": "file_filter_parse",
+   "text": " A | *.a "
+  },
+  {
+   "name": "file filter \"JSON (*.json)|*.json\"",
+   "kind": "file_filter_parse",
+   "text": "JSON (*.json)|*.json"
+  },
+  {
+   "name": "file filter \"JSON (*.json)|*.json|All files (*.*)|*.*\"",
+   "kind": "file_filter_parse",
+   "text": "JSON (*.json)|*.json|All files (*.*)|*.*"
+  },
+  {
+   "name": "file filter \"Executable (*.exe)|*.exe|All files (*.*)|*.*\"",
+   "kind": "file_filter_parse",
+   "text": "Executable (*.exe)|*.exe|All files (*.*)|*.*"
+  },
+  {
+   "name": "file filter \"A|B|C|D|E|F\"",
+   "kind": "file_filter_parse",
+   "text": "A|B|C|D|E|F"
+  },
+  {
+   "name": "file filter \"A||B|\"",
+   "kind": "file_filter_parse",
+   "text": "A||B|"
+  },
+  {
+   "name": "preferred avg 6 line 15",
+   "kind": "preferred",
+   "avg": 6,
+   "line": 15
+  },
+  {
+   "name": "preferred avg 7 line 16",
+   "kind": "preferred",
+   "avg": 7,
+   "line": 16
+  },
+  {
+   "name": "preferred avg 8 line 20",
+   "kind": "preferred",
+   "avg": 8,
+   "line": 20
+  },
+  {
+   "name": "preferred avg 9 line 24",
+   "kind": "preferred",
+   "avg": 9,
+   "line": 24
+  },
+  {
+   "name": "preferred avg 10 line 29",
+   "kind": "preferred",
+   "avg": 10,
+   "line": 29
+  },
+  {
+   "name": "metrics avg 6 line 15 client 0",
+   "kind": "metrics",
+   "avg": 6,
+   "line": 15,
+   "client_width": 0
+  },
+  {
+   "name": "metrics avg 6 line 15 client 299",
+   "kind": "metrics",
+   "avg": 6,
+   "line": 15,
+   "client_width": 299
+  },
+  {
+   "name": "metrics avg 6 line 15 client 300",
+   "kind": "metrics",
+   "avg": 6,
+   "line": 15,
+   "client_width": 300
+  },
+  {
+   "name": "metrics avg 6 line 15 client 301",
+   "kind": "metrics",
+   "avg": 6,
+   "line": 15,
+   "client_width": 301
+  },
+  {
+   "name": "metrics avg 6 line 15 client 420",
+   "kind": "metrics",
+   "avg": 6,
+   "line": 15,
+   "client_width": 420
+  },
+  {
+   "name": "metrics avg 6 line 15 client 510",
+   "kind": "metrics",
+   "avg": 6,
+   "line": 15,
+   "client_width": 510
+  },
+  {
+   "name": "metrics avg 6 line 15 client 600",
+   "kind": "metrics",
+   "avg": 6,
+   "line": 15,
+   "client_width": 600
+  },
+  {
+   "name": "metrics avg 6 line 15 client 1000",
+   "kind": "metrics",
+   "avg": 6,
+   "line": 15,
+   "client_width": 1000
+  },
+  {
+   "name": "metrics avg 8 line 20 client 0",
+   "kind": "metrics",
+   "avg": 8,
+   "line": 20,
+   "client_width": 0
+  },
+  {
+   "name": "metrics avg 8 line 20 client 299",
+   "kind": "metrics",
+   "avg": 8,
+   "line": 20,
+   "client_width": 299
+  },
+  {
+   "name": "metrics avg 8 line 20 client 300",
+   "kind": "metrics",
+   "avg": 8,
+   "line": 20,
+   "client_width": 300
+  },
+  {
+   "name": "metrics avg 8 line 20 client 301",
+   "kind": "metrics",
+   "avg": 8,
+   "line": 20,
+   "client_width": 301
+  },
+  {
+   "name": "metrics avg 8 line 20 client 420",
+   "kind": "metrics",
+   "avg": 8,
+   "line": 20,
+   "client_width": 420
+  },
+  {
+   "name": "metrics avg 8 line 20 client 510",
+   "kind": "metrics",
+   "avg": 8,
+   "line": 20,
+   "client_width": 510
+  },
+  {
+   "name": "metrics avg 8 line 20 client 600",
+   "kind": "metrics",
+   "avg": 8,
+   "line": 20,
+   "client_width": 600
+  },
+  {
+   "name": "metrics avg 8 line 20 client 1000",
+   "kind": "metrics",
+   "avg": 8,
+   "line": 20,
+   "client_width": 1000
+  },
+  {
+   "name": "metrics avg 10 line 29 client 0",
+   "kind": "metrics",
+   "avg": 10,
+   "line": 29,
+   "client_width": 0
+  },
+  {
+   "name": "metrics avg 10 line 29 client 299",
+   "kind": "metrics",
+   "avg": 10,
+   "line": 29,
+   "client_width": 299
+  },
+  {
+   "name": "metrics avg 10 line 29 client 300",
+   "kind": "metrics",
+   "avg": 10,
+   "line": 29,
+   "client_width": 300
+  },
+  {
+   "name": "metrics avg 10 line 29 client 301",
+   "kind": "metrics",
+   "avg": 10,
+   "line": 29,
+   "client_width": 301
+  },
+  {
+   "name": "metrics avg 10 line 29 client 420",
+   "kind": "metrics",
+   "avg": 10,
+   "line": 29,
+   "client_width": 420
+  },
+  {
+   "name": "metrics avg 10 line 29 client 510",
+   "kind": "metrics",
+   "avg": 10,
+   "line": 29,
+   "client_width": 510
+  },
+  {
+   "name": "metrics avg 10 line 29 client 600",
+   "kind": "metrics",
+   "avg": 10,
+   "line": 29,
+   "client_width": 600
+  },
+  {
+   "name": "metrics avg 10 line 29 client 1000",
+   "kind": "metrics",
+   "avg": 10,
+   "line": 29,
+   "client_width": 1000
+  },
+  {
+   "name": "ids of the dialog",
+   "kind": "constants"
+  }
+ ]
+}

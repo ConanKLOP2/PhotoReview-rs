@@ -1,0 +1,104 @@
+{
+ "command": "recovery-dialog-layout",
+ "notes": [
+  "Feeds W8-18t (dialogs::recovery::{layout, list}). Reflection over the internal RecoveryDialog of the PhotoReview (Shell.Win32) assembly; no window is created.",
+  "A window-less dialog is RuntimeHelpers.GetUninitializedObject(RecoveryDialog) with _avgCharWidth, _lineHeight and an empty _childHosts set by reflection (hwnd 0): ButtonWidth(ids) is then exactly Dx(50).",
+  "Output per kind: constants -> ids (28 control ids, snake_case), ss_center, cursor_arrow, cursor_wait; items -> items[] (class, id, text, style, ex_style) in template order; color_ref -> color_ref; sizes -> margin, field_height, button_height, preferred_w, preferred_h, minimum_w, minimum_h.",
+  "Texts are the English catalog; style words are the raw uint values."
+ ],
+ "cases": [
+  {
+   "name": "constants",
+   "kind": "constants"
+  },
+  {
+   "name": "items",
+   "kind": "items"
+  },
+  {
+   "name": "color_ref Neutral",
+   "kind": "color_ref",
+   "tone": "Neutral"
+  },
+  {
+   "name": "color_ref Good",
+   "kind": "color_ref",
+   "tone": "Good"
+  },
+  {
+   "name": "color_ref Info",
+   "kind": "color_ref",
+   "tone": "Info"
+  },
+  {
+   "name": "color_ref Warn",
+   "kind": "color_ref",
+   "tone": "Warn"
+  },
+  {
+   "name": "color_ref Bad",
+   "kind": "color_ref",
+   "tone": "Bad"
+  },
+  {
+   "name": "sizes avg 5 line 11",
+   "kind": "sizes",
+   "avg": 5,
+   "line": 11
+  },
+  {
+   "name": "sizes avg 6 line 13",
+   "kind": "sizes",
+   "avg": 6,
+   "line": 13
+  },
+  {
+   "name": "sizes avg 6 line 15",
+   "kind": "sizes",
+   "avg": 6,
+   "line": 15
+  },
+  {
+   "name": "sizes avg 7 line 15",
+   "kind": "sizes",
+   "avg": 7,
+   "line": 15
+  },
+  {
+   "name": "sizes avg 7 line 16",
+   "kind": "sizes",
+   "avg": 7,
+   "line": 16
+  },
+  {
+   "name": "sizes avg 8 line 17",
+   "kind": "sizes",
+   "avg": 8,
+   "line": 17
+  },
+  {
+   "name": "sizes avg 8 line 18",
+   "kind": "sizes",
+   "avg": 8,
+   "line": 18
+  },
+  {
+   "name": "sizes avg 9 line 20",
+   "kind": "sizes",
+   "avg": 9,
+   "line": 20
+  },
+  {
+   "name": "sizes avg 10 line 23",
+   "kind": "sizes",
+   "avg": 10,
+   "line": 23
+  },
+  {
+   "name": "sizes avg 12 line 28",
+   "kind": "sizes",
+   "avg": 12,
+   "line": 28
+  }
+ ]
+}

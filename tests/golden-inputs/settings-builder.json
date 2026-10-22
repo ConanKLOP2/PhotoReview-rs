@@ -1,0 +1,807 @@
+{
+ "command": "settings-builder",
+ "notes": [
+  "Feeds W8-19c (dialogs::settings::builder::inputs). Reflection over the internal SettingsPageBuilder of PhotoReview.dll; see tools/oracle-cs/Commands/W8-19c.cs for the op vocabulary and the output fields.",
+  "Controls declared with a Button class get '&' doubled in the item text and in the stored provider; Static/Edit/ComboBox texts are untouched. A throwing op appends {threw: <exception name>} to results; the exception types are InvalidOperationException (999-control limit) and ArgumentException (radio arguments)."
+ ],
+ "cases": [
+  {
+   "name": "empty builder",
+   "kind": "builder",
+   "id_base": 1000,
+   "ops": []
+  },
+  {
+   "name": "check: styles and Button ampersand doubling",
+   "kind": "builder",
+   "id_base": 1000,
+   "ops": [
+    {
+     "op": "check",
+     "text": "Show & hide the grid",
+     "indent": 0
+    },
+    {
+     "op": "check",
+     "text": "Indented",
+     "indent": 6
+    }
+   ]
+  },
+  {
+   "name": "static texts keep a single ampersand",
+   "kind": "builder",
+   "id_base": 1000,
+   "ops": [
+    {
+     "op": "combo",
+     "label": "Display & performance",
+     "items": null,
+     "width": 0
+    },
+    {
+     "op": "edit",
+     "label": "Name & path",
+     "width": 60
+    },
+    {
+     "op": "note",
+     "text": "A & B",
+     "aligned": true
+    },
+    {
+     "op": "text",
+     "text": "C & D"
+    },
+    {
+     "op": "warning",
+     "text": "E & F"
+    }
+   ]
+  },
+  {
+   "name": "combo with items keeps the item order, edit and slider",
+   "kind": "builder",
+   "id_base": 1000,
+   "ops": [
+    {
+     "op": "combo",
+     "label": "Transition",
+     "items": [
+      "None",
+      "Fade",
+      "Slide"
+     ],
+     "width": 120
+    },
+    {
+     "op": "combo",
+     "label": "Dynamic list",
+     "items": null,
+     "width": 0
+    },
+    {
+     "op": "edit",
+     "label": "Pan step",
+     "width": 60
+    },
+    {
+     "op": "slider",
+     "label": "RAM cache",
+     "min": 10,
+     "max": 90
+    }
+   ]
+  },
+  {
+   "name": "note, text and warning with and without a text",
+   "kind": "builder",
+   "id_base": 1000,
+   "ops": [
+    {
+     "op": "note",
+     "text": "hint",
+     "aligned": true
+    },
+    {
+     "op": "note",
+     "text": null,
+     "aligned": false
+    },
+    {
+     "op": "text",
+     "text": "status"
+    },
+    {
+     "op": "text",
+     "text": null
+    },
+    {
+     "op": "warning",
+     "text": "conflict"
+    },
+    {
+     "op": "warning",
+     "text": null
+    }
+   ]
+  },
+  {
+   "name": "buttons: ids in order, aligned flag, text doubling",
+   "kind": "builder",
+   "id_base": 1000,
+   "ops": [
+    {
+     "op": "buttons",
+     "aligned": true,
+     "texts": [
+      "Browse & pick",
+      "Clear"
+     ]
+    },
+    {
+     "op": "buttons",
+     "aligned": false,
+     "texts": [
+      "Only"
+     ]
+    }
+   ]
+  },
+  {
+   "name": "check_flow: ids in order and button-class ampersand",
+   "kind": "builder",
+   "id_base": 1000,
+   "ops": [
+    {
+     "op": "check_flow",
+     "texts": [
+      "Name",
+      "Date & time",
+      "Size"
+     ],
+     "indent": 4
+    }
+   ]
+  },
+  {
+   "name": "radio: three options, the first has WS_GROUP and WS_TABSTOP, the next control opens a group",
+   "kind": "builder",
+   "id_base": 5000,
+   "ops": [
+    {
+     "op": "radio",
+     "texts": [
+      "A",
+      "B",
+      "C"
+     ],
+     "hints": null,
+     "indent": 0
+    },
+    {
+     "op": "check",
+     "text": "after",
+     "indent": 0
+    },
+    {
+     "op": "check",
+     "text": "after2",
+     "indent": 0
+    }
+   ]
+  },
+  {
+   "name": "radio: hints are created after every radio, the first hint opens the next group",
+   "kind": "builder",
+   "id_base": 7000,
+   "ops": [
+    {
+     "op": "radio",
+     "texts": [
+      "A",
+      "B"
+     ],
+     "hints": [
+      "hint A",
+      null
+     ],
+     "indent": 0
+    },
+    {
+     "op": "check",
+     "text": "after",
+     "indent": 0
+    }
+   ]
+  },
+  {
+   "name": "radio: a hint list with only nulls creates no hint but still cuts the group",
+   "kind": "builder",
+   "id_base": 1000,
+   "ops": [
+    {
+     "op": "radio",
+     "texts": [
+      "A",
+      "B"
+     ],
+     "hints": [
+      null,
+      null
+     ],
+     "indent": 0
+    },
+    {
+     "op": "check",
+     "text": "after",
+     "indent": 0
+    }
+   ]
+  },
+  {
+   "name": "radio: both hints present, second hint does not take WS_GROUP",
+   "kind": "builder",
+   "id_base": 1000,
+   "ops": [
+    {
+     "op": "radio",
+     "texts": [
+      "A",
+      "B"
+     ],
+     "hints": [
+      "hint A",
+      "hint B"
+     ],
+     "indent": 8
+    },
+    {
+     "op": "check",
+     "text": "after",
+     "indent": 0
+    }
+   ]
+  },
+  {
+   "name": "radio then buttons: the first button takes WS_GROUP",
+   "kind": "builder",
+   "id_base": 1000,
+   "ops": [
+    {
+     "op": "radio",
+     "texts": [
+      "A",
+      "B"
+     ],
+     "hints": null,
+     "indent": 0
+    },
+    {
+     "op": "buttons",
+     "aligned": false,
+     "texts": [
+      "Go"
+     ]
+    }
+   ]
+  },
+  {
+   "name": "radio then slider: the slider label takes WS_GROUP",
+   "kind": "builder",
+   "id_base": 1000,
+   "ops": [
+    {
+     "op": "radio",
+     "texts": [
+      "A",
+      "B"
+     ],
+     "hints": null,
+     "indent": 0
+    },
+    {
+     "op": "slider",
+     "label": "Level",
+     "min": 0,
+     "max": 10
+    }
+   ]
+  },
+  {
+   "name": "radio then group: the group box does not consume the cut, the first control inside does",
+   "kind": "builder",
+   "id_base": 1000,
+   "ops": [
+    {
+     "op": "radio",
+     "texts": [
+      "A",
+      "B"
+     ],
+     "hints": null,
+     "indent": 0
+    },
+    {
+     "op": "group",
+     "title": "Box",
+     "ops": [
+      {
+       "op": "check",
+       "text": "inside",
+       "indent": 0
+      },
+      {
+       "op": "check",
+       "text": "inside2",
+       "indent": 0
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "radio then radio: the second group's first radio has WS_GROUP anyway",
+   "kind": "builder",
+   "id_base": 1000,
+   "ops": [
+    {
+     "op": "radio",
+     "texts": [
+      "A",
+      "B"
+     ],
+     "hints": null,
+     "indent": 0
+    },
+    {
+     "op": "radio",
+     "texts": [
+      "C",
+      "D"
+     ],
+     "hints": null,
+     "indent": 0
+    }
+   ]
+  },
+  {
+   "name": "radio errors: fewer than two options and a hint list of the wrong length throw, ids are not consumed",
+   "kind": "builder",
+   "id_base": 9000,
+   "ops": [
+    {
+     "op": "radio",
+     "texts": [
+      "only"
+     ],
+     "hints": null,
+     "indent": 0
+    },
+    {
+     "op": "radio",
+     "texts": [
+      "A",
+      "B"
+     ],
+     "hints": [
+      "just one"
+     ],
+     "indent": 0
+    },
+    {
+     "op": "radio",
+     "texts": [],
+     "hints": null,
+     "indent": 0
+    },
+    {
+     "op": "check",
+     "text": "next",
+     "indent": 0
+    }
+   ]
+  },
+  {
+   "name": "radio error does not clear a pending group cut",
+   "kind": "builder",
+   "id_base": 1000,
+   "ops": [
+    {
+     "op": "radio",
+     "texts": [
+      "A",
+      "B"
+     ],
+     "hints": null,
+     "indent": 0
+    },
+    {
+     "op": "radio",
+     "texts": [
+      "only"
+     ],
+     "hints": null,
+     "indent": 0
+    },
+    {
+     "op": "check",
+     "text": "after",
+     "indent": 0
+    }
+   ]
+  },
+  {
+   "name": "group: the box id comes first, children follow, nested group",
+   "kind": "builder",
+   "id_base": 1000,
+   "ops": [
+    {
+     "op": "group",
+     "title": "Outer",
+     "ops": [
+      {
+       "op": "check",
+       "text": "a",
+       "indent": 0
+      },
+      {
+       "op": "group",
+       "title": "Inner",
+       "ops": [
+        {
+         "op": "edit",
+         "label": "x",
+         "width": 60
+        },
+        {
+         "op": "note",
+         "text": "n",
+         "aligned": true
+        }
+       ]
+      },
+      {
+       "op": "check",
+       "text": "b",
+       "indent": 0
+      }
+     ]
+    },
+    {
+     "op": "check",
+     "text": "tail",
+     "indent": 0
+    }
+   ]
+  },
+  {
+   "name": "group box is not a tab stop and has BS_GROUPBOX",
+   "kind": "builder",
+   "id_base": 1000,
+   "ops": [
+    {
+     "op": "group",
+     "title": "Only a box",
+     "ops": []
+    }
+   ]
+  },
+  {
+   "name": "key_grid: label, read-only box (key box), optional clear glyph; creation order is the Tab order",
+   "kind": "builder",
+   "id_base": 2000,
+   "ops": [
+    {
+     "op": "key_grid",
+     "specs": [
+      {
+       "label": "Next",
+       "clearable": true
+      },
+      {
+       "label": "Previous",
+       "clearable": false
+      },
+      {
+       "label": "First",
+       "clearable": true
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "key_grid after a radio: the first label takes WS_GROUP",
+   "kind": "builder",
+   "id_base": 1000,
+   "ops": [
+    {
+     "op": "radio",
+     "texts": [
+      "A",
+      "B"
+     ],
+     "hints": null,
+     "indent": 0
+    },
+    {
+     "op": "key_grid",
+     "specs": [
+      {
+       "label": "Next",
+       "clearable": true
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "Vietnamese texts",
+   "kind": "builder",
+   "id_base": 1000,
+   "ops": [
+    {
+     "op": "check",
+     "text": "Hỏi xác nhận trước khi xoá",
+     "indent": 0
+    },
+    {
+     "op": "combo",
+     "label": "Ngôn ngữ",
+     "items": [
+      "Tiếng Việt",
+      "English"
+     ],
+     "width": 0
+    },
+    {
+     "op": "buttons",
+     "aligned": false,
+     "texts": [
+      "Nhập & xuất"
+     ]
+    }
+   ]
+  },
+  {
+   "name": "a realistic mixed page",
+   "kind": "builder",
+   "id_base": 1000,
+   "ops": [
+    {
+     "op": "group",
+     "title": "General",
+     "ops": [
+      {
+       "op": "check",
+       "text": "Open the last folder",
+       "indent": 0
+      },
+      {
+       "op": "combo",
+       "label": "Language",
+       "items": [
+        "English",
+        "Tiếng Việt"
+       ],
+       "width": 120
+      },
+      {
+       "op": "note",
+       "text": "Restart is not needed.",
+       "aligned": true
+      }
+     ]
+    },
+    {
+     "op": "group",
+     "title": "Updates",
+     "ops": [
+      {
+       "op": "buttons",
+       "aligned": true,
+       "texts": [
+        "Check now",
+        "Open page"
+       ]
+      },
+      {
+       "op": "text",
+       "text": null
+      },
+      {
+       "op": "radio",
+       "texts": [
+        "Never",
+        "Weekly"
+       ],
+       "hints": [
+        "off",
+        null
+       ],
+       "indent": 4
+      }
+     ]
+    },
+    {
+     "op": "group",
+     "title": "Shortcuts",
+     "ops": [
+      {
+       "op": "key_grid",
+       "specs": [
+        {
+         "label": "Next",
+         "clearable": true
+        },
+        {
+         "label": "Previous",
+         "clearable": true
+        }
+       ]
+      },
+      {
+       "op": "warning",
+       "text": null
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "limit: 999 controls are allowed, the 1000th and the next throw",
+   "kind": "builder",
+   "id_base": 1000,
+   "ops": [
+    {
+     "op": "repeat",
+     "count": 1001,
+     "inner": {
+      "op": "check",
+      "text": "x",
+      "indent": 0
+     }
+    }
+   ],
+   "dump": "counts"
+  },
+  {
+   "name": "limit: a combo whose label is the 999th control adds the label and then throws",
+   "kind": "builder",
+   "id_base": 1000,
+   "ops": [
+    {
+     "op": "repeat",
+     "count": 998,
+     "inner": {
+      "op": "check",
+      "text": "x",
+      "indent": 0
+     }
+    },
+    {
+     "op": "combo",
+     "label": "L",
+     "items": [
+      "a"
+     ],
+     "width": 0
+    },
+    {
+     "op": "check",
+     "text": "y",
+     "indent": 0
+    }
+   ],
+   "dump": "counts"
+  },
+  {
+   "name": "limit: a radio group that crosses the limit keeps the radios it added",
+   "kind": "builder",
+   "id_base": 1000,
+   "ops": [
+    {
+     "op": "repeat",
+     "count": 997,
+     "inner": {
+      "op": "check",
+      "text": "x",
+      "indent": 0
+     }
+    },
+    {
+     "op": "radio",
+     "texts": [
+      "A",
+      "B",
+      "C"
+     ],
+     "hints": null,
+     "indent": 0
+    },
+    {
+     "op": "check",
+     "text": "y",
+     "indent": 0
+    }
+   ],
+   "dump": "counts"
+  },
+  {
+   "name": "limit: the throwing Add still consumes a counter value (every later Add throws too)",
+   "kind": "builder",
+   "id_base": 1000,
+   "ops": [
+    {
+     "op": "repeat",
+     "count": 999,
+     "inner": {
+      "op": "check",
+      "text": "x",
+      "indent": 0
+     }
+    },
+    {
+     "op": "edit",
+     "label": "a",
+     "width": 60
+    },
+    {
+     "op": "note",
+     "text": "b",
+     "aligned": true
+    },
+    {
+     "op": "text",
+     "text": "c"
+    }
+   ],
+   "dump": "counts"
+  },
+  {
+   "name": "id_base is applied to every id",
+   "kind": "builder",
+   "id_base": 0,
+   "ops": [
+    {
+     "op": "check",
+     "text": "a",
+     "indent": 0
+    },
+    {
+     "op": "check",
+     "text": "b",
+     "indent": 0
+    }
+   ]
+  },
+  {
+   "name": "id_base 3000 with a group, a slider and a combo",
+   "kind": "builder",
+   "id_base": 3000,
+   "ops": [
+    {
+     "op": "group",
+     "title": "G",
+     "ops": [
+      {
+       "op": "slider",
+       "label": "S",
+       "min": 1,
+       "max": 5
+      },
+      {
+       "op": "combo",
+       "label": "C",
+       "items": [
+        "x"
+       ],
+       "width": 0
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

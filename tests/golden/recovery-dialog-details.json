@@ -1,0 +1,658 @@
+{
+  "generator": "oracle-cs recovery-dialog-details",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "name": "explain only",
+      "kind": "details_text",
+      "explain": "Explain.",
+      "action": "",
+      "source": null,
+      "destination": null,
+      "source_visible": false,
+      "destination_visible": false,
+      "group_heading": null,
+      "group_members": null,
+      "text": "Explain.",
+      "action_label": "Suggested action"
+    },
+    {
+      "name": "with action",
+      "kind": "details_text",
+      "explain": "Explain.",
+      "action": "Press Retry.",
+      "source": null,
+      "destination": null,
+      "source_visible": false,
+      "destination_visible": false,
+      "group_heading": null,
+      "group_members": null,
+      "text": "Explain.\r\n\r\nSuggested action: Press Retry.",
+      "action_label": "Suggested action"
+    },
+    {
+      "name": "source only",
+      "kind": "details_text",
+      "explain": "Explain.",
+      "action": "",
+      "source": {
+        "title": "Source",
+        "path": "C:\\src\\a.jpg",
+        "status_text": "Exists",
+        "status_tone": "Good",
+        "now": "Now: 4 bytes",
+        "journal": "Journal: 4 bytes",
+        "note": null
+      },
+      "destination": null,
+      "source_visible": true,
+      "destination_visible": false,
+      "group_heading": null,
+      "group_members": null,
+      "text": "Explain.\r\n\r\nSource\r\nNow: 4 bytes\r\nJournal: 4 bytes",
+      "action_label": "Suggested action"
+    },
+    {
+      "name": "source and destination",
+      "kind": "details_text",
+      "explain": "Explain.",
+      "action": "Press Retry.",
+      "source": {
+        "title": "Source",
+        "path": "C:\\src\\a.jpg",
+        "status_text": "Exists",
+        "status_tone": "Good",
+        "now": "Now: 4 bytes",
+        "journal": "Journal: 4 bytes",
+        "note": null
+      },
+      "destination": {
+        "title": "Destination",
+        "path": "C:\\dst\\a.jpg",
+        "status_text": "Missing",
+        "status_tone": "Neutral",
+        "now": "",
+        "journal": "Journal: 4 bytes",
+        "note": "The destination folder is missing"
+      },
+      "source_visible": true,
+      "destination_visible": true,
+      "group_heading": null,
+      "group_members": null,
+      "text": "Explain.\r\n\r\nSuggested action: Press Retry.\r\n\r\nSource\r\nNow: 4 bytes\r\nJournal: 4 bytes\r\n\r\nDestination\r\nJournal: 4 bytes\r\nThe destination folder is missing",
+      "action_label": "Suggested action"
+    },
+    {
+      "name": "destination with empty note",
+      "kind": "details_text",
+      "explain": "Explain.",
+      "action": "",
+      "source": {
+        "title": "Source",
+        "path": "C:\\src\\a.jpg",
+        "status_text": "Exists",
+        "status_tone": "Good",
+        "now": "Now: 4 bytes",
+        "journal": "Journal: 4 bytes",
+        "note": null
+      },
+      "destination": {
+        "title": "Destination",
+        "path": "C:\\dst\\a.jpg",
+        "status_text": "Exists",
+        "status_tone": "Warn",
+        "now": "Now: 9 bytes",
+        "journal": "Journal: 4 bytes",
+        "note": ""
+      },
+      "source_visible": true,
+      "destination_visible": true,
+      "group_heading": null,
+      "group_members": null,
+      "text": "Explain.\r\n\r\nSource\r\nNow: 4 bytes\r\nJournal: 4 bytes\r\n\r\nDestination\r\nNow: 9 bytes\r\nJournal: 4 bytes",
+      "action_label": "Suggested action"
+    },
+    {
+      "name": "source hidden by flag",
+      "kind": "details_text",
+      "explain": "Explain.",
+      "action": "",
+      "source": {
+        "title": "Source",
+        "path": "C:\\src\\a.jpg",
+        "status_text": "Exists",
+        "status_tone": "Good",
+        "now": "Now: 4 bytes",
+        "journal": "Journal: 4 bytes",
+        "note": null
+      },
+      "destination": {
+        "title": "Destination",
+        "path": "C:\\dst\\a.jpg",
+        "status_text": "Missing",
+        "status_tone": "Neutral",
+        "now": "",
+        "journal": "Journal: 4 bytes",
+        "note": "The destination folder is missing"
+      },
+      "source_visible": false,
+      "destination_visible": true,
+      "group_heading": null,
+      "group_members": null,
+      "text": "Explain.\r\n\r\nDestination\r\nJournal: 4 bytes\r\nThe destination folder is missing",
+      "action_label": "Suggested action"
+    },
+    {
+      "name": "destination flag without destination",
+      "kind": "details_text",
+      "explain": "Explain.",
+      "action": "",
+      "source": {
+        "title": "Source",
+        "path": "C:\\src\\a.jpg",
+        "status_text": "Exists",
+        "status_tone": "Good",
+        "now": "Now: 4 bytes",
+        "journal": "Journal: 4 bytes",
+        "note": null
+      },
+      "destination": null,
+      "source_visible": true,
+      "destination_visible": true,
+      "group_heading": null,
+      "group_members": null,
+      "text": "Explain.\r\n\r\nSource\r\nNow: 4 bytes\r\nJournal: 4 bytes",
+      "action_label": "Suggested action"
+    },
+    {
+      "name": "path without now and journal",
+      "kind": "details_text",
+      "explain": "Explain.",
+      "action": "",
+      "source": {
+        "title": "Source",
+        "path": "C:\\x.jpg",
+        "status_text": "Exists",
+        "status_tone": "Good",
+        "now": "",
+        "journal": "",
+        "note": null
+      },
+      "destination": null,
+      "source_visible": true,
+      "destination_visible": false,
+      "group_heading": null,
+      "group_members": null,
+      "text": "Explain.\r\n\r\nSource",
+      "action_label": "Suggested action"
+    },
+    {
+      "name": "group of two",
+      "kind": "details_text",
+      "explain": "Explain.",
+      "action": "",
+      "source": null,
+      "destination": null,
+      "source_visible": false,
+      "destination_visible": false,
+      "group_heading": "2 files in this group",
+      "group_members": [
+        {
+          "status": "Missing",
+          "source": "C:\\s\\1.jpg",
+          "destination": "C:\\d\\1.jpg"
+        },
+        {
+          "status": "Exists",
+          "source": "C:\\s\\2.jpg",
+          "destination": "(no destination)"
+        }
+      ],
+      "text": "Explain.\r\n\r\n2 files in this group\r\n\r\nMissing\r\nC:\\s\\1.jpg\r\nC:\\d\\1.jpg\r\n\r\nExists\r\nC:\\s\\2.jpg\r\n(no destination)",
+      "action_label": "Suggested action"
+    },
+    {
+      "name": "group heading null with a member",
+      "kind": "details_text",
+      "explain": "Explain.",
+      "action": "",
+      "source": null,
+      "destination": null,
+      "source_visible": false,
+      "destination_visible": false,
+      "group_heading": null,
+      "group_members": [
+        {
+          "status": "Lost",
+          "source": "C:\\s\\1.jpg",
+          "destination": "C:\\d\\1.jpg"
+        }
+      ],
+      "text": "Explain.\r\n\r\n\r\n\r\nLost\r\nC:\\s\\1.jpg\r\nC:\\d\\1.jpg",
+      "action_label": "Suggested action"
+    },
+    {
+      "name": "group with no members",
+      "kind": "details_text",
+      "explain": "Explain.",
+      "action": "",
+      "source": null,
+      "destination": null,
+      "source_visible": false,
+      "destination_visible": false,
+      "group_heading": "Heading",
+      "group_members": [],
+      "text": "Explain.\r\n\r\nHeading",
+      "action_label": "Suggested action"
+    },
+    {
+      "name": "action and group",
+      "kind": "details_text",
+      "explain": "Explain.",
+      "action": "Do it.",
+      "source": null,
+      "destination": null,
+      "source_visible": false,
+      "destination_visible": false,
+      "group_heading": "Group",
+      "group_members": [
+        {
+          "status": "Exists",
+          "source": "s",
+          "destination": "d"
+        }
+      ],
+      "text": "Explain.\r\n\r\nSuggested action: Do it.\r\n\r\nGroup\r\n\r\nExists\r\ns\r\nd",
+      "action_label": "Suggested action"
+    },
+    {
+      "name": "text_color VerdictBadgeId good/warn/bad",
+      "kind": "text_color",
+      "verdict_tone": "Good",
+      "source_tone": "Warn",
+      "destination_tone": "Bad",
+      "id_name": "VerdictBadgeId",
+      "color": 8047468
+    },
+    {
+      "name": "text_color SourceStatusId good/warn/bad",
+      "kind": "text_color",
+      "verdict_tone": "Good",
+      "source_tone": "Warn",
+      "destination_tone": "Bad",
+      "id_name": "SourceStatusId",
+      "color": 4239600
+    },
+    {
+      "name": "text_color DestinationStatusId good/warn/bad",
+      "kind": "text_color",
+      "verdict_tone": "Good",
+      "source_tone": "Warn",
+      "destination_tone": "Bad",
+      "id_name": "DestinationStatusId",
+      "color": 7039999
+    },
+    {
+      "name": "text_color ErrorId good/warn/bad",
+      "kind": "text_color",
+      "verdict_tone": "Good",
+      "source_tone": "Warn",
+      "destination_tone": "Bad",
+      "id_name": "ErrorId",
+      "color": 10132223
+    },
+    {
+      "name": "text_color SummaryId good/warn/bad",
+      "kind": "text_color",
+      "verdict_tone": "Good",
+      "source_tone": "Warn",
+      "destination_tone": "Bad",
+      "id_name": "SummaryId",
+      "color": 12303291
+    },
+    {
+      "name": "text_color CheckStatusId good/warn/bad",
+      "kind": "text_color",
+      "verdict_tone": "Good",
+      "source_tone": "Warn",
+      "destination_tone": "Bad",
+      "id_name": "CheckStatusId",
+      "color": 12303291
+    },
+    {
+      "name": "text_color VerdictLabelId good/warn/bad",
+      "kind": "text_color",
+      "verdict_tone": "Good",
+      "source_tone": "Warn",
+      "destination_tone": "Bad",
+      "id_name": "VerdictLabelId",
+      "color": 10132122
+    },
+    {
+      "name": "text_color FilterEmptyId good/warn/bad",
+      "kind": "text_color",
+      "verdict_tone": "Good",
+      "source_tone": "Warn",
+      "destination_tone": "Bad",
+      "id_name": "FilterEmptyId",
+      "color": 10132122
+    },
+    {
+      "name": "text_color DetailsEmptyId good/warn/bad",
+      "kind": "text_color",
+      "verdict_tone": "Good",
+      "source_tone": "Warn",
+      "destination_tone": "Bad",
+      "id_name": "DetailsEmptyId",
+      "color": 10132122
+    },
+    {
+      "name": "text_color NoDestinationId good/warn/bad",
+      "kind": "text_color",
+      "verdict_tone": "Good",
+      "source_tone": "Warn",
+      "destination_tone": "Bad",
+      "id_name": "NoDestinationId",
+      "color": 10132122
+    },
+    {
+      "name": "text_color SourcePathId good/warn/bad",
+      "kind": "text_color",
+      "verdict_tone": "Good",
+      "source_tone": "Warn",
+      "destination_tone": "Bad",
+      "id_name": "SourcePathId",
+      "color": 16777215
+    },
+    {
+      "name": "text_color DestinationPathId good/warn/bad",
+      "kind": "text_color",
+      "verdict_tone": "Good",
+      "source_tone": "Warn",
+      "destination_tone": "Bad",
+      "id_name": "DestinationPathId",
+      "color": 16777215
+    },
+    {
+      "name": "text_color DetailsId good/warn/bad",
+      "kind": "text_color",
+      "verdict_tone": "Good",
+      "source_tone": "Warn",
+      "destination_tone": "Bad",
+      "id_name": "DetailsId",
+      "color": 16777215
+    },
+    {
+      "name": "text_color HeaderId good/warn/bad",
+      "kind": "text_color",
+      "verdict_tone": "Good",
+      "source_tone": "Warn",
+      "destination_tone": "Bad",
+      "id_name": "HeaderId",
+      "color": 16119285
+    },
+    {
+      "name": "text_color ListId good/warn/bad",
+      "kind": "text_color",
+      "verdict_tone": "Good",
+      "source_tone": "Warn",
+      "destination_tone": "Bad",
+      "id_name": "ListId",
+      "color": 16119285
+    },
+    {
+      "name": "text_color CloseId good/warn/bad",
+      "kind": "text_color",
+      "verdict_tone": "Good",
+      "source_tone": "Warn",
+      "destination_tone": "Bad",
+      "id_name": "CloseId",
+      "color": 16119285
+    },
+    {
+      "name": "text_color verdict tone Neutral",
+      "kind": "text_color",
+      "verdict_tone": "Neutral",
+      "source_tone": "Neutral",
+      "destination_tone": "Good",
+      "id_name": "VerdictBadgeId",
+      "color": 11579568
+    },
+    {
+      "name": "text_color source tone Neutral",
+      "kind": "text_color",
+      "verdict_tone": "Neutral",
+      "source_tone": "Neutral",
+      "destination_tone": "Neutral",
+      "id_name": "SourceStatusId",
+      "color": 11579568
+    },
+    {
+      "name": "text_color destination tone Neutral",
+      "kind": "text_color",
+      "verdict_tone": "Neutral",
+      "source_tone": "Neutral",
+      "destination_tone": "Neutral",
+      "id_name": "DestinationStatusId",
+      "color": 11579568
+    },
+    {
+      "name": "text_color verdict tone Good",
+      "kind": "text_color",
+      "verdict_tone": "Good",
+      "source_tone": "Good",
+      "destination_tone": "Info",
+      "id_name": "VerdictBadgeId",
+      "color": 8047468
+    },
+    {
+      "name": "text_color source tone Good",
+      "kind": "text_color",
+      "verdict_tone": "Neutral",
+      "source_tone": "Good",
+      "destination_tone": "Neutral",
+      "id_name": "SourceStatusId",
+      "color": 8047468
+    },
+    {
+      "name": "text_color destination tone Good",
+      "kind": "text_color",
+      "verdict_tone": "Neutral",
+      "source_tone": "Neutral",
+      "destination_tone": "Good",
+      "id_name": "DestinationStatusId",
+      "color": 8047468
+    },
+    {
+      "name": "text_color verdict tone Info",
+      "kind": "text_color",
+      "verdict_tone": "Info",
+      "source_tone": "Info",
+      "destination_tone": "Warn",
+      "id_name": "VerdictBadgeId",
+      "color": 16757103
+    },
+    {
+      "name": "text_color source tone Info",
+      "kind": "text_color",
+      "verdict_tone": "Neutral",
+      "source_tone": "Info",
+      "destination_tone": "Neutral",
+      "id_name": "SourceStatusId",
+      "color": 16757103
+    },
+    {
+      "name": "text_color destination tone Info",
+      "kind": "text_color",
+      "verdict_tone": "Neutral",
+      "source_tone": "Neutral",
+      "destination_tone": "Info",
+      "id_name": "DestinationStatusId",
+      "color": 16757103
+    },
+    {
+      "name": "text_color verdict tone Warn",
+      "kind": "text_color",
+      "verdict_tone": "Warn",
+      "source_tone": "Warn",
+      "destination_tone": "Bad",
+      "id_name": "VerdictBadgeId",
+      "color": 4239600
+    },
+    {
+      "name": "text_color source tone Warn",
+      "kind": "text_color",
+      "verdict_tone": "Neutral",
+      "source_tone": "Warn",
+      "destination_tone": "Neutral",
+      "id_name": "SourceStatusId",
+      "color": 4239600
+    },
+    {
+      "name": "text_color destination tone Warn",
+      "kind": "text_color",
+      "verdict_tone": "Neutral",
+      "source_tone": "Neutral",
+      "destination_tone": "Warn",
+      "id_name": "DestinationStatusId",
+      "color": 4239600
+    },
+    {
+      "name": "text_color verdict tone Bad",
+      "kind": "text_color",
+      "verdict_tone": "Bad",
+      "source_tone": "Bad",
+      "destination_tone": "Neutral",
+      "id_name": "VerdictBadgeId",
+      "color": 7039999
+    },
+    {
+      "name": "text_color source tone Bad",
+      "kind": "text_color",
+      "verdict_tone": "Neutral",
+      "source_tone": "Bad",
+      "destination_tone": "Neutral",
+      "id_name": "SourceStatusId",
+      "color": 7039999
+    },
+    {
+      "name": "text_color destination tone Bad",
+      "kind": "text_color",
+      "verdict_tone": "Neutral",
+      "source_tone": "Neutral",
+      "destination_tone": "Bad",
+      "id_name": "DestinationStatusId",
+      "color": 7039999
+    },
+    {
+      "name": "explorer_args \"$ROOT\\\\a.jpg\"",
+      "kind": "explorer_args",
+      "path": "$ROOT\\a.jpg",
+      "args": [
+        "/select,\"$ROOT\\a.jpg\""
+      ]
+    },
+    {
+      "name": "explorer_args \"$ROOT\\\\with space.jpg\"",
+      "kind": "explorer_args",
+      "path": "$ROOT\\with space.jpg",
+      "args": [
+        "/select,\"$ROOT\\with space.jpg\""
+      ]
+    },
+    {
+      "name": "explorer_args \"$ROOT\\\\sub\\\\b.jpg\"",
+      "kind": "explorer_args",
+      "path": "$ROOT\\sub\\b.jpg",
+      "args": [
+        "/select,\"$ROOT\\sub\\b.jpg\""
+      ]
+    },
+    {
+      "name": "explorer_args \"$ROOT\\\\missing.jpg\"",
+      "kind": "explorer_args",
+      "path": "$ROOT\\missing.jpg",
+      "args": [
+        "\"$ROOT\""
+      ]
+    },
+    {
+      "name": "explorer_args \"$ROOT\\\\sub\\\\gone\\\\deeper\\\\x.jpg\"",
+      "kind": "explorer_args",
+      "path": "$ROOT\\sub\\gone\\deeper\\x.jpg",
+      "args": [
+        "\"$ROOT\\sub\""
+      ]
+    },
+    {
+      "name": "explorer_args \"$ROOT\\\\sub\"",
+      "kind": "explorer_args",
+      "path": "$ROOT\\sub",
+      "args": [
+        "\"$ROOT\""
+      ]
+    },
+    {
+      "name": "explorer_args \"$ROOT\\\\sub\\\\\"",
+      "kind": "explorer_args",
+      "path": "$ROOT\\sub\\",
+      "args": [
+        "\"$ROOT\\sub\""
+      ]
+    },
+    {
+      "name": "explorer_args \"$ROOT\"",
+      "kind": "explorer_args",
+      "path": "$ROOT",
+      "args": [
+        "\"C:\\Users\\adminvti\\AppData\\Local\\Temp\""
+      ]
+    },
+    {
+      "name": "explorer_args \"$NODRIVE\\\\a\\\\b.jpg\"",
+      "kind": "explorer_args",
+      "path": "$NODRIVE\\a\\b.jpg",
+      "args": []
+    },
+    {
+      "name": "explorer_args \"\"",
+      "kind": "explorer_args",
+      "path": "",
+      "args": []
+    },
+    {
+      "name": "explorer_args \"   \"",
+      "kind": "explorer_args",
+      "path": "   ",
+      "args": []
+    },
+    {
+      "name": "explorer_args \"\\t\"",
+      "kind": "explorer_args",
+      "path": "\t",
+      "args": []
+    },
+    {
+      "name": "copy \"C:\\\\a\\\\b.jpg\"",
+      "kind": "copy",
+      "path": "C:\\a\\b.jpg",
+      "calls": [
+        "C:\\a\\b.jpg"
+      ]
+    },
+    {
+      "name": "copy \"\"",
+      "kind": "copy",
+      "path": "",
+      "calls": []
+    },
+    {
+      "name": "copy \"D:\\\\x y\\\\z.jpg\"",
+      "kind": "copy",
+      "path": "D:\\x y\\z.jpg",
+      "calls": [
+        "D:\\x y\\z.jpg"
+      ]
+    }
+  ]
+}
