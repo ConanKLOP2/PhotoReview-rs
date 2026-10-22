@@ -5,6 +5,7 @@
 | [`../AGENTS.md`](../AGENTS.md) | Rules, priorities, coexistence, tests, git | Every session |
 | [`../task_on_progress.md`](../task_on_progress.md) | Current state and next steps | Every session |
 | [`PLAN.md`](PLAN.md) | Phases, gates, stack (Vietnamese) | Planning / picking next work |
+| [`MULTI-MACHINE.md`](MULTI-MACHINE.md) | Two or more machines porting in parallel: ownership table, claims (`tools/autopilot/claim.sh`), branches, shared files, messages | Before starting work on a second machine |
 | [`MULTI-AGENT-PLAN.md`](MULTI-AGENT-PLAN.md) | Waves, work units, model per unit (Haiku/Sonnet/Opus), prompts, gates | Before launching agents |
 | [`PARITY.md`](PARITY.md) | Feature/INV checklist C# → Rust | Before porting anything |
 | [`../contracts/README.md`](../contracts/README.md) | Wave rosters, lead decisions, one contract per work unit | Before porting a unit |
