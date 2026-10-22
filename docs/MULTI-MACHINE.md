@@ -59,6 +59,7 @@ There is no live channel; use git:
   question where the other machine and the human will see it, then take the recommended option (standing rule: do not stop).
 
 ## 7. Resources
+- Send heavy CPU lanes (`cargo-mutants`, mutation killers, large builds) to the machine with the strongest CPU and enough disk. A small-disk machine runs one worktree at a time, uses one shared mutation target directory outside worktrees, and deletes `target` after each unit. Both machines follow the Codex-first rule in `AGENTS.md`.
 - One Codex account: quota is shared. `tools/autopilot/codex-usage.sh` shows it; the limit is 95 % (set by the owner): stop a machine's Codex work above 95 % of the 5 h window or of the week
   (the pipeline enforces it with `QUOTA_MAX=95`), and run `--jobs 1` on the second machine unless the quota has room.
 - Each machine has its own `CARGO_TARGET_DIR` inside the worktree; mutation targets go outside the worktree.

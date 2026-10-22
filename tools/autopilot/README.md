@@ -46,6 +46,9 @@ Claude tokens, not for wall-clock time. Files: `codex-pipeline.sh` (driver), `co
 checks), `codex-run.sh` (one Codex call, `--json`, `resume`), `CODEX-RULES.md`, `lib/codex-lib.py` (plan/contract/state/lint/telemetry
 helpers), `test/pipeline-selftest.sh` (fake-Codex control-flow test, also covers every gate and helper).
 
+## Routing
+Follow [AGENTS.md](../../AGENTS.md#who-does-what-codex-first): use `codex-pipeline.sh` for units, `codex-run.sh` for one-off tasks, and `claim.sh` for coordination.
+
 Run (terminal, main checkout, contracts of the batch already merged to `master`):
 ```
 bash tools/autopilot/codex-pipeline.sh --smoke                     # env checks + 1 tiny real Codex call + gate on a throwaway unit
