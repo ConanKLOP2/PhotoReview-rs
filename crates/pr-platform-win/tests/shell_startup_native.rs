@@ -16,7 +16,12 @@ fn try_set_cloaked_cloaks_and_uncloaks_a_hidden_window() {
 #[ignore = "native: needs desktop"]
 fn schedule_on_thread_runs_the_job_once() {
     let (tx, rx) = mpsc::channel();
-    let _handle = schedule_on_thread(Duration::from_millis(1), Box::new(move || { let _ = tx.send(()); }));
+    let _handle = schedule_on_thread(
+        Duration::from_millis(1),
+        Box::new(move || {
+            let _ = tx.send(());
+        }),
+    );
     assert!(rx.recv_timeout(Duration::from_secs(5)).is_ok());
 }
 
@@ -24,9 +29,17 @@ fn schedule_on_thread_runs_the_job_once() {
 #[ignore = "native: needs desktop"]
 fn schedule_on_thread_cancel_by_drop_never_runs_the_job() {
     let (tx, rx) = mpsc::channel();
-    let handle = schedule_on_thread(Duration::from_secs(2), Box::new(move || { let _ = tx.send(()); }));
+    let handle = schedule_on_thread(
+        Duration::from_secs(2),
+        Box::new(move || {
+            let _ = tx.send(());
+        }),
+    );
     drop(handle);
-    assert!(matches!(rx.recv_timeout(Duration::from_millis(300)), Err(mpsc::RecvTimeoutError::Timeout)));
+    assert!(matches!(
+        rx.recv_timeout(Duration::from_millis(300)),
+        Err(mpsc::RecvTimeoutError::Timeout)
+    ));
 }
 
 #[test]
@@ -35,4 +48,3 @@ fn native_get_set_round_trip() {
     let native = NativeWindowPlacement;
     assert!(native.try_get(0).is_none());
 }
-
