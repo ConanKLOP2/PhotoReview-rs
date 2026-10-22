@@ -472,6 +472,8 @@ JsonArray cases = command switch
     "external-editor-rules" => Commands.W9E1ExternalEditorRulesCases(inputs),
     "external-editor-menu" => Commands.W9E6ExternalEditorMenuCases(inputs),
     "open-in-default-editor-shortcut" => Commands.W9E7OpenInDefaultEditorCases(inputs),
+    // Commands\Commands\W9-E2
+    "dialog-external-editors" => Commands.W9E2ExternalEditorsDialogCases(inputs),
     _ => throw new ArgumentException($"unknown command '{command}'"),
 };
 
