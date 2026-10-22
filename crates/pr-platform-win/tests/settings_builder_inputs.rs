@@ -41,7 +41,10 @@ fn builder_radio_gives_the_first_radio_group_and_tab_stop_the_others_neither_and
         builder.items().iter().find(|item| item.id == later).unwrap().style & 0x20000,
         0
     );
-    assert!(builder.items().iter().all(|item| item.style & 0x0f == 9));
+    assert!(
+        ids.iter()
+            .all(|id| { builder.items().iter().find(|item| item.id == *id).unwrap().style & 0x0f == 9 })
+    );
 }
 
 #[test]
@@ -74,11 +77,11 @@ fn builder_radio_creates_the_hints_after_every_radio_as_dimmed_notes_and_the_fir
 fn builder_radio_rejects_fewer_than_two_options_and_a_hint_list_of_the_wrong_length() {
     // C#: SettingsFilesPageTests.Builder_Radio_RejectsFewerThanTwoOptions_AndAHintListOfTheWrongLength
     let mut builder = SettingsPageBuilder::new(0);
-    assert!(builder.radio(&[text("one")], None, 0).is_empty());
+    assert_eq!(builder.radio(&[text("one")], None, 0), vec![0]);
     assert_eq!(builder.error(), Some(SettingsBuilderError::RadioNeedsTwoOptions));
     let mut builder = SettingsPageBuilder::new(0);
     let hints = [Some(text("hint"))];
-    assert!(builder.radio(&[text("one"), text("two")], Some(&hints), 0).is_empty());
+    assert_eq!(builder.radio(&[text("one"), text("two")], Some(&hints), 0), vec![0, 0]);
     assert_eq!(builder.error(), Some(SettingsBuilderError::RadioHintCountMismatch));
 }
 
@@ -213,9 +216,14 @@ fn a_rejected_radio_changes_nothing_and_keeps_a_pending_cut() {
     let mut builder = SettingsPageBuilder::new(0);
     builder.radio(&[text("a"), text("b")], None, 0);
     let before = builder.items().len();
-    builder.radio(&[text("only")], None, 0);
+    let rejected_ids = builder.radio(&[text("only")], None, 0);
+    assert_eq!(rejected_ids, vec![0]);
     assert_eq!(builder.items().len(), before);
-    assert_ne!(builder.items()[2].style & 0x20000, 0);
+    let next = builder.check(text("next"), 0);
+    assert_ne!(
+        builder.items().iter().find(|item| item.id == next).unwrap().style & 0x20000,
+        0
+    );
 }
 
 #[test]
@@ -252,7 +260,7 @@ fn flatten_is_pre_order() {
         builder.check(text("inside"), 0);
     });
     let flat = builder.flatten();
-    assert_eq!(flat.first().unwrap().control_ids(), vec![group]);
+    assert_eq!(flat.first().unwrap().control_ids(), vec![group, group + 1]);
 }
 
 #[test]
