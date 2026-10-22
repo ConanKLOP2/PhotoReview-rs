@@ -19,8 +19,9 @@ fn golden_general_declare_matches_the_csharp_dump() {
     let mut builder = SettingsPageBuilder::new(1000);
     page.declare(&mut builder);
     assert_eq!(page.key(), "General");
-    assert_eq!(page.ids().language, 1001);
-    assert_eq!(page.ids().language_group, 1000);
+    // C# builder allocates the group box and combo label before the combo itself.
+    assert_eq!(page.ids().language, 1003);
+    assert_eq!(page.ids().language_group, 1001);
     assert_eq!(settings_builder_fixture::dump(&builder)["counts"]["elements"], 4);
 }
 
@@ -50,8 +51,10 @@ fn view_mode_combo_order_matches_the_form_index() {
     host.configure_from(&builder);
     page.attach(host.context());
     for index in 0..6 {
-        let mut state = SettingsFormState::default();
-        state.view_mode_index = index;
+        let state = SettingsFormState {
+            view_mode_index: index,
+            ..SettingsFormState::default()
+        };
         page.load(&state);
         assert_eq!(host.combo_index(page.ids().view_mode), index);
     }
@@ -67,8 +70,10 @@ fn sort_mode_every_tag_round_trips_in_combo_order() {
     host.configure_from(&builder);
     page.attach(host.context());
     for (index, tag) in SORT_TAGS.iter().enumerate() {
-        let mut state = SettingsFormState::default();
-        state.sort_mode_tag = Some((*tag).to_owned());
+        let mut state = SettingsFormState {
+            sort_mode_tag: Some((*tag).to_owned()),
+            ..SettingsFormState::default()
+        };
         page.load(&state);
         assert_eq!(host.combo_index(page.ids().sort_mode), index as i32);
         page.collect(&mut state);
@@ -86,8 +91,10 @@ fn sort_mode_unknown_or_missing_tag_selects_the_first_item() {
     host.configure_from(&builder);
     page.attach(host.context());
     for tag in [None, Some("Bogus"), Some("namedescending")] {
-        let mut state = SettingsFormState::default();
-        state.sort_mode_tag = tag.map(str::to_owned);
+        let state = SettingsFormState {
+            sort_mode_tag: tag.map(str::to_owned),
+            ..SettingsFormState::default()
+        };
         page.load(&state);
         assert_eq!(host.combo_index(page.ids().sort_mode), 0);
     }
@@ -120,8 +127,10 @@ fn instance_mode_round_trips() {
     host.configure_from(&builder);
     page.attach(host.context());
     for index in 0..2 {
-        let mut state = SettingsFormState::default();
-        state.instance_mode_index = index;
+        let state = SettingsFormState {
+            instance_mode_index: index,
+            ..SettingsFormState::default()
+        };
         page.load(&state);
         assert_eq!(host.combo_index(page.ids().instance_mode), index);
     }
@@ -155,15 +164,15 @@ fn open_languages_folder_asks_explorer_for_the_folder() {
 }
 
 #[test]
-// C#: SettingsPagesTests.General_UpdateCheck_ShowsTheResult_AndOffersTheDownloadPage
-fn update_check_is_ignored_while_the_button_is_disabled() {
+// C#: GeneralSettingsPage.OnCommand: an enabled update button handles the click.
+fn update_check_click_is_handled_while_the_button_is_enabled() {
     let mut page = GeneralSettingsPage::new();
     let mut builder = SettingsPageBuilder::new(1000);
     page.declare(&mut builder);
     let host = settings_page_fixture::PageHost::new();
     host.configure_from(&builder);
     page.attach(host.context());
-    assert!(!page.on_command(page.ids().check_update, 0));
+    assert!(page.on_command(page.ids().check_update, 0));
 }
 
 #[test]
@@ -174,7 +183,7 @@ fn attach_calls_the_host_in_the_csharp_order() {
     page.declare(&mut builder);
     let host = settings_page_fixture::PageHost::new();
     page.attach(host.context());
-    assert_eq!(host.calls().first().map(String::as_str), Some("set_visible 1007 false"));
+    assert_eq!(host.calls().first().map(String::as_str), Some("set_visible 1019 false"));
 }
 
 #[test]
