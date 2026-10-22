@@ -61,10 +61,10 @@ macro_rules! row {
 
 #[test]
 fn golden_dialog_constants_equal_the_csharp_constants() {
-    // C# DialogConstants (65 constants).
+    // C# DialogConstants (66 constants).
     assert_class(
         "DialogConstants",
-        65,
+        66,
         &[
             row!(WmSetFont, dn::WM_SETFONT),
             row!(WmGetFont, dn::WM_GETFONT),
@@ -81,6 +81,7 @@ fn golden_dialog_constants_equal_the_csharp_constants() {
             row!(BmSetStyle, dn::BM_SETSTYLE),
             row!(EmSetSel, dn::EM_SETSEL),
             row!(EmGetSel, dn::EM_GETSEL),
+            row!(EnChange, dn::EN_CHANGE),
             row!(EmSetLimitText, dn::EM_SETLIMITTEXT),
             row!(EmGetRect, dn::EM_GETRECT),
             row!(EmSetRect, dn::EM_SETRECT),

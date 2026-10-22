@@ -43,6 +43,7 @@ pub fn build(context: &ContextMenuBuildContext<'_>) -> Result<Vec<MenuItemModel>
     let hidden = context_menu::effective_hidden(context.settings);
     let menu_context = ContextMenuContext {
         has_photo: context.has_image && context.can_copy_path,
+        include_shell_only: true,
     };
     context_menu::compute(&hidden, menu_context, None)
         .entries
@@ -188,6 +189,13 @@ fn top_level_item(
             None,
             tr::main_menu_open_in_external_editor_automation_name(),
             true,
+        ),
+        ContextMenuItemId::RenameFile => command(
+            id.name(),
+            tr::main_menu_rename_file(),
+            Some(&shortcuts.rename_file),
+            tr::main_menu_rename_file_automation_name(),
+            menu_context.has_photo,
         ),
         ContextMenuItemId::CopyFileName => command(
             id.name(),

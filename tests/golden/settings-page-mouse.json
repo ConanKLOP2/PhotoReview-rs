@@ -1,6 +1,6 @@
 {
   "generator": "oracle-cs settings-page-mouse",
-  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "csharp_commit": "7eaee2a2b071c7ca05291c86fb78a347f9e6a15f",
   "cases": [
     {
       "name": "Mouse page declaration",
@@ -70,36 +70,40 @@
           "id": 3062
         },
         {
-          "item": "CopyFileName",
+          "item": "RenameFile",
           "id": 3063
         },
         {
-          "item": "CopyFullPath",
+          "item": "CopyFileName",
           "id": 3064
         },
         {
-          "item": "Settings",
+          "item": "CopyFullPath",
           "id": 3065
         },
         {
-          "item": "ZoomFitWidth",
+          "item": "Settings",
           "id": 3066
         },
         {
-          "item": "ZoomFitWidth2",
+          "item": "ZoomFitWidth",
           "id": 3067
         },
         {
-          "item": "ZoomFitHeight",
+          "item": "ZoomFitWidth2",
           "id": 3068
         },
         {
-          "item": "ZoomPresets",
+          "item": "ZoomFitHeight",
           "id": 3069
         },
         {
-          "item": "ZoomLevelOptions",
+          "item": "ZoomPresets",
           "id": 3070
+        },
+        {
+          "item": "ZoomLevelOptions",
+          "id": 3071
         }
       ],
       "key": "Mouse",
@@ -542,55 +546,62 @@
         {
           "class": "Button",
           "id": 3063,
-          "text": "Copy File Name",
+          "text": "Rename…",
           "style": 1342251011,
           "ex_style": 0
         },
         {
           "class": "Button",
           "id": 3064,
-          "text": "Copy Full Pathname",
+          "text": "Copy File Name",
           "style": 1342251011,
           "ex_style": 0
         },
         {
           "class": "Button",
           "id": 3065,
-          "text": "Settings",
+          "text": "Copy Full Pathname",
           "style": 1342251011,
           "ex_style": 0
         },
         {
           "class": "Button",
           "id": 3066,
-          "text": "Fit width",
+          "text": "Settings",
           "style": 1342251011,
           "ex_style": 0
         },
         {
           "class": "Button",
           "id": 3067,
-          "text": "Fit width 2",
+          "text": "Fit width",
           "style": 1342251011,
           "ex_style": 0
         },
         {
           "class": "Button",
           "id": 3068,
-          "text": "Fit height",
+          "text": "Fit width 2",
           "style": 1342251011,
           "ex_style": 0
         },
         {
           "class": "Button",
           "id": 3069,
-          "text": "Zoom presets and Custom...",
+          "text": "Fit height",
           "style": 1342251011,
           "ex_style": 0
         },
         {
           "class": "Button",
           "id": 3070,
+          "text": "Zoom presets and Custom...",
+          "style": 1342251011,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 3071,
           "text": "Click zoom level options (also set / set current)",
           "style": 1342251011,
           "ex_style": 0
@@ -795,34 +806,38 @@
         },
         {
           "id": 3063,
-          "text": "Copy File Name"
+          "text": "Rename…"
         },
         {
           "id": 3064,
-          "text": "Copy Full Pathname"
+          "text": "Copy File Name"
         },
         {
           "id": 3065,
-          "text": "Settings"
+          "text": "Copy Full Pathname"
         },
         {
           "id": 3066,
-          "text": "Fit width"
+          "text": "Settings"
         },
         {
           "id": 3067,
-          "text": "Fit width 2"
+          "text": "Fit width"
         },
         {
           "id": 3068,
-          "text": "Fit height"
+          "text": "Fit width 2"
         },
         {
           "id": 3069,
-          "text": "Zoom presets and Custom..."
+          "text": "Fit height"
         },
         {
           "id": 3070,
+          "text": "Zoom presets and Custom..."
+        },
+        {
+          "id": 3071,
           "text": "Click zoom level options (also set / set current)"
         }
       ],
@@ -1225,7 +1240,8 @@
             3067,
             3068,
             3069,
-            3070
+            3070,
+            3071
           ],
           "children": [
             {
@@ -1340,6 +1356,12 @@
               "type": "SettingsCheckElement",
               "control_ids": [
                 3070
+              ]
+            },
+            {
+              "type": "SettingsCheckElement",
+              "control_ids": [
+                3071
               ]
             }
           ]

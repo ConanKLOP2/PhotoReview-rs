@@ -71,11 +71,13 @@ pub struct ShortcutMappings {
     pub refresh: String,
     /// W9-E1 (JSON `OpenInDefaultEditor`, declared after `Refresh`): sends the photo to the default external editor. Default `""` (disabled, optional).
     pub open_in_default_editor: String,
+    /// FEAT-RENAME: opens the rename prompt. Default `F2`; empty disables it.
+    pub rename_file: String,
 }
 
 impl ShortcutMappings {
     /// The C# property names (the JSON names too), in declaration order: what `GetProperties()` returns.
-    pub const PROPERTY_NAMES: [&'static str; 28] = [
+    pub const PROPERTY_NAMES: [&'static str; 30] = [
         "Next",
         "Previous",
         "MoveToFolder2",
@@ -104,11 +106,13 @@ impl ShortcutMappings {
         "ToggleCaptureMember",
         "FitWidth2",
         "Refresh",
+        "OpenInDefaultEditor",
+        "RenameFile",
     ];
 
     /// `ShortcutMappings.OptionalNames`: the shortcuts that may be empty (= feature disabled). The older ones are
     /// mandatory: an empty value is invalid. NOT part of [`ShortcutMappings::PROPERTY_NAMES`] (in C# it is a field).
-    pub const OPTIONAL_NAMES: [&'static str; 14] = [
+    pub const OPTIONAL_NAMES: [&'static str; 16] = [
         "LastImage",
         "ZoomActualSize",
         "ToggleInfoOverlay",
@@ -123,6 +127,8 @@ impl ShortcutMappings {
         "ToggleCaptureMember",
         "FitWidth2",
         "Refresh",
+        "OpenInDefaultEditor",
+        "RenameFile",
     ];
 
     /// `ShortcutMappings.IsOptional`: true when `property_name` is one of [`ShortcutMappings::OPTIONAL_NAMES`].
@@ -163,6 +169,8 @@ impl ShortcutMappings {
             "ToggleCaptureMember" => &self.toggle_capture_member,
             "FitWidth2" => &self.fit_width2,
             "Refresh" => &self.refresh,
+            "OpenInDefaultEditor" => &self.open_in_default_editor,
+            "RenameFile" => &self.rename_file,
             _ => return None,
         };
         Some(value.as_str())
@@ -199,6 +207,8 @@ impl ShortcutMappings {
             "ToggleCaptureMember" => &mut self.toggle_capture_member,
             "FitWidth2" => &mut self.fit_width2,
             "Refresh" => &mut self.refresh,
+            "OpenInDefaultEditor" => &mut self.open_in_default_editor,
+            "RenameFile" => &mut self.rename_file,
             _ => return None,
         };
         Some(value)
@@ -246,6 +256,7 @@ impl Default for ShortcutMappings {
             fit_width2: "D4".to_owned(),
             refresh: "R".to_owned(),
             open_in_default_editor: String::new(),
+            rename_file: "F2".to_owned(),
         }
     }
 }

@@ -1,5 +1,5 @@
 //! Port of `PhotoReview.Core/Settings/ShortcutMappings.cs`, `ShortcutKeyCanonical.cs` and `ReviewAction.cs`
-//! (baseline d92d6aae) and the C# tests that cover them. Golden: `tests/golden/shortcut-canonical.json`.
+//! (baseline 7eaee2a2) and the C# tests that cover them. Golden: `tests/golden/shortcut-canonical.json`.
 
 use pr_core::model::enums::FileOperationType;
 use pr_core::settings::shortcuts::{ALIAS_PAIRS, ReviewAction, ShortcutMappings, canonicalize, canonicalize_all};
@@ -10,7 +10,7 @@ use serde_json::Value;
 fn kind_cases(kind: &str) -> Vec<Value> {
     let g = golden::load("shortcut-canonical");
     assert!(
-        g.csharp_commit.starts_with("d92d6aae"),
+        g.csharp_commit.starts_with("7eaee2a2"),
         "golden baseline {}",
         g.csharp_commit
     );
@@ -162,7 +162,7 @@ fn canonicalize_all_canonicalises_every_property_and_action_shortcut() {
     assert_eq!(actions[0].destination, "x", "destination is not touched");
 }
 
-// Every one of the 28 properties is canonicalised, not only the ones named in the test above.
+// Every one of the 30 properties is canonicalised, not only the ones named in the test above.
 // C#: ShortcutMappings properties reached by reflection in CanonicalizeAll.
 #[test]
 fn canonicalize_all_handles_every_property() {
@@ -178,7 +178,7 @@ fn canonicalize_all_handles_every_property() {
 #[test]
 fn get_get_mut_entries_agree_with_property_names() {
     let mut shortcuts = ShortcutMappings::default();
-    assert_eq!(shortcuts.entries().len(), 28);
+    assert_eq!(shortcuts.entries().len(), 30);
     for (i, name) in ShortcutMappings::PROPERTY_NAMES.iter().enumerate() {
         let (entry_name, entry_value) = shortcuts.entries()[i];
         assert_eq!(entry_name, *name);
@@ -290,7 +290,6 @@ fn is_optional_matches_golden() {
 // C#: ShortcutMappings defaults, OptionalNames and the JSON STJ writes for new ShortcutMappings().
 // Golden kind "shortcut-defaults".
 #[test]
-#[ignore = "W9-E1: golden `shortcut-canonical` is at the old baseline; the stub already has `open_in_default_editor` (7eaee2a2). Un-ignore after the baseline move regenerates the golden"]
 fn shortcut_defaults_match_golden() {
     let cases = kind_cases("shortcut-defaults");
     assert_eq!(cases.len(), 1);

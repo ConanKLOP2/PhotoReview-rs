@@ -763,7 +763,7 @@ impl PreviewImageService {
     /// C# `EvictCachedPath(path, alsoInvalidate)`: normalizes with the key's own normalization (`normalize_key_path`,
     /// full path + `ToUpperInvariant`; a bad path is `Err(InvalidPath)` BEFORE anything is evicted), evicts the
     /// source-bytes cache for `path` (as given; an error is `Err(SourceBytes)` and stops here, like the C# exception),
-    /// then under the lifecycle gate removes every RAM entry whose key path equals the normalized path (ORDINAL) and
+    /// then under the lifecycle gate removes every RAM and original-dimensions entry whose key path equals the normalized path (ORDINAL) and
     /// calls `also_invalidate(normalized)`. NO epoch bump (R2-F-02). `also_invalidate` runs under a non-reentrant
     /// mutex: it must not call back into this service.
     pub fn evict_cached_path(&self, path: &str, also_invalidate: Option<&dyn Fn(&str)>) -> Result<(), PreviewError> {
@@ -776,6 +776,9 @@ impl PreviewImageService {
         // No epoch bump (R2-F-02): bumping would also drop every OTHER path's in-flight decode.
         let _gate = lock(&self.inner.lifecycle_gate);
         self.inner.cache.remove_where(|key| key.path() == normalized);
+        self.inner
+            .original_dimensions
+            .remove_where(|key| key.path() == normalized);
         if let Some(also_invalidate) = also_invalidate {
             also_invalidate(&normalized);
         }
@@ -1195,7 +1198,7 @@ mod white_box_tests {
     }
 
     // C# `EvictCachedPath`: only the evicted path's entries go (every box), the callback gets the normalized path once,
-    // the epoch and the original dimensions are kept.
+    // the epoch and other paths' original dimensions are kept; the evicted path's dimensions are removed.
     #[test]
     fn evict_cached_path_removes_only_that_paths_entries_and_calls_back() {
         let root = TempRoot::new("preview-white-box-evict");
@@ -1215,6 +1218,10 @@ mod white_box_tests {
             .inner
             .original_dimensions
             .set(ImageCacheKey::create_original(&key_a), (6000, 4000));
+        service
+            .inner
+            .original_dimensions
+            .set(ImageCacheKey::create_original(&key_b), (3000, 2000));
         let epoch = service.inner.current_epoch();
         let seen = Mutex::new(Vec::<String>::new());
         let callback = |normalized: &str| lock(&seen).push(normalized.to_owned());
@@ -1231,7 +1238,8 @@ mod white_box_tests {
         assert!(Arc::ptr_eq(&kept, &image_b));
         assert_eq!(*lock(&seen), vec![key_a.path().to_owned()]);
         assert_eq!(service.inner.current_epoch(), epoch);
-        assert_eq!(service.try_get_known_original_dimensions(&key_a), Some((6000, 4000)));
+        assert_eq!(service.try_get_known_original_dimensions(&key_a), None);
+        assert_eq!(service.try_get_known_original_dimensions(&key_b), Some((3000, 2000)));
     }
 
     // C# `TryGetKnownOriginalDimensions`: looked up under `ImageCacheKey.CreateOriginal(currentKey)`; cleared by

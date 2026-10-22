@@ -1,6 +1,6 @@
 {
   "generator": "oracle-cs win32-constants",
-  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "csharp_commit": "7eaee2a2b071c7ca05291c86fb78a347f9e6a15f",
   "cases": [
     {
       "kind": "const",
@@ -3207,6 +3207,13 @@
       "name": "EmGetSel",
       "type": "UInt32",
       "value": 176
+    },
+    {
+      "kind": "const",
+      "class": "DialogConstants",
+      "name": "EnChange",
+      "type": "Int32",
+      "value": 768
     },
     {
       "kind": "const",
