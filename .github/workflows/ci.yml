@@ -21,6 +21,39 @@ env:
   CARGO_INCREMENTAL: 0
 
 jobs:
+  # Decides whether the Rust jobs are needed. A pull request that only touches documentation, markdown contracts or the tools/ scripts
+  # skips lint and tests (about 8 minutes of Windows runners for nothing); pushes to master, manual runs and any change of the workflow,
+  # Cargo files, crates, test fixtures or the toolchain always run everything.
+  changes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      rust: ${{ steps.diff.outputs.rust }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - name: Changed files
+        id: diff
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" != "pull_request" ]; then echo "rust=true" >> "$GITHUB_OUTPUT"; exit 0; fi
+          git fetch --no-tags origin "${{ github.base_ref }}"
+          files="$(git diff --name-only "origin/${{ github.base_ref }}...HEAD")"
+          echo "$files"
+          # Not Rust relevant: docs/, tools/ (scripts, oracle sources, autopilot) and markdown anywhere.
+          other="$(echo "$files" | grep -vE '^(docs/|tools/)|\.md$' || true)"
+          if [ -n "$other" ]; then
+            echo "rust=true" >> "$GITHUB_OUTPUT"
+            echo "Rust jobs needed because of:"
+            echo "$other"
+          else
+            echo "rust=false" >> "$GITHUB_OUTPUT"
+            echo "Only docs/tools changed: Rust jobs skipped"
+          fi
+
+  # Required by the master-ci ruleset together with build-test: it must always run and succeed.
   repo-checks:
     runs-on: windows-latest
     timeout-minutes: 10
@@ -32,11 +65,16 @@ jobs:
         shell: powershell
         run: ./tools/sync-from-csharp.ps1 -Check
 
-  # The three jobs below run in parallel (wall time = the slowest one, not the sum). Only master saves the cache;
-  # pull requests restore it.
+  # Runner time is the budget, not the number of jobs: every Windows job pays about 30 s of setup (checkout, toolchain, cache) and
+  # GitHub runs a limited number of Windows jobs at once, so two overlapping runs (a pull request and the master run of the previous
+  # merge) used to queue. The work is grouped into five jobs of about two minutes each: lint plus release build, pr-core, the rest of
+  # the workspace, pr-platform-win with the pr-app unit tests, and the pr-app integration tests. Only master saves the cache.
   lint:
+    needs: changes
+    if: ${{ needs.changes.outputs.rust == 'true' }}
+    name: lint and release build
     runs-on: windows-latest
-    timeout-minutes: 15
+    timeout-minutes: 25
     env:
       # No debug info: nothing in CI reads it and writing PDBs is the slowest part of linking on Windows.
       CARGO_PROFILE_DEV_DEBUG: 0
@@ -49,7 +87,7 @@ jobs:
       - name: Cache
         uses: Swatinem/rust-cache@f13886b937689c021905a6b90929199931d60db1 # v2.8.1
         with:
-          shared-key: lint
+          shared-key: lint-release
           save-if: ${{ github.ref == 'refs/heads/master' }}
       # One rustfmt run per package: `cargo fmt --all` hands every test file of the whole workspace to one rustfmt process, which
       # fails with os error 206 (command line too long) on Windows once pr-platform-win and pr-app have enough test files.
@@ -63,19 +101,24 @@ jobs:
           }
       - name: Clippy
         run: cargo clippy --workspace --all-targets --locked -- -D warnings
+      - name: Build release
+        run: cargo build --workspace --release --locked
 
-  # `pr-app` has over a hundred integration test files, each linked as its own binary, so it dominates the test time.
-  # Its files are split round-robin over 4 shards (computed from the directory on every run, so a new test file needs no
-  # workflow edit); core-a, core-b, crates-win, crates-rest and app-unit run the remaining crate, unit and doc tests in parallel.
+  # `pr-app` has over a hundred integration test files, each linked as its own binary, so it dominates the test time. Its files are
+  # split round-robin over 4 shards (computed from the directory on every run, so a new test file needs no workflow edit); the groups
+  # below take the shards that balance them (measured step times: core 120 s, crates-rest 120 s, win 69 s + app-unit 12 s + shard 2
+  # 23 s, app shards 0, 1 and 3 43 + 31 + 41 s).
   test:
-    name: test (${{ matrix.shard }})
+    needs: changes
+    if: ${{ needs.changes.outputs.rust == 'true' }}
+    name: test (${{ matrix.group }})
     runs-on: windows-latest
     # Hang guard: a stuck test fails the job instead of burning the runner (C#: test.runsettings).
     timeout-minutes: 25
     strategy:
       fail-fast: false
       matrix:
-        shard: [core-a, core-b, crates-win, crates-rest, app-unit, "0", "1", "2", "3"]
+        group: [core, crates-rest, win, app]
     env:
       CARGO_PROFILE_DEV_DEBUG: 0
     steps:
@@ -86,83 +129,53 @@ jobs:
       - name: Cache
         uses: Swatinem/rust-cache@f13886b937689c021905a6b90929199931d60db1 # v2.8.1
         with:
-          shared-key: test-${{ matrix.shard }}
+          shared-key: test-${{ matrix.group }}
           save-if: ${{ github.ref == 'refs/heads/master' }}
       - name: Test
         timeout-minutes: 15
         shell: pwsh
         run: |
-          $shard = '${{ matrix.shard }}'
-          if ($shard -like 'core-*') {
-            # pr-core tests are sequential and a few files (journal, compaction) take 15-35 s each: alternate the
-            # files over two shards (computed from the directory); core-a also runs the lib tests, core-b the doc tests.
-            $half = if ($shard -eq 'core-a') { 0 } else { 1 }
-            $names = @(Get-ChildItem crates/pr-core/tests -Filter *.rs -File | Sort-Object Name | ForEach-Object { $_.BaseName })
-            $targets = @(if ($half -eq 0) { '--lib' } else { })
+          $group = '${{ matrix.group }}'
+          function Invoke-Cargo {
+            cargo @args
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          }
+          # pr-app integration tests of the given shards (round-robin over 4), one cargo invocation.
+          function Invoke-AppShards([int[]]$shards) {
+            $names = @(Get-ChildItem crates/pr-app/tests -Filter *.rs -File | Sort-Object Name | ForEach-Object { $_.BaseName })
+            $targets = @()
             for ($k = 0; $k -lt $names.Count; $k++) {
-              if ($k % 2 -eq $half) { $targets += '--test'; $targets += $names[$k] }
+              if ($shards -contains ($k % 4)) { $targets += '--test'; $targets += $names[$k] }
             }
-            cargo test -p pr-core --locked @targets
-            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-            if ($half -eq 1) {
-              cargo test -p pr-core --doc --locked
-              exit $LASTEXITCODE
+            Write-Host "shards $($shards -join ',') run $($targets.Count / 2) of $($names.Count) pr-app test files"
+            if ($targets.Count -gt 0) { Invoke-Cargo test -p pr-app --locked @targets }
+          }
+          switch ($group) {
+            'core' { Invoke-Cargo test -p pr-core --locked }
+            'crates-rest' { Invoke-Cargo test --workspace --exclude pr-app --exclude pr-core --exclude pr-platform-win --locked }
+            'win' {
+              Invoke-Cargo test -p pr-platform-win --locked
+              Invoke-Cargo test -p pr-app --lib --bins --locked
+              Invoke-Cargo test -p pr-app --doc --locked
+              Invoke-AppShards @(2)
             }
-            exit 0
+            'app' { Invoke-AppShards @(0, 1, 3) }
           }
-          if ($shard -eq 'crates-win') {
-            cargo test -p pr-platform-win --locked
-            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-            exit 0
-          }
-          if ($shard -eq 'crates-rest') {
-            cargo test --workspace --exclude pr-app --exclude pr-core --exclude pr-platform-win --locked
-            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-            exit 0
-          }
-          if ($shard -eq 'app-unit') {
-            cargo test -p pr-app --lib --bins --locked
-            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-            cargo test -p pr-app --doc --locked
-            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-            exit 0
-          }
-          $shards = 4
-          $names = @(Get-ChildItem crates/pr-app/tests -Filter *.rs -File | Sort-Object Name | ForEach-Object { $_.BaseName })
-          $targets = @()
-          for ($k = 0; $k -lt $names.Count; $k++) {
-            if ($k % $shards -eq [int]$shard) { $targets += '--test'; $targets += $names[$k] }
-          }
-          Write-Host "shard $shard runs $($targets.Count / 2) of $($names.Count) pr-app test files"
-          if ($targets.Count -eq 0) { exit 0 }
-          cargo test -p pr-app --locked @targets
-          exit $LASTEXITCODE
 
-  release-build:
-    runs-on: windows-latest
-    timeout-minutes: 20
-    steps:
-      - name: Checkout
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - name: Toolchain
-        run: rustup show
-      - name: Cache
-        uses: Swatinem/rust-cache@f13886b937689c021905a6b90929199931d60db1 # v2.8.1
-        with:
-          shared-key: release
-          save-if: ${{ github.ref == 'refs/heads/master' }}
-      - name: Build release
-        run: cargo build --workspace --release --locked
-
-  # Gate with the name branch protection requires. `if: always()` is needed: a skipped job would otherwise count
-  # as passing when an upstream job fails.
+  # Gate with the name the master-ci ruleset requires. `if: always()` is needed: a skipped job would otherwise count as passing when
+  # an upstream job fails. lint and test are skipped on purpose (and only then) when `changes` found nothing but docs and tools.
   build-test:
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    needs: [lint, test, release-build]
+    needs: [changes, lint, test]
     if: ${{ always() }}
     steps:
-      - name: Require lint, test and release build
+      - name: Require the checks that apply
         run: |
-          echo "lint=${{ needs.lint.result }} test=${{ needs.test.result }} release-build=${{ needs.release-build.result }}"
-          test "${{ needs.lint.result }}" = "success" && test "${{ needs.test.result }}" = "success" && test "${{ needs.release-build.result }}" = "success"
+          echo "changes=${{ needs.changes.result }} rust=${{ needs.changes.outputs.rust }} lint=${{ needs.lint.result }} test=${{ needs.test.result }}"
+          test "${{ needs.changes.result }}" = "success" || exit 1
+          if [ "${{ needs.changes.outputs.rust }}" = "true" ]; then
+            test "${{ needs.lint.result }}" = "success" && test "${{ needs.test.result }}" = "success"
+          else
+            test "${{ needs.lint.result }}" = "skipped" && test "${{ needs.test.result }}" = "skipped"
+          fi
