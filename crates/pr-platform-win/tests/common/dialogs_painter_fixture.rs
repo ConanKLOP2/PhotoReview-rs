@@ -7,8 +7,8 @@
 //!   body may still be a stub when these tests run); the call is idempotent, so the result is the same.
 //! - `OwnerWindow::dark()` implements the `WM_CTLCOLOR*` decision itself (the contract names `dialog::draw::ctl_color_kind` of W8-18h, not merged yet): dialog and button
 //!   colours use the window brush, a static label the window brush with `Dark.Text`, an edit box and a list box the input brush with `Dark.TextStrong`.
-//! - The windows are never shown (`PrintWindow` sends `WM_PRINT` and works on hidden windows), so a test run never flashes anything on the user's desktop; the
-//!   "visible child" test of the C# is `WS_VISIBLE` of the child style.
+//! - `PrintWindow` returns black for a window that is not shown, so `new()` and `dark()` show the owner WITHOUT activation far outside every monitor
+//!   (-20000, -20000): the pixels are real and nothing flashes on the user's desktop. `hidden()` is never shown (the attach tests need no pixels).
 #![allow(dead_code)] // each test crate that includes this file uses a different part
 
 use std::any::Any;
@@ -23,7 +23,7 @@ use pr_platform_win::win32::api::user32::{get_client_rect, get_window_long_ptr, 
 use pr_platform_win::win32::comctl::common_controls::{
     def_subclass_proc, init_common_controls_ex, set_window_subclass,
 };
-use pr_platform_win::win32::comctl::user32::get_class_name;
+use pr_platform_win::win32::comctl::user32::{get_class_name, get_parent};
 use pr_platform_win::win32::dialog_native::gdi32::{create_solid_brush, delete_object, set_bk_color, set_text_color};
 use pr_platform_win::win32::dialog_native::user32::{get_dlg_ctrl_id, get_window, get_window_text, screen_to_client};
 use pr_platform_win::win32::structs::{Hdc, Hgdi, Hwnd, Point, Rect, to_utf16z};
@@ -36,7 +36,7 @@ use windows::Win32::System::Com::{COINIT_APARTMENTTHREADED, CoInitializeEx, CoUn
 use windows::Win32::System::LibraryLoader::GetModuleHandleW;
 use windows::Win32::UI::WindowsAndMessaging::{
     CreateWindowExW, DestroyWindow, DispatchMessageW, MSG, PM_REMOVE, PeekMessageW, SW_SHOWNOACTIVATE, ShowWindow,
-    TranslateMessage, WINDOW_EX_STYLE, WINDOW_STYLE, WS_CHILD, WS_POPUP,
+    TranslateMessage, WINDOW_EX_STYLE, WINDOW_STYLE, WS_CHILD, WS_POPUP, WS_VISIBLE,
 };
 use windows::core::PCWSTR;
 
@@ -161,7 +161,7 @@ unsafe extern "system" fn dark_owner_proc(
     unsafe { def_subclass_proc(hwnd, message, wparam, lparam) }
 }
 
-/// A `WS_POPUP` `STATIC` owner of 640 x 480 at (100, 100), destroyed on drop. Create and drop it on the thread that uses it.
+/// A `WS_POPUP` `STATIC` owner of 640 x 480 (at (-20000, -20000) when shown, see the module doc), destroyed on drop. Create and drop it on the thread that uses it.
 pub struct OwnerWindow {
     pub hwnd: Hwnd,
     brushes: Option<Box<DarkBrushes>>,
@@ -169,7 +169,7 @@ pub struct OwnerWindow {
 
 impl OwnerWindow {
     fn make(show: bool, dark: bool) -> Self {
-        let hwnd = create("STATIC", "painter-owner", WS_POPUP.0, 0, 100, 100, 640, 480, None);
+        let hwnd = create("STATIC", "painter-owner", WS_POPUP.0, 0, -20000, -20000, 640, 480, None);
         let mut owner = Self { hwnd, brushes: None };
         if dark {
             let brushes = Box::new(DarkBrushes {
@@ -189,7 +189,7 @@ impl OwnerWindow {
         owner
     }
 
-    /// The plain owner, shown without activation.
+    /// The plain owner, shown without activation (offscreen).
     pub fn new() -> Self {
         Self::make(true, false)
     }
@@ -199,9 +199,9 @@ impl OwnerWindow {
         Self::make(false, false)
     }
 
-    /// The owner that answers `WM_CTLCOLORDLG / BTN / STATIC / EDIT / LISTBOX` like a dark `NativeDialog` (never shown).
+    /// The owner that answers `WM_CTLCOLORDLG / BTN / STATIC / EDIT / LISTBOX` like a dark `NativeDialog` (shown without activation, offscreen).
     pub fn dark() -> Self {
-        Self::make(false, true)
+        Self::make(true, true)
     }
 }
 
@@ -216,7 +216,7 @@ impl Drop for OwnerWindow {
     }
 }
 
-/// A child of `owner` at (8, 8): the common controls are initialised, the class name is `template::window_class_name(class)`, the style is `WS_CHILD | style`.
+/// A child of `owner` at (8, 8): the common controls are initialised, the class name is `template::window_class_name(class)`, the style is `WS_CHILD | WS_VISIBLE | style`.
 pub fn child(owner: &OwnerWindow, class: DialogControlClass, style: u32, text: &str, width: i32, height: i32) -> Hwnd {
     child_at(owner, class, style, text, 8, 8, width, height)
 }
@@ -238,7 +238,7 @@ pub fn child_at(
     create(
         window_class_name(class),
         text,
-        WS_CHILD.0 | style,
+        WS_CHILD.0 | WS_VISIBLE.0 | style,
         0,
         x,
         y,
@@ -274,8 +274,17 @@ pub struct Shot {
 }
 
 impl Shot {
-    /// `PrintWindow` of `hwnd` into a memory bitmap of the window size.
+    /// `PrintWindow` of the top-level window of `hwnd` (like the C# test, which printed the dialog and read its children by screen position: `PrintWindow`
+    /// of a child window alone answers black) into a memory bitmap of the window size.
     pub fn capture(hwnd: Hwnd) -> Shot {
+        let mut hwnd = hwnd;
+        loop {
+            let parent = get_parent(hwnd);
+            if parent == 0 {
+                break;
+            }
+            hwnd = parent;
+        }
         let rect = window_rect(hwnd);
         let width = (rect.right - rect.left).max(1);
         let height = (rect.bottom - rect.top).max(1);
@@ -447,7 +456,7 @@ pub fn dark_and_readable_findings(dialog: Hwnd) -> Vec<Finding> {
         let class = get_class_name(current).unwrap_or_default();
         let rect = window_rect(current);
         let style = get_window_long_ptr(current, -16) as u32;
-        // The owner is never shown, so the "visible" test of the C# is the WS_VISIBLE flag of the child.
+        // The "visible" test of the C#: the WS_VISIBLE flag of the child (the owner may be offscreen).
         if style & 0x1000_0000 == 0 || rect.right - rect.left < 8 || rect.bottom - rect.top < 6 {
             continue;
         }
