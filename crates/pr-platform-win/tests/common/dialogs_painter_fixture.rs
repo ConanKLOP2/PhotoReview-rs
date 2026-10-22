@@ -161,16 +161,32 @@ unsafe extern "system" fn dark_owner_proc(
     unsafe { def_subclass_proc(hwnd, message, wparam, lparam) }
 }
 
-/// A `WS_POPUP` `STATIC` owner of 640 x 480 (at (-20000, -20000) when shown, see the module doc), destroyed on drop. Create and drop it on the thread that uses it.
+/// A `WS_POPUP` `STATIC` owner of 640 x 2000 (at (-20000, -20000) when shown, see the module doc), destroyed on drop. Create and drop it on the thread that uses
+/// it. `child` and `child_ex` stack the children vertically so that none overlaps another (the pixels of one are never those of its neighbour).
 pub struct OwnerWindow {
     pub hwnd: Hwnd,
     brushes: Option<Box<DarkBrushes>>,
+    next_y: std::cell::Cell<i32>,
 }
 
 impl OwnerWindow {
     fn make(show: bool, dark: bool) -> Self {
-        let hwnd = create("STATIC", "painter-owner", WS_POPUP.0, 0, -20000, -20000, 640, 480, None);
-        let mut owner = Self { hwnd, brushes: None };
+        let hwnd = create(
+            "STATIC",
+            "painter-owner",
+            WS_POPUP.0,
+            0,
+            -20000,
+            -20000,
+            640,
+            2000,
+            None,
+        );
+        let mut owner = Self {
+            hwnd,
+            brushes: None,
+            next_y: std::cell::Cell::new(8),
+        };
         if dark {
             let brushes = Box::new(DarkBrushes {
                 window: create_solid_brush(DialogColors::window()),
@@ -216,9 +232,11 @@ impl Drop for OwnerWindow {
     }
 }
 
-/// A child of `owner` at (8, 8): the common controls are initialised, the class name is `template::window_class_name(class)`, the style is `WS_CHILD | WS_VISIBLE | style`.
+/// A child of `owner` at (8, next free row): the common controls are initialised, the class name is `template::window_class_name(class)`, the style is `WS_CHILD | WS_VISIBLE | style`.
 pub fn child(owner: &OwnerWindow, class: DialogControlClass, style: u32, text: &str, width: i32, height: i32) -> Hwnd {
-    child_at(owner, class, style, text, 8, 8, width, height)
+    let y = owner.next_y.get();
+    owner.next_y.set(y + height + 8);
+    child_at(owner, class, style, text, 8, y, width, height)
 }
 
 /// Like [`child`] at an explicit position.
@@ -241,6 +259,32 @@ pub fn child_at(
         WS_CHILD.0 | WS_VISIBLE.0 | style,
         0,
         x,
+        y,
+        width,
+        height,
+        Some(owner.hwnd),
+    )
+}
+
+/// Like [`child`] with extended window styles (`WS_EX_CLIENTEDGE`, ...).
+pub fn child_ex(
+    owner: &OwnerWindow,
+    class: DialogControlClass,
+    style: u32,
+    ex_style: u32,
+    text: &str,
+    width: i32,
+    height: i32,
+) -> Hwnd {
+    let _ = init_common_controls_ex(0x0000_00FF);
+    let y = owner.next_y.get();
+    owner.next_y.set(y + height + 8);
+    create(
+        window_class_name(class),
+        text,
+        WS_CHILD.0 | WS_VISIBLE.0 | style,
+        ex_style,
+        8,
         y,
         width,
         height,
