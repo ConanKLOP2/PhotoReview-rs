@@ -42,6 +42,12 @@ impl ExternalEditor {
     }
 }
 
+impl Default for ExternalEditor {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 /// C# static class `ExternalEditors` (the pure rules). C# `Clone()` is `Clone::clone`.
 #[derive(Debug)]
 pub struct ExternalEditors;

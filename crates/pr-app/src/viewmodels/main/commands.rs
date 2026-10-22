@@ -788,7 +788,7 @@ impl From<crate::coordinators::zoom_detail::ZoomDetailRefreshResult> for ZoomDet
 impl MainViewModel {
     /// W9-E5, C# `OpenInExternalEditor(string editorId)`: sends the photo to the declared editor with this id (ordinal) among `ExternalEditors::effective`;
     /// an unknown id does nothing. Same `Result` contract as `open_in_external_editor` (`Err` only for an `Unexpected` launch failure).
-    pub fn open_in_external_editor_by_id(&mut self, editor_id: &str) -> Result<ChangeSet, ExternalEditorBug> {
+    pub fn open_in_external_editor_by_id(&mut self, _editor_id: &str) -> Result<ChangeSet, ExternalEditorBug> {
         todo!()
     }
 

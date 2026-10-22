@@ -222,7 +222,7 @@ impl ContextMenuActions for MainWindowMenuActions {
         }
     }
     /// W9-E9: `vm.open_in_external_editor_by_id(editor_id)`, an `Err(ExternalEditorBug)` becomes the `Err` (same shape as `open_in_external_editor`).
-    fn open_in_external_editor_by_id(&self, editor_id: &str) -> ActionResult {
+    fn open_in_external_editor_by_id(&self, _editor_id: &str) -> ActionResult {
         todo!()
     }
     /// W9-E9: `vm.add_external_editor()` (C# `ShellMainWindow.Menus.cs`: `_viewModel.AddExternalEditor()`).

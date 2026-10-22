@@ -375,8 +375,8 @@ impl SettingsPageContext {
     /// (`show_warning(dialog.openEditorFailed.title, dialog.openEditorFailed.message)`) and `None`.
     pub fn edit_external_editors(
         &self,
-        editors: &[ExternalEditor],
-        default_id: Option<&str>,
+        _editors: &[ExternalEditor],
+        _default_id: Option<&str>,
     ) -> Option<ExternalEditorsEdit> {
         todo!()
     }

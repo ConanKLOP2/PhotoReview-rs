@@ -68,7 +68,7 @@ pub trait ContextMenuActions {
     /// C# `OpenInExternalEditor()` (the DEFAULT editor).
     fn open_in_external_editor(&self) -> ActionResult;
     /// W9-E9, C# `OpenInExternalEditor(string editorId)` (default interface method: `OpenInExternalEditor()`): one entry of the editors submenu.
-    fn open_in_external_editor_by_id(&self, editor_id: &str) -> ActionResult {
+    fn open_in_external_editor_by_id(&self, _editor_id: &str) -> ActionResult {
         self.open_in_external_editor()
     }
     /// W9-E9, C# `AddExternalEditor()` ("Add more editors..."; default interface method: nothing).

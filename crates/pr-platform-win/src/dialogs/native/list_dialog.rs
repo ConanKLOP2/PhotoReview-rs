@@ -82,7 +82,7 @@ impl ListDialogContent {
 
     /// W9-E3, C# `ForChoice(title, intro, lines, selected)`: title `title`, no heading, intro `intro` in `Dark.TextSecondary`, the `lines`, confirm text
     /// `dialog.externalEditor.setDefaultConfirm`, cancel `common.cancel`, 260 x 150 dialog units, `initial_selected_index = selected`.
-    pub fn for_choice(title: &str, intro: &str, lines: &[String], selected: i32, localizer: &Localizer) -> Self {
+    pub fn for_choice(_title: &str, _intro: &str, _lines: &[String], _selected: i32, _localizer: &Localizer) -> Self {
         todo!()
     }
 }
