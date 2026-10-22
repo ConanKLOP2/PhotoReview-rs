@@ -1,5 +1,8 @@
 #![allow(clippy::too_many_lines)]
 
+#[rustfmt::skip]
+mod red_tests {
+
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
 use std::thread;
@@ -45,7 +48,9 @@ fn close_visible_windows(thread_id: u32, stop: Arc<AtomicBool>) {
 }
 
 fn read_folder(dialog: &windows::Win32::UI::Shell::IFileDialog) -> String {
+    // SAFETY: `dialog` is a live COM interface in the current STA apartment.
     let item: IShellItem = unsafe { dialog.GetFolder().unwrap() };
+    // SAFETY: `item` is a live shell interface returned by GetFolder.
     let name = unsafe { item.GetDisplayName(SIGDN_FILESYSPATH).unwrap() };
     // SAFETY: The shell allocated this PWSTR and take_co_task_string frees it.
     unsafe { take_co_task_string(name.0).unwrap() }
@@ -58,6 +63,7 @@ fn folder_configure_sets_the_folder_picking_flags_title_and_initial_folder() {
     on_sta(|| {
         let dialog = create_file_open_dialog().unwrap();
         NativeShellFolderDialog::configure(&dialog, "Choose folder", Some("C:\\" )).unwrap();
+        // SAFETY: `dialog` is a live COM interface in the current STA apartment.
         let options = unsafe { dialog.GetOptions().unwrap() };
         assert_eq!(options.0 & FOLDER_OPTIONS.0, FOLDER_OPTIONS.0);
         assert_eq!(read_folder(&dialog), "C:\\");
@@ -71,6 +77,7 @@ fn folder_show_returns_none_when_the_dialog_window_is_closed() {
     on_sta(|| {
         let stop = Arc::new(AtomicBool::new(false));
         let closer = stop.clone();
+        // SAFETY: GetCurrentThreadId has no preconditions and returns the current STA thread id.
         let thread_id = unsafe { GetCurrentThreadId() };
         let _helper = thread::spawn(move || close_visible_windows(thread_id, closer));
         let picker = NativeShellFolderDialog::with_before_show(Box::new(|_| {}));
@@ -88,7 +95,9 @@ fn open_configure_sets_existing_file_flags_file_type_index_and_initial_folder() 
         let dialog = create_file_open_dialog().unwrap();
         let filters = vec![FileDialogFilter { name: "JSON".into(), pattern: "*.json".into() }];
         let buffers = NativeShellFileDialog::configure(&dialog, "Open", &filters, Some("C:\\"), OPEN_OPTIONS, None, None).unwrap();
+        // SAFETY: `dialog` is a live COM interface in the current STA apartment.
         let options = unsafe { dialog.GetOptions().unwrap() };
+        // SAFETY: `dialog` is a live COM interface in the current STA apartment.
         let index = unsafe { dialog.GetFileTypeIndex().unwrap() };
         assert_eq!(options.0 & OPEN_OPTIONS.0, OPEN_OPTIONS.0);
         assert_eq!(index, 1);
@@ -105,7 +114,9 @@ fn save_configure_sets_overwrite_prompt_file_name_and_keeps_the_first_filter() {
         let dialog = create_file_save_dialog().unwrap();
         let filters = vec![FileDialogFilter { name: "JSON".into(), pattern: "*.json".into() }];
         let buffers = NativeShellFileDialog::configure(&dialog, "Save", &filters, None, SAVE_OPTIONS, Some(".json"), Some("settings.json")).unwrap();
+        // SAFETY: `dialog` is a live COM interface in the current STA apartment.
         let options = unsafe { dialog.GetOptions().unwrap() };
+        // SAFETY: `dialog` is a live COM interface in the current STA apartment.
         let filename = unsafe { dialog.GetFileName().unwrap() };
         // SAFETY: The returned PWSTR is allocated by the shell and is freed by take_co_task_string.
         let filename = unsafe { take_co_task_string(filename.0).unwrap() };
@@ -129,6 +140,7 @@ fn show_is_cancelled(save: bool) {
     on_sta(move || {
         let stop = Arc::new(AtomicBool::new(false));
         let closer = stop.clone();
+        // SAFETY: GetCurrentThreadId has no preconditions and returns the current STA thread id.
         let thread_id = unsafe { GetCurrentThreadId() };
         let _helper = thread::spawn(move || close_visible_windows(thread_id, closer));
         let dialog = NativeShellFileDialog::with_before_show(Box::new(|_| {}));
@@ -138,4 +150,5 @@ fn show_is_cancelled(save: bool) {
         stop.store(true, Ordering::Release);
         assert_eq!(result.unwrap(), None);
     });
+}
 }

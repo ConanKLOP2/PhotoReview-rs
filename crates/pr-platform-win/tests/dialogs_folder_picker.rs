@@ -1,3 +1,6 @@
+#[rustfmt::skip]
+mod red_tests {
+
 use std::cell::RefCell;
 use std::rc::Rc;
 
@@ -108,4 +111,5 @@ fn open_and_save_options_equal_the_golden_values() {
 #[test]
 fn hresult_cancelled_is_0x800704c7() {
     assert_eq!(HRESULT_CANCELLED, 0x800704c7u32 as i32);
+}
 }
