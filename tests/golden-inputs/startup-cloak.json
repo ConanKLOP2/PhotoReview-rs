@@ -1,0 +1,19 @@
+{
+  "scripts": [
+    { "id": "hide-twice-cloaks-once-and-stays-hidden", "accept": true, "timeout_ms": null, "ops": ["hide:42", "hide:42"] },
+    { "id": "first-present-uncloaks-once-and-reports-once", "accept": true, "timeout_ms": null, "ops": ["hide:42", "note_first_present", "note_first_present"] },
+    { "id": "dwm-refuses-leaves-the-window-visible-and-never-reports", "accept": false, "timeout_ms": null, "ops": ["hide:42", "note_first_present"] },
+    { "id": "dwm-refuses-schedules-no-deadline", "accept": false, "timeout_ms": 50, "ops": ["hide:42", "fire"] },
+    { "id": "hide-with-no-handle-does-nothing", "accept": true, "timeout_ms": null, "ops": ["hide:0", "note_first_present"] },
+    { "id": "hide-after-reveal-does-nothing", "accept": true, "timeout_ms": null, "ops": ["reveal", "hide:42"] },
+    { "id": "reveal-without-hide-reveals-nothing", "accept": true, "timeout_ms": null, "ops": ["reveal", "reveal"] },
+    { "id": "safety-deadline-reveals-a-window-that-never-gets-a-frame", "accept": true, "timeout_ms": 50, "ops": ["hide:7", "fire"] },
+    { "id": "safety-deadline-default-delay-is-recorded", "accept": true, "timeout_ms": null, "ops": ["hide:7"] },
+    { "id": "safety-deadline-after-the-first-present-does-not-reveal-twice", "accept": true, "timeout_ms": null, "ops": ["hide:7", "note_first_present", "fire"] },
+    { "id": "stop-cancels-the-deadline-and-keeps-the-window-hidden", "accept": true, "timeout_ms": null, "ops": ["hide:7", "stop", "fire"] },
+    { "id": "stop-then-first-present-still-reveals", "accept": true, "timeout_ms": null, "ops": ["hide:7", "stop", "note_first_present"] },
+    { "id": "dispose-is-stop", "accept": true, "timeout_ms": null, "ops": ["hide:7", "dispose", "fire"] },
+    { "id": "hide-again-after-a-deadline-fired-is-ignored", "accept": true, "timeout_ms": 50, "ops": ["hide:7", "fire", "hide:8"] },
+    { "id": "second-hide-before-reveal-is-ignored-and-keeps-the-first-handle", "accept": true, "timeout_ms": null, "ops": ["hide:7", "hide:8", "note_first_present"] }
+  ]
+}

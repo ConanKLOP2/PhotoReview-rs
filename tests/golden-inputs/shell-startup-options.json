@@ -1,0 +1,26 @@
+{
+  "options": [
+    { "id": "no-environment", "env": {} },
+    { "id": "prefix-set", "env": { "PHOTOREVIEW_SHELL_INSTANCE_PREFIX": "TestPrefix123" } },
+    { "id": "prefix-empty-uses-the-default", "env": { "PHOTOREVIEW_SHELL_INSTANCE_PREFIX": "" } },
+    { "id": "prefix-whitespace-is-kept", "env": { "PHOTOREVIEW_SHELL_INSTANCE_PREFIX": "  " } },
+    { "id": "warp-1", "env": { "PHOTOREVIEW_SHELL_WARP": "1" } },
+    { "id": "warp-0", "env": { "PHOTOREVIEW_SHELL_WARP": "0" } },
+    { "id": "warp-true-is-not-one", "env": { "PHOTOREVIEW_SHELL_WARP": "true" } },
+    { "id": "warp-padded-one-is-not-one", "env": { "PHOTOREVIEW_SHELL_WARP": " 1" } },
+    { "id": "warp-empty", "env": { "PHOTOREVIEW_SHELL_WARP": "" } },
+    { "id": "nowarm-1", "env": { "PHOTOREVIEW_SHELL_NOWARM": "1" } },
+    { "id": "nowarm-0", "env": { "PHOTOREVIEW_SHELL_NOWARM": "0" } },
+    { "id": "nowarm-true-is-not-one", "env": { "PHOTOREVIEW_SHELL_NOWARM": "true" } },
+    { "id": "nowarm-empty", "env": { "PHOTOREVIEW_SHELL_NOWARM": "" } },
+    { "id": "all-three-set", "env": { "PHOTOREVIEW_SHELL_INSTANCE_PREFIX": "P", "PHOTOREVIEW_SHELL_WARP": "1", "PHOTOREVIEW_SHELL_NOWARM": "1" } }
+  ],
+  "texts": [
+    { "id": "folder-already-open", "kind": "folder_already_open" },
+    { "id": "app-already-running", "kind": "app_already_running" },
+    { "id": "app-title", "kind": "app_title" }
+  ],
+  "constants": [
+    { "id": "constants" }
+  ]
+}

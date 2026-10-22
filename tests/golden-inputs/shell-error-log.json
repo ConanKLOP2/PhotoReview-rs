@@ -1,0 +1,219 @@
+{
+  "format": [
+    {
+      "id": "invalid-operation",
+      "utc": "2026-10-13T06:07:08Z",
+      "context": "ToolsMenu",
+      "exception": {
+        "type": "InvalidOperationException",
+        "message": "hộp thoại hỏng"
+      }
+    },
+    {
+      "id": "io-exception-hresult",
+      "utc": "2026-01-02T03:04:05Z",
+      "context": "ContextMenu",
+      "exception": {
+        "type": "IOException",
+        "message": "disk gone"
+      }
+    },
+    {
+      "id": "argument-exception-hresult",
+      "utc": "2026-12-31T23:59:59Z",
+      "context": "ctx",
+      "exception": {
+        "type": "ArgumentException",
+        "message": "bad value"
+      }
+    },
+    {
+      "id": "plain-exception-hresult",
+      "utc": "2026-10-13T06:07:08Z",
+      "context": "ctx",
+      "exception": {
+        "type": "Exception",
+        "message": "plain"
+      }
+    },
+    {
+      "id": "unauthorized-hresult",
+      "utc": "2026-10-13T06:07:08Z",
+      "context": "ctx",
+      "exception": {
+        "type": "UnauthorizedAccessException",
+        "message": "denied"
+      }
+    },
+    {
+      "id": "empty-message",
+      "utc": "2026-10-13T06:07:08Z",
+      "context": "ctx",
+      "exception": {
+        "type": "InvalidOperationException",
+        "message": ""
+      }
+    },
+    {
+      "id": "message-with-crlf-and-lf-and-cr",
+      "utc": "2026-10-13T06:07:08Z",
+      "context": "ctx",
+      "exception": {
+        "type": "InvalidOperationException",
+        "message": "one\r\ntwo\nthree\rfour"
+      }
+    },
+    {
+      "id": "message-with-unicode-line-separators",
+      "utc": "2026-10-13T06:07:08Z",
+      "context": "ctx",
+      "exception": {
+        "type": "InvalidOperationException",
+        "message": "a b cd"
+      }
+    },
+    {
+      "id": "message-with-form-feed-and-vertical-tab",
+      "utc": "2026-10-13T06:07:08Z",
+      "context": "ctx",
+      "exception": {
+        "type": "InvalidOperationException",
+        "message": "a\fb\u000bc"
+      }
+    },
+    {
+      "id": "message-exactly-300-chars",
+      "utc": "2026-10-13T06:07:08Z",
+      "context": "ctx",
+      "exception": {
+        "type": "InvalidOperationException",
+        "message": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+      }
+    },
+    {
+      "id": "message-301-chars-is-cut-to-300",
+      "utc": "2026-10-13T06:07:08Z",
+      "context": "ctx",
+      "exception": {
+        "type": "InvalidOperationException",
+        "message": "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy"
+      }
+    },
+    {
+      "id": "inner-exception-is-brief",
+      "utc": "2026-10-13T06:07:08Z",
+      "context": "c",
+      "exception": {
+        "type": "InvalidOperationException",
+        "message": "outer",
+        "inner": {
+          "type": "IOException",
+          "message": "disk gone"
+        }
+      }
+    },
+    {
+      "id": "inner-message-with-newlines-and-long",
+      "utc": "2026-10-13T06:07:08Z",
+      "context": "c",
+      "exception": {
+        "type": "InvalidOperationException",
+        "message": "outer",
+        "inner": {
+          "type": "Exception",
+          "message": "line1\nline2 qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq"
+        }
+      }
+    },
+    {
+      "id": "empty-context",
+      "utc": "2026-10-13T06:07:08Z",
+      "context": "",
+      "exception": {
+        "type": "InvalidOperationException",
+        "message": "m"
+      }
+    }
+  ],
+  "thrown": [
+    {
+      "id": "depth-0",
+      "depth": 0,
+      "message": "shallow"
+    },
+    {
+      "id": "depth-5",
+      "depth": 5,
+      "message": "few frames"
+    },
+    {
+      "id": "depth-40-keeps-exactly-twelve-frames",
+      "depth": 40,
+      "message": "deep"
+    }
+  ],
+  "truncate": [
+    {
+      "id": "over-the-limit-keeps-the-newest-half-on-a-line-boundary",
+      "lines": 200,
+      "pad": 42,
+      "limit": 2002
+    },
+    {
+      "id": "cut-point-on-a-line-boundary",
+      "lines": 200,
+      "pad": 42,
+      "limit": 2000
+    },
+    {
+      "id": "under-the-limit-keeps-everything",
+      "lines": 10,
+      "pad": 42,
+      "limit": 100000
+    },
+    {
+      "id": "exactly-at-the-limit-is-not-cut",
+      "lines": 10,
+      "pad": 42,
+      "limit": 500
+    },
+    {
+      "id": "one-byte-over-the-limit-is-cut",
+      "lines": 10,
+      "pad": 42,
+      "limit": 499
+    }
+  ],
+  "unusable": [
+    {
+      "id": "drive-that-does-not-exist",
+      "path_kind": "bad-drive"
+    },
+    {
+      "id": "path-that-is-too-long",
+      "path_kind": "long-name"
+    }
+  ],
+  "report": [
+    {
+      "id": "not-configured-does-nothing",
+      "configure": null,
+      "reports": [
+        "x"
+      ]
+    },
+    {
+      "id": "configured-writes-and-creates-the-folder",
+      "configure": "$ROOT\\sub\\shell-errors.log",
+      "reports": [
+        "ContextMenu",
+        "ToolsMenu"
+      ]
+    },
+    {
+      "id": "configured-but-no-report-writes-nothing",
+      "configure": "$ROOT\\none\\shell-errors.log",
+      "reports": []
+    }
+  ]
+}

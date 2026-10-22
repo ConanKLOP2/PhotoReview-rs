@@ -1,0 +1,25 @@
+{
+  "launch": [
+    { "id": "no-arguments", "args": [], "cwd": null },
+    { "id": "existing-file", "args": ["$ROOT\\a.jpg"], "cwd": null },
+    { "id": "folder-with-trailing-separator", "args": ["$ROOT\\photos\\"], "cwd": null },
+    { "id": "folder-with-dot-dot-segment", "args": ["$ROOT\\photos\\sub\\.."], "cwd": null },
+    { "id": "folder-other-case", "args": ["$ROOT\\PHOTOS"], "cwd": null },
+    { "id": "folder-then-file-prefers-the-file", "args": ["$ROOT\\photos", "$ROOT\\a.jpg"], "cwd": null },
+    { "id": "file-in-subfolder-then-folder", "args": ["$ROOT\\photos\\b.jpg", "$ROOT\\photos\\sub"], "cwd": null },
+    { "id": "file-then-file-keeps-the-first", "args": ["$ROOT\\a.jpg", "$ROOT\\photos\\b.jpg"], "cwd": null },
+    { "id": "quoted-drive-root-is-repaired", "args": ["$DRIVE\""], "cwd": null },
+    { "id": "smoke-flag-is-extracted", "args": ["--smoke", "$ROOT\\a.jpg"], "cwd": null },
+    { "id": "smoke-flag-only", "args": ["--smoke"], "cwd": null },
+    { "id": "smoke-flag-other-case-is-a-path", "args": ["--SMOKE"], "cwd": null },
+    { "id": "smoke-flag-twice", "args": ["--smoke", "--smoke", "$ROOT\\photos"], "cwd": null },
+    { "id": "missing-path-is-kept-but-not-opened", "args": ["$ROOT\\nope.jpg"], "cwd": null },
+    { "id": "missing-then-existing-file", "args": ["$ROOT\\nope.jpg", "$ROOT\\a.jpg"], "cwd": null },
+    { "id": "relative-file-uses-the-full-path-folder", "args": ["a.jpg"], "cwd": "$ROOT" },
+    { "id": "relative-folder-is-made-canonical", "args": ["photos"], "cwd": "$ROOT" },
+    { "id": "relative-subfolder-file", "args": ["photos\\b.jpg"], "cwd": "$ROOT" },
+    { "id": "empty-argument-is-kept", "args": [""], "cwd": null },
+    { "id": "whitespace-argument-is-kept", "args": ["   "], "cwd": null },
+    { "id": "file-and-missing-folder-forward-only-the-file", "args": ["$ROOT\\a.jpg", "$ROOT\\missing-folder\\"], "cwd": null }
+  ]
+}

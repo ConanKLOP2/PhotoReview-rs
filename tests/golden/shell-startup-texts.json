@@ -1,0 +1,97 @@
+{
+  "generator": "oracle-cs shell-startup-texts",
+  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "cases": [
+    {
+      "id": "plain-message",
+      "message": "Disk is full",
+      "kind": "startup_failed",
+      "text": "Photo Review could not start and will close. Details: Disk is full"
+    },
+    {
+      "id": "empty-message",
+      "message": "",
+      "kind": "startup_failed",
+      "text": "Photo Review could not start and will close. Details: "
+    },
+    {
+      "id": "braces-in-the-message",
+      "message": "bad {name} and {0}",
+      "kind": "startup_failed",
+      "text": "Photo Review could not start and will close. Details: bad {name} and {0}"
+    },
+    {
+      "id": "multi-line-message",
+      "message": "first line\r\nsecond line",
+      "kind": "startup_failed",
+      "text": "Photo Review could not start and will close. Details: first line\r\nsecond line"
+    },
+    {
+      "id": "unicode-message",
+      "message": "Không tìm thấy tệp",
+      "kind": "startup_failed",
+      "text": "Photo Review could not start and will close. Details: Không tìm thấy tệp"
+    },
+    {
+      "id": "count-0",
+      "count": 0,
+      "kind": "recovery_prompt",
+      "title": "Interrupted file operations",
+      "message": "0 file operations were interrupted last time and could not be confirmed. Nothing was replayed or deleted. Open Recovery to review them now?"
+    },
+    {
+      "id": "count-1",
+      "count": 1,
+      "kind": "recovery_prompt",
+      "title": "Interrupted file operations",
+      "message": "1 file operation was interrupted last time and could not be confirmed. Nothing was replayed or deleted. Open Recovery to review it now?"
+    },
+    {
+      "id": "count-2",
+      "count": 2,
+      "kind": "recovery_prompt",
+      "title": "Interrupted file operations",
+      "message": "2 file operations were interrupted last time and could not be confirmed. Nothing was replayed or deleted. Open Recovery to review them now?"
+    },
+    {
+      "id": "count-3",
+      "count": 3,
+      "kind": "recovery_prompt",
+      "title": "Interrupted file operations",
+      "message": "3 file operations were interrupted last time and could not be confirmed. Nothing was replayed or deleted. Open Recovery to review them now?"
+    },
+    {
+      "id": "count-21",
+      "count": 21,
+      "kind": "recovery_prompt",
+      "title": "Interrupted file operations",
+      "message": "21 file operations were interrupted last time and could not be confirmed. Nothing was replayed or deleted. Open Recovery to review them now?"
+    },
+    {
+      "id": "count-1000",
+      "count": 1000,
+      "kind": "recovery_prompt",
+      "title": "Interrupted file operations",
+      "message": "1000 file operations were interrupted last time and could not be confirmed. Nothing was replayed or deleted. Open Recovery to review them now?"
+    },
+    {
+      "id": "count-1234567",
+      "count": 1234567,
+      "kind": "recovery_prompt",
+      "title": "Interrupted file operations",
+      "message": "1234567 file operations were interrupted last time and could not be confirmed. Nothing was replayed or deleted. Open Recovery to review them now?"
+    },
+    {
+      "id": "not-cancelled-closes",
+      "cancel": false,
+      "kind": "closing",
+      "closed": true
+    },
+    {
+      "id": "cancelled-keeps-the-secondary-windows",
+      "cancel": true,
+      "kind": "closing",
+      "closed": false
+    }
+  ]
+}

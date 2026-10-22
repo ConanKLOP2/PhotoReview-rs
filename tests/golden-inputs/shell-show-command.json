@@ -1,0 +1,12 @@
+{
+  "show_command": [
+    { "id": "maximized-activate", "state": "Maximized", "activate": true },
+    { "id": "maximized-no-activate", "state": "Maximized", "activate": false },
+    { "id": "normal-activate", "state": "Normal", "activate": true },
+    { "id": "normal-no-activate", "state": "Normal", "activate": false },
+    { "id": "minimized-activate", "state": "Minimized", "activate": true },
+    { "id": "minimized-no-activate", "state": "Minimized", "activate": false },
+    { "id": "none-activate", "state": null, "activate": true },
+    { "id": "none-no-activate", "state": null, "activate": false }
+  ]
+}
