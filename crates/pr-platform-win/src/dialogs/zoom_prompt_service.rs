@@ -3,8 +3,6 @@
 //!
 //! `pr_app::services::contracts::ZoomPromptService` (C-13) for the Win32 shell: the custom click-zoom prompt is run by the lazily created `SecondaryWindowPort`
 //! (W8-18o; the dialog itself is `zoom_prompt`, W8-18p). A missing port is `None`, like the user cancelling (no zoom change).
-#![allow(unused_variables, dead_code)] // stub: removed by the porter with the last `todo!()`
-
 use std::rc::Rc;
 
 use pr_app::services::contracts::ZoomPromptService;
@@ -27,7 +25,9 @@ impl Win32ZoomPromptService {
 
 impl ZoomPromptService for Win32ZoomPromptService {
     fn prompt_custom_zoom(&self, current_percent: i32) -> Option<i32> {
-        todo!("W8-18b: secondary.get()?.prompt_custom_zoom(owner(), current_percent)")
+        self.secondary
+            .get()?
+            .prompt_custom_zoom((self.owner)(), current_percent)
     }
 }
 

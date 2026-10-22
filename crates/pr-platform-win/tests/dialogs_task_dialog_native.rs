@@ -1,3 +1,4 @@
+use pr_core::abstractions::DialogService;
 use pr_platform_win::dialogs::dialog_service::{LazySecondaryPort, Win32DialogService};
 use pr_platform_win::dialogs::folder_dialog::{FolderPicker, UnwiredShellFolderDialog};
 use pr_platform_win::dialogs::task_dialog::{NativeTaskDialogPort, TaskDialogKind, TaskDialogPort};
@@ -5,7 +6,6 @@ use pr_platform_win::win32::activation_context::ActivationScope;
 use pr_platform_win::win32::comctl::SHELL_MANIFEST;
 use pr_platform_win::win32::messages::{IDCANCEL, WM_CLOSE};
 use pr_platform_win::win32::structs::Hwnd;
-use pr_core::abstractions::DialogService;
 use std::rc::Rc;
 
 fn show_and_close() -> (i32, Option<String>) {
@@ -16,7 +16,8 @@ fn show_and_close() -> (i32, Option<String>) {
     })));
     let picker = FolderPicker::new(Rc::new(UnwiredShellFolderDialog), Box::new(|| 0));
     let secondary = Rc::new(LazySecondaryPort::from_value(None));
-    let service = Win32DialogService::with_task_dialogs(Box::new(|| 0), Box::new(NativePort(port.clone())), picker, secondary);
+    let service =
+        Win32DialogService::with_task_dialogs(Box::new(|| 0), Box::new(NativePort(port.clone())), picker, secondary);
     let result = service.show_confirmation("PhotoReview", "Native task dialog test");
     (i32::from(result), port.last_failure())
 }
