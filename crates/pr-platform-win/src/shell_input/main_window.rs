@@ -261,6 +261,9 @@ impl ShellInputHost for MainWindowInputHost {
                     owner.refresh_view();
                 }
             }
+            // W9-E9 (C# `ShellMainWindow.Input.cs`): `_viewModel.OpenInExternalEditor()` = the DEFAULT editor (opens Settings when none is declared); an
+            // `Err(ExternalEditorBug)` is returned as the `Err` of `execute` like the menu path does.
+            ReviewCommandType::OpenInDefaultEditor => todo!(),
             // The viewport commands never arrive here: `ShellInput` handled them.
             ReviewCommandType::ToggleFit
             | ReviewCommandType::ZoomIn

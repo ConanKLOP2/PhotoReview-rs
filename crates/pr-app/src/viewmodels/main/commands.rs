@@ -12,6 +12,7 @@
 //! - Undo and duplicate cleanup use `run_exclusive`; their turns are kept until their last step.
 
 use std::fmt;
+use std::os::windows::process::CommandExt;
 use std::path::Path;
 
 use pr_core::abstractions::{SettingsTarget, UiAction};
@@ -42,10 +43,11 @@ pub enum ExternalEditorFailure {
     Unexpected { message: String },
 }
 
-/// C# `StartExternalEditor` test seam (`Action<string, string>`, default starts the process).
+/// C# `StartExternalEditor` test seam (`Action<string, string, string>` = exePath, filePath, commandLine since W9-E5; default starts the process).
 pub trait ExternalEditorLauncher {
-    /// C# `Process.Start(new ProcessStartInfo(exePath) { UseShellExecute = false, ArgumentList = { filePath } })`.
-    fn launch(&mut self, exe_path: &str, file_path: &str) -> Result<(), ExternalEditorFailure>;
+    /// C# default: `Process.Start(new ProcessStartInfo(exePath) { UseShellExecute = false, Arguments = commandLine, WorkingDirectory = Path.GetDirectoryName(exePath) ?? "" })`.
+    /// `file_path` is the file that is sent (a fake records it); `command_line` is the finished `ExternalEditors::build_arguments` text.
+    fn launch(&mut self, exe_path: &str, file_path: &str, command_line: &str) -> Result<(), ExternalEditorFailure>;
 }
 
 /// The production launcher: `std::process::Command::new(exe).arg(file)` without a shell; every `io::Error` is `Expected`.
@@ -53,9 +55,18 @@ pub trait ExternalEditorLauncher {
 pub struct ProcessEditorLauncher;
 
 impl ExternalEditorLauncher for ProcessEditorLauncher {
-    fn launch(&mut self, exe_path: &str, file_path: &str) -> Result<(), ExternalEditorFailure> {
-        // No shell: the file path is ONE argument whatever it contains (spaces, `&`, quotes), T10.
-        match std::process::Command::new(exe_path).arg(file_path).spawn() {
+    fn launch(&mut self, exe_path: &str, _file_path: &str, command_line: &str) -> Result<(), ExternalEditorFailure> {
+        // No shell. W9-E5: the command line is the finished `ExternalEditors::build_arguments` text, passed VERBATIM (`raw_arg`: std must not quote it again),
+        // and the working directory is the editor's folder (C# `Path.GetDirectoryName(exePath) ?? ""`; no parent = the current directory).
+        let mut command = std::process::Command::new(exe_path);
+        command.raw_arg(command_line);
+        if let Some(folder) = std::path::Path::new(exe_path)
+            .parent()
+            .filter(|folder| !folder.as_os_str().is_empty())
+        {
+            command.current_dir(folder);
+        }
+        match command.spawn() {
             // C# disposes the process handle at once; the editor keeps running.
             Ok(child) => {
                 drop(child);
@@ -507,12 +518,13 @@ impl MainViewModel {
         self.external_editor = launcher;
     }
 
-    /// C# `CanOpenInExternalEditor` (line 730): the configured path is not blank and `has_images`.
+    /// C# `CanOpenInExternalEditor`. W9-E5 CHANGES the rule (d92d6aae: legacy path not blank): `ExternalEditors::effective_default(settings).is_some() && has_images()`.
     pub fn can_open_in_external_editor(&self) -> bool {
         !self.settings.current().external_editor_path.trim().is_empty() && self.has_images()
     }
 
-    /// C# `OpenInExternalEditor()` (line 733). No editor configured: `show_settings_at(SettingsTarget::ExternalEditor)` (W8-08d) and stop.
+    /// C# `OpenInExternalEditor()` (the DEFAULT editor). W9-E5 REWRITES the body (the text below is the d92d6aae behaviour): the editor is
+    /// `ExternalEditors::effective_default`, the launch is the shared private `launch_external_editor(editor)` of the contract. No editor configured: `show_settings_at(SettingsTarget::ExternalEditor)` (W8-08d) and stop.
     /// `path = compare().selected_path() or else presenter.current_presented_path() or else catalog.current().path`; empty -> nothing. A missing file
     /// -> `dialog.show_error(dialog.externalEditor.failedTitle, dialog.externalEditor.fileMissing {fileName})`. `launcher.launch(editor, path)`:
     /// `Expected` -> the same error dialog with the failure text; `Unexpected` -> `Err(ExternalEditorBug)`, no dialog.
@@ -537,7 +549,9 @@ impl MainViewModel {
             self.dialog_service.show_error(&title, &message);
             return Ok(ChangeSet::default());
         }
-        match self.external_editor.launch(&editor, &path) {
+        // Interim (until W9-E5 rewrites this body): the default template `"{file}"`, so the merged behaviour and tests do not change.
+        let command_line = format!("\"{path}\"");
+        match self.external_editor.launch(&editor, &path, &command_line) {
             Ok(()) => Ok(ChangeSet::default()),
             Err(ExternalEditorFailure::Expected { message }) => {
                 self.dialog_service.show_error(&title, &message);
@@ -768,5 +782,23 @@ impl From<crate::coordinators::zoom_detail::ZoomDetailRefreshResult> for ZoomDet
             Loader::LoadingOriginal => Self::LoadingOriginal,
             Loader::RetryingOriginal => Self::RetryingOriginal,
         }
+    }
+}
+
+impl MainViewModel {
+    /// W9-E5, C# `OpenInExternalEditor(string editorId)`: sends the photo to the declared editor with this id (ordinal) among `ExternalEditors::effective`;
+    /// an unknown id does nothing. Same `Result` contract as `open_in_external_editor` (`Err` only for an `Unexpected` launch failure).
+    pub fn open_in_external_editor_by_id(&mut self, editor_id: &str) -> Result<ChangeSet, ExternalEditorBug> {
+        todo!()
+    }
+
+    /// W9-E5, C# `AddExternalEditor()` ("Add more editors..."): see the contract (dialog prompt, legacy materialisation, 32 cap, fresh id, `reconcile`, save).
+    pub fn add_external_editor(&mut self) -> ChangeSet {
+        todo!()
+    }
+
+    /// W9-E5, C# `ChooseDefaultExternalEditor()` ("Set default editor..."): see the contract.
+    pub fn choose_default_external_editor(&mut self) -> ChangeSet {
+        todo!()
     }
 }

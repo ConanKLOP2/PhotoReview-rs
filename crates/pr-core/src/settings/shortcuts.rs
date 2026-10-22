@@ -69,6 +69,8 @@ pub struct ShortcutMappings {
     /// (not `F5`: that is the default key of the "Backup" action). Empty = disabled; a config whose own binding already
     /// owns `R` gets this one disabled by `SettingsNormalizer.DisableConflictingOptionalShortcuts`.
     pub refresh: String,
+    /// W9-E1 (JSON `OpenInDefaultEditor`, declared after `Refresh`): sends the photo to the default external editor. Default `""` (disabled, optional).
+    pub open_in_default_editor: String,
 }
 
 impl ShortcutMappings {
@@ -243,6 +245,7 @@ impl Default for ShortcutMappings {
             toggle_capture_member: String::new(),
             fit_width2: "D4".to_owned(),
             refresh: "R".to_owned(),
+            open_in_default_editor: String::new(),
         }
     }
 }

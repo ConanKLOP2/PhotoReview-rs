@@ -38,6 +38,7 @@ use crate::model::serde_ext::{
     FlagEnum, LenientEnum, deserialize_flags, deserialize_lenient, deserialize_settings_enum, format_flags,
     lenient_text,
 };
+use crate::settings::external_editors::ExternalEditor;
 use crate::settings::perf_options as perf;
 use crate::settings::shortcuts::{ReviewAction, ShortcutMappings, canonicalize_all};
 
@@ -345,6 +346,12 @@ pub struct AppSettings {
     pub show_zoom_indicator: bool,
     /// Default `""`. C# `null` reads as `""`.
     pub external_editor_path: String,
+    /// W9-E1 (config version 4, JSON `ExternalEditors`, declared after `ExternalEditorPath`): the declared editors in menu order. Default empty.
+    pub external_editors: Vec<ExternalEditor>,
+    /// W9-E1 (JSON `DefaultExternalEditorId`): id of the default editor; empty/unknown = the first. Default `""`.
+    pub default_external_editor_id: String,
+    /// W9-E1 (JSON `ExternalEditorSendsRawOriginal`): send the paired RAW instead of the JPEG. Default `true`.
+    pub external_editor_sends_raw_original: bool,
     /// (S) default `Predict`.
     pub kinetic_glide_smoothing: Option<KineticGlideSmoothing>,
     pub info_overlay_auto_hide: bool,
@@ -445,6 +452,9 @@ impl AppSettings {
             confirm_before_delete: false,
             show_zoom_indicator: false,
             external_editor_path: String::new(),
+            external_editors: Vec::new(),
+            default_external_editor_id: String::new(),
+            external_editor_sends_raw_original: true,
             kinetic_glide_smoothing: Some(KineticGlideSmoothing::Predict),
             info_overlay_auto_hide: false,
             info_overlay_auto_hide_delay_ms: DEFAULT_INFO_OVERLAY_AUTO_HIDE_DELAY_MS,

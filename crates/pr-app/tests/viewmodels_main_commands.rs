@@ -1463,7 +1463,7 @@ struct TestLauncher {
 }
 
 impl ExternalEditorLauncher for TestLauncher {
-    fn launch(&mut self, exe_path: &str, file_path: &str) -> Result<(), ExternalEditorFailure> {
+    fn launch(&mut self, exe_path: &str, file_path: &str, _command_line: &str) -> Result<(), ExternalEditorFailure> {
         lock(&self.launches).push((exe_path.to_owned(), file_path.to_owned()));
         match lock(&self.failure).clone() {
             Some(failure) => Err(failure),
@@ -1684,7 +1684,11 @@ fn open_in_external_editor_when_the_launch_is_unexpected_returns_the_bug_and_sho
 fn the_production_launcher_passes_the_file_path_as_one_argument_without_a_shell() {
     // New test (T10: a path with spaces or `&` must stay one argument; a missing exe is an expected failure)
     let mut launcher = pr_app::viewmodels::main::ProcessEditorLauncher;
-    let missing = launcher.launch(r"C:\definitely\missing\editor.exe", r"C:\x y\a & b.png");
+    let missing = launcher.launch(
+        r"C:\definitely\missing\editor.exe",
+        r"C:\x y\a & b.png",
+        r#""C:\x y\a & b.png""#,
+    );
     assert!(
         matches!(missing, Err(ExternalEditorFailure::Expected { .. })),
         "{missing:?}"

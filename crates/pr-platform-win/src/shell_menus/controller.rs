@@ -65,8 +65,20 @@ pub trait ContextMenuActions {
     fn set_zoom_also_sets_click_level(&self, value: bool);
     /// C# `SetClickZoomPercent(percent)`: write and save, no zoom.
     fn set_click_zoom_percent(&self, percent: i32);
-    /// C# `OpenInExternalEditor()`.
+    /// C# `OpenInExternalEditor()` (the DEFAULT editor).
     fn open_in_external_editor(&self) -> ActionResult;
+    /// W9-E9, C# `OpenInExternalEditor(string editorId)` (default interface method: `OpenInExternalEditor()`): one entry of the editors submenu.
+    fn open_in_external_editor_by_id(&self, editor_id: &str) -> ActionResult {
+        self.open_in_external_editor()
+    }
+    /// W9-E9, C# `AddExternalEditor()` ("Add more editors..."; default interface method: nothing).
+    fn add_external_editor(&self) -> ActionResult {
+        Ok(())
+    }
+    /// W9-E9, C# `ChooseDefaultExternalEditor()` ("Set default editor..."; default interface method: nothing).
+    fn choose_default_external_editor(&self) -> ActionResult {
+        Ok(())
+    }
     /// C# `CopyFileName()`.
     fn copy_file_name(&self) -> ActionResult;
     /// C# `CopyFullPathname()`.
@@ -82,6 +94,14 @@ pub trait ContextMenuActions {
     /// C# `Tr.MainMenuZoom` (the localized "Zoom", the name of the zoom commands in a failure report).
     fn zoom_action_name(&self) -> String;
 }
+
+/// W9-E9, C# `ExternalEditorOpenPrefix`: ids of the editors submenu are `"ExternalEditor.Open." + editor id` (the same text as
+/// `pr_app::menus::external_editors::EXTERNAL_EDITOR_OPEN_PREFIX`; a test compares the two).
+pub const EXTERNAL_EDITOR_OPEN_PREFIX: &str = "ExternalEditor.Open.";
+/// W9-E9, C# `ExternalEditorAddId`.
+pub const EXTERNAL_EDITOR_ADD_ID: &str = "ExternalEditor.Add";
+/// W9-E9, C# `ExternalEditorSetDefaultId`.
+pub const EXTERNAL_EDITOR_SET_DEFAULT_ID: &str = "ExternalEditor.SetDefault";
 
 /// C# `ContextMenuController`.
 pub struct ContextMenuController {

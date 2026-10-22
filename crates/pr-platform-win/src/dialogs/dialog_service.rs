@@ -10,10 +10,12 @@ use std::rc::Rc;
 use std::sync::Arc;
 
 use pr_core::abstractions::{BatchReviewItem, DialogService, Log, SettingsTarget, SkippedEntry};
+use pr_core::settings::external_editors::ExternalEditor;
 use pr_core::settings::shortcuts::ReviewAction;
 use pr_l10n::localizer::Localizer;
 
 use super::folder_dialog::FolderPicker;
+use super::native::external_editors_dialog::ExternalEditorsEdit;
 use super::task_dialog::{NativeTaskDialogPort, TaskDialogKind, TaskDialogPort};
 use crate::win32::messages::IDYES;
 use crate::win32::structs::Hwnd;
@@ -39,8 +41,8 @@ pub enum SecondaryWindowKind {
 /// C# `ISecondaryWindowPort` (C-13b): the door to the secondary windows. Implemented by `secondary_window_port::SecondaryWindowRouter` (W8-18o); the tests use fakes.
 /// Every method runs on the UI thread of the owner window. `owner` is the shell window's `HWND` (0 when it is gone).
 ///
-/// Not ported (D-W8B5-4): `ShowExternalEditors`, `PromptAddExternalEditor`, `PromptDefaultExternalEditor`, `PromptRename` (their types do not exist in Rust yet and
-/// `pr_core::abstractions::DialogService` has no such members). Their C# default bodies return `null`, so omitting them changes nothing for the ported members.
+/// W9-E8 adds `show_external_editors`, `prompt_add_external_editor` and `prompt_default_external_editor` (FEAT-EXTERNAL-EDITORS, defaults `None`, C# default interface
+/// members). `PromptRename` is FEAT-RENAME (not part of lane W9-E).
 pub trait SecondaryWindowPort {
     /// `true` when the user saved changes.
     fn show_settings(&self, owner: Hwnd, target: SettingsTarget) -> bool;
@@ -59,6 +61,28 @@ pub trait SecondaryWindowPort {
     }
     /// WP-35 G2: the Action profiles editor. The edited list when the user applies, `None` when cancelled or when the port does not have it (C# default `null`).
     fn show_action_profiles(&self, _owner: Hwnd, _actions: &[ReviewAction]) -> Option<Vec<ReviewAction>> {
+        None
+    }
+    /// FEAT-EXTERNAL-EDITORS: shows the editor manager; `None` means cancelled or unsupported.
+    fn show_external_editors(
+        &self,
+        _owner: Hwnd,
+        _editors: &[ExternalEditor],
+        _default_id: Option<&str>,
+    ) -> Option<ExternalEditorsEdit> {
+        None
+    }
+    /// FEAT-EXTERNAL-EDITORS: prompts for an editor; `None` means cancelled or unsupported.
+    fn prompt_add_external_editor(&self, _owner: Hwnd, _initial_folder: Option<&Path>) -> Option<ExternalEditor> {
+        None
+    }
+    /// FEAT-EXTERNAL-EDITORS: prompts for the default editor ID.
+    fn prompt_default_external_editor(
+        &self,
+        _owner: Hwnd,
+        _editors: &[ExternalEditor],
+        _current_id: Option<&str>,
+    ) -> Option<String> {
         None
     }
     /// C# `IDisposable.Dispose` of the router (`SecondaryWindowPortHost` calls it when the port was created): closes every secondary dialog that is still open. Default: nothing.
@@ -262,6 +286,18 @@ impl DialogService for Win32DialogService {
         if let Some(port) = self.secondary.get() {
             port.show_skipped_files((self.owner)(), entries);
         }
+    }
+
+    fn prompt_add_external_editor(&self, initial_folder: Option<&Path>) -> Option<ExternalEditor> {
+        self.secondary
+            .get()?
+            .prompt_add_external_editor((self.owner)(), initial_folder)
+    }
+
+    fn prompt_default_external_editor(&self, editors: &[ExternalEditor], current_id: Option<&str>) -> Option<String> {
+        self.secondary
+            .get()?
+            .prompt_default_external_editor((self.owner)(), editors, current_id)
     }
 }
 

@@ -37,6 +37,9 @@ pub enum ReviewCommandType {
     ToggleCaptureMember = 27,
     FitWidth2 = 28,
     Refresh = 29,
+    /// W9-E7 (FEAT-EXTERNAL-EDITORS): sends the current photo to the default external editor. C# declares it right after `Refresh` (value 30);
+    /// FEAT-RENAME's `RenameFile` follows it (value 31, not part of lane W9-E).
+    OpenInDefaultEditor = 30,
 }
 
 impl ReviewCommandType {
@@ -140,4 +143,6 @@ impl ReviewCommand {
     pub const TOGGLE_CAPTURE_MEMBER: Self = Self::new(ReviewCommandType::ToggleCaptureMember);
     pub const FIT_WIDTH2: Self = Self::new(ReviewCommandType::FitWidth2);
     pub const REFRESH: Self = Self::new(ReviewCommandType::Refresh);
+    /// W9-E7: C# `ReviewCommand.OpenInDefaultEditor`.
+    pub const OPEN_IN_DEFAULT_EDITOR: Self = Self::new(ReviewCommandType::OpenInDefaultEditor);
 }

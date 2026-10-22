@@ -3,6 +3,7 @@
 use std::path::{Path, PathBuf};
 
 use super::SkippedEntry;
+use crate::settings::external_editors::ExternalEditor;
 
 /// One line of the batch-review dialog: the file and its size in bytes when known (`None` = unknown or gone).
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -43,4 +44,17 @@ pub trait DialogService {
     fn show_benchmark(&self, folder: Option<&Path>);
     /// Files skipped while loading a folder (AR19).
     fn show_skipped_files(&self, entries: &[SkippedEntry]);
+
+    /// W9-E1, C# `PromptAddExternalEditor(string? initialFolder = null)` ("Add more editors..."): asks for an editor program (file picker) and the menu
+    /// name; `None` when cancelled. Default (C# default interface method, the frozen WPF shell): `None`. The returned editor has the picked `path` and the
+    /// typed `name` (`id` and `arguments` are the `ExternalEditor::new()` values; the caller assigns a fresh id).
+    fn prompt_add_external_editor(&self, _initial_folder: Option<&Path>) -> Option<ExternalEditor> {
+        None
+    }
+
+    /// W9-E1, C# `PromptDefaultExternalEditor(editors, currentId)` ("Set default editor..."): a choice list; the chosen editor's id, `None` when cancelled.
+    /// Default: `None`.
+    fn prompt_default_external_editor(&self, _editors: &[ExternalEditor], _current_id: Option<&str>) -> Option<String> {
+        None
+    }
 }
