@@ -1,4 +1,4 @@
-#[path = "common/settings_builder_fixture.rs"]
+﻿#[path = "common/settings_builder_fixture.rs"]
 mod settings_builder_fixture;
 #[path = "common/settings_page_fixture.rs"]
 mod settings_page_fixture;
@@ -39,6 +39,7 @@ fn golden_diagnostics_declare_matches_the_csharp_dump() {
     assert_eq!(p.ids().open_log, 7003);
     assert_eq!(p.key(), "Diagnostics");
     let _ = settings_builder_fixture::dump(&b);
+    let _ = settings_builder_fixture::run_ops(&mut b, &[]);
 }
 #[test]
 fn golden_performance_constants() {
@@ -55,6 +56,7 @@ fn golden_performance_declare_matches_the_csharp_dump() {
     assert_eq!(p.ids().decoder, 4003);
     assert_eq!(p.ids().backward, 4012);
     let _ = settings_builder_fixture::dump(&b);
+    let _ = settings_builder_fixture::run_ops(&mut b, &[]);
 }
 #[test]
 fn focus_target_maps_the_two_preload_fields() {

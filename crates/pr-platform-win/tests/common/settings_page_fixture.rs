@@ -1,3 +1,5 @@
+﻿#![allow(dead_code)] // Shared fixture API is consumed by the other settings-page unit tests.
+
 use pr_app::presenters::settings::{SettingsPresenter, SettingsPresenterOptions};
 use pr_core::settings::shortcuts::ReviewAction;
 use pr_core::{
