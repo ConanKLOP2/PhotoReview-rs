@@ -59,7 +59,7 @@ There is no live channel; use git:
   question where the other machine and the human will see it, then take the recommended option (standing rule: do not stop).
 
 ## 7. Resources
-- One Codex account: quota is shared. `tools/autopilot/codex-usage.sh` shows it; stop a machine's Codex work above 85 % of the 5 h window or 90 % of
-  the week, and run `--jobs 1` on the second machine.
+- One Codex account: quota is shared. `tools/autopilot/codex-usage.sh` shows it; the limit is 95 % (set by the owner): stop a machine's Codex work above 95 % of the 5 h window or of the week
+  (the pipeline enforces it with `QUOTA_MAX=95`), and run `--jobs 1` on the second machine unless the quota has room.
 - Each machine has its own `CARGO_TARGET_DIR` inside the worktree; mutation targets go outside the worktree.
 - A machine that cannot build (disk, `STATUS_DLL_INIT_FAILED`) reports it in the claim note and releases its claims.
