@@ -488,6 +488,9 @@ while :; do
     done
     if [ -n "$bad" ]; then $LIB sset "$STATE" "$u" skipped "dependency $bad is not merged" >/dev/null; say "$u: skipped, dependency $bad"; unset "LIVE[$u]"; continue; fi
     if [ "$waitdep" = 1 ] || [ "$running" -ge "$JOBS" ]; then REMAIN+=("$l"); continue; fi
+    # several machines: a unit is claimed through git before it starts (docs/MULTI-MACHINE.md); 1 = another machine holds it, 2 = origin unreachable (go on)
+    bash "$SELF/claim.sh" claim "$u" "pipeline $TAG" >>"$LOGDIR/claims.log" 2>&1; crc=$?
+    if [ "$crc" = 1 ]; then $LIB sset "$STATE" "$u" skipped "claimed by $(bash "$SELF/claim.sh" who "$u")" >/dev/null; say "$u: skipped, claimed by another machine"; unset "LIVE[$u]"; continue; fi
     need="$(start_need)"; wait_quota "$need"
     slot="$(free_slot)"; say "$u: start (slot $slot, quota need ${need}%)"
     ( run_unit "$u" "$slot" ) &
