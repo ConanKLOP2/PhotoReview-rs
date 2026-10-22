@@ -3,9 +3,20 @@
 //!
 //! Pure: no OS call. Every element places the controls of ONE declared row on a [`SettingsLayoutSurface`] (the real surface is the Settings frame, W8-19j; the tests
 //! use a fake) and returns the height it used, in pixels, including the gap below it. All arithmetic is `i32` and saturating (the C# `int` wraps).
-#![allow(unused_variables, dead_code)] // stub: the porter removes this line with the last `todo!()`
-
 use super::groups::GroupElement;
+
+fn add(a: i32, b: i32) -> i32 {
+    a.saturating_add(b)
+}
+fn sub(a: i32, b: i32) -> i32 {
+    a.saturating_sub(b)
+}
+fn mul(a: i32, b: i32) -> i32 {
+    a.saturating_mul(b)
+}
+fn clamp(v: i32, lo: i32, hi: i32) -> i32 {
+    v.max(lo).min(hi)
+}
 
 /// C# `SettingsRow(Label, Control)`: the ids of a "label + control" row.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -81,7 +92,14 @@ pub trait SettingsLayoutElement {
     /// C# `Place(surface, x, y, width)`: when not [`visible`](Self::visible), `surface.hide(id)` for EVERY id of `control_ids()` in order and return 0; else
     /// `place_visible(...)`.
     fn place(&self, surface: &mut dyn SettingsLayoutSurface, x: i32, y: i32, width: i32) -> i32 {
-        todo!()
+        if !self.visible() {
+            for id in self.control_ids() {
+                surface.hide(id);
+            }
+            0
+        } else {
+            self.place_visible(surface, x, y, width)
+        }
     }
 }
 
@@ -90,7 +108,7 @@ pub trait SettingsLayoutElement {
 ///
 /// The clamp must not panic when `dx(80) > dx(140)` (`i32::clamp` does): use `max` then `min` (D-W8B5-703).
 pub fn label_width(surface: &dyn SettingsLayoutSurface, width: i32) -> i32 {
-    todo!()
+    clamp(mul(width, 38) / 100, surface.dx(80), surface.dx(140))
 }
 
 /// C# `SettingsRowKind`.
@@ -112,7 +130,13 @@ pub struct RowElement {
 
 impl RowElement {
     pub fn new(label_id: i32, control_id: i32, kind: RowKind, width_dlu: i32) -> Self {
-        todo!()
+        Self {
+            visible: true,
+            label_id,
+            control_id,
+            kind,
+            width_dlu,
+        }
     }
 }
 
@@ -124,10 +148,34 @@ impl SettingsLayoutElement for RowElement {
         self.visible = visible;
     }
     fn control_ids(&self) -> Vec<i32> {
-        todo!()
+        vec![self.label_id, self.control_id]
     }
     fn place_visible(&self, surface: &mut dyn SettingsLayoutSurface, x: i32, y: i32, width: i32) -> i32 {
-        todo!()
+        if surface.is_hidden(self.control_id) {
+            surface.hide(self.label_id);
+            surface.hide(self.control_id);
+            return 0;
+        }
+        let lw = label_width(surface, width);
+        let gap = surface.dx(6);
+        let cx = add(add(x, lw), gap);
+        let available = sub(sub(width, lw), gap).max(surface.dx(30));
+        let cw = if self.width_dlu > 0 {
+            available.min(surface.dx(self.width_dlu))
+        } else {
+            available.min(surface.dx(240))
+        };
+        let ch = surface.field_height();
+        let lh = surface.text_height(self.label_id, lw);
+        let rh = ch.max(lh);
+        surface.place(self.label_id, x, add(y, sub(rh, lh) / 2), lw, lh);
+        let wh = if self.kind == RowKind::Combo {
+            add(ch, surface.combo_drop_height(self.control_id))
+        } else {
+            ch
+        };
+        surface.place(self.control_id, cx, add(y, sub(rh, ch) / 2), cw, wh);
+        add(rh, surface.dy(5))
     }
 }
 
@@ -142,7 +190,12 @@ pub struct SliderElement {
 
 impl SliderElement {
     pub fn new(label_id: i32, slider_id: i32, value_id: i32) -> Self {
-        todo!()
+        Self {
+            visible: true,
+            label_id,
+            slider_id,
+            value_id,
+        }
     }
 }
 
@@ -154,10 +207,30 @@ impl SettingsLayoutElement for SliderElement {
         self.visible = visible;
     }
     fn control_ids(&self) -> Vec<i32> {
-        todo!()
+        vec![self.label_id, self.slider_id, self.value_id]
     }
     fn place_visible(&self, surface: &mut dyn SettingsLayoutSurface, x: i32, y: i32, width: i32) -> i32 {
-        todo!()
+        let lw = label_width(surface, width);
+        let gap = surface.dx(6);
+        let sx = add(add(x, lw), gap);
+        let vw = surface
+            .text_width(&surface.text_of(self.value_id))
+            .max(surface.text_width("100 %"))
+            .saturating_add(surface.dx(6))
+            .max(surface.dx(34));
+        let sw = clamp(
+            sub(sub(sub(width, lw), gap), add(vw, gap)),
+            surface.dx(60),
+            surface.dx(150),
+        );
+        let sh = surface.field_height().max(add(surface.line_height(), surface.dy(8)));
+        let lh = surface.text_height(self.label_id, lw);
+        let rh = sh.max(lh);
+        surface.place(self.label_id, x, add(y, sub(rh, lh) / 2), lw, lh);
+        surface.place(self.slider_id, sx, add(y, sub(rh, sh) / 2), sw, sh);
+        let vh = surface.text_height(self.value_id, vw);
+        surface.place(self.value_id, add(add(sx, sw), gap), add(y, sub(rh, vh) / 2), vw, vh);
+        add(rh, surface.dy(5))
     }
 }
 
@@ -172,7 +245,11 @@ pub struct TextElement {
 
 impl TextElement {
     pub fn new(id: i32, aligned_to_controls: bool) -> Self {
-        todo!()
+        Self {
+            visible: true,
+            id,
+            aligned_to_controls,
+        }
     }
 }
 
@@ -184,10 +261,22 @@ impl SettingsLayoutElement for TextElement {
         self.visible = visible;
     }
     fn control_ids(&self) -> Vec<i32> {
-        todo!()
+        vec![self.id]
     }
     fn place_visible(&self, surface: &mut dyn SettingsLayoutSurface, x: i32, y: i32, width: i32) -> i32 {
-        todo!()
+        if surface.is_hidden(self.id) || surface.text_of(self.id).is_empty() {
+            surface.hide(self.id);
+            return 0;
+        }
+        let indent = if self.aligned_to_controls {
+            add(label_width(surface, width), surface.dx(6))
+        } else {
+            0
+        };
+        let tw = sub(width, indent).max(surface.dx(30));
+        let h = surface.text_height(self.id, tw);
+        surface.place(self.id, add(x, indent), y, tw, h);
+        add(h, surface.dy(5))
     }
 }
 
@@ -201,7 +290,11 @@ pub struct ButtonsElement {
 
 impl ButtonsElement {
     pub fn new(ids: Vec<i32>, aligned_to_controls: bool) -> Self {
-        todo!()
+        Self {
+            visible: true,
+            ids,
+            aligned_to_controls,
+        }
     }
 }
 
@@ -213,9 +306,38 @@ impl SettingsLayoutElement for ButtonsElement {
         self.visible = visible;
     }
     fn control_ids(&self) -> Vec<i32> {
-        todo!()
+        self.ids.clone()
     }
     fn place_visible(&self, surface: &mut dyn SettingsLayoutSurface, x: i32, y: i32, width: i32) -> i32 {
-        todo!()
+        let indent = if self.aligned_to_controls {
+            add(label_width(surface, width), surface.dx(6))
+        } else {
+            0
+        };
+        let left = add(x, indent);
+        let right = add(x, width);
+        let gap = surface.dx(6);
+        let h = surface.field_height();
+        let mut cx = left;
+        let mut cy = y;
+        let mut any = false;
+        for id in &self.ids {
+            if surface.is_hidden(*id) {
+                surface.hide(*id);
+                continue;
+            }
+            let bw = surface
+                .text_width(&surface.text_of(*id))
+                .saturating_add(surface.dx(16))
+                .max(surface.dx(50));
+            if cx > left && add(cx, bw) > right {
+                cx = left;
+                cy = add(cy, add(h, surface.dy(4)));
+            }
+            surface.place(*id, cx, cy, bw, h);
+            cx = add(cx, add(bw, gap));
+            any = true;
+        }
+        if any { add(add(sub(cy, y), h), surface.dy(5)) } else { 0 }
     }
 }

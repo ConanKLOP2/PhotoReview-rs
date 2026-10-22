@@ -2,11 +2,19 @@
 //! stack controls: the group box, the check box, the radio (with its hint) and the wrapping row of check boxes. Unit W8-19b. Contract: `contracts/W8-19b.md`.
 //!
 //! Pure, same conventions as [`super::rows`] (saturating `i32`, a hidden element returns 0).
-#![allow(unused_variables, dead_code)] // stub: the porter removes this line with the last `todo!()`
-
 use std::fmt;
 
 use super::rows::{LayoutElement, SettingsLayoutElement, SettingsLayoutSurface};
+
+fn add(a: i32, b: i32) -> i32 {
+    a.saturating_add(b)
+}
+fn sub(a: i32, b: i32) -> i32 {
+    a.saturating_sub(b)
+}
+fn mul(a: i32, b: i32) -> i32 {
+    a.saturating_mul(b)
+}
 
 /// C# `SettingsGroupElement(titleId, children)`: a group box around its child elements. Its title id is the id of the `BS_GROUPBOX` control.
 pub struct GroupElement {
@@ -27,7 +35,11 @@ impl fmt::Debug for GroupElement {
 
 impl GroupElement {
     pub fn new(title_id: i32, children: Vec<LayoutElement>) -> Self {
-        todo!()
+        Self {
+            visible: true,
+            title_id,
+            children,
+        }
     }
 
     /// C# `TitleId`.
@@ -55,10 +67,24 @@ impl SettingsLayoutElement for GroupElement {
     }
     /// The title id FIRST, then the ids of the children in order (C# `children.SelectMany(...).Prepend(titleId)`).
     fn control_ids(&self) -> Vec<i32> {
-        todo!()
+        let mut ids = vec![self.title_id];
+        for child in &self.children {
+            ids.extend(child.control_ids());
+        }
+        ids
     }
     fn place_visible(&self, surface: &mut dyn SettingsLayoutSurface, x: i32, y: i32, width: i32) -> i32 {
-        todo!()
+        let pad = surface.dx(8);
+        let top = add(surface.line_height(), surface.dy(5));
+        let ix = add(x, pad);
+        let iw = sub(width, mul(2, pad)).max(surface.dx(40));
+        let mut cursor = add(y, top);
+        for child in &self.children {
+            cursor = add(cursor, child.place(surface, ix, cursor, iw));
+        }
+        cursor = add(cursor, surface.dy(2));
+        surface.place(self.title_id, x, y, width, sub(cursor, y));
+        add(sub(cursor, y), surface.dy(8))
     }
     fn as_group(&self) -> Option<&GroupElement> {
         Some(self)
@@ -78,7 +104,11 @@ pub struct CheckElement {
 
 impl CheckElement {
     pub fn new(id: i32, indent_dlu: i32) -> Self {
-        todo!()
+        Self {
+            visible: true,
+            id,
+            indent_dlu,
+        }
     }
 }
 
@@ -90,10 +120,18 @@ impl SettingsLayoutElement for CheckElement {
         self.visible = visible;
     }
     fn control_ids(&self) -> Vec<i32> {
-        todo!()
+        vec![self.id]
     }
     fn place_visible(&self, surface: &mut dyn SettingsLayoutSurface, x: i32, y: i32, width: i32) -> i32 {
-        todo!()
+        if surface.is_hidden(self.id) {
+            surface.hide(self.id);
+            return 0;
+        }
+        let indent = surface.dx(self.indent_dlu);
+        let tw = sub(sub(width, indent), surface.dx(14)).max(surface.dx(20));
+        let h = add(surface.text_height(self.id, tw), surface.dy(1)).max(add(surface.line_height(), surface.dy(2)));
+        surface.place(self.id, add(x, indent), y, sub(width, indent), h);
+        add(h, surface.dy(4))
     }
 }
 
@@ -108,7 +146,12 @@ pub struct RadioElement {
 
 impl RadioElement {
     pub fn new(id: i32, hint_id: Option<i32>, indent_dlu: i32) -> Self {
-        todo!()
+        Self {
+            visible: true,
+            id,
+            hint_id,
+            indent_dlu,
+        }
     }
 }
 
@@ -121,10 +164,33 @@ impl SettingsLayoutElement for RadioElement {
     }
     /// `[id, hint]` when there is a hint, else `[id]`.
     fn control_ids(&self) -> Vec<i32> {
-        todo!()
+        let mut ids = vec![self.id];
+        if let Some(id) = self.hint_id {
+            ids.push(id);
+        }
+        ids
     }
     fn place_visible(&self, surface: &mut dyn SettingsLayoutSurface, x: i32, y: i32, width: i32) -> i32 {
-        todo!()
+        if surface.is_hidden(self.id) {
+            surface.hide(self.id);
+            if let Some(id) = self.hint_id {
+                surface.hide(id);
+            }
+            return 0;
+        }
+        let indent = surface.dx(self.indent_dlu);
+        let tw = sub(sub(width, indent), surface.dx(14)).max(surface.dx(20));
+        let h = add(surface.text_height(self.id, tw), surface.dy(1)).max(add(surface.line_height(), surface.dy(2)));
+        surface.place(self.id, add(x, indent), y, sub(width, indent), h);
+        let mut used = add(h, surface.dy(2));
+        if let Some(hint) = self.hint_id {
+            let hi = add(indent, surface.dx(12));
+            let hw = sub(width, hi).max(surface.dx(30));
+            let hh = surface.text_height(hint, hw);
+            surface.place(hint, add(x, hi), add(y, used), hw, hh);
+            used = add(used, add(hh, surface.dy(2)));
+        }
+        add(used, surface.dy(4))
     }
 }
 
@@ -138,7 +204,11 @@ pub struct CheckFlowElement {
 
 impl CheckFlowElement {
     pub fn new(ids: Vec<i32>, indent_dlu: i32) -> Self {
-        todo!()
+        Self {
+            visible: true,
+            ids,
+            indent_dlu,
+        }
     }
 }
 
@@ -150,9 +220,24 @@ impl SettingsLayoutElement for CheckFlowElement {
         self.visible = visible;
     }
     fn control_ids(&self) -> Vec<i32> {
-        todo!()
+        self.ids.clone()
     }
     fn place_visible(&self, surface: &mut dyn SettingsLayoutSurface, x: i32, y: i32, width: i32) -> i32 {
-        todo!()
+        let left = add(x, surface.dx(self.indent_dlu));
+        let right = add(x, width);
+        let gap = surface.dx(10);
+        let h = add(surface.line_height(), surface.dy(2));
+        let mut cx = left;
+        let mut cy = y;
+        for id in &self.ids {
+            let iw = surface.text_width(&surface.text_of(*id)).saturating_add(surface.dx(16));
+            if cx > left && add(cx, iw) > right {
+                cx = left;
+                cy = add(cy, add(h, surface.dy(4)));
+            }
+            surface.place(*id, cx, cy, iw.min(sub(right, left)), h);
+            cx = add(cx, add(iw, gap));
+        }
+        add(add(sub(cy, y), h), surface.dy(5))
     }
 }
