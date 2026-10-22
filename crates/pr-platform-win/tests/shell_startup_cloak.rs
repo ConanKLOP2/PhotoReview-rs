@@ -149,17 +149,22 @@ fn safety_timeout_reveals_window_that_never_gets_a_frame() {
     });
     let m = Arc::new(Manual::default());
     let shown = Arc::new(Mutex::new(0));
+    let scheduler = Arc::new(Scheduler::default());
     let c = StartupCloak::new(
-        Arc::new(Scheduler::default()),
+        scheduler.clone(),
         opts(r.clone(), m.clone(), shown.clone(), Duration::from_millis(50)),
     );
     c.hide(7);
     assert!(c.is_hidden());
     let job = m.job.lock().unwrap().take().unwrap();
     job();
+    assert!(c.is_hidden());
     assert_eq!(*shown.lock().unwrap(), 0);
-    let scheduler = Scheduler::default(); /* dispatch is validated by the dedicated queued-scheduler test */
-    let _ = &scheduler;
+    scheduler.run();
+    assert!(!c.is_hidden());
+    assert!(c.is_revealed());
+    assert_eq!(*shown.lock().unwrap(), 1);
+    assert_eq!(*r.calls.lock().unwrap(), [(7, true), (7, false)]);
 }
 // C#: StartupCloakTests.SafetyTimeout_AfterTheFirstPresent_DoesNotRevealASecondTime
 #[test]
