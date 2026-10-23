@@ -3,7 +3,6 @@
 //! The C# start-up is `try { await StartupCoreAsync(); } catch (Exception ex) when (ex is not OutOfMemoryException) { FailStartup(ex); }` (R2-F-04: a failure used to leave a process with no
 //! window that kept the instance mutex). Exceptions become [`StartupError`] values; a panic inside a start-up step is turned into [`StartupError::Panicked`] by [`catch_step`], the
 //! last-resort handler that R0003 allows on the UI thread (D-W8B6-21). Every failure ends in `pr_app::startup::shutdown::run_fail_startup`.
-#![allow(unused_variables, dead_code)] // stub: the porter removes this line with the last `todo!()`
 
 use std::fmt;
 
@@ -36,7 +35,13 @@ pub enum StartupError {
 impl fmt::Display for StartupError {
     /// The text of the cause (the box says `Tr.AppStartupFailed(ex.Message)`, so the text is what `ex.Message` was): `Graph(m)`/`Overlay(m)`/`Worker(m)`/`Panicked(m)` = `m`; the others delegate to their error.
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        todo!()
+        match self {
+            Self::Graph(m) | Self::Overlay(m) | Self::Worker(m) | Self::Panicked(m) => f.write_str(m),
+            Self::Settings(e) => e.fmt(f),
+            Self::Instance(e) => e.fmt(f),
+            Self::Host(e) => e.fmt(f),
+            Self::MainWindow(e) => e.fmt(f),
+        }
     }
 }
 
@@ -69,5 +74,13 @@ impl From<MainWindowError> for StartupError {
 /// Runs `step` under `catch_unwind(AssertUnwindSafe(step))`: `Ok(value)` and `Err(e)` pass through; a panic becomes `Err(StartupError::Panicked(describe_payload(&payload)))`. The panic hook
 /// already printed the message where the panic started, so nothing is logged here. Used by every UI-thread start-up step and continuation (17d `phase_one`, 17e `run`).
 pub fn catch_step<R>(step: impl FnOnce() -> Result<R, StartupError>) -> Result<R, StartupError> {
-    todo!()
+    std::panic::catch_unwind(std::panic::AssertUnwindSafe(step)).unwrap_or_else(|payload| {
+        // Same payload mapping as 17e's crash::describe_payload; independent of that unported module.
+        let message = payload
+            .downcast_ref::<&str>()
+            .map(|s| (*s).to_owned())
+            .or_else(|| payload.downcast_ref::<String>().cloned())
+            .unwrap_or_else(|| "unknown exception object".to_owned());
+        Err(StartupError::Panicked(message))
+    })
 }

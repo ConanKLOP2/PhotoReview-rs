@@ -1,18 +1,36 @@
-//! Port of `PhotoReview.Shell.Win32/Startup/ShellStartup.cs` lines 253-359 (the first half of `StartupCoreAsync`, baseline `d92d6aae`): services, error log, prefetches, settings and language
+//! Port of `PhotoReview.Shell.Win32/Startup/ShellStartup.cs` lines 253-359 (the first half of `StartupCoreAsync`, baseline `7eaee2a2`): services, error log, prefetches, settings and language
 //! load (C-28 input), logging switch, forward coalescer and the single-instance lock. Unit W8-17d. Contract: `contracts/W8-17d.md`.
 //!
 //! The C# method awaits twice (`await settingsLoad`, `await SecondInstanceHandoff.TryForwardAsync`) and continues on the UI thread. Rust has no async (D-W8-2, R0003): the same sequence is a
 //! step machine whose two continuations are `startup::ui_hop` hops. EVERY path ends in exactly one call of the `done` callback, on the UI thread: `Ok(Proceed)` (this process holds the lock, or
 //! runs `--smoke`: go on to the window, W8-17e), `Ok(SecondInstanceExit)` (the request was handed over or answered with a box: quit with code 0) or `Err` (the start-up failed: W8-17e's
 //! `fail_startup`). Each step runs under `error::catch_step`, so a panic is an `Err(Panicked)` and never leaves a window-less process holding the mutex (R2-F-04).
-#![allow(unused_variables, dead_code)] // stub: the porter removes this line with the last `todo!()`
 
+use pr_app::localization::service::LocalizationService;
+use pr_app::misc::app_log::AppLog;
+use pr_app::startup::context::StartupTask;
+use pr_app::startup::error_log;
+use pr_app::startup::forwarded_open::new_forward_coalescer;
+use pr_app::startup::instance::{
+    HandoffDecision, InstanceGate, handoff_decision, instance_message_text, startup_box_title, try_take_lock,
+};
+use pr_app::startup::{early_decode, settings_load};
+use pr_app::windowing::contracts::WindowPlacementStore;
+use pr_core::abstractions::DialogService;
+use pr_l10n::localizer::Localizer;
+use pr_platform_win::host::main_window::core::{DEFAULT_HEIGHT_DIP, DEFAULT_WIDTH_DIP, PREVIEW_QUALITY_MULTIPLIER};
+use pr_platform_win::shell_startup::monitor_probe::Win32MonitorProbe;
+use std::path::Path;
 use std::rc::Rc;
+use std::sync::{Arc, PoisonError};
 
 use pr_app::startup::settings_load::LoadedSettings;
 use pr_app::startup::ui_hop::HopLost;
 
-use super::error::StartupError;
+use super::composition_root::{ShellHostServices, ShellServices};
+use super::error::{StartupError, catch_step};
+use super::graph::{GraphInputs, diag_options, global_log, production_graph_builder};
+use super::instance::{ScopeGate, create_scope};
 use super::state::StartupState;
 
 /// How the first half ended.
@@ -47,7 +65,123 @@ impl StartupState {
     ///
     /// `done` receives the outcome of the whole half.
     pub fn start_phase_one(self: &Rc<Self>, done: PhaseOneDone) {
-        todo!()
+        let prepared = catch_step(|| {
+            let owner = Rc::downgrade(&self.main);
+            let services_options = std::mem::take(&mut self.options.borrow_mut().services);
+            let services = Rc::new(ShellServices::build(
+                ShellHostServices {
+                    dispatcher: self.dispatcher.clone(),
+                    message_loop: Some(self.message_loop.clone()),
+                    owner_window: Rc::new(move || {
+                        let window = owner.upgrade().and_then(|slot| slot.borrow().clone());
+                        window.map_or(0, |window| window.hwnd())
+                    }),
+                },
+                self.hub.clone(),
+                global_log(),
+                services_options,
+            ));
+            // Keep the host services available to failure cleanup even if the graph builder fails.
+            *self.services.borrow_mut() = Some(services.clone());
+            let builder = self
+                .options
+                .borrow_mut()
+                .graph_builder
+                .take()
+                .unwrap_or_else(production_graph_builder);
+            let graph = builder(GraphInputs {
+                services: services.clone(),
+                dispatcher: self.dispatcher.clone(),
+                message_loop: self.message_loop.clone(),
+                hub: self.hub.clone(),
+                log: global_log(),
+                mark: self.mark.clone(),
+            })
+            .map_err(|e| StartupError::Graph(e.to_string()))?;
+            services.bind_dialog_services(graph.dialog_services.clone());
+            let store = graph.settings_store.clone();
+            let localization = graph.localization.clone();
+            let previews = graph.previews.clone();
+            let log = graph.log.clone();
+            let config_file = graph.config_file.clone();
+            let placement_file = graph.window_placement_file.clone();
+            let explorer = graph.explorer_order.clone();
+            *self.graph.borrow_mut() = Some(graph);
+            (self.mark)("servicesBuilt");
+            error_log::configure(Some(
+                config_file
+                    .parent()
+                    .unwrap_or_else(|| Path::new(""))
+                    .join(error_log::FILE_NAME),
+            ));
+            if let Some(folder) = self.launch.launch_folder.as_deref().filter(|f| !f.is_empty()) {
+                explorer.prefetch(Path::new(folder), pr_app::startup::options::EXPLORER_PREFETCH_TIMEOUT);
+            }
+            if !self.launch.smoke {
+                let handle = self.placement_store.prefetch(&placement_file.to_string_lossy());
+                *self.placement_load.lock().unwrap_or_else(PoisonError::into_inner) = Some(handle);
+            }
+            let diag = diag_options();
+            store.subscribe_changed(Box::new(move |settings| {
+                AppLog::global().set_enabled(settings_load::logging_enabled(settings, &diag));
+                Ok(())
+            }));
+            localization
+                .lock()
+                .unwrap_or_else(PoisonError::into_inner)
+                .set_mode(LocalizationService::parse_mode(&self.args));
+            Ok((store, localization, previews, log))
+        });
+        let (store, localization, previews, log) = match prepared {
+            Ok(parts) => parts,
+            Err(error) => {
+                done(Err(error));
+                return;
+            }
+        };
+        let weak = Rc::downgrade(self);
+        let sender = pr_app::startup::ui_hop::ui_hop(self.ui.clone(), move |result| {
+            if let Some(state) = weak.upgrade() {
+                state.on_settings_loaded(result, done);
+            }
+        });
+        let placement = self.placement_load.clone();
+        let early = self.early_decode.clone();
+        let initial = self.launch.initial_file.is_some();
+        let mark = self.mark.clone();
+        // If spawning fails the captured sender drops and posts HopLost; no UI-thread join.
+        let _worker = std::thread::Builder::new()
+            .name("PhotoReview.SettingsLoad".into())
+            .spawn(move || {
+                let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+                    settings_load::load_settings_and_language(&store, &localization, &*mark, &|_| {
+                        if initial {
+                            let handle = placement.lock().unwrap_or_else(PoisonError::into_inner).take();
+                            let previews = previews.clone();
+                            let log = log.clone();
+                            let task = StartupTask::spawn("PhotoReview.EarlyDecodePlan", move || {
+                                let placement = handle.and_then(|h| h.join());
+                                early_decode::prepare_early_decode(
+                                    placement.as_ref(),
+                                    previews,
+                                    &Win32MonitorProbe,
+                                    DEFAULT_WIDTH_DIP,
+                                    DEFAULT_HEIGHT_DIP,
+                                    PREVIEW_QUALITY_MULTIPLIER,
+                                    &*log,
+                                )
+                            });
+                            *early.lock().unwrap_or_else(PoisonError::into_inner) = Some(task);
+                        }
+                    })
+                }))
+                .unwrap_or_else(|payload| {
+                    Err(settings_load::StartupLoadError::Worker(
+                        pr_core::abstractions::panic_message(payload.as_ref()),
+                    ))
+                });
+                sender.send(result);
+            });
     }
 
     /// C# lines 300-359 after `await settingsLoad`. `Err(HopLost)` (the worker panicked or could not start) is `StartupError::Worker`, `Ok(Err(e))` is `StartupError::Settings(e)`. Then, in order:
@@ -71,6 +205,98 @@ impl StartupState {
         result: Result<Result<LoadedSettings, pr_app::startup::settings_load::StartupLoadError>, HopLost>,
         done: PhaseOneDone,
     ) {
-        todo!()
+        let step = catch_step(|| {
+            let loaded = result.map_err(|e| StartupError::Worker(e.to_string()))??;
+            let (localization, log) = {
+                let graph = self.graph.borrow();
+                let graph = graph
+                    .as_ref()
+                    .ok_or_else(|| StartupError::Graph("Startup graph is unavailable.".into()))?;
+                (graph.localization.clone(), graph.log.clone())
+            };
+            settings_load::apply_loaded_settings(&localization, &loaded, &*self.mark);
+            *self.settings.borrow_mut() = Some(loaded.settings.clone());
+            let placement = self
+                .placement_load
+                .lock()
+                .unwrap_or_else(PoisonError::into_inner)
+                .take();
+            *self.context.borrow_mut() = Some(settings_load::build_startup_context(
+                &self.launch,
+                &loaded.settings,
+                placement,
+                self.process_start,
+            ));
+            let diag = diag_options();
+            AppLog::global().set_enabled(settings_load::logging_enabled(&loaded.settings, &diag));
+            let (startup, diag_line) = settings_load::startup_log_lines(&self.args, &diag);
+            if AppLog::global().enabled() {
+                AppLog::global().info(&startup);
+            }
+            if let Some(line) = diag_line {
+                AppLog::global().write_forced(|| AppLog::global().error(&line, None));
+            }
+            let coalescer = new_forward_coalescer(self.ui.clone(), log.clone());
+            *self.coalescer.borrow_mut() = Some(coalescer.clone());
+            if !self.launch.smoke {
+                let prefix = self.options.borrow().instance_name_prefix.clone();
+                let scope = create_scope(loaded.settings.instance_mode, coalescer, log.clone(), &prefix)?;
+                *self.instance.borrow_mut() = Some(scope.clone());
+                let gate = Arc::new(ScopeGate::new(scope, log));
+                if !try_take_lock(&*gate, self.launch.launch_folder.as_deref())? {
+                    return Ok(Some(gate));
+                }
+                (self.mark)("instanceLock");
+            }
+            Ok(None)
+        });
+        let gate = match step {
+            Err(error) => {
+                done(Err(error));
+                return;
+            }
+            Ok(None) => {
+                done(Ok(PhaseOneOutcome::Proceed));
+                return;
+            }
+            Ok(Some(gate)) => gate,
+        };
+        let mode = gate.mode();
+        let weak = Rc::downgrade(self);
+        let sender = pr_app::startup::ui_hop::ui_hop(
+            self.ui.clone(),
+            move |result: Result<Result<bool, pr_app::startup::instance::InstanceStartError>, HopLost>| {
+                if let Some(state) = weak.upgrade() {
+                    let outcome = catch_step(|| {
+                        let forwarded = result.map_err(|e| StartupError::Worker(e.to_string()))??;
+                        if let HandoffDecision::ExitWithMessage(kind) = handoff_decision(forwarded, mode) {
+                            let service = state
+                                .services
+                                .borrow()
+                                .as_ref()
+                                .map(|s| s.dialog_service.clone())
+                                .ok_or_else(|| StartupError::Graph("Startup services are unavailable.".into()))?;
+                            let loc = Localizer::current();
+                            service.show_message(&startup_box_title(&loc), &instance_message_text(kind, &loc));
+                        }
+                        Ok(PhaseOneOutcome::SecondInstanceExit)
+                    });
+                    done(outcome);
+                }
+            },
+        );
+        let folder = self.launch.launch_folder.clone();
+        let paths = self.launch.existing_paths().to_vec();
+        let _worker = std::thread::Builder::new()
+            .name("PhotoReview.Handoff".into())
+            .spawn(move || {
+                // An unwinding worker drops the sender, producing HopLost on the UI thread.
+                let outcome = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+                    gate.forward_to_owner(folder.as_deref(), &paths)
+                }));
+                if let Ok(result) = outcome {
+                    sender.send(result);
+                }
+            });
     }
 }

@@ -1,9 +1,8 @@
-//! Port of the `InstanceScope` creation of `PhotoReview.Shell.Win32/Startup/ShellStartup.cs` lines 329-335 and 339-340 (baseline `d92d6aae`): the real [`InstanceGate`]. Unit W8-17d.
+//! Port of the `InstanceScope` creation of `PhotoReview.Shell.Win32/Startup/ShellStartup.cs` lines 329-335 and 339-340 (baseline `7eaee2a2`): the real [`InstanceGate`]. Unit W8-17d.
 //! Contract: `contracts/W8-17d.md`.
 //!
 //! `pr_platform_win::instance_scope::InstanceScope` (W2-19, merged) owns the mutex and the forward pipe; `pr_core::instance::handoff::try_forward` (W2-19) does the hand-off. This file only
 //! creates the scope with the start-up's options and adapts both to the pure [`InstanceGate`] of `pr_app::startup::instance`.
-#![allow(unused_variables, dead_code)] // stub: the porter removes this line with the last `todo!()`
 
 use std::sync::Arc;
 
@@ -22,7 +21,20 @@ pub fn create_scope(
     log: Arc<dyn Log>,
     prefix: &str,
 ) -> Result<Arc<InstanceScope>, InstanceStartError> {
-    todo!()
+    InstanceScope::with_options(
+        mode,
+        move |paths| {
+            coalescer.submit(paths);
+        },
+        Some(log),
+        prefix,
+        None,
+        true,
+    )
+    .map(Arc::new)
+    .map_err(|error| InstanceStartError {
+        message: error.to_string(),
+    })
 }
 
 /// [`InstanceGate`] over a scope. `Send + Sync` (the hand-off runs on a worker).
@@ -47,17 +59,29 @@ impl ScopeGate {
 impl InstanceGate for ScopeGate {
     /// `scope.mode()`.
     fn mode(&self) -> InstanceMode {
-        todo!()
+        self.scope.mode()
     }
 
     /// `scope.try_acquire(folder)`; `Err(InstanceScopeError)` -> `InstanceStartError`.
     fn try_acquire(&self, folder: Option<&str>) -> Result<bool, InstanceStartError> {
-        todo!()
+        self.scope.try_acquire(folder).map_err(|error| InstanceStartError {
+            message: error.to_string(),
+        })
     }
 
     /// `client = scope.create_client(folder)?` (`Err` -> `InstanceStartError`); `try_forward(&*client, existing_paths, handoff::DEFAULT_TIMEOUT, Some(&*log), &CancelToken::none())`;
     /// `Ok(delivered)` -> `Ok(delivered)`; `Err(Canceled)` (impossible with a token that never cancels) -> `Ok(false)`.
     fn forward_to_owner(&self, folder: Option<&str>, existing_paths: &[String]) -> Result<bool, InstanceStartError> {
-        todo!()
+        let client = self.scope.create_client(folder).map_err(|error| InstanceStartError {
+            message: error.to_string(),
+        })?;
+        Ok(pr_core::instance::handoff::try_forward(
+            &*client,
+            existing_paths,
+            pr_core::instance::handoff::DEFAULT_TIMEOUT,
+            Some(&*self.log),
+            &pr_core::sync::CancelToken::none(),
+        )
+        .unwrap_or(false))
     }
 }
