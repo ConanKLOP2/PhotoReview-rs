@@ -17,7 +17,6 @@
 //! | `dismiss` | 18v | `Dismiss` |
 //!
 //! Lead-owned: the submodule declarations below are final. The slice files own their own `*State` structs.
-#![allow(unused_variables, dead_code)] // stub: the porter of each unit removes the line of its own files with their last `todo!()`; this file's line goes with 18t
 
 pub mod actions;
 pub mod dismiss;
@@ -157,13 +156,17 @@ pub struct RecoveryContent {
     presenter: RefCell<RecoveryWindowPresenter>,
     texts: RecoveryTextSource,
     /// C# `_messages`.
+    #[allow(dead_code)] // W8-18u and W8-18v consume the dialog seams in their owned slices.
     messages: Rc<dyn TaskDialogPort>,
     /// C# `_copy`.
+    #[allow(dead_code)] // W8-18u consumes the clipboard seam in its owned slice.
     copy: CopySeam,
     /// C# `_explorer`.
+    #[allow(dead_code)] // W8-18u consumes the Explorer seam in its owned slice.
     explorer: ExplorerSeam,
     /// C# `_autoCheck`.
     auto_check: bool,
+    #[allow(dead_code)] // W8-18u and W8-18v consume the background runner in their owned slices.
     runner: Arc<dyn BackgroundRunner>,
     list: ListState,
     details: DetailsState,
@@ -186,18 +189,32 @@ impl RecoveryContent {
         services: RecoveryDialogServices,
         seams: RecoveryDialogSeams,
     ) -> Rc<Self> {
-        todo!()
+        Rc::new(Self {
+            presenter: RefCell::new(RecoveryWindowPresenter::new(entries, options)),
+            texts: services.texts,
+            messages: seams
+                .messages
+                .unwrap_or_else(|| Rc::new(crate::dialogs::task_dialog::NativeTaskDialogPort::new())),
+            copy: seams.copy.unwrap_or_else(|| Rc::new(|_| false)),
+            explorer: seams.explorer.unwrap_or_else(|| Rc::new(path_panel::start_explorer)),
+            auto_check: seams.auto_check,
+            runner: services.runner,
+            list: ListState::new(),
+            details: DetailsState::new(),
+            actions: ActionsState::new(),
+            restore: RestoreState::new(),
+        })
     }
 }
 
 impl DialogContent for RecoveryContent {
     /// `texts.text(RECOVERY_TITLE)`.
     fn title(&self) -> String {
-        todo!()
+        self.texts.text("RECOVERY_TITLE")
     }
     /// `layout::build_items(&self.texts)`.
     fn items(&self) -> Vec<DialogItem> {
-        todo!()
+        layout::build_items(&self.texts)
     }
     /// `true`.
     fn resizable(&self) -> bool {
@@ -217,52 +234,93 @@ impl DialogContent for RecoveryContent {
     }
     /// `layout::preferred_client_size(dialog)`.
     fn preferred_client_size(&self, dialog: &NativeDialog) -> (i32, i32) {
-        todo!()
+        layout::preferred_client_size(dialog)
     }
     /// `layout::minimum_client_size(dialog)`.
     fn minimum_client_size(&self, dialog: &NativeDialog) -> (i32, i32) {
-        todo!()
+        layout::minimum_client_size(dialog)
     }
     /// `layout::layout_controls(dialog, self.details.layout(), w, h)`.
     fn layout_controls(&self, dialog: &NativeDialog, client_width: i32, client_height: i32) {
-        todo!()
+        layout::layout_controls(dialog, self.details.layout(), client_width, client_height)
     }
     /// C# `OnInitialized` (lines 183-218): see the contract 18t, rule 3.
     fn on_initialized(&self, dialog: &NativeDialog) {
-        todo!()
+        use crate::dialogs::native::controls::basic::{ComboBoxControl, ListBoxControl};
+        let filter = dialog.item(layout::FILTER_ID);
+        for key in [
+            "RECOVERY_FILTER_ALL",
+            "RECOVERY_FILTER_CAN_RETRY",
+            "RECOVERY_FILTER_ALREADY_DONE",
+            "RECOVERY_FILTER_PROBLEMS",
+        ] {
+            ComboBoxControl::add(filter, &self.texts.text(key));
+        }
+        ComboBoxControl::select(filter, 0);
+        for (id, key) in [
+            (layout::FILTER_ID, "RECOVERY_FILTER_AUTOMATION_NAME"),
+            (layout::RECHECK_ID, "RECOVERY_CHECK_RECHECK_AUTOMATION_NAME"),
+            (layout::CLEAR_SELECTED_ID, "RECOVERY_CLEAR_SELECTED_AUTOMATION_NAME"),
+            (layout::CLEAR_ALL_ID, "RECOVERY_CLEAR_ALL_AUTOMATION_NAME"),
+            (layout::RETRY_ID, "RECOVERY_RETRY_AUTOMATION_NAME"),
+            (layout::COPY_SOURCE_ID, "RECOVERY_DETAIL_COPY_PATH_AUTOMATION_NAME"),
+            (layout::COPY_DESTINATION_ID, "RECOVERY_DETAIL_COPY_PATH_AUTOMATION_NAME"),
+            (
+                layout::SHOW_SOURCE_ID,
+                "RECOVERY_DETAIL_SHOW_IN_EXPLORER_AUTOMATION_NAME",
+            ),
+            (
+                layout::SHOW_DESTINATION_ID,
+                "RECOVERY_DETAIL_SHOW_IN_EXPLORER_AUTOMATION_NAME",
+            ),
+        ] {
+            dialog.set_tooltip(id, &self.texts.text(key));
+        }
+        self.actions
+            .wake_target
+            .store(dialog.hwnd(), std::sync::atomic::Ordering::SeqCst);
+        list::refresh_entries(self, dialog);
+        self.list.initialized.set(true);
+        if self.auto_check {
+            actions::start_checks(self, dialog);
+        }
+        let _ = ListBoxControl::count(dialog.item(layout::LIST_ID));
     }
     /// C# `OnCancel() => !_presenter.CanClose`: `true` (handled, stay open) while a retry runs. `presenter.try_borrow()`; when the presenter is borrowed (a
     /// re-entrant call from inside a presenter method) answer `true`: refusing to close is the safe default (R2-A-01), and a hook never panics.
-    fn on_cancel(&self, dialog: &NativeDialog) -> bool {
-        todo!()
+    fn on_cancel(&self, _dialog: &NativeDialog) -> bool {
+        !self.presenter.try_borrow().map(|p| p.can_close()).unwrap_or(false)
     }
     /// `actions::on_command`.
     fn on_command(&self, dialog: &NativeDialog, id: i32, notification: i32) -> bool {
-        todo!()
+        actions::on_command(self, dialog, id, notification)
     }
     /// `list::list_item_text`.
     fn list_item_text(&self, dialog: &NativeDialog, id: i32, index: i32) -> ListItemText {
-        todo!()
+        list::list_item_text(self, dialog, id, index)
     }
     /// `list::list_item_subtitle`.
     fn list_item_subtitle(&self, dialog: &NativeDialog, id: i32, index: i32) -> Option<String> {
-        todo!()
+        list::list_item_subtitle(self, dialog, id, index)
     }
     /// `list::list_item_badge_color`.
     fn list_item_badge_color(&self, dialog: &NativeDialog, id: i32, index: i32) -> Option<u32> {
-        todo!()
+        list::list_item_badge_color(self, dialog, id, index)
     }
     /// C# `CanCloseByUser => _presenter.CanClose`. `try_borrow()`; a failed borrow answers `false` (do not close; see `on_cancel`).
     fn can_close_by_user(&self) -> bool {
-        todo!()
+        self.presenter.try_borrow().map(|p| p.can_close()).unwrap_or(false)
     }
     /// C# `WaitCursor => _busy`.
     fn wait_cursor(&self) -> bool {
-        todo!()
+        restore::is_busy(self)
     }
     /// C# `OnClosed` (lines 220-230): see the contract 18t, rule 4.
-    fn on_closed(&self, dialog: &NativeDialog) {
-        todo!()
+    fn on_closed(&self, _dialog: &NativeDialog) {
+        self.presenter.borrow_mut().cancel_check();
+        self.actions.closed.store(true, std::sync::atomic::Ordering::SeqCst);
+        self.actions.wake_target.store(0, std::sync::atomic::Ordering::SeqCst);
+        let _ = self.actions.inbox.drain();
     }
     /// `actions::on_window_message` (only [`WM_RECOVERY_COMPLETIONS`] is handled).
     fn on_window_message(
@@ -272,11 +330,11 @@ impl DialogContent for RecoveryContent {
         wparam: Wparam,
         lparam: Lparam,
     ) -> Option<Lresult> {
-        todo!()
+        actions::on_window_message(self, dialog, message, wparam, lparam)
     }
     /// `path_panel::static_text_color`.
     fn static_text_color(&self, dialog: &NativeDialog, id: i32) -> u32 {
-        todo!()
+        path_panel::static_text_color(self, dialog, id)
     }
 }
 
@@ -301,7 +359,9 @@ impl RecoveryDialog {
         seams: RecoveryDialogSeams,
         chrome: Option<Rc<dyn NativeDialogChrome>>,
     ) -> Self {
-        todo!()
+        let content = RecoveryContent::new(entries, options, services, seams);
+        let native = NativeDialog::with_chrome(content.clone(), chrome);
+        Self { native, content }
     }
 
     /// The base-class handle (`hwnd()`, `is_closed()`, `dpi()`, `close()`, `activate()`, the helpers).
@@ -316,7 +376,7 @@ impl RecoveryDialog {
 
     /// `native.show_modal(owner, None, message_loop)`.
     pub fn show_modal(&self, owner: Hwnd, message_loop: Option<&Rc<MessageLoop>>) -> Result<i32, DialogError> {
-        todo!()
+        self.native.show_modal(owner, None, message_loop)
     }
 
     /// `native.show_modeless(owner, message_loop, None, closed)` (what the tests and W8-18o use).
@@ -326,71 +386,71 @@ impl RecoveryDialog {
         message_loop: Option<Rc<MessageLoop>>,
         closed: Option<Box<dyn FnOnce()>>,
     ) -> Result<(), DialogError> {
-        todo!()
+        self.native.show_modeless(owner, message_loop, None, closed)
     }
 
     /// C# `Close()` from outside: always closes, even mid-retry.
     pub fn close(&self) {
-        todo!()
+        self.native.close()
     }
 
     /// C# `Presenter` (tests): read access under a short borrow.
     pub fn with_presenter<R>(&self, f: impl FnOnce(&RecoveryWindowPresenter) -> R) -> R {
-        todo!()
+        f(&self.content.presenter.borrow())
     }
 
     /// C# `SelectedRows()` as indices into the presenter rows, in display order.
     pub fn selected_rows(&self) -> Vec<usize> {
-        todo!()
+        list::selected_rows(&self.content, &self.native)
     }
 
     /// C# `VisibleRows` as indices into the presenter rows.
     pub fn visible_rows(&self) -> Vec<usize> {
-        todo!()
+        list::visible_rows(&self.content)
     }
 
     /// C# `SelectRows(params int[] visibleIndices)`: selects those visible rows as a user would and updates details and buttons.
     pub fn select_rows(&self, visible_indices: &[i32]) {
-        todo!()
+        list::select_rows(&self.content, &self.native, visible_indices)
     }
 
     /// C# `RowView(index)`.
     pub fn row_view(&self, index: i32) -> RowView {
-        todo!()
+        list::row_view(&self.content, &self.native, index)
     }
 
     /// C# `IsBusy`.
     pub fn is_busy(&self) -> bool {
-        todo!()
+        restore::is_busy(&self.content)
     }
 
     /// C# `IsEnabled(id)`.
     pub fn is_enabled(&self, id: i32) -> bool {
-        todo!()
+        crate::win32::dialog_native::user32::is_window_enabled(self.native.item(id))
     }
 
     /// C# `TextColorOf(id)`.
     pub fn text_color_of(&self, id: i32) -> u32 {
-        todo!()
+        path_panel::static_text_color(&self.content, &self.native, id)
     }
 
     /// C# `StartChecks()`.
     pub fn start_checks(&self) {
-        todo!()
+        actions::start_checks(&self.content, &self.native)
     }
 
     /// Runs `actions::pump` now (tests with an inline or queued runner; the production path is the window message).
     pub fn pump_completions(&self) {
-        todo!()
+        actions::pump(&self.content, &self.native)
     }
 
     /// Replaces C# `LastCheckTask`: how many checks `start_checks` launched (a run with no rows launches none).
     pub fn check_runs(&self) -> u32 {
-        todo!()
+        self.content.actions.check_runs.get()
     }
 
     /// Replaces C# `LastRetryTask`: how many retries the Retry button launched.
     pub fn retry_runs(&self) -> u32 {
-        todo!()
+        self.content.restore.retry_runs.get()
     }
 }
