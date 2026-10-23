@@ -63,3 +63,7 @@
 - Bổ sung H1: retry nhóm Recycle thiếu kiểm lại fingerprint sau Prepared, có nhánh permanent-delete; sửa diễn giải INV-5/APP-03 và live marker của M3.
 - Kết quả: suy luận từ mã, chưa chạy thử. Không chạy fmt/clippy/test/oracle/mutation; không chạm Recycle Bin. PR docs sẽ bật squash auto-merge; nhả claim sau khi xác nhận merged.
 - Tiếp: REVIEW-BACKLOG, rồi REVIEW-PRS, B4, W9-CONTRACTS và TEST-PLAN theo lệnh người dùng.
+## Review BACKLOG, machine C, 2026-10-23 (tái kiểm)
+- REVIEW-INVARIANTS #212 đã merged tại e25f8bf; content diff đã xác nhận, claim nhả; worktree và branch local đã dọn, remote branch đã được GitHub xoá tự động (lệnh delete báo ref không tồn tại; không thử lại).
+- Claim REVIEW-BACKLOG bởi C. Bổ sung G25 rủi ro permanent-delete từ invariants H1, prompt/test/phạm vi riêng; cập nhật Q1..Q8 theo P-52/#211; bỏ đề nghị che test đỏ bằng ignore và cảnh báo blanket native run trái quy tắc bin.
+- Docs-only; suy luận từ mã, chưa chạy thử. Không chạy Cargo/oracle/mutation. Tiếp theo REVIEW-PRS; nhả claim sau merge PR docs này.
