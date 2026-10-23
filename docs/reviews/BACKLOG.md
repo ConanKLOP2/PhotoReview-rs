@@ -1,6 +1,6 @@
 # BACKLOG tổng hợp từ docs/reviews/
 
-Machine C (cloud), 2026-10-23. Gộp mọi phát hiện của các báo cáo trong `docs/reviews/`: `autopilot`, `dialogs-base`, `native-dialog`, `render-painter`, `settings-ui`, `startup`, `test-quality`, `invariants`, `main-window-input-overlay-viewing`, `w9-contracts`, `pr-164`, `pr-203`. `test-strengthening-plan.md` (80 test đề xuất, PR #208) được trỏ tới từng nhóm, chưa gộp lại từng dòng.
+Machine C (cloud), 2026-10-23. Gộp mọi phát hiện của các báo cáo trong `docs/reviews/`: `autopilot`, `dialogs-base`, `native-dialog`, `render-painter`, `settings-ui`, `startup`, `test-quality`, `invariants`, `main-window-input-overlay-viewing`, `w9-contracts`, `pr-164`, `pr-203`. `test-strengthening-plan.md` (81 mục test sau tái kiểm TEST-PLAN, PR #208) được trỏ tới từng nhóm, chưa gộp lại từng dòng.
 
 **Mọi mục dưới đây là suy luận từ mã, chưa chạy thử** (đúng như báo cáo nguồn). Mã phát hiện = tên báo cáo + số trong báo cáo (ví dụ `startup H1` = `docs/reviews/startup.md` mục H1). Đã khử trùng lặp: các mục cùng gốc gộp thành một dòng, ghi mọi mã nguồn.
 
@@ -341,7 +341,7 @@ Q1 giữ Fast; Q2 giữ cờ Shell + cảnh báo chờ 10 s; Q3 kiểm lại dan
 - Settings General: settings-ui H1 và `tp-pr-platform-win T1`. -> G4.
 
 ## 4. Chưa gộp / ngoài phạm vi
-- `test-strengthening-plan.md` có 80 test; chỉ gom theo nhóm G17, G19, G20. Các mục crate khác (pr-imaging, pr-turbojpeg, pr-libraw, pr-imaging-raw, pr-perf, pr-l10n, pr-bench, pr-test-support) dùng prompt G17 với phạm vi crate đó.
+- `test-strengthening-plan.md` có 81 mục test; chỉ gom theo nhóm G17, G19, G20. Các mục crate khác (pr-imaging, pr-turbojpeg, pr-libraw, pr-imaging-raw, pr-perf, pr-l10n, pr-bench, pr-test-support) dùng prompt G17 với phạm vi crate đó.
 - INV-1, 2, 8, 10, 11, 12 (pr-imaging, settings store, file_log) chưa được đọc sâu trong invariants.md: chưa có mục trong backlog; cần review riêng.
 - Lần tái kiểm này theo đúng thứ tự INVARIANTS -> BACKLOG -> PRS -> B4 -> W9 -> TEST-PLAN. Báo cáo các lần trước giữ làm nguồn, phát hiện sau mốc này cần ghi rõ chưa nằm trong snapshot tổng hợp.
 ## 5. Tái tổng hợp ngày 2026-10-23 (sau #211 và #212)
@@ -376,3 +376,5 @@ Kiểm tra: cargo fmt -p pr-core --check; cargo clippy -p pr-core --all-targets 
 1. G1/G7/G9 có thể chạm cùng call path: giao tuần tự hoặc tách ownership rõ, không coi chúng độc lập hoàn toàn.
 2. Test đỏ vì lỗi thật không được che bằng `#[ignore = "BUG"]`. Bằng chứng phải ghi ca đỏ và giao sửa nguyên nhân; native/slow vẫn theo quy tắc repo.
 3. `test-quality` gợi ý đường golden bằng `CARGO_MANIFEST_DIR/../../...` ở ví dụ 14, trái quy tắc test không hard-code repo-relative path. Dùng helper golden đã có của pr-test-support, dữ liệu test qua TempRoot khi cần; không sao chép lời gợi ý đường dẫn cũ vào test mới.
+
+Cập nhật TEST-PLAN 2026-10-23: core T13 là test của G25, không tính thành lỗi mới; core T14 là durability-order (không chứng minh mất điện). Kế hoạch còn 81 mục/12 crate sau khi tách perf T3 chờ oracle, xem phần tái kiểm trong test-strengthening-plan.md. Số PR được ghi khi mở; không coi đây là kết quả chạy test.
