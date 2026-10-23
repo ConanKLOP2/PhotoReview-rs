@@ -166,3 +166,7 @@ Lập luận cũ “trong phiên này cũng không xử lý vì marker sống”
 ## 7. Review bổ sung vùng cache/config/log
 
 Ngày 2026-10-23, đọc sâu thêm tại Rust `809759d` và C# `7eaee2a2`: xem [invariants-storage.md](invariants-storage.md). Mọi phát hiện là suy luận từ mã, chưa chạy thử. Báo cáo riêng có 0 cao / 3 trung bình / 1 thấp; không nhập lại thành mã M/L trùng ở đây. BACKLOG G26..G29 theo dõi. Phạm vi và bằng chứng còn thiếu được ghi riêng, không coi toàn bộ INV-1/2/8/10/11/12 đã có verdict runtime.
+
+### Đọc bổ sung policy/selection Recycle Bin (2026-10-23)
+
+Xem [recycle-policy.md](recycle-policy.md), Rust 8042d67 / C# 7eaee2a2: 0 cao / 1 trung bình / 1 thấp; BACKLOG G30/G31. Kiểm sâu capacity/settings/candidate/eligibility và native restore adapter; không chạy bin thật. Đây là suy luận từ mã, chưa chạy thử, không xác nhận đóng TOCTOU G25 hay chứng minh byte identity của metadata matching.
