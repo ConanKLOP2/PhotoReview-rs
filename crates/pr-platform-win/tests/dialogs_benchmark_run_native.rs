@@ -4,6 +4,18 @@
 #[path = "common/dialogs_benchmark_run_fixture.rs"]
 mod dialogs_benchmark_run_fixture;
 
+#[test]
+fn fake_session_gate_releases_and_observes_cancellation() {
+    let (gate, receiver) = dialogs_benchmark_run_fixture::FakeSessionGate::new();
+    let token = gate.token();
+    assert!(!token.is_canceled());
+    gate.release();
+    assert!(gate.wait(&receiver));
+    token.cancel();
+    assert!(token.is_canceled());
+    assert!(!gate.wait(&receiver));
+}
+
 // C#: BenchmarkDialogTests.RunButton_RunsTheSelectedProfiles_ShowsProgress_LocksTheControls_ThenListsRows
 #[test]
 #[ignore = "native: needs desktop"]
