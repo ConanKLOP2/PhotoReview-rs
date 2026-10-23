@@ -62,6 +62,19 @@ fn time_window_is_inclusive() {
     }
 }
 
+#[test]
+fn click_time_window_distinguishes_exactly_one_under_and_one_over() {
+    for (elapsed, expected) in [(TIME - 1, 2), (TIME, 2), (TIME + 1, 1)] {
+        let mut counter = ClickCounter::new();
+        register(&mut counter, PointerButton::Left, 10, 10, 2_000);
+        assert_eq!(
+            expected,
+            register(&mut counter, PointerButton::Left, 10, 10, 2_000 + elapsed),
+            "elapsed {elapsed}"
+        );
+    }
+}
+
 // C#: ClickCounterTests.SlopRectangle_IsCenteredOnTheFirstClick_BothAxes
 #[test]
 fn slop_rectangle_is_centered_on_the_first_click_both_axes() {
@@ -265,6 +278,19 @@ fn signed_high_word_reads_an_int16() {
     assert_eq!(100, signed_high_word(0x5_0064_1234));
     assert_eq!(-1, signed_high_word(-1));
     assert_eq!(0, signed_high_word(0xFFFF));
+}
+
+#[test]
+fn signed_high_word_preserves_exact_sign_boundaries_and_low_word_mask() {
+    for (value, expected) in [
+        (0x0001_0000_isize, 1),
+        (0xFFFF_0000_u32 as i32 as isize, -1),
+        (0x7FFF_0000_isize, 32767),
+        (0x8000_0000_u32 as i32 as isize, -32768),
+        (0x1234_5678_isize, 0x1234),
+    ] {
+        assert_eq!(expected, signed_high_word(value), "{value:#x}");
+    }
 }
 
 // C#: InputNativeTests.LowWord_IsUnsigned
@@ -923,6 +949,23 @@ mod native_tests {
         let (click_w, click_h) = native::double_click_size_pixels(96);
         assert!(click_w > 0 && click_h > 0);
         assert!(native::double_click_time_ms() >= 200);
+    }
+
+    // Exact metrics are Windows system settings; this only verifies positive, DPI-scaled values.
+    #[test]
+    #[ignore = "native: needs desktop"]
+    fn drag_metrics_and_double_click_size_scale_at_96_and_192_dpi() {
+        let drag96 = native::drag_metrics_pixels(96);
+        let drag192 = native::drag_metrics_pixels(192);
+        let click96 = native::double_click_size_pixels(96);
+        let click192 = native::double_click_size_pixels(192);
+        for value in [
+            drag96.0, drag96.1, drag192.0, drag192.1, click96.0, click96.1, click192.0, click192.1,
+        ] {
+            assert!(value > 0);
+        }
+        assert!(drag192.0 >= drag96.0 && drag192.1 >= drag96.1);
+        assert!(click192.0 >= click96.0 && click192.1 >= click96.1);
     }
 
     // C#: InputNativeTests.CursorScreenPixel_IsTheCursorPosition_OrNullWhenWindowsCannotSayIt
