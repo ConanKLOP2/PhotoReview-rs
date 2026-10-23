@@ -422,6 +422,18 @@ pub(crate) mod tests {
         assert_eq!(resources.live_bitmap_count(), 0);
     }
 
+    #[test]
+    fn debug_and_hwnd_report_their_exact_fields_without_com() {
+        let resources = DeviceResources::new_unbuilt(123, 8, 9, 1.0, true, 3);
+        assert_eq!(resources.hwnd(), 123);
+        let debug = format!("{resources:?}");
+        assert!(debug.contains("DeviceResources"), "{debug}");
+        assert!(debug.contains("hwnd: 123"), "{debug}");
+        assert!(debug.contains(".."), "{debug}");
+        let offscreen = DeviceResources::new_unbuilt(0, 1, 1, 1.0, true, 1);
+        assert_eq!(offscreen.hwnd(), 0);
+    }
+
     // C#: D2DRenderSurfaceTests.Offscreen_IsWarpWithoutWindowOrWaitHandle
     #[test]
     #[ignore = "native: needs desktop"]
@@ -437,6 +449,14 @@ pub(crate) mod tests {
         assert!(r.adapter_description().is_empty());
         assert_eq!(r.query_maximum_frame_latency().unwrap(), 0);
         assert!(r.target().is_ok());
+    }
+
+    #[test]
+    #[ignore = "native: needs desktop"]
+    fn create_offscreen_one_by_one_succeeds() {
+        let r = DeviceResources::create_offscreen(1, 1, 1.0, true).unwrap();
+        assert_eq!(r.pixel_width(), 1);
+        assert_eq!(r.pixel_height(), 1);
     }
 
     // C#: D2DWindowSurfaceTests.WindowSurface_FlipModelWaitableSwapChain_LatencyOne_PresentsAndResizes (first assertions)
@@ -456,6 +476,28 @@ pub(crate) mod tests {
             "{}",
             r.adapter_description()
         );
+    }
+
+    #[test]
+    #[ignore = "native: needs desktop"]
+    fn window_resource_getters_report_swap_chain_and_adapter() {
+        let window = HiddenWindow::new();
+        let r = DeviceResources::create_for_window(window.raw(), true, 3).unwrap();
+        assert_eq!(r.hwnd(), window.raw());
+        assert!(r.has_swap_chain());
+        assert_eq!(r.query_maximum_frame_latency().unwrap(), 3);
+        let description = r.adapter_description();
+        assert!(!description.is_empty());
+        assert_ne!(description, "xyzzy");
+        let seen = Rc::new(std::cell::Cell::new(i32::MIN));
+        let captured = Rc::clone(&seen);
+        r.set_present_fault(Some(Box::new(move |hr| {
+            captured.set(hr);
+            hr
+        })));
+        let presented = r.present(0);
+        assert!(presented >= 0);
+        assert_eq!(seen.get(), presented);
     }
 
     // C#: D2DWindowSurfaceTests.WindowSurface_MaxFrameLatencyOption_IsApplied
