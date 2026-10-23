@@ -122,3 +122,44 @@ Tổng: 3 cao / 2 trung bình / 5 thấp.
 - `ViewModelOverlayCommands` và `MainWindowOverlay::attach` bỏ `deps.log` (`shell_overlay/main_window.rs:270`, `log: _`) và `DeferredTooltips::create_now` im lặng khi tạo tooltip thất bại (`tooltips.rs:401`): khó chẩn đoán nhưng khớp C# (`DeferredTooltips.cs` cũng chỉ đặt `_failed`).
 - `ShellOverlay::with_toolbar/with_status/...` dùng `expect("ShellOverlay is disposed")` (`overlay/state.rs:416-464`) trên API công khai; chỉ test và 17e dùng, không nằm trên đường I/O hay dữ liệu người dùng.
 - `owner_draw::run_guarded` nuốt panic và ghi log, trong khi mọi chốt khác ném lại; là quyết định D-W8B4I-9 bám theo C#, khác chính sách "panic là lỗi" của R0003 nhưng có chủ ý.
+## Tái kiểm REVIEW-B4 ngày 2026-10-23, Rust `48f96aa`
+
+**Mọi phát hiện: suy luận từ mã, chưa chạy thử.** Không chạy cargo/test/native UI, không tạo HWND, không sửa Rust. Tổng giữ **3 cao / 2 trung bình / 5 thấp**, 0 phát hiện mới; các mục dưới bổ sung bằng chứng và sửa giới hạn của báo cáo cũ. `git diff c40b59d origin/master` trong năm thư mục production thuộc phạm vi B4 không có thay đổi ở thời điểm đối chiếu; #210 chủ yếu thêm test/bằng chứng mutation, không sửa các đường H1/H2/H3.
+
+### Ba lỗi cao vẫn có đường đi trong mã hiện tại
+
+| Mã | Nơi bảo đảm/thiếu chốt | Kịch bản và test nên thêm |
+|---|---|---|
+| H1, W8-13h/14c/14f | `crates/pr-platform-win/src/host/main_window/lifecycle.rs:324-330` vẫn giữ mutable borrow khi gọi closure, `:445` lại borrow trong on_closing | Gọi command mở modal qua update_view_model, callback modal giả gọi pump/on_closing/read-view: borrow xung đột. Test hồi quy dùng chính shared VM của MainWindow, không fixture tách VM; assert không panic và completion không mất. Không kết luận đã tái hiện native. |
+| H2, W8-14a/13i | `crates/pr-platform-win/src/shell_input/dispatch.rs:647` giữ viewer.borrow_mut xuyên controller; `shell_input/surface.rs:129-130` gọi viewport.update_layout đồng bộ; `host/main_window/lifecycle.rs:359` content_from_viewer đọc cùng viewer | Anchored wheel/click zoom làm surface.update_layout đi qua content_from_viewer khi viewer đang mutable borrow. Test phải nối viewer thật với viewport callback thật; cache snapshot của fixture có thể che đường lỗi. Assert zoom/offset đúng, không chỉ không panic. |
+| H3, W8-14a/13i/16f | `shell_input/dispatch.rs:674-680` chỉ stop glide/invalidate từ ViewerUpdate; `crates/pr-app/src/viewmodels/main/state.rs:1319-1326` mới cập nhật presenter qua apply_viewer_update | Zoom từ input core có update nhưng không đi qua VM apply_viewer_update. C# `src/PhotoReview.App.Shared/ViewModels/MainViewModel.cs:136-143` subscribe ZoomModeChanged và PropertyChanged để set presenter zoom/refresh HUD. Test wheel/phím/click -> kiểm presenter zoom và HUD bằng giá trị cụ thể, rồi completion full-resolution còn thuộc ảnh hiện tại. |
+
+Đường input `shell_input/main_window.rs:266` vẫn `ReviewCommandType::OpenInDefaultEditor => todo!()`: M1 còn. Q4 đã chốt ở P-52/#211: xử lý tạm an toàn có thông báo, không cần hỏi lại. Reviewer chỉ ghi nhận, không sửa code.
+
+### Unsafe, handle và R0003
+
+- Quét cú pháp 54 file `.rs` của `host/main_window`, `shell_input`, `shell_menus`, `shell_overlay`, `shell_viewing`: 38 dòng có `unsafe {`, 0 dòng thiếu `SAFETY:` trong 5 dòng trước. Đây chỉ là kiểm chú thích, **không** phải chứng minh không UB, không bao gồm mọi khai báo unsafe extern hoặc FFI wrapper ngoài phạm vi.
+- Đọc lại `shell_input/drop_target.rs:280-287`: pdwEffect được kiểm null và đi qua panic boundary; COM method dùng `com_guarded`. Không xác minh con trỏ do COM client sai giao ước bằng chạy thử. Không gọi ReleaseStgMedium trên dữ liệu người dùng trong lần này.
+- `shell_menus/popup_host.rs:254-280`: session tạo trước guard menu, TrackPopupMenu xong thì root/menu guard được huỷ trước `pending_panic::rethrow_pending`. Đây là biên bắt/ném lại cần giữ; bỏ catch FFI không phải cách sửa H1. R0003 nói panic UI là bug; không nên nuốt BorrowError bằng catch rộng để làm app tiếp tục với state mất đồng bộ.
+- `host/main_window/lifecycle.rs:540-582` dispose lần lượt unsubscribe hub/window/layout, dispose feature ngược thứ tự, bỏ size source callback, release renderer và viewport rồi unregister. Đọc thứ tự này chưa chứng minh mọi cycle được cắt; test vòng tham chiếu từ pr-203 M2 vẫn cần chạy và định danh nguồn giữ Rc.
+
+### Đọc bổ sung vùng trước đây chưa đọc kỹ
+
+Đã đọc `shell_overlay/overlay/hit_test.rs`, `layout.rs`, `paint.rs`, `input.rs` và `shell_viewing/scrollbars/layout.rs`. Pointer hover/request_render được gọi sau khi nhả state borrow ở hit_test; key click lấy focused button ra trước khi gọi click_button. Scrollbar hit-test che vùng compare trước khi xét bar; `to_dip` dùng normalized_dpi. Chưa tìm ra sai lệch mới đủ căn cứ; không khẳng định callback renderer tuỳ ý có thể re-enter là lỗi production khi chưa có caller cụ thể.
+
+### Cập nhật test và đường dẫn giao việc
+
+Đếm cú pháp `#[test]`/`#[ignore` trong 5 binary `host_main_window_*` hiện tại:
+
+| Binary | Test | Ignore |
+|---|---:|---:|
+| core | 28 | 22 |
+| frame | 18 | 16 |
+| lifecycle | 23 | 16 |
+| viewing | 14 | 11 |
+| windowing | 38 | 17 |
+| Tổng | 121 | 82 |
+
+Con số 82/120 ở M2 là snapshot cũ; hiện là 82/121 theo quét cú pháp, không phải kết quả test runner. Test mutation thêm không tự chứng minh H1/H2/H3 đã được bắt.
+
+**Đính chính phạm vi prompt G1/G2 của BACKLOG:** đường thật theo `contracts/W8-13g.md` là `crates/pr-platform-win/src/host/main_window/`, không có thư mục `src/shell_main_window/`. Main view model nằm ở `crates/pr-app/src/viewmodels/main/`, không phải glob `main_view_model*`. Người triển khai chỉ được claim/sửa file thật; không tạo mô-đun song song để khớp đường dẫn sai trong prompt cũ. Việc này là sửa sự thật tài liệu, không phải quyết định sản phẩm.

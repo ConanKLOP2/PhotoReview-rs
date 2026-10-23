@@ -51,7 +51,7 @@ Thứ tự đề xuất sau tái kiểm: G25 (nguy cơ xoá vĩnh viễn), rồi
 ```
 Việc: sửa lỗi RefCell giữ qua hộp thoại modal / controller trong cửa sổ chính (docs/reviews/main-window-input-overlay-viewing.md H1, H2; docs/reviews/pr-203.md M2).
 Đọc trước: AGENTS.md, docs/adr/R0003-*, docs/reviews/main-window-input-overlay-viewing.md (H1, H2), contracts/W8-13h.md, W8-13i.md, W8-14a.md.
-Phạm vi file được sửa: crates/pr-platform-win/src/shell_main_window/{lifecycle,viewing,mod}.rs, crates/pr-platform-win/src/shell_input/{main_window,dispatch}.rs, crates/pr-platform-win/src/shell_menus/main_window.rs và các test mới tên crates/pr-platform-win/tests/shell_main_window_reentrancy.rs (đường dẫn thật: lấy theo contracts/W8-13g.md, đừng đoán). Cấm sửa file khác.
+Phạm vi file được sửa: crates/pr-platform-win/src/host/main_window/{lifecycle,viewing,mod}.rs, crates/pr-platform-win/src/shell_input/{main_window,dispatch}.rs, crates/pr-platform-win/src/shell_menus/main_window.rs và các test mới tên crates/pr-platform-win/tests/shell_main_window_reentrancy.rs (đường dẫn thật: lấy theo contracts/W8-13g.md, đừng đoán). Cấm sửa file khác.
 Yêu cầu: (1) không giữ borrow_mut của view model qua bất kỳ hộp thoại modal/lời gọi OS nào: lấy kết quả ra khỏi borrow trước khi gọi dialog, rồi borrow lại để áp kết quả; (2) run_pointer không giữ viewer.borrow_mut() trong lúc controller gọi update_layout: đổi sang trích dữ liệu cần thiết ra trước hoặc dùng try_borrow có đường dự phòng; (3) sửa vòng tham chiếu của cửa sổ chính để test closed_disposes_the_bars_once_and_unsubscribes xanh.
 Test phải thêm: (a) test mở dialog giả (host fake) từ lệnh Open/Settings và trong callback dialog gọi vẽ/pump/on_closing: không panic; (b) test zoom có neo bằng con trỏ trên viewer thật (không dùng cache của fixture); (c) bỏ #[ignore] của closed_disposes_the_bars_once_and_unsubscribes.
 CẤM: làm yếu/xoá/ignore test hiện có; thêm #[allow] không kèm lý do; unwrap/expect ở đường production; sửa fixture để né lỗi.
@@ -65,7 +65,7 @@ Kiểm tra (chạy và dán kết quả): cargo fmt -p pr-platform-win --check; 
 ```
 Việc: nối thay đổi zoom do con trỏ/phím tới presenter.set_viewer_zoom, HUD zoom và bộ nạp zoom-detail (docs/reviews/main-window-input-overlay-viewing.md H3).
 Bước 0: tái hiện bằng test đỏ trước (không sửa mã): zoom bằng cuộn chuột trên viewer thật, khẳng định presenter nhận set_viewer_zoom đúng giá trị. Nếu test xanh ngay thì dừng và báo.
-Phạm vi: crates/pr-platform-win/src/shell_main_window/*.rs, crates/pr-platform-win/src/shell_input/*.rs, crates/pr-app/src/viewmodels/main_view_model* (chỉ chỗ đăng ký/nhận sự kiện viewer), tests mới shell_zoom_events.rs (pr-platform-win) và viewmodels_main_zoom_events.rs (pr-app). Cấm sửa file khác.
+Phạm vi: crates/pr-platform-win/src/host/main_window/*.rs, crates/pr-platform-win/src/shell_input/*.rs, crates/pr-app/src/viewmodels/main/*.rs (chỉ chỗ đăng ký/nhận sự kiện viewer), tests mới shell_zoom_events.rs (pr-platform-win) và viewmodels_main_zoom_events.rs (pr-app). Cấm sửa file khác.
 So với C#: MainViewModel.cs dòng 136, 140-143 (đăng ký sự kiện viewer).
 Test: zoom bằng wheel/phím/click-zoom => HUD % đổi, set_viewer_zoom được gọi đúng một lần mỗi thay đổi, zoom-detail loader nhận mức mới.
 CẤM: làm yếu test; thêm callback gọi lại vòng tròn (re-entrancy) vào view model đang borrow (xem G1).
@@ -221,7 +221,7 @@ Kiểm tra: cargo fmt -p pr-app --check && cargo fmt -p pr-platform-win --check;
 **PROMPT Codex G14+G15** (hai file tập hợp tách riêng nên một lượt, nhưng hai commit)
 ```
 Việc: (A) docs/reviews/main-window-input-overlay-viewing.md L1..L4; (B) docs/reviews/startup.md L2, L3.
-Phạm vi A: crates/pr-platform-win/src/shell_main_window/ (UiLocalPoster, TimerQueue, prefetch, FrameLog) và test cạnh. Phạm vi B: crates/pr-shell/src/composition/registry.rs và crates/pr-shell/tests/composition_registry*.rs. Cấm sửa file khác. L5 của b4 giữ nguyên (tương đương C#).
+Phạm vi A: crates/pr-platform-win/src/host/main_window/ (UiLocalPoster, TimerQueue, prefetch, FrameLog) và test cạnh. Phạm vi B: crates/pr-shell/src/composition/registry.rs và crates/pr-shell/tests/composition_registry*.rs. Cấm sửa file khác. L5 của b4 giữ nguyên (tương đương C#).
 Sửa A: UiLocalPoster thêm PhantomData<*const ()> để !Send; TimerQueue bọc callback bằng catch_unwind và log lỗi tạo luồng; prefetch dùng một luồng dùng chung thay vì một luồng mỗi yêu cầu; FrameLog đệm trong bộ nhớ và ghi ở luồng nền.
 Sửa B: giữ Weak thay vì Arc trong closure của preload_scheduler_factory/decoder_decorator; không lưu lỗi tạm trong OnceLock (thử lại lần sau).
 Test: mỗi mục một test (compile_fail cho !Send bằng static_assertions nếu repo đã dùng, nếu chưa thì test Rust-only bằng assert_not_impl).
