@@ -41,6 +41,13 @@ It checks same-batch dependencies on `origin/master`, then copies owned source f
 Failing `not yet implemented` tests may pull in completed source modules for up to four test rounds.
 Cargo output goes to `tools/autopilot/state/logs/<unit>.pr.log`; the worktree keeps its own target directory.
 `--dry-run` runs the checks without staging, committing, pushing, or opening a PR.
+### Wave 9
+
+Use lane tags such as `wave9-e`; the integration branch is `integration/wave9-e`. The pipeline finds the unique
+`docs/WAVE-9-PLAN-*.md` containing rows for that lane, or accepts `--plan docs/WAVE-9-PLAN-edt.md` to choose explicitly.
+`PLAN_REL` takes precedence over automatic lookup. A W8 dependency is ready when its id appears in `origin/master` history or
+any `tools/autopilot/state/*.json` records it as `done` or `partial`.
+
 Ports the units of one Wave 8 batch with Codex CLI (gpt-6-luna, effort low) driven by plain bash. Optimised for Codex quota and
 Claude tokens, not for wall-clock time. Files: `codex-pipeline.sh` (driver), `codex-pack.sh` (context pack), `codex-gate.sh` (machine
 checks), `codex-run.sh` (one Codex call, `--json`, `resume`), `CODEX-RULES.md`, `lib/codex-lib.py` (plan/contract/state/lint/telemetry
