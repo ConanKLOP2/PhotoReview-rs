@@ -440,3 +440,7 @@ Giữ một file open và read sequential, stream/handle drop trước return k�
 CẤM làm yếu/xoá/ignore test, sửa golden, cấp phát theo metadata chưa kiểm, chặn global UI lock trong lúc đọc.
 Kiểm: cargo fmt -p pr-imaging --check; cargo clippy -p pr-imaging --all-targets --locked -- -D warnings; cargo test -p pr-imaging --locked --test cache_preview_file; cargo test -p pr-imaging --locked, có hang guard. Mutation chỉ logic owned sau merge và timebox repo.
 ```
+
+## Bổ sung REVIEW-RECOVERY-FLOW (2026-10-23)
+
+G17 (thêm test, mức trung bình, chủ W8-10g) nhận thêm recovery-flow M1: test result_for_a_cleared_row_still_counts_progress không so check theo Id sau dismiss. Không tạo nhóm trùng. Phạm vi, phản ví dụ và PROMPT với lệnh fmt/clippy/test pr-app: [recovery-flow.md](recovery-flow.md). Không thêm lỗi production; G25/G7/G3 giữ mã cũ. Suy luận từ mã, chưa chạy thử.
