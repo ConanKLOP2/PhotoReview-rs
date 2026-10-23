@@ -91,3 +91,7 @@
 - Đã đối chiếu C# 7eaee2a2 và test hiện có; M1/M2 thừa kế oracle, M3 contract từng cho phép whole-file nhưng guard resource chưa tương đương, L1 test staging chưa bảo vệ short I/O. Không sửa Rust/assets/goldens, không chạy Cargo/test/oracle/mutation/native bin, không tạo file lớn/ép OOM.
 - Bổ sung BACKLOG G26..G29 với prompt/phạm vi/test/lệnh theo package; contracts/W4-08b.md ghi rõ khác biệt guard trước allocation; invariants.md dẫn báo cáo mới. Quyết định mới của G27 chưa thuộc P-52; giữ cần quyết định, không tự sửa production.
 - Kiểm docs diff/encoding trước PR; bật squash auto-merge qua gh, nhả claim và dọn branch/worktree sau merge. Không có target build của session.
+
+## 2026-10-23 — Machine C REVIEW-RECOVERY-FLOW
+
+Review tĩnh tại bb5c02a, oracle 7eaee2a2: 0 cao / 1 trung bình (test) / 0 thấp. Báo cáo recovery-flow.md; nối M1 vào G17, không đếm lại G25/G7/G3. Phân biệt presenter đã port với 96 todo native; không yêu cầu catch panic UI trái R0003. Không sửa Rust, không chạy Cargo/native; suy luận từ mã, chưa chạy thử. Tiếp theo: PR docs, auto squash, nhả claim sau merge; tiếp tục vùng host/dialog khác.
