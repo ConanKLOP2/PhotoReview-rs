@@ -52,6 +52,48 @@ fn surface_over(controller: &Rc<FakeController>) -> (ViewportImageSurface, Viewe
     (surface, viewer)
 }
 
+#[test]
+fn debug_output_names_viewport_image_surface() {
+    let (surface, _) = surface_over(&FakeController::new());
+    let debug = format!("{surface:?}");
+    assert!(debug.contains("ViewportImageSurface"), "{debug:?}");
+}
+
+#[test]
+fn input_host_forwards_profile_and_boolean_queries() {
+    let (rig, _) = images_rig(&["a.jpg"]);
+    let host = rig.input.input_host();
+    assert!(host.has_images());
+    assert!(!host.is_fullscreen());
+    assert!(!host.is_compare_visible());
+
+    // The view model exposes these states through its real compare/fullscreen actions.
+    execute(&rig, ReviewCommandType::Fullscreen);
+    assert!(host.is_fullscreen());
+    // is_compare_visible -> false (main_window.rs:185) stays unkilled: ToggleCompare needs a compare pair the fake rig does not provide.
+}
+
+#[test]
+fn viewport_input_hooks_debug_output_names_its_type() {
+    let rig = FeatureRig::new();
+    let hooks = create_viewport_input_hooks(rig.services.window.clone());
+    let debug = format!("{hooks:?}");
+    assert!(debug.contains("ViewportInputHooks"), "{debug:?}");
+}
+
+#[test]
+fn logged_input_error_displays_exact_original_text() {
+    let (rig, _) = images_rig(&["a.jpg"]);
+    rig.input
+        .input_host()
+        .report_action_failed("Open", &std::io::Error::other("denied"));
+    assert_eq!("action-failed:Open:denied", rig.statuses()[0]);
+    assert_eq!(
+        (LogLevel::Error, "Open failed: denied".to_owned()),
+        rig.services.log.entries().last().cloned().expect("entry")
+    );
+}
+
 fn scripted_layout() -> ViewportLayout {
     ViewportLayout {
         viewport_width: 800.0,

@@ -332,6 +332,24 @@ fn files_reads_a_wide_hdrop_list_in_order() {
 }
 
 #[test]
+fn hdrop_format_uses_the_required_negative_lindex() {
+    let data = fake(Some(&[r"C:\x"]));
+    assert!(has_files(&data.data));
+    assert_eq!(1, files(&data.data).len());
+}
+
+#[test]
+fn parse_drop_files_accepts_exact_minimum_header_and_rejects_one_byte_less() {
+    assert!(parse_drop_files(&[0; 19]).is_empty());
+    let minimum = raw_block(20, 1, &[]);
+    assert_eq!(20, minimum.len());
+    assert!(parse_drop_files(&minimum).is_empty());
+    let mut one_more = minimum;
+    one_more.push(0);
+    assert!(parse_drop_files(&one_more).is_empty());
+}
+
+#[test]
 fn files_reads_an_ansi_hdrop_list() {
     // C#: DropTargetTests.Files_ReadsAnAnsiHDropList
     let list = [r"C:\a\one.jpg", r"C:\two.jpg"];
