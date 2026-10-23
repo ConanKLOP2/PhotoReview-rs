@@ -11,7 +11,7 @@ Machine C (cloud). Review CHỈ ĐỌC, không sửa mã, không chạy cargo (c
 - `crates/pr-platform-win/src/{recycle_bin,recycle_restore,live_operation_registry}.rs` (`recycle_bin_shell/capacity/settings/candidate/eligibility` chỉ liệt kê, không đọc sâu).
 - Không đọc sâu: `pr-imaging` (INV-1, 2, 8 phía giải mã/cache), `pr-core/src/settings/store.rs` (INV-11), `pr-core/src/diagnostics/file_log.rs` (INV-10). Các hàng đó trong bảng dưới chỉ dựa vào tên test và tài liệu, ghi rõ.
 
-Tổng: 0 cao / 3 trung bình / 8 thấp / 3 câu hỏi sản phẩm.
+Tổng sau tái kiểm ngày 2026-10-23: 1 cao / 3 trung bình / 8 thấp / 3 câu hỏi sản phẩm (H1 mới bên dưới).
 
 ## 1. Bảng INV
 
@@ -23,7 +23,7 @@ Nguồn định nghĩa: `docs/architecture.md` của C# (mục "Ánh xạ bất 
 | INV-2 | Clear/evict vô hiệu hoá in-flight/persist cũ | epoch trong `pr-imaging/src/service/mod.rs` (~959 có test white-box), `DiskCacheStore`, `ThumbnailCache` (chưa đọc sâu) | `pr-imaging/tests/cache_preview_file.rs`, `thumbnail_cache.rs:1228` |
 | INV-3 | Advance một lần TRƯỚC I/O; không present lại sau action | `pr-app/.../file_actions/actions.rs:299-320` (`execute_core`: `catalog.remove` -> `sink.present` -> mới submit job ở 365) | `pr-app/tests/viewmodels_main_commands.rs:811` `recycle_failing_during_the_file_operation_keeps_the_advance_restores_the_photo_and_shows_a_dialog`; `pr-core/tests/file_actions_service.rs:324` `execute_async_move_size_changed_source_gone_failed_journal_and_source_removed` (sự kiện `source_removed`, F3) |
 | INV-4 | Chỉ một file action chạy cùng lúc | hai lớp: `FileActionService::try_begin` `service.rs:222` (CAS `in_progress`) + `GateGuard` `service.rs:1174`; lớp UI `coordinators/file_action_gate.rs:129-166` (`release`), `:202` (`try_enter`); `UndoService::begin_hold` `undo.rs:539`; retry `recovery_retry.rs:316` | `file_actions_service.rs:963` `file_action_gate_trait_forwards_to_the_one_gate`; `file_actions_matrix.rs:346` (một journal, một service, undo dùng chung gate); `pr-app/tests/coordinators_file_action_gate.rs` |
-| INV-5 | Action cũ không sửa catalog/undo sau đổi folder; thất bại thì trả ảnh lại | `actions.rs:444-448` (stale-folder guard), `:479-507` (restore), `:680-747` (`executor_threw`); `review_catalog.rs:299` (`restore`) | `viewmodels_main_commands.rs:811` (ở trên); `file_actions_matrix.rs:1095` (undo không báo khôi phục thứ chưa đủ); `pr-app/tests/file_action_core.rs` |
+| INV-5 | Không sửa catalog/session của folder mới; APP-03 vẫn đăng ký Undo cho action cũ thành công; thất bại chỉ trả ảnh vào folder gốc nếu còn hiện hành | `actions.rs:444-448` (stale-folder guard), `:479-507` (restore), `:680-747` (`executor_threw`); `review_catalog.rs:299` (`restore`) | `viewmodels_main_commands.rs:811` (ở trên); `file_actions_matrix.rs:1095` (undo không báo khôi phục thứ chưa đủ); `pr-app/tests/file_action_core.rs` |
 | INV-6 | Recycle; journal Prepared -> Committed/Failed; reconcile khi khởi động | `service.rs:393/473/717` (`tx.begin()` TRƯỚC mọi mutation); `transaction.rs:137-160,212-223,249-293`; `journal.rs:653-684`; `reconcile.rs:99,286,411`; `startup_recovery.rs:44-67` | `file_actions_matrix.rs`: `move_matrix:1445`, `copy_matrix`, `recycle_matrix`, `group_*_matrix`, `undo_*_matrix`, `reconcile_interrupted_*` (1628-1732), `action_crashed_before_each_call_restart_is_consistent_move:2615`, `torn_journal_append_restart_is_consistent_move:2674`, `torn_append_after_successful_appends_next_append_starts_on_new_line:2690`; `journal_reconcile.rs`, `journal_startup_recovery.rs` |
 | INV-7 | Bỏ snapshot Explorer trễ khi catalog đã tương tác/đổi | `folder_load/load.rs` (~456-487 cổng thứ tự), `review_catalog.rs:511` (`replace_order` chỉ nhận hoán vị), `snapshot_validator` | `pr-app/tests/folder_load_order.rs:21` `late_order_is_ignored_after_user_interaction` |
 | INV-8 | Handle decode share ReadWrite/Delete, SequentialScan, đóng sớm | `io/physical.rs:1217-1231` (`open_read_shared`: `FILE_SHARE_READ|WRITE|DELETE` + `SEQUENTIAL_SCAN`); phía decoder chưa đọc | ops `openread-then-rename` (PARITY); `pixel_memory.rs:650` |
@@ -132,3 +132,32 @@ Xem M1. Hiện mỗi bản được recycle riêng với dòng journal riêng; k
 3. Chống `end()` sai người, cổng dùng chung trong composition: chưa có.
 4. Dọn trùng lặp: chưa có test bản giữ lại biến mất/bị sửa trong lúc xem lại.
 5. Move chéo ổ lỗi nửa chừng: chỉ có native `#[ignore]` (`file_actions_service_native.rs` 19 test bị bỏ qua), chưa chạy trên CI Linux.
+## 6. Tái kiểm Machine C ngày 2026-10-23 (Rust `85b8bf0`, C# `7eaee2a2`)
+
+**Mọi phát hiện bổ sung: suy luận từ mã, chưa chạy thử.** Không chạy Cargo, oracle, mutation hoặc thao tác Recycle Bin. Đây là bổ sung cho lần đọc cũ, không phải xác nhận runtime cho toàn bộ bảng INV. Không thay đổi mã Rust.
+
+### H1 (cao, thừa kế C#): Recovery retry nhóm Recycle không kiểm lại fingerprint sau Prepared
+
+- Chủ sở hữu: W3-06 (`pr-core` recovery retry); W8-18v chỉ là bên gọi UI, không nên sửa riêng tại dialog.
+- Rust: `crates/pr-core/src/file_actions/recovery_retry.rs:505` (`precheck_group_members`) kiểm size/mtime trước transaction; `:596` ghi Prepared qua `tx.try_begin`; `:609-648` nhánh Recycle chỉ kiểm path trống khi undo, hoặc loại ổ khi permanent, rồi gọi bin. Khác nhánh Move/Copy `:651-657`, không stat lại nguồn ngay trước mutation.
+- Kịch bản cụ thể: journal Failed có member B được đánh dấu `permanent=true`, cho phép permanent-delete đang bật, B trên ổ được xác nhận không có bin. Precheck thấy B đúng size/mtime. Trong lúc append Prepared bị chậm hoặc đang xử lý member A, chương trình khác thay B bằng ảnh khác size/mtime. Tới B, `can_recycle` vẫn false -> `delete_permanently(B)` xoá vĩnh viễn ảnh thay thế, trong khi journal lưu fingerprint ảnh cũ. Với member không permanent, ảnh thay thế bị recycle nhầm. Gate INV-4 chỉ khoá thao tác của app, không khoá chương trình ngoài.
+- Adapter `crates/pr-platform-win/src/recycle_bin.rs:192-210` kiểm loại ổ và nguồn đã mất sau delete, không kiểm fingerprint; vì vậy adapter không chặn kịch bản trên. Không cần chạy thùng rác thật để chứng minh nhánh logic này.
+- C# baseline: `src/PhotoReview.Core/FileActions/RecoveryRetryService.cs`, `ExecuteGroupRetry` có cùng nhánh `else if (member.Permanent)` -> `DeletePermanently(member.Source)` mà không re-stat; đây là rủi ro thừa kế, thay đổi hành vi cần ADR và hàng Different theo quy tắc parity.
+- Test đã đọc: `crates/pr-core/tests/recovery_retry.rs:960` `retry_move_or_copy_delete_group_member_resized_after_the_check_is_refused_and_nothing_recycled` chỉ bảo vệ khoảng trước transaction; `:1084` `retry_move_or_copy_move_group_source_resized_after_prepared_fails_as_source_changed_without_moving` bảo vệ Move, không Recycle; `:2748` `retry_group_permanent_member_whose_drive_gained_a_recycle_bin_after_the_pre_check_is_not_deleted` bảo vệ loại ổ, không fingerprint.
+- Test nên thêm (đề xuất, chưa tồn tại): `retry_group_permanent_source_replaced_after_prepared_is_not_deleted`, fake append hook thay B sau Prepared; kỳ vọng 0 lần `delete_permanently(B)`, file thay thế còn nguyên bytes, kết quả thất bại SourceChanged và dòng Failed. Thêm biến thể non-permanent và thay B trong callback recycle A. Không làm yếu các test cũ; mọi bin đều fake. Re-stat thu hẹp khoảng race, chưa tạo bảo đảm nguyên tử với tiến trình ngoài; cần ghi giới hạn đó trong ADR.
+
+### Đính chính INV-5: ngoại lệ APP-03 là chủ ý của oracle
+
+`docs/architecture.md` C# vẫn tóm tắt INV-5 là không sửa catalog/undo sau đổi folder, nhưng test baseline mới hơn giải nghĩa ngoại lệ: `tests/PhotoReview.Integration.Tests/MainWindowBehaviorTests.FolderSwitch.cs:123`, tên `MoveCompletingAfterFolderSwitchDoesNotMutateNewCatalogOrRegisterUndo`, có DisplayName và assert yêu cầu đăng ký Undo. Tên test cũ không phản ánh assertion hiện tại. Rust `actions.rs:442-448,545,844` thực hiện ngoại lệ này. Các test Rust `move_finishing_after_folder_switch_is_registered_and_leaves_new_folder_untouched` (`file_action_core.rs:914`) và `recycle_finishing_after_folder_switch_is_undoable` (`:937`) là bằng chứng mã test, chưa được chạy trong lần review này. Không coi việc đăng ký Undo muộn là vi phạm INV-5.
+
+### Đính chính M3: live marker không chặn mãi trong phiên
+
+Lập luận cũ “trong phiên này cũng không xử lý vì marker sống” quá mạnh: marker được nhả khi transaction Drop. Sau panic, một lần reconcile mới có thể xét Prepared. Giới hạn thực tế là UI không tự động reconcile ngay trong nhánh `executor_threw`; nguồn được restore vào catalog mà không chứng minh lại. M3 vẫn còn, nhưng không nên mô tả reconcile là bất khả thi trước lần khởi động kế tiếp.
+
+### Bằng chứng durability và giới hạn
+
+`journal.rs:667-684` dùng `sync_all` hoặc seam flush khi PowerLossSafe và stream là File; stream khác vẫn plain flush theo parity. Các test `append_power_loss_safe_on_a_real_file_flushes_to_disk_once_per_append_after_the_bytes_were_written` (`file_actions_journal.rs:1680`, native ignored), `append_fast_mode_never_flushes_to_disk` (`:1729`, native ignored), `append_power_loss_safe_on_a_stream_that_is_not_a_file_stream_falls_back_to_a_plain_flush` (`:1762`) có kiểm đường flush. Test native đầu dùng seam recorder, không thực sự cắt điện; không gọi đó là chứng minh chịu mất điện. Đề xuất mô hình mất cache ở M2 vẫn cần.
+
+### Phạm vi bổ sung đã đọc
+
+Đọc `recovery_retry.rs:555-810` (transaction và toàn bộ vòng retry), `recovery_check.rs` phần type/check, `recycle_candidate.rs`, `recycle_bin_capacity.rs`, `recycle_bin_shell.rs` phần COM apartment/enumeration/candidate/restore và `recycle_restore.rs` phần chọn đúng một candidate. Candidate không rõ/không duy nhất bị từ chối; lỗi per-item được log rồi bỏ qua. Không kết luận bộ COM/native này an toàn runtime chỉ từ việc đọc mã. `folder_load/load.rs:456-487` vẫn giữ PendingOrder khi mở file và Explorer pending; `actions.rs:444` vẫn chặn completion chạm catalog folder mới.

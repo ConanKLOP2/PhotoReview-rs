@@ -58,3 +58,8 @@
 - Gates (CARGO_TARGET_DIR in the worktree): rustfmt per touched file clean, `cargo clippy --workspace --all-targets --locked -- -D warnings` clean, `cargo test --workspace --locked --no-fail-fast`: 9494 passed, 0 failed, 1084 ignored.
 - NOT done / NOT run: no unit is ported; R2..R11 have no oracle (fake or native tests); no native test, mutation run or desktop run; no Rust test reads the `w9-r1-rename-policy` golden yet; the spec baseline in `docs/SYNC-LEDGER.md` was not moved and no existing golden was regenerated (settings goldens stay at `d92d6aae`, R7 updates the rename expectations by hand); the en/vi catalog keys of the rename dialog and menu are not synced; `FileSystem` fake in `pr-test-support` is not yet changed for case-only moves (owned by R2).
 - Next: lead decides the ledger advance and the catalog sync; port R1 first, then R2, R4, R7; the golden generator moves `staged/w9-r1-rename-policy.json` up when the baseline moves.
+## Review INVARIANTS, machine C, 2026-10-23 (tái kiểm)
+- Rust reviewed: 85b8bf0; C# oracle read-only: 7eaee2a2. Claim REVIEW-INVARIANTS held by C. Docs-only, không sửa Rust.
+- Bổ sung H1: retry nhóm Recycle thiếu kiểm lại fingerprint sau Prepared, có nhánh permanent-delete; sửa diễn giải INV-5/APP-03 và live marker của M3.
+- Kết quả: suy luận từ mã, chưa chạy thử. Không chạy fmt/clippy/test/oracle/mutation; không chạm Recycle Bin. PR docs sẽ bật squash auto-merge; nhả claim sau khi xác nhận merged.
+- Tiếp: REVIEW-BACKLOG, rồi REVIEW-PRS, B4, W9-CONTRACTS và TEST-PLAN theo lệnh người dùng.
