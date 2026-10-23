@@ -59,6 +59,18 @@ fn no_image() -> RouteState {
     RouteState::new(false, false)
 }
 
+#[test]
+fn rename_file_f2_requires_an_image_and_no_modifiers() {
+    // C#: ShortcutRouter.TryResolve, FEAT-RENAME step 9b after Recycle.
+    let router = default_router();
+    assert_eq!(
+        route(&router, KeyId::F2, KeyModifiers::NONE, image()),
+        Some(ReviewCommand::RENAME_FILE)
+    );
+    assert_eq!(route(&router, KeyId::F2, KeyModifiers::CONTROL, image()), None);
+    assert_eq!(route(&router, KeyId::F2, KeyModifiers::NONE, no_image()), None);
+}
+
 /// Compare flags of the C# `TryResolve(..., hasComparePair, isCompareVisible)` overloads, with an image.
 fn with_compare(has_compare_pair: bool, is_compare_visible: bool) -> RouteState {
     RouteState {

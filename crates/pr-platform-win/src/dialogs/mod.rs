@@ -12,6 +12,7 @@ pub mod file_dialog;
 pub mod folder_dialog;
 pub mod native;
 pub mod recovery;
+pub mod rename_prompt;
 pub mod secondary_window_port;
 pub mod settings;
 pub mod task_dialog;

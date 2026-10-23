@@ -4,8 +4,6 @@
 //! A second process forwards its paths to the running one (pipe, `pr_platform_win::forward_server`); `pr_core::instance::coalescer::ForwardedOpenCoalescer`
 //! merges a burst (Explorer starts N processes for N selected files) into ONE request after 750 ms; the request is posted to the UI thread, where the
 //! [`ForwardedOpenHandler`] brings the window to the front and opens the first path.
-#![allow(unused_variables, dead_code)] // stub: the porter removes this line with the last `todo!()`
-
 use std::cell::{Cell, RefCell};
 use std::error::Error;
 use std::fmt;
@@ -15,6 +13,10 @@ use std::time::Duration;
 
 use pr_core::abstractions::{Log, UiScheduler};
 use pr_core::instance::coalescer::{ForwardedOpenCoalescer, OpenCallback};
+
+thread_local! {
+    static CURRENT_ROUTER: RefCell<Option<std::rc::Weak<ForwardedOpenRouter>>> = const { RefCell::new(None) };
+}
 
 /// C# `ShellStartup.ForwardCoalesceWindow`.
 pub const FORWARD_COALESCE_WINDOW: Duration = Duration::from_millis(750);
@@ -29,7 +31,7 @@ pub struct WindowGone {
 impl fmt::Display for WindowGone {
     /// The message.
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        todo!()
+        f.write_str(&self.message)
     }
 }
 
@@ -65,17 +67,43 @@ impl fmt::Debug for ForwardedOpenHandler {
 impl ForwardedOpenHandler {
     /// C# constructor.
     pub fn new(target: Rc<dyn ForwardedOpenTarget>, log: Arc<dyn Log>) -> Self {
-        todo!()
+        Self {
+            target,
+            log,
+            ignored: Cell::new(0),
+        }
     }
 
     /// C# `IgnoredCount`: requests skipped because the window is closing or gone.
     pub fn ignored_count(&self) -> usize {
-        todo!()
+        self.ignored.get()
     }
 
     /// C# `HandleAsync(path)`: a path-less request only brings the window to the front.
     pub fn handle(&self, path: Option<&str>) {
-        todo!()
+        if self.target.is_closing_or_closed() {
+            self.ignored.set(self.ignored.get() + 1);
+            return;
+        }
+        let activation = self.target.is_minimized().and_then(|minimized| {
+            if minimized {
+                self.target.restore()?;
+            }
+            self.target.activate()
+        });
+        if let Err(error) = activation {
+            self.ignored.set(self.ignored.get() + 1);
+            self.log.warn(&format!(
+                "Forwarded launch: could not activate the main window: {}",
+                error.message
+            ));
+            return;
+        }
+        if let Some(path) = path {
+            if let Err(error) = self.target.open_path(path) {
+                self.log.error("Forwarded open failed", Some(&*error));
+            }
+        }
     }
 }
 
@@ -96,42 +124,66 @@ impl fmt::Debug for ForwardedOpenRouter {
 impl ForwardedOpenRouter {
     /// A router with no handler and nothing pending.
     pub fn new() -> Rc<Self> {
-        todo!()
+        Rc::new(Self {
+            handler: RefCell::new(None),
+            pending: RefCell::new(None),
+        })
     }
 
     /// C# `_forwardHandler = new ForwardedOpenHandler(_main, log)`.
     pub fn set_handler(&self, handler: Rc<ForwardedOpenHandler>) {
-        todo!()
+        *self.handler.borrow_mut() = Some(handler);
     }
 
     /// C# `OnForwardedOpen(path)`.
     pub fn on_forwarded_open(&self, path: Option<String>) {
-        todo!()
+        if let Some(handler) = self.handler.borrow().as_ref() {
+            handler.handle(path.as_deref());
+            return;
+        }
+        let mut pending = self.pending.borrow_mut();
+        match pending.as_mut() {
+            None => *pending = Some(path),
+            Some(existing) if existing.is_none() => *existing = path,
+            Some(_) => {}
+        }
     }
 
     /// C# `if (_hasPendingForward) { _hasPendingForward = false; path = _pendingForwardPath; _pendingForwardPath = null; ... }`: takes the remembered request.
     pub fn take_pending(&self) -> Option<Option<String>> {
-        todo!()
+        self.pending.borrow_mut().take()
     }
 
     /// Makes this router the one that [`ui_open_callback`] delivers to on the CALLING (UI) thread. Holds a `Weak`.
     pub fn attach_to_current_thread(self: &Rc<Self>) {
-        todo!()
+        CURRENT_ROUTER.with(|slot| *slot.borrow_mut() = Some(Rc::downgrade(self)));
     }
 
     /// Delivers to the router attached to the current thread; nothing when there is none or it was dropped.
     fn deliver_on_current_thread(path: Option<String>) {
-        todo!()
+        CURRENT_ROUTER.with(|slot| {
+            if let Some(router) = slot.borrow().as_ref().and_then(std::rc::Weak::upgrade) {
+                router.on_forwarded_open(path);
+            }
+        });
     }
 }
 
 /// The `OpenCallback` of the coalescer (C# `path => dispatcher.Post(() => OnForwardedOpen(path))`): runs on the coalescer's worker thread, posts a `Send` job to
 /// `ui` that calls `ForwardedOpenRouter::deliver_on_current_thread(path)` on the UI thread.
 pub fn ui_open_callback(ui: Arc<dyn UiScheduler>) -> OpenCallback {
-    todo!()
+    Arc::new(move |path| {
+        ui.post(Box::new(move || ForwardedOpenRouter::deliver_on_current_thread(path)));
+    })
 }
 
 /// C# `new ForwardedOpenCoalescer(path => dispatcher.Post(...), ForwardCoalesceWindow, log)`: the coalescer with the production delay and thread.
 pub fn new_forward_coalescer(ui: Arc<dyn UiScheduler>, log: Arc<dyn Log>) -> Arc<ForwardedOpenCoalescer> {
-    todo!()
+    Arc::new(ForwardedOpenCoalescer::new(
+        ui_open_callback(ui),
+        FORWARD_COALESCE_WINDOW,
+        Some(log),
+        None,
+        None,
+    ))
 }

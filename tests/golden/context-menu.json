@@ -1,6 +1,6 @@
 {
   "generator": "oracle-cs context-menu",
-  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "csharp_commit": "7eaee2a2b071c7ca05291c86fb78a347f9e6a15f",
   "cases": [
     {
       "kind": "items",
@@ -86,6 +86,14 @@
           "needs_photo": false
         },
         {
+          "id": "RenameFile",
+          "value": 18,
+          "parent": null,
+          "group": 5,
+          "locked": false,
+          "needs_photo": true
+        },
+        {
           "id": "CopyFileName",
           "value": 9,
           "parent": null,
@@ -168,7 +176,8 @@
         "ZoomFitHeight",
         "ZoomPresets",
         "ZoomLevelOptions",
-        "Refresh"
+        "Refresh",
+        "RenameFile"
       ],
       "values": [
         0,
@@ -188,7 +197,8 @@
         14,
         15,
         16,
-        17
+        17,
+        18
       ],
       "default_hidden": [
         "MoveToRecycleBin",
@@ -472,7 +482,9 @@
     {
       "kind": "single_name",
       "name": "18",
-      "stored": []
+      "stored": [
+        "RenameFile"
+      ]
     },
     {
       "kind": "single_name",
@@ -1317,6 +1329,7 @@
         "NextFolder",
         "PreviousFolder",
         "ExternalEditor",
+        "RenameFile",
         "CopyFileName",
         "CopyFullPath"
       ]
@@ -6217,7 +6230,7 @@
       "kind": "compute",
       "mask": 1024,
       "has_photo": true,
-      "render": "Undo,MoveToRecycleBin,|,Fit,ZoomToLevel,ZoomSubmenu,Refresh,|,OpenFolder,NextFolder,PreviousFolder,|,ExternalEditor,|,CopyFullPath,|,Settings",
+      "render": "Undo,MoveToRecycleBin,|,Fit,ZoomToLevel,ZoomSubmenu,Refresh,|,OpenFolder,NextFolder,PreviousFolder,|,ExternalEditor,|,CopyFileName,CopyFullPath,|,Settings",
       "entries": [
         [
           "Undo",
@@ -6273,6 +6286,10 @@
         ],
         [
           null,
+          5
+        ],
+        [
+          "CopyFileName",
           5
         ],
         [
@@ -6361,7 +6378,7 @@
       "kind": "compute",
       "mask": 1036,
       "has_photo": true,
-      "render": "Undo,MoveToRecycleBin,|,ZoomSubmenu,Refresh,|,OpenFolder,NextFolder,PreviousFolder,|,ExternalEditor,|,CopyFullPath,|,Settings",
+      "render": "Undo,MoveToRecycleBin,|,ZoomSubmenu,Refresh,|,OpenFolder,NextFolder,PreviousFolder,|,ExternalEditor,|,CopyFileName,CopyFullPath,|,Settings",
       "entries": [
         [
           "Undo",
@@ -6409,6 +6426,10 @@
         ],
         [
           null,
+          5
+        ],
+        [
+          "CopyFileName",
           5
         ],
         [
@@ -6489,7 +6510,7 @@
       "kind": "compute",
       "mask": 1064,
       "has_photo": true,
-      "render": "Undo,MoveToRecycleBin,|,Fit,ZoomSubmenu,|,OpenFolder,NextFolder,PreviousFolder,|,ExternalEditor,|,CopyFullPath,|,Settings",
+      "render": "Undo,MoveToRecycleBin,|,Fit,ZoomSubmenu,|,OpenFolder,NextFolder,PreviousFolder,|,ExternalEditor,|,CopyFileName,CopyFullPath,|,Settings",
       "entries": [
         [
           "Undo",
@@ -6537,6 +6558,10 @@
         ],
         [
           null,
+          5
+        ],
+        [
+          "CopyFileName",
           5
         ],
         [
@@ -6617,7 +6642,7 @@
       "kind": "compute",
       "mask": 1073,
       "has_photo": true,
-      "render": "MoveToRecycleBin,|,Fit,ZoomToLevel,|,OpenFolder,NextFolder,PreviousFolder,|,ExternalEditor,|,CopyFullPath,|,Settings",
+      "render": "MoveToRecycleBin,|,Fit,ZoomToLevel,|,OpenFolder,NextFolder,PreviousFolder,|,ExternalEditor,|,CopyFileName,CopyFullPath,|,Settings",
       "entries": [
         [
           "MoveToRecycleBin",
@@ -6661,6 +6686,10 @@
         ],
         [
           null,
+          5
+        ],
+        [
+          "CopyFileName",
           5
         ],
         [
@@ -6737,7 +6766,7 @@
       "kind": "compute",
       "mask": 1110,
       "has_photo": true,
-      "render": "Undo,|,ZoomToLevel,Refresh,|,NextFolder,PreviousFolder,|,ExternalEditor,|,CopyFullPath,|,Settings",
+      "render": "Undo,|,ZoomToLevel,Refresh,|,NextFolder,PreviousFolder,|,ExternalEditor,|,CopyFileName,CopyFullPath,|,Settings",
       "entries": [
         [
           "Undo",
@@ -6777,6 +6806,10 @@
         ],
         [
           null,
+          5
+        ],
+        [
+          "CopyFileName",
           5
         ],
         [
@@ -6849,7 +6882,7 @@
       "kind": "compute",
       "mask": 1147,
       "has_photo": true,
-      "render": "Fit,|,NextFolder,PreviousFolder,|,ExternalEditor,|,CopyFullPath,|,Settings",
+      "render": "Fit,|,NextFolder,PreviousFolder,|,ExternalEditor,|,CopyFileName,CopyFullPath,|,Settings",
       "entries": [
         [
           "Fit",
@@ -6877,6 +6910,10 @@
         ],
         [
           null,
+          5
+        ],
+        [
+          "CopyFileName",
           5
         ],
         [
@@ -6937,7 +6974,7 @@
       "kind": "compute",
       "mask": 1184,
       "has_photo": true,
-      "render": "Undo,MoveToRecycleBin,|,Fit,ZoomToLevel,ZoomSubmenu,|,OpenFolder,PreviousFolder,|,ExternalEditor,|,CopyFullPath,|,Settings",
+      "render": "Undo,MoveToRecycleBin,|,Fit,ZoomToLevel,ZoomSubmenu,|,OpenFolder,PreviousFolder,|,ExternalEditor,|,CopyFileName,CopyFullPath,|,Settings",
       "entries": [
         [
           "Undo",
@@ -6985,6 +7022,10 @@
         ],
         [
           null,
+          5
+        ],
+        [
+          "CopyFileName",
           5
         ],
         [
@@ -7065,7 +7106,7 @@
       "kind": "compute",
       "mask": 1221,
       "has_photo": true,
-      "render": "MoveToRecycleBin,|,ZoomToLevel,ZoomSubmenu,Refresh,|,PreviousFolder,|,ExternalEditor,|,CopyFullPath,|,Settings",
+      "render": "MoveToRecycleBin,|,ZoomToLevel,ZoomSubmenu,Refresh,|,PreviousFolder,|,ExternalEditor,|,CopyFileName,CopyFullPath,|,Settings",
       "entries": [
         [
           "MoveToRecycleBin",
@@ -7105,6 +7146,10 @@
         ],
         [
           null,
+          5
+        ],
+        [
+          "CopyFileName",
           5
         ],
         [
@@ -7177,7 +7222,7 @@
       "kind": "compute",
       "mask": 1258,
       "has_photo": true,
-      "render": "Undo,|,Fit,ZoomSubmenu,|,PreviousFolder,|,ExternalEditor,|,CopyFullPath,|,Settings",
+      "render": "Undo,|,Fit,ZoomSubmenu,|,PreviousFolder,|,ExternalEditor,|,CopyFileName,CopyFullPath,|,Settings",
       "entries": [
         [
           "Undo",
@@ -7213,6 +7258,10 @@
         ],
         [
           null,
+          5
+        ],
+        [
+          "CopyFileName",
           5
         ],
         [
@@ -7281,7 +7330,7 @@
       "kind": "compute",
       "mask": 1295,
       "has_photo": true,
-      "render": "ZoomSubmenu,Refresh,|,OpenFolder,NextFolder,|,ExternalEditor,|,CopyFullPath,|,Settings",
+      "render": "ZoomSubmenu,Refresh,|,OpenFolder,NextFolder,|,ExternalEditor,|,CopyFileName,CopyFullPath,|,Settings",
       "entries": [
         [
           "ZoomSubmenu",
@@ -7313,6 +7362,10 @@
         ],
         [
           null,
+          5
+        ],
+        [
+          "CopyFileName",
           5
         ],
         [
@@ -7377,7 +7430,7 @@
       "kind": "compute",
       "mask": 1332,
       "has_photo": true,
-      "render": "Undo,MoveToRecycleBin,|,ZoomToLevel,|,OpenFolder,NextFolder,|,ExternalEditor,|,CopyFullPath,|,Settings",
+      "render": "Undo,MoveToRecycleBin,|,ZoomToLevel,|,OpenFolder,NextFolder,|,ExternalEditor,|,CopyFileName,CopyFullPath,|,Settings",
       "entries": [
         [
           "Undo",
@@ -7417,6 +7470,10 @@
         ],
         [
           null,
+          5
+        ],
+        [
+          "CopyFileName",
           5
         ],
         [
@@ -7489,7 +7546,7 @@
       "kind": "compute",
       "mask": 1335,
       "has_photo": true,
-      "render": "ZoomToLevel,|,OpenFolder,NextFolder,|,ExternalEditor,|,CopyFullPath,|,Settings",
+      "render": "ZoomToLevel,|,OpenFolder,NextFolder,|,ExternalEditor,|,CopyFileName,CopyFullPath,|,Settings",
       "entries": [
         [
           "ZoomToLevel",
@@ -7517,6 +7574,10 @@
         ],
         [
           null,
+          5
+        ],
+        [
+          "CopyFileName",
           5
         ],
         [
@@ -7577,7 +7638,7 @@
       "kind": "compute",
       "mask": 1336,
       "has_photo": true,
-      "render": "Undo,MoveToRecycleBin,|,Fit,|,OpenFolder,NextFolder,|,ExternalEditor,|,CopyFullPath,|,Settings",
+      "render": "Undo,MoveToRecycleBin,|,Fit,|,OpenFolder,NextFolder,|,ExternalEditor,|,CopyFileName,CopyFullPath,|,Settings",
       "entries": [
         [
           "Undo",
@@ -7617,6 +7678,10 @@
         ],
         [
           null,
+          5
+        ],
+        [
+          "CopyFileName",
           5
         ],
         [
@@ -7689,7 +7754,7 @@
       "kind": "compute",
       "mask": 1355,
       "has_photo": true,
-      "render": "Fit,ZoomSubmenu,Refresh,|,NextFolder,|,ExternalEditor,|,CopyFullPath,|,Settings",
+      "render": "Fit,ZoomSubmenu,Refresh,|,NextFolder,|,ExternalEditor,|,CopyFileName,CopyFullPath,|,Settings",
       "entries": [
         [
           "Fit",
@@ -7721,6 +7786,10 @@
         ],
         [
           null,
+          5
+        ],
+        [
+          "CopyFileName",
           5
         ],
         [
@@ -7785,7 +7854,7 @@
       "kind": "compute",
       "mask": 1369,
       "has_photo": true,
-      "render": "MoveToRecycleBin,|,Fit,Refresh,|,NextFolder,|,ExternalEditor,|,CopyFullPath,|,Settings",
+      "render": "MoveToRecycleBin,|,Fit,Refresh,|,NextFolder,|,ExternalEditor,|,CopyFileName,CopyFullPath,|,Settings",
       "entries": [
         [
           "MoveToRecycleBin",
@@ -7821,6 +7890,10 @@
         ],
         [
           null,
+          5
+        ],
+        [
+          "CopyFileName",
           5
         ],
         [
@@ -7889,7 +7962,7 @@
       "kind": "compute",
       "mask": 1406,
       "has_photo": true,
-      "render": "Undo,|,NextFolder,|,ExternalEditor,|,CopyFullPath,|,Settings",
+      "render": "Undo,|,NextFolder,|,ExternalEditor,|,CopyFileName,CopyFullPath,|,Settings",
       "entries": [
         [
           "Undo",
@@ -7913,6 +7986,10 @@
         ],
         [
           null,
+          5
+        ],
+        [
+          "CopyFileName",
           5
         ],
         [
@@ -7969,7 +8046,7 @@
       "kind": "compute",
       "mask": 1443,
       "has_photo": true,
-      "render": "Fit,ZoomToLevel,ZoomSubmenu,|,OpenFolder,|,ExternalEditor,|,CopyFullPath,|,Settings",
+      "render": "Fit,ZoomToLevel,ZoomSubmenu,|,OpenFolder,|,ExternalEditor,|,CopyFileName,CopyFullPath,|,Settings",
       "entries": [
         [
           "Fit",
@@ -8001,6 +8078,10 @@
         ],
         [
           null,
+          5
+        ],
+        [
+          "CopyFileName",
           5
         ],
         [
@@ -8065,7 +8146,7 @@
       "kind": "compute",
       "mask": 1448,
       "has_photo": true,
-      "render": "Undo,MoveToRecycleBin,|,Fit,ZoomSubmenu,|,OpenFolder,|,ExternalEditor,|,CopyFullPath,|,Settings",
+      "render": "Undo,MoveToRecycleBin,|,Fit,ZoomSubmenu,|,OpenFolder,|,ExternalEditor,|,CopyFileName,CopyFullPath,|,Settings",
       "entries": [
         [
           "Undo",
@@ -8105,6 +8186,10 @@
         ],
         [
           null,
+          5
+        ],
+        [
+          "CopyFileName",
           5
         ],
         [
@@ -8177,7 +8262,7 @@
       "kind": "compute",
       "mask": 1480,
       "has_photo": true,
-      "render": "Undo,MoveToRecycleBin,|,Fit,ZoomSubmenu,Refresh,|,ExternalEditor,|,CopyFullPath,|,Settings",
+      "render": "Undo,MoveToRecycleBin,|,Fit,ZoomSubmenu,Refresh,|,ExternalEditor,|,CopyFileName,CopyFullPath,|,Settings",
       "entries": [
         [
           "Undo",
@@ -8213,6 +8298,10 @@
         ],
         [
           null,
+          5
+        ],
+        [
+          "CopyFileName",
           5
         ],
         [
@@ -8281,7 +8370,7 @@
       "kind": "compute",
       "mask": 1517,
       "has_photo": true,
-      "render": "MoveToRecycleBin,|,ZoomSubmenu,|,ExternalEditor,|,CopyFullPath,|,Settings",
+      "render": "MoveToRecycleBin,|,ZoomSubmenu,|,ExternalEditor,|,CopyFileName,CopyFullPath,|,Settings",
       "entries": [
         [
           "MoveToRecycleBin",
@@ -8305,6 +8394,10 @@
         ],
         [
           null,
+          5
+        ],
+        [
+          "CopyFileName",
           5
         ],
         [
@@ -8361,7 +8454,7 @@
       "kind": "compute",
       "mask": 1554,
       "has_photo": true,
-      "render": "Undo,|,Fit,ZoomToLevel,Refresh,|,OpenFolder,NextFolder,PreviousFolder,|,CopyFullPath,|,Settings",
+      "render": "Undo,|,Fit,ZoomToLevel,Refresh,|,OpenFolder,NextFolder,PreviousFolder,|,CopyFileName,CopyFullPath,|,Settings",
       "entries": [
         [
           "Undo",
@@ -8401,6 +8494,10 @@
         ],
         [
           null,
+          5
+        ],
+        [
+          "CopyFileName",
           5
         ],
         [
@@ -8473,7 +8570,7 @@
       "kind": "compute",
       "mask": 1591,
       "has_photo": true,
-      "render": "ZoomToLevel,|,OpenFolder,NextFolder,PreviousFolder,|,CopyFullPath,|,Settings",
+      "render": "ZoomToLevel,|,OpenFolder,NextFolder,PreviousFolder,|,CopyFileName,CopyFullPath,|,Settings",
       "entries": [
         [
           "ZoomToLevel",
@@ -8497,6 +8594,10 @@
         ],
         [
           null,
+          5
+        ],
+        [
+          "CopyFileName",
           5
         ],
         [
@@ -8553,7 +8654,7 @@
       "kind": "compute",
       "mask": 1628,
       "has_photo": true,
-      "render": "Undo,MoveToRecycleBin,|,Refresh,|,NextFolder,PreviousFolder,|,CopyFullPath,|,Settings",
+      "render": "Undo,MoveToRecycleBin,|,Refresh,|,NextFolder,PreviousFolder,|,CopyFileName,CopyFullPath,|,Settings",
       "entries": [
         [
           "Undo",
@@ -8585,6 +8686,10 @@
         ],
         [
           null,
+          5
+        ],
+        [
+          "CopyFileName",
           5
         ],
         [
@@ -8649,7 +8754,7 @@
       "kind": "compute",
       "mask": 1665,
       "has_photo": true,
-      "render": "MoveToRecycleBin,|,Fit,ZoomToLevel,ZoomSubmenu,Refresh,|,OpenFolder,PreviousFolder,|,CopyFullPath,|,Settings",
+      "render": "MoveToRecycleBin,|,Fit,ZoomToLevel,ZoomSubmenu,Refresh,|,OpenFolder,PreviousFolder,|,CopyFileName,CopyFullPath,|,Settings",
       "entries": [
         [
           "MoveToRecycleBin",
@@ -8689,6 +8794,10 @@
         ],
         [
           null,
+          5
+        ],
+        [
+          "CopyFileName",
           5
         ],
         [
@@ -8761,7 +8870,7 @@
       "kind": "compute",
       "mask": 1702,
       "has_photo": true,
-      "render": "Undo,|,ZoomToLevel,ZoomSubmenu,|,OpenFolder,PreviousFolder,|,CopyFullPath,|,Settings",
+      "render": "Undo,|,ZoomToLevel,ZoomSubmenu,|,OpenFolder,PreviousFolder,|,CopyFileName,CopyFullPath,|,Settings",
       "entries": [
         [
           "Undo",
@@ -8793,6 +8902,10 @@
         ],
         [
           null,
+          5
+        ],
+        [
+          "CopyFileName",
           5
         ],
         [
@@ -8857,7 +8970,7 @@
       "kind": "compute",
       "mask": 1708,
       "has_photo": true,
-      "render": "Undo,MoveToRecycleBin,|,ZoomSubmenu,|,OpenFolder,PreviousFolder,|,CopyFullPath,|,Settings",
+      "render": "Undo,MoveToRecycleBin,|,ZoomSubmenu,|,OpenFolder,PreviousFolder,|,CopyFileName,CopyFullPath,|,Settings",
       "entries": [
         [
           "Undo",
@@ -8889,6 +9002,10 @@
         ],
         [
           null,
+          5
+        ],
+        [
+          "CopyFileName",
           5
         ],
         [
@@ -8953,7 +9070,7 @@
       "kind": "compute",
       "mask": 1739,
       "has_photo": true,
-      "render": "Fit,ZoomSubmenu,Refresh,|,PreviousFolder,|,CopyFullPath,|,Settings",
+      "render": "Fit,ZoomSubmenu,Refresh,|,PreviousFolder,|,CopyFileName,CopyFullPath,|,Settings",
       "entries": [
         [
           "Fit",
@@ -8977,6 +9094,10 @@
         ],
         [
           null,
+          5
+        ],
+        [
+          "CopyFileName",
           5
         ],
         [
@@ -9033,7 +9154,7 @@
       "kind": "compute",
       "mask": 1776,
       "has_photo": true,
-      "render": "Undo,MoveToRecycleBin,|,Fit,ZoomToLevel,|,PreviousFolder,|,CopyFullPath,|,Settings",
+      "render": "Undo,MoveToRecycleBin,|,Fit,ZoomToLevel,|,PreviousFolder,|,CopyFileName,CopyFullPath,|,Settings",
       "entries": [
         [
           "Undo",
@@ -9065,6 +9186,10 @@
         ],
         [
           null,
+          5
+        ],
+        [
+          "CopyFileName",
           5
         ],
         [
@@ -9129,7 +9254,7 @@
       "kind": "compute",
       "mask": 1784,
       "has_photo": true,
-      "render": "Undo,MoveToRecycleBin,|,Fit,|,PreviousFolder,|,CopyFullPath,|,Settings",
+      "render": "Undo,MoveToRecycleBin,|,Fit,|,PreviousFolder,|,CopyFileName,CopyFullPath,|,Settings",
       "entries": [
         [
           "Undo",
@@ -9157,6 +9282,10 @@
         ],
         [
           null,
+          5
+        ],
+        [
+          "CopyFileName",
           5
         ],
         [
@@ -9217,7 +9346,7 @@
       "kind": "compute",
       "mask": 1813,
       "has_photo": true,
-      "render": "MoveToRecycleBin,|,ZoomToLevel,Refresh,|,OpenFolder,NextFolder,|,CopyFullPath,|,Settings",
+      "render": "MoveToRecycleBin,|,ZoomToLevel,Refresh,|,OpenFolder,NextFolder,|,CopyFileName,CopyFullPath,|,Settings",
       "entries": [
         [
           "MoveToRecycleBin",
@@ -9249,6 +9378,10 @@
         ],
         [
           null,
+          5
+        ],
+        [
+          "CopyFileName",
           5
         ],
         [
@@ -9313,7 +9446,7 @@
       "kind": "compute",
       "mask": 1850,
       "has_photo": true,
-      "render": "Undo,|,Fit,|,OpenFolder,NextFolder,|,CopyFullPath,|,Settings",
+      "render": "Undo,|,Fit,|,OpenFolder,NextFolder,|,CopyFileName,CopyFullPath,|,Settings",
       "entries": [
         [
           "Undo",
@@ -9341,6 +9474,10 @@
         ],
         [
           null,
+          5
+        ],
+        [
+          "CopyFileName",
           5
         ],
         [
@@ -9401,7 +9538,7 @@
       "kind": "compute",
       "mask": 1887,
       "has_photo": true,
-      "render": "Refresh,|,NextFolder,|,CopyFullPath,|,Settings",
+      "render": "Refresh,|,NextFolder,|,CopyFileName,CopyFullPath,|,Settings",
       "entries": [
         [
           "Refresh",
@@ -9417,6 +9554,10 @@
         ],
         [
           null,
+          5
+        ],
+        [
+          "CopyFileName",
           5
         ],
         [
@@ -9465,7 +9606,7 @@
       "kind": "compute",
       "mask": 1924,
       "has_photo": true,
-      "render": "Undo,MoveToRecycleBin,|,ZoomToLevel,ZoomSubmenu,Refresh,|,OpenFolder,|,CopyFullPath,|,Settings",
+      "render": "Undo,MoveToRecycleBin,|,ZoomToLevel,ZoomSubmenu,Refresh,|,OpenFolder,|,CopyFileName,CopyFullPath,|,Settings",
       "entries": [
         [
           "Undo",
@@ -9501,6 +9642,10 @@
         ],
         [
           null,
+          5
+        ],
+        [
+          "CopyFileName",
           5
         ],
         [
@@ -9569,7 +9714,7 @@
       "kind": "compute",
       "mask": 1961,
       "has_photo": true,
-      "render": "MoveToRecycleBin,|,Fit,ZoomSubmenu,|,OpenFolder,|,CopyFullPath,|,Settings",
+      "render": "MoveToRecycleBin,|,Fit,ZoomSubmenu,|,OpenFolder,|,CopyFileName,CopyFullPath,|,Settings",
       "entries": [
         [
           "MoveToRecycleBin",
@@ -9597,6 +9742,10 @@
         ],
         [
           null,
+          5
+        ],
+        [
+          "CopyFileName",
           5
         ],
         [
@@ -9657,7 +9806,7 @@
       "kind": "compute",
       "mask": 1992,
       "has_photo": true,
-      "render": "Undo,MoveToRecycleBin,|,Fit,ZoomSubmenu,Refresh,|,CopyFullPath,|,Settings",
+      "render": "Undo,MoveToRecycleBin,|,Fit,ZoomSubmenu,Refresh,|,CopyFileName,CopyFullPath,|,Settings",
       "entries": [
         [
           "Undo",
@@ -9685,6 +9834,10 @@
         ],
         [
           null,
+          5
+        ],
+        [
+          "CopyFileName",
           5
         ],
         [
@@ -9745,7 +9898,7 @@
       "kind": "compute",
       "mask": 1998,
       "has_photo": true,
-      "render": "Undo,|,ZoomSubmenu,Refresh,|,CopyFullPath,|,Settings",
+      "render": "Undo,|,ZoomSubmenu,Refresh,|,CopyFileName,CopyFullPath,|,Settings",
       "entries": [
         [
           "Undo",
@@ -9765,6 +9918,10 @@
         ],
         [
           null,
+          5
+        ],
+        [
+          "CopyFileName",
           5
         ],
         [
@@ -9817,7 +9974,7 @@
       "kind": "compute",
       "mask": 2035,
       "has_photo": true,
-      "render": "Fit,ZoomToLevel,|,CopyFullPath,|,Settings",
+      "render": "Fit,ZoomToLevel,|,CopyFileName,CopyFullPath,|,Settings",
       "entries": [
         [
           "Fit",
@@ -9829,6 +9986,10 @@
         ],
         [
           null,
+          5
+        ],
+        [
+          "CopyFileName",
           5
         ],
         [
@@ -9873,8 +10034,12 @@
       "kind": "compute",
       "mask": 2047,
       "has_photo": true,
-      "render": "CopyFullPath,|,Settings",
+      "render": "CopyFileName,CopyFullPath,|,Settings",
       "entries": [
+        [
+          "CopyFileName",
+          5
+        ],
         [
           "CopyFullPath",
           5
@@ -9905,7 +10070,7 @@
       "kind": "compute",
       "mask": 2048,
       "has_photo": true,
-      "render": "Undo,MoveToRecycleBin,|,Fit,ZoomToLevel,ZoomSubmenu,Refresh,|,OpenFolder,NextFolder,PreviousFolder,|,ExternalEditor,|,CopyFileName,|,Settings",
+      "render": "Undo,MoveToRecycleBin,|,Fit,ZoomToLevel,ZoomSubmenu,Refresh,|,OpenFolder,NextFolder,PreviousFolder,|,ExternalEditor,|,CopyFullPath,|,Settings",
       "entries": [
         [
           "Undo",
@@ -9964,7 +10129,7 @@
           5
         ],
         [
-          "CopyFileName",
+          "CopyFullPath",
           5
         ],
         [
@@ -10049,7 +10214,7 @@
       "kind": "compute",
       "mask": 2072,
       "has_photo": true,
-      "render": "Undo,MoveToRecycleBin,|,Fit,Refresh,|,OpenFolder,NextFolder,PreviousFolder,|,ExternalEditor,|,CopyFileName,|,Settings",
+      "render": "Undo,MoveToRecycleBin,|,Fit,Refresh,|,OpenFolder,NextFolder,PreviousFolder,|,ExternalEditor,|,CopyFullPath,|,Settings",
       "entries": [
         [
           "Undo",
@@ -10100,7 +10265,7 @@
           5
         ],
         [
-          "CopyFileName",
+          "CopyFullPath",
           5
         ],
         [
@@ -10177,7 +10342,7 @@
       "kind": "compute",
       "mask": 2092,
       "has_photo": true,
-      "render": "Undo,MoveToRecycleBin,|,ZoomSubmenu,|,OpenFolder,NextFolder,PreviousFolder,|,ExternalEditor,|,CopyFileName,|,Settings",
+      "render": "Undo,MoveToRecycleBin,|,ZoomSubmenu,|,OpenFolder,NextFolder,PreviousFolder,|,ExternalEditor,|,CopyFullPath,|,Settings",
       "entries": [
         [
           "Undo",
@@ -10224,7 +10389,7 @@
           5
         ],
         [
-          "CopyFileName",
+          "CopyFullPath",
           5
         ],
         [
@@ -10297,7 +10462,7 @@
       "kind": "compute",
       "mask": 2109,
       "has_photo": true,
-      "render": "MoveToRecycleBin,|,OpenFolder,NextFolder,PreviousFolder,|,ExternalEditor,|,CopyFileName,|,Settings",
+      "render": "MoveToRecycleBin,|,OpenFolder,NextFolder,PreviousFolder,|,ExternalEditor,|,CopyFullPath,|,Settings",
       "entries": [
         [
           "MoveToRecycleBin",
@@ -10332,7 +10497,7 @@
           5
         ],
         [
-          "CopyFileName",
+          "CopyFullPath",
           5
         ],
         [
@@ -10393,7 +10558,7 @@
       "kind": "compute",
       "mask": 2146,
       "has_photo": true,
-      "render": "Undo,|,Fit,ZoomToLevel,ZoomSubmenu,|,NextFolder,PreviousFolder,|,ExternalEditor,|,CopyFileName,|,Settings",
+      "render": "Undo,|,Fit,ZoomToLevel,ZoomSubmenu,|,NextFolder,PreviousFolder,|,ExternalEditor,|,CopyFullPath,|,Settings",
       "entries": [
         [
           "Undo",
@@ -10440,7 +10605,7 @@
           5
         ],
         [
-          "CopyFileName",
+          "CopyFullPath",
           5
         ],
         [
@@ -10513,7 +10678,7 @@
       "kind": "compute",
       "mask": 2183,
       "has_photo": true,
-      "render": "ZoomToLevel,ZoomSubmenu,Refresh,|,OpenFolder,PreviousFolder,|,ExternalEditor,|,CopyFileName,|,Settings",
+      "render": "ZoomToLevel,ZoomSubmenu,Refresh,|,OpenFolder,PreviousFolder,|,ExternalEditor,|,CopyFullPath,|,Settings",
       "entries": [
         [
           "ZoomToLevel",
@@ -10552,7 +10717,7 @@
           5
         ],
         [
-          "CopyFileName",
+          "CopyFullPath",
           5
         ],
         [
@@ -10617,7 +10782,7 @@
       "kind": "compute",
       "mask": 2200,
       "has_photo": true,
-      "render": "Undo,MoveToRecycleBin,|,Fit,Refresh,|,OpenFolder,PreviousFolder,|,ExternalEditor,|,CopyFileName,|,Settings",
+      "render": "Undo,MoveToRecycleBin,|,Fit,Refresh,|,OpenFolder,PreviousFolder,|,ExternalEditor,|,CopyFullPath,|,Settings",
       "entries": [
         [
           "Undo",
@@ -10664,7 +10829,7 @@
           5
         ],
         [
-          "CopyFileName",
+          "CopyFullPath",
           5
         ],
         [
@@ -10737,7 +10902,7 @@
       "kind": "compute",
       "mask": 2220,
       "has_photo": true,
-      "render": "Undo,MoveToRecycleBin,|,ZoomSubmenu,|,OpenFolder,PreviousFolder,|,ExternalEditor,|,CopyFileName,|,Settings",
+      "render": "Undo,MoveToRecycleBin,|,ZoomSubmenu,|,OpenFolder,PreviousFolder,|,ExternalEditor,|,CopyFullPath,|,Settings",
       "entries": [
         [
           "Undo",
@@ -10780,7 +10945,7 @@
           5
         ],
         [
-          "CopyFileName",
+          "CopyFullPath",
           5
         ],
         [
@@ -10849,7 +11014,7 @@
       "kind": "compute",
       "mask": 2243,
       "has_photo": true,
-      "render": "Fit,ZoomToLevel,ZoomSubmenu,Refresh,|,PreviousFolder,|,ExternalEditor,|,CopyFileName,|,Settings",
+      "render": "Fit,ZoomToLevel,ZoomSubmenu,Refresh,|,PreviousFolder,|,ExternalEditor,|,CopyFullPath,|,Settings",
       "entries": [
         [
           "Fit",
@@ -10888,7 +11053,7 @@
           5
         ],
         [
-          "CopyFileName",
+          "CopyFullPath",
           5
         ],
         [
@@ -10953,7 +11118,7 @@
       "kind": "compute",
       "mask": 2257,
       "has_photo": true,
-      "render": "MoveToRecycleBin,|,Fit,ZoomToLevel,Refresh,|,PreviousFolder,|,ExternalEditor,|,CopyFileName,|,Settings",
+      "render": "MoveToRecycleBin,|,Fit,ZoomToLevel,Refresh,|,PreviousFolder,|,ExternalEditor,|,CopyFullPath,|,Settings",
       "entries": [
         [
           "MoveToRecycleBin",
@@ -10996,7 +11161,7 @@
           5
         ],
         [
-          "CopyFileName",
+          "CopyFullPath",
           5
         ],
         [
@@ -11065,7 +11230,7 @@
       "kind": "compute",
       "mask": 2280,
       "has_photo": true,
-      "render": "Undo,MoveToRecycleBin,|,Fit,ZoomSubmenu,|,PreviousFolder,|,ExternalEditor,|,CopyFileName,|,Settings",
+      "render": "Undo,MoveToRecycleBin,|,Fit,ZoomSubmenu,|,PreviousFolder,|,ExternalEditor,|,CopyFullPath,|,Settings",
       "entries": [
         [
           "Undo",
@@ -11108,7 +11273,7 @@
           5
         ],
         [
-          "CopyFileName",
+          "CopyFullPath",
           5
         ],
         [
@@ -11177,7 +11342,7 @@
       "kind": "compute",
       "mask": 2294,
       "has_photo": true,
-      "render": "Undo,|,ZoomToLevel,|,PreviousFolder,|,ExternalEditor,|,CopyFileName,|,Settings",
+      "render": "Undo,|,ZoomToLevel,|,PreviousFolder,|,ExternalEditor,|,CopyFullPath,|,Settings",
       "entries": [
         [
           "Undo",
@@ -11212,7 +11377,7 @@
           5
         ],
         [
-          "CopyFileName",
+          "CopyFullPath",
           5
         ],
         [
@@ -11273,7 +11438,7 @@
       "kind": "compute",
       "mask": 2312,
       "has_photo": true,
-      "render": "Undo,MoveToRecycleBin,|,Fit,ZoomSubmenu,Refresh,|,OpenFolder,NextFolder,|,ExternalEditor,|,CopyFileName,|,Settings",
+      "render": "Undo,MoveToRecycleBin,|,Fit,ZoomSubmenu,Refresh,|,OpenFolder,NextFolder,|,ExternalEditor,|,CopyFullPath,|,Settings",
       "entries": [
         [
           "Undo",
@@ -11324,7 +11489,7 @@
           5
         ],
         [
-          "CopyFileName",
+          "CopyFullPath",
           5
         ],
         [
@@ -11401,7 +11566,7 @@
       "kind": "compute",
       "mask": 2331,
       "has_photo": true,
-      "render": "Fit,Refresh,|,OpenFolder,NextFolder,|,ExternalEditor,|,CopyFileName,|,Settings",
+      "render": "Fit,Refresh,|,OpenFolder,NextFolder,|,ExternalEditor,|,CopyFullPath,|,Settings",
       "entries": [
         [
           "Fit",
@@ -11436,7 +11601,7 @@
           5
         ],
         [
-          "CopyFileName",
+          "CopyFullPath",
           5
         ],
         [
@@ -11497,7 +11662,7 @@
       "kind": "compute",
       "mask": 2363,
       "has_photo": true,
-      "render": "Fit,|,OpenFolder,NextFolder,|,ExternalEditor,|,CopyFileName,|,Settings",
+      "render": "Fit,|,OpenFolder,NextFolder,|,ExternalEditor,|,CopyFullPath,|,Settings",
       "entries": [
         [
           "Fit",
@@ -11528,7 +11693,7 @@
           5
         ],
         [
-          "CopyFileName",
+          "CopyFullPath",
           5
         ],
         [
@@ -11585,7 +11750,7 @@
       "kind": "compute",
       "mask": 2368,
       "has_photo": true,
-      "render": "Undo,MoveToRecycleBin,|,Fit,ZoomToLevel,ZoomSubmenu,Refresh,|,NextFolder,|,ExternalEditor,|,CopyFileName,|,Settings",
+      "render": "Undo,MoveToRecycleBin,|,Fit,ZoomToLevel,ZoomSubmenu,Refresh,|,NextFolder,|,ExternalEditor,|,CopyFullPath,|,Settings",
       "entries": [
         [
           "Undo",
@@ -11636,7 +11801,7 @@
           5
         ],
         [
-          "CopyFileName",
+          "CopyFullPath",
           5
         ],
         [
@@ -11713,7 +11878,7 @@
       "kind": "compute",
       "mask": 2405,
       "has_photo": true,
-      "render": "MoveToRecycleBin,|,ZoomToLevel,ZoomSubmenu,|,NextFolder,|,ExternalEditor,|,CopyFileName,|,Settings",
+      "render": "MoveToRecycleBin,|,ZoomToLevel,ZoomSubmenu,|,NextFolder,|,ExternalEditor,|,CopyFullPath,|,Settings",
       "entries": [
         [
           "MoveToRecycleBin",
@@ -11752,7 +11917,7 @@
           5
         ],
         [
-          "CopyFileName",
+          "CopyFullPath",
           5
         ],
         [
@@ -11817,7 +11982,7 @@
       "kind": "compute",
       "mask": 2439,
       "has_photo": true,
-      "render": "ZoomToLevel,ZoomSubmenu,Refresh,|,OpenFolder,|,ExternalEditor,|,CopyFileName,|,Settings",
+      "render": "ZoomToLevel,ZoomSubmenu,Refresh,|,OpenFolder,|,ExternalEditor,|,CopyFullPath,|,Settings",
       "entries": [
         [
           "ZoomToLevel",
@@ -11852,7 +12017,7 @@
           5
         ],
         [
-          "CopyFileName",
+          "CopyFullPath",
           5
         ],
         [
@@ -11913,7 +12078,7 @@
       "kind": "compute",
       "mask": 2442,
       "has_photo": true,
-      "render": "Undo,|,Fit,ZoomSubmenu,Refresh,|,OpenFolder,|,ExternalEditor,|,CopyFileName,|,Settings",
+      "render": "Undo,|,Fit,ZoomSubmenu,Refresh,|,OpenFolder,|,ExternalEditor,|,CopyFullPath,|,Settings",
       "entries": [
         [
           "Undo",
@@ -11956,7 +12121,7 @@
           5
         ],
         [
-          "CopyFileName",
+          "CopyFullPath",
           5
         ],
         [
@@ -12025,7 +12190,7 @@
       "kind": "compute",
       "mask": 2479,
       "has_photo": true,
-      "render": "ZoomSubmenu,|,OpenFolder,|,ExternalEditor,|,CopyFileName,|,Settings",
+      "render": "ZoomSubmenu,|,OpenFolder,|,ExternalEditor,|,CopyFullPath,|,Settings",
       "entries": [
         [
           "ZoomSubmenu",
@@ -12052,7 +12217,7 @@
           5
         ],
         [
-          "CopyFileName",
+          "CopyFullPath",
           5
         ],
         [
@@ -12105,7 +12270,7 @@
       "kind": "compute",
       "mask": 2516,
       "has_photo": true,
-      "render": "Undo,MoveToRecycleBin,|,ZoomToLevel,Refresh,|,ExternalEditor,|,CopyFileName,|,Settings",
+      "render": "Undo,MoveToRecycleBin,|,ZoomToLevel,Refresh,|,ExternalEditor,|,CopyFullPath,|,Settings",
       "entries": [
         [
           "Undo",
@@ -12140,7 +12305,7 @@
           5
         ],
         [
-          "CopyFileName",
+          "CopyFullPath",
           5
         ],
         [
@@ -12201,7 +12366,7 @@
       "kind": "compute",
       "mask": 2553,
       "has_photo": true,
-      "render": "MoveToRecycleBin,|,Fit,|,ExternalEditor,|,CopyFileName,|,Settings",
+      "render": "MoveToRecycleBin,|,Fit,|,ExternalEditor,|,CopyFullPath,|,Settings",
       "entries": [
         [
           "MoveToRecycleBin",
@@ -12228,7 +12393,7 @@
           5
         ],
         [
-          "CopyFileName",
+          "CopyFullPath",
           5
         ],
         [
@@ -12281,7 +12446,7 @@
       "kind": "compute",
       "mask": 2590,
       "has_photo": true,
-      "render": "Undo,|,Refresh,|,OpenFolder,NextFolder,PreviousFolder,|,CopyFileName,|,Settings",
+      "render": "Undo,|,Refresh,|,OpenFolder,NextFolder,PreviousFolder,|,CopyFullPath,|,Settings",
       "entries": [
         [
           "Undo",
@@ -12316,7 +12481,7 @@
           5
         ],
         [
-          "CopyFileName",
+          "CopyFullPath",
           5
         ],
         [
@@ -12377,7 +12542,7 @@
       "kind": "compute",
       "mask": 2627,
       "has_photo": true,
-      "render": "Fit,ZoomToLevel,ZoomSubmenu,Refresh,|,NextFolder,PreviousFolder,|,CopyFileName,|,Settings",
+      "render": "Fit,ZoomToLevel,ZoomSubmenu,Refresh,|,NextFolder,PreviousFolder,|,CopyFullPath,|,Settings",
       "entries": [
         [
           "Fit",
@@ -12412,7 +12577,7 @@
           5
         ],
         [
-          "CopyFileName",
+          "CopyFullPath",
           5
         ],
         [
@@ -12473,7 +12638,7 @@
       "kind": "compute",
       "mask": 2647,
       "has_photo": true,
-      "render": "ZoomToLevel,Refresh,|,NextFolder,PreviousFolder,|,CopyFileName,|,Settings",
+      "render": "ZoomToLevel,Refresh,|,NextFolder,PreviousFolder,|,CopyFullPath,|,Settings",
       "entries": [
         [
           "ZoomToLevel",
@@ -12500,7 +12665,7 @@
           5
         ],
         [
-          "CopyFileName",
+          "CopyFullPath",
           5
         ],
         [
@@ -12553,7 +12718,7 @@
       "kind": "compute",
       "mask": 2664,
       "has_photo": true,
-      "render": "Undo,MoveToRecycleBin,|,Fit,ZoomSubmenu,|,NextFolder,PreviousFolder,|,CopyFileName,|,Settings",
+      "render": "Undo,MoveToRecycleBin,|,Fit,ZoomSubmenu,|,NextFolder,PreviousFolder,|,CopyFullPath,|,Settings",
       "entries": [
         [
           "Undo",
@@ -12592,7 +12757,7 @@
           5
         ],
         [
-          "CopyFileName",
+          "CopyFullPath",
           5
         ],
         [
@@ -12657,7 +12822,7 @@
       "kind": "compute",
       "mask": 2668,
       "has_photo": true,
-      "render": "Undo,MoveToRecycleBin,|,ZoomSubmenu,|,NextFolder,PreviousFolder,|,CopyFileName,|,Settings",
+      "render": "Undo,MoveToRecycleBin,|,ZoomSubmenu,|,NextFolder,PreviousFolder,|,CopyFullPath,|,Settings",
       "entries": [
         [
           "Undo",
@@ -12692,7 +12857,7 @@
           5
         ],
         [
-          "CopyFileName",
+          "CopyFullPath",
           5
         ],
         [
@@ -12753,7 +12918,7 @@
       "kind": "compute",
       "mask": 2701,
       "has_photo": true,
-      "render": "MoveToRecycleBin,|,ZoomSubmenu,Refresh,|,OpenFolder,PreviousFolder,|,CopyFileName,|,Settings",
+      "render": "MoveToRecycleBin,|,ZoomSubmenu,Refresh,|,OpenFolder,PreviousFolder,|,CopyFullPath,|,Settings",
       "entries": [
         [
           "MoveToRecycleBin",
@@ -12788,7 +12953,7 @@
           5
         ],
         [
-          "CopyFileName",
+          "CopyFullPath",
           5
         ],
         [
@@ -12849,7 +13014,7 @@
       "kind": "compute",
       "mask": 2715,
       "has_photo": true,
-      "render": "Fit,Refresh,|,OpenFolder,PreviousFolder,|,CopyFileName,|,Settings",
+      "render": "Fit,Refresh,|,OpenFolder,PreviousFolder,|,CopyFullPath,|,Settings",
       "entries": [
         [
           "Fit",
@@ -12876,7 +13041,7 @@
           5
         ],
         [
-          "CopyFileName",
+          "CopyFullPath",
           5
         ],
         [
@@ -12929,7 +13094,7 @@
       "kind": "compute",
       "mask": 2738,
       "has_photo": true,
-      "render": "Undo,|,Fit,ZoomToLevel,|,OpenFolder,PreviousFolder,|,CopyFileName,|,Settings",
+      "render": "Undo,|,Fit,ZoomToLevel,|,OpenFolder,PreviousFolder,|,CopyFullPath,|,Settings",
       "entries": [
         [
           "Undo",
@@ -12964,7 +13129,7 @@
           5
         ],
         [
-          "CopyFileName",
+          "CopyFullPath",
           5
         ],
         [
@@ -13025,7 +13190,7 @@
       "kind": "compute",
       "mask": 2775,
       "has_photo": true,
-      "render": "ZoomToLevel,Refresh,|,PreviousFolder,|,CopyFileName,|,Settings",
+      "render": "ZoomToLevel,Refresh,|,PreviousFolder,|,CopyFullPath,|,Settings",
       "entries": [
         [
           "ZoomToLevel",
@@ -13048,7 +13213,7 @@
           5
         ],
         [
-          "CopyFileName",
+          "CopyFullPath",
           5
         ],
         [
@@ -13097,7 +13262,7 @@
       "kind": "compute",
       "mask": 2808,
       "has_photo": true,
-      "render": "Undo,MoveToRecycleBin,|,Fit,|,PreviousFolder,|,CopyFileName,|,Settings",
+      "render": "Undo,MoveToRecycleBin,|,Fit,|,PreviousFolder,|,CopyFullPath,|,Settings",
       "entries": [
         [
           "Undo",
@@ -13128,7 +13293,7 @@
           5
         ],
         [
-          "CopyFileName",
+          "CopyFullPath",
           5
         ],
         [
@@ -13185,7 +13350,7 @@
       "kind": "compute",
       "mask": 2812,
       "has_photo": true,
-      "render": "Undo,MoveToRecycleBin,|,PreviousFolder,|,CopyFileName,|,Settings",
+      "render": "Undo,MoveToRecycleBin,|,PreviousFolder,|,CopyFullPath,|,Settings",
       "entries": [
         [
           "Undo",
@@ -13208,7 +13373,7 @@
           5
         ],
         [
-          "CopyFileName",
+          "CopyFullPath",
           5
         ],
         [
@@ -13257,7 +13422,7 @@
       "kind": "compute",
       "mask": 2847,
       "has_photo": true,
-      "render": "Refresh,|,OpenFolder,NextFolder,|,CopyFileName,|,Settings",
+      "render": "Refresh,|,OpenFolder,NextFolder,|,CopyFullPath,|,Settings",
       "entries": [
         [
           "Refresh",
@@ -13280,7 +13445,7 @@
           5
         ],
         [
-          "CopyFileName",
+          "CopyFullPath",
           5
         ],
         [
@@ -13329,7 +13494,7 @@
       "kind": "compute",
       "mask": 2849,
       "has_photo": true,
-      "render": "MoveToRecycleBin,|,Fit,ZoomToLevel,ZoomSubmenu,|,OpenFolder,NextFolder,|,CopyFileName,|,Settings",
+      "render": "MoveToRecycleBin,|,Fit,ZoomToLevel,ZoomSubmenu,|,OpenFolder,NextFolder,|,CopyFullPath,|,Settings",
       "entries": [
         [
           "MoveToRecycleBin",
@@ -13368,7 +13533,7 @@
           5
         ],
         [
-          "CopyFileName",
+          "CopyFullPath",
           5
         ],
         [
@@ -13433,7 +13598,7 @@
       "kind": "compute",
       "mask": 2886,
       "has_photo": true,
-      "render": "Undo,|,ZoomToLevel,ZoomSubmenu,Refresh,|,NextFolder,|,CopyFileName,|,Settings",
+      "render": "Undo,|,ZoomToLevel,ZoomSubmenu,Refresh,|,NextFolder,|,CopyFullPath,|,Settings",
       "entries": [
         [
           "Undo",
@@ -13468,7 +13633,7 @@
           5
         ],
         [
-          "CopyFileName",
+          "CopyFullPath",
           5
         ],
         [
@@ -13529,7 +13694,7 @@
       "kind": "compute",
       "mask": 2923,
       "has_photo": true,
-      "render": "Fit,ZoomSubmenu,|,NextFolder,|,CopyFileName,|,Settings",
+      "render": "Fit,ZoomSubmenu,|,NextFolder,|,CopyFullPath,|,Settings",
       "entries": [
         [
           "Fit",
@@ -13552,7 +13717,7 @@
           5
         ],
         [
-          "CopyFileName",
+          "CopyFullPath",
           5
         ],
         [
@@ -13601,7 +13766,7 @@
       "kind": "compute",
       "mask": 2960,
       "has_photo": true,
-      "render": "Undo,MoveToRecycleBin,|,Fit,ZoomToLevel,Refresh,|,OpenFolder,|,CopyFileName,|,Settings",
+      "render": "Undo,MoveToRecycleBin,|,Fit,ZoomToLevel,Refresh,|,OpenFolder,|,CopyFullPath,|,Settings",
       "entries": [
         [
           "Undo",
@@ -13640,7 +13805,7 @@
           5
         ],
         [
-          "CopyFileName",
+          "CopyFullPath",
           5
         ],
         [
@@ -13705,7 +13870,7 @@
       "kind": "compute",
       "mask": 2997,
       "has_photo": true,
-      "render": "MoveToRecycleBin,|,ZoomToLevel,|,OpenFolder,|,CopyFileName,|,Settings",
+      "render": "MoveToRecycleBin,|,ZoomToLevel,|,OpenFolder,|,CopyFullPath,|,Settings",
       "entries": [
         [
           "MoveToRecycleBin",
@@ -13732,7 +13897,7 @@
           5
         ],
         [
-          "CopyFileName",
+          "CopyFullPath",
           5
         ],
         [
@@ -13785,7 +13950,7 @@
       "kind": "compute",
       "mask": 3016,
       "has_photo": true,
-      "render": "Undo,MoveToRecycleBin,|,Fit,ZoomSubmenu,Refresh,|,CopyFileName,|,Settings",
+      "render": "Undo,MoveToRecycleBin,|,Fit,ZoomSubmenu,Refresh,|,CopyFullPath,|,Settings",
       "entries": [
         [
           "Undo",
@@ -13816,7 +13981,7 @@
           5
         ],
         [
-          "CopyFileName",
+          "CopyFullPath",
           5
         ],
         [
@@ -13873,7 +14038,7 @@
       "kind": "compute",
       "mask": 3034,
       "has_photo": true,
-      "render": "Undo,|,Fit,Refresh,|,CopyFileName,|,Settings",
+      "render": "Undo,|,Fit,Refresh,|,CopyFullPath,|,Settings",
       "entries": [
         [
           "Undo",
@@ -13896,7 +14061,7 @@
           5
         ],
         [
-          "CopyFileName",
+          "CopyFullPath",
           5
         ],
         [
@@ -13945,7 +14110,7 @@
       "kind": "compute",
       "mask": 3047,
       "has_photo": true,
-      "render": "ZoomToLevel,ZoomSubmenu,|,CopyFileName,|,Settings",
+      "render": "ZoomToLevel,ZoomSubmenu,|,CopyFullPath,|,Settings",
       "entries": [
         [
           "ZoomToLevel",
@@ -13960,7 +14125,7 @@
           5
         ],
         [
-          "CopyFileName",
+          "CopyFullPath",
           5
         ],
         [
@@ -14001,7 +14166,7 @@
       "kind": "compute",
       "mask": 3050,
       "has_photo": true,
-      "render": "Undo,|,Fit,ZoomSubmenu,|,CopyFileName,|,Settings",
+      "render": "Undo,|,Fit,ZoomSubmenu,|,CopyFullPath,|,Settings",
       "entries": [
         [
           "Undo",
@@ -14024,7 +14189,7 @@
           5
         ],
         [
-          "CopyFileName",
+          "CopyFullPath",
           5
         ],
         [
@@ -14073,10 +14238,10 @@
       "kind": "compute",
       "mask": 3071,
       "has_photo": true,
-      "render": "CopyFileName,|,Settings",
+      "render": "CopyFullPath,|,Settings",
       "entries": [
         [
-          "CopyFileName",
+          "CopyFullPath",
           5
         ],
         [
@@ -14105,7 +14270,7 @@
       "kind": "compute",
       "mask": 3094,
       "has_photo": true,
-      "render": "Undo,|,ZoomToLevel,Refresh,|,OpenFolder,NextFolder,PreviousFolder,|,ExternalEditor,|,Settings",
+      "render": "Undo,|,ZoomToLevel,Refresh,|,OpenFolder,NextFolder,PreviousFolder,|,ExternalEditor,|,CopyFullPath,|,Settings",
       "entries": [
         [
           "Undo",
@@ -14146,6 +14311,14 @@
         [
           "ExternalEditor",
           4
+        ],
+        [
+          null,
+          5
+        ],
+        [
+          "CopyFullPath",
+          5
         ],
         [
           null,
@@ -14217,7 +14390,7 @@
       "kind": "compute",
       "mask": 3108,
       "has_photo": true,
-      "render": "Undo,MoveToRecycleBin,|,ZoomToLevel,ZoomSubmenu,|,OpenFolder,NextFolder,PreviousFolder,|,ExternalEditor,|,Settings",
+      "render": "Undo,MoveToRecycleBin,|,ZoomToLevel,ZoomSubmenu,|,OpenFolder,NextFolder,PreviousFolder,|,ExternalEditor,|,CopyFullPath,|,Settings",
       "entries": [
         [
           "Undo",
@@ -14262,6 +14435,14 @@
         [
           "ExternalEditor",
           4
+        ],
+        [
+          null,
+          5
+        ],
+        [
+          "CopyFullPath",
+          5
         ],
         [
           null,
@@ -14337,7 +14518,7 @@
       "kind": "compute",
       "mask": 3123,
       "has_photo": true,
-      "render": "Fit,ZoomToLevel,|,OpenFolder,NextFolder,PreviousFolder,|,ExternalEditor,|,Settings",
+      "render": "Fit,ZoomToLevel,|,OpenFolder,NextFolder,PreviousFolder,|,ExternalEditor,|,CopyFullPath,|,Settings",
       "entries": [
         [
           "Fit",
@@ -14370,6 +14551,14 @@
         [
           "ExternalEditor",
           4
+        ],
+        [
+          null,
+          5
+        ],
+        [
+          "CopyFullPath",
+          5
         ],
         [
           null,
@@ -14433,7 +14622,7 @@
       "kind": "compute",
       "mask": 3145,
       "has_photo": true,
-      "render": "MoveToRecycleBin,|,Fit,ZoomSubmenu,Refresh,|,NextFolder,PreviousFolder,|,ExternalEditor,|,Settings",
+      "render": "MoveToRecycleBin,|,Fit,ZoomSubmenu,Refresh,|,NextFolder,PreviousFolder,|,ExternalEditor,|,CopyFullPath,|,Settings",
       "entries": [
         [
           "MoveToRecycleBin",
@@ -14474,6 +14663,14 @@
         [
           "ExternalEditor",
           4
+        ],
+        [
+          null,
+          5
+        ],
+        [
+          "CopyFullPath",
+          5
         ],
         [
           null,
@@ -14545,7 +14742,7 @@
       "kind": "compute",
       "mask": 3155,
       "has_photo": true,
-      "render": "Fit,ZoomToLevel,Refresh,|,NextFolder,PreviousFolder,|,ExternalEditor,|,Settings",
+      "render": "Fit,ZoomToLevel,Refresh,|,NextFolder,PreviousFolder,|,ExternalEditor,|,CopyFullPath,|,Settings",
       "entries": [
         [
           "Fit",
@@ -14578,6 +14775,14 @@
         [
           "ExternalEditor",
           4
+        ],
+        [
+          null,
+          5
+        ],
+        [
+          "CopyFullPath",
+          5
         ],
         [
           null,
@@ -14641,7 +14846,7 @@
       "kind": "compute",
       "mask": 3182,
       "has_photo": true,
-      "render": "Undo,|,ZoomSubmenu,|,NextFolder,PreviousFolder,|,ExternalEditor,|,Settings",
+      "render": "Undo,|,ZoomSubmenu,|,NextFolder,PreviousFolder,|,ExternalEditor,|,CopyFullPath,|,Settings",
       "entries": [
         [
           "Undo",
@@ -14674,6 +14879,14 @@
         [
           "ExternalEditor",
           4
+        ],
+        [
+          null,
+          5
+        ],
+        [
+          "CopyFullPath",
+          5
         ],
         [
           null,
@@ -14737,7 +14950,7 @@
       "kind": "compute",
       "mask": 3219,
       "has_photo": true,
-      "render": "Fit,ZoomToLevel,Refresh,|,OpenFolder,PreviousFolder,|,ExternalEditor,|,Settings",
+      "render": "Fit,ZoomToLevel,Refresh,|,OpenFolder,PreviousFolder,|,ExternalEditor,|,CopyFullPath,|,Settings",
       "entries": [
         [
           "Fit",
@@ -14770,6 +14983,14 @@
         [
           "ExternalEditor",
           4
+        ],
+        [
+          null,
+          5
+        ],
+        [
+          "CopyFullPath",
+          5
         ],
         [
           null,
@@ -14833,7 +15054,7 @@
       "kind": "compute",
       "mask": 3239,
       "has_photo": true,
-      "render": "ZoomToLevel,ZoomSubmenu,|,OpenFolder,PreviousFolder,|,ExternalEditor,|,Settings",
+      "render": "ZoomToLevel,ZoomSubmenu,|,OpenFolder,PreviousFolder,|,ExternalEditor,|,CopyFullPath,|,Settings",
       "entries": [
         [
           "ZoomToLevel",
@@ -14862,6 +15083,14 @@
         [
           "ExternalEditor",
           4
+        ],
+        [
+          null,
+          5
+        ],
+        [
+          "CopyFullPath",
+          5
         ],
         [
           null,
@@ -14921,7 +15150,7 @@
       "kind": "compute",
       "mask": 3256,
       "has_photo": true,
-      "render": "Undo,MoveToRecycleBin,|,Fit,|,OpenFolder,PreviousFolder,|,ExternalEditor,|,Settings",
+      "render": "Undo,MoveToRecycleBin,|,Fit,|,OpenFolder,PreviousFolder,|,ExternalEditor,|,CopyFullPath,|,Settings",
       "entries": [
         [
           "Undo",
@@ -14958,6 +15187,14 @@
         [
           "ExternalEditor",
           4
+        ],
+        [
+          null,
+          5
+        ],
+        [
+          "CopyFullPath",
+          5
         ],
         [
           null,
@@ -15025,7 +15262,7 @@
       "kind": "compute",
       "mask": 3293,
       "has_photo": true,
-      "render": "MoveToRecycleBin,|,Refresh,|,PreviousFolder,|,ExternalEditor,|,Settings",
+      "render": "MoveToRecycleBin,|,Refresh,|,PreviousFolder,|,ExternalEditor,|,CopyFullPath,|,Settings",
       "entries": [
         [
           "MoveToRecycleBin",
@@ -15054,6 +15291,14 @@
         [
           "ExternalEditor",
           4
+        ],
+        [
+          null,
+          5
+        ],
+        [
+          "CopyFullPath",
+          5
         ],
         [
           null,
@@ -15113,7 +15358,7 @@
       "kind": "compute",
       "mask": 3330,
       "has_photo": true,
-      "render": "Undo,|,Fit,ZoomToLevel,ZoomSubmenu,Refresh,|,OpenFolder,NextFolder,|,ExternalEditor,|,Settings",
+      "render": "Undo,|,Fit,ZoomToLevel,ZoomSubmenu,Refresh,|,OpenFolder,NextFolder,|,ExternalEditor,|,CopyFullPath,|,Settings",
       "entries": [
         [
           "Undo",
@@ -15158,6 +15403,14 @@
         [
           "ExternalEditor",
           4
+        ],
+        [
+          null,
+          5
+        ],
+        [
+          "CopyFullPath",
+          5
         ],
         [
           null,
@@ -15233,7 +15486,7 @@
       "kind": "compute",
       "mask": 3367,
       "has_photo": true,
-      "render": "ZoomToLevel,ZoomSubmenu,|,OpenFolder,NextFolder,|,ExternalEditor,|,Settings",
+      "render": "ZoomToLevel,ZoomSubmenu,|,OpenFolder,NextFolder,|,ExternalEditor,|,CopyFullPath,|,Settings",
       "entries": [
         [
           "ZoomToLevel",
@@ -15262,6 +15515,14 @@
         [
           "ExternalEditor",
           4
+        ],
+        [
+          null,
+          5
+        ],
+        [
+          "CopyFullPath",
+          5
         ],
         [
           null,
@@ -15321,7 +15582,7 @@
       "kind": "compute",
       "mask": 3404,
       "has_photo": true,
-      "render": "Undo,MoveToRecycleBin,|,ZoomSubmenu,Refresh,|,NextFolder,|,ExternalEditor,|,Settings",
+      "render": "Undo,MoveToRecycleBin,|,ZoomSubmenu,Refresh,|,NextFolder,|,ExternalEditor,|,CopyFullPath,|,Settings",
       "entries": [
         [
           "Undo",
@@ -15358,6 +15619,14 @@
         [
           "ExternalEditor",
           4
+        ],
+        [
+          null,
+          5
+        ],
+        [
+          "CopyFullPath",
+          5
         ],
         [
           null,
@@ -15425,7 +15694,7 @@
       "kind": "compute",
       "mask": 3441,
       "has_photo": true,
-      "render": "MoveToRecycleBin,|,Fit,ZoomToLevel,|,NextFolder,|,ExternalEditor,|,Settings",
+      "render": "MoveToRecycleBin,|,Fit,ZoomToLevel,|,NextFolder,|,ExternalEditor,|,CopyFullPath,|,Settings",
       "entries": [
         [
           "MoveToRecycleBin",
@@ -15458,6 +15727,14 @@
         [
           "ExternalEditor",
           4
+        ],
+        [
+          null,
+          5
+        ],
+        [
+          "CopyFullPath",
+          5
         ],
         [
           null,
@@ -15521,7 +15798,7 @@
       "kind": "compute",
       "mask": 3478,
       "has_photo": true,
-      "render": "Undo,|,ZoomToLevel,Refresh,|,OpenFolder,|,ExternalEditor,|,Settings",
+      "render": "Undo,|,ZoomToLevel,Refresh,|,OpenFolder,|,ExternalEditor,|,CopyFullPath,|,Settings",
       "entries": [
         [
           "Undo",
@@ -15554,6 +15831,14 @@
         [
           "ExternalEditor",
           4
+        ],
+        [
+          null,
+          5
+        ],
+        [
+          "CopyFullPath",
+          5
         ],
         [
           null,
@@ -15617,7 +15902,7 @@
       "kind": "compute",
       "mask": 3515,
       "has_photo": true,
-      "render": "Fit,|,OpenFolder,|,ExternalEditor,|,Settings",
+      "render": "Fit,|,OpenFolder,|,ExternalEditor,|,CopyFullPath,|,Settings",
       "entries": [
         [
           "Fit",
@@ -15638,6 +15923,14 @@
         [
           "ExternalEditor",
           4
+        ],
+        [
+          null,
+          5
+        ],
+        [
+          "CopyFullPath",
+          5
         ],
         [
           null,
@@ -15689,7 +15982,7 @@
       "kind": "compute",
       "mask": 3552,
       "has_photo": true,
-      "render": "Undo,MoveToRecycleBin,|,Fit,ZoomToLevel,ZoomSubmenu,|,ExternalEditor,|,Settings",
+      "render": "Undo,MoveToRecycleBin,|,Fit,ZoomToLevel,ZoomSubmenu,|,ExternalEditor,|,CopyFullPath,|,Settings",
       "entries": [
         [
           "Undo",
@@ -15722,6 +16015,14 @@
         [
           "ExternalEditor",
           4
+        ],
+        [
+          null,
+          5
+        ],
+        [
+          "CopyFullPath",
+          5
         ],
         [
           null,
@@ -15785,11 +16086,19 @@
       "kind": "compute",
       "mask": 3583,
       "has_photo": true,
-      "render": "ExternalEditor,|,Settings",
+      "render": "ExternalEditor,|,CopyFullPath,|,Settings",
       "entries": [
         [
           "ExternalEditor",
           4
+        ],
+        [
+          null,
+          5
+        ],
+        [
+          "CopyFullPath",
+          5
         ],
         [
           null,
@@ -15825,7 +16134,7 @@
       "kind": "compute",
       "mask": 3589,
       "has_photo": true,
-      "render": "MoveToRecycleBin,|,ZoomToLevel,ZoomSubmenu,Refresh,|,OpenFolder,NextFolder,PreviousFolder,|,Settings",
+      "render": "MoveToRecycleBin,|,ZoomToLevel,ZoomSubmenu,Refresh,|,OpenFolder,NextFolder,PreviousFolder,|,CopyFullPath,|,Settings",
       "entries": [
         [
           "MoveToRecycleBin",
@@ -15862,6 +16171,14 @@
         [
           "PreviousFolder",
           3
+        ],
+        [
+          null,
+          5
+        ],
+        [
+          "CopyFullPath",
+          5
         ],
         [
           null,
@@ -15929,7 +16246,7 @@
       "kind": "compute",
       "mask": 3626,
       "has_photo": true,
-      "render": "Undo,|,Fit,ZoomSubmenu,|,OpenFolder,NextFolder,PreviousFolder,|,Settings",
+      "render": "Undo,|,Fit,ZoomSubmenu,|,OpenFolder,NextFolder,PreviousFolder,|,CopyFullPath,|,Settings",
       "entries": [
         [
           "Undo",
@@ -15962,6 +16279,14 @@
         [
           "PreviousFolder",
           3
+        ],
+        [
+          null,
+          5
+        ],
+        [
+          "CopyFullPath",
+          5
         ],
         [
           null,
@@ -16025,7 +16350,7 @@
       "kind": "compute",
       "mask": 3631,
       "has_photo": true,
-      "render": "ZoomSubmenu,|,OpenFolder,NextFolder,PreviousFolder,|,Settings",
+      "render": "ZoomSubmenu,|,OpenFolder,NextFolder,PreviousFolder,|,CopyFullPath,|,Settings",
       "entries": [
         [
           "ZoomSubmenu",
@@ -16046,6 +16371,14 @@
         [
           "PreviousFolder",
           3
+        ],
+        [
+          null,
+          5
+        ],
+        [
+          "CopyFullPath",
+          5
         ],
         [
           null,
@@ -16097,7 +16430,7 @@
       "kind": "compute",
       "mask": 3663,
       "has_photo": true,
-      "render": "ZoomSubmenu,Refresh,|,NextFolder,PreviousFolder,|,Settings",
+      "render": "ZoomSubmenu,Refresh,|,NextFolder,PreviousFolder,|,CopyFullPath,|,Settings",
       "entries": [
         [
           "ZoomSubmenu",
@@ -16118,6 +16451,14 @@
         [
           "PreviousFolder",
           3
+        ],
+        [
+          null,
+          5
+        ],
+        [
+          "CopyFullPath",
+          5
         ],
         [
           null,
@@ -16169,7 +16510,7 @@
       "kind": "compute",
       "mask": 3683,
       "has_photo": true,
-      "render": "Fit,ZoomToLevel,ZoomSubmenu,|,NextFolder,PreviousFolder,|,Settings",
+      "render": "Fit,ZoomToLevel,ZoomSubmenu,|,NextFolder,PreviousFolder,|,CopyFullPath,|,Settings",
       "entries": [
         [
           "Fit",
@@ -16194,6 +16535,14 @@
         [
           "PreviousFolder",
           3
+        ],
+        [
+          null,
+          5
+        ],
+        [
+          "CopyFullPath",
+          5
         ],
         [
           null,
@@ -16249,7 +16598,7 @@
       "kind": "compute",
       "mask": 3700,
       "has_photo": true,
-      "render": "Undo,MoveToRecycleBin,|,ZoomToLevel,|,NextFolder,PreviousFolder,|,Settings",
+      "render": "Undo,MoveToRecycleBin,|,ZoomToLevel,|,NextFolder,PreviousFolder,|,CopyFullPath,|,Settings",
       "entries": [
         [
           "Undo",
@@ -16278,6 +16627,14 @@
         [
           "PreviousFolder",
           3
+        ],
+        [
+          null,
+          5
+        ],
+        [
+          "CopyFullPath",
+          5
         ],
         [
           null,
@@ -16337,7 +16694,7 @@
       "kind": "compute",
       "mask": 3737,
       "has_photo": true,
-      "render": "MoveToRecycleBin,|,Fit,Refresh,|,OpenFolder,PreviousFolder,|,Settings",
+      "render": "MoveToRecycleBin,|,Fit,Refresh,|,OpenFolder,PreviousFolder,|,CopyFullPath,|,Settings",
       "entries": [
         [
           "MoveToRecycleBin",
@@ -16366,6 +16723,14 @@
         [
           "PreviousFolder",
           3
+        ],
+        [
+          null,
+          5
+        ],
+        [
+          "CopyFullPath",
+          5
         ],
         [
           null,
@@ -16425,7 +16790,7 @@
       "kind": "compute",
       "mask": 3774,
       "has_photo": true,
-      "render": "Undo,|,OpenFolder,PreviousFolder,|,Settings",
+      "render": "Undo,|,OpenFolder,PreviousFolder,|,CopyFullPath,|,Settings",
       "entries": [
         [
           "Undo",
@@ -16442,6 +16807,14 @@
         [
           "PreviousFolder",
           3
+        ],
+        [
+          null,
+          5
+        ],
+        [
+          "CopyFullPath",
+          5
         ],
         [
           null,
@@ -16489,7 +16862,7 @@
       "kind": "compute",
       "mask": 3794,
       "has_photo": true,
-      "render": "Undo,|,Fit,ZoomToLevel,Refresh,|,PreviousFolder,|,Settings",
+      "render": "Undo,|,Fit,ZoomToLevel,Refresh,|,PreviousFolder,|,CopyFullPath,|,Settings",
       "entries": [
         [
           "Undo",
@@ -16518,6 +16891,14 @@
         [
           "PreviousFolder",
           3
+        ],
+        [
+          null,
+          5
+        ],
+        [
+          "CopyFullPath",
+          5
         ],
         [
           null,
@@ -16577,7 +16958,7 @@
       "kind": "compute",
       "mask": 3811,
       "has_photo": true,
-      "render": "Fit,ZoomToLevel,ZoomSubmenu,|,PreviousFolder,|,Settings",
+      "render": "Fit,ZoomToLevel,ZoomSubmenu,|,PreviousFolder,|,CopyFullPath,|,Settings",
       "entries": [
         [
           "Fit",
@@ -16598,6 +16979,14 @@
         [
           "PreviousFolder",
           3
+        ],
+        [
+          null,
+          5
+        ],
+        [
+          "CopyFullPath",
+          5
         ],
         [
           null,
@@ -16649,11 +17038,19 @@
       "kind": "compute",
       "mask": 3839,
       "has_photo": true,
-      "render": "PreviousFolder,|,Settings",
+      "render": "PreviousFolder,|,CopyFullPath,|,Settings",
       "entries": [
         [
           "PreviousFolder",
           3
+        ],
+        [
+          null,
+          5
+        ],
+        [
+          "CopyFullPath",
+          5
         ],
         [
           null,
@@ -16689,7 +17086,7 @@
       "kind": "compute",
       "mask": 3848,
       "has_photo": true,
-      "render": "Undo,MoveToRecycleBin,|,Fit,ZoomSubmenu,Refresh,|,OpenFolder,NextFolder,|,Settings",
+      "render": "Undo,MoveToRecycleBin,|,Fit,ZoomSubmenu,Refresh,|,OpenFolder,NextFolder,|,CopyFullPath,|,Settings",
       "entries": [
         [
           "Undo",
@@ -16726,6 +17123,14 @@
         [
           "NextFolder",
           3
+        ],
+        [
+          null,
+          5
+        ],
+        [
+          "CopyFullPath",
+          5
         ],
         [
           null,
@@ -16793,7 +17198,7 @@
       "kind": "compute",
       "mask": 3885,
       "has_photo": true,
-      "render": "MoveToRecycleBin,|,ZoomSubmenu,|,OpenFolder,NextFolder,|,Settings",
+      "render": "MoveToRecycleBin,|,ZoomSubmenu,|,OpenFolder,NextFolder,|,CopyFullPath,|,Settings",
       "entries": [
         [
           "MoveToRecycleBin",
@@ -16818,6 +17223,14 @@
         [
           "NextFolder",
           3
+        ],
+        [
+          null,
+          5
+        ],
+        [
+          "CopyFullPath",
+          5
         ],
         [
           null,
@@ -16873,7 +17286,7 @@
       "kind": "compute",
       "mask": 3893,
       "has_photo": true,
-      "render": "MoveToRecycleBin,|,ZoomToLevel,|,OpenFolder,NextFolder,|,Settings",
+      "render": "MoveToRecycleBin,|,ZoomToLevel,|,OpenFolder,NextFolder,|,CopyFullPath,|,Settings",
       "entries": [
         [
           "MoveToRecycleBin",
@@ -16898,6 +17311,14 @@
         [
           "NextFolder",
           3
+        ],
+        [
+          null,
+          5
+        ],
+        [
+          "CopyFullPath",
+          5
         ],
         [
           null,
@@ -16953,7 +17374,7 @@
       "kind": "compute",
       "mask": 3922,
       "has_photo": true,
-      "render": "Undo,|,Fit,ZoomToLevel,Refresh,|,NextFolder,|,Settings",
+      "render": "Undo,|,Fit,ZoomToLevel,Refresh,|,NextFolder,|,CopyFullPath,|,Settings",
       "entries": [
         [
           "Undo",
@@ -16982,6 +17403,14 @@
         [
           "NextFolder",
           3
+        ],
+        [
+          null,
+          5
+        ],
+        [
+          "CopyFullPath",
+          5
         ],
         [
           null,
@@ -17041,7 +17470,7 @@
       "kind": "compute",
       "mask": 3959,
       "has_photo": true,
-      "render": "ZoomToLevel,|,NextFolder,|,Settings",
+      "render": "ZoomToLevel,|,NextFolder,|,CopyFullPath,|,Settings",
       "entries": [
         [
           "ZoomToLevel",
@@ -17054,6 +17483,14 @@
         [
           "NextFolder",
           3
+        ],
+        [
+          null,
+          5
+        ],
+        [
+          "CopyFullPath",
+          5
         ],
         [
           null,
@@ -17097,11 +17534,19 @@
       "kind": "compute",
       "mask": 3967,
       "has_photo": true,
-      "render": "NextFolder,|,Settings",
+      "render": "NextFolder,|,CopyFullPath,|,Settings",
       "entries": [
         [
           "NextFolder",
           3
+        ],
+        [
+          null,
+          5
+        ],
+        [
+          "CopyFullPath",
+          5
         ],
         [
           null,
@@ -17137,7 +17582,7 @@
       "kind": "compute",
       "mask": 3996,
       "has_photo": true,
-      "render": "Undo,MoveToRecycleBin,|,Refresh,|,OpenFolder,|,Settings",
+      "render": "Undo,MoveToRecycleBin,|,Refresh,|,OpenFolder,|,CopyFullPath,|,Settings",
       "entries": [
         [
           "Undo",
@@ -17162,6 +17607,14 @@
         [
           "OpenFolder",
           3
+        ],
+        [
+          null,
+          5
+        ],
+        [
+          "CopyFullPath",
+          5
         ],
         [
           null,
@@ -17217,11 +17670,19 @@
       "kind": "compute",
       "mask": 4031,
       "has_photo": true,
-      "render": "OpenFolder,|,Settings",
+      "render": "OpenFolder,|,CopyFullPath,|,Settings",
       "entries": [
         [
           "OpenFolder",
           3
+        ],
+        [
+          null,
+          5
+        ],
+        [
+          "CopyFullPath",
+          5
         ],
         [
           null,
@@ -17257,7 +17718,7 @@
       "kind": "compute",
       "mask": 4033,
       "has_photo": true,
-      "render": "MoveToRecycleBin,|,Fit,ZoomToLevel,ZoomSubmenu,Refresh,|,Settings",
+      "render": "MoveToRecycleBin,|,Fit,ZoomToLevel,ZoomSubmenu,Refresh,|,CopyFullPath,|,Settings",
       "entries": [
         [
           "MoveToRecycleBin",
@@ -17282,6 +17743,14 @@
         [
           "Refresh",
           2
+        ],
+        [
+          null,
+          5
+        ],
+        [
+          "CopyFullPath",
+          5
         ],
         [
           null,
@@ -17337,11 +17806,19 @@
       "kind": "compute",
       "mask": 4063,
       "has_photo": true,
-      "render": "Refresh,|,Settings",
+      "render": "Refresh,|,CopyFullPath,|,Settings",
       "entries": [
         [
           "Refresh",
           2
+        ],
+        [
+          null,
+          5
+        ],
+        [
+          "CopyFullPath",
+          5
         ],
         [
           null,
@@ -17377,7 +17854,7 @@
       "kind": "compute",
       "mask": 4070,
       "has_photo": true,
-      "render": "Undo,|,ZoomToLevel,ZoomSubmenu,|,Settings",
+      "render": "Undo,|,ZoomToLevel,ZoomSubmenu,|,CopyFullPath,|,Settings",
       "entries": [
         [
           "Undo",
@@ -17394,6 +17871,14 @@
         [
           "ZoomSubmenu",
           2
+        ],
+        [
+          null,
+          5
+        ],
+        [
+          "CopyFullPath",
+          5
         ],
         [
           null,
@@ -17441,11 +17926,19 @@
       "kind": "compute",
       "mask": 4079,
       "has_photo": true,
-      "render": "ZoomSubmenu,|,Settings",
+      "render": "ZoomSubmenu,|,CopyFullPath,|,Settings",
       "entries": [
         [
           "ZoomSubmenu",
           2
+        ],
+        [
+          null,
+          5
+        ],
+        [
+          "CopyFullPath",
+          5
         ],
         [
           null,
@@ -17481,11 +17974,19 @@
       "kind": "compute",
       "mask": 4087,
       "has_photo": true,
-      "render": "ZoomToLevel,|,Settings",
+      "render": "ZoomToLevel,|,CopyFullPath,|,Settings",
       "entries": [
         [
           "ZoomToLevel",
           2
+        ],
+        [
+          null,
+          5
+        ],
+        [
+          "CopyFullPath",
+          5
         ],
         [
           null,
@@ -17521,7 +18022,7 @@
       "kind": "compute",
       "mask": 4090,
       "has_photo": true,
-      "render": "Undo,|,Fit,|,Settings",
+      "render": "Undo,|,Fit,|,CopyFullPath,|,Settings",
       "entries": [
         [
           "Undo",
@@ -17534,6 +18035,14 @@
         [
           "Fit",
           2
+        ],
+        [
+          null,
+          5
+        ],
+        [
+          "CopyFullPath",
+          5
         ],
         [
           null,
@@ -17577,11 +18086,19 @@
       "kind": "compute",
       "mask": 4091,
       "has_photo": true,
-      "render": "Fit,|,Settings",
+      "render": "Fit,|,CopyFullPath,|,Settings",
       "entries": [
         [
           "Fit",
           2
+        ],
+        [
+          null,
+          5
+        ],
+        [
+          "CopyFullPath",
+          5
         ],
         [
           null,
@@ -17617,11 +18134,19 @@
       "kind": "compute",
       "mask": 4093,
       "has_photo": true,
-      "render": "MoveToRecycleBin,|,Settings",
+      "render": "MoveToRecycleBin,|,CopyFullPath,|,Settings",
       "entries": [
         [
           "MoveToRecycleBin",
           1
+        ],
+        [
+          null,
+          5
+        ],
+        [
+          "CopyFullPath",
+          5
         ],
         [
           null,
@@ -17657,11 +18182,19 @@
       "kind": "compute",
       "mask": 4094,
       "has_photo": true,
-      "render": "Undo,|,Settings",
+      "render": "Undo,|,CopyFullPath,|,Settings",
       "entries": [
         [
           "Undo",
           1
+        ],
+        [
+          null,
+          5
+        ],
+        [
+          "CopyFullPath",
+          5
         ],
         [
           null,
@@ -17697,8 +18230,16 @@
       "kind": "compute",
       "mask": 4095,
       "has_photo": true,
-      "render": "Settings",
+      "render": "CopyFullPath,|,Settings",
       "entries": [
+        [
+          "CopyFullPath",
+          5
+        ],
+        [
+          null,
+          6
+        ],
         [
           "Settings",
           6

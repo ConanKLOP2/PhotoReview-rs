@@ -1,4 +1,4 @@
-//! Port of the `PhotoReview.Core/Settings` normalizer, validator and repair-text tests (baseline d92d6aae).
+//! Port of the `PhotoReview.Core/Settings` normalizer, validator and repair-text tests (baseline 7eaee2a2).
 //! Goldens: `tests/golden/settings-normalize.json` (294), `settings-validate.json` (84), `settings-repair-text.json` (22).
 
 use std::collections::{BTreeMap, HashSet};
@@ -86,9 +86,9 @@ impl KeyNameValidator for Known {
     }
 }
 
-const DEFAULT_KNOWN: [&str; 32] = [
+const DEFAULT_KNOWN: [&str; 33] = [
     "Right", "Left", "Enter", "Delete", "C", "PageDown", "PageUp", "Home", "Add", "Subtract", "F", "Space", "Z", "F11",
-    "F3", "F4", "F5", "F6", "T", "D1", "D2", "D3", "D4", "M", "Y", "End", "I", "W", "H", "K", "O", "R",
+    "F2", "F3", "F4", "F5", "F6", "T", "D1", "D2", "D3", "D4", "M", "Y", "End", "I", "W", "H", "K", "O", "R",
 ];
 
 fn validator(v: Arc<dyn KeyNameValidator>) -> SettingsValidator {
@@ -165,7 +165,7 @@ fn strings(v: &Value) -> Vec<String> {
 #[test]
 fn golden_settings_normalize() {
     let g = golden::load("settings-normalize");
-    assert!(g.csharp_commit.starts_with("d92d6aae"), "baseline {}", g.csharp_commit);
+    assert!(g.csharp_commit.starts_with("7eaee2a2"), "baseline {}", g.csharp_commit);
     assert_eq!(g.cases.len(), 294);
     for case in &g.cases {
         let name = str_of(case, "name");
@@ -193,7 +193,7 @@ fn golden_settings_normalize() {
 #[test]
 fn golden_settings_validate() {
     let g = golden::load("settings-validate");
-    assert!(g.csharp_commit.starts_with("d92d6aae"), "baseline {}", g.csharp_commit);
+    assert!(g.csharp_commit.starts_with("7eaee2a2"), "baseline {}", g.csharp_commit);
     assert_eq!(g.cases.len(), 84);
     for case in &g.cases {
         let name = str_of(case, "name");
@@ -209,7 +209,7 @@ fn golden_settings_validate() {
 #[test]
 fn golden_settings_repair_text() {
     let g = golden::load("settings-repair-text");
-    assert!(g.csharp_commit.starts_with("d92d6aae"), "baseline {}", g.csharp_commit);
+    assert!(g.csharp_commit.starts_with("7eaee2a2"), "baseline {}", g.csharp_commit);
     assert_eq!(g.cases.len(), 22);
     for case in &g.cases {
         let name = str_of(case, "name");
@@ -436,7 +436,7 @@ fn optional_shortcut_sharing_a_mandatory_key_is_disabled_and_settings_stay_valid
             pairs += 1;
         }
     }
-    assert_eq!(pairs, 13 * 14);
+    assert_eq!(pairs, 13 * 16);
 }
 
 // ---- SettingsValidatorTests ----

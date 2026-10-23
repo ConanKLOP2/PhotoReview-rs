@@ -1,0 +1,499 @@
+{
+  "generator": "oracle-cs w9-r1-rename-policy",
+  "csharp_commit": "7eaee2a2b071c7ca05291c86fb78a347f9e6a15f",
+  "cases": [
+    {
+      "kind": "single",
+      "path": "C:\\photos\\a.JPG",
+      "typed": " b ",
+      "problem": "None",
+      "new_file_name": "b.JPG",
+      "invalid_character": null,
+      "unchanged": false,
+      "case_only": false
+    },
+    {
+      "kind": "single",
+      "path": "C:\\photos\\a.JPG",
+      "typed": "b.jpg",
+      "problem": "None",
+      "new_file_name": "b.JPG",
+      "invalid_character": null,
+      "unchanged": false,
+      "case_only": false
+    },
+    {
+      "kind": "single",
+      "path": "C:\\photos\\a.JPG",
+      "typed": "a",
+      "problem": "None",
+      "new_file_name": "a.JPG",
+      "invalid_character": null,
+      "unchanged": true,
+      "case_only": false
+    },
+    {
+      "kind": "single",
+      "path": "C:\\photos\\a.JPG",
+      "typed": "A",
+      "problem": "None",
+      "new_file_name": "A.JPG",
+      "invalid_character": null,
+      "unchanged": false,
+      "case_only": true
+    },
+    {
+      "kind": "single",
+      "path": "C:\\photos\\a.JPG",
+      "typed": "a.v2",
+      "problem": "None",
+      "new_file_name": "a.v2.JPG",
+      "invalid_character": null,
+      "unchanged": false,
+      "case_only": false
+    },
+    {
+      "kind": "single",
+      "path": "C:\\photos\\a.JPG",
+      "typed": "a.",
+      "problem": "TrailingDotOrSpace",
+      "new_file_name": "",
+      "invalid_character": null,
+      "unchanged": false,
+      "case_only": false
+    },
+    {
+      "kind": "single",
+      "path": "C:\\photos\\a.JPG",
+      "typed": "CON",
+      "problem": "ReservedDeviceName",
+      "new_file_name": "",
+      "invalid_character": null,
+      "unchanged": false,
+      "case_only": false
+    },
+    {
+      "kind": "single",
+      "path": "C:\\photos\\a.JPG",
+      "typed": "COM¹",
+      "problem": "ReservedDeviceName",
+      "new_file_name": "",
+      "invalid_character": null,
+      "unchanged": false,
+      "case_only": false
+    },
+    {
+      "kind": "single",
+      "path": "C:\\photos\\a.JPG",
+      "typed": "bad:name",
+      "problem": "InvalidCharacter",
+      "new_file_name": "",
+      "invalid_character": ":",
+      "unchanged": false,
+      "case_only": false
+    },
+    {
+      "kind": "single",
+      "path": "C:\\photos\\é.JPG",
+      "typed": "é",
+      "problem": "None",
+      "new_file_name": "é.JPG",
+      "invalid_character": null,
+      "unchanged": false,
+      "case_only": false
+    },
+    {
+      "kind": "single",
+      "path": "C:\\photos\\a.JPG",
+      "typed": "",
+      "problem": "Empty",
+      "new_file_name": "",
+      "invalid_character": null,
+      "unchanged": false,
+      "case_only": false
+    },
+    {
+      "kind": "single",
+      "path": "C:\\photos\\a.JPG",
+      "typed": "A.JPG",
+      "problem": "None",
+      "new_file_name": "A.JPG",
+      "invalid_character": null,
+      "unchanged": false,
+      "case_only": true
+    },
+    {
+      "kind": "single",
+      "path": "C:\\photos\\a.JPG",
+      "typed": "a.jpg",
+      "problem": "None",
+      "new_file_name": "a.JPG",
+      "invalid_character": null,
+      "unchanged": true,
+      "case_only": false
+    },
+    {
+      "kind": "single",
+      "path": "C:\\photos\\a.JPG",
+      "typed": ".JPG",
+      "problem": "Empty",
+      "new_file_name": "",
+      "invalid_character": null,
+      "unchanged": false,
+      "case_only": false
+    },
+    {
+      "kind": "single",
+      "path": "C:\\photos\\a.JPG",
+      "typed": "   ",
+      "problem": "Empty",
+      "new_file_name": "",
+      "invalid_character": null,
+      "unchanged": false,
+      "case_only": false
+    },
+    {
+      "kind": "single",
+      "path": "C:\\photos\\a.JPG",
+      "typed": "a ",
+      "problem": "None",
+      "new_file_name": "a.JPG",
+      "invalid_character": null,
+      "unchanged": true,
+      "case_only": false
+    },
+    {
+      "kind": "single",
+      "path": "C:\\photos\\a.JPG",
+      "typed": "a. ",
+      "problem": "TrailingDotOrSpace",
+      "new_file_name": "",
+      "invalid_character": null,
+      "unchanged": false,
+      "case_only": false
+    },
+    {
+      "kind": "single",
+      "path": "C:\\photos\\a.JPG",
+      "typed": "CON.txt",
+      "problem": "ReservedDeviceName",
+      "new_file_name": "",
+      "invalid_character": null,
+      "unchanged": false,
+      "case_only": false
+    },
+    {
+      "kind": "single",
+      "path": "C:\\photos\\a.JPG",
+      "typed": "CONIN$",
+      "problem": "ReservedDeviceName",
+      "new_file_name": "",
+      "invalid_character": null,
+      "unchanged": false,
+      "case_only": false
+    },
+    {
+      "kind": "single",
+      "path": "C:\\photos\\a.JPG",
+      "typed": "COM0",
+      "problem": "ReservedDeviceName",
+      "new_file_name": "",
+      "invalid_character": null,
+      "unchanged": false,
+      "case_only": false
+    },
+    {
+      "kind": "single",
+      "path": "C:\\photos\\a.JPG",
+      "typed": "LPT¹",
+      "problem": "ReservedDeviceName",
+      "new_file_name": "",
+      "invalid_character": null,
+      "unchanged": false,
+      "case_only": false
+    },
+    {
+      "kind": "single",
+      "path": "C:\\photos\\a.JPG",
+      "typed": "NUL.",
+      "problem": "TrailingDotOrSpace",
+      "new_file_name": "",
+      "invalid_character": null,
+      "unchanged": false,
+      "case_only": false
+    },
+    {
+      "kind": "single",
+      "path": "C:\\photos\\a.JPG",
+      "typed": "COM10",
+      "problem": "None",
+      "new_file_name": "COM10.JPG",
+      "invalid_character": null,
+      "unchanged": false,
+      "case_only": false
+    },
+    {
+      "kind": "single",
+      "path": "C:\\photos\\a.JPG",
+      "typed": "a\u0001b",
+      "problem": "InvalidCharacter",
+      "new_file_name": "",
+      "invalid_character": "\u0001",
+      "unchanged": false,
+      "case_only": false
+    },
+    {
+      "kind": "single",
+      "path": "C:\\photos\\a.JPG",
+      "typed": "a<b>c",
+      "problem": "InvalidCharacter",
+      "new_file_name": "",
+      "invalid_character": "<",
+      "unchanged": false,
+      "case_only": false
+    },
+    {
+      "kind": "single",
+      "path": "C:\\photos\\é.JPG",
+      "typed": "é",
+      "problem": "None",
+      "new_file_name": "é.JPG",
+      "invalid_character": null,
+      "unchanged": false,
+      "case_only": false
+    },
+    {
+      "kind": "single",
+      "path": "C:\\photos\\a.JPG",
+      "typed": null,
+      "problem": "Empty",
+      "new_file_name": "",
+      "invalid_character": null,
+      "unchanged": false,
+      "case_only": false
+    },
+    {
+      "kind": "single",
+      "path": "C:\\photos\\a.JPG",
+      "typed": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+      "problem": "PathTooLong",
+      "new_file_name": "",
+      "invalid_character": null,
+      "unchanged": false,
+      "case_only": false
+    },
+    {
+      "kind": "single",
+      "path": "C:\\photos\\a.JPG",
+      "typed": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+      "problem": "NameTooLong",
+      "new_file_name": "",
+      "invalid_character": null,
+      "unchanged": false,
+      "case_only": false
+    },
+    {
+      "kind": "single",
+      "path": "C:\\fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff\\a.JPG",
+      "typed": "xxxxxxxx",
+      "problem": "None",
+      "new_file_name": "xxxxxxxx.JPG",
+      "invalid_character": null,
+      "unchanged": false,
+      "case_only": false
+    },
+    {
+      "kind": "single",
+      "path": "C:\\fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff\\a.JPG",
+      "typed": "xxxxxxxxx",
+      "problem": "PathTooLong",
+      "new_file_name": "",
+      "invalid_character": null,
+      "unchanged": false,
+      "case_only": false
+    },
+    {
+      "kind": "single",
+      "path": "C:\\fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff\\a.JPG",
+      "typed": "xxxxxxxxx",
+      "problem": "None",
+      "new_file_name": "xxxxxxxxx.JPG",
+      "invalid_character": null,
+      "unchanged": false,
+      "case_only": false
+    },
+    {
+      "kind": "single",
+      "path": "C:\\fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff\\xxxxxxxxxxxxxxxxxxxx.JPG",
+      "typed": "y",
+      "problem": "None",
+      "new_file_name": "y.JPG",
+      "invalid_character": null,
+      "unchanged": false,
+      "case_only": false
+    },
+    {
+      "kind": "group",
+      "jpeg": "C:\\photos\\a.jpg",
+      "raw": "C:\\photos\\a.cr3",
+      "xmp": "C:\\photos\\a.xmp",
+      "typed": "b",
+      "problem": "None",
+      "new_file_name": "b.jpg",
+      "unchanged": false,
+      "case_only": false,
+      "names": {
+        "C:\\photos\\a.cr3": "b.cr3",
+        "C:\\photos\\a.jpg": "b.jpg",
+        "C:\\photos\\a.xmp": "b.xmp"
+      }
+    },
+    {
+      "kind": "group",
+      "jpeg": "C:\\photos\\a.jpg",
+      "raw": "C:\\photos\\a.cr3",
+      "xmp": "C:\\photos\\a.cr3.xmp",
+      "typed": "b",
+      "problem": "None",
+      "new_file_name": "b.jpg",
+      "unchanged": false,
+      "case_only": false,
+      "names": {
+        "C:\\photos\\a.cr3": "b.cr3",
+        "C:\\photos\\a.cr3.xmp": "b.cr3.xmp",
+        "C:\\photos\\a.jpg": "b.jpg"
+      }
+    },
+    {
+      "kind": "group",
+      "jpeg": "C:\\photos\\a.jpg",
+      "raw": "C:\\photos\\a.cr3",
+      "xmp": "C:\\photos\\other.xmp",
+      "typed": "b",
+      "problem": "SidecarNotMappable",
+      "new_file_name": "",
+      "unchanged": false,
+      "case_only": false,
+      "names": {}
+    },
+    {
+      "kind": "group",
+      "jpeg": "C:\\photos\\a.jpg",
+      "raw": "C:\\photos\\a.cr3",
+      "xmp": null,
+      "typed": "A",
+      "problem": "None",
+      "new_file_name": "A.jpg",
+      "unchanged": false,
+      "case_only": true,
+      "names": {
+        "C:\\photos\\a.cr3": "A.cr3",
+        "C:\\photos\\a.jpg": "A.jpg"
+      }
+    },
+    {
+      "kind": "group",
+      "jpeg": "C:\\photos\\a.jpg",
+      "raw": "C:\\photos\\a.cr3",
+      "xmp": null,
+      "typed": "a.cr3",
+      "problem": "None",
+      "new_file_name": "a.cr3.jpg",
+      "unchanged": false,
+      "case_only": false,
+      "names": {
+        "C:\\photos\\a.cr3": "a.cr3.cr3",
+        "C:\\photos\\a.jpg": "a.cr3.jpg"
+      }
+    },
+    {
+      "kind": "group",
+      "jpeg": "C:\\photos\\a.jpg",
+      "raw": "C:\\photos\\a.cr3",
+      "xmp": "C:\\photos\\A.xmp",
+      "typed": "b",
+      "problem": "None",
+      "new_file_name": "b.jpg",
+      "unchanged": false,
+      "case_only": false,
+      "names": {
+        "C:\\photos\\A.xmp": "b.xmp",
+        "C:\\photos\\a.cr3": "b.cr3",
+        "C:\\photos\\a.jpg": "b.jpg"
+      }
+    },
+    {
+      "kind": "group",
+      "jpeg": "C:\\photos\\a.jpg",
+      "raw": "C:\\photos\\a.cr3",
+      "xmp": "C:\\photos\\a.jpg.xmp",
+      "typed": "b",
+      "problem": "None",
+      "new_file_name": "b.jpg",
+      "unchanged": false,
+      "case_only": false,
+      "names": {
+        "C:\\photos\\a.cr3": "b.cr3",
+        "C:\\photos\\a.jpg": "b.jpg",
+        "C:\\photos\\a.jpg.xmp": "b.jpg.xmp"
+      }
+    },
+    {
+      "kind": "group",
+      "jpeg": "C:\\photos\\a.JPG",
+      "raw": "C:\\photos\\a.CR3",
+      "xmp": null,
+      "typed": "b.jpg",
+      "problem": "None",
+      "new_file_name": "b.JPG",
+      "unchanged": false,
+      "case_only": false,
+      "names": {
+        "C:\\photos\\a.CR3": "b.CR3",
+        "C:\\photos\\a.JPG": "b.JPG"
+      }
+    },
+    {
+      "kind": "group",
+      "jpeg": "C:\\photos\\a.jpg",
+      "raw": "C:\\photos\\a.cr3",
+      "xmp": null,
+      "typed": "a",
+      "problem": "None",
+      "new_file_name": "a.jpg",
+      "unchanged": true,
+      "case_only": false,
+      "names": {
+        "C:\\photos\\a.cr3": "a.cr3",
+        "C:\\photos\\a.jpg": "a.jpg"
+      }
+    },
+    {
+      "kind": "group",
+      "jpeg": "C:\\fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff\\a.jpg",
+      "raw": "C:\\fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff\\a.cr3",
+      "xmp": null,
+      "typed": "xxxxxxxxx",
+      "problem": "PathTooLong",
+      "new_file_name": "",
+      "unchanged": false,
+      "case_only": false,
+      "names": {}
+    },
+    {
+      "kind": "group",
+      "jpeg": "C:\\fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff\\a.jpg",
+      "raw": "C:\\fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff\\a.cr3",
+      "xmp": null,
+      "typed": "xxxxxxxxx",
+      "problem": "None",
+      "new_file_name": "xxxxxxxxx.jpg",
+      "unchanged": false,
+      "case_only": false,
+      "names": {
+        "C:\\fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff\\a.cr3": "xxxxxxxxx.cr3",
+        "C:\\fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff\\a.jpg": "xxxxxxxxx.jpg"
+      }
+    }
+  ]
+}

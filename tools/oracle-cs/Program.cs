@@ -31,6 +31,10 @@ if (command == "ordinal-casing-table")
 
 JsonArray cases = command switch
 {
+#if W9_RENAME_BASELINE
+    // Wave 9 FEAT-RENAME (needs the C# baseline at 7eaee2a2 or later: -p:W9RenameBaseline=true).
+    "w9-r1-rename-policy" => Commands.W9R1RenamePolicyCases(inputs),
+#endif
     "datetime-json" => Commands.DateTimeJson(inputs),
     "ordinal-ignore-case" => Commands.OrdinalIgnoreCase(inputs),
     "natural-cmp" => Commands.NaturalCompare(inputs),
@@ -468,6 +472,12 @@ JsonArray cases = command switch
     "shell-startup-options" => Commands.W817dStartupOptionsCases(inputs),
     // Commands\Commands\W8-17e
     "shell-startup-texts" => Commands.W817eStartupTextsCases(inputs),
+    // Commands\Commands\W9-E1, W9-E6, W9-E7 (lane W9-E external editors)
+    "external-editor-rules" => Commands.W9E1ExternalEditorRulesCases(inputs),
+    "external-editor-menu" => Commands.W9E6ExternalEditorMenuCases(inputs),
+    "open-in-default-editor-shortcut" => Commands.W9E7OpenInDefaultEditorCases(inputs),
+    // Commands\Commands\W9-E2
+    "dialog-external-editors" => Commands.W9E2ExternalEditorsDialogCases(inputs),
     _ => throw new ArgumentException($"unknown command '{command}'"),
 };
 

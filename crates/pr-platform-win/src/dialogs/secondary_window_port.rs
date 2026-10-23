@@ -17,10 +17,13 @@ use std::rc::{Rc, Weak};
 use std::sync::Arc;
 
 use pr_core::abstractions::{BatchReviewItem, Log, SettingsTarget, SkippedEntry};
+use pr_core::settings::external_editors::ExternalEditor;
 use pr_core::settings::shortcuts::ReviewAction;
 
 use super::dialog_service::{SecondaryWindowKind, SecondaryWindowPort};
 use super::native::dialog::NativeDialog;
+use super::native::external_editors_dialog::ExternalEditorsEdit;
+use super::native::list_dialog::ListDialogContent;
 use crate::host::message_loop::MessageLoop;
 use crate::win32::structs::Hwnd;
 
@@ -30,6 +33,10 @@ pub type ReadyHook = Rc<dyn Fn(&NativeDialog)>;
 /// C# method group `ShowActionProfiles` handed to the Settings dialog (`options.ShowActionProfiles`): opens the Action profiles editor on top of the Settings
 /// window through the same port. Holds a `Weak` of the port (no cycle, D-W8B3H-18); after the port is gone it answers `None`.
 pub type ActionProfilesOpener = Rc<dyn Fn(Hwnd, &[ReviewAction]) -> Option<Vec<ReviewAction>>>;
+
+/// W9-E8, C# method group `ShowExternalEditors` handed to the Settings dialog (`options.ShowExternalEditors`): opens the editors list MODAL over the Settings window
+/// through the same port. Holds a `Weak` of the port like [`ActionProfilesOpener`]; after the port is gone it answers `None`.
+pub type ExternalEditorsOpener = Rc<dyn Fn(Hwnd, &[ExternalEditor], Option<&str>) -> Option<ExternalEditorsEdit>>;
 
 /// A dialog that is ready to be shown modally and the way to read what the user did. `finish` runs once with the id the dialog ended with (`ID_OK`, `ID_CANCEL`
 /// or the custom ids of the dialog) and returns the value the port method must answer; it reads the state of the dialog content (C# `dialog.Saved`,
@@ -88,6 +95,48 @@ pub trait SecondaryWindowDialogs {
 
     /// C# `new ZoomPromptDialog(currentPercent, chrome)`; `finish(ID_OK)` is `Some(value)`, any other id `None`.
     fn custom_zoom(&self, current_percent: i32) -> Option<PreparedDialog<Option<i32>>>;
+
+    // ---- W9-E8 (FEAT-EXTERNAL-EDITORS): additive members with default bodies, so the W8-18o fakes and the merged adapters keep compiling ----
+
+    /// W9-E8: the Settings window with BOTH nested openers (C# `options with { Target, ShowActionProfiles, ShowExternalEditors }`). Default: `settings(target,
+    /// show_action_profiles)`, i.e. the Files page reports "could not open the editor". The porter may fold this into `settings` once no fake depends on the old
+    /// signature.
+    fn settings_with_editors(
+        &self,
+        target: SettingsTarget,
+        show_action_profiles: ActionProfilesOpener,
+        show_external_editors: ExternalEditorsOpener,
+    ) -> Option<PreparedDialog<bool>> {
+        self.settings(target, show_action_profiles)
+    }
+
+    /// W9-E8, C# `new ExternalEditorsDialog(editors, defaultId, files, warnings, ExternalEditorProductName.Suggest, chrome)`; `finish(ID_OK)` is `Some(outcome)`, any
+    /// other id `None`. Default `None` (no such window).
+    fn external_editors(
+        &self,
+        editors: &[ExternalEditor],
+        default_id: Option<&str>,
+    ) -> Option<PreparedDialog<Option<ExternalEditorsEdit>>> {
+        None
+    }
+
+    /// W9-E8, the file-picker half of C# `PromptAddExternalEditor`: `files.PickOpenFile(owner, dialog.externalEditor.addTitle,
+    /// FileFilterText.Parse(dialog.fileFilter.executable), initialFolder)`. `None` = cancelled, no file dialog service, or a blank result.
+    fn pick_executable(&self, owner: Hwnd, initial_folder: Option<&str>) -> Option<String> {
+        None
+    }
+
+    /// W9-E8, the name-prompt half: `new TextPromptDialog(dialog.externalEditor.nameTitle, dialog.externalEditor.nameLabel, initial, chrome)`; `finish(ID_OK)` is
+    /// `Some(value)` (trimmed, non-blank), any other id `None`. Default `None`.
+    fn text_prompt(&self, title: &str, label: &str, initial: &str) -> Option<PreparedDialog<Option<String>>> {
+        None
+    }
+
+    /// W9-E8, C# `new ListDialog(content, chrome)` over a choice list (`ListDialogContent::for_choice`); `finish(ID_OK)` is `Some(selected_index)` (a valid index), any
+    /// other id `None`. Default `None`.
+    fn choice_list(&self, content: ListDialogContent) -> Option<PreparedDialog<Option<usize>>> {
+        None
+    }
 }
 
 /// The optional constructor arguments of the C# `Win32SecondaryWindowPort` (`ready`, `loop`, `settingsEnabled`; `chrome`, `warnings`, `benchmark`, `settings`

@@ -28,6 +28,9 @@ pub mod forward_server;
 pub mod forward_client;
 
 #[cfg(windows)]
+pub mod http;
+
+#[cfg(windows)]
 pub mod instance_scope;
 
 #[cfg(windows)]

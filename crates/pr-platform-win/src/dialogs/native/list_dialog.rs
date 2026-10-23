@@ -39,6 +39,8 @@ pub struct ListDialogContent {
     pub initial_width_dlu: i32,
     /// The initial client height in dialog units.
     pub initial_height_dlu: i32,
+    /// W9-E3, C# `InitialSelectedIndex` (default `-1`): the line selected when the dialog opens; `>= 0` also makes Confirm require a selection (a choice list).
+    pub initial_selected_index: i32,
 }
 
 impl ListDialogContent {
@@ -56,6 +58,7 @@ impl ListDialogContent {
             cancel_text: SkippedFilesPresenter::close_text(localizer),
             initial_width_dlu: 470,
             initial_height_dlu: 205,
+            initial_selected_index: -1,
         }
     }
 
@@ -73,7 +76,14 @@ impl ListDialogContent {
             cancel_text: localizer.get(COMMON_CANCEL),
             initial_width_dlu: 470,
             initial_height_dlu: 280,
+            initial_selected_index: -1,
         }
+    }
+
+    /// W9-E3, C# `ForChoice(title, intro, lines, selected)`: title `title`, no heading, intro `intro` in `Dark.TextSecondary`, the `lines`, confirm text
+    /// `dialog.externalEditor.setDefaultConfirm`, cancel `common.cancel`, 260 x 150 dialog units, `initial_selected_index = selected`.
+    pub fn for_choice(_title: &str, _intro: &str, _lines: &[String], _selected: i32, _localizer: &Localizer) -> Self {
+        todo!()
     }
 }
 

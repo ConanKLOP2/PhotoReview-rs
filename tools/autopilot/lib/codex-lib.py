@@ -166,12 +166,12 @@ def cmd_avgpct(path):
     print(("%.1f" % (sum(v) / len(v))) if v else "")
 
 def cmd_table(path):
-    print("| Unit | Status | Rounds | Codex tokens in/cached/out | Seconds | Mutants killed/survived/budgeted-out | Pack KB |")
-    print("|---|---|---|---|---|---|---|")
+    print("| Unit | Status | Rounds | Fixup | Codex tokens in/cached/out | Seconds | Mutants killed/survived/budgeted-out | Pack KB |")
+    print("|---|---|---|---|---|---|---|---|")
     for k, v in sorted(state_load(path)["units"].items()):
         mut = "-" if "killed" not in v else "%d/%d/%d" % (v.get("killed", 0), v.get("survivors", 0), v.get("budgeted", 0))
         pk = "%.1f" % (v["pack_bytes"] / 1024) if v.get("pack_bytes") else "-"
-        print("| %s | %s | %d | %d/%d/%d | %d | %s | %s |" % (k, v.get("status", ""), v.get("rounds", 0), v.get("tin", 0),
+        print("| %s | %s | %d | %s | %d/%d/%d | %d | %s | %s |" % (k, v.get("status", ""), v.get("rounds", 0), v.get("fixup", 0), v.get("tin", 0),
               v.get("tcached", 0), v.get("tout", 0), v.get("secs", 0), mut, pk))
 
 # ------------------------------------------------------------------ tier / pack trimming
@@ -190,7 +190,7 @@ def cmd_tier(plan, uid):
 
 def trim_cs(text, cap):
     """Strip BOM, the leading license/header comment block, XML doc lines, trailing blanks and blank runs; cap the size."""
-    lines = text.replace("﻿", "").replace("\r", "").split("\n")
+    lines = text.replace("\ufeff", "").replace("\r", "").split("\n")
     i = 0
     while i < len(lines):
         t = lines[i].strip()
@@ -363,7 +363,7 @@ def _fn_bodies(src):
         res.setdefault(m.group(1), body)
     return res
 
-def cmd_testguard(wt, base, ownedfile):
+def cmd_testguard(wt, base, ownedfile, relaxed=False):
     """Test files that existed at <base> may only grow: every old fn keeps all its old lines (in order); no ignore/should_panic added."""
     bad = []
     for f in [l.strip() for l in read(ownedfile).splitlines() if l.strip()]:
@@ -375,6 +375,14 @@ def cmd_testguard(wt, base, ownedfile):
             bad.append("%s: red/test file deleted" % f); continue
         new = read(pth).replace("\r", "")
         ob, nb = _fn_bodies(old), _fn_bodies(new)
+        if relaxed:
+            old_asserts = len(re.findall(r"\bassert(?:_eq|_ne)?\s*!", old))
+            new_asserts = len(re.findall(r"\bassert(?:_eq|_ne)?\s*!", new))
+            if len(nb) < len(ob): bad.append("%s: number of test functions decreased" % f)
+            if new_asserts < old_asserts: bad.append("%s: number of assert macro occurrences decreased" % f)
+            if len(re.findall(r"#\[ignore(?:\s*(?:=|\]))", new)) > len(re.findall(r"#\[ignore(?:\s*(?:=|\]))", old)):
+                bad.append("%s: a previously runnable test was marked #[ignore]" % f)
+            continue
         for name, lines in ob.items():
             if name not in nb:
                 bad.append("%s: test fn `%s` removed or renamed" % (f, name)); continue
@@ -387,6 +395,20 @@ def cmd_testguard(wt, base, ownedfile):
     if bad:
         print("Red/test files of the red-tests commit must not be modified or weakened:")
         print("\n".join(bad[:30])); sys.exit(1)
+
+def cmd_fixupreport(wt, base, ownedfile, lastmsg, out):
+    """Require the fixup summary to cite C# and name every changed Rust test function."""
+    changed = []
+    for f in [x.strip() for x in read(ownedfile).splitlines() if x.strip() and "/tests/" in x.strip() and x.strip().endswith(".rs")]:
+        old = _fn_bodies(_git(wt, "show", "%s:%s" % (base, f)).replace("\r", ""))
+        p = os.path.join(wt, f)
+        if not os.path.isfile(p): continue
+        new = _fn_bodies(read(p).replace("\r", ""))
+        changed += [name for name in new if name not in old or new[name] != old.get(name)]
+    msg = read(lastmsg) if os.path.isfile(lastmsg) else ""
+    if changed and (not re.search(r"C#.*\.cs|\.cs.*C#", msg, re.I) or any(n not in msg for n in changed)):
+        sys.exit("fixup summary must cite a C# .cs test and name changed Rust test functions: " + ", ".join(changed))
+    with open(out, "w", encoding="utf-8", newline="\n") as f: f.write(",".join(changed))
 
 # ------------------------------------------------------------------ failure triage (<= 3 KB)
 def cmd_triage(out, uid, reason, errfile, wt, lastmsg):
@@ -468,7 +490,8 @@ def main(a):
     elif c == "mutstat": cmd_mutstat(a[1])
     elif c == "mutregex": cmd_mutregex(a[1])
     elif c == "lint": cmd_lint(a[1], a[2])
-    elif c == "testguard": cmd_testguard(a[1], a[2], a[3])
+    elif c == "testguard": cmd_testguard(a[1], a[2], a[3], len(a) > 4 and a[4] == "relaxed")
+    elif c == "fixupreport": cmd_fixupreport(a[1], a[2], a[3], a[4], a[5])
     elif c == "members": cmd_members()
     elif c == "sreset": cmd_sreset(a[1], a[2])
     elif c == "redcheck": cmd_redcheck(a[1])
