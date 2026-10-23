@@ -35,9 +35,10 @@ Rủi ro: **D** = có thể mất/sai dữ liệu người dùng, **C** = crash/
 | 21 | G21 Contract W9 lỗi thời sau #182 | w9-contracts H1, L6..L10 | cao (H1) | T | contracts/W9-*, docs/WAVE-9-PLAN-edt.md | tài liệu |
 | 22 | G22 PARITY/PR evidence mâu thuẫn | pr-164 M4; pr-203 M2 | trung bình | T | docs/PARITY.md | tài liệu |
 | 23 | G23 Chú thích/`DIVERGENCE` lạc hậu | test-quality L1; w9-contracts L8; settings-ui L5 | thấp | T | nhiều | tài liệu |
+| 25 | G25 Retry Recycle xoá nhầm file thay thế sau Prepared | invariants H1 (tái kiểm #212) | cao | D | W3-06; W8-18v gọi UI | sửa mã + test, cần ADR parity |
 | 24 | G24 Cần quyết định sản phẩm | invariants Q1, Q2, Q3; w9-contracts M2..M5, L11; b4 M1; pr-203 M2; test-quality M1 | n/a | n/a | lead | quyết định |
 
-Thứ tự đề xuất: G3, G4, G1, G2 (lỗi người dùng thấy ngay); G5, G7, G6 (an toàn dữ liệu); sau đó G10, G11, G9; test (G17..G20) song song vì không xung đột file; G16 độc lập; G21..G23 tài liệu cuối cùng (chạm PARITY, gộp theo hàng).
+Thứ tự đề xuất sau tái kiểm: G25 (nguy cơ xoá vĩnh viễn), rồi G3, G4, G1, G2 (lỗi người dùng thấy ngay); G5, G7, G6 (an toàn dữ liệu); sau đó G10, G11, G9; test (G17..G20) song song vì không xung đột file; G16 độc lập; G21..G23 tài liệu cuối cùng (chạm PARITY, gộp theo hàng).
 
 ## 2. Chi tiết theo nhóm
 
@@ -54,7 +55,7 @@ Phạm vi file được sửa: crates/pr-platform-win/src/shell_main_window/{lif
 Yêu cầu: (1) không giữ borrow_mut của view model qua bất kỳ hộp thoại modal/lời gọi OS nào: lấy kết quả ra khỏi borrow trước khi gọi dialog, rồi borrow lại để áp kết quả; (2) run_pointer không giữ viewer.borrow_mut() trong lúc controller gọi update_layout: đổi sang trích dữ liệu cần thiết ra trước hoặc dùng try_borrow có đường dự phòng; (3) sửa vòng tham chiếu của cửa sổ chính để test closed_disposes_the_bars_once_and_unsubscribes xanh.
 Test phải thêm: (a) test mở dialog giả (host fake) từ lệnh Open/Settings và trong callback dialog gọi vẽ/pump/on_closing: không panic; (b) test zoom có neo bằng con trỏ trên viewer thật (không dùng cache của fixture); (c) bỏ #[ignore] của closed_disposes_the_bars_once_and_unsubscribes.
 CẤM: làm yếu/xoá/ignore test hiện có; thêm #[allow] không kèm lý do; unwrap/expect ở đường production; sửa fixture để né lỗi.
-Kiểm tra (chạy và dán kết quả): cargo fmt -p pr-platform-win --check; cargo clippy -p pr-platform-win --all-targets --locked -- -D warnings; cargo test -p pr-platform-win --locked (kèm các test native liên quan trên Windows bằng --include-ignored nếu máy cho phép).
+Kiểm tra (chạy và dán kết quả): cargo fmt -p pr-platform-win --check; cargo clippy -p pr-platform-win --all-targets --locked -- -D warnings; cargo test -p pr-platform-win --locked (native chỉ chạy từng test đã duyệt, không chạy blanket --include-ignored; không đụng bin người dùng).
 ```
 
 ### G2 sửa mã (cao): zoom từ con trỏ/phím không tới presenter/HUD
@@ -109,10 +110,10 @@ CẤM: làm yếu test; thêm unwrap/expect.
 Kiểm tra: cargo fmt -p pr-app --check; cargo clippy -p pr-app --all-targets --locked -- -D warnings; cargo test -p pr-app --locked.
 ```
 
-### G6 (trung bình): dọn trùng lặp (cần quyết định Q3 trước)
+### G6 (trung bình): dọn trùng lặp (Q3 đã chốt ở P-52)
 - invariants M1: `duplicate_cleanup.rs:469-611,615-665,741-753`. Đề xuất sau khi chốt Q3: stat lại file đích và ít nhất một bản giữ lại ngay trước mỗi `execute(Recycle)`; bỏ file không còn khớp size/mtime lúc băm.
 
-**PROMPT Codex G6** (chạy SAU khi lead chốt Q3 phương án "kiểm lại, chưa làm Undo")
+**PROMPT Codex G6** (Q3 đã chọn kiểm lại, chưa làm Undo; không cần hỏi lại)
 ```
 Việc: trước mỗi recycle trong dọn trùng lặp, kiểm lại danh tính (docs/reviews/invariants.md M1).
 Phạm vi: crates/pr-app/src/coordinators/duplicate_cleanup.rs, crates/pr-app/tests/duplicate_cleanup.rs. Cấm sửa file khác.
@@ -243,12 +244,12 @@ Kiểm tra: bash tools/autopilot/test/pipeline-selftest.sh; shellcheck nếu có
 
 ### G17 thêm test: CI/ignore/pass giả
 - test-quality M1 (CI không chạy `--ignored`; 1157 test không chạy), M2 (`#[ignore]` stale), M3 (đạt giả khi thiếu env/dữ liệu), M4 (tên hứa so khớp, chỉ không panic), L1..L3; native-dialog M1 (`run_case` có thể pass mà không chạy kiểm tra), M2 (100 test native ignore), L6; settings-ui L5; b4 M2 (82/120 `host_main_window_*` ignore); pr-203 M1 (test trùng, không giết mutant), L2; test-strengthening-plan §crate pr-bench (4 test chặn ghi đè qua hard link/junction bị ignore), pr-core 22 test thật bị ignore, pr-turbojpeg/pr-libraw đạt giả, pr-perf `divergence_*`.
-Cần quyết định Q7 (chạy native trên Windows CI?) cho phần CI; phần còn lại là thêm/siết test.
+Q7 đã chốt ở P-52: đề xuất job native nightly ở docs/drafts trước. Phải dùng danh sách test được duyệt; không chạy hàng loạt test Recycle Bin.
 
 **PROMPT Codex G17** (mỗi crate một lượt; ví dụ cho pr-platform-win, thay phạm vi cho crate khác)
 ```
 Việc: biến test giả/ignore stale thành test thật (docs/reviews/test-quality.md M2, M3, M4, L1..L3 + docs/reviews/test-strengthening-plan.md mục crate đang làm).
-Phạm vi: chỉ các file test trong crates/<crate>/tests/ (và fixture tests/common/); cấm sửa src/. Nếu một test lộ lỗi sản phẩm thật: giữ test, đánh #[ignore = "BUG: <báo cáo + mã>"] và ghi vào task_on_progress.md, KHÔNG sửa src.
+Phạm vi: chỉ các file test trong crates/<crate>/tests/ (và fixture tests/common/); cấm sửa src/. Nếu một test lộ lỗi sản phẩm thật: giữ nguyên assertion, ghi kết quả đỏ và giao chủ sở hữu sửa trong PR riêng; không thêm ignore để làm xanh.
 Với mỗi mục: bỏ #[ignore] khi lý do đã hết hiệu lực; test đạt giả khi thiếu env phải panic/fail (hoặc #[ignore] với lý do native/slow hợp lệ), không return sớm im lặng; test tên "so khớp" phải so giá trị chính xác (lấy từ golden hoặc từ test C# trong báo cáo).
 CẤM: làm yếu bất kỳ khẳng định nào; xoá test; thêm sleep/poll cố định.
 Kiểm tra: cargo fmt -p <crate> --check; cargo clippy -p <crate> --all-targets --locked -- -D warnings; cargo test -p <crate> --locked (không --include-ignored trừ khi nói rõ).
@@ -268,14 +269,14 @@ Kiểm tra: cargo fmt -p pr-app --check && cargo fmt -p pr-platform-win --check;
 ```
 
 ### G19 thêm test: INV
-- invariants §5: mất cache journal Fast vs PowerLossSafe (chờ Q1), composition cổng chung (đã trong G12), dọn trùng lặp (trong G6), panic executor (trong G5), Move chéo ổ lỗi nửa chừng (`file_actions_service_native.rs`, 19 test native bị ignore, cần hai ổ hoặc fake). test-strengthening-plan: `tp-pr-core` (12) và `tp-pr-app` (13).
+- invariants §5: mất cache journal Fast vs PowerLossSafe (Q1 đã chốt giữ Fast), composition cổng chung (đã trong G12), dọn trùng lặp (trong G6), panic executor (trong G5), Move chéo ổ lỗi nửa chừng (`file_actions_service_native.rs`, 19 test native bị ignore, cần hai ổ hoặc fake). test-strengthening-plan: `tp-pr-core` (12) và `tp-pr-app` (13).
 
 **PROMPT Codex G19**
 ```
 Việc: thêm test INV còn thiếu (docs/reviews/invariants.md §5 + docs/reviews/test-strengthening-plan.md mục pr-core, pr-app).
 Phạm vi: crates/pr-core/tests/{file_actions_journal,file_actions_service,file_actions_matrix}.rs, crates/pr-app/tests/{file_action_core,duplicate_cleanup}.rs. Cấm sửa src/.
-Test: (1) mô hình mất cache: AppendStream giả bỏ phần chưa flush_to_disk; Fast => Prepared có thể mất, PowerLossSafe => không mất (khoá hành vi hiện tại, ghi chú liên kết Q1); (2) Move chéo ổ lỗi nửa chừng bằng fake FS: nguồn còn, đích đầy đủ -> Failed, hành vi hiện tại được khoá; (3) các test tp-pr-core/tp-pr-app trong test-strengthening-plan, mỗi test mirror tên C# ghi trong kế hoạch.
-Nếu test lộ lỗi: giữ test, #[ignore = "BUG: ..."] kèm mã báo cáo, ghi task_on_progress.md.
+Test: (1) kiểm đúng open_append(durable) và thứ tự write/flush; stream fake không phải File chỉ plain flush ngay cả PowerLossSafe (journal.rs:675-684), không bịa mô hình fake chứng minh fsync. Mô hình mất cache phải khai báo riêng write-through và volatile/stable storage; đối chiếu test native hiện có, không nhận đó là thử mất điện; (2) Move chéo ổ lỗi nửa chừng bằng fake FS: nguồn còn, đích đầy đủ -> Failed, hành vi hiện tại được khoá; (3) các test tp-pr-core/tp-pr-app trong test-strengthening-plan, mỗi test mirror tên C# ghi trong kế hoạch.
+Nếu test lộ lỗi: giữ assertion và ghi kết quả đỏ cùng mã báo cáo; không thêm ignore để làm xanh.
 CẤM: làm yếu test; sửa src/.
 Kiểm tra: cargo fmt -p pr-core --check && cargo fmt -p pr-app --check; cargo clippy -p pr-core -p pr-app --all-targets --locked -- -D warnings; cargo test -p pr-core -p pr-app --locked.
 ```
@@ -342,4 +343,36 @@ Q1 giữ Fast; Q2 giữ cờ Shell + cảnh báo chờ 10 s; Q3 kiểm lại dan
 ## 4. Chưa gộp / ngoài phạm vi
 - `test-strengthening-plan.md` có 80 test; chỉ gom theo nhóm G17, G19, G20. Các mục crate khác (pr-imaging, pr-turbojpeg, pr-libraw, pr-imaging-raw, pr-perf, pr-l10n, pr-bench, pr-test-support) dùng prompt G17 với phạm vi crate đó.
 - INV-1, 2, 8, 10, 11, 12 (pr-imaging, settings store, file_log) chưa được đọc sâu trong invariants.md: chưa có mục trong backlog; cần review riêng.
-- Việc 2 làm sau việc 3-6 để gộp được cả B4, W9, pr-164/203 (đổi thứ tự so với yêu cầu).
+- Lần tái kiểm này theo đúng thứ tự INVARIANTS -> BACKLOG -> PRS -> B4 -> W9 -> TEST-PLAN. Báo cáo các lần trước giữ làm nguồn, phát hiện sau mốc này cần ghi rõ chưa nằm trong snapshot tổng hợp.
+## 5. Tái tổng hợp ngày 2026-10-23 (sau #211 và #212)
+
+**Mọi phát hiện: suy luận từ mã, chưa chạy thử.** Snapshot gồm mọi báo cáo có trong `docs/reviews/` ở `e25f8bf`. Không chạy test để xác nhận lại số liệu lịch sử 10103/1157; chúng thuộc lần quét `test-quality.md`, không phải số hiện tại.
+
+### G25 sửa mã + test (cao, dữ liệu): retry nhóm Recycle sau Prepared
+
+Nguồn duy nhất: `invariants H1` (#212). Không gộp với G6: G6 là lựa chọn file từ quét duplicate trước modal, G25 là recovery của journal Failed/Prepared, gồm permanent-delete. W3-06 sở hữu logic; W8-18v chỉ gọi recovery, sửa tại UI không đủ. Không gộp với G19: G19 thuần thêm test, G25 cần thay hành vi và ADR vì C# cùng thiếu chốt re-stat.
+
+**PROMPT Codex G25**
+```
+Việc: chặn RecoveryRetryService xoá/recycle file thay thế sau Prepared (docs/reviews/invariants.md H1).
+Đọc: AGENTS.md, contracts/W3-06.md, docs/reviews/invariants.md §6 và C# RecoveryRetryService.cs tại 7eaee2a2. Kiểm đường contract thật bằng rg --files; không đoán API.
+Phạm vi được sửa: crates/pr-core/src/file_actions/recovery_retry.rs, crates/pr-core/tests/recovery_retry.rs, crates/pr-core/tests/recovery_retry_support/mod.rs; docs/adr/ (một ADR mới cho khác biệt an toàn), docs/PARITY.md (chỉ hàng recovery retry), task_on_progress.md. Không sửa adapter native hay file khác.
+Trước mutation mỗi member Recycle non-undo: re-stat qua try_get_file_stat, so size và last_write_utc với member journal; thiếu/đổi/lỗi => Failed, không gọi bin cho member đó. Giữ guard loại ổ và chính sách permanent-delete hiện tại; không tự rollback member đã xong. Kiểm cả sau append Prepared và khi member trước đang chạy. ADR phải nói re-stat thu hẹp khoảng race, không khoá nguyên tử tiến trình ngoài; quyết định sản phẩm/parity phải được ghi rõ, không tự coi khác biệt là parity.
+Test đỏ trước: fake journal append hook thay B sau Prepared (khác size, rồi cùng size khác mtime); fake bin xử lý A rồi thay B. Assert B bytes nguyên vẹn, không có delete_permanently/send_to_recycle_bin(B), journal Failed và lỗi SourceChanged. Ca size/mtime không đổi vẫn xử lý đúng. Dùng fake bin toàn bộ, không native bin.
+CẤM: xoá/ignore/làm yếu assertion hiện có; thay golden để khớp mã; test chỉ kiểm không panic; nới fingerprint; sửa mã ngoài phạm vi.
+Kiểm tra: cargo fmt -p pr-core --check; cargo clippy -p pr-core --all-targets --locked -- -D warnings; cargo test -p pr-core --locked --test recovery_retry; cargo test -p pr-core --locked. Hang guard theo tools/wave.ps1 hoặc timeout ngoài tiến trình; báo đúng lệnh chưa chạy. Mutation chỉ logic owned, sau merge theo quy tắc repo, không mutation bin/native.
+```
+
+### Phân loại và các quyết định đã có
+
+- Sửa mã: G1..G16, G25 (G16 là script, không phải Rust). G25 ưu tiên vì có nhánh mất file không phục hồi bằng bin.
+- Thêm/siết test: G17..G20; G25 kèm test hồi quy của cùng thay đổi. 80 đề xuất crate còn lại được tham chiếu theo `tp-<crate> Tn`, không tính lại thành phát hiện mới.
+- Tài liệu: G21..G23; thêm đính chính INV-5/APP-03 vào phạm vi G22 (catalog/session folder mới không đổi, Undo cho action muộn thành công vẫn được đăng ký).
+- Quyết định sản phẩm: Q1..Q8 đã chốt P-52/#211, không yêu cầu người dùng chọn lại. G25 là rủi ro mới, chưa thuộc Q1..Q8; cần ADR parity cho biện pháp chặn.
+- ADR-INV Q7 hiện đề nghị `cargo test --workspace --locked -- --include-ignored`. Không chuyển nguyên lệnh đó thành automation: AGENTS.md cấm sweep/empty bin thật. Prompt triển khai job phải chia danh sách test native an toàn, review từng test bin và chỉ cho xoá các mục TempRoot do nó tạo; bin fault/mutation dùng fake. Đây là ràng buộc đã có, không phải yêu cầu quyền mới.
+
+### Ba điểm cần tránh khi giao việc
+
+1. G1/G7/G9 có thể chạm cùng call path: giao tuần tự hoặc tách ownership rõ, không coi chúng độc lập hoàn toàn.
+2. Test đỏ vì lỗi thật không được che bằng `#[ignore = "BUG"]`. Bằng chứng phải ghi ca đỏ và giao sửa nguyên nhân; native/slow vẫn theo quy tắc repo.
+3. `test-quality` gợi ý đường golden bằng `CARGO_MANIFEST_DIR/../../...` ở ví dụ 14, trái quy tắc test không hard-code repo-relative path. Dùng helper golden đã có của pr-test-support, dữ liệu test qua TempRoot khi cần; không sao chép lời gợi ý đường dẫn cũ vào test mới.
