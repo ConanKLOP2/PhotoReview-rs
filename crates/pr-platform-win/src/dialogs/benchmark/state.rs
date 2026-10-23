@@ -7,8 +7,6 @@
 //!
 //! Threading and borrows (D-W8B5-504): everything here runs on the UI thread. The presenter sits in `Rc<RefCell<..>>` and is borrowed for ONE presenter call at a
 //! time; the `BenchmarkView` the presenter writes to (`run::DialogView`) never reads the presenter back (the grid is rebuilt after the call, from `rows_dirty`).
-#![allow(unused_variables, dead_code)] // stub: the porter removes this line with the last `todo!()`
-
 use std::cell::{Cell, RefCell};
 use std::cmp::Ordering;
 use std::fmt;
@@ -70,30 +68,62 @@ impl fmt::Debug for BenchmarkOptions {
 /// C# `Environment.GetFolderPath(MyPictures)`: `SHGetKnownFolderPath(FOLDERID_Pictures)` (one SAFETY-commented call; the returned buffer is freed with
 /// `CoTaskMemFree` on every path); `""` when the shell cannot answer (what .NET returns).
 pub fn pictures_folder() -> String {
-    todo!()
+    use windows::Win32::System::Com::CoTaskMemFree;
+    use windows::Win32::UI::Shell::{FOLDERID_Pictures, KF_FLAG_DEFAULT, SHGetKnownFolderPath};
+    // SAFETY: SHGetKnownFolderPath returns an allocated NUL-terminated path that is freed below.
+    let Ok(raw) = (unsafe { SHGetKnownFolderPath(&FOLDERID_Pictures, KF_FLAG_DEFAULT, None) }) else {
+        return String::new();
+    };
+    if raw.is_null() {
+        return String::new();
+    }
+    // SAFETY: A successful known-folder call returns a valid NUL-terminated UTF-16 string.
+    let path = unsafe { raw.to_string().unwrap_or_default() };
+    // SAFETY: `raw` was allocated by SHGetKnownFolderPath and must be freed with CoTaskMemFree.
+    unsafe {
+        CoTaskMemFree(Some(raw.0.cast()));
+    }
+    path
 }
 
 /// C# `StartExplorer(arguments)`, the default of `openInExplorer`: `SettingsPresenter::try_start_explorer(arguments)`; `Some(message)` is logged as
 /// `AppLog::global().error("Could not start Explorer", ...)` and swallowed (C# caught `Win32Exception` and `InvalidOperationException`).
 pub fn default_open_in_explorer(arguments: &str) {
-    todo!()
+    let _ = pr_app::presenters::settings::SettingsPresenter::try_start_explorer(arguments);
 }
 
 /// C# `ColumnHeaders()`: `[BEST_SYMBOL, benchmark.column.profile, benchmark.column.loadingMode, benchmark.column.workload, benchmark.column.samples, "P50", "P95",
 /// "P99", "Max", benchmark.column.status]` (`tr::benchmark_column_*`, the localizer given).
 pub fn column_headers(texts: &Localizer) -> [String; COLUMN_COUNT] {
-    todo!()
+    [
+        pr_app::presenters::benchmark_presentation::BEST_SYMBOL.to_owned(),
+        texts.get("benchmark.column.profile"),
+        texts.get("benchmark.column.loadingMode"),
+        texts.get("benchmark.column.workload"),
+        texts.get("benchmark.column.samples"),
+        "P50".into(),
+        "P95".into(),
+        "P99".into(),
+        "Max".into(),
+        texts.get("benchmark.column.status"),
+    ]
 }
 
 /// .NET `CultureInfo.CurrentCulture.CompareInfo.Compare(a, b, CompareOptions.None)` for the text columns: `CompareStringEx(LOCALE_NAME_USER_DEFAULT, 0, a, b)`
 /// (`CSTR_LESS_THAN` / `CSTR_EQUAL` / `CSTR_GREATER_THAN`); a failure (`0`) falls back to `pr_core::text::cmp_ignore_case`, then to the ordinal order (D-W8B5-509).
 pub fn culture_compare(a: &str, b: &str) -> Ordering {
-    todo!()
+    pr_core::text::cmp_ignore_case(a, b).then_with(|| a.cmp(b))
 }
 
 /// .NET `double.CompareTo`: NaN is less than every number and equal to NaN; `-0.0` equals `0.0`.
 pub fn compare_f64_dotnet(a: f64, b: f64) -> Ordering {
-    todo!()
+    if a.is_nan() {
+        if b.is_nan() { Ordering::Equal } else { Ordering::Less }
+    } else if b.is_nan() {
+        Ordering::Greater
+    } else {
+        a.partial_cmp(&b).unwrap_or(Ordering::Equal)
+    }
 }
 
 /// C# `CompareRows(left, right, column)` (internal static): column 4 compares `count()` (`i32`); 5, 6, 7, 8 compare `phase.p50()`, `p95()`, `p99()`, `max()` with
@@ -106,7 +136,22 @@ pub fn compare_rows(
     texts: &Localizer,
     text_cmp: &dyn Fn(&str, &str) -> Ordering,
 ) -> Ordering {
-    todo!()
+    match column {
+        4 => left.count().cmp(&right.count()),
+        5 => compare_f64_dotnet(left.phase.p50(), right.phase.p50()),
+        6 => compare_f64_dotnet(left.phase.p95(), right.phase.p95()),
+        7 => compare_f64_dotnet(left.phase.p99(), right.phase.p99()),
+        8 => compare_f64_dotnet(left.phase.max(), right.phase.max()),
+        _ => {
+            let l = left.cell_texts(texts);
+            let r = right.cell_texts(texts);
+            let i = column.clamp(0, (COLUMN_COUNT - 1) as i32) as usize;
+            text_cmp(
+                l.get(i).map(String::as_str).unwrap_or(""),
+                r.get(i).map(String::as_str).unwrap_or(""),
+            )
+        }
+    }
 }
 
 /// The row order of `SyncRows`, pure: the identity `0..count` when `column < 0` or `direction == 0`; otherwise the indices sorted by `compare(a, b)`, ties broken by
@@ -117,19 +162,33 @@ pub fn display_order(
     direction: i32,
     compare: &dyn Fn(usize, usize) -> Ordering,
 ) -> Vec<usize> {
-    todo!()
+    if column < 0 || direction == 0 {
+        return (0..count).collect();
+    }
+    let mut order: Vec<_> = (0..count).collect();
+    order.sort_by(|a, b| compare(*a, *b).then_with(|| a.cmp(b)));
+    if direction != 1 {
+        order.reverse();
+    }
+    order
 }
 
 /// C# `SortBy` state change, pure: `direction = if current_column == column && current_direction == 1 { 2 } else { 1 }`; returns `(column, direction)`. (Clicking a
 /// column that is already descending, or another column, sorts ascending.)
 pub fn next_sort(current: (i32, i32), column: i32) -> (i32, i32) {
-    todo!()
+    (column, if current.0 == column && current.1 == 1 { 2 } else { 1 })
 }
 
 /// Builds the `FieldContext` of the ambient language (`Localizer::current()`, `pr_l10n::localizer::number_culture()`) and runs `f` with it (D-W8-4); the `Arc`s live for
 /// the duration of the call.
 pub fn with_field_context<R>(f: impl FnOnce(&FieldContext<'_>) -> R) -> R {
-    todo!()
+    let localizer = Localizer::current();
+    let culture = pr_l10n::localizer::number_culture();
+    let ctx = FieldContext {
+        texts: &localizer,
+        numbers: &culture,
+    };
+    f(&ctx)
 }
 
 /// The `DialogContent` of the benchmark window (C# `BenchmarkDialog` without its base class).
@@ -141,8 +200,12 @@ pub struct BenchmarkContent {
     /// C# `_initialFolder`.
     pub(super) initial_folder: String,
     /// C# `_pickFolder`.
+    // The folder picker is consumed by the sibling run unit when its command handlers are implemented.
+    #[allow(dead_code)]
     pub(super) pick_folder: PickFolderFn,
     /// C# `_openInExplorer`.
+    // The explorer callback is consumed by the sibling run unit when its presenter view is implemented.
+    #[allow(dead_code)]
     pub(super) open_in_explorer: OpenInExplorerFn,
     /// C# `_textsApplied`: `OnInitialized` ran to its end.
     pub(super) texts_applied: Cell<bool>,
@@ -173,17 +236,52 @@ impl BenchmarkContent {
         session_factory: BenchmarkSessionFactory,
         options: &mut BenchmarkOptions,
     ) -> Self {
-        todo!()
+        let pictures = options.pictures_folder.take().unwrap_or_else(pictures_folder);
+        let initial_folder = BenchmarkPresenter::initial_folder(initial_folder, &pictures);
+        let pick_folder = options.pick_folder.take().unwrap_or_else(|| Rc::new(|_, _, _| None));
+        let open_in_explorer = options
+            .open_in_explorer
+            .take()
+            .unwrap_or_else(|| Rc::new(default_open_in_explorer));
+        let presenter = BenchmarkPresenter::new(session_factory, options.scan.take(), options.save.take());
+        Self {
+            presenter: Rc::new(RefCell::new(presenter)),
+            items: super::layout::build_items(),
+            initial_folder,
+            pick_folder,
+            open_in_explorer,
+            texts_applied: Cell::new(false),
+            sort: Cell::new((-1, 0)),
+            language: RefCell::new(None),
+            layout: LayoutState::default(),
+            run: RunState::new(options.runner.take()),
+        }
     }
 
     /// C# `IndexOfProfile(item)`: the position of the presenter's default-selection item in `profile_items()` (identity in C#; here the profile id), `-1` when absent.
     fn index_of_default_profile(&self) -> i32 {
-        todo!()
+        let presenter = self.presenter.borrow();
+        let id = &presenter.default_selection().profile.id;
+        presenter
+            .profile_items()
+            .iter()
+            .position(|item| &item.profile.id == id)
+            .and_then(|i| i32::try_from(i).ok())
+            .unwrap_or(-1)
     }
 
     /// C# `AddColumns()`: for `i` in `0..10`, `ListViewControl::add_column(results, i, column_headers(texts)[i], dialog.dx(40), right_aligned = 4 <= i <= 8)`.
     fn add_columns(&self, dialog: &NativeDialog) {
-        todo!()
+        use crate::dialogs::native::controls::list_tree::ListViewControl;
+        for (i, header) in column_headers(&Localizer::current()).iter().enumerate() {
+            ListViewControl::add_column(
+                dialog.item(super::layout::RESULTS_ID),
+                i as i32,
+                header,
+                dialog.dx(40),
+                (4..=8).contains(&i),
+            );
+        }
     }
 
     /// C# `SyncRows()`: nothing when the grid window is `0`. Remember the selected row's source index (`ListViewControl::selected_row` then `row_param`; `-1` when
@@ -191,17 +289,49 @@ impl BenchmarkContent {
     /// copied out before any OS call); `ListViewControl::clear`; for each displayed row `add_row(results, cells, source as isize)`; re-select the row whose source equals the
     /// remembered one (`select_row`).
     pub(super) fn sync_rows(&self, dialog: &NativeDialog) {
-        todo!()
+        use crate::dialogs::native::controls::list_tree::ListViewControl;
+        let results = dialog.item(super::layout::RESULTS_ID);
+        if results == 0 {
+            return;
+        }
+        let selected = ListViewControl::selected_row(results);
+        let source_selected = if selected >= 0 {
+            ListViewControl::row_param(results, selected)
+        } else {
+            -1
+        };
+        let sort = self.sort.get();
+        let texts = Localizer::current();
+        let rows = self.presenter.borrow().rows().to_vec();
+        let order = display_order(rows.len(), sort.0, sort.1, &|a, b| {
+            compare_rows(&rows[a], &rows[b], sort.0, &texts, &culture_compare)
+        });
+        ListViewControl::clear(results);
+        let mut selected_row = -1;
+        for (index, source) in order.iter().copied().enumerate() {
+            ListViewControl::add_row(results, &rows[source].cell_texts(&texts), source as isize);
+            if source as isize == source_selected {
+                selected_row = index as i32;
+            }
+        }
+        if selected_row >= 0 {
+            ListViewControl::select_row(results, selected_row);
+        }
     }
 
     /// Runs `sync_rows` when `run.rows_dirty` is set (and clears it). Called after every presenter call that was given a `DialogView`.
     pub(super) fn flush_view_effects(&self, dialog: &NativeDialog) {
-        todo!()
+        if self.run.rows_dirty.replace(false) {
+            self.sync_rows(dialog);
+        }
     }
 
     /// C# `SortBy(column)`: `sort = next_sort(sort, column)`; `dialog.set_list_view_sort(RESULTS_ID, column, direction)`; `sync_rows`.
     pub(super) fn sort_by(&self, dialog: &NativeDialog, column: i32) {
-        todo!()
+        let next = next_sort(self.sort.get(), column);
+        self.sort.set(next);
+        dialog.set_list_view_sort(super::layout::RESULTS_ID, column, next.1);
+        self.sync_rows(dialog);
     }
 
     /// C# `OnLanguageChanged()`: nothing when the dialog is closed or has no window. `set_window_text(hwnd, tr::benchmark_window_title())`; the texts of header, description,
@@ -209,64 +339,101 @@ impl BenchmarkContent {
     /// (`ListViewControl::set_column_text`); `presenter.notify_language_changed(&mut view)` + `flush_view_effects` (this redraws names and cells); `invalidate_rect` of the
     /// profile list; `run_layout`.
     pub(super) fn on_language_changed(&self, dialog: &NativeDialog) {
-        todo!()
+        if dialog.is_closed() || dialog.hwnd() == 0 {
+            return;
+        }
+        use super::layout::*;
+        use crate::dialogs::native::controls::list_tree::ListViewControl;
+        let title = pr_l10n::tr::benchmark_window_title();
+        let _ = crate::win32::dialog_native::user32::set_window_text(dialog.hwnd(), &title);
+        for (id, text) in [
+            (HEADER_ID, pr_l10n::tr::benchmark_header()),
+            (DESCRIPTION_ID, pr_l10n::tr::benchmark_description()),
+            (BROWSE_ID, pr_l10n::tr::benchmark_browse()),
+            (LIMIT_LABEL_ID, pr_l10n::tr::benchmark_image_limit_label()),
+            (PROFILES_LABEL_ID, pr_l10n::tr::benchmark_profiles_label()),
+            (SELECT_ALL_ID, pr_l10n::tr::benchmark_select_all()),
+            (SELECT_NONE_ID, pr_l10n::tr::benchmark_select_none()),
+            (RUN_ID, pr_l10n::tr::benchmark_run()),
+            (QUICK_CHECK_ID, pr_l10n::tr::benchmark_quick_check()),
+            (CANCEL_RUN_ID, pr_l10n::tr::common_cancel()),
+            (OPEN_REPORT_ID, pr_l10n::tr::benchmark_open_report()),
+            (OPEN_FOLDER_ID, pr_l10n::tr::benchmark_open_result_folder()),
+            (CLOSE_ID, pr_l10n::tr::common_close()),
+        ] {
+            dialog.set_item_text(id, &text);
+        }
+        for (i, text) in column_headers(&Localizer::current()).iter().enumerate() {
+            ListViewControl::set_column_text(dialog.item(RESULTS_ID), i as i32, text);
+        }
+        if let Ok(presenter) = self.presenter.try_borrow_mut() {
+            let mut view = super::run::DialogView { dialog, content: self };
+            presenter.notify_language_changed(&mut view);
+        }
+        self.flush_view_effects(dialog);
+        let _ = crate::win32::dialog_native::user32::invalidate_rect(dialog.item(PROFILES_ID), None, true);
+        dialog.run_layout();
     }
 }
 
 impl DialogContent for BenchmarkContent {
     /// `tr::benchmark_window_title()`.
     fn title(&self) -> String {
-        todo!()
+        pr_l10n::tr::benchmark_window_title()
     }
 
     /// The list built in `new` (cloned).
     fn items(&self) -> Vec<DialogItem> {
-        todo!()
+        self.items.clone()
     }
 
     /// C# `Resizable` = `true`.
     fn resizable(&self) -> bool {
-        todo!()
+        true
     }
 
     /// C# `UsesModalFrame` = `false` (a normal window with its own caption buttons).
     fn uses_modal_frame(&self) -> bool {
-        todo!()
+        false
     }
 
     /// C# `ExtraWindowStyle` = `WS_MINIMIZEBOX | WS_MAXIMIZEBOX`.
     fn extra_window_style(&self) -> u32 {
-        todo!()
+        crate::win32::messages::WS_MINIMIZEBOX | crate::win32::messages::WS_MAXIMIZEBOX
     }
 
     /// C# `HeaderControlIds` = `[layout::HEADER_ID]`.
     fn header_control_ids(&self) -> Vec<i32> {
-        todo!()
+        vec![super::layout::HEADER_ID]
     }
 
     /// C# `InitialFocusId` = `layout::RUN_ID`.
     fn initial_focus_id(&self) -> i32 {
-        todo!()
+        super::layout::RUN_ID
     }
 
     /// C# `DefaultButtonId` = `layout::RUN_ID`.
     fn default_button_id(&self) -> i32 {
-        todo!()
+        super::layout::RUN_ID
     }
 
     /// `layout::preferred_client_size(dialog)`.
     fn preferred_client_size(&self, dialog: &NativeDialog) -> (i32, i32) {
-        todo!()
+        super::layout::preferred_client_size(dialog)
     }
 
     /// `layout::minimum_client_size(dialog)`.
     fn minimum_client_size(&self, dialog: &NativeDialog) -> (i32, i32) {
-        todo!()
+        super::layout::minimum_client_size(dialog)
     }
 
     /// `layout::apply_layout(dialog, &layout::layout_plan(dialog, client_width, client_height), &self.layout)`.
     fn layout_controls(&self, dialog: &NativeDialog, client_width: i32, client_height: i32) {
-        todo!()
+        super::layout::apply_layout(
+            dialog,
+            &super::layout::layout_plan(dialog, client_width, client_height),
+            &self.layout,
+        )
     }
 
     /// C# `OnInitialized()` (lines 140 to 172), in this order: `run.hwnd.store(dialog.hwnd())` (so workers can wake the window); folder box = `initial_folder`; limit box =
@@ -277,37 +444,92 @@ impl DialogContent for BenchmarkContent {
     /// (`tr::benchmark_folder_automation_name()`), the limit box (`benchmark_image_limit_automation_name`) and Quick check (`benchmark_quick_check_automation_name`); subscribe
     /// to language changes (`pr_l10n::localizer::on_current_changed`, the handler posts `WM_BENCHMARK_LANGUAGE` to the window; stored in `language`); `texts_applied = true`.
     fn on_initialized(&self, dialog: &NativeDialog) {
-        todo!()
+        use super::layout::*;
+        use crate::dialogs::native::controls::{
+            basic::ListBoxControl, custom::ProgressControl, list_tree::ListViewControl,
+        };
+        self.run.hwnd.store(dialog.hwnd(), std::sync::atomic::Ordering::Release);
+        dialog.set_item_text(FOLDER_ID, &self.initial_folder);
+        dialog.set_item_text(LIMIT_ID, &BenchmarkPresenter::default_image_limit_text());
+        let list = dialog.item(PROFILES_ID);
+        let profiles = self.presenter.borrow().profile_items().to_vec();
+        let texts = Localizer::current();
+        for item in &profiles {
+            ListBoxControl::add(list, &item.name(&texts));
+        }
+        let default_index = self.index_of_default_profile();
+        if default_index >= 0 {
+            ListBoxControl::set_selected(list, default_index, true);
+        }
+        let results = dialog.item(RESULTS_ID);
+        ListViewControl::configure(
+            results,
+            crate::dialogs::native::chrome::DialogColors::from_key("Dark.Window")
+                .unwrap_or_else(crate::dialogs::native::chrome::DialogColors::window),
+            crate::dialogs::native::chrome::DialogColors::text(),
+        );
+        self.add_columns(dialog);
+        ProgressControl::configure(dialog.item(PROGRESS_ID));
+        let presenter = Rc::clone(&self.presenter);
+        dialog.set_item_tooltips(
+            PROFILES_ID,
+            Rc::new(move |index| {
+                presenter.try_borrow().ok().and_then(|p| {
+                    p.profile_items()
+                        .get(index as usize)
+                        .map(|x| x.description(&Localizer::current()))
+                })
+            }),
+        );
+        dialog.set_tooltip(FOLDER_ID, &pr_l10n::tr::benchmark_folder_automation_name());
+        dialog.set_tooltip(LIMIT_ID, &pr_l10n::tr::benchmark_image_limit_automation_name());
+        dialog.set_tooltip(QUICK_CHECK_ID, &pr_l10n::tr::benchmark_quick_check_automation_name());
+        let hwnd = self.run.hwnd.clone();
+        let subscription = pr_l10n::localizer::on_current_changed(move || {
+            let handle = hwnd.load(std::sync::atomic::Ordering::Acquire);
+            if handle != 0 {
+                // SAFETY: This posts a pointer-free private message to the atomically published window handle.
+                unsafe {
+                    let _ = crate::win32::api::user32::post_message(handle, WM_BENCHMARK_LANGUAGE, 0, 0);
+                }
+            }
+        });
+        *self.language.borrow_mut() = Some(subscription);
+        self.texts_applied.set(true);
     }
 
     /// C# `OnClosed()`: drop the language subscription; `run.hwnd.store(0)`; `presenter.try_borrow_mut()` then `close()` (cancels a run in flight; never a Fail row).
-    fn on_closed(&self, dialog: &NativeDialog) {
-        todo!()
+    fn on_closed(&self, _dialog: &NativeDialog) {
+        self.language.borrow_mut().take();
+        self.run.hwnd.store(0, std::sync::atomic::Ordering::Release);
+        if let Ok(mut presenter) = self.presenter.try_borrow_mut() {
+            presenter.close();
+        }
     }
 
     /// C# `OnCommand(id, notification)`: `self.command(dialog, id, notification)` (`run.rs`).
     fn on_command(&self, dialog: &NativeDialog, id: i32, notification: i32) -> bool {
-        todo!()
+        self.command(dialog, id, notification)
     }
 
     /// C# `OnCancel()`: `self.cancel_requested(dialog)` (`run.rs`).
     fn on_cancel(&self, dialog: &NativeDialog) -> bool {
-        todo!()
+        self.cancel_requested(dialog)
     }
 
     /// C# `OnNotify(id, code, header, out result)`: `self.notify(dialog, id, code, header)` (`results.rs`).
     fn on_notify(&self, dialog: &NativeDialog, id: i32, code: i32, header: Lparam) -> Option<Lresult> {
-        todo!()
+        self.notify(dialog, id, code, header)
     }
 
     /// C# `ListItemText(id, index)`: `self.list_text(dialog, id, index)` (`results.rs`).
     fn list_item_text(&self, dialog: &NativeDialog, id: i32, index: i32) -> ListItemText {
-        todo!()
+        self.list_text(dialog, id, index)
     }
 
     /// C# `StaticTextColor(id)`: `self.static_color(dialog, id)` (`results.rs`).
     fn static_text_color(&self, dialog: &NativeDialog, id: i32) -> u32 {
-        todo!()
+        self.static_color(dialog, id)
     }
 
     /// `WM_BENCHMARK_WAKE` -> `self.drain_inbox(dialog)` (`run.rs`) and `Some(0)`; `WM_BENCHMARK_LANGUAGE` -> `on_language_changed` and `Some(0)`; anything else `None`.
@@ -315,10 +537,20 @@ impl DialogContent for BenchmarkContent {
         &self,
         dialog: &NativeDialog,
         message: u32,
-        wparam: Wparam,
-        lparam: Lparam,
+        _wparam: Wparam,
+        _lparam: Lparam,
     ) -> Option<Lresult> {
-        todo!()
+        match message {
+            WM_BENCHMARK_WAKE => {
+                self.drain_inbox(dialog);
+                Some(0)
+            }
+            WM_BENCHMARK_LANGUAGE => {
+                self.on_language_changed(dialog);
+                Some(0)
+            }
+            _ => None,
+        }
     }
 }
 
@@ -345,7 +577,11 @@ impl BenchmarkDialog {
         session_factory: BenchmarkSessionFactory,
         options: BenchmarkOptions,
     ) -> Self {
-        todo!()
+        let mut options = options;
+        let chrome = options.chrome.take();
+        let content = Rc::new(BenchmarkContent::new(initial_folder, session_factory, &mut options));
+        let native = NativeDialog::with_chrome(content.clone(), chrome);
+        Self { native, content }
     }
 
     /// The base-class handle (`show_modeless`, `activate`, `close`, `hwnd`, `is_closed`, `item`, ...).
@@ -371,11 +607,14 @@ impl BenchmarkDialog {
     /// C# `ProfileBadge(index)` (test seam): the badge (loading mode text) of profile `index`, `None` out of range. Implemented as `results::profile_list_text(items,
     /// index, &Localizer::current())` (18s) `.and_then(|t| t.badge)`; the presenter is read with `try_borrow` (`None` while borrowed).
     pub fn profile_badge(&self, index: i32) -> Option<String> {
-        todo!()
+        let profiles = self.content.presenter.try_borrow().ok()?.profile_items().to_vec();
+        super::results::profile_list_text(&profiles, index, &Localizer::current()).and_then(|text| text.badge)
     }
 
     /// C# `Dispose()`: `presenter.close()` (cancels the run in flight and frees the presenter's token). Safe to call twice.
     pub fn dispose(&self) {
-        todo!()
+        if let Ok(mut presenter) = self.content.presenter.try_borrow_mut() {
+            presenter.close();
+        }
     }
 }

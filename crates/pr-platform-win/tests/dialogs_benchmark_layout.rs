@@ -7,7 +7,9 @@ use pr_platform_win::dialogs::benchmark::state::{
 };
 use pr_platform_win::dialogs::zoom_prompt::{ButtonRowPlan, DialogMeasure};
 
+#[rustfmt::skip]
 struct Measure { status: String }
+#[rustfmt::skip]
 impl DialogMeasure for Measure {
     fn dx(&self, u: i32) -> i32 { (u * 6 + 2) / 4 }
     fn dy(&self, u: i32) -> i32 { (u * 15 + 4) / 8 }
@@ -23,6 +25,7 @@ impl DialogMeasure for Measure {
 }
 
 #[test]
+#[rustfmt::skip]
 fn layout_plan_matches_the_worked_example() {
     let m = Measure { status: String::new() };
     assert_eq!(preferred_client_size(&m), (780, 619));
@@ -38,6 +41,7 @@ fn layout_plan_matches_the_worked_example() {
 }
 
 #[test]
+#[rustfmt::skip]
 fn layout_plan_with_status_and_tiny_client_respects_contract_minimums() {
     let m = Measure { status: "wrapped status".into() };
     let normal = layout_plan(&m, 780, 619);
@@ -49,6 +53,7 @@ fn layout_plan_with_status_and_tiny_client_respects_contract_minimums() {
 }
 
 #[test]
+#[rustfmt::skip]
 fn sort_and_numeric_helpers_follow_dotnet_and_csharp_rules() {
     assert_eq!(display_order(4, -1, 1, &|a,b| a.cmp(&b)), vec![0,1,2,3]);
     assert_eq!(display_order(4, 1, 1, &|a,b| (a % 2).cmp(&(b % 2))), vec![0,2,1,3]);
