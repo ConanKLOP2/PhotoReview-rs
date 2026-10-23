@@ -8,9 +8,9 @@ COMMON="$(git -C "$SELF" rev-parse --path-format=absolute --git-common-dir)" || 
 REPO="$(dirname "$COMMON")"
 # The main checkout may have a different owner from the agent's worktree.
 git() { command git -c "safe.directory=$REPO" -c "safe.directory=${WT:-$REPO}" "$@"; }
-PLAN_REL="${PLAN_REL:-docs/WAVE-8-PLAN.md}"
+PLAN_REL="${PLAN_REL:-}"
 LOGDIR="$SELF/state/logs"
-IBR="integration/wave8-b2"
+IBR=""
 DRY=0
 UNIT=""
 usage() { echo "usage: $0 <unit e.g. W8-06f> [--ibr branch] [--dry-run]" >&2; exit 2; }
@@ -22,7 +22,11 @@ while [ "$#" -gt 0 ]; do
     *) [ -z "$UNIT" ] || usage; UNIT="$1"; shift ;;
   esac
 done
-[[ "$UNIT" =~ ^W[0-9]+-[0-9][0-9][a-z]$ ]] || usage
+[[ "$UNIT" =~ ^(W[0-9]+-[0-9][0-9][a-z]|W9-[A-Z][0-9]+)$ ]] || usage
+if [ -z "$PLAN_REL" ]; then PLAN_REL="$(cd "$REPO" && $LIB planfor "$REPO" "$UNIT")" || exit 2; fi
+if [ -z "$IBR" ]; then
+  if [[ "$UNIT" == W9-* ]]; then IBR="integration/wave9-$(printf '%s' "${UNIT:3:1}" | tr '[:upper:]' '[:lower:]')"; else IBR="integration/wave8-b2"; fi
+fi
 git check-ref-format --branch "$IBR" >/dev/null || usage
 LOWER="$(printf '%s' "$UNIT" | tr '[:upper:]' '[:lower:]')"
 BR="pr/$LOWER"
@@ -39,7 +43,7 @@ mapfile -t OWN < <($LIB owned "$CONTRACT" | tr -d '\r')
 CRATE="$(printf '%s\n' "${OWN[@]}" | grep -m1 '^crates/' | cut -d/ -f2)"
 [ -n "$CRATE" ] || { echo "cannot derive crate: $UNIT" >&2; exit 2; }
 ROW="$($LIB row "$PLAN" "$UNIT" | tr -d '\r')" || exit 2
-BATCH="$(printf '%s' "$ROW" | awk -F '|' '{gsub(/^[ \t]+|[ \t]+$/, "", $9); print $9}')"
+if [[ "$UNIT" == W9-* ]]; then BATCH="${UNIT:3:1}"; else BATCH="$(printf '%s' "$ROW" | awk -F '|' '{gsub(/^[ \t]+|[ \t]+$/, "", $9); print $9}')"; fi
 TITLE="$(printf '%s' "$ROW" | awk -F '|' '{gsub(/^[ \t]+|[ \t]+$/, "", $3); print $3}')"
 TITLE="$(printf '%s' "$TITLE" | sed -E 's/`//g; s/ = [0-9]+.*$//')"
 [ -n "$TITLE" ] || TITLE="$UNIT"
@@ -54,7 +58,7 @@ fi
 for DEP in $($LIB deps "$PLAN" "$UNIT" | tr -d '\r'); do
   DEP_ROW="$($LIB row "$PLAN" "$DEP" 2>/dev/null || :)"
   [ -n "$DEP_ROW" ] || continue
-  DEP_BATCH="$(printf '%s' "$DEP_ROW" | awk -F '|' '{gsub(/^[ \t]+|[ \t]+$/, "", $9); print $9}')"
+  if [[ "$DEP" == W9-* ]]; then DEP_BATCH="${DEP:3:1}"; else DEP_BATCH="$(printf '%s' "$DEP_ROW" | awk -F '|' '{gsub(/^[ \t]+|[ \t]+$/, "", $9); print $9}')"; fi
   [ "$DEP_BATCH" = "$BATCH" ] || continue
   DEP_CONTRACT="$SELF/../../contracts/$DEP.md"
   [ -f "$DEP_CONTRACT" ] || { echo "waiting on $DEP (contract missing)"; exit 3; }
@@ -69,6 +73,13 @@ for DEP in $($LIB deps "$PLAN" "$UNIT" | tr -d '\r'); do
     fi
   done
 done
+if [[ "$UNIT" == W9-* ]]; then
+  while IFS= read -r DEP; do
+    [ -n "$DEP" ] || continue
+    MISSING="$($LIB extsat "$REPO" "$SELF/state" "$DEP")"
+    [ -z "$MISSING" ] || { echo "waiting on $DEP (not on master)"; exit 3; }
+  done < <($LIB extdeps "$PLAN" "$UNIT")
+fi
 REMOTE_HEAD="$(git -C "$REPO" ls-remote --heads origin "$BR" 2>>"$LOG")" || {
   echo "cannot check remote branch $BR:"; tail -n 12 "$LOG"; exit 2;
 }

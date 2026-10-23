@@ -8,19 +8,31 @@ def read(p):
         return f.read()
 
 def plan_rows(plan):
-    """Yield dicts for table rows `| W8-04a | files | rust | col | model | test | deps | batch |`."""
+    """Yield parsed Wave 8 and Wave 9 plan rows, preserving the source line."""
     for line in read(plan).splitlines():
-        if not re.match(r"^\|\s*W\d+-\d\d[a-z]\s*\|", line):
+        if not re.match(r"^\|\s*(?:W\d+-\d\d[a-z]|W9-[A-Z]\d+)\s*\|", line):
             continue
         c = [x.strip() for x in line.strip().strip("|").split("|")]
-        if len(c) < 8:
-            continue
-        yield {"id": c[0], "deps_raw": c[6], "batch": c[7], "line": line}
+        if re.fullmatch(r"W9-[A-Z]\d+", c[0]) and len(c) == 6:
+            yield {"id": c[0], "deps_raw": c[5], "batch": c[0][3], "line": line, "col": c[3], "test": c[4]}
+        elif re.fullmatch(r"W\d+-\d\d[a-z]", c[0]) and len(c) >= 8:
+            yield {"id": c[0], "deps_raw": c[6], "batch": c[7], "line": line, "col": c[3], "test": c[5]}
 
 def expand_deps(raw, uid):
+    if re.fullmatch(r"W9-[A-Z]\d+", uid):
+        raw = re.split(r"\bnot\b", raw, maxsplit=1, flags=re.I)[0]
+        raw = re.sub(r"`[^`]*`", " ", raw)
+        out = re.findall(r"\b" + re.escape(uid[3]) + r"\d+\b", raw)
+        seen, res = set(), []
+        for token in out:
+            d = "W9-" + token
+            if d not in seen: seen.add(d); res.append(d)
+        return res
     prefix = uid.rsplit("-", 1)[0]
     raw = re.sub(r"`[^`]*`", " ", raw)
     out = []
+    for a, b in re.findall(r"\b(\d\d[a-z])\.\.([a-z])\b", raw):
+        out += [a[:2] + chr(x) for x in range(ord(a[2]), ord(b) + 1)]
     for a, b in re.findall(r"\b(\d\d[a-z])\.\.(\d\d[a-z])\b", raw):
         if a[:2] == b[:2]:
             out += [a[:2] + chr(x) for x in range(ord(a[2]), ord(b[2]) + 1)]
@@ -34,8 +46,34 @@ def expand_deps(raw, uid):
             seen.add(d); res.append(d)
     return res
 
+def expand_unit_ids(text):
+    """Expand W8 ids, including abbreviated ranges and slash lists, in source order."""
+    token_re = re.compile(r"\bW\d+-\d\d[a-z](?:\.\.(?:W\d+-)?(?:\d\d)?[a-z])?(?:/\d\d[a-z])*")
+    out = []
+    for match in token_re.finditer(text):
+        token = match.group(0)
+        if ".." in token:
+            first, last = token.split("..", 1)
+            m1 = re.fullmatch(r"(W\d+)-(\d\d)([a-z])", first)
+            m2 = re.fullmatch(r"(?:(W\d+)-)?(?:(\d\d))?([a-z])", last)
+            if m1 and m2 and (not m2.group(1) or m2.group(1) == m1.group(1)) and (not m2.group(2) or m2.group(2) == m1.group(2)):
+                wave, digits, start = m1.groups()
+                end = m2.group(3)
+                if ord(start) <= ord(end):
+                    out.extend(wave + "-" + digits + chr(n) for n in range(ord(start), ord(end) + 1))
+                else:
+                    out.append(first)
+            else:
+                out.extend((first, last))
+        else:
+            parts = token.split("/")
+            wave, _, _ = re.fullmatch(r"(W\d+)-(\d\d)([a-z])", parts[0]).groups()
+            out.append(parts[0])
+            out.extend(wave + "-" + part for part in parts[1:])
+    return list(dict.fromkeys(out))
+
 def cmd_order(plan, batch, only=None):
-    rows = [r for r in plan_rows(plan) if r["batch"].upper() == batch.upper()]
+    rows = [r for r in plan_rows(plan) if (r["batch"].upper() == batch.upper())]
     ids = [r["id"] for r in rows]
     deps = {r["id"]: [d for d in expand_deps(r["deps_raw"], r["id"]) if d in ids and d != r["id"]] for r in rows}
     done, order = set(), []
@@ -50,6 +88,50 @@ def cmd_order(plan, batch, only=None):
     for i in order:
         if sel is None or i in sel:
             print(i + "\t" + ",".join(deps[i]))
+
+def cmd_extdeps(plan, uid):
+    rows = {r["id"]: r for r in plan_rows(plan)}
+    r = rows.get(uid)
+    if r:
+        raw = re.sub(r"`[^`]*`", " ", r["deps_raw"])
+        raw = re.split(r"\bnot\b", raw, maxsplit=1, flags=re.I)[0]
+        print("\n".join(expand_unit_ids(raw)))
+
+def cmd_planfor(root, ident):
+    if ident.startswith("W9-"):
+        lane = ident[3]
+    elif re.fullmatch(r"wave9-[a-z]", ident):
+        lane = ident[-1].upper()
+    else:
+        print("docs/WAVE-8-PLAN.md"); return
+    matches = []
+    for name in sorted(os.listdir(os.path.join(root, "docs"))):
+        if not name.startswith("WAVE-9-PLAN-") or not name.endswith(".md"): continue
+        path = os.path.join(root, "docs", name)
+        if any(re.match(r"^\|\s*W9-%s\d+\s*\|" % lane, x) for x in read(path).splitlines()): matches.append(name)
+    if len(matches) != 1:
+        if not matches: sys.exit("no Wave 9 plan with rows W9-%s* in docs/" % lane)
+        sys.exit("multiple Wave 9 plans with rows W9-%s* in docs/: %s" % (lane, ", ".join(matches)))
+    print("docs/" + matches[0])
+
+def cmd_extsat(repo, statedir, uid):
+    log = subprocess.run(["git", "-C", repo, "log", "origin/master", "--format=%s%x1f%b%x1e"], capture_output=True, text=True)
+    merged = False
+    for entry in log.stdout.split("\x1e"):
+        subject, _, body = entry.partition("\x1f")
+        subject = subject.lstrip()
+        # Skip documentation, maintenance, CI and style commits; other subjects may identify implementation units.
+        if subject.startswith(("docs(", "docs:", "chore(", "chore:", "ci(", "style(")):
+            continue
+        if uid in expand_unit_ids(subject + "\n" + body):
+            merged = True
+            break
+    if not merged:
+        for name in os.listdir(statedir) if os.path.isdir(statedir) else []:
+            if not name.endswith(".json"): continue
+            if state_load(os.path.join(statedir, name)).get("units", {}).get(uid, {}).get("status") in ("done", "partial"):
+                merged = True; break
+    if not merged: print(uid)
 
 def cmd_row(plan, uid):
     for r in plan_rows(plan):
@@ -177,11 +259,9 @@ def cmd_table(path):
 # ------------------------------------------------------------------ tier / pack trimming
 def cmd_tier(plan, uid):
     """skip (green or golden-covered), yellow or red - read from the plan row's Col and Test cells."""
-    for line in read(plan).splitlines():
-        if not re.match(r"^\|\s*" + re.escape(uid) + r"\s*\|", line):
-            continue
-        c = [x.strip() for x in line.strip().strip("|").split("|")]
-        col, test = c[3].lower(), c[5]
+    for row in plan_rows(plan):
+        if row["id"] != uid: continue
+        col, test = row["col"].lower(), row["test"]
         if "\U0001F7E2" in col or "green" in col: return "skip"
         if re.match(r"^G\b", test): return "skip"
         if "\U0001F534" in col or "red" in col: return "red"
@@ -465,6 +545,9 @@ def cmd_redcheck(path):
 def main(a):
     c = a[0]
     if c == "order": cmd_order(a[1], a[2], a[3] if len(a) > 3 else None)
+    elif c == "extdeps": cmd_extdeps(a[1], a[2])
+    elif c == "planfor": cmd_planfor(a[1], a[2])
+    elif c == "extsat": cmd_extsat(a[1], a[2], a[3])
     elif c == "row": cmd_row(a[1], a[2])
     elif c == "deps": cmd_deps(a[1], a[2])
     elif c == "owned": print("\n".join(owned(a[1])))
