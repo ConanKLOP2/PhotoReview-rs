@@ -5,7 +5,6 @@
 //! `composition::main_view_model`, batch B6, contracted separately); its type names were not fixed when this contract was written. The seam is a plain struct with ONE field per
 //! `GetRequiredService<T>()` the start-up makes ([`StartupGraph`], the same decision as `DialogServices`, D-W8B6-10) and a builder closure ([`GraphBuilder`], the C#
 //! `ShellCompositionRoot.Build(host, hub, overrides)` step): the 09b porter fills the body of [`production_graph_builder`] and nothing else here changes.
-#![allow(unused_variables, dead_code)] // stub: the porter removes this line with the last `todo!()`
 
 use std::error::Error;
 use std::path::PathBuf;
@@ -104,31 +103,31 @@ pub struct GlobalLog;
 impl Log for GlobalLog {
     /// `AppLog::global().enabled()`.
     fn enabled(&self) -> bool {
-        todo!()
+        pr_app::misc::app_log::AppLog::global().enabled()
     }
 
     /// `AppLog::global().info(message)`.
     fn info(&self, message: &str) {
-        todo!()
+        pr_app::misc::app_log::AppLog::global().info(message)
     }
 
     /// `AppLog::global().warn(message)`.
     fn warn(&self, message: &str) {
-        todo!()
+        pr_app::misc::app_log::AppLog::global().warn(message)
     }
 
     /// `AppLog::global().error(message, error)`.
     fn error(&self, message: &str, error: Option<&(dyn Error + 'static)>) {
-        todo!()
+        pr_app::misc::app_log::AppLog::global().error(message, error)
     }
 }
 
 /// `Arc::new(GlobalLog)`.
 pub fn global_log() -> Arc<dyn Log> {
-    todo!()
+    Arc::new(GlobalLog)
 }
 
 /// The process-wide DIAG snapshot (`DiagOptions::current()`), the value of C# `DiagOptions.*`.
 pub fn diag_options() -> Arc<DiagOptions> {
-    todo!()
+    DiagOptions::current()
 }

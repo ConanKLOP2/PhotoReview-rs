@@ -1,11 +1,10 @@
-//! Port of `PhotoReview.Shell.Win32/Startup/ShellStartup.cs` lines 329-359 (baseline `d92d6aae`): the single-instance negotiation of the start-up (Q-R18, Q-R10).
+//! Port of `PhotoReview.Shell.Win32/Startup/ShellStartup.cs` lines 329-359 (baseline `7eaee2a2`): the single-instance negotiation of the start-up (Q-R18, Q-R10).
 //! Unit W8-17d. Contract: `contracts/W8-17d.md`.
 //!
 //! Order (C# comments kept): the instance MODE comes from the settings just read, so BEFORE any lock; `--smoke` takes no lock at all. A refused lock is not an error: the
 //! request is HANDED to the running instance (`SecondInstanceHandoff.TryForwardAsync`, `pr_core::instance::handoff::try_forward`, up to 1.5 s); only when nobody answers does the
 //! second launch say so and exit 0. The seam [`InstanceGate`] is implemented over `pr_platform_win::instance_scope::InstanceScope` by `pr_shell::startup::instance`; this
 //! module is pure.
-#![allow(unused_variables, dead_code)] // stub: the porter removes this line with the last `todo!()`
 
 use std::fmt;
 
@@ -22,7 +21,7 @@ pub struct InstanceStartError {
 impl fmt::Display for InstanceStartError {
     /// The message.
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        todo!()
+        f.write_str(&self.message)
     }
 }
 
@@ -59,21 +58,32 @@ pub enum HandoffDecision {
 
 /// C# lines 341-348: `forwarded` -> `ExitSilently`; else `PerFolder` -> `FolderAlreadyOpen`, any other mode -> `AppAlreadyRunningNoResponse`.
 pub fn handoff_decision(forwarded: bool, mode: InstanceMode) -> HandoffDecision {
-    todo!()
+    if forwarded {
+        HandoffDecision::ExitSilently
+    } else {
+        HandoffDecision::ExitWithMessage(if mode == InstanceMode::PerFolder {
+            InstanceMessageKind::FolderAlreadyOpen
+        } else {
+            InstanceMessageKind::AppAlreadyRunningNoResponse
+        })
+    }
 }
 
 /// The localized text of the box: `localizer.get("folder.alreadyOpenInOtherInstance")` or `localizer.get("app.alreadyRunningNoResponse")`.
 pub fn instance_message_text(kind: InstanceMessageKind, localizer: &Localizer) -> String {
-    todo!()
+    localizer.get(match kind {
+        InstanceMessageKind::FolderAlreadyOpen => "folder.alreadyOpenInOtherInstance",
+        InstanceMessageKind::AppAlreadyRunningNoResponse => "app.alreadyRunningNoResponse",
+    })
 }
 
 /// The title of every start-up box: `localizer.get("app.title")` (C# `Tr.AppTitle`).
 pub fn startup_box_title(localizer: &Localizer) -> String {
-    todo!()
+    localizer.get("app.title")
 }
 
 /// C# lines 331-335: `try_acquire(launch_folder)` of a non-smoke start-up. `Ok(true)` = this process holds the lock and goes on; `Ok(false)` = the caller must run the hand-off
 /// ([`InstanceGate::forward_to_owner`], on a worker) and then [`handoff_decision`]. `Err` = start-up failure.
 pub fn try_take_lock(gate: &dyn InstanceGate, launch_folder: Option<&str>) -> Result<bool, InstanceStartError> {
-    todo!()
+    gate.try_acquire(launch_folder)
 }

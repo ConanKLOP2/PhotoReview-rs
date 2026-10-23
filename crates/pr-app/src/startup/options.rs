@@ -1,10 +1,9 @@
 //! Port of `PhotoReview.Shell.Win32/Startup/ShellStartup.cs` lines 20-82 (`ShellStartupOptions`, the env-driven defaults) and the constants of lines 102-114
-//! (baseline `d92d6aae`). Unit W8-17d. Contract: `contracts/W8-17d.md`.
+//! (baseline `7eaee2a2`). Unit W8-17d. Contract: `contracts/W8-17d.md`.
 //!
 //! The window-free half of the options: the exit codes, the time limits and the three values that the C# record reads from the environment
 //! (`PHOTOREVIEW_SHELL_INSTANCE_PREFIX`, `PHOTOREVIEW_SHELL_WARP`, `PHOTOREVIEW_SHELL_NOWARM`; renamed `PHOTOREVIEW_RS_*`, R0002). The full options record, with the
 //! seams that name `pr-platform-win` types, is `pr_shell::startup::options::ShellStartupOptions`.
-#![allow(unused_variables, dead_code)] // stub: the porter removes this line with the last `todo!()`
 
 use std::time::Duration;
 
@@ -39,7 +38,7 @@ pub struct ProcessEnv;
 impl EnvSource for ProcessEnv {
     /// `std::env::var_os(name)` converted with `to_string_lossy`.
     fn var(&self, name: &str) -> Option<String> {
-        todo!()
+        std::env::var_os(name).map(|value| value.to_string_lossy().into_owned())
     }
 }
 
@@ -58,12 +57,19 @@ pub struct EnvOptions {
 impl EnvOptions {
     /// Applies the rules above to `env`.
     pub fn from_env(env: &dyn EnvSource) -> Self {
-        todo!()
+        Self {
+            instance_name_prefix: env
+                .var(INSTANCE_PREFIX_VAR)
+                .filter(|s| !s.is_empty())
+                .unwrap_or_else(|| crate::startup::launch::INSTANCE_NAME_PREFIX.to_owned()),
+            prefer_warp: env.var(PREFER_WARP_VAR).as_deref() == Some("1"),
+            warm_graphics: env.var(NO_WARM_VAR).as_deref() != Some("1"),
+        }
     }
 
     /// `from_env(&ProcessEnv)`.
     pub fn from_process() -> Self {
-        todo!()
+        Self::from_env(&ProcessEnv)
     }
 }
 

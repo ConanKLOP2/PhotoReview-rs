@@ -1,20 +1,21 @@
-//! Port of `PhotoReview.Shell.Win32/Startup/ShellStartup.cs` lines 262-328 and 388-391 (baseline `d92d6aae`): the settings and language load, what is done with the result,
+//! Port of `PhotoReview.Shell.Win32/Startup/ShellStartup.cs` lines 262-328 and 388-391 (baseline `7eaee2a2`): the settings and language load, what is done with the result,
 //! the "settings repaired" notice (C-28) and the `ShellStartupContext` of C-16 (lines 300-303 and 520-523). Unit W8-17d. Contract: `contracts/W8-17d.md`.
 //!
 //! The C# runs `store.Load()` and `localization.Load(..)` in ONE pool task, then continues on the UI thread: `localization.Apply`, mark `settingsLoaded`, the log switch.
 //! Rust: [`load_settings_and_language`] is the worker body (`Send`-safe pieces only), [`apply_loaded_settings`] is the UI-thread part; the hop between them is
 //! `startup::ui_hop`. Nothing here touches a window.
-#![allow(unused_variables, dead_code)] // stub: the porter removes this line with the last `todo!()`
 
 use std::fmt;
 use std::io;
 use std::sync::Arc;
+use std::sync::PoisonError;
 use std::time::Instant;
 
 use pr_core::diagnostics::diag_options::DiagOptions;
 use pr_core::settings::app_settings::{AppSettings, SettingsTexts};
 use pr_core::settings::store::SettingsStore;
 use pr_l10n::localizer::Localizer;
+use pr_l10n::template::LocArg;
 
 use crate::presenters::settings::load::SharedLocalization;
 use crate::startup::context::ShellStartupContext;
@@ -48,7 +49,10 @@ pub enum StartupLoadError {
 impl fmt::Display for StartupLoadError {
     /// `Settings(e)`: `e`; `Worker(m)`: `m`.
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        todo!()
+        match self {
+            Self::Settings(e) => e.fmt(f),
+            Self::Worker(message) => f.write_str(message),
+        }
     }
 }
 
@@ -63,30 +67,48 @@ pub fn load_settings_and_language(
     mark: &dyn Fn(&str),
     after_file_loaded: &dyn Fn(&Arc<AppSettings>),
 ) -> Result<LoadedSettings, StartupLoadError> {
-    todo!()
+    let settings = store.load(None).map_err(StartupLoadError::Settings)?;
+    mark("settingsFileLoaded");
+    after_file_loaded(&settings);
+    let localizer = Arc::new(
+        localization
+            .lock()
+            .unwrap_or_else(PoisonError::into_inner)
+            .load(Some(&settings.ui_language)),
+    );
+    mark("languageLoaded");
+    Ok(LoadedSettings { settings, localizer })
 }
 
 /// The UI-thread part (C# lines 304-306): `localization.lock().apply(Some(&settings.ui_language), localizer.clone())` (publishes the localizer and the UI culture), then
 /// `mark("settingsLoaded")`.
 pub fn apply_loaded_settings(localization: &SharedLocalization, loaded: &LoadedSettings, mark: &dyn Fn(&str)) {
-    todo!()
+    localization
+        .lock()
+        .unwrap_or_else(PoisonError::into_inner)
+        .apply(Some(&loaded.settings.ui_language), loaded.localizer.clone());
+    mark("settingsLoaded");
 }
 
 /// C# `AppLog.Enabled = settings.LoggingEnabled || DiagOptions.ForceLog` (lines 281 and 307): the value to give `AppLog::set_enabled`.
 pub fn logging_enabled(settings: &AppSettings, diag: &DiagOptions) -> bool {
-    todo!()
+    settings.logging_enabled || diag.force_log
 }
 
 /// The two start-up log lines (C# lines 308-316): `"Startup (shell) args=" + args joined by " | "` (written only when logging is enabled) and, when
 /// `diag.any_enabled()`, `"DIAG MODE: " + diag.describe()` (written even when logging is off, through `AppLog::write_forced`; the second element says so).
 /// Pure: the caller does the writing. Returns `(startup_line, diag_line)`; `diag_line` is `None` when no DIAG variable is in effect.
 pub fn startup_log_lines(args: &[String], diag: &DiagOptions) -> (String, Option<String>) {
-    todo!()
+    (
+        format!("Startup (shell) args={}", args.join(" | ")),
+        diag.any_enabled().then(|| format!("DIAG MODE: {}", diag.describe())),
+    )
 }
 
 /// C# lines 388-391: `Some(build_repair_text(&store.last_load_repairs(), false, texts))` when the load repaired anything, else `None` (a valid file shows no box).
 pub fn repair_notice(store: &SettingsStore, texts: &dyn SettingsTexts) -> Option<String> {
-    todo!()
+    let repairs = store.last_load_repairs();
+    (!repairs.is_empty()).then(|| pr_core::settings::normalizer::build_repair_text(&repairs, false, texts))
 }
 
 /// `SettingsTexts` over the CURRENT localizer (C# `Tr.*`): the nine members read the keys `action.default.name` (`{n}`), `action.default.backup`,
@@ -113,31 +135,39 @@ impl LocalizerSettingsTexts {
 
 impl SettingsTexts for LocalizerSettingsTexts {
     fn action_default_name(&self, n: u32) -> String {
-        todo!()
+        self.localizer.format("action.default.name", &[LocArg::new("n", n)])
     }
     fn action_default_backup(&self) -> String {
-        todo!()
+        self.localizer.get("action.default.backup")
     }
     fn core_settings_shortcut_invalid(&self, name: &str) -> String {
-        todo!()
+        self.localizer
+            .format("core.settings.shortcutInvalid", &[LocArg::new("name", name)])
     }
     fn core_settings_action_invalid(&self) -> String {
-        todo!()
+        self.localizer.get("core.settings.actionInvalid")
     }
     fn core_settings_action_binding_name(&self, name: &str) -> String {
-        todo!()
+        self.localizer
+            .format("core.settings.actionBindingName", &[LocArg::new("name", name)])
     }
     fn core_settings_shortcut_duplicate(&self, key: &str, names: &str) -> String {
-        todo!()
+        self.localizer.format(
+            "core.settings.shortcutDuplicate",
+            &[LocArg::new("key", key), LocArg::new("names", names)],
+        )
     }
     fn settings_load_repaired(&self, items: &str) -> String {
-        todo!()
+        self.localizer
+            .format("settings.load.repaired", &[LocArg::new("items", items)])
     }
     fn dialog_import_settings_repaired(&self, items: &str) -> String {
-        todo!()
+        self.localizer
+            .format("dialog.importSettings.repaired", &[LocArg::new("items", items)])
     }
     fn settings_load_shortcut_disabled(&self, name: &str) -> String {
-        todo!()
+        self.localizer
+            .format("settings.load.shortcutDisabled", &[LocArg::new("name", name)])
     }
 }
 
@@ -151,5 +181,13 @@ pub fn build_startup_context(
     placement: Option<PrefetchHandle>,
     process_start: Instant,
 ) -> ShellStartupContext {
-    todo!()
+    let settings = settings.clone();
+    ShellStartupContext {
+        arguments: launch.arguments.clone(),
+        initial_path: launch.initial_path().map(str::to_owned),
+        launch_folder: launch.launch_folder.clone(),
+        settings: crate::startup::context::StartupTask::spawn("startup-context-settings", move || (*settings).clone()),
+        placement: placement.unwrap_or(PrefetchHandle { handle: None }),
+        process_start,
+    }
 }

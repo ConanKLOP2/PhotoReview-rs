@@ -1,4 +1,4 @@
-//! Port of the FIELDS of `PhotoReview.Shell.Win32/Startup/ShellStartup.cs` lines 108-135 (baseline `d92d6aae`): the state that the C# `ShellStartup` object carries through the start-up and the
+//! Port of the FIELDS of `PhotoReview.Shell.Win32/Startup/ShellStartup.cs` lines 108-135 (baseline `7eaee2a2`): the state that the C# `ShellStartup` object carries through the start-up and the
 //! shutdown. Unit W8-17d owns this file and declares EVERY field of both units (17e must not need to add one; if it does it appends to this file, after 17d is merged). Contract:
 //! `contracts/W8-17d.md`.
 //!
@@ -6,7 +6,6 @@
 //! `_coalescer`, `_services`, `_instanceScope`, `_perf`: the shutdown may run twice and must dispose each once); here every such field is a `RefCell<Option<..>>` that `take()`s. The
 //! methods of the state are split over the sibling files by unit: `phase_one.rs` (17d: services, settings, instance lock), `window.rs`, `recovery.rs`, `smoke.rs`, `shutdown.rs`,
 //! `run.rs` (17e). Workers never see the state (it is `!Send`); they get a `UiHopSender` or a clone of an `Arc`.
-#![allow(unused_variables, dead_code)] // stub: the porter removes this line with the last `todo!()`
 
 use std::cell::{Cell, RefCell};
 use std::rc::Rc;
@@ -38,6 +37,7 @@ use super::options::ShellStartupOptions;
 pub type EarlyDecodeSlot = Arc<Mutex<Option<StartupTask<Option<EarlyDecodePlan>>>>>;
 
 /// C# `ShellStartup` instance fields. See the module doc.
+#[allow(dead_code)] // Phase-two fields are consumed by the separately ported W8-17e.
 pub struct StartupState {
     // ---- given by `run` (17e) ----------------------------------------------------------------------------------------------------------------------------------------
     /// C# `_args`.
@@ -77,6 +77,8 @@ pub struct StartupState {
     pub(super) coalescer: RefCell<Option<Arc<ForwardedOpenCoalescer>>>,
     /// C# `earlyDecode` local: the preparation task (see [`EarlyDecodeSlot`]).
     pub(super) early_decode: EarlyDecodeSlot,
+    /// Shared single-use placement handle: the worker takes it for prediction, otherwise the context takes it.
+    pub(super) placement_load: Arc<Mutex<Option<pr_app::windowing::contracts::PrefetchHandle>>>,
     // ---- phase two, run and shutdown (17e) --------------------------------------------------------------------------------------------------------------------------
     /// C# `_main`. A SHARED slot of an `Rc<MainWindow>`: the owner closures of the dialogs, the forwarded-open target and the overlay view model hold a `Weak` of the SLOT, read "no window"
     /// as `0` / "closing", and CLONE the `Rc<MainWindow>` out of it (a short borrow) before they call the window, because a call may open a modal dialog and the window may be closed and the slot
@@ -118,6 +120,36 @@ impl StartupState {
         hub: Rc<ShellPresentationHub>,
         router: Rc<ForwardedOpenRouter>,
     ) -> Rc<StartupState> {
-        todo!()
+        let ui = Arc::new(dispatcher.clone());
+        Rc::new(Self {
+            args,
+            launch,
+            options: RefCell::new(options),
+            mark,
+            process_start,
+            dispatcher,
+            ui,
+            message_loop,
+            hub,
+            router,
+            placement_store: Arc::new(JsonWindowPlacementStore::new(
+                Arc::new(pr_core::io::physical::PhysicalFileSystem),
+                Arc::new(pr_platform_win::host::main_window::windowing::Win32MonitorLayout),
+            )),
+            services: RefCell::new(None),
+            graph: RefCell::new(None),
+            settings: RefCell::new(None),
+            context: RefCell::new(None),
+            instance: RefCell::new(None),
+            coalescer: RefCell::new(None),
+            early_decode: Arc::new(Mutex::new(None)),
+            placement_load: Arc::new(Mutex::new(None)),
+            main: Rc::new(RefCell::new(None)),
+            cloak: RefCell::new(None),
+            frame_clock: RefCell::new(None),
+            perf: RefCell::new(None),
+            exit_code: Cell::new(0),
+            forced_exit: Cell::new(None),
+        })
     }
 }

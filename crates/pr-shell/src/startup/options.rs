@@ -1,8 +1,7 @@
-//! Port of `PhotoReview.Shell.Win32/Startup/ShellStartup.cs` lines 20-82 (`ShellStartupOptions`, baseline `d92d6aae`). Unit W8-17d. Contract: `contracts/W8-17d.md`.
+//! Port of `PhotoReview.Shell.Win32/Startup/ShellStartup.cs` lines 20-82 (`ShellStartupOptions`, baseline `7eaee2a2`). Unit W8-17d. Contract: `contracts/W8-17d.md`.
 //!
 //! Start-up options: the defaults are the real run, a test replaces one seam at a time and never touches the user's data. The window-free members (`EnvOptions`, constants) are `pr_app::startup::options`; this record adds the seams that name `pr-platform-win` types. Every `Option` seam is
 //! `None` in production. The `Action<IServiceCollection>? ServiceOverrides` of the C# is [`ShellStartupOptions::graph_builder`] + [`ShellStartupOptions::services`] (there is no container).
-#![allow(unused_variables, dead_code)] // stub: the porter removes this line with the last `todo!()`
 
 use std::fmt;
 use std::path::PathBuf;
@@ -88,13 +87,33 @@ impl ShellStartupOptions {
     /// The C# property initialisers with the environment read through `env` (`EnvOptions::from_env`): the three env-driven members from there, `activate`, `install_process_hooks`,
     /// `start_perf_listener` = `true`, every seam `None`, `services` = `ShellServicesOptions::default()`, `smoke_timeout` = `DEFAULT_SMOKE_TIMEOUT`.
     pub fn from_env(env: &dyn EnvSource) -> Self {
-        todo!()
+        let env = pr_app::startup::options::EnvOptions::from_env(env);
+        Self {
+            instance_name_prefix: env.instance_name_prefix,
+            prefer_warp: env.prefer_warp,
+            warm_graphics: env.warm_graphics,
+            activate: true,
+            install_process_hooks: true,
+            start_perf_listener: true,
+            smoke_timeout: pr_app::startup::options::DEFAULT_SMOKE_TIMEOUT,
+            set_cloaked: None,
+            windowing: None,
+            keep_warm: None,
+            frame_log_path: None,
+            keep_warm_work: None,
+            keep_warm_timestamp: None,
+            graph_builder: None,
+            services: ShellServicesOptions::default(),
+            mark: None,
+            journal_recovery: None,
+            on_main_window_ready: None,
+        }
     }
 }
 
 impl Default for ShellStartupOptions {
     /// `from_env(&ProcessEnv)`: the real run.
     fn default() -> Self {
-        todo!()
+        Self::from_env(&pr_app::startup::options::ProcessEnv)
     }
 }
