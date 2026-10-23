@@ -259,8 +259,8 @@ fn dpi_change_of_a_resizable_dialog_takes_the_suggested_rectangle() {
             let mut suggested = Rect {
                 left: 200,
                 top: 200,
-                right: 700,
-                bottom: 600,
+                right: 1200,
+                bottom: 1000,
             };
             send(
                 d.hwnd(),
@@ -403,14 +403,21 @@ fn current_client_size_matches_get_client_rect() {
 
 #[test]
 #[ignore = "native: needs desktop"]
-fn wm_dpichanged_with_a_null_rect_changes_the_dpi_but_not_the_position() {
-    // Rust guard for NativeDialog.OnDpiChangedMessage.
+fn wm_dpichanged_with_a_valid_current_rect_changes_the_dpi_without_moving_the_window() {
+    // C#: NativeDialog.OnDpiChangedMessage; Win32 requires WM_DPICHANGED lParam to point to a suggested RECT.
     run(|d, _, _| {
         let before = api::user32::get_window_rect(d.hwnd()).unwrap();
         let next = d.dpi() * 2;
-        send(d.hwnd(), messages::WM_DPICHANGED, next as usize, 0);
+        let mut suggested = before;
+        send(
+            d.hwnd(),
+            messages::WM_DPICHANGED,
+            next as usize,
+            (&mut suggested as *mut Rect) as isize,
+        );
         assert_eq!(d.dpi(), next);
-        assert_eq!(api::user32::get_window_rect(d.hwnd()).unwrap(), before);
+        let after = api::user32::get_window_rect(d.hwnd()).unwrap();
+        assert_eq!((after.left, after.top), (before.left, before.top));
     });
 }
 

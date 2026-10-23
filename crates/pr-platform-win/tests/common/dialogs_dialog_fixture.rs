@@ -401,9 +401,12 @@ impl DialogContent for RecordingContent {
         }
         self.window_message_result.get()
     }
-    fn on_dialog_key(&self, _: &NativeDialog, _: &Msg) -> bool {
+    fn on_dialog_key(&self, _: &NativeDialog, message: &Msg) -> bool {
         self.log("key", "key".into());
-        self.dialog_key_handled.get()
+        matches!(
+            message.message,
+            messages::WM_KEYDOWN | messages::WM_KEYUP | messages::WM_SYSKEYDOWN | messages::WM_SYSKEYUP
+        ) && self.dialog_key_handled.get()
     }
     fn static_text_color(&self, _: &NativeDialog, _: i32) -> u32 {
         self.static_color

@@ -15,6 +15,7 @@ use pr_platform_win::win32::{api, dialog_native, messages};
 
 thread_local! { static QUEUED_DIALOG: RefCell<Option<NativeDialog>> = const { RefCell::new(None) }; }
 thread_local! { static QUEUED_WORK: Cell<u32> = const { Cell::new(0) }; }
+thread_local! { static NESTED_DIALOG_LOOP: RefCell<Option<Rc<pr_platform_win::host::message_loop::MessageLoop>>> = const { RefCell::new(None) }; }
 
 struct CountingFilter(Cell<u32>);
 impl pr_platform_win::host::message_loop::MessageFilter for CountingFilter {
@@ -404,20 +405,32 @@ fn nested_loop_keeps_dispatcher_work_and_filters_running() {
 
 #[test]
 #[ignore = "native: needs desktop"]
-fn wm_quit_in_the_nested_loop_closes_the_dialog_and_reaches_the_outer_loop() {
+fn wm_quit_in_the_nested_loop_closes_the_dialog_and_is_reposted_for_the_outer_loop() {
     // C#: NativeDialogLoopTests WM_QUIT in nested loop.
-    let ui = ui_thread::UiThread::start();
-    ui.invoke(|| {
-        let loop_ = ui_thread::ui_loop();
-        let c = content();
-        let d = dialog(&c);
-        assert_eq!(
-            d.show_modal(0, Some(&|_| api::user32::post_quit_message(5)), Some(&loop_))
-                .unwrap(),
-            ID_CANCEL
-        );
+    on_sta(|| {
+        let dispatcher = Rc::new(ui_thread::TestDispatcher::new());
+        let loop_ = Rc::new(pr_platform_win::host::message_loop::MessageLoop::new(dispatcher.clone()).unwrap());
+        NESTED_DIALOG_LOOP.with(|slot| *slot.borrow_mut() = Some(loop_.clone()));
+
+        // Ensure PostThreadMessage in TestDispatcher's poster succeeds before Run starts.
+        let mut message = pr_platform_win::win32::structs::Msg::default();
+        let _ = api::user32::peek_message(&mut message, 0, 0, 0, messages::PM_NOREMOVE);
+        let poster = dispatcher.poster();
+        poster(Box::new(|| {
+            let loop_ = NESTED_DIALOG_LOOP.with(|slot| slot.borrow().as_ref().cloned().expect("nested loop"));
+            let c = content();
+            let d = dialog(&c);
+            assert_eq!(
+                d.show_modal(0, Some(&|_| api::user32::post_quit_message(5)), Some(&loop_))
+                    .unwrap(),
+                ID_CANCEL
+            );
+        }));
+
+        // The outer Run consumes the WM_QUIT reposted by RunNested and returns its original exit code.
+        assert_eq!(loop_.run().unwrap(), 5);
+        NESTED_DIALOG_LOOP.with(|slot| *slot.borrow_mut() = None);
     });
-    assert_eq!(ui.dispose().unwrap(), 5);
 }
 
 #[test]
@@ -482,7 +495,7 @@ fn on_dialog_key_claims_the_key_before_the_dialog_manager() {
             c.dialog_key_handled.set(claim);
             let d = dialog(&c);
             show_on_owner(&d, |d, _| {
-                // SAFETY: WM_KEYDOWN carries integer key data only.
+                // SAFETY: WM_KEYDOWN and WM_CLOSE carry integer values only.
                 unsafe {
                     api::user32::post_message(item(d, ID_OK), messages::WM_KEYDOWN, VK_RETURN as usize, 1).unwrap();
                     if claim {
@@ -505,7 +518,7 @@ fn on_dialog_key_claims_the_key_before_the_dialog_manager() {
             d.show_modal(
                 0,
                 Some(&|d| {
-                    // SAFETY: both queued messages contain integer values only.
+                    // SAFETY: WM_KEYDOWN and WM_CLOSE contain integer values only.
                     unsafe {
                         api::user32::post_message(item(d, ID_OK), messages::WM_KEYDOWN, VK_RETURN as usize, 1).unwrap();
                         if claim {
