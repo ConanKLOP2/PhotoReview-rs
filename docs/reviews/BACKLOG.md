@@ -444,3 +444,7 @@ Kiểm: cargo fmt -p pr-imaging --check; cargo clippy -p pr-imaging --all-target
 ## Bổ sung REVIEW-RECOVERY-FLOW (2026-10-23)
 
 G17 (thêm test, mức trung bình, chủ W8-10g) nhận thêm recovery-flow M1: test result_for_a_cleared_row_still_counts_progress không so check theo Id sau dismiss. Không tạo nhóm trùng. Phạm vi, phản ví dụ và PROMPT với lệnh fmt/clippy/test pr-app: [recovery-flow.md](recovery-flow.md). Không thêm lỗi production; G25/G7/G3 giữ mã cũ. Suy luận từ mã, chưa chạy thử.
+
+## Bổ sung REVIEW-HOST-DISPATCHER (2026-10-23)
+
+G11 nhận thêm host-dispatcher M1 (trung bình, W8-13c/18h..18k): filtered message có thể giữ pending panic tới message khác hoặc qua WM_QUIT. Không tạo nhóm trùng với native-dialog; ghi rõ C# cùng khoảng hở, thay đổi cần quyết định parity/ADR. [host-dispatcher.md](host-dispatcher.md) có kịch bản, test seam và PROMPT cùng lệnh kiểm tra pr-platform-win. Suy luận từ mã, chưa chạy thử.
