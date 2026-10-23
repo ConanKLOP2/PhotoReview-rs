@@ -1950,7 +1950,7 @@ WinHTTP is chosen because the Windows OS supplies certificate validation and PAC
 
 #### D-W10http-2: preserve the existing checker and UI logic
 
-Inject `Arc<UpdateChecker>` built from `Arc<WinHttpTransport>` into the existing `DialogServices.update_checker`. The C# presenter falls back to `new UpdateChecker()` when DI supplies none (`SettingsPresenter.cs` 575); the Rust presenter has no such fallback. Keep the merged UI worker/poster, localized status mapping, allow-listed URL validation and close cancellation. Only fix demonstrated gaps, with a fake or native test. Do not introduce another network request or an automatic check.
+Inject `Arc<UpdateChecker>` built from `Arc<WinHttpTransport>` into the existing `DialogServices.update_checker`. The C# presenter falls back to `new UpdateChecker()` when DI supplies none (`SettingsPresenter.cs` 580 at `7eaee2a2`; 575 at `d92d6aae`); the Rust presenter has no such fallback. Keep the merged UI worker/poster, localized status mapping, allow-listed URL validation and close cancellation. Only fix demonstrated gaps, with a fake or native test. Do not introduce another network request or an automatic check.
 
 #### D-W10http-3: HTTPS proxy source precedence (recommended, believed, not verified)
 
