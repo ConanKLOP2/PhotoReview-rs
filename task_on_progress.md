@@ -99,3 +99,7 @@ Review tĩnh tại bb5c02a, oracle 7eaee2a2: 0 cao / 1 trung bình (test) / 0 th
 ## 2026-10-23 — Machine C REVIEW-HOST-DISPATCHER
 
 REVIEW-RECOVERY-FLOW đã merge PR #219 (a9ed01d), claim nhả và worktree dọn. Review host tại a9ed01d: 0 cao / 1 trung bình / 0 thấp; thêm host-dispatcher.md và nối G11, cập nhật giới hạn native-dialog. Suy luận từ mã, chưa chạy thử; không sửa Rust/Cargo/native. Tiếp theo: PR docs auto squash, nhả claim khi merge, tiếp tục review vùng chưa phủ.
+
+## 2026-10-23 — Machine C REVIEW-RECYCLE-POLICY
+
+REVIEW-HOST-DISPATCHER đã merge #220 (8042d67), nhả claim và dọn worktree. Review Recycle Bin policy/selection tại 8042d67: 0 cao / 1 trung bình / 1 thấp. Thêm recycle-policy.md, G30/G31 và crosslink invariant. Không sửa Rust, không chạy Cargo/native/registry/bin; suy luận từ mã, chưa chạy thử. Tiếp theo: PR docs auto squash, nhả claim sau merge; vùng chưa phủ gồm số học render tile và Settings host còn stub.

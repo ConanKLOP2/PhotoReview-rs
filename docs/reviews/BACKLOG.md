@@ -448,3 +448,12 @@ G17 (thêm test, mức trung bình, chủ W8-10g) nhận thêm recovery-flow M1:
 ## Bổ sung REVIEW-HOST-DISPATCHER (2026-10-23)
 
 G11 nhận thêm host-dispatcher M1 (trung bình, W8-13c/18h..18k): filtered message có thể giữ pending panic tới message khác hoặc qua WM_QUIT. Không tạo nhóm trùng với native-dialog; ghi rõ C# cùng khoảng hở, thay đổi cần quyết định parity/ADR. [host-dispatcher.md](host-dispatcher.md) có kịch bản, test seam và PROMPT cùng lệnh kiểm tra pr-platform-win. Suy luận từ mã, chưa chạy thử.
+
+## Bổ sung REVIEW-RECYCLE-POLICY (2026-10-23)
+
+| Nhóm | Nguồn | Mức | Rủi ro | Chủ | Loại |
+|---|---|---|---|---|---|
+| G30 Kiểm output của lần registry read thứ hai | recycle-policy M1 | trung bình | D/B (fail-closed, chưa chứng minh mất file) | W6-02b | sửa mã + test fake |
+| G31 Nối restore verb helper vào adapter | recycle-policy L1 | thấp | B/T | W6-02d/e | tích hợp hoặc ADR, giữ Partial |
+
+Bằng chứng, kịch bản và hai PROMPT có phạm vi/lệnh kiểm tra: [recycle-policy.md](recycle-policy.md). Không gộp với G25 (fingerprint nguồn) hoặc G12 (journal/Undo), không đếm lại test ignored của G17. Suy luận từ mã, chưa chạy thử.
