@@ -75,3 +75,7 @@
 - REVIEW-PRS #214 merged tại 48f96aa; content diff sạch, claim nhả, branch local/worktree dọn. Nhận xét đã đăng #164; head PR không đổi. REVIEW-B4 claim bởi C.
 - Giữ 3 cao / 2 trung bình / 5 thấp, không lỗi mới. Bổ sung đường H1/H2/H3, đọc vùng layout/hit-test, quét chú thích unsafe (54 file/38 dòng block), test inventory 121/82 ignore; sửa đường file sai trong prompt G1/G2 của BACKLOG.
 - Mọi phát hiện là suy luận từ mã, chưa chạy thử. Không Cargo/oracle/mutation/native UI. Tiếp W9-CONTRACTS sau merge.
+## Review W9-CONTRACTS, machine C, 2026-10-23 (tái kiểm)
+- REVIEW-B4 #215 merged tại f795e18; content diff sạch, claim nhả, branch local/worktree dọn. REVIEW-W9-CONTRACTS claim bởi C.
+- Đối chiếu E1..E9/R1..R11 với C# 7eaee2a2 và crates. 254 tên test inventory tìm thấy, không phải test runner. Sửa docs E1/E3/E5/R1/R6/R7 và hai plan: baseline/golden, Option/Localizer, no-save khi full, empty-map rearm, trạng thái pages. Không sửa Rust/assets/goldens.
+- Tổng lịch sử báo cáo 1 cao / 5 trung bình / 11 thấp gồm mục đã sửa; không phát hiện mới trùng. Mọi phát hiện là suy luận từ mã, chưa chạy thử. Không Cargo/oracle/mutation/native. Tiếp REVIEW-TEST-PLAN sau merge.

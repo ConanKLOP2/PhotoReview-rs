@@ -143,3 +143,56 @@ Kiểm tra lại sau khi sửa: `git diff --stat` chỉ gồm `contracts/W9-*.md
 - R4, R5, R6: chưa mở `ReviewCatalog.cs` 527-621, `FileActionController.cs` 529-782, `ImagePresenter.cs` 225-294 để so từng câu "Semantics"; chỉ kiểm tên test, số lượng test, khoảng dòng và chữ ký stub.
 - Nội dung `tests/golden/*.json` (đúng/sai của từng ca) và việc oracle chạy được không được kiểm.
 - Mọi thứ cần Windows/desktop (E2, E3, E9 paint test, R8, R11) chỉ so tài liệu với mã C#.
+## Tái kiểm REVIEW-W9-CONTRACTS ngày 2026-10-23, Rust `f795e18`
+
+**Mọi phát hiện: suy luận từ mã, chưa chạy thử.** C# đọc bằng `git show 7eaee2a2:<path>`, không checkout/ghi vào repo C#. Giữ inventory lịch sử **1 cao / 5 trung bình / 11 thấp** để mã tham chiếu không đổi; **0 phát hiện mới** trong lần tái kiểm, có các đính chính rõ ràng được sửa thẳng vào tài liệu. Tổng lịch sử bao gồm mục đã sửa, không phải số lỗi production còn mở.
+
+### Kiểm tên, API và baseline
+
+- Duyệt mọi `contracts/W9-*.md` (E1..E9, R1..R11); đối chiếu 254 tên phương thức được ghi trong các dòng inventory dạng `tests/...cs: ...` với source test tại baseline: 254 tìm thấy, 0 không thấy. Phép kiểm này không chứng minh đã liệt kê hết mọi test C#, không đếm theory rows và không chạy test.
+- Metadata của 8 golden: `settings-json`, `settings-normalize`, `settings-parse-text`, `settings-store`, `settings-field-map`, `shortcut-canonical`, `settings-validate`, `w9-r1-rename-policy` đều có `csharp_commit=7eaee2a2b071c7ca05291c86fb78a347f9e6a15f`. Đây là đọc metadata, không tái sinh/chứng minh oracle hay Rust chạy đúng.
+- Không coi test lone surrogate là bất khả thi: `crates/pr-core/src/file_actions/rename.rs:51` đã có `check_utf16(Option<&[u16]>,...)`, `invalid_character: Option<u16>`. Contract R1 cũng nêu rõ biên này. C# `Check_LoneSurrogate_ReturnsInvalidCharacter` dựng code unit 0xD800/0xDC00 trực tiếp. Test Rust phải dùng biên utf16, không from_utf16_lossy rồi tưởng đã kiểm cùng đầu vào.
+
+### Sửa sự thật tài liệu trong PR này
+
+1. **E1, H1/L8:** ghi ledger/catalog/golden đã được #182 cập nhật; không yêu cầu porter đồng bộ lại assets hoặc đổi baseline. Vẫn phân biệt metadata/schema đã có với thân rules còn todo.
+2. **E1/E5, L7:** nêu chữ ký `build_arguments -> Option<String>` thật (`external_editors.rs:99`) và xử lý caller-error None; không truyền Option thẳng tới launcher, không unwrap. C# ném cho file path rỗng; không biến nó thành chuỗi rỗng rồi khởi chạy.
+3. **E5, L6:** danh sách đầy trả về không save/commit (`MainViewModel.cs:840-845`); `SettingsSource::commit_edit` (`state.rs:330`) ghi store thật. Đã bỏ chỉ dẫn ghi đĩa thừa “as in C#”. Test nên thêm: full list + fake recording settings store -> 0 save, list/default nguyên vẹn.
+4. **E3, L7:** thêm chữ ký Rust năm tham số của `ListDialogContent::for_choice`, gồm `&Localizer` (`dialogs/native/list_dialog.rs:85`); mô tả bốn tham số của C# được giữ như ngữ nghĩa C#.
+5. **R1/plan rename, L8:** phân biệt baseline đã đổi với input thực tế còn `staged/` và symbol W9_RENAME_BASELINE. Không di chuyển fixture/golden trong review. Việc dọn scaffold generator vẫn chưa làm.
+6. **R6:** làm rõ RetargetPath(empty map) vẫn re-arm zoom-detail khi frame được giữ; đọc `ImagePresenter.cs:258-291`. Không đổi thứ tự compare/in-flight return false. Đây là chi tiết của cùng hành vi contract, không đếm thêm lỗi production mới.
+7. **R7, L10:** ghi nhận test menu/config-version có đối ứng Rust đã sửa ở #182, tránh tạo bản test trùng.
+8. **Plan editor, H1/L9:** cập nhật Survey và dependency W8-19f/19i thành đã cài đặt; dialog frame/host vẫn stub. Giữ nguyên ID/dòng bảng đơn vị để không làm hỏng parser kế hoạch. Bỏ câu khiến người đọc nghĩ reviewer lần này vừa chạy oracle.
+
+### Bảng kiểm 20 contract (mức chứng cứ là tài liệu/source)
+
+| Unit | Đối chiếu chính và kết quả |
+|---|---|
+| E1 | ExternalEditor rules/schema/store; schema/metadata đã có, rules stub; sửa baseline/Option như trên |
+| E2 | ExternalEditorsDialog/edit clone; inventory/source paths có thật; còn phụ thuộc layout/native chưa có runtime verdict |
+| E3 | TextPrompt/choice list/version info; sửa chữ ký for_choice, test UI là native, product-name có pure + native |
+| E4 | Field-map/editor save; M5 còn, chủ E4 đã được P-52 xác nhận; W8 pages không còn stub |
+| E5 | MainViewModel 774-880; sửa no-save khi full và Option launcher; modal borrow là rủi ro B4 H1 |
+| E6 | Builder/menu IDs và golden có; E1 vẫn là phụ thuộc rules, không còn bị chặn catalog sync |
+| E7 | Router/enum/optional names; enum và autorepeat đã có, body binding còn phải port; không bịa tệp input_shortcut_router |
+| E8 | SecondaryWindowPort/service; SharedDialogService M1 vẫn thiếu ownership/forwarding; biên native cần test |
+| E9 | Dispatch prefix/add/default và input; phân loại F controller, N paint đúng; W9-E5/E6/E8 phải có trước |
+| R1 | Policy/map/utf16; PathKeyMap đã được P-52 chọn, chưa đổi Rust stub; staged chỉ là scaffold |
+| R2 | Rename/CaseOnlyRename/no-overwrite; xem source ProbeTarget/StatAs; không dùng FileExists thuần cho case-only |
+| R3 | Undo/reconcile/retry đổi tên; phụ thuộc R2 stored spelling; H1 invariants retry-Recycle là rủi ro riêng, không tuyên bố R3 đã xử lý |
+| R4 | Catalog collision/swap và cache identity; đọc ReviewCatalog.cs 527-621, test inventory có thật; cache không được stat khi rekey |
+| R5 | Controller 529-648: validate trước StopForAction, late success đăng ký Undo; không nhầm INV-5 là cấm late Undo |
+| R6 | Presenter/ZoomDetail/session; đọc ImagePresenter 225-294, bổ sung empty-map rearm |
+| R7 | Prompt presenter/shortcut tables; InitialText/Extension đã được contract liệt kê là việc thiếu, không coi stub đủ |
+| R8 | Native rename/service; dialog stub chưa đủ cho R11; P-52 giao bổ sung thành viên cho R11 |
+| R9 | Fault matrix; bộ bất biến nhận biết stored spelling do P-52 giao R9; không bỏ case-only test vì fake hiện thiếu |
+| R10 | App/controller/presenter tests: phụ thuộc R5/R6/R7; không gọi các ca integration là test pure nếu tạo window |
+| R11 | 12 dialog test và shell E2E; N/native, cần API/inspection members P-52 giao; không thể nghiệm thu bằng compile stub |
+
+### Còn cần quyết định hoặc triển khai theo quyết định đã chốt
+
+- M1: ai sửa/chia ownership của `pr-shell/src/composition/adapters.rs` cho hai editor prompts và rename prompt vẫn cần quyết định giao việc; P-52/Q6 giao dialog members cho R11 nhưng không nói rõ forwarding ở SharedDialogService. Không tự thêm file Rust hay chuyển quyền sở hữu trong review.
+- M2/M3/M4/M5: giải pháp/chủ đã có ở P-52 (#211): PathKeyMap -> R1, dialog members -> R11, fault invariants -> R9, field-map -> E4. Đây là việc triển khai, không hỏi lại cùng quyết định; các stub/API thực tế chưa tự thay đổi theo P-52.
+- R1 blank current path (`D-W9R-12`) và khác biệt exception/Empty vẫn cần quyết định/ADR như contract đã ghi; review không tự tạo hành vi mới.
+- L11/Q8: đã đọc `pr-l10n/build/keygen.rs:783-823` (snake_case, fn_name) và build.rs dùng generator đó. Có căn cứ quy tắc sinh tên; chưa build/đối chiếu toàn bộ accessors nên không tuyên bố mọi tên tr:: đã compile.
+- R2/R3 toàn bộ fault interleaving và handle native vẫn chưa chạy; bảng trên là đối chiếu có chọn lọc, không phủ mọi dòng source của từng class lớn. Các giới hạn ở phần “Không kiểm tra được” cũ vẫn được giữ nếu chưa có bằng chứng mới nêu rõ.
