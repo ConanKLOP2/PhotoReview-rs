@@ -318,7 +318,8 @@ Kiểm tra: không có dấu xung đột; UTF-8 không BOM; không chạy cargo.
 ### G23 tài liệu (thấp): chú thích lạc hậu
 - test-quality L1 (`DIVERGENCE`/`TODO(lead)` đã lạc hậu), L3 (test khẳng định hằng với chính nó), w9-contracts L8, settings-ui L5. Nên ghép vào G17 cho phần test; phần comment trong src/ do Codex làm trong G17 (chỉ comment).
 
-### G24 cần quyết định sản phẩm (không giao Codex)
+### G24 quyết định sản phẩm: ĐÃ CHỐT 2026-10-23 theo đề xuất (P-52 trong `docs/PROPOSED-DECISIONS.md`)
+Q1 giữ Fast; Q2 giữ cờ Shell + cảnh báo chờ 10 s; Q3 kiểm lại danh tính (mở khoá G6), chưa Undo nhóm; Q4 no-op có thông báo (mở khoá G8); Q5 `PathKeyMap` ở W9-R1; Q6 R11/R9/E4 như bảng; Q7 job `native` hằng đêm, chưa chặn PR; Q8 xác minh `pr_l10n::tr` (đã thấy module `tr` ở `lib.rs:12`). Bảng gốc giữ lại bên dưới.
 | Mã | Câu hỏi | Phương án gợi ý | Ghi chú |
 |---|---|---|---|
 | Q1 invariants M2 | Đổi mặc định `JournalDurability` sang `PowerLossSafe`? | Giữ Fast (parity C#, ADR 0007) hoặc đổi, thêm một fsync mỗi action | Cần ADR; G19 khoá hành vi hiện tại |
