@@ -519,6 +519,7 @@ impl MainViewModel {
     /// C# `TaskLogging.FireAndLog(() => _preloadController?.PreloadAroundAsync(index), ..)`: the handle is dropped (O4).
     fn preload_around(&self, index: i32) {
         if let Some(preload) = &self.preload_controller {
+            preload.catalog_changed(&self.catalog);
             drop(preload.preload_around(index));
         }
     }

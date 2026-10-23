@@ -71,7 +71,7 @@ pub struct StartupGraph {
     /// `GetRequiredService<IDisplayClock>()`.
     pub display_clock: Arc<dyn DisplayClock>,
     /// `GetRequiredService<MainViewModel>()`, shared with the window and its features.
-    pub view_model: SharedViewModel,
+    pub view_model: ViewModelFactory,
     /// `GetRequiredService<OperationJournal>()`.
     pub journal: Arc<OperationJournal>,
     /// `GetRequiredService<IClock>()`.
@@ -89,10 +89,15 @@ impl std::fmt::Debug for StartupGraph {
 /// C# `ShellCompositionRoot.Build(host, hub, overrides)` for the graph half: consumes the inputs and returns the graph. The error text becomes `StartupError::Graph`.
 pub type GraphBuilder = Box<dyn FnOnce(GraphInputs) -> Result<StartupGraph, Box<dyn Error>>>;
 
-/// The production builder: W8-09b's `SharedServiceRegistration` + `MainViewModelCompositionRoot` over the host services. THE BODY IS NOT PART OF W8-17d: it stays `todo!("W8-09b")` here and
-/// the 09b port replaces it (the one cross-unit file edit of 09b, listed in its contract). 17d and 17e tests pass a fake builder.
+/// Resolves the view model after loaded settings have been applied (D-W8B6-160).
+pub type ViewModelFactory = Box<dyn FnOnce() -> Result<SharedViewModel, super::error::StartupError>>;
+
+pub use crate::composition::graph::{GraphOverrides, production_graph_builder_with};
+
+/// The production builder: W8-09b's `SharedServiceRegistration` + `MainViewModelCompositionRoot` over the host services.
+/// Tests of 17d and 17e can pass a fake builder instead.
 pub fn production_graph_builder() -> GraphBuilder {
-    todo!("W8-09b")
+    production_graph_builder_with(GraphOverrides::default())
 }
 
 /// `Log` over the process-wide `pr_app::misc::app_log::AppLog` facade (`AppLog::global()`), so the dispatcher, the instance scope and the services log where the C# `FileLog.Default` /
