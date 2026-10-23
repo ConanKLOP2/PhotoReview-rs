@@ -7,6 +7,7 @@ pub mod file_action_gate;
 pub mod file_actions;
 pub mod folder_load;
 pub mod presenter;
+pub mod rename;
 pub mod sibling_navigator;
 pub mod sink_callbacks;
 pub mod traits;

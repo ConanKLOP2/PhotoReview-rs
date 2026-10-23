@@ -353,6 +353,7 @@ impl FileActionController {
                             operation,
                             destination,
                             allow_permanent_delete: allow_permanent,
+                            destination_file_names: None,
                         };
                         ExecOutcome::Group(executor.execute_group(&request, &cancel))
                     }

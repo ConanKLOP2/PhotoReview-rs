@@ -1,0 +1,245 @@
+{
+ "command": "external-editor-menu",
+ "note": "Inputs for tools/oracle-cs/Commands/W9-E6.cs (W9-E6); the case shape is in the header of the command.",
+ "cases": [
+  {
+   "name": "no editor keeps the single command",
+   "has_image": true
+  },
+  {
+   "name": "no editor, no image",
+   "has_image": false
+  },
+  {
+   "name": "one editor",
+   "has_image": true,
+   "editors": [
+    {
+     "id": "a",
+     "name": "Alpha",
+     "path": "C:\\a.exe"
+    }
+   ],
+   "default_id": "a"
+  },
+  {
+   "name": "two editors, the second is the default, with a shortcut",
+   "has_image": true,
+   "editors": [
+    {
+     "id": "a",
+     "name": "Alpha",
+     "path": "C:\\a.exe"
+    },
+    {
+     "id": "b",
+     "name": "Beta",
+     "path": "C:\\b.exe"
+    }
+   ],
+   "default_id": "b",
+   "shortcut": "F6"
+  },
+  {
+   "name": "two editors, a shortcut that is blank is not shown",
+   "has_image": true,
+   "editors": [
+    {
+     "id": "a",
+     "name": "Alpha",
+     "path": "C:\\a.exe"
+    },
+    {
+     "id": "b",
+     "name": "Beta",
+     "path": "C:\\b.exe"
+    }
+   ],
+   "default_id": "a",
+   "shortcut": "   "
+  },
+  {
+   "name": "unknown default id marks the first",
+   "has_image": true,
+   "editors": [
+    {
+     "id": "a",
+     "name": "Alpha",
+     "path": "C:\\a.exe"
+    },
+    {
+     "id": "b",
+     "name": "Beta",
+     "path": "C:\\b.exe"
+    }
+   ],
+   "default_id": "zz",
+   "shortcut": "F6"
+  },
+  {
+   "name": "blank default id marks the first",
+   "has_image": true,
+   "editors": [
+    {
+     "id": "a",
+     "name": "Alpha",
+     "path": "C:\\a.exe"
+    },
+    {
+     "id": "b",
+     "name": "Beta",
+     "path": "C:\\b.exe"
+    }
+   ],
+   "default_id": ""
+  },
+  {
+   "name": "no image disables the editors but not Add or Set default",
+   "has_image": false,
+   "editors": [
+    {
+     "id": "a",
+     "name": "Alpha",
+     "path": "C:\\a.exe"
+    },
+    {
+     "id": "b",
+     "name": "Beta",
+     "path": "C:\\b.exe"
+    }
+   ],
+   "default_id": "a",
+   "shortcut": "F6"
+  },
+  {
+   "name": "legacy path only is one implicit editor",
+   "has_image": true,
+   "legacy_path": "C:\\Tools\\Affinity Photo.exe",
+   "shortcut": "F6"
+  },
+  {
+   "name": "legacy path only, no image",
+   "has_image": false,
+   "legacy_path": "C:\\Tools\\Affinity Photo.exe"
+  },
+  {
+   "name": "blank name falls back to the file name",
+   "has_image": true,
+   "editors": [
+    {
+     "id": "a",
+     "name": "   ",
+     "path": "C:\\Tools\\Retouch.exe"
+    }
+   ],
+   "default_id": "a"
+  },
+  {
+   "name": "name is trimmed",
+   "has_image": true,
+   "editors": [
+    {
+     "id": "a",
+     "name": "  Padded  ",
+     "path": "C:\\a.exe"
+    }
+   ],
+   "default_id": "a"
+  },
+  {
+   "name": "id with dots keeps the whole id",
+   "has_image": true,
+   "editors": [
+    {
+     "id": "x.y",
+     "name": "Dotted",
+     "path": "C:\\a.exe"
+    }
+   ],
+   "default_id": "x.y"
+  },
+  {
+   "name": "layout hiding the entry removes the whole submenu",
+   "has_image": true,
+   "editors": [
+    {
+     "id": "a",
+     "name": "Alpha",
+     "path": "C:\\a.exe"
+    }
+   ],
+   "default_id": "a",
+   "hidden": [
+    "ExternalEditor"
+   ]
+  },
+  {
+   "name": "layout hiding the entry, no editor",
+   "has_image": true,
+   "hidden": [
+    "ExternalEditor"
+   ]
+  },
+  {
+   "name": "many editors keep their order",
+   "has_image": true,
+   "editors": [
+    {
+     "id": "e0",
+     "name": "Editor 9",
+     "path": "C:\\e0.exe"
+    },
+    {
+     "id": "e1",
+     "name": "Editor 8",
+     "path": "C:\\e1.exe"
+    },
+    {
+     "id": "e2",
+     "name": "Editor 7",
+     "path": "C:\\e2.exe"
+    },
+    {
+     "id": "e3",
+     "name": "Editor 6",
+     "path": "C:\\e3.exe"
+    },
+    {
+     "id": "e4",
+     "name": "Editor 5",
+     "path": "C:\\e4.exe"
+    }
+   ],
+   "default_id": "e3",
+   "shortcut": "Ctrl+E"
+  },
+  {
+   "name": "a list wins over the legacy path",
+   "has_image": true,
+   "editors": [
+    {
+     "id": "a",
+     "name": "Alpha",
+     "path": "C:\\a.exe"
+    }
+   ],
+   "default_id": "a",
+   "legacy_path": "C:\\legacy.exe"
+  },
+  {
+   "name": "zoom submenu hidden does not touch the editors",
+   "has_image": true,
+   "editors": [
+    {
+     "id": "a",
+     "name": "Alpha",
+     "path": "C:\\a.exe"
+    }
+   ],
+   "default_id": "a",
+   "hidden": [
+    "ZoomSubmenu"
+   ]
+  }
+ ]
+}

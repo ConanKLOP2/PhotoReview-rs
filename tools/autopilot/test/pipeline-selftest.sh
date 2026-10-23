@@ -18,6 +18,7 @@ check() { if eval "$2"; then ok "$1"; else bad "$1  [$2]"; fi; }
 mkdir -p "$T/cs" && git -C "$T/cs" init -q -b master && git -C "$T/cs" -c user.name=t -c user.email=t@e.com commit -q --allow-empty -m init
 
 git init -q --bare "$ORIGIN"; git init -q -b master "$W"; cd "$W" || exit 1
+W_WIN="$(cygpath -w "$W")"
 git config user.name selftest; git config user.email selftest@example.com
 mkdir -p crates/demo/src crates/demo/tests contracts docs tools/autopilot
 cat > Cargo.toml <<'X'
@@ -36,7 +37,7 @@ printf 'pub fn run(_x: i32) -> i32 {\n    todo!()\n}\n' > crates/demo/src/u90a.r
 printf 'pub fn run(_a: i32, _b: i32) -> i32 {\n    todo!()\n}\n' > crates/demo/src/u90b.rs
 for n in 90c 90e 90f 90g 90h 90i; do printf 'pub fn run(_a: i32) -> i32 {\n    todo!()\n}\n' > crates/demo/src/u$n.rs; done
 printf 'pub fn run(_a: i32) -> i32 {\n    0\n}\n' > crates/demo/src/u90j.rs   # stub that does NOT call todo!()
-printf 'target/\n.claude/worktrees/\n/target-wave-*/\ntools/autopilot/state/\n.codex-*\n' > .gitignore
+printf 'target/\ntarget-mut/\n.claude/worktrees/\n/target-wave-*/\ntools/autopilot/state/\n.codex-*\n' > .gitignore
 mkc() { # id title
   cat > "contracts/$1.md" <<X
 # $1: $2
@@ -49,6 +50,18 @@ mkc() { # id title
 X
 }
 mkc W8-90g merged; mkc W8-90h preexisting; mkc W8-90i redfix; mkc W8-90j redbad; mkc W8-90a sign; mkc W8-90b sub; mkc W8-90c double; mkc W8-90d never; mkc W8-90e inc; mkc W8-90f triple
+for n in 1 2 3 4 5; do
+  printf 'pub mod w9x%s;\n' "$n" >> crates/demo/src/lib.rs
+  printf 'pub fn run() -> i32 {\n    todo!()\n}\n' > "crates/demo/src/w9x$n.rs"
+  cat > "contracts/W9-X$n.md" <<X
+# W9-X$n
+- Baseline C# \`7eaee2a2\`.
+
+## Owned files (the ONLY files the porter may create or modify)
+    crates/demo/src/w9x$n.rs
+    crates/demo/tests/w9x$n.rs
+X
+done
 sed -i 's#/\(90.\)\.rs#/u\1.rs#' contracts/W8-90?.md
 cat > docs/WAVE-8-PLAN.md <<'X'
 | WU | C# files (lines) | Rust | Col | Model | Test | Depends on | Batch |
@@ -84,7 +97,7 @@ if [ -n "$RESUME" ]; then
   if [ -f "$FS/fail-resume-once" ]; then rm -f "$FS/fail-resume-once"; echo "resume failed" >&2; echo "resume-failed $SID" >> "$FS/calls"; exit 1; fi
   U="$(cat "$FS/sess-$SID" 2>/dev/null)"
 else
-  SID="sess-$RANDOM$RANDOM"; U="$(printf '%s' "$P" | grep -o 'Unit: W8-90.' | head -1 | sed 's/Unit: W8-//')"; echo "$U" > "$FS/sess-$SID"
+  SID="sess-$RANDOM$RANDOM"; U="$(printf '%s' "$P" | grep -o 'Unit: W[A-Za-z0-9-]*' | head -1 | cut -d' ' -f2)"; U="${U#W8-}"; echo "$U" > "$FS/sess-$SID"
 fi
 TASK="$(printf '%s' "$P" | grep -o 'TASK: [a-z-]*' | head -1 | cut -d' ' -f2)"
 echo "{\"type\":\"thread.started\",\"thread_id\":\"$SID\"}"; echo "FAKE TRANSCRIPT NOISE $TASK $U"
@@ -165,6 +178,13 @@ fn wrong_value() {
     assert_eq!(demo::u90j::run(1), 2);
 }';;   # compiles, but fails by assertion (stub returns 0), not through todo!()
   red-repair:90j) :;;
+  implement:90j) src 90j 'pub fn run(_a: i32) -> i32 {
+    0
+}';;
+  fixup:90j) tst 90j '#[test]
+fn wrong_value() {
+    assert_eq!(demo::u90j::run(1), 0);
+}'; echo 'C# oracle: Oracle.cs CSharpCase; changed Rust test: wrong_value' > "$O";;
   implement:90h) src 90h 'pub fn run(a: i32) -> i32 {
     a + 10
 }';;
@@ -175,8 +195,13 @@ fn triple() {
   implement:90f) src 90f 'pub fn run(a: i32) -> i32 {
     a * 3
 }';;
+  red-tests:W9-X1|red-tests:W9-X2|red-tests:W9-X3)
+    n="${U#W9-X}"; mkdir -p crates/demo/tests
+    printf '%s\n' '#[test]' 'fn returns_value() {' "    assert_eq!(demo::w9x$n::run(), $((10+n)));" '}' > "crates/demo/tests/w9x$n.rs";;
+  implement:W9-X1|implement:W9-X2|implement:W9-X3)
+    n="${U#W9-X}"; printf 'pub fn run() -> i32 {\n    %s\n}\n' "$((10+n))" > "crates/demo/src/w9x$n.rs";;
 esac
-echo "summary: done" > "$O"
+if [ "$TASK" = fixup ]; then echo 'C# oracle: Oracle.cs CSharpCase; changed Rust test: wrong_value' > "$O"; else echo "summary: done" > "$O"; fi
 echo '{"type":"turn.completed","usage":{"input_tokens":1000,"cached_input_tokens":200,"output_tokens":50}}'
 X
 cat > "$T/fake-usage" <<'X'
@@ -191,7 +216,7 @@ echo "{\"ok\":true,\"five_hour_used\":$used,\"five_hour_resets_at\":\"2000-01-01
 X
 chmod +x "$T/fake-codex" "$T/fake-usage"
 export CODEX_BIN="$T/fake-codex" CODEX_USAGE_SH="$T/fake-usage" FAKE_STATE="$FS" QUOTA_SLEEP_OVERRIDE=1 PIPELINE_NO_PR=1 USAGE_CACHE_TTL=0
-export MUTANTS_TIMEOUT=600 CODEX_TIMEOUT=120 CS_REPO="$T/cs"
+export MUTANTS_TIMEOUT=600 CODEX_TIMEOUT=120 CS_REPO="$T/cs" MIN_DISK_GB=0
 P="bash tools/autopilot/codex-pipeline.sh test-b9"
 STATE="tools/autopilot/state/test-b9.json"; LOGS="tools/autopilot/state/logs"; SF="python $LIBPY sfield $STATE"; SG="python $LIBPY sget $STATE"
 
@@ -260,7 +285,7 @@ check "90b done after a repair round on the same session" '[ "$($SG W8-90b)" = d
 check "repair prompt carried the gate error tail (<= 60 lines + header)" 'grep -q "GATE FAIL" $LOGS/W8-90b.repair1.prompt.md && [ "$(wc -l < $LOGS/W8-90b.repair1.prompt.md)" -le 66 ]'
 check "repair rounds use the fast gate" 'grep -q "^TASK: repair. The machine gate (fast)" $LOGS/W8-90b.repair1.prompt.md'
 check "failed resume fell back to a fresh session" 'grep -q "falling back to a fresh session" "$T/run2.out" && grep -q "^resume-failed" $FS/calls'
-check "90c failed (stray edit never fixed, 3 repair rounds)" '[ "$($SG W8-90c)" = failed ] && [ "$(grep -c "^repair 90c" $FS/calls)" = 3 ]'
+check "90c failed after its fixup also left the stray edit" '[ "$($SG W8-90c)" = failed ] && [ "$(grep -c "^repair 90c" $FS/calls)" = 6 ] && [ "$(grep -c "^fixup 90c" $FS/calls)" = 1 ]'
 check "gate error mentions the owned-files check" 'grep -q "owned-files check" $LOGS/W8-90c.gate-error.txt'
 check "needs-claude triage note exists and is <= 3 KB" 'N=tools/autopilot/state/needs-claude/W8-90c.md; [ -f $N ] && [ "$(wc -c < $N)" -le 3072 ] && grep -q "Error tail" $N && grep -q "git diff --stat" $N && grep -q "Last Codex message" $N'
 check "90d skipped because 90c failed" '[ "$($SG W8-90d)" = skipped ]'
@@ -279,6 +304,7 @@ check "precondition: wu/W8-90c is checked out in a worktree at another path" 'gi
 $P --only W8-90c --jobs 1 > "$T/run2b.out" 2>&1; rc=$?
 check "rerun reset the unit instead of failing on the worktree" '! grep -q "worktree add failed" tools/autopilot/state/test-b9.json && [ ! -d .claude/worktrees/elsewhere ]'
 check "rerun really started the unit again (Codex red/implement calls, fresh telemetry: rounds < 10)" '[ "$(grep -c "^implement 90c" $FS/calls)" = 2 ] && [ "$($SF W8-90c rounds)" -lt 10 ]'
+check "the rerun also gets one failed fixup after three gate repairs" '[ "$(grep -c "^repair 90c" $FS/calls)" = 12 ] && [ "$(grep -c "^fixup 90c" $FS/calls)" = 2 ]'
 check "the unit's old unmerged tip was kept under refs/pipeline-old" 'git show-ref --verify -q refs/pipeline-old/W8-90c'
 check "the stale triage note was replaced by the new one" '[ -f tools/autopilot/state/needs-claude/W8-90c.md ]'
 check "the rerun left other units untouched" '[ "$($SG W8-90b)" = done ] && [ "$($SG W8-90a)" = done ]'
@@ -304,17 +330,21 @@ else ok "tdir_free lock-held case skipped (not Windows)"; fi
 check "each parallel slot gets its own target dir (-s<slot>) and mutants its own -mut" 'grep -q "TDB-s\$slot" tools/autopilot/codex-pipeline.sh && grep -q "CARGO_TARGET_DIR}-mut" tools/autopilot/codex-pipeline.sh'
 
 echo "== red tests: compile gate with repair rounds, pre-existing red tests, units already merged on the integration branch"
-git branch side master && git checkout -q side && printf '#[test]\nfn pre_existing() {\n    assert_eq!(demo::u90h::run(1), 11);\n}\n' > crates/demo/tests/u90h.rs && git add crates/demo/tests/u90h.rs && git commit -q -m 'test(W8-90h): red tests (pre-existing)' && git checkout -q -b integration/test-b7 master && git merge -q --no-ff side -m 'merge(W8-90g)' && git checkout -q master
+git branch side master && git checkout -q side && mkdir -p crates/demo/tests && printf '#[test]\nfn pre_existing() {\n    assert_eq!(demo::u90h::run(1), 11);\n}\n' > crates/demo/tests/u90h.rs && git add crates/demo/tests/u90h.rs && git commit -q -m 'test(W8-90h): red tests (pre-existing)' && git checkout -q -b integration/test-b7 master && git merge -q --no-ff side -m 'merge(W8-90g)' && git checkout -q master
 bash tools/autopilot/codex-pipeline.sh test-b7 --jobs 1 > "$T/run5.out" 2>&1; rc=$?
 check "unit merged on the integration branch (merge commit) is marked done without a state file" 'grep -q "W8-90g: found merged on integration/test-b7" "$T/run5.out" && [ "$(python $LIBPY sget tools/autopilot/state/test-b7.json W8-90g)" = done ] && ! grep -q " 90g" $FS/calls'
 check "red tests already on the integration branch: no Codex red step, the unit is implemented and merged" '! grep -q "^red-tests 90h" $FS/calls && grep -q "^implement 90h" $FS/calls && [ "$(python $LIBPY sget tools/autopilot/state/test-b7.json W8-90h)" = done ]'
-bash tools/autopilot/codex-pipeline.sh test-b6 --jobs 1 > "$T/run6.out" 2>&1; rc=$?
+export FIXUP=0; bash tools/autopilot/codex-pipeline.sh test-b6 --jobs 1 > "$T/run6.out" 2>&1; rc=$?; unset FIXUP
 check "red tests that do not compile get a repair round and then pass the gate" 'grep -q "^red-tests 90i" $FS/calls && [ "$(grep -c "^red-repair 90i" $FS/calls)" = 1 ] && [ "$(python $LIBPY sget tools/autopilot/state/test-b6.json W8-90i)" = done ]'
 check "the repair prompt carried the compiler error" 'grep -q "RED TESTS DO NOT COMPILE" $LOGS/W8-90i.redrepair1.prompt.md && grep -q "TASK: red-repair" $LOGS/W8-90i.redrepair1.prompt.md'
 check "red tests are committed on their own after the gate" 'git log integration/test-b6 --format=%s | grep -q "test(W8-90i): red tests"'
-check "red tests that fail by assertion (not todo!()) fail the unit after 3 repair rounds" '[ "$(python $LIBPY sget tools/autopilot/state/test-b6.json W8-90j)" = failed ] && [ "$(grep -c "^red-repair 90j" $FS/calls)" = 3 ] && ! grep -q "^implement 90j" $FS/calls'
-check "triage note for the invalid red tests exists and explains why" 'grep -q "not through todo" tools/autopilot/state/needs-claude/W8-90j.md'
+check "FIXUP=0 preserves invalid-red failure after 3 repair rounds" '[ "$(python $LIBPY sget tools/autopilot/state/test-b6.json W8-90j)" = failed ] && [ "$(grep -c "^red-repair 90j" $FS/calls)" = 3 ] && ! grep -q "^implement 90j" $FS/calls'
+check "triage note for invalid red tests explains why" 'grep -q "not through todo" tools/autopilot/state/needs-claude/W8-90j.md'
 check "the red-test guard was not applied during the red phase (no 'red-test guard' failure)" '! grep -q "red-test guard" $LOGS/W8-90i.log $LOGS/W8-90j.log'
+FIXUP=1 bash tools/autopilot/codex-pipeline.sh test-b6 --only W8-90j --redo W8-90j --jobs 1 > "$T/run6-fixup.out" 2>&1; rc=$?
+check "fixup corrects a red test against the fake C# oracle and completes" '[ "$(python $LIBPY sget tools/autopilot/state/test-b6.json W8-90j)" = done ] && [ "$(python $LIBPY sfield tools/autopilot/state/test-b6.json W8-90j fixup)" = 1 ] && grep -q "^fixup 90j" $FS/calls'
+check "fixup correction is its own commit and names the changed test" 'git log integration/test-b6 --format=%s | grep -q "test(W8-90j): corrected tests (Codex fixup)" && [ "$(python $LIBPY sfield tools/autopilot/state/test-b6.json W8-90j fixup_tests)" = wrong_value ]'
+check "fixup relaxed guard retains the test and assert counts" '! grep -q "number of test functions decreased\|assert macro occurrences decreased\|marked #\[ignore\]" $LOGS/W8-90j.fixup-guard.txt'
 
 echo "== quota estimate: do not start a unit that may not fit"
 git -C "$W" fetch -q origin 2>/dev/null
@@ -386,6 +416,81 @@ check "triage note is capped at 3 KB" '[ "$(wc -c < "$T/tri.md")" -le 3072 ]'
 check "tier helper" '[ "$(python $LIBPY tier docs/WAVE-8-PLAN.md W8-90a)" = yellow ] && [ "$(python $LIBPY tier docs/WAVE-8-PLAN.md W8-90c)" = red ] && [ "$(python $LIBPY tier docs/WAVE-8-PLAN.md W8-90e)" = skip ]'
 printf '{"type":"thread.started","thread_id":"abc"}\nnoise\n{"type":"turn.completed","usage":{"input_tokens":5,"cached_input_tokens":2,"output_tokens":3}}\n{"type":"turn.completed","usage":{"input_tokens":1,"cached_input_tokens":0,"output_tokens":1}}\n' > "$T/cx.log"
 check "codexparse reads session id and sums usage" '[ "$(python $LIBPY codexparse $T/cx.log 0)" = "abc|6|2|4" ]'
+
+echo "== Wave 9 plan parsing and external dependencies"
+cat > docs/WAVE-9-PLAN-fake.md <<'X'
+| Unit | C# files | Rust | Col | Test | Depends on |
+|---|---|---|---|---|---|
+| W9-X1 | a | a | yellow | F | none |
+| W9-X2 | b | b | yellow | F | X1 |
+| W9-X3 | c | c | yellow | F | X1, W8-90a |
+| W9-X4 | d | d | yellow | F | W8-77z |
+| W9-X5 | e | e | yellow | F | X4 |
+| W9-X6 | f | f | yellow | F | W8-18h..k; W8-14c/14e/14f; `W8-99q`; W8-18o (stub); Not E8 |
+X
+git add docs/WAVE-9-PLAN-fake.md && git commit -q -m "Add fake Wave 9 plan" && git push -q origin master
+check "Wave 9 plan auto lookup finds rows by tag lane" '[ "$(python $LIBPY planfor "$W" wave9-x)" = docs/WAVE-9-PLAN-fake.md ]'
+cat > docs/WAVE-9-PLAN-fake-e.md <<'X'
+| Unit | C# files | Rust | Col | Test | Depends on |
+|---|---|---|---|---|---|
+| W9-E1 | a | a | yellow | F | none |
+X
+cat > docs/WAVE-9-PLAN-fake-r.md <<'X'
+| Unit | C# files | Rust | Col | Test | Depends on |
+|---|---|---|---|---|---|
+| W9-R1 | a | a | yellow | F | none |
+X
+check "planfor finds the Wave 9 E lane plan" '[ "$(python $LIBPY planfor "$W" wave9-e)" = docs/WAVE-9-PLAN-fake-e.md ]'
+check "planfor finds the Wave 9 R lane plan" '[ "$(python $LIBPY planfor "$W" wave9-r)" = docs/WAVE-9-PLAN-fake-r.md ]'
+W9_ORDER_EXPECTED="$(printf 'W9-X1\t\nW9-X2\tW9-X1\nW9-X3\tW9-X1\nW9-X4\t\nW9-X5\tW9-X4\nW9-X6\t')"
+check "Wave 9 dependency order lists same-lane dependencies only" '[ "$(python $LIBPY order docs/WAVE-9-PLAN-fake.md X)" = "$W9_ORDER_EXPECTED" ]'
+check "Wave 9 deps returns its same-lane unit edge" '[ "$(python $LIBPY deps docs/WAVE-9-PLAN-fake.md W9-X2)" = W9-X1 ]'
+W9_EXT_EXPECTED="$(printf 'W8-18h\nW8-18i\nW8-18j\nW8-18k\nW8-14c\nW8-14e\nW8-14f\nW8-18o')"
+check "Wave 9 extdeps expands ranges and slash lists, ignores backticks and Not tail" '[ "$(python $LIBPY extdeps docs/WAVE-9-PLAN-fake.md W9-X6)" = "$W9_EXT_EXPECTED" ]'
+W8_ORDER_EXPECTED="$(printf 'W8-90a\t\nW8-90b\tW8-90a\nW8-90c\tW8-90a\nW8-90d\tW8-90c\nW8-90e\t')"
+check "Wave 8 order output remains byte-for-byte stable" '[ "$(python $LIBPY order docs/WAVE-8-PLAN.md B9)" = "$W8_ORDER_EXPECTED" ]'
+check "Wave 8 row output remains byte-for-byte stable" '[ "$(python $LIBPY row docs/WAVE-8-PLAN.md W8-90a)" = "| W8-90a | a | a | yellow | Sonnet | F | none | B9 |" ]'
+check "Wave 8 deps and tier output remain byte-for-byte stable" '[ "$(python $LIBPY deps docs/WAVE-8-PLAN.md W8-90b)" = W8-90a ] && [ "$(python $LIBPY tier docs/WAVE-8-PLAN.md W8-90a)" = yellow ]'
+check "missing Wave 9 plan reports lane-specific error" 'python $LIBPY planfor "$W" wave9-z > "$T/noplan.out" 2>&1; [ $? = 1 ] && grep -q "no Wave 9 plan with rows W9-Z\* in docs/" "$T/noplan.out"'
+cp docs/WAVE-9-PLAN-fake.md docs/WAVE-9-PLAN-fake2.md
+check "ambiguous Wave 9 plan lookup lists matching files" 'python $LIBPY planfor "$W" wave9-x > "$T/ambig.out" 2>&1; [ $? = 1 ] && grep -q "WAVE-9-PLAN-fake2.md" "$T/ambig.out"'
+rm docs/WAVE-9-PLAN-fake2.md
+python $LIBPY sset tools/autopilot/state/test-other.json W8-90a done "other tag" 0
+check "external dependency is satisfied by another tag state" '[ -z "$(python $LIBPY extsat "$W" tools/autopilot/state W8-90a)" ]'
+check "external dependency absent from master and all state remains unsatisfied" '[ "$(python $LIBPY extsat "$W" tools/autopilot/state W8-77z)" = W8-77z ]'
+git -C "$W" -c user.name=selftest -c user.email=selftest@example.com commit -q --allow-empty -m "Complete W8-18p layout unit"
+git -C "$W" push -q origin master
+check "external dependency is satisfied by a token in origin/master history" '[ -z "$(python $LIBPY extsat "$W_WIN" tools/autopilot/state W8-18p)" ]'
+git -C "$W" -c user.name=selftest -c user.email=selftest@example.com commit -q --allow-empty -m "feat(W8-18l..18n): fake range implementation"
+git -C "$W" -c user.name=selftest -c user.email=selftest@example.com commit -q --allow-empty -m "perf(W8-18x..z): fake short-range implementation"
+git -C "$W" -c user.name=selftest -c user.email=selftest@example.com commit -q --allow-empty -m "fix(W8-18a, W8-18c): fake listed implementation"
+git -C "$W" -c user.name=selftest -c user.email=selftest@example.com commit -q --allow-empty -m "refactor(W8-18p/18q): fake slash-list implementation"
+git -C "$W" -c user.name=selftest -c user.email=selftest@example.com commit -q --allow-empty -m "docs(W8-B5): contracts (W8-18a..18v)"
+git -C "$W" push -q origin master
+check "external dependency range with full endpoint matches a unit inside it" '[ -z "$(python $LIBPY extsat "$W_WIN" tools/autopilot/state W8-18m)" ]'
+check "external dependency range with short endpoint matches a unit inside it" '[ -z "$(python $LIBPY extsat "$W_WIN" tools/autopilot/state W8-18y)" ]'
+check "external dependency comma-list subject matches a listed unit" '[ -z "$(python $LIBPY extsat "$W_WIN" tools/autopilot/state W8-18c)" ]'
+check "external dependency slash-list subject matches a listed unit" '[ -z "$(python $LIBPY extsat "$W_WIN" tools/autopilot/state W8-18q)" ]'
+check "docs commit mentioning a unit range does not satisfy it" '[ "$(python $LIBPY extsat "$W_WIN" tools/autopilot/state W8-18s)" = W8-18s ]'
+check "W9 mutation tier reads six-column Test and Col cells" '[ "$(python $LIBPY tier docs/WAVE-9-PLAN-fake.md W9-X1)" = yellow ]'
+echo "== Wave 9 pipeline dry-run and fake Codex run"
+bash tools/autopilot/codex-pipeline.sh wave9-x --dry-run > "$T/w9-dry.out" 2>&1; rc=$?
+check "wave9-x auto-detects its plan and dry-run shows internal and external deps" '[ $rc = 0 ] && grep -q "W9-X3.*deps=W9-X1.*extdeps=-" "$T/w9-dry.out" && grep -q "W9-X4.*extdeps=W8-77z" "$T/w9-dry.out"'
+bash tools/autopilot/codex-pipeline.sh wave9-x --plan docs/WAVE-9-PLAN-fake.md --dry-run > "$T/w9-cli-plan.out" 2>&1; rc=$?
+check "--plan selects a Wave 9 plan" '[ $rc = 0 ] && grep -q "units=6" "$T/w9-cli-plan.out"'
+cat > docs/WAVE-9-PLAN-alt.md <<'X'
+| Unit | C# files | Rust | Col | Test | Depends on |
+|---|---|---|---|---|---|
+| W9-X1 | a | a | yellow | F | none |
+X
+PLAN_REL=docs/WAVE-9-PLAN-alt.md bash tools/autopilot/codex-pipeline.sh wave9-x --dry-run > "$T/w9-env-plan.out" 2>&1; rc=$?
+check "PLAN_REL overrides the automatically selected plan" '[ $rc = 0 ] && grep -q "units=1" "$T/w9-env-plan.out"'
+rm docs/WAVE-9-PLAN-alt.md
+MIN_DISK_GB=0 SKIP_MUTANTS=1 PIPELINE_NO_PR=1 bash tools/autopilot/codex-pipeline.sh wave9-x --only W9-X1,W9-X2,W9-X3,W9-X4,W9-X5 --jobs 1 > "$T/w9-run.out" 2>&1; rc=$?
+check "W9 fake Codex run finishes X1-X3 and skips unsatisfied X4 and dependent X5" '[ $rc = 0 ] && [ "$(python $LIBPY sget tools/autopilot/state/wave9-x.json W9-X1)" = done ] && [ "$(python $LIBPY sget tools/autopilot/state/wave9-x.json W9-X2)" = done ] && [ "$(python $LIBPY sget tools/autopilot/state/wave9-x.json W9-X3)" = done ] && [ "$(python $LIBPY sget tools/autopilot/state/wave9-x.json W9-X4)" = skipped ] && [ "$(python $LIBPY sget tools/autopilot/state/wave9-x.json W9-X5)" = skipped ]'
+check "unsatisfied external dependency skip includes the waiting note" 'grep -q "waiting for W8-77z (not on master)" "$T/w9-run.out" && grep -q "W9-X4.*skipped" "$T/w9-run.out" && grep -q "W9-X5.*skipped" "$T/w9-run.out"'
+check "Wave 9 units merge into integration/wave9-x" 'git log integration/wave9-x --format=%s | grep -q "Merge W9-X1" && git log integration/wave9-x --format=%s | grep -q "Merge W9-X3"'
+check "Wave 9 pipeline uses Wave 9 PR title and body wording" 'grep -q "Wave \$wave batch \$BATCH" tools/autopilot/codex-pipeline.sh && grep -q "feat: Wave \$wave" tools/autopilot/codex-pipeline.sh'
 
 echo; if [ "$FAILS" = 0 ]; then echo "selftest PASSED"; else echo "selftest: $FAILS FAILED (work dir kept: $T)"; exit 1; fi
 cd /; git -C "$W" worktree prune 2>/dev/null; rm -rf "$T"

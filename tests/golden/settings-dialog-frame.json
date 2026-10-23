@@ -1,6 +1,6 @@
 {
   "generator": "oracle-cs settings-dialog-frame",
-  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "csharp_commit": "7eaee2a2b071c7ca05291c86fb78a347f9e6a15f",
   "cases": [
     {
       "name": "frame",
@@ -169,10 +169,10 @@
       "page_item_counts": [
         26,
         55,
-        70,
+        71,
         13,
-        76,
-        35,
+        82,
+        39,
         3
       ],
       "active_page_index": -1,

@@ -111,7 +111,7 @@ pub fn not_edited_in_dialog() -> &'static [(&'static str, &'static str)] {
     ]
 }
 
-/// The 27 shortcut property names with a text box, in the order of the Shortcuts page (C# `Shortcuts` list). `MoveToFolder2`
+/// The 29 shortcut property names with a text box, in the order of the Shortcuts page (C# `Shortcuts` list). `MoveToFolder2`
 /// is not in it (owned by ReviewAction). Same names as `ShortcutMappings::PROPERTY_NAMES` minus `MoveToFolder2`.
 pub fn shortcut_properties() -> &'static [&'static str] {
     &[
@@ -142,6 +142,8 @@ pub fn shortcut_properties() -> &'static [&'static str] {
         "ToggleCaptureMember",
         "FitWidth2",
         "Refresh",
+        "OpenInDefaultEditor",
+        "RenameFile",
     ]
 }
 
@@ -349,7 +351,16 @@ fn build_bindings() -> Vec<SettingsFieldBinding> {
     push!(load_logging, apply_logging, &["LoggingEnabled"]);
     push!(load_delete, apply_delete, &["AllowPermanentDeleteWithoutRecycleBin"]);
     push!(load_confirm, apply_confirm, &["ConfirmBeforeDelete"]);
-    push!(load_editor, apply_editor, &["ExternalEditorPath"]);
+    push!(
+        load_editor,
+        apply_editor,
+        &[
+            "ExternalEditors",
+            "DefaultExternalEditorId",
+            "ExternalEditorSendsRawOriginal",
+            "ExternalEditorPath",
+        ]
+    );
     push!(load_journal, apply_journal, &["JournalDurability"]);
     push!(load_ram, apply_ram, &["ImageCacheRamPercent"]);
     push!(load_show_overlay, apply_show_overlay, &["ShowInfoOverlay"]);
@@ -864,10 +875,16 @@ fn apply_delete(f: &SettingsFormState, s: &mut AppSettings, _: &FieldContext<'_>
     None
 }
 fn load_editor(s: &AppSettings, f: &mut SettingsFormState) {
-    f.external_editor_path = s.external_editor_path.clone()
+    f.external_editor_path = s.external_editor_path.clone();
+    f.external_editors = s.external_editors.clone();
+    f.default_external_editor_id = s.default_external_editor_id.clone();
+    f.external_editor_sends_raw_original = s.external_editor_sends_raw_original;
 }
 fn apply_editor(f: &SettingsFormState, s: &mut AppSettings, _: &FieldContext<'_>) -> Option<SettingsFieldError> {
     s.external_editor_path = f.external_editor_path.trim().to_owned();
+    s.external_editors = f.external_editors.clone();
+    s.default_external_editor_id = f.default_external_editor_id.clone();
+    s.external_editor_sends_raw_original = f.external_editor_sends_raw_original;
     None
 }
 fn load_journal(s: &AppSettings, f: &mut SettingsFormState) {

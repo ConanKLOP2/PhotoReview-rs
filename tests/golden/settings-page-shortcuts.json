@@ -1,6 +1,6 @@
 {
   "generator": "oracle-cs settings-page-shortcuts",
-  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "csharp_commit": "7eaee2a2b071c7ca05291c86fb78a347f9e6a15f",
   "cases": [
     {
       "name": "Shortcuts page declaration",
@@ -174,6 +174,18 @@
           "label": 5073,
           "box": 5074,
           "clear": 0
+        },
+        {
+          "property": "OpenInDefaultEditor",
+          "label": 5075,
+          "box": 5076,
+          "clear": 5077
+        },
+        {
+          "property": "RenameFile",
+          "label": 5078,
+          "box": 5079,
+          "clear": 5080
         }
       ],
       "key": "Shortcuts",
@@ -700,13 +712,55 @@
         {
           "class": "Static",
           "id": 5075,
+          "text": "Open in default editor",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Edit",
+          "id": 5076,
+          "text": "",
+          "style": 1342244992,
+          "ex_style": 512
+        },
+        {
+          "class": "Button",
+          "id": 5077,
+          "text": "×",
+          "style": 1342242816,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 5078,
+          "text": "Rename file",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Edit",
+          "id": 5079,
+          "text": "",
+          "style": 1342244992,
+          "ex_style": 512
+        },
+        {
+          "class": "Button",
+          "id": 5080,
+          "text": "×",
+          "style": 1342242816,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 5081,
           "text": "Default action profiles: Enter moves the photo into the \"Group-2\" subfolder, F3 / F4 into \"Group-3\" / \"Group-4\", F5 copies it into \"Backup\". Change or remove them with the button below.",
           "style": 1342177408,
           "ex_style": 0
         },
         {
           "class": "Button",
-          "id": 5076,
+          "id": 5082,
           "text": "Edit action profiles…",
           "style": 1342242816,
           "ex_style": 0
@@ -899,16 +953,32 @@
         },
         {
           "id": 5075,
+          "text": "Open in default editor"
+        },
+        {
+          "id": 5077,
+          "text": "×"
+        },
+        {
+          "id": 5078,
+          "text": "Rename file"
+        },
+        {
+          "id": 5080,
+          "text": "×"
+        },
+        {
+          "id": 5081,
           "text": "Default action profiles: Enter moves the photo into the \"Group-2\" subfolder, F3 / F4 into \"Group-3\" / \"Group-4\", F5 copies it into \"Backup\". Change or remove them with the button below."
         },
         {
-          "id": 5076,
+          "id": 5082,
           "text": "Edit action profiles…"
         }
       ],
       "notes": [
         5001,
-        5075
+        5081
       ],
       "key_boxes": [
         5006,
@@ -937,7 +1007,9 @@
         5066,
         5068,
         5071,
-        5074
+        5074,
+        5076,
+        5079
       ],
       "warnings": [
         5002
@@ -1116,7 +1188,13 @@
             5073,
             5074,
             5075,
-            5076
+            5076,
+            5077,
+            5078,
+            5079,
+            5080,
+            5081,
+            5082
           ],
           "children": [
             {
@@ -1135,19 +1213,25 @@
                 5071,
                 5072,
                 5073,
-                5074
+                5074,
+                5075,
+                5076,
+                5077,
+                5078,
+                5079,
+                5080
               ]
             },
             {
               "type": "SettingsTextElement",
               "control_ids": [
-                5075
+                5081
               ]
             },
             {
               "type": "SettingsButtonsElement",
               "control_ids": [
-                5076
+                5082
               ]
             }
           ]
@@ -1156,7 +1240,7 @@
       "ids": {
         "warning": 5002,
         "reset_keys": 5003,
-        "edit_actions": 5076
+        "edit_actions": 5082
       }
     },
     {
@@ -1297,6 +1381,16 @@
           "property": "SendToRecycleBin",
           "label": "Move to Recycle Bin key",
           "clear_tip": null
+        },
+        {
+          "property": "OpenInDefaultEditor",
+          "label": "Open in default editor",
+          "clear_tip": "Clear the Open in default editor shortcut"
+        },
+        {
+          "property": "RenameFile",
+          "label": "Rename file",
+          "clear_tip": "Clear the Rename file shortcut"
         }
       ],
       "marker": "⚠ "

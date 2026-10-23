@@ -5,14 +5,15 @@
 //! presented (`note_first_present`). The cloak slows nothing else: the window is shown, activated, laid out and painted as usual. `reveal` is idempotent and also
 //! runs at a safety deadline ([`SAFETY_TIMEOUT`]) if no frame ever comes; `stop` (the window closes) cancels the deadline. A DWM that refuses the cloak changes
 //! nothing (the window just shows). State is changed on the UI thread only; the deadline thread only posts a job to the UI dispatcher.
-#![allow(unused_variables, dead_code)] // stub: the porter removes this line with the last `todo!()`
-
-use std::sync::{Arc, Mutex};
+use std::panic::{AssertUnwindSafe, catch_unwind};
+use std::sync::{Arc, Mutex, PoisonError};
 use std::time::Duration;
 
-use pr_core::abstractions::UiScheduler;
+use pr_core::abstractions::{UiAction, UiScheduler};
+use pr_core::instance::coalescer::WindowCancel;
 
 use crate::host::main_window::core::StartupCloakPort;
+use crate::win32::api::dwmapi;
 use crate::win32::structs::Hwnd;
 
 /// C# `StartupCloak.SafetyTimeout`: the longest a window stays cloaked when no frame is presented.
@@ -32,13 +33,37 @@ pub type ScheduleTimeoutFn = Arc<dyn Fn(Duration, Box<dyn FnOnce() + Send>) -> B
 
 /// C# `WindowsDwmCloak.TrySetCloaked(handle, cloaked)`: `false` for handle 0; `dwmapi::dwm_set_window_attribute(hwnd, DWMWA_CLOAK, &(1 or 0 as i32))` with `is_ok()`.
 pub fn try_set_cloaked(hwnd: Hwnd, cloaked: bool) -> bool {
-    todo!()
+    if hwnd == 0 {
+        return false;
+    }
+    let value: i32 = if cloaked { 1 } else { 0 };
+    dwmapi::dwm_set_window_attribute(hwnd, dwmapi::DWMWA_CLOAK, &value).is_ok()
 }
 
 /// The production [`ScheduleTimeoutFn`]: one named thread that waits on a `pr_core::instance::coalescer::WindowCancel` for the delay and runs the job unless
 /// cancelled (C# `System.Threading.Timer`).
 pub fn schedule_on_thread(delay: Duration, job: Box<dyn FnOnce() + Send>) -> Box<dyn TimerHandle> {
-    todo!()
+    struct DeadlineHandle(WindowCancel);
+    impl TimerHandle for DeadlineHandle {}
+    impl Drop for DeadlineHandle {
+        fn drop(&mut self) {
+            self.0.cancel();
+        }
+    }
+
+    let cancel = WindowCancel::new();
+    let thread_cancel = cancel.clone();
+    let spawned = std::thread::Builder::new()
+        .name("startup-cloak-deadline".to_owned())
+        .spawn(move || {
+            if !thread_cancel.wait_timeout(delay) {
+                job();
+            }
+        });
+    if spawned.is_err() {
+        cancel.cancel();
+    }
+    Box::new(DeadlineHandle(cancel))
 }
 
 /// The optional constructor arguments of the C# `StartupCloak` (`None` = the C# default).
@@ -92,54 +117,139 @@ impl std::fmt::Debug for StartupCloak {
 impl StartupCloak {
     /// C# constructor. `dispatcher` receives the safety-deadline reveal.
     pub fn new(dispatcher: Arc<dyn UiScheduler>, options: StartupCloakOptions) -> Self {
-        todo!()
+        let set_cloaked = options.set_cloaked.unwrap_or_else(|| Arc::new(try_set_cloaked));
+        let safety_timeout = options.safety_timeout.unwrap_or(SAFETY_TIMEOUT);
+        let schedule_timeout = options.schedule_timeout.unwrap_or_else(|| Arc::new(schedule_on_thread));
+        Self {
+            inner: Arc::new(CloakInner {
+                state: Mutex::new(CloakState {
+                    handle: 0,
+                    cloaked: false,
+                    revealed: false,
+                    timer: None,
+                }),
+                dispatcher,
+                on_revealed: options.on_revealed,
+                set_cloaked,
+                safety_timeout,
+                schedule_timeout,
+            }),
+        }
     }
 
     /// C# `IsHidden`: cloaked and not revealed.
     pub fn is_hidden(&self) -> bool {
-        todo!()
+        let state = self.inner.state.lock().unwrap_or_else(PoisonError::into_inner);
+        state.cloaked && !state.revealed
     }
 
     /// C# `IsRevealed`.
     pub fn is_revealed(&self) -> bool {
-        todo!()
+        self.inner.state.lock().unwrap_or_else(PoisonError::into_inner).revealed
     }
 
     /// C# `Hide(hwnd)`: cloaks `hwnd` unless this gate was already used (one window, one cloak) or `hwnd` is 0; arms the safety deadline when DWM accepted.
     pub fn hide(&self, hwnd: Hwnd) {
-        todo!()
+        {
+            let mut state = self.inner.state.lock().unwrap_or_else(PoisonError::into_inner);
+            if state.revealed || state.cloaked || hwnd == 0 {
+                return;
+            }
+            state.handle = hwnd;
+        }
+
+        let cloaked = catch_unwind(AssertUnwindSafe(|| (self.inner.set_cloaked)(hwnd, true))).unwrap_or(false);
+        {
+            let mut state = self.inner.state.lock().unwrap_or_else(PoisonError::into_inner);
+            state.cloaked = cloaked;
+        }
+        if !cloaked {
+            return;
+        }
+
+        let inner = Arc::clone(&self.inner);
+        let dispatcher = Arc::clone(&self.inner.dispatcher);
+        let timer = catch_unwind(AssertUnwindSafe(|| {
+            (self.inner.schedule_timeout)(
+                self.inner.safety_timeout,
+                Box::new(move || {
+                    let inner = Arc::clone(&inner);
+                    let action: UiAction = Box::new(move || reveal_inner(&inner));
+                    dispatcher.post(action);
+                }),
+            )
+        }))
+        .ok();
+        if let Some(timer) = timer {
+            let mut state = self.inner.state.lock().unwrap_or_else(PoisonError::into_inner);
+            if state.revealed {
+                drop(state);
+                drop(timer);
+            } else {
+                state.timer = Some(timer);
+            }
+        }
     }
 
     /// C# `NoteFirstPresent()` = [`reveal`](Self::reveal).
     pub fn note_first_present(&self) {
-        todo!()
+        self.reveal();
     }
 
     /// C# `Reveal()`: stops the deadline, then un-cloaks once; nothing when it never cloaked; calls `on_revealed` after the un-cloak.
     pub fn reveal(&self) {
-        todo!()
+        reveal_inner(&self.inner);
     }
 
     /// C# `Stop()`: cancels the deadline and keeps the cloak state (the window is closing).
     pub fn stop(&self) {
-        todo!()
+        let timer = {
+            let mut state = self.inner.state.lock().unwrap_or_else(PoisonError::into_inner);
+            state.timer.take()
+        };
+        drop(timer);
     }
 }
 
 impl Drop for StartupCloak {
     /// C# `Dispose()`.
     fn drop(&mut self) {
-        todo!()
+        self.stop();
     }
 }
 
 /// The two members `host::main_window` calls (D-W8B4M-4).
 impl StartupCloakPort for StartupCloak {
     fn stop(&self) {
-        todo!()
+        StartupCloak::stop(self)
     }
 
     fn note_first_present(&self) {
-        todo!()
+        StartupCloak::note_first_present(self)
+    }
+}
+
+fn reveal_inner(inner: &Arc<CloakInner>) {
+    let timer = {
+        let mut state = inner.state.lock().unwrap_or_else(PoisonError::into_inner);
+        state.timer.take()
+    };
+    drop(timer);
+
+    let handle = {
+        let mut state = inner.state.lock().unwrap_or_else(PoisonError::into_inner);
+        if state.revealed {
+            return;
+        }
+        state.revealed = true;
+        if !state.cloaked {
+            return;
+        }
+        state.handle
+    };
+
+    let _ = catch_unwind(AssertUnwindSafe(|| (inner.set_cloaked)(handle, false)));
+    if let Some(on_revealed) = &inner.on_revealed {
+        let _ = catch_unwind(AssertUnwindSafe(|| on_revealed()));
     }
 }

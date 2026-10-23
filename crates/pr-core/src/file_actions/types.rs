@@ -88,6 +88,8 @@ pub struct FileActionResult {
     /// catalog. Always computed from the file system after the failure, never assumed; false for Copy/Recycle and
     /// successes. Default false.
     pub source_removed: bool,
+    /// FEAT-RENAME: source already has the requested exact spelling; no journal line was written.
+    pub no_change: bool,
 }
 
 impl FileActionResult {
@@ -115,6 +117,7 @@ impl FileActionResult {
             journal_error: None,
             permanently_deleted: false,
             source_removed: false,
+            no_change: false,
         }
     }
 }
@@ -130,6 +133,8 @@ pub struct CaptureGroupActionRequest {
     pub operation: FileOperationType,
     pub destination: Option<String>,
     pub allow_permanent_delete: bool,
+    /// FEAT-RENAME: optional source-path to complete target-file-name map.
+    pub destination_file_names: Option<std::collections::HashMap<String, String>>,
 }
 
 impl CaptureGroupActionRequest {
@@ -140,6 +145,7 @@ impl CaptureGroupActionRequest {
             operation,
             destination: None,
             allow_permanent_delete: false,
+            destination_file_names: None,
         }
     }
 }
