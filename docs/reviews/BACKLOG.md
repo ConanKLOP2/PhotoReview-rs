@@ -37,6 +37,10 @@ Rủi ro: **D** = có thể mất/sai dữ liệu người dùng, **C** = crash/
 | 23 | G23 Chú thích/`DIVERGENCE` lạc hậu | test-quality L1; w9-contracts L8; settings-ui L5 | thấp | T | nhiều | tài liệu |
 | 25 | G25 Retry Recycle xoá nhầm file thay thế sau Prepared | invariants H1 (tái kiểm #212) | cao | D | W3-06; W8-18v gọi UI | sửa mã + test, cần ADR parity |
 | 24 | G24 Cần quyết định sản phẩm | invariants Q1, Q2, Q3; w9-contracts M2..M5, L11; b4 M1; pr-203 M2; test-quality M1 | n/a | n/a | lead | quyết định |
+| 26 | G26 Writer cache cũ rename sau writer mới | invariants-storage M1 | trung bình | B/T | W4-14c, W4-08a | sửa mã + test, cần ADR parity |
+| 27 | G27 Backup config newer lỗi nhưng vẫn downgrade, mất field chưa biết | invariants-storage M2 | trung bình | D (config) | W2-03 | cần quyết định sản phẩm |
+| 28 | G28 Log short-write rồi retry lỗi làm lặp/dính dòng | invariants-storage L1 | thấp | T | W2-16 | thêm test + hardening log |
+| 29 | G29 Cache read cấp phát toàn file trước kiểm header/length; phân loại I/O OOM | invariants-storage M3 | trung bình | C/B | W4-08b, W4-14c | sửa mã + test |
 
 Thứ tự đề xuất sau tái kiểm: G25 (nguy cơ xoá vĩnh viễn), rồi G3, G4, G1, G2 (lỗi người dùng thấy ngay); G5, G7, G6 (an toàn dữ liệu); sau đó G10, G11, G9; test (G17..G20) song song vì không xung đột file; G16 độc lập; G21..G23 tài liệu cuối cùng (chạm PARITY, gộp theo hàng).
 
@@ -342,7 +346,7 @@ Q1 giữ Fast; Q2 giữ cờ Shell + cảnh báo chờ 10 s; Q3 kiểm lại dan
 
 ## 4. Chưa gộp / ngoài phạm vi
 - `test-strengthening-plan.md` có 81 mục test; chỉ gom theo nhóm G17, G19, G20. Các mục crate khác (pr-imaging, pr-turbojpeg, pr-libraw, pr-imaging-raw, pr-perf, pr-l10n, pr-bench, pr-test-support) dùng prompt G17 với phạm vi crate đó.
-- INV-1, 2, 8, 10, 11, 12 (pr-imaging, settings store, file_log) chưa được đọc sâu trong invariants.md: chưa có mục trong backlog; cần review riêng.
+- INV-1/2/8/10/11/12 đã có review bổ sung `invariants-storage.md` tại 809759d (G26..G29). Giới hạn đọc/native chưa chạy nằm trong báo cáo; không còn coi toàn bộ vùng này là chưa đọc sâu.
 - Lần tái kiểm này theo đúng thứ tự INVARIANTS -> BACKLOG -> PRS -> B4 -> W9 -> TEST-PLAN. Báo cáo các lần trước giữ làm nguồn, phát hiện sau mốc này cần ghi rõ chưa nằm trong snapshot tổng hợp.
 ## 5. Tái tổng hợp ngày 2026-10-23 (sau #211 và #212)
 
@@ -378,3 +382,61 @@ Kiểm tra: cargo fmt -p pr-core --check; cargo clippy -p pr-core --all-targets 
 3. `test-quality` gợi ý đường golden bằng `CARGO_MANIFEST_DIR/../../...` ở ví dụ 14, trái quy tắc test không hard-code repo-relative path. Dùng helper golden đã có của pr-test-support, dữ liệu test qua TempRoot khi cần; không sao chép lời gợi ý đường dẫn cũ vào test mới.
 
 Cập nhật TEST-PLAN 2026-10-23: core T13 là test của G25, không tính thành lỗi mới; core T14 là durability-order (không chứng minh mất điện). Kế hoạch còn 81 mục/12 crate sau khi tách perf T3 chờ oracle, xem phần tái kiểm trong test-strengthening-plan.md. Số PR được ghi khi mở; không coi đây là kết quả chạy test.
+## 6. Review storage bổ sung (Rust 809759d, C# 7eaee2a2)
+
+**Mọi phát hiện: suy luận từ mã, chưa chạy thử.** Nguồn mới: `docs/reviews/invariants-storage.md`, 0 cao / 3 trung bình / 1 thấp. Bảng tổng có 29 nhóm sau khi thêm G26..G29; không cộng các assertion còn thiếu thành lỗi production độc lập. Không thay đổi 81 mục của kế hoạch test trước: các test dưới đây là đề xuất của review mới, được tách mã để không tính trùng.
+
+### G26: publication của hai persist worker (trung bình)
+
+M1 khác với G25 permanent-delete: chỉ ghi file cache, cùng path/key, epoch thay sau Clear Cache/Disk. Owner table bảo vệ khỏi delete nhầm nhưng chưa ngăn stale rename đè newest. Test cũ chặn A sau write, chưa bảo vệ A encode chậm -> B commit -> A commit.
+
+**PROMPT Codex G26**
+```
+Đọc docs/reviews/invariants-storage.md M1, contracts/W4-14c.md và W4-08a.md, C# PreviewImageService.cs tại 7eaee2a2.
+Claim W4-14c theo máy sở hữu. File được phép: crates/pr-imaging/src/service/disk.rs (logic + inline test riêng unit), crates/pr-imaging/src/cache/atomic_file.rs chỉ nếu cần seam publish; docs/adr/ (ADR cho thay đổi concurrency khác oracle), docs/PARITY.md chỉ hàng W4-14c, task_on_progress.md. Không đổi format/key/cache API công khai nếu chưa cần.
+Viết test đỏ: codec A chặn trước rename, clear epoch, B ghi cùng K với payload phân biệt và hoàn tất, nhả A. Assert bytes decode cuối là B, không chỉ file exists; mọi gate được nhả khi unwind và có timeout ngoài, không sleep. Giữ nguyên test stale_worker_cleanup_after_newer_worker_wrote_same_path_keeps_newer_file và các test owner table.
+Sửa quyền publication theo epoch/newest writer; không sửa bằng cách xoá mọi file của epoch mới khi A stale. Không giữ global lifecycle mutex qua encode/I/O dài làm chặn Clear Cache; chứng minh lock order nếu thêm khoá per-path. C# có cùng rủi ro, ghi ADR/parity theo quy tắc repo trước khi gọi đây là fix tương đương hoàn toàn.
+CẤM làm yếu/xoá/ignore test, sửa fixture để A/B mất khác biệt, cập nhật golden theo output implementation, chạy native Recycle Bin.
+Kiểm: cargo fmt -p pr-imaging --check; cargo clippy -p pr-imaging --all-targets --locked -- -D warnings; cargo test -p pr-imaging --locked. Test fake/pure có hang guard; ghi đúng lệnh chưa chạy.
+```
+
+### G27: newer-config backup (trung bình, cần quyết định)
+
+M2 là chính sách C# đã có, không phải lý do xoá test `save_when_backup_fails_still_writes_the_config`. P-52 chưa bao gồm quyết định này. Chủ W2-03 phải xác định giữ best effort hay chỉ RAM/hoãn downgrade nếu không có backup nguyên văn.
+
+**PROMPT Codex G27 (chuẩn bị characterization; fix sau quyết định/ADR)**
+```
+Nguồn: docs/reviews/invariants-storage.md M2; C# SettingsStore.cs Persist/BackupNewerConfig tại 7eaee2a2; contracts/W2-03.md.
+File được phép: crates/pr-core/tests/settings_store.rs cho test characterization; docs/adr/ cho quyết định sản phẩm và task_on_progress.md. Khi quyết định cho thay behavior mới thêm crates/pr-core/src/settings/store.rs và hàng PARITY W2-03. Không sửa trước quyết định để làm test cũ xanh giả.
+Ca 1: config version>4 có FutureField, Copy backup lỗi nhưng WriteAtomic thành công: đo rõ file/backup/call log và hành vi hiện tại. Ca 2: Copy + WriteAtomic đều lỗi Save1, hết lỗi Save2: ghi thứ tự, số Copy và bytes backup, chứng minh flag newer không được mất trước khi downgrade thực sự xong theo chính sách được chọn. Dùng fake FS, không khoá config người dùng thật. Nguồn trực tiếp test cũ Save_WhenBackupFails_StillWritesTheConfig; không bịa test C# cho ca hai bước mới.
+CẤM làm yếu/xoá/ignore test parity hiện có; không giữ unknown fields bằng cách silently thay schema. Ghi lựa chọn và ADR/Different nếu khác C#.
+Kiểm: cargo fmt -p pr-core --check; cargo clippy -p pr-core --all-targets --locked -- -D warnings; cargo test -p pr-core --locked --test settings_store; cargo test -p pr-core --locked, có hang guard.
+```
+
+### G28: log ghi dở (thấp)
+
+L1 nằm ở log chẩn đoán, không phải operations journal; không gộp với G12/G19 hoặc mô tả gây mất ảnh. Cần seam test short-write trước khi nâng lời hứa exactly-once.
+
+**PROMPT Codex G28**
+```
+Đọc docs/reviews/invariants-storage.md L1, contracts/W2-16.md, C# FileLog.cs 250-305 tại 7eaee2a2.
+File được phép: crates/pr-core/src/diagnostics/file_log.rs, crates/pr-core/tests/diagnostics_file_log.rs, test helper riêng diagnostics_file_log_write_fixture.rs trong tests/common nếu cần; docs/PARITY.md chỉ W2-16 và task_on_progress.md. Không sửa journal/file actions.
+Thêm scripted Write seam: write nhận hết A + nửa B, lỗi write tiếp và retry, rồi drain sau thành công. Kiểm bytes/log records, A đúng một lần theo chính sách chosen; thêm ca flush lỗi hai lần sau khi bytes đã tới sink. Không mô phỏng chỉ bằng panic BeforeEntryWrittenHook (đó là staging failure, test hiện có đã phủ). Giữ test partial_batch_failure_does_not_duplicate_flushed_entries.
+Nếu best-effort log không thể exactly-once qua reopen/crash, ghi đúng giới hạn và chỉ sửa lời hứa quá rộng; không tự yêu cầu fsync cho mọi dòng log trên đường review nhanh. Không làm đầy đĩa thật, không sleep.
+CẤM xoá/ignore/làm yếu test; không mở rộng sang journal durability.
+Kiểm: cargo fmt -p pr-core --check; cargo clippy -p pr-core --all-targets --locked -- -D warnings; cargo test -p pr-core --locked --test diagnostics_file_log; cargo test -p pr-core --locked, có hang guard.
+```
+
+### G29: kiểm cache trước allocation/read toàn bộ (trung bình)
+
+M3 gồm thứ tự kiểm size/header và phân loại io::ErrorKind::OutOfMemory. Không gộp với native pixel OOM tests vốn chỉ bơm lỗi platform codec. Ưu tiên G29 trước G26 vì có đường kết thúc tiến trình trên cache hỏng quá lớn.
+
+**PROMPT Codex G29**
+```
+Đọc docs/reviews/invariants-storage.md M3, contracts/W4-08b.md và C# PreviewCacheFile.cs Read tại 7eaee2a2.
+File được phép: crates/pr-imaging/src/cache/preview_file.rs, crates/pr-imaging/tests/cache_preview_file.rs, fixture cache_preview_file_read_fixture.rs riêng unit trong tests/common nếu cần; contracts/W4-08b.md (chỉ làm rõ guard), docs/PARITY.md chỉ W4-08b, task_on_progress.md. Không đổi format v6/v7 hay codec khác.
+Thêm seam/helper kiểm total length + prefix trước cấp phát lớn: payload i32::MAX+1 => InvalidData đúng thông điệp C#, 0 decode và không yêu cầu buffer toàn file; bad magic + huge length => InvalidData sau prefix. Đường allocation dùng fallible allocation, map OOM thành PreviewCacheError::OutOfMemory, không Io/corrupt; test chuyển io::ErrorKind::OutOfMemory cũng không bị is_cache_entry_failure phân loại hỏng. Chưa có yêu cầu sản phẩm cho một cap tuỳ ý nhỏ hơn giới hạn oracle; đừng bịa cap mới để test pass.
+Giữ một file open và read sequential, stream/handle drop trước return kể cả lỗi. Giữ golden/read/write round-trip v6/v7, fallback Canceled/OOM giữ cache entry; corrupt header/payload mới được xoá theo contract. Test dùng fake stream/counter hoặc helper pure, KHÔNG tạo file GiB hoặc cố OOM allocator thật.
+CẤM làm yếu/xoá/ignore test, sửa golden, cấp phát theo metadata chưa kiểm, chặn global UI lock trong lúc đọc.
+Kiểm: cargo fmt -p pr-imaging --check; cargo clippy -p pr-imaging --all-targets --locked -- -D warnings; cargo test -p pr-imaging --locked --test cache_preview_file; cargo test -p pr-imaging --locked, có hang guard. Mutation chỉ logic owned sau merge và timebox repo.
+```

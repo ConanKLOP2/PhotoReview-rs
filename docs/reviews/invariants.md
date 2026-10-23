@@ -161,3 +161,8 @@ Lập luận cũ “trong phiên này cũng không xử lý vì marker sống”
 ### Phạm vi bổ sung đã đọc
 
 Đọc `recovery_retry.rs:555-810` (transaction và toàn bộ vòng retry), `recovery_check.rs` phần type/check, `recycle_candidate.rs`, `recycle_bin_capacity.rs`, `recycle_bin_shell.rs` phần COM apartment/enumeration/candidate/restore và `recycle_restore.rs` phần chọn đúng một candidate. Candidate không rõ/không duy nhất bị từ chối; lỗi per-item được log rồi bỏ qua. Không kết luận bộ COM/native này an toàn runtime chỉ từ việc đọc mã. `folder_load/load.rs:456-487` vẫn giữ PendingOrder khi mở file và Explorer pending; `actions.rs:444` vẫn chặn completion chạm catalog folder mới.
+
+
+## 7. Review bổ sung vùng cache/config/log
+
+Ngày 2026-10-23, đọc sâu thêm tại Rust `809759d` và C# `7eaee2a2`: xem [invariants-storage.md](invariants-storage.md). Mọi phát hiện là suy luận từ mã, chưa chạy thử. Báo cáo riêng có 0 cao / 3 trung bình / 1 thấp; không nhập lại thành mã M/L trùng ở đây. BACKLOG G26..G29 theo dõi. Phạm vi và bằng chứng còn thiếu được ghi riêng, không coi toàn bộ INV-1/2/8/10/11/12 đã có verdict runtime.
