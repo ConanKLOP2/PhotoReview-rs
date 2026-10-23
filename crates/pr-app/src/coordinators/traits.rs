@@ -226,6 +226,9 @@ pub fn into_move_override(over: Arc<dyn IMoveOverride>) -> MoveOverride {
 /// C# `IPreloadController` (44 lines): the preload seam around the current image. Methods take `&self`, because the
 /// scheduler is shared and uses interior mutability.
 pub trait IPreloadController {
+    /// Publishes the current catalog before a preload kick (composition amendment A12).
+    fn catalog_changed(&self, _catalog: &pr_core::catalog::review_catalog::ReviewCatalog) {}
+
     /// C# `PreloadAroundAsync(center)`. Returns the handle of the run (the C# `Task`): `wait()` / `is_complete()` replace `await`.
     fn preload_around(&self, center: i32) -> RunHandle;
 

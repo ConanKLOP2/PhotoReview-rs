@@ -685,7 +685,7 @@ impl ImagePresenter {
             PresenterEvent::Thumbnail { token, result } => self.on_thumbnail(env, token, result),
             PresenterEvent::Preview { token, result } => self.on_preview(env, token, result),
             PresenterEvent::FrameYielded { token, purpose } => match purpose {
-                YieldPurpose::DeferredKick { index } => self.on_deferred_kick_due(token, index),
+                YieldPurpose::DeferredKick { index } => self.on_deferred_kick_due(env, token, index),
                 YieldPurpose::PostFrame => self.on_post_frame_yield(env, token),
             },
             PresenterEvent::Dimensions { token, result } => self.on_dimensions(env, token, result),

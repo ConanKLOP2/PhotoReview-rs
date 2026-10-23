@@ -612,6 +612,7 @@ impl ImagePresenter {
             }
             None => {
                 // Fire and forget: the run continues on the scheduler's own workers.
+                self.preload.catalog_changed(env.catalog);
                 drop(self.preload.preload_around(index));
             }
         }
@@ -625,8 +626,9 @@ impl ImagePresenter {
 
     /// The deferred preload kick came due (the C# `await ui.YieldAsync()` returned inside `FireAndLog`): `preload.preload_around(index)` only if
     /// `clock.is_navigation_current(token)`; otherwise the kick is dropped (the newer navigation kicks its own).
-    pub(super) fn on_deferred_kick_due(&mut self, token: i64, index: i32) {
+    pub(super) fn on_deferred_kick_due(&mut self, env: &mut PresenterEnv<'_>, token: i64, index: i32) {
         if self.clock.is_navigation_current(token) {
+            self.preload.catalog_changed(env.catalog);
             drop(self.preload.preload_around(index));
         }
     }

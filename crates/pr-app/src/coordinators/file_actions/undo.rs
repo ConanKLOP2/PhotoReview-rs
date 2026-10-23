@@ -185,6 +185,7 @@ impl FileActionController {
             }
             // The neighbour window shifted by one: warm the restored photo (fire and forget, the handle is dropped).
             if let Some(preload) = &self.deps.preload_controller {
+                preload.catalog_changed(cx.catalog);
                 drop(preload.preload_around(max(cx.catalog.current_index(), 0)));
             }
             let session = cx

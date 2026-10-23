@@ -1,4 +1,4 @@
-//! Port of `PhotoReview.App.Shared/Composition/MainViewModelCompositionRoot.cs` (98 lines, C# baseline `d92d6aae`) and of the registration
+//! Port of `PhotoReview.App.Shared/Composition/MainViewModelCompositionRoot.cs` (98 lines, C# baseline `7eaee2a2`) and of the registration
 //! `services.AddTransient<MainViewModel>(sp => MainViewModelCompositionRoot.Create(sp))` (`SharedServiceRegistration.cs` line 228). Unit W8-09b. Contract: `contracts/W8-09b.md`.
 //!
 //! One call builds ONE complete `MainViewModel` with everything C# wired by hand: a FRESH catalog, generation clock, viewer and compare view model (registrations 43 to 46 are
@@ -7,7 +7,6 @@
 //! [`PresentationBridge`] (08a), so the order is simply viewer, bridge, sink, presenter, coordinators, view model.
 //!
 //! UI thread only: the result is `!Send`. The result is NOT wrapped: the shell wraps it as `SharedViewModel = Rc<RefCell<MainViewModel>>` (`graph::build_shared_view_model`).
-#![allow(unused_variables, dead_code)] // stub: the porter removes this line with the last `todo!()`
 
 use std::rc::Rc;
 use std::sync::{Arc, Mutex};
@@ -82,22 +81,46 @@ impl std::fmt::Debug for CatalogFeed {
 impl CatalogFeed {
     /// An empty feed (version `-1`, no entries).
     pub fn new() -> Self {
-        todo!()
+        Self {
+            state: Arc::new(Mutex::new(FeedState {
+                version: -1,
+                entries: Arc::from([]),
+            })),
+        }
     }
 
     /// UI thread. `catalog.structural_version() == published version` -> nothing (no copy, same `Arc`); else `entries = Arc::from(catalog.entries_snapshot())` and the new version.
     pub fn publish_if_changed(&self, catalog: &ReviewCatalog) {
-        todo!()
+        let mut state = self.state.lock().unwrap_or_else(std::sync::PoisonError::into_inner);
+        if state.version != catalog.structural_version() {
+            state.entries = Arc::from(catalog.entries_snapshot());
+            state.version = catalog.structural_version();
+        }
     }
 
     /// The `EntriesSnapshotFn` the scheduler factory takes: `Ok(published list)` (a poisoned lock is recovered).
     pub fn entries_fn(&self) -> EntriesSnapshotFn {
-        todo!()
+        let feed = self.clone();
+        Arc::new(move || {
+            Ok(feed
+                .state
+                .lock()
+                .unwrap_or_else(std::sync::PoisonError::into_inner)
+                .entries
+                .clone())
+        })
     }
 
     /// The `SnapshotVersionFn` the scheduler factory takes: `Ok(published version)`.
     pub fn version_fn(&self) -> SnapshotVersionFn {
-        todo!()
+        let feed = self.clone();
+        Arc::new(move || {
+            Ok(feed
+                .state
+                .lock()
+                .unwrap_or_else(std::sync::PoisonError::into_inner)
+                .version)
+        })
     }
 }
 
@@ -108,8 +131,8 @@ impl Default for CatalogFeed {
 }
 
 /// The production `IPreloadController` (C# `PreloadControllerAdapter(() => preloadScheduler)` over the real `PreloadScheduler`), plus the feed. Every method forwards to the
-/// adapter; AFTER amendment A12 it also overrides `catalog_changed(&self, catalog)` as `self.feed.publish_if_changed(catalog)` (the stub cannot override a method the trait does not
-/// have yet). `dispose` disposes the scheduler (the main window calls it at close).
+/// adapter; amendment A12 publishes the current catalog through `catalog_changed` immediately before each preload kick.
+/// `dispose` disposes the scheduler (the main window calls it at close).
 pub struct FeedPreloadController {
     scheduler: Arc<pr_imaging::preload::scheduler::PreloadScheduler>,
     feed: CatalogFeed,
@@ -129,40 +152,44 @@ impl FeedPreloadController {
 }
 
 impl IPreloadController for FeedPreloadController {
+    fn catalog_changed(&self, catalog: &ReviewCatalog) {
+        self.feed.publish_if_changed(catalog);
+    }
+
     fn preload_around(&self, center: i32) -> RunHandle {
-        todo!()
+        self.scheduler.preload_around(center)
     }
 
     fn try_consume_preloaded_key(&self, key: &ImageCacheKey) -> bool {
-        todo!()
+        self.scheduler.try_consume_preloaded_key(key)
     }
 
     fn cancel(&self) {
-        todo!()
+        self.scheduler.cancel();
     }
 
     fn remove_preloaded_keys_for_path(&self, normalized_path: &str) {
-        todo!()
+        self.scheduler.remove_preloaded_keys_for_path(normalized_path);
     }
 
     fn clear_preloaded_keys(&self) {
-        todo!()
+        self.scheduler.clear_preloaded_keys();
     }
 
     fn is_idle(&self) -> bool {
-        todo!()
+        self.scheduler.is_idle()
     }
 
     fn notify_navigation(&self, index: i32) {
-        todo!()
+        self.scheduler.notify_navigation(index);
     }
 
     fn get_viewer_decode_delay(&self) -> Duration {
-        todo!()
+        self.scheduler.get_viewer_decode_delay()
     }
 
     fn dispose(&self) {
-        todo!()
+        self.scheduler.dispose();
     }
 }
 
@@ -193,5 +220,192 @@ pub fn create_main_view_model(
     services: &SharedServices,
     host: MainViewModelHost,
 ) -> Result<MainViewModel, RegistryError> {
-    todo!()
+    use super::{adapters::LocalizedFormat, texts::LocalizedTexts};
+    use pr_app::coordinators::{
+        duplicate_cleanup::{DuplicateCleanupController, DuplicateCleanupDeps},
+        file_action_gate::FileActionGate,
+        file_actions::recycle::{FileActionController, FileActionDeps},
+        folder_load::state::{FolderLoadCoordinator, FolderLoadDeps},
+        presenter::{ImagePresenter, ImagePresenterDeps},
+        sibling_navigator::SiblingFolderNavigator,
+        sink_callbacks::MainViewModelSinkCallbacks,
+        traits::FileActionServiceExecutor,
+        zoom_detail::CompletionInbox,
+    };
+    use pr_app::viewmodels::{
+        compare::CompareViewModel,
+        main::{
+            FormatContextSource, MainEvent, MainViewModelDeps, MainWorkerPort, PresentationBridge, SettingsSource,
+            ViewerHandle, remember_move_copy_folder,
+        },
+        viewer_state::ViewerState,
+    };
+    use pr_core::catalog::generation::GenerationClock;
+
+    let mut catalog = ReviewCatalog::new();
+    catalog.bind_to_current_thread();
+    let clock = Arc::new(GenerationClock::default());
+    let viewer = ViewerHandle::new(ViewerState::new());
+    let bridge = PresentationBridge::new(viewer.clone());
+    let settings = SettingsSource::new(services.settings_store());
+    let texts = Arc::new(LocalizedTexts);
+    let format = Arc::new(LocalizedFormat::new());
+    let inbox = CompletionInbox::new(host.wake.clone());
+    let preload = match host.preload_controller {
+        Some(controller) => controller,
+        None => {
+            let feed = CatalogFeed::new();
+            let scheduler = (services.preload_scheduler_factory())(feed.entries_fn(), feed.version_fn())?;
+            Arc::new(FeedPreloadController::new(scheduler, feed)) as Arc<dyn IPreloadController>
+        }
+    };
+    let image_bridge = bridge.clone();
+    let status_bridge = bridge.clone();
+    let initial_bridge = bridge.clone();
+    let zoom_bridge = bridge.clone();
+    let viewport = services.viewport_size_source();
+    let store = services.settings_store();
+    let observer = host.observer;
+    let sink = host.sink_factory.create(MainViewModelSinkCallbacks {
+        set_current_image: Box::new(move |_, is_file_change, change| {
+            image_bridge.on_set_current_image(change, is_file_change)
+        }),
+        set_status_text: Box::new(move |_| status_bridge.on_set_status_text()),
+        apply_initial_view_mode: Box::new(move || {
+            initial_bridge.apply_initial_view(viewport.viewport_size(), &store.current());
+        }),
+        on_presented: Box::new(move |path| observer.on_presented(path)),
+        take_viewer_zoom_change: Box::new(move || zoom_bridge.take_viewer_zoom_change()),
+    });
+    let mut compare = None;
+    format.with_context(&mut |context| compare = Some(CompareViewModel::new(context)));
+    let compare = compare.ok_or_else(|| RegistryError {
+        service: "compare_view_model",
+        message: "format context unavailable".to_owned(),
+    })?;
+    let preview = services.preview_service()?;
+    let thumbnails = services.thumbnail_cache()?;
+    let hash = services.file_hash_service()?;
+    let writer = services.session_writer()?;
+    let fs = services.file_system();
+    let metrics = services.metrics();
+    let log = services.log();
+    let presenter = ImagePresenter::new(
+        ImagePresenterDeps {
+            clock: clock.clone(),
+            preview_service: preview.clone(),
+            thumbnail_cache: thumbnails.clone(),
+            preload: preload.clone(),
+            hasher: hash.clone(),
+            metrics: metrics.clone(),
+            session_store: Some(services.session_store()),
+            session_writer: Some(writer.clone()),
+            sink,
+            file_system: Some(fs.clone()),
+            on_presented_hook: None,
+            ui_scheduler: Some(host.ui_scheduler.clone()),
+            busy_retry_delay: None,
+            runner: Some(host.runner.clone()),
+            stat_worker: None,
+            wake: host.wake,
+            indicator_delay: None,
+        },
+        compare,
+    );
+    let folder_coordinator = FolderLoadCoordinator::new(FolderLoadDeps {
+        clock: clock.clone(),
+        explorer_order: services.explorer_order(),
+        file_system: fs.clone(),
+        session_store: services.session_store(),
+        settings_store: services.settings_store(),
+        session_writer: Some(writer.clone()),
+        latest_explorer: Some(services.explorer_snapshot()),
+        worker: Arc::new(MainWorkerPort::new(
+            host.runner.clone(),
+            inbox.clone(),
+            MainEvent::FolderLoad,
+        )),
+        log: log.clone(),
+        perf: None,
+    });
+    let actions = Arc::new(FileActionServiceExecutor::new(services.file_action_service()));
+    let undo = services.undo_service();
+    let action_settings = settings.clone();
+    let remember_settings = settings.clone();
+    let remember_log = log.clone();
+    let file_action_controller = FileActionController::new(FileActionDeps {
+        clock: clock.clone(),
+        file_actions: Some(actions.clone()),
+        undo_service: Some(undo.clone()),
+        dialog_service: Some(host.dialog_service.clone()),
+        preload_controller: Some(preload.clone()),
+        natural_comparer: services.natural_comparer(),
+        get_settings: Box::new(move || action_settings.current()),
+        file_system: Some(fs.clone()),
+        remember_folder: Some(Box::new(move |operation, folder| {
+            remember_move_copy_folder(&remember_settings, remember_log.as_ref(), operation, folder)
+        })),
+        worker: Arc::new(MainWorkerPort::new(
+            host.runner.clone(),
+            inbox.clone(),
+            MainEvent::FileAction,
+        )),
+        texts: texts.clone(),
+        log: log.clone(),
+    });
+    let duplicate_controller = DuplicateCleanupController::new(DuplicateCleanupDeps {
+        clock: clock.clone(),
+        file_actions: Some(actions),
+        hash_service: Some(hash),
+        file_system: fs.clone(),
+        dialog_service: Some(host.dialog_service.clone()),
+        preload_controller: Some(preload.clone()),
+        thumbnail_cache: Some(thumbnails),
+        preview_service: Some(preview.clone()),
+        clear_disk_caches: None,
+        worker: Arc::new(MainWorkerPort::new(
+            host.runner.clone(),
+            inbox.clone(),
+            MainEvent::Duplicate,
+        )),
+        texts: texts.clone(),
+        log: log.clone(),
+    });
+    let raw_settings = settings.clone();
+    let webp_settings = settings.clone();
+    let sibling_navigator = Arc::new(SiblingFolderNavigator::new(
+        clock.clone(),
+        fs.clone(),
+        Some(Arc::new(move || raw_settings.current().raw_support_enabled)),
+        Some(Arc::new(move || webp_settings.current().webp_heic_support_enabled)),
+    ));
+    Ok(MainViewModel::new(MainViewModelDeps {
+        catalog,
+        clock,
+        folder_coordinator,
+        presenter,
+        viewer,
+        bridge,
+        settings,
+        file_system: fs,
+        file_action_controller,
+        file_action_gate: FileActionGate::new(host.ui_scheduler),
+        sibling_navigator,
+        duplicate_controller,
+        dialog_service: host.dialog_service,
+        session_writer: writer,
+        undo_service: undo,
+        preview_service: preview,
+        preload_controller: Some(preload),
+        reset_caches_action: None,
+        metrics,
+        folder_picker: host.folder_picker,
+        clipboard: Some(host.clipboard),
+        external_editor: None,
+        texts,
+        format,
+        inbox,
+        runner: host.runner,
+        log,
+    }))
 }
