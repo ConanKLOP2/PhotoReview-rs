@@ -1,4 +1,4 @@
-//! Port of the pure rules of `PhotoReview.Imaging/Preload/PreloadScheduler.cs` (C# baseline d92d6aae) and of the C# tests
+//! Port of the pure rules of `PhotoReview.Imaging/Preload/PreloadScheduler.cs` (C# baseline 7eaee2a2) and of the C# tests
 //! that pin them: `PreloadDiagWorkersParseTests.cs` (`ParseDiagWorkers`), `PreloadSchedulerGapTests.cs`
 //! (`InPreloadWindow` boundaries) and the policy-level twins of `PreloadSchedulerMutationTests.Resume.cs` and
 //! `PreloadSchedulerMutationTests.cs`. Golden check against `tests/golden/preload-policy.json` (213 cases, oracle command
@@ -318,7 +318,7 @@ fn check_case(section: &str, case: &Value) -> Result<(), String> {
 fn preload_policy_golden_matches_csharp() {
     let golden = golden::load("preload-policy");
     assert!(
-        golden.csharp_commit.starts_with("d92d6aae"),
+        golden.csharp_commit.starts_with("7eaee2a2"),
         "golden made from {}",
         golden.csharp_commit
     );
@@ -560,7 +560,7 @@ fn headroom_cache_reprobes_only_after_fifty_ms_or_a_queued_decode() {
     assert!(!state.decode_queued_since_check, "a probe clears the queued flag");
 }
 
-// ---- log texts without a golden section (texts checked against PreloadScheduler.cs d92d6aae) ------------------------
+// ---- log texts without a golden section (texts checked against PreloadScheduler.cs 7eaee2a2) ------------------------
 
 #[test]
 fn log_texts_without_a_golden_section_match_the_csharp_interpolations() {

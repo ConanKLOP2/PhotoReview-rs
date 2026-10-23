@@ -4,8 +4,6 @@
 //! `ShowRecovery` 123-160, `TryReadRecoveryEntries` 163-175, `ShowBenchmark` 181-228, `ShowActionProfiles` 234-239, `ShowDiagnostics` 241-252, `ShowSkippedFiles`
 //! 254-258, `ShowBatchReview` 260-264, `PromptCustomZoom` 266-270) and the `BenchmarkDialogSeams` record (21-27). The routing, the open list, the nested modal run and
 //! `dispose` are `pr_platform_win::dialogs::secondary_window_port` (W8-18o); this type only builds each dialog from the services and says how to read its result.
-#![allow(unused_variables, dead_code)] // stub: the porter removes this line with the last `todo!()`
-
 use std::path::Path;
 use std::rc::Rc;
 use std::sync::Arc;
@@ -13,13 +11,18 @@ use std::sync::Arc;
 use pr_app::coordinators::zoom_detail::BackgroundRunner;
 use pr_app::presenters::benchmark::{BenchmarkFileScan, BenchmarkSessionFactory, BenchmarkSummarySave};
 use pr_app::presenters::recovery_presentation::RecoveryTimeFormatter;
+use pr_app::presenters::recovery_window::RecoveryWindowOptions;
+use pr_app::presenters::secondary::DiagnosticsPresenter;
 use pr_app::presenters::secondary::NumberFormatting;
+use pr_app::presenters::settings::load::SettingsPresenterOptions;
 use pr_app::presenters::settings::load::SharedLocalization;
 use pr_app::services::contracts::ClipboardService;
 use pr_core::abstractions::{BatchReviewItem, FileSystem, Log, SettingsTarget, ShellIntegration, SkippedEntry};
 use pr_core::catalog::types::LatestExplorerSnapshot;
 use pr_core::diagnostics::metrics::ReviewMetrics;
 use pr_core::file_actions::journal::OperationJournal;
+use pr_core::file_actions::journal_line::JournalEntry;
+use pr_core::file_actions::recovery_check::RecoveryFileCheck;
 use pr_core::file_actions::recovery_retry::RecoveryRetryService;
 use pr_core::settings::app_settings::SettingsTexts;
 use pr_core::settings::shortcuts::ReviewAction;
@@ -30,13 +33,27 @@ use pr_l10n::localizer::Localizer;
 use pr_platform_win::dialogs::action_profiles::DialogWarningSink;
 use pr_platform_win::dialogs::benchmark::state::{OpenInExplorerFn, PickFolderFn};
 use pr_platform_win::dialogs::file_dialog::ShellFileDialog;
+use pr_platform_win::dialogs::folder_dialog::FolderPicker;
 use pr_platform_win::dialogs::folder_dialog::ShellFolderDialog;
 use pr_platform_win::dialogs::native::chrome::NativeDialogChrome;
+use pr_platform_win::dialogs::secondary_window_port::try_read_recovery_entries;
 use pr_platform_win::dialogs::secondary_window_port::{ActionProfilesOpener, PreparedDialog, SecondaryWindowDialogs};
 use pr_platform_win::dialogs::task_dialog::TaskDialogPort;
+use pr_platform_win::dialogs::{
+    action_profiles::ActionProfilesDialog,
+    benchmark::state::{BenchmarkDialog, BenchmarkOptions},
+    diagnostics::DiagnosticsDialog,
+    native::{
+        dialog::{ID_OK, NativeDialog},
+        list_dialog::{ListDialog, ListDialogContent},
+    },
+    recovery::{RecoveryDialog, RecoveryDialogSeams, RecoveryDialogServices, RecoveryTextSource},
+    settings::dialog::frame::{SettingsDialog, SettingsDialogArgs, SettingsDialogOptions},
+    zoom_prompt::ZoomPromptDialog,
+};
 use pr_platform_win::win32::structs::Hwnd;
 
-/// The services the C# port asked its `IServiceProvider` for with `GetService<T>()` (an absent one is `None`, exactly the C# `null` returns) and
+/// The services the C# port asked its `IServiceProvider` for with `GetService<T>()` (an absent one is `None`, exactly the C# `null` return) and
 /// `GetRequiredService<T>()` (fields that are not `Option`). Built from the shared graph (W8-09b registry) by W8-17e and handed to
 /// [`ProductionSecondaryWindowDialogs::new`]; the settings of the current UI language are read through `localization` at use time.
 pub struct DialogServices {
@@ -167,12 +184,13 @@ impl std::fmt::Debug for ProductionSecondaryWindowDialogs {
 impl ProductionSecondaryWindowDialogs {
     /// The graph services, the host parts and the seams.
     pub fn new(services: Rc<DialogServices>, host: DialogHostParts, seams: DialogFactorySeams) -> Self {
-        todo!()
+        Self { services, host, seams }
     }
 }
 
 impl SecondaryWindowDialogs for ProductionSecondaryWindowDialogs {
-    /// C# `ShowSettings` 97-115 up to the `new SettingsDialog(..)`: `None` without a store; `SettingsDialogArgs { current: store.current(), presenter:
+    /// C# `ShowSettings` 97-115 up to the
+    /// C# SettingsDialog constructor: absent store returns None; constructs `SettingsDialogArgs` from the shared services.
     /// SettingsPresenterOptions { store, localization, update_checker, shell_integration, executable_path, .. }, decoder_factory, options: SettingsDialogOptions {
     /// files, warnings, target, show_action_profiles, version, .. }, chrome }`; `finish(_)` = `dialog.saved()`.
     fn settings(
@@ -180,41 +198,201 @@ impl SecondaryWindowDialogs for ProductionSecondaryWindowDialogs {
         target: SettingsTarget,
         show_action_profiles: ActionProfilesOpener,
     ) -> Option<PreparedDialog<bool>> {
-        todo!()
+        let store = self.services.settings_store.as_ref()?;
+        let mut presenter = SettingsPresenterOptions::new(
+            self.services.physical_memory_bytes,
+            self.services.settings_texts.clone(),
+            self.services.shell_integration.clone(),
+        );
+        presenter.store = Some(store.clone());
+        presenter.localization = self.services.localization.clone();
+        presenter.update_checker = self.services.update_checker.clone();
+        let opener = show_action_profiles.clone();
+        let args = SettingsDialogArgs {
+            current: (*store.current()).clone(),
+            presenter,
+            decoder_factory: self.services.decoder_factory.clone(),
+            options: SettingsDialogOptions {
+                files: Some(self.host.file_dialog.clone()),
+                warnings: self.seams.warnings.clone(),
+                target,
+                version: self.host.version.clone(),
+                show_action_profiles: Some(Rc::new(move |owner, actions| Ok(opener(owner, actions)))),
+                ..Default::default()
+            },
+            chrome: self.seams.chrome.clone(),
+        };
+        match SettingsDialog::new(args) {
+            Ok(dialog) => {
+                let native = dialog.native().clone();
+                Some(PreparedDialog::new(native, Box::new(move |_| dialog.saved())))
+            }
+            Err(error) => {
+                self.host
+                    .log
+                    .error("Settings dialog could not be created", Some(&error));
+                None
+            }
+        }
     }
 
-    /// C# `ShowRecovery` 131-158 up to the `new RecoveryDialog(..)`.
+    /// C# `ShowRecovery` 131-158 up to the
+    /// C# recovery builder.
     fn recovery(&self, owner: Hwnd) -> Option<PreparedDialog<()>> {
-        todo!()
+        let journal = self.services.journal.clone()?;
+        let entries = try_read_recovery_entries(
+            || journal.read_pending_and_failed_operations(),
+            &*self.host.log,
+            &|title, message| {
+                if let Some(w) = &self.seams.warnings {
+                    w.show_warning(owner, title, message);
+                }
+            },
+        )?;
+        let retry = self.services.recovery_retry.clone().map(|service| {
+            Arc::new(move |entry: &JournalEntry| {
+                service
+                    .retry_move_or_copy(entry, true, &pr_core::sync::CancelToken::new())
+                    .map_err(|_| "canceled".to_owned())
+            }) as pr_app::presenters::recovery_window::RetryFn
+        });
+        let dismiss_journal = journal.clone();
+        let dismiss = Some(Box::new(move |items: &[JournalEntry]| {
+            dismiss_journal.dismiss(items).map_err(|error| error.to_string())
+        }) as pr_app::presenters::recovery_window::DismissFn);
+        let options = RecoveryWindowOptions {
+            retry,
+            dismiss,
+            checker: Arc::new(RecoveryFileCheck::new(self.services.file_system.clone())),
+            allow_permanent_delete: None,
+            current_time_text: self.host.current_time_text.clone(),
+        };
+        let services = RecoveryDialogServices {
+            texts: RecoveryTextSource::new(
+                (self.host.localizer)(),
+                self.host.time.clone(),
+                self.host.group_separator.clone(),
+            ),
+            runner: self.services.runner.clone(),
+        };
+        let clipboard = self.host.clipboard.clone();
+        let seams = RecoveryDialogSeams {
+            messages: self.seams.recovery_messages.clone(),
+            copy: Some(Rc::new(move |text| clipboard.try_set_text(text))),
+            explorer: self.seams.recovery_explorer.clone(),
+            auto_check: !self.seams.recovery_no_auto_check,
+        };
+        let dialog = RecoveryDialog::new(entries, options, services, seams, self.seams.chrome.clone());
+        Some(PreparedDialog::new(
+            dialog.native().clone(),
+            Box::new(move |_| drop(dialog)),
+        ))
     }
 
-    /// C# `ShowBenchmark` 195-208 up to the `new BenchmarkDialog(..)`: the dialog, not shown.
+    /// C# `ShowBenchmark` 195-208 up to the
+    /// C# benchmark builder; returns its native dialog without showing it.
     fn benchmark(&self, folder: Option<&Path>) -> Option<pr_platform_win::dialogs::native::dialog::NativeDialog> {
-        todo!()
+        let folder_dialog = self.host.folder_dialog.clone();
+        let log = self.host.log.clone();
+        let default_pick: PickFolderFn = Rc::new(move |owner, title, initial| {
+            match folder_dialog.show(owner, title, FolderPicker::usable_initial_folder(initial).as_deref()) {
+                Ok(path) => path,
+                Err(error) => {
+                    log.error(&format!("Folder dialog failed (0x{:08X})", error.0 as u32), None);
+                    None
+                }
+            }
+        });
+        let options = BenchmarkOptions {
+            pick_folder: Some(self.seams.benchmark.pick_folder.clone().unwrap_or(default_pick)),
+            open_in_explorer: self.seams.benchmark.open_in_explorer.clone(),
+            scan: self.seams.benchmark.scan.clone(),
+            save: self.seams.benchmark.save.clone(),
+            chrome: self.seams.chrome.clone(),
+            runner: Some(self.services.runner.clone()),
+            pictures_folder: None,
+        };
+        let factory = self
+            .seams
+            .benchmark
+            .sessions
+            .clone()
+            .unwrap_or_else(|| self.services.benchmark_sessions.clone());
+        let folder = folder.map(|path| path.to_string_lossy().into_owned());
+        let dialog = BenchmarkDialog::new(folder.as_deref(), factory, options);
+        Some(dialog.native().clone())
     }
 
     /// C# `ShowActionProfiles` 237.
     fn action_profiles(&self, actions: &[ReviewAction]) -> Option<PreparedDialog<Option<Vec<ReviewAction>>>> {
-        todo!()
+        let dialog = ActionProfilesDialog::new(
+            actions,
+            Some(self.host.file_dialog.clone()),
+            self.seams.warnings.clone(),
+            self.seams.chrome.clone(),
+        );
+        let native = dialog.native().clone();
+        Some(PreparedDialog::new(
+            native,
+            Box::new(move |id| (id == ID_OK).then(|| dialog.actions())),
+        ))
     }
 
     /// C# `ShowDiagnostics` 241-252.
     fn diagnostics(&self) -> Option<PreparedDialog<()>> {
-        todo!()
+        let snapshot = self
+            .services
+            .metrics
+            .as_ref()
+            .map(|metrics| metrics.snapshot())
+            .unwrap_or_else(|| ReviewMetrics::new().snapshot());
+        let explorer = self
+            .services
+            .explorer_snapshot
+            .as_ref()
+            .and_then(|snapshot| snapshot.current());
+        let display = DiagnosticsPresenter::build(
+            &snapshot,
+            explorer.as_deref(),
+            &(self.host.localizer)(),
+            &*self.host.numbers,
+        );
+        let clipboard = self.host.clipboard.clone();
+        let dialog = DiagnosticsDialog::new(
+            display,
+            Some(Box::new(move |text| clipboard.try_set_text(text))),
+            self.seams.chrome.clone(),
+        );
+        Some(PreparedDialog::new(dialog.native().clone(), Box::new(|_| ())))
     }
 
     /// C# `ShowSkippedFiles` 254-258.
     fn skipped_files(&self, entries: &[SkippedEntry]) -> Option<PreparedDialog<()>> {
-        todo!()
+        let localizer = (self.host.localizer)();
+        let dialog = NativeDialog::with_chrome(
+            Rc::new(ListDialog::new(ListDialogContent::for_skipped_files(
+                entries, &localizer,
+            ))),
+            self.seams.chrome.clone(),
+        );
+        Some(PreparedDialog::new(dialog, Box::new(|_| ())))
     }
 
     /// C# `ShowBatchReview` 260-264.
     fn batch_review(&self, items: &[BatchReviewItem]) -> Option<PreparedDialog<bool>> {
-        todo!()
+        let localizer = (self.host.localizer)();
+        let content = ListDialogContent::for_batch_review(items, &localizer, &*self.host.numbers);
+        let dialog = NativeDialog::with_chrome(Rc::new(ListDialog::new(content)), self.seams.chrome.clone());
+        Some(PreparedDialog::new(dialog, Box::new(|id| id == ID_OK)))
     }
 
     /// C# `PromptCustomZoom` 266-270.
     fn custom_zoom(&self, current_percent: i32) -> Option<PreparedDialog<Option<i32>>> {
-        todo!()
+        let dialog = ZoomPromptDialog::new(current_percent, self.seams.chrome.clone());
+        let native = dialog.native().clone();
+        Some(PreparedDialog::new(
+            native,
+            Box::new(move |id| if id == ID_OK { dialog.value() } else { None }),
+        ))
     }
 }

@@ -607,6 +607,10 @@ mod tests {
     fn offscreen_surface_is_warp_without_window_or_wait_handle() {
         let surface = offscreen(64, 32, 1.25);
         assert!(surface.is_warp());
+        assert!(
+            surface.options.prefer_warp,
+            "use_hardware=false is retained as PreferWarp=true"
+        );
         assert_eq!(
             (surface.pixel_width(), surface.pixel_height(), surface.dpi_scale()),
             (64, 32, 1.25)
@@ -893,6 +897,28 @@ mod tests {
         assert_eq!(log.borrow().len(), before);
     }
 
+    // Trait adapter must preserve handler identity and subscription lifecycle.
+    #[test]
+    #[ignore = "native: needs desktop"]
+    fn render_surface_trait_device_recreated_subscription_is_forwarded() {
+        let mut surface = offscreen(4, 4, 1.0);
+        let (first_count, first_handler) = counter();
+        let (second_count, second_handler) = counter();
+        let via_trait: &mut dyn RenderSurface = &mut surface;
+        let first = via_trait.subscribe_device_recreated(first_handler);
+        let second = via_trait.subscribe_device_recreated(second_handler);
+        assert_ne!(first, second);
+        via_trait.unsubscribe_device_recreated(first);
+        surface.recreate_device().unwrap();
+        assert_eq!(first_count.get(), 0);
+        assert_eq!(second_count.get(), 1);
+        let via_trait: &mut dyn RenderSurface = &mut surface;
+        via_trait.unsubscribe_device_recreated(second);
+        surface.recreate_device().unwrap();
+        assert_eq!(first_count.get(), 0);
+        assert_eq!(second_count.get(), 1);
+    }
+
     // C#: D2DRenderSurface.ImmediatePresent property
     #[test]
     #[ignore = "native: needs desktop"]
@@ -938,6 +964,21 @@ mod tests {
         assert_ne!(surface.frame_latency_wait_handle(), 0);
     }
 
+    #[test]
+    #[ignore = "native: needs desktop"]
+    fn window_surface_records_present_interval() {
+        let window = HiddenWindow::new();
+        let mut surface = D2dRenderSurface::create_window_surface(window.raw(), warp_options()).unwrap();
+        surface.begin_draw_context().unwrap().clear(BLACK);
+        assert!(matches!(
+            surface.end_draw_and_present().unwrap(),
+            PresentResult::Presented | PresentResult::Occluded
+        ));
+        // The interval may be clock-resolution zero. A Present fault hook proves the interval was measured
+        // around the swap-chain call, while last_present remains the elapsed duration (including zero).
+        assert!(surface.last_present() <= Duration::from_secs(60));
+    }
+
     // Immediate present and the tearing option only change the sync interval; the frame still presents
     #[test]
     #[ignore = "native: needs desktop"]
@@ -957,6 +998,10 @@ mod tests {
             ));
         }
     }
+
+    // Equivalent/unobservable: source lines 291-294 time a real swap-chain Present with Instant::elapsed;
+    // there is no clock seam, and elapsed can legitimately be Duration::ZERO at clock resolution, so
+    // replacing the getter with ZERO cannot be distinguished by a deterministic native test.
 
     // C#: D2DWindowSurfaceTests.WindowSurface_DeviceRemovedOnPresent_RecreatesSwapChainAndRaisesEvent
     #[test]

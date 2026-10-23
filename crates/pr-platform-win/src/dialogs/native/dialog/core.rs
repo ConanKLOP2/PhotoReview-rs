@@ -10,22 +10,26 @@
 //!
 //! `unsafe` here: the cookie (a `Box<Rc<DialogInner>>` pointer given to `CreateDialogIndirectParam` as `lParam` and stored in `DWLP_USER`, the C# `GCHandle`) and
 //! the `extern "system"` dialog procedure.
-#![allow(unused_variables, dead_code)] // stub: the porter removes this line with the last `todo!()`
-
+use std::cell::{Cell, RefCell};
+use std::collections::HashMap;
 use std::fmt;
+use std::panic::{AssertUnwindSafe, catch_unwind};
 use std::rc::Rc;
 
 use super::{dpi, draw, events, layout, modal, tooltip};
-use crate::dialogs::native::chrome::{DialogColors, NativeDialogChrome};
+use crate::dialogs::native::chrome::{ChromePainter, DarkDialogChrome, DialogColors, NativeDialogChrome};
 use crate::dialogs::native::template::{DialogItem, TemplateError};
 use crate::host::error::HostError;
+use crate::host::pending_panic;
 use crate::win32::structs::{Hgdi, Hwnd, Lparam, Lresult, Msg, Win32Error, Wparam};
+use crate::win32::{api::user32, dialog_native, messages};
 
 /// C# `IdOk`: the id of the default confirm button; `IDOK` of the dialog manager.
 pub const ID_OK: i32 = 1;
 /// C# `IdCancel`: `IDCANCEL` of the dialog manager (Esc, the Cancel / Close button, the X button).
 pub const ID_CANCEL: i32 = 2;
 /// C# `SizeMinimized` = `SIZE_MINIMIZED`: the `wParam` of a `WM_SIZE` that must not trigger a layout.
+#[allow(dead_code)] // W8-18i's WM_SIZE handler consumes this constant after its stub is ported.
 pub(super) const SIZE_MINIMIZED: u32 = 1;
 /// C# `WsDefaultDialog` = `WS_POPUP | WS_CAPTION | WS_SYSMENU` (`0x80C80000`).
 pub const WS_DEFAULT_DIALOG: u32 = 0x8000_0000 | 0x00C0_0000 | 0x0008_0000;
@@ -49,7 +53,12 @@ impl fmt::Display for DialogError {
     /// `AlreadyShown`: `"A NativeDialog instance can be shown once."`; `Template`: the `TemplateError` text; `CreateFailed`: `"CreateDialogIndirectParam failed
     /// (Win32 error {code})."`; `Loop`: the `HostError` text.
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        todo!()
+        match self {
+            Self::AlreadyShown => write!(f, "A NativeDialog instance can be shown once."),
+            Self::Template(error) => write!(f, "{error}"),
+            Self::CreateFailed(error) => write!(f, "CreateDialogIndirectParam failed (Win32 error {}).", error.0),
+            Self::Loop(error) => write!(f, "{error}"),
+        }
     }
 }
 
@@ -57,13 +66,13 @@ impl std::error::Error for DialogError {}
 
 impl From<TemplateError> for DialogError {
     fn from(error: TemplateError) -> Self {
-        todo!()
+        Self::Template(error)
     }
 }
 
 impl From<HostError> for DialogError {
     fn from(error: HostError) -> Self {
-        todo!()
+        Self::Loop(error)
     }
 }
 
@@ -80,6 +89,7 @@ pub struct ListItemText {
 /// implementor keeps its state in `Cell`/`RefCell`; `dialog` is the C# `this` for the `protected` helpers. An implementor must NOT store a [`NativeDialog`]
 /// (the handle owns the content: a stored handle would be a cycle); a dialog type that needs external methods is `struct X { native: NativeDialog, content:
 /// Rc<XContent> }`. A hook must not panic (R0003); a panic is captured by `pending_panic` and the dialog closes as Cancel.
+#[allow(unused_variables)] // Virtual hook defaults keep the C# parameter names for implementors.
 pub trait DialogContent {
     /// C# abstract `Title`: the window caption.
     fn title(&self) -> String;
@@ -149,7 +159,10 @@ pub trait DialogContent {
     /// C# virtual `ListItemText(id, index)`: text and badge of row `index` of the owner-draw list box `id`. Default
     /// `ListItemText { text: ListBoxControl::text_at(dialog.item(id), index), badge: None }`.
     fn list_item_text(&self, dialog: &NativeDialog, id: i32, index: i32) -> ListItemText {
-        todo!()
+        ListItemText {
+            text: crate::dialogs::native::controls::basic::ListBoxControl::text_at(dialog.item(id), index),
+            badge: None,
+        }
     }
 
     /// C# virtual `ListItemSubtitle(id, index)`: the small second line of an owner-draw row; `None` = single line. Default `None`.
@@ -211,7 +224,21 @@ pub trait DialogContent {
 /// C# `DarkDialogChrome.Instance` for the base class: the chrome used when `NativeDialog::new` is given none. Built once per thread
 /// (`DarkDialogChrome::new(Rc::new(painter))`); until the painter group (W8-18l..18n) lands this uses the `NoPainter` of this file (D-W8B5-305).
 pub fn default_chrome() -> Rc<dyn NativeDialogChrome> {
-    todo!()
+    thread_local! { static CHROME: Rc<DarkDialogChrome> = Rc::new(DarkDialogChrome::new(Rc::new(NoPainter))); }
+    CHROME.with(|chrome| Rc::clone(chrome) as Rc<dyn NativeDialogChrome>)
+}
+
+struct NoPainter;
+impl ChromePainter for NoPainter {
+    fn attach_dialog(&self, _: Hwnd) -> bool {
+        false
+    }
+    fn attach_control(&self, _: Hwnd, _: crate::dialogs::native::template::DialogControlClass) -> bool {
+        false
+    }
+    fn attach_header_filler(&self, _: Hwnd) -> bool {
+        false
+    }
 }
 
 /// A native Win32 dialog (C# `NativeDialog`). The handle is cheap to clone; every clone is the same dialog. Not `Send` (UI thread only). Each object shows
@@ -224,11 +251,15 @@ pub struct NativeDialog {
 impl fmt::Debug for NativeDialog {
     /// `NativeDialog { hwnd, closed }` (no content, no state dump).
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        todo!()
+        f.debug_struct("NativeDialog")
+            .field("hwnd", &self.hwnd())
+            .field("closed", &self.is_closed())
+            .finish()
     }
 }
 
 /// All state of one dialog. The `*State` structs are declared by the file that uses them.
+#[allow(dead_code)] // W8-18i..18k will read these shared state fields when their stubs are ported.
 pub(super) struct DialogInner {
     /// The abstract and virtual members.
     pub(super) content: Rc<dyn DialogContent>,
@@ -245,42 +276,73 @@ pub(super) struct DialogInner {
 impl NativeDialog {
     /// C# constructor with `chrome = null`: `with_chrome(content, None)`.
     pub fn new(content: Rc<dyn DialogContent>) -> Self {
-        todo!()
+        Self::with_chrome(content, None)
     }
 
     /// C# constructor `NativeDialog(INativeDialogChrome? chrome = null)`: `None` = `default_chrome()`. Nothing is created yet (no window, no handle).
     pub fn with_chrome(content: Rc<dyn DialogContent>, chrome: Option<Rc<dyn NativeDialogChrome>>) -> Self {
-        todo!()
+        Self {
+            inner: Rc::new(DialogInner {
+                content,
+                chrome: chrome.unwrap_or_else(default_chrome),
+                modal: modal::ModalState::new(),
+                metrics: dpi::MetricsState {
+                    dpi: Cell::new(96),
+                    font: Cell::new(0),
+                    header_font: Cell::new(0),
+                    avg_char_width: Cell::new(6),
+                    line_height: Cell::new(15),
+                },
+                controls: layout::ControlsState {
+                    children: RefCell::new(Vec::new()),
+                    child_hosts: RefCell::new(Vec::new()),
+                },
+                events: events::EventsState {
+                    list_views: RefCell::new(Vec::new()),
+                    sorts: RefCell::new(HashMap::new()),
+                },
+                tips: tooltip::TipState {
+                    tooltip: Cell::new(0),
+                    tip_buffer: RefCell::new(Vec::new()),
+                    item_tips: RefCell::new(Vec::new()),
+                    last_tip_item: RefCell::new(HashMap::new()),
+                },
+                draw: draw::DrawState {
+                    window_brush: Cell::new(0),
+                    input_brush: Cell::new(0),
+                },
+            }),
+        }
     }
 
     /// C# `Hwnd`: the dialog window (`0` before creation and after destruction).
     pub fn hwnd(&self) -> Hwnd {
-        todo!()
+        self.inner.modal.hwnd.get()
     }
 
     /// C# `IsClosed`: `show_modal` finished or `close` / `end_modal` was called.
     pub fn is_closed(&self) -> bool {
-        todo!()
+        self.inner.modal.done.get()
     }
 
     /// C# `Dpi`: the DPI used for fonts and units (`96` until `WM_INITDIALOG`).
     pub fn dpi(&self) -> u32 {
-        todo!()
+        self.inner.metrics.dpi.get()
     }
 
     /// C# `BodyFont`: the current body font (`0` before creation).
     pub fn body_font(&self) -> Hgdi {
-        todo!()
+        self.inner.metrics.font.get()
     }
 
     /// C# `SelfRefData`: the cookie as the `ref_data` of a subclass procedure installed by a derived dialog. Valid until the window is destroyed (`0` after).
     pub fn self_ref_data(&self) -> usize {
-        todo!()
+        self.inner.modal.self_cookie.get() as usize
     }
 
     /// The content object (for the owner of a composite dialog type and for tests).
     pub fn content(&self) -> &Rc<dyn DialogContent> {
-        todo!()
+        &self.inner.content
     }
 
     /// Recovers the dialog from a cookie WITHOUT consuming it (clones the `Rc`): the first thing the dialog procedure and the subclass procedures do.
@@ -288,22 +350,32 @@ impl NativeDialog {
     /// # Safety
     /// `cookie` is `0` or a value returned by `make_cookie` that `free_cookie` has not released.
     pub(super) unsafe fn from_cookie(cookie: isize) -> Option<NativeDialog> {
-        todo!()
+        if cookie == 0 {
+            return None;
+        }
+        Some(Self {
+            // SAFETY: cookie is a live pointer produced by make_cookie; cloning preserves ownership of the boxed Rc.
+            inner: unsafe { (*(cookie as *const Rc<DialogInner>)).clone() },
+        })
     }
 }
 
 /// Boxes a clone of `inner` and returns the thin pointer for `lpInitParam` / `DWLP_USER` (never `0`). Pair with exactly one [`free_cookie`] (C# `GCHandle.Alloc`
 /// and `Free`).
 pub(super) fn make_cookie(inner: &Rc<DialogInner>) -> isize {
-    todo!()
+    Box::into_raw(Box::new(Rc::clone(inner))) as isize
 }
 
 /// Releases a cookie from [`make_cookie`]; `0` is a no-op.
 ///
 /// # Safety
 /// `cookie` came from `make_cookie` and was not freed; the dialog procedure clones the `Rc` before it calls anything, so a handler may free its own cookie.
+#[allow(dead_code)] // W8-18k's cleanup calls free_cookie once the window is destroyed.
 pub(super) unsafe fn free_cookie(cookie: isize) {
-    todo!()
+    if cookie != 0 {
+        // SAFETY: cookie came from make_cookie and is freed exactly once here.
+        drop(unsafe { Box::from_raw(cookie as *mut Rc<DialogInner>) });
+    }
 }
 
 /// The `DLGPROC` of every native dialog (C# `[UnmanagedCallersOnly] DialogProc`, lines 535 to 560). Algorithm: `WM_INITDIALOG`: `SetWindowLongPtr(hwnd,
@@ -315,7 +387,31 @@ pub(super) unsafe fn free_cookie(cookie: isize) {
 /// # Safety
 /// Only the OS calls it, as a `DLGPROC`, with a window of a dialog created by `show_modal` / `show_modeless` on this thread.
 pub(super) unsafe extern "system" fn dialog_proc(hwnd: Hwnd, message: u32, wparam: Wparam, lparam: Lparam) -> Lresult {
-    todo!()
+    let mut dialog = None;
+    let answer = catch_unwind(AssertUnwindSafe(|| {
+        let cookie = if message == dialog_native::WM_INITDIALOG {
+            // SAFETY: lparam is our live cookie and DWLP_USER is this dialog's private slot.
+            unsafe { user32::set_window_long_ptr(hwnd, dialog_native::DWLP_USER, lparam) };
+            lparam
+        } else {
+            user32::get_window_long_ptr(hwnd, dialog_native::DWLP_USER)
+        };
+        // SAFETY: nonzero cookie was stored by this dialog and remains live until cleanup.
+        dialog = unsafe { NativeDialog::from_cookie(cookie) };
+        dialog
+            .as_ref()
+            .map_or(0, |d| d.handle_message(hwnd, message, wparam, lparam))
+    }));
+    match answer {
+        Ok(value) => value,
+        Err(payload) => {
+            pending_panic::capture(payload);
+            if let Some(dialog) = dialog {
+                pending_panic::guarded((), AssertUnwindSafe(|| dialog.end_modal(ID_CANCEL)));
+            }
+            0
+        }
+    }
 }
 
 impl NativeDialog {
@@ -327,6 +423,104 @@ impl NativeDialog {
     /// `on_dpi_changed_message(wparam, lparam)` (18i; it takes the low word of `wparam`), `1`; the six `WM_CTLCOLOR*` -> `on_ctl_color(message, wparam, lparam)` (18k, `Some` = the brush);
     /// anything else -> `content.on_window_message(..)`: `Some(r)` -> `SetWindowLongPtr(hwnd, DWLP_MSGRESULT, r)` and `1`, `None` -> `0`.
     pub(super) fn handle_message(&self, hwnd: Hwnd, message: u32, wparam: Wparam, lparam: Lparam) -> Lresult {
-        todo!()
+        match message {
+            dialog_native::WM_INITDIALOG => {
+                self.initialize_dialog(hwnd);
+                0
+            }
+            messages::WM_COMMAND => {
+                let (id, notification) = events::split_command_wparam(wparam);
+                isize::from(self.handle_command(id, notification))
+            }
+            messages::WM_CLOSE => self.on_close_request(),
+            messages::WM_SETCURSOR => self.on_set_cursor(hwnd),
+            crate::win32::control_constants::WM_NOTIFY => self.handle_notify(hwnd, lparam),
+            crate::win32::control_constants::WM_DRAWITEM => isize::from(self.draw_owner_item(lparam)),
+            crate::win32::control_constants::WM_HSCROLL | crate::win32::control_constants::WM_VSCROLL => {
+                self.on_scroll_message(wparam, lparam);
+                0
+            }
+            messages::WM_SIZE => {
+                self.on_size(wparam);
+                1
+            }
+            messages::WM_GETMINMAXINFO => {
+                self.on_get_min_max_info(lparam);
+                1
+            }
+            messages::WM_DPICHANGED => {
+                self.on_dpi_changed_message(wparam, lparam);
+                1
+            }
+            dialog_native::WM_CTLCOLORDLG
+            | dialog_native::WM_CTLCOLORBTN
+            | dialog_native::WM_CTLCOLORMSGBOX
+            | dialog_native::WM_CTLCOLORSCROLLBAR
+            | dialog_native::WM_CTLCOLORSTATIC
+            | dialog_native::WM_CTLCOLOREDIT
+            | dialog_native::WM_CTLCOLORLISTBOX => self.on_ctl_color(message, wparam, lparam).unwrap_or(0),
+            _ => match self.inner.content.on_window_message(self, message, wparam, lparam) {
+                Some(result) => {
+                    // SAFETY: DWLP_MSGRESULT is this dialog's result slot; result is an integer answer from its hook.
+                    unsafe { user32::set_window_long_ptr(hwnd, dialog_native::DWLP_MSGRESULT, result) };
+                    1
+                }
+                None => 0,
+            },
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    struct Content;
+    impl DialogContent for Content {
+        fn title(&self) -> String {
+            String::new()
+        }
+        fn items(&self) -> Vec<DialogItem> {
+            Vec::new()
+        }
+        fn preferred_client_size(&self, _: &NativeDialog) -> (i32, i32) {
+            (100, 100)
+        }
+        fn layout_controls(&self, _: &NativeDialog, _: i32, _: i32) {}
+    }
+
+    #[test]
+    fn cookie_round_trip_keeps_the_dialog_alive_until_freed() {
+        // C#: NativeDialog._self / GCHandle.Alloc and Free.
+        let dialog = NativeDialog::new(Rc::new(Content));
+        let initial = Rc::strong_count(&dialog.inner);
+        let cookie = make_cookie(&dialog.inner);
+        assert_ne!(cookie, 0);
+        assert_eq!(Rc::strong_count(&dialog.inner), initial + 1);
+        // SAFETY: cookie came from make_cookie above and remains live until free_cookie below.
+        let recovered = unsafe { NativeDialog::from_cookie(cookie) }.expect("live cookie");
+        assert!(Rc::ptr_eq(&dialog.inner, &recovered.inner));
+        assert_eq!(Rc::strong_count(&dialog.inner), initial + 2);
+        drop(recovered);
+        // SAFETY: the cookie came from make_cookie and has not been freed.
+        unsafe { free_cookie(cookie) };
+        assert_eq!(Rc::strong_count(&dialog.inner), initial);
+        // SAFETY: zero is expressly valid for both functions.
+        unsafe {
+            assert!(NativeDialog::from_cookie(0).is_none());
+            free_cookie(0);
+        }
+    }
+
+    #[test]
+    fn size_minimized_matches_the_csharp_golden() {
+        // C#: NativeDialog.SizeMinimized.
+        let golden = pr_test_support::golden::load("dialog-layout");
+        let row = golden
+            .cases
+            .iter()
+            .find(|c| c["kind"] == "constants")
+            .expect("constants row");
+        assert_eq!(u64::from(SIZE_MINIMIZED), row["size_minimized"]);
     }
 }

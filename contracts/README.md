@@ -6,6 +6,97 @@ compiles with the rest of the workspace; a porter fills only the files under "Ow
 
 **Lead decisions below override anything a contract says.** Porters read this file first, then their contract.
 
+## Table of contents
+
+Generated from the headings of this file (levels 2 and 3). Roster and decision sections are listed per wave and batch; the text of every decision is unchanged.
+
+- [Wave 1 roster](#wave-1-roster)
+- [Lead decisions (Wave 1)](#lead-decisions-wave-1)
+- [Wave 2 roster (dependency order)](#wave-2-roster-dependency-order)
+- [Lead decisions (Wave 2)](#lead-decisions-wave-2)
+- [Wave 3 roster (data safety, dependency order)](#wave-3-roster-data-safety-dependency-order)
+- [Lead decisions (Wave 3)](#lead-decisions-wave-3)
+- [Wave 4 roster (imaging, tiers run in order, units inside a tier in parallel)](#wave-4-roster-imaging-tiers-run-in-order-units-inside-a-tier-in-parallel)
+  - [Tier A: pure leaves](#tier-a-pure-leaves)
+  - [Tier B: caches and routing](#tier-b-caches-and-routing)
+  - [Tier C: Windows imaging (`pr_platform_win::wic`, `unsafe` with SAFETY per block)](#tier-c-windows-imaging-pr_platform_winwic-unsafe-with-safety-per-block)
+  - [Tier D: orchestration (split by the contract writer)](#tier-d-orchestration-split-by-the-contract-writer)
+- [Lead decisions (Wave 4)](#lead-decisions-wave-4)
+- [Wave 5 roster (RAW, TurboJPEG, LibRaw; dependency-graph scheduling, P-28)](#wave-5-roster-raw-turbojpeg-libraw-dependency-graph-scheduling-p-28)
+  - [Tier A: leaves (no Wave 5 dependency)](#tier-a-leaves-no-wave-5-dependency)
+  - [Tier B: shared parsers and gates (depend on Tier A)](#tier-b-shared-parsers-and-gates-depend-on-tier-a)
+  - [Tier C: container readers and consumers of Tier B](#tier-c-container-readers-and-consumers-of-tier-b)
+  - [Tier D: registry and routing](#tier-d-registry-and-routing)
+  - [Tier E: `RawDecoder`](#tier-e-rawdecoder)
+- [Lead decisions (Wave 5)](#lead-decisions-wave-5)
+- [Wave 6 roster (Windows platform)](#wave-6-roster-windows-platform)
+- [Wave 7 roster (benchmarking, `pr-bench`)](#wave-7-roster-benchmarking-pr-bench)
+- [Lead decisions (Wave 7)](#lead-decisions-wave-7)
+- [Wave 8 batch B1 roster (pure leaves and goldens, `pr-app` / `pr-platform-win`)](#wave-8-batch-b1-roster-pure-leaves-and-goldens-pr-app--pr-platform-win)
+- [Lead decisions (Wave 8 batch B1)](#lead-decisions-wave-8-batch-b1)
+- [Wave 8 batch B2 roster (coordinators, view models, presenters; `pr-app`, pure fakes-only units)](#wave-8-batch-b2-roster-coordinators-view-models-presenters-pr-app-pure-fakes-only-units)
+- [Lead decisions (Wave 8 batch B2)](#lead-decisions-wave-8-batch-b2)
+- [Wave 8 batch B3 (gfx group 11f-11h)](#wave-8-batch-b3-gfx-group-11f-11h)
+- [Lead decisions (Wave 8 batch B3, gfx group)](#lead-decisions-wave-8-batch-b3-gfx-group)
+- [Wave 8 batch B3 roster (win32 group 11a-11e; `pr-platform-win`, `unsafe` with SAFETY per block)](#wave-8-batch-b3-roster-win32-group-11a-11e-pr-platform-win-unsafe-with-safety-per-block)
+- [Lead decisions (Wave 8 batch B3, win32 group)](#lead-decisions-wave-8-batch-b3-win32-group)
+- [Wave 8 batch B3 (render group 12b-12e)](#wave-8-batch-b3-render-group-12b-12e)
+- [Lead decisions (Wave 8 batch B3, render group)](#lead-decisions-wave-8-batch-b3-render-group)
+- [Wave 8 batch B3 (render group 12f-12j)](#wave-8-batch-b3-render-group-12f-12j)
+- [Lead decisions (Wave 8 batch B3, render group 12f-12j)](#lead-decisions-wave-8-batch-b3-render-group-12f-12j)
+- [Wave 8 batch B3 (host group 13a-13f)](#wave-8-batch-b3-host-group-13a-13f)
+- [Lead decisions (Wave 8 batch B3, host group)](#lead-decisions-wave-8-batch-b3-host-group)
+- [Wave 8 batch B4 (viewing group 16b-16i)](#wave-8-batch-b4-viewing-group-16b-16i)
+- [Lead decisions (Wave 8 batch B4, viewing group)](#lead-decisions-wave-8-batch-b4-viewing-group)
+- [Wave 8 batch B4 (input and menus group 14a-14g)](#wave-8-batch-b4-input-and-menus-group-14a-14g)
+- [Lead decisions (Wave 8 batch B4, input and menus group)](#lead-decisions-wave-8-batch-b4-input-and-menus-group)
+- [Wave 8 batch B4 (main window group 13g-13k)](#wave-8-batch-b4-main-window-group-13g-13k)
+- [Lead decisions (Wave 8 batch B4, main window group)](#lead-decisions-wave-8-batch-b4-main-window-group)
+- [Wave 8 batch B4 (overlay group 15f-15j)](#wave-8-batch-b4-overlay-group-15f-15j)
+- [Lead decisions (Wave 8 batch B4, overlay group)](#lead-decisions-wave-8-batch-b4-overlay-group)
+- [Wave 8 batch B4 reconciliation (main window 13g-13k, input and menus 14a-14g, overlay 15f-15j, viewing 16b-16d + 16f-16i)](#wave-8-batch-b4-reconciliation-main-window-13g-13k-input-and-menus-14a-14g-overlay-15f-15j-viewing-16b-16d--16f-16i)
+  - [Decisions](#decisions)
+  - [Cross-group findings (what was checked, what it was)](#cross-group-findings-what-was-checked-what-it-was)
+  - [Required amendments to merged code (prerequisite PR; NOT implemented here)](#required-amendments-to-merged-code-prerequisite-pr-not-implemented-here)
+  - [Not resolved (needs a product or lead decision)](#not-resolved-needs-a-product-or-lead-decision)
+  - [Not verified](#not-verified)
+- [Wave 8 batch B5 (dialogs and settings UI: `pr-platform-win::dialogs`, units W8-18a..18v and W8-19a..19m)](#wave-8-batch-b5-dialogs-and-settings-ui-pr-platform-windialogs-units-w8-18a18v-and-w8-19a19m)
+  - [Wave 8 batch B5, group G1 (W8-18a, W8-18b, W8-18c): decisions for the lead to merge into `contracts/README.md`](#wave-8-batch-b5-group-g1-w8-18a-w8-18b-w8-18c-decisions-for-the-lead-to-merge-into-contractsreadmemd)
+  - [Wave 8 batch B5, group G2 (dialog base: 18d template and chrome, 18e edit centering and list dialog, 18f/18g native controls): lead decisions](#wave-8-batch-b5-group-g2-dialog-base-18d-template-and-chrome-18e-edit-centering-and-list-dialog-18f18g-native-controls-lead-decisions)
+  - [Wave 8 batch B5, group G3 (W8-18h, W8-18i, W8-18j, W8-18k: the `NativeDialog` base class): lead decisions](#wave-8-batch-b5-group-g3-w8-18h-w8-18i-w8-18j-w8-18k-the-nativedialog-base-class-lead-decisions)
+  - [Wave 8 batch B5, group G4 (W8-18l, W8-18m, W8-18n: NativeDialogChromePainter; W8-18o: Win32SecondaryWindowPort): lead decisions](#wave-8-batch-b5-group-g4-w8-18l-w8-18m-w8-18n-nativedialogchromepainter-w8-18o-win32secondarywindowport-lead-decisions)
+  - [Wave 8 batch B5, group G5 (W8-18p, W8-18q, W8-18r, W8-18s: ZoomPromptDialog, DiagnosticsDialog, ActionProfilesDialog, BenchmarkDialog): lead decisions](#wave-8-batch-b5-group-g5-w8-18p-w8-18q-w8-18r-w8-18s-zoompromptdialog-diagnosticsdialog-actionprofilesdialog-benchmarkdialog-lead-decisions)
+  - [Wave 8 batch B5, group G6 (W8-18t, W8-18u, W8-18v: the Recovery dialog): lead decisions](#wave-8-batch-b5-group-g6-w8-18t-w8-18u-w8-18v-the-recovery-dialog-lead-decisions)
+  - [Wave 8 batch B5, group G7 (settings framework: 19a page view, catalog and context; 19b layout elements; 19c page builder): lead decisions](#wave-8-batch-b5-group-g7-settings-framework-19a-page-view-catalog-and-context-19b-layout-elements-19c-page-builder-lead-decisions)
+  - [Wave 8 batch B5, group G8 (settings pages: 19d Diagnostics and Performance, 19e Display, 19f Files, 19g General, 19h Mouse, 19i Shortcuts): lead decisions](#wave-8-batch-b5-group-g8-settings-pages-19d-diagnostics-and-performance-19e-display-19f-files-19g-general-19h-mouse-19i-shortcuts-lead-decisions)
+  - [Wave 8 batch B5, group G9 (the Settings window: 19j frame, 19k working state and key capture, 19l commands and messages, 19m layout and close): lead decisions](#wave-8-batch-b5-group-g9-the-settings-window-19j-frame-19k-working-state-and-key-capture-19l-commands-and-messages-19m-layout-and-close-lead-decisions)
+  - [Lead reconciliation of batch B5 (integrator pass)](#lead-reconciliation-of-batch-b5-integrator-pass)
+  - [Not resolved (needs a product or lead decision; acted on as recommended, P-45)](#not-resolved-needs-a-product-or-lead-decision-acted-on-as-recommended-p-45)
+  - [Not verified](#not-verified-1)
+- [Wave 8 batch B6 (shell start-up and the exe: `pr_app::startup`, `pr_platform_win::shell_startup`, `pr_shell::startup`, units W8-17a..17e, W8-20a, W8-20b)](#wave-8-batch-b6-shell-start-up-and-the-exe-pr_appstartup-pr_platform_winshell_startup-pr_shellstartup-units-w8-17a17e-w8-20a-w8-20b)
+  - [Wave 8 batch B6, group H1 (W8-17a, W8-17b, W8-17c): decisions, lead actions and cross-unit notes](#wave-8-batch-b6-group-h1-w8-17a-w8-17b-w8-17c-decisions-lead-actions-and-cross-unit-notes)
+  - [Wave 8 batch B6, group H2 (W8-17d, W8-17e): decisions, lead actions and cross-unit notes](#wave-8-batch-b6-group-h2-w8-17d-w8-17e-decisions-lead-actions-and-cross-unit-notes)
+  - [Wave 8 batch B6, group H3 (W8-20a, W8-20b): decisions, lead actions and cross-unit notes](#wave-8-batch-b6-group-h3-w8-20a-w8-20b-decisions-lead-actions-and-cross-unit-notes)
+  - [Lead reconciliation of batch B6 (integrator pass)](#lead-reconciliation-of-batch-b6-integrator-pass)
+  - [Not resolved (needs a product or lead decision; acted on as recommended, P-46, P-47)](#not-resolved-needs-a-product-or-lead-decision-acted-on-as-recommended-p-46-p-47)
+  - [Not verified](#not-verified-2)
+  - [Wave 8 batch B6, group H4 (W8-09b: the shared service graph): decisions, lead actions and cross-unit notes](#wave-8-batch-b6-group-h4-w8-09b-the-shared-service-graph-decisions-lead-actions-and-cross-unit-notes)
+- [Wave 9 sync (EXTERNAL-EDITORS UI)](#wave-9-sync-external-editors-ui)
+  - [Unconfirmed sources](#unconfirmed-sources)
+  - [Wave 9 lane E decisions (D-W9E-1..12; P-48 in `docs/PROPOSED-DECISIONS.md`)](#wave-9-lane-e-decisions-d-w9e-112-p-48-in-docsproposed-decisionsmd)
+  - [Needs a human or product decision (acted on as recommended, P-48)](#needs-a-human-or-product-decision-acted-on-as-recommended-p-48)
+  - [Not verified](#not-verified-3)
+- [Wave 9 sync (FEAT-RENAME)](#wave-9-sync-feat-rename)
+  - [Decisions](#decisions-7)
+  - [Unconfirmed sources](#unconfirmed-sources-1)
+  - [Localisation ownership](#localisation-ownership)
+  - [Needs a human or product decision (acted on as recommended, P-49)](#needs-a-human-or-product-decision-acted-on-as-recommended-p-49)
+- [Wave 10 (contracts only: manual update HTTP, release, benchmark parity, RAW/native residual)](#wave-10-contracts-only-manual-update-http-release-benchmark-parity-rawnative-residual)
+  - [Wave 10 HTTP lane (W10-H1..H3: manual update transport)](#wave-10-http-lane-w10-h1h3-manual-update-transport)
+  - [Wave 10 release lane (W10-R1..R5)](#wave-10-release-lane-w10-r1r5)
+  - [Wave 10 benchmark lane (W10-B1..B3)](#wave-10-benchmark-lane-w10-b1b3)
+  - [Wave 10 RAW/native lane (W10-N1..N4)](#wave-10-rawnative-lane-w10-n1n4)
+
 ## Wave 1 roster
 
 | WU | Unit | Rust | Porter | Golden |
@@ -1308,7 +1399,7 @@ Verified while writing: the stubs under `crates/pr-platform-win/src/dialogs/nati
 | D-W8B5-415 | **`ExternalEditors` and `RenamePrompt` are not supported by the Rust port (baseline parity).** The baseline `Supports` lists seven kinds plus Settings; the two extra enum variants of `SecondaryWindowKind` (D-W8B5-4) answer `false`, and the router (which answers `supports = true` for everything) sends them to the cancelled answer. The golden `kinds` row lists the 8 baseline names; the 2 Rust-only variants follow them in the enum. | 18o |
 | D-W8B5-416 | **Oracle command `secondary-window-supports`** (`tools/oracle-cs/Commands/W8-18o.cs`, inputs `tests/golden-inputs/secondary-window-supports.json`, 44 cases): reflection over the internal `Win32SecondaryWindowPort` (built with an empty `ServiceCollection().BuildServiceProvider()` and `settingsEnabled` null / `() => true` / `() => false`) and `SecondaryWindowRouter` (null fallback); only `Supports`, `OpenCount`, `IsBenchmarkOpen`, `SettingsEnabled` are read; no window, no dialog. Lead actions: add to `Program.cs`: `// Commands\W8-18o` and `"secondary-window-supports" => Commands.W818oSupportsCases(inputs),`; no csproj change (DI is already referenced); run the oracle; add the row to `tests/golden-inputs/README.md`: `| secondary-window-supports | W8-18o Win32SecondaryWindowPort / SecondaryWindowRouter | Supports table of the port (settings enabled true / false / default) and of the router, initial state, SecondaryWindowKind names |`. | 18o |
 | D-W8B5-417 | **Open dialogs are tracked by a counter id, not by handle or reference.** `open: RefCell<Vec<OpenDialog { id, dialog }>>` and the Benchmark slot use the id (a closed dialog has `hwnd == 0`; `NativeDialog` has no `ptr_eq`); the `closed` callback of the modeless Benchmark holds the id and an `Rc<PortState>` and clears the slot only if it still holds that id. `dispose` clones the handles first and closes them last to first; no `RefCell` borrow is held across `show_modal`, `show_modeless`, `close`, `activate` or a factory call. | 18o |
-| D-W8B5-418 | **Plan-edge corrections and unplanned items (lead actions).** (a) 18l also needs 11a, 11c, 11d, 13c; 18m also needs 18d and 11a..11d; 18n also needs 18l, 18f (`ComboBoxControl::text_at`), 18d and 11a..11d. (b) 18o also needs 18b (declares `SecondaryWindowPort` and `SecondaryWindowKind`, so 18o implements them), 13c (`MessageLoop`), 19a (`catalog::is_complete`). (c) **Unplanned unit W8-18w**: the production implementation of `SecondaryWindowDialogs` (about 250 lines, Sonnet, N; depends on 18p..18v and 19j..19m; builds each dialog from its constructor with the services of the composition root, includes the RV-A14 journal read with `try_read_recovery_entries`, the warning sink, the clipboard copy, `BenchmarkDialogSeams`). Until it exists, 17c can pass a factory answering `None` for every window. The lead decides whether it is its own row or part of W8-17c. (d) The four post-baseline C# dialogs named in `contracts/drafts-b5/G1-decisions.md` stay unplanned. (e) Reconcile the numbering: 18l, 18m, 18n each get a PARITY row `X-chrome-painter-*` (new). | plan |
+| D-W8B5-418 | **Plan-edge corrections and unplanned items (lead actions).** (a) 18l also needs 11a, 11c, 11d, 13c; 18m also needs 18d and 11a..11d; 18n also needs 18l, 18f (`ComboBoxControl::text_at`), 18d and 11a..11d. (b) 18o also needs 18b (declares `SecondaryWindowPort` and `SecondaryWindowKind`, so 18o implements them), 13c (`MessageLoop`), 19a (`catalog::is_complete`). (c) **Unplanned unit W8-18w**: the production implementation of `SecondaryWindowDialogs` (about 250 lines, Sonnet, N; depends on 18p..18v and 19j..19m; builds each dialog from its constructor with the services of the composition root, includes the RV-A14 journal read with `try_read_recovery_entries`, the warning sink, the clipboard copy, `BenchmarkDialogSeams`). Until it exists, 17c can pass a factory answering `None` for every window. The lead decides whether it is its own row or part of W8-17c. (d) The four post-baseline C# dialogs named in `contracts/README.md` (section "Wave 8 batch B5, group G1") stay unplanned. (e) Reconcile the numbering: 18l, 18m, 18n each get a PARITY row `X-chrome-painter-*` (new). | plan |
 | D-W8B5-419 | **`PaintState` counts its live instances (test hook).** The box freed at `WM_NCDESTROY` is a heap allocation, invisible to `GetGuiResources`, so the native leak test of 18l could not detect a leak or a double free. `PaintState` is `#[non_exhaustive]`, built by `PaintState::new(kind)` (counts up), `Drop` counts down, and `painter::live_state_count()` (`#[doc(hidden)]`) reads the `AtomicUsize`. | 18l |
 | D-W8B5-420 | **`controls::frame_rects` is `pub`.** The pure test of the four rectangles of `Frame` lives in `tests/` (an integration test crate) and cannot reach a `pub(super)` helper; the helper is a plain `pub fn` returning `[Rect; 4]`, which `frame` uses. | 18m |
 | D-W8B5-421 | **The Benchmark `closed` callback holds a `Weak<PortState>`; the production-factory tests of the port go to W8-18w.** (a) The port owns the Benchmark dialog and the dialog owns its `closed` callback, so a strong `Rc<PortState>` in the callback is a cycle while the window is open; `Weak` makes a port dropped without `dispose` free its state. (b) The C# tests that drive `ShowRecovery` / `Show*` through the real services (`RecoveryDialogDataSafetyTests.Port_*`, `RecoveryDialogGapTests.Port_*`, `Port_Copy_*`) need the production `SecondaryWindowDialogs`, which is the unplanned unit W8-18w (D-W8B5-418 c); until the lead creates that row they have no owner. The Benchmark `Port_*` tests (3) and `SettingsPortTests` (7) are listed in `W8-18o.md` and ported there with test dialogs. | 18o |
@@ -1702,6 +1793,8 @@ Written by the contract writer of W8-09b (`contracts/W8-09b.md`) AFTER the B6 re
 | D-W8B6-157 | **Module homes.** Crate home `pr-shell` (D-W8B1-1, as 09a): `composition::{registry, main_view_model}` as the plan says, plus `platform`, `texts`, `adapters` (pure) and `graph` (`#[cfg(windows)]`, needs `startup`). OS adapters in `pr-platform-win` at crate level (`culture`, `explorer_order_provider`, `physical_memory`, `shell_integration`) and `wic::cache_adapters`. Plan row text "`composition::{registry, main_view_model}`" stays true; the row grows by the modules above. | 09b |
 | D-W8B6-158 | **`GraphOverrides` / `production_graph_builder_with` are defined in `composition::graph` and re-exported by `startup::graph`** (closes the lead action of D-W8B6-47 / -106: the contract provides them, so 20b's amendment A1 is not needed). The six fields are exactly D-W8B6-47's. The ONE cross-unit edit of 09b in 17d's file is three lines: `production_graph_builder()` delegates to `production_graph_builder_with(GraphOverrides::default())`, and `pub use` of the two names. If B1 resolves as (a), two more lines in `startup/graph.rs` (field type) and `startup/window.rs`. | 09b S4 |
 | D-W8B6-159 | **PARITY.** New rows `X-composition-registry`, `X-composition-main-view-model`, `X-composition-texts-adapters`, `X-platform-adapters` (status `Contract (W8-09b)`), `X-embedded-thumbnail-backend` (`Different`/Todo, O1). `Different` also: `AddPhotoReviewShared` null-argument and "missing host service" tests are unrepresentable (types); the Wpf-only registrations (`WpfKeyNameValidator`, `WpfClipboardService`, `WpfPresentationSinkFactory`) are retired. | 09b |
+| D-W8B6-160 | **B1 approved (option a).** `StartupGraph::view_model` becomes a factory (`ViewModelFactory`) that W8-17e's `create_main_window` calls right after `apply_loaded_settings`, so the preview service reads the LOADED settings (capacity, RAM percent, preload window) when the view model is built; `build_shared_view_model` is the body of that factory. Cross-unit edit of 17d/17e files, done in slice S4 of W8-09b. Approved by the lead (Machine B session, 2026-10-22), following the recommendation in `contracts/W8-09b.md`. |
+| D-W8B6-161 | **B2 approved (amendment A12 to pr-app).** `IPreloadController::catalog_changed(&self, &ReviewCatalog)` is added with a default no-op body and is called, with the catalog the caller already holds, immediately before each of the four `preload_around` call sites (`present_a.rs` x2, `undo.rs`, `notify_move.rs`); `FeedPreloadController` overrides it to publish the entries to the `CatalogFeed` (D-W8B6-155). Belongs to slice S4 of W8-09b. Approved by the lead (Machine B session, 2026-10-22), following the recommendation in `contracts/W8-09b.md`. |
 
 #### Lead actions (not done in the contract PR)
 1. Answer **B1** (view model timing) and approve amendment **A12** (B2); both gate slice S4 only.
@@ -1716,3 +1809,252 @@ Written by the contract writer of W8-09b (`contracts/W8-09b.md`) AFTER the B6 re
 
 #### Not done and out of scope here
 No unit is ported; no stub body exists. S2's native tests, the desktop runs, the mutation runs and the IDs of the new PARITY rows' tests are unrecorded. The oracle was not run (D-W8B6-156).
+
+## Wave 9 sync (EXTERNAL-EDITORS UI)
+
+Contract-only lane E of Wave 9 (plan: `docs/WAVE-9-PLAN-edt.md`; C# baseline `7eaee2a2`, feature commit `d9623945`): 9 contracts (`contracts/W9-E1.md` .. `W9-E9.md`), stubs in `pr-core` settings, `pr-app` menus/input/presenters/viewmodels and `pr-platform-win` dialogs/shell, three oracle commands with goldens. No unit is ported; no stub body is implemented.
+
+| Unit | Contract | Kind | Oracle command (golden cases) | Depends on |
+|---|---|---|---|---|
+| W9-E1 settings: `ExternalEditor` and its rules, `AppSettings`/normalizer/store v3 to v4, `ShortcutMappings.open_in_default_editor`, `DialogService` trait members | `contracts/W9-E1.md` | G + F | `external-editor-rules` | none |
+| W9-E2 `ExternalEditorsDialog` (native) | `contracts/W9-E2.md` | N | none | E1, W8-18p, W8-18q |
+| W9-E3 `ExternalEditorProductName`, `TextPromptDialog`, `ListDialog` choice list | `contracts/W9-E3.md` | F + N | none (machine dependent, D-W9E-3) | E1, W8-18p |
+| W9-E4 settings field map, form state, presenter, Files and Shortcuts pages | `contracts/W9-E4.md` | F + N | none | E1, W8-19f, W8-19i, W8-19j..m |
+| W9-E5 `MainViewModel` editor members, launcher seam | `contracts/W9-E5.md` | F | none (fakes) | E1 |
+| W9-E6 `ContextMenuModelBuilder` editors submenu | `contracts/W9-E6.md` | G | `external-editor-menu` | E1 |
+| W9-E7 `ReviewCommand`, `ShortcutRouter` default-editor shortcut | `contracts/W9-E7.md` | G | `open-in-default-editor-shortcut` | E1 |
+| W9-E8 `SecondaryWindowPort` and `DialogService` members | `contracts/W9-E8.md` | F | none | E1, E2, E3, E4, W8-18o |
+| W9-E9 `ContextMenuController`, `ShellMainWindow` Menus and Input | `contracts/W9-E9.md` | F + N | none | E5, E6, E7 |
+
+### Unconfirmed sources
+- The C# `FEAT-EXTERNAL-EDITORS.md` design describes the proposal for editor records, list editing, name suggestion, and shortcut/default-editor behaviour; it is marked unconfirmed in the C# repository. The contracts take behaviour from the implementation and its tests, not from the proposal. `ExternalEditors.Reconcile`, `ApplyLegacyPath` and `BuildArguments` decide repair, migration and quoting where the proposal is silent. No other code/design conflict is asserted without evidence.
+- C# `FEAT-RENAME*.md` is also unconfirmed. `RenamePromptDialog`, F2 rename, the rename menu entry, `RenameFile` shortcut and rename localization are excluded (another lane).
+
+### Wave 9 lane E decisions (D-W9E-1..12; P-48 in `docs/PROPOSED-DECISIONS.md`)
+- **D-W9E-1 persisted settings (W9-E1).** List plus default id plus RAW switch with the v3 -> v4 migration, config version 4, `external_editor_path` kept as a mirror of the default editor's path (the frozen WPF build reads it). Alternatives: keep only the legacy path; materialise lazily after launch.
+- **D-W9E-2 repair and launch arguments (W9-E1).** C# repair rules, cap 32, arguments longer than 4000 UTF-16 units reset, default falls back to the first valid editor, `{file}` replaced in one left-to-right pass with Windows argument escaping. Alternatives: reject the file; accept raw values.
+- **D-W9E-3 product-name lookup (W9-E3).** OS version-resource lookup stays in `pr-platform-win` (`ExternalEditorProductName::suggest`, ProductName then FileDescription, the caller falls back to the file name). No oracle (machine dependent); the pure choice `first_non_blank` is a unit test.
+- **D-W9E-4 dialog capability (W9-E2/E3/E8). CORRECTED.** The first draft said `Supports(ExternalEditors)` stays false until dispatch is wired. In C# it is `true` in the same commit (`Win32SecondaryWindowPort.Supports`); the optional members of `ISecondaryWindowPort` default to `None` only for ports that do not implement them. W9-E8 makes it `true` and updates the golden `secondary-window-supports`.
+- **D-W9E-5 shortcut and duplicate rules (W9-E1/E7).** The default-editor key is optional (empty = disabled), part of `OPTIONAL_NAMES`, and takes part in the duplicate check; the router resolves it at step 12f with no modifier, independent of fullscreen (the shared no-image early return still applies); the command ignores key auto-repeat; enum value 30. The first draft put the `ShortcutMappings` field in E7: moved to E1 because persistence and validation need it first.
+- **D-W9E-6 menu structure and command ids (W9-E6/E9).** Submenu in list order, ids `ExternalEditor.Open.<id>` / `ExternalEditor.Add` / `ExternalEditor.SetDefault`, separator `Separator.ExternalEditor`, the default is checked and alone carries the default-editor key (an unknown default id marks the first editor). With no editor the entry is the single command it was.
+- **D-W9E-7 language catalogs (W9-E2/E4/E6/E8).** The new en/vi keys (34 at `7eaee2a2`) come from a separate asset synchronisation at the new baseline; the synced JSON is never hand-edited by these contracts. Tests that read texts are blocked on it.
+- **D-W9E-8 unit order.** E1 (Core) first; then E2, E3, E5, E6, E7; then E4, E8, E9. Each downstream unit consumes compiled upstream stubs.
+- **D-W9E-9 JSON `null` elements in `ExternalEditors` (W9-E1).** C# keeps a `null` list element and `Reconcile` counts dropping it as a repair; `Vec<ExternalEditor>` cannot hold it. Recommended: the Rust reader drops `null` elements silently (no `repaired` flag, so `last_load_repairs` omits `ExternalEditors` for that one corner); alternative: `Vec<Option<ExternalEditor>>` like `hidden_context_menu_items`. Needs a product/lead call.
+- **D-W9E-10 where `ExternalEditorsEdit` lives (W9-E2).** `pr_platform_win::dialogs::native::external_editors_dialog`, as in C# (internal to `Shell.Win32`). The first draft put it in `pr-core` and added a `show_external_editors` method to `pr_core::abstractions::DialogService`; the C# `IDialogService` has only the two `Prompt*` methods, so the third was invented and is removed.
+- **D-W9E-11 the `SecondaryWindowDialogs` seam grows (W9-E8).** Five additive members with default bodies (`settings_with_editors`, `external_editors`, `pick_executable`, `text_prompt`, `choice_list`) and an `ExternalEditorsOpener` alias, so the W8-18o fakes keep compiling. Alternative: change `settings(...)` itself and update the W8-18o tests (the porter may fold `settings_with_editors` into `settings` once nothing depends on the old signature).
+- **D-W9E-12 launcher seam (W9-E5).** `ExternalEditorLauncher::launch` gets a third `command_line` argument (C# `Action<string,string,string>`); the production launcher passes it with `raw_arg` and uses the editor's folder as the working directory. The merged test that asserted "one argument without a shell" is renamed: the contract is now the C# command-line text.
+
+### Needs a human or product decision (acted on as recommended, P-48)
+1. Move the spec baseline in `docs/SYNC-LEDGER.md` to `7eaee2a2` and regenerate the existing goldens (settings-*, shortcut-canonical, secondary-window-supports, settings-page-*): the diff must contain only version 4, three new keys, one more shortcut, plus the FEAT-RENAME effects.
+2. Run the catalog sync (en/vi, 34 keys at `7eaee2a2`, about 29 for this lane) before porting E2, E4, E6, E8.
+3. Order of the two lanes (external editors, rename): they edit the same files on disjoint lines; decide which merges first (the enum value 31 of `RenameFile` and the config version 4 are identical in both).
+4. D-W9E-9 above (null list elements).
+5. Whether the native dialogs of W9-E2/E3 may be ported before W8-18p/18q merge (they need `DialogMeasure`, `DialogWarningSink` and `FileFilterText`); the plan says no.
+
+### Not verified
+The three new oracle commands were run twice at `7eaee2a2` with byte-identical goldens. No oracle exists for E2, E3, E4, E5, E8 and E9. The mutation runs, the native tests and the desktop run are not done. The en/vi catalog keys are not synced. No unit is ported.
+
+## Wave 9 sync (FEAT-RENAME)
+
+Contract-only lane R of Wave 9 (plan: `docs/WAVE-9-PLAN-ren.md`; C# baseline `7eaee2a2`, compared with `d92d6aae`; feature commits `55a37986` core, `9800058e` state, `170a2d19` UI): 11 contracts (`contracts/W9-R1.md` .. `W9-R11.md`). These are planned ports, not implemented Rust behavior or an advance of `docs/SYNC-LEDGER.md`. Lane E merged first.
+
+| Unit | Contract | Kind | Oracle command (golden cases) | Depends on |
+|---|---|---|---|---|
+| W9-R1 rename name policy and JPEG+RAW+XMP plan | `contracts/W9-R1.md` | G | `w9-r1-rename-policy` (input staged in `tests/golden-inputs/staged/`) | none |
+| W9-R2 case-only rename and `FileActionService.rename` | `contracts/W9-R2.md` | F + N | none | R1 |
+| W9-R3 journal, undo and recovery for case-only pairs | `contracts/W9-R3.md` | F + N | none | R2 |
+| W9-R4 catalog rekey and cache key | `contracts/W9-R4.md` | F | none | R1 |
+| W9-R5 `FileActionController` rename | `contracts/W9-R5.md` | F | none | R1–R4 |
+| W9-R6 `ImagePresenter`, `ZoomDetailLoader`, `MainViewModel` retarget | `contracts/W9-R6.md` | F | none | R4, R5 |
+| W9-R7 settings, menu, shortcut and `RenamePromptPresenter` | `contracts/W9-R7.md` | F | none | R1, R6 |
+| W9-R8 native `RenamePromptDialog` and shell wiring | `contracts/W9-R8.md` | N | none | R7 |
+| W9-R9 core rename and fault matrix test owner | `contracts/W9-R9.md` | F + N | none | R2, R3 |
+| W9-R10 controller, presenter and view-model test owner | `contracts/W9-R10.md` | F | none | R5, R6, R7 |
+| W9-R11 native dialog and shell end-to-end test owner | `contracts/W9-R11.md` | N | none | R8 |
+
+### Decisions
+
+| ID | Decision |
+|---|---|
+| D-W9R-1 | The name policy and JPEG+RAW+XMP plan are pure `pr_core::file_actions::rename` APIs; string comparison follows C# OrdinalIgnoreCase, but name bytes and extension spelling are preserved. |
+| D-W9R-2 | Rename is a same-folder Move using the existing journal schema and service gate. The Rust operation is blocking on the file-action lane per R0003; no new async runtime or `FileOperationType` variant. |
+| D-W9R-3 | Undo, reconcile and recovery use stored spelling for case-only pairs; a third spelling is ambiguous and stays recoverable. |
+| D-W9R-4 | Catalog rekey is atomic and in place; preserve index/metadata, bump one structural version, invalidate old-path caches. |
+| D-W9R-5 | Controller order is validation, generation stop, preload cancel, worker I/O, catalog/session/presenter/cache rekey, preload restart; same name changes nothing. |
+| D-W9R-6 | Retarget displayed state without decoding when possible. MainViewModel methods mutate and return `ChangeSet`; off-thread completion uses existing event plumbing. |
+| D-W9R-7 | Menu item is Win32-only, appended as ID 18; F2 is optional default and an Action shortcut wins collision. Prompt validation checks catalog while typing and disk only on commit. |
+| D-W9R-8 | Native rename dialog is separate from `TextPromptDialog` (the latter belongs to FEAT-EXTERNAL-EDITORS). F2 and right-click menu use one command path. |
+| D-W9R-9 | Core fault matrix is a separate test owner because the C# test file exceeds a production slice; no real Recycle Bin operation. |
+| D-W9R-10 | Large controller/presenter/view-model test suites are separate test owners; deterministic fakes replace sleeps. |
+| D-W9R-11 | Native dialog and shell end-to-end tests remain `Partial` until an attended/hidden desktop run, regardless of cargo check. |
+| D-W9R-12 | **Needs a human decision:** C# `RenameNamePolicy.Check` throws on a blank current path; Rust returns `RenameNameProblem::Empty` instead of panicking (default chosen, change only if a hard error type is wanted). |
+| D-W9R-13 | Merge order resolved: lane E merged first. `RenameFile` stays last after `OpenInDefaultEditor`; `ReviewCommandType::RenameFile = 31`. |
+| D-W9R-14 | Golden-pinned settings cases stay at `d92d6aae` until the lead advances `SYNC-LEDGER`; R7 updates rename expectations by hand. |
+
+### Unconfirmed sources
+
+For every item here the binding decision is **the C# code as implemented at `7eaee2a2` is the spec**. The older document at `57b04243` is a design rationale and was never confirmed as a behavior override.
+
+| Design item or open question | Implemented C# resolution / divergence |
+|---|---|
+| Q1 case-only rename | Supported with `CaseOnlyRename` and stored-name enumeration; no temporary file name. |
+| Q2 F2 default | `ShortcutMappings.RenameFile = "F2"`, optional/clearable; conflicting Action wins. |
+| Q3 single Undo slot | Rename registers as Move and replaces the latest Undo action. |
+| Q4 sidecar scope | JPEG+RAW group with known `.xmp` only. PR4 sidecar discovery is absent; do not invent `.dop`, `.pp3`, `.acr` support. |
+| Q5 UI scope | **Divergence:** design recommends both Win32 and WPF, PR3 implements Win32 only. `ContextMenuItemInfo.ShellOnly` hides it from WPF and WPF settings preserves the hidden choice. |
+| Q6 location after rename | Preserve index and viewer state; no sort or folder reload. |
+| Q7 untouched failure | Journal line is Dismissed when unchanged is proven; ambiguous mutation stays Failed. |
+| Design R36 title bar path was not checked | Implemented presenter/session notification and title propagation are the spec; tests must check displayed name rather than assume the old design inventory. |
+| Manifest `longPathAware` was not checked | Implemented `RenameNamePolicy.Check` defaults to `longPathAware=false`; reject a new path reaching 260 only when longer than the existing one. |
+| LibRaw file share mode was not checked | No claim that native RAW decode permits rename; cancel ZoomDetail pending work and require native verification. |
+| Failure message for file locked by an external editor | **Divergence:** design suggests text telling user to close the editor; PR3 shows the generic `status.renameFailed` message on status bar, without an error dialog or special close-editor hint. |
+| Preview cache re-key was optional in design | **Divergence:** code evicts old-path cache and original dimensions; it does not re-key decoded RAM image under the new name. |
+| Design estimated four PRs | Implemented FEAT-RENAME commits are design, core, state and UI; the planned PR4 advanced sidecar discovery is absent. |
+| Design says no code until confirmation | Historical statement is obsolete after #527/#529/#530. Contract source is implemented code, status label remains unconfirmed. |
+
+### Localisation ownership
+
+The source of all text is C# `src/PhotoReview.Core/Localization/Languages/{en,vi}.json` at `7eaee2a2`; the Rust catalog lives in `assets/languages/{en,vi}.json` and generated flat `pr_l10n::keys`/`tr`. Do not hand-edit synced language assets; the integration lead runs the sync tool after the baseline moves.
+
+- R2: `core.fileAction.renameInvalidName`.
+- R5/R6: `status.renamed`, `status.renameFailed`, `status.renameUnchanged`, `status.renameUndone`.
+- R7/R8: `main.menu.renameFile`, `main.menu.renameFile.automationName`, `settings.contextMenu.item.renameFile`, `settings.shortcut.renameFile`, `settings.shortcut.renameFile.clearAutomationName`, `dialog.rename.title`, `dialog.rename.label`, `dialog.rename.ok`, `dialog.rename.error.empty`, `.invalidCharacter`, `.trailingDot`, `.reservedName`, `.tooLong`, `.pathTooLong`, `.sidecarNotMappable`, `.exists` (the last eight suffixes are under `dialog.rename.error`).
+
+### Needs a human or product decision (acted on as recommended, P-49)
+
+1. D-W9R-12: blank current path maps to `RenameNameProblem::Empty`.
+2. Keep WPF-only `ShellOnly` semantics for parity; no WPF window port is planned.
+3. The lead advances `docs/SYNC-LEDGER.md` only after triaging unrelated C# changes in the range; golden-pinned settings stay at `d92d6aae` until then.
+4. Generate the `w9-r1-rename-policy` oracle golden with `-p:W9RenameBaseline=true`; the golden generator moves its input out of `tests/golden-inputs/staged/` in the same change.
+
+## Wave 10 (contracts only: manual update HTTP, release, benchmark parity, RAW/native residual)
+
+Merged from the four lane drafts (`contracts/drafts-w10-*.md`, removed in the same change). Decision numbers D-W10http-n, D-W10release-n, D-W10BENCH-n, D-W10RAW-n are kept. Nothing here is implemented; every decision is open for the lead unless a row says otherwise. Plans: `docs/WAVE-10-PLAN-http.md`.
+
+
+### Wave 10 HTTP lane (W10-H1..H3: manual update transport)
+
+#### D-W10http-1: OS stack = WinHTTP through `windows` / windows-rs
+
+The C# baseline creates `new HttpClient()` without a handler, gives it `Timeout.InfiniteTimeSpan`, and uses a linked token with `CancelAfter(10 s)` (`UpdateChecker.cs` 21-45). `PhotoReview.Shell.Win32.csproj` targets `net10.0-windows` (7-10). Its application code does not set the handler's proxy, redirect, TLS, decompression, or HTTP version options. .NET 10's `HttpClientHandler` uses SocketsHttpHandler; `HttpClient.DefaultProxy` on Windows checks `HTTPS_PROXY`/`ALL_PROXY` (and `NO_PROXY`) before the current user's proxy settings, including PAC/WPAD. This is a runtime default, not code in the repository. [DefaultProxy](https://learn.microsoft.com/en-us/dotnet/api/system.net.http.httpclient.defaultproxy), [HttpClientHandler](https://learn.microsoft.com/en-us/dotnet/fundamentals/runtime-libraries/system-net-http-httpclienthandler).
+
+| Stack | Proxy and trust parity | Unsafe / cancellation | Binary size and fake tests |
+|---|---|---|---|
+| **WinHTTP (chosen)** | Windows certificate validation through the OS; explicitly implement .NET environment precedence and current-user WinINet/IE proxy settings with `WinHttpGetIEProxyConfigForCurrentUser` and PAC/WPAD via `WinHttpGetProxyForUrl`. WinHTTP's `PRECONFIG` alone is insufficient. Redirect policy and decompression need explicit settings. | Small FFI surface confined to `pr-platform-win`, every `unsafe` block justified. Use asynchronous request handles and close the **request** handle on cancel/deadline; completion races must be guarded. `WinHttpSetTimeouts` is phase protection, not the whole-exchange deadline. | Windows DLL, no new Rust HTTP dependency; pure policy and in-process loopback tests. |
+| WinINet | Current-user proxy is close, but env precedence still manual; Windows trust. Intended for interactive clients, with more implicit state. | WinINet FFI and handle-cancel races; verify prompt cancellation before adopting. | OS DLL; fake protocol tests possible but global configuration harder to isolate. |
+| Windows.Web.Http / WinRT | Windows trust and brokered settings, but .NET proxy and redirect defaults require measurement. | COM/WinRT lifetime and async cancellation mapping are larger than needed. | OS runtime; testing adapter without network is more complex. |
+| Pure Rust HTTP client | New dependency plus explicit Windows trust and proxy/PAC integration; cannot assume parity from TLS backend alone. | Smaller local unsafe surface; cancellation depends on client. | Adds code and dependency tree; fake servers straightforward. |
+| `curl.exe` / PowerShell child | External executable's proxy, TLS, redirects, headers and decompression differ by installation/configuration. | Kill child on cancellation; process cleanup and output limits. | No linked crate, but startup and distribution costs; difficult deterministic tests. |
+
+WinHTTP is chosen because the Windows OS supplies certificate validation and PAC primitives without a new third-party crate. The porter must reproduce the documented .NET defaults explicitly, never assume WinHTTP and SocketsHttpHandler are interchangeable. [WinHTTP current-user proxy](https://learn.microsoft.com/en-us/windows/win32/winhttp/setting-wininet-proxy-configurations-in-winhttp), [WinHTTP cancellation](https://learn.microsoft.com/en-us/windows/win32/winhttp/concurrency-in-winhttp).
+
+#### D-W10http-2: preserve the existing checker and UI logic
+
+Inject `Arc<UpdateChecker>` built from `Arc<WinHttpTransport>` into the existing `DialogServices.update_checker`. The C# presenter falls back to `new UpdateChecker()` when DI supplies none (`SettingsPresenter.cs` 580 at `7eaee2a2`; 575 at `d92d6aae`); the Rust presenter has no such fallback. Keep the merged UI worker/poster, localized status mapping, allow-listed URL validation and close cancellation. Only fix demonstrated gaps, with a fake or native test. Do not introduce another network request or an automatic check.
+
+#### D-W10http-3: HTTPS proxy source precedence (recommended, believed, not verified)
+
+For an HTTPS target, choose a usable nonempty `HTTPS_PROXY`, else `ALL_PROXY`, else the current user's WinINet/IE configuration, else direct. Apply `NO_PROXY` or the user's bypass list after selecting the source. For current-user automatic configuration, call `WinHttpGetIEProxyConfigForCurrentUser` and resolve PAC/WPAD for the target with `WinHttpGetProxyForUrl`; WinHTTP machine `PRECONFIG` alone does not reproduce `HttpClient.DefaultProxy`. This is the recommended implementation rule, **believed but not verified** for empty/invalid environment values, bypass grammar and PAC edge cases. It follows the documented Windows `HttpClient.DefaultProxy` source order but is not yet a measured baseline result. [DefaultProxy](https://learn.microsoft.com/en-us/dotnet/api/system.net.http.httpclient.defaultproxy), [WinHTTP AutoProxy](https://learn.microsoft.com/en-us/windows/win32/winhttp/winhttp-autoproxy-api).
+
+Lead verification probe: proposed `tools/oracle-cs/Commands/W10-H1.cs` should include a tiny .NET 10 command that prints `HttpClient.DefaultProxy.GetProxy` and `IsBypassed` for an HTTPS test URL under controlled `HTTPS_PROXY`, `ALL_PROXY`, `NO_PROXY`, and current-user proxy scenarios, plus the default values of `HttpClientHandler.AllowAutoRedirect`, `MaxAutomaticRedirections`, `AutomaticDecompression`, `MaxResponseHeadersLength`, and `HttpRequestMessage.Version`. Run it only in a controlled environment; the file and probe are **proposed only, not created or run** by this writer. PAC/WPAD requires a separately controlled local PAC endpoint.
+
+#### Roster
+
+| WU | Unit | Contract | Test kind | Batch order |
+|---|---|---|---|---|
+| W10-H1 | HTTP redirect/proxy/deadline/error policy | `contracts/W10-H1.md` | F | H1 |
+| W10-H2 | WinHTTP transport and streamed body | `contracts/W10-H2.md` | F/N | H2 after H1 |
+| W10-H3 | Shell injection and manual check completion | `contracts/W10-H3.md` | F/N | H3 after H2 |
+
+Plan: `docs/WAVE-10-PLAN-http.md`.
+
+#### Runtime defaults and uncertainties
+
+Verified from Microsoft documentation: automatic redirects are enabled with a maximum of 50; .NET 5+ rejects automatic HTTPS-to-HTTP downgrade; `Authorization` is cleared on automatic redirect. [Redirects](https://learn.microsoft.com/en-us/dotnet/api/system.net.http.httpclienthandler.allowautoredirect), [limit](https://learn.microsoft.com/en-us/dotnet/api/system.net.http.httpclienthandler.maxautomaticredirections). C# `UpdateChecker.Classify` maps `NameResolutionError`, `ConnectionError`, `ProxyTunnelError`, and unknown to Offline, all other listed `HttpRequestError` values to BadResponse (`UpdateChecker.cs` 74-83).
+
+The request is explicitly a `new HttpRequestMessage(...)`, whose default version is HTTP/1.1; `HttpClient.DefaultRequestVersion` does not override `SendAsync`'s request object. The default response-header limit is 64 KiB. The normal `HttpClient.Timeout` is 100 seconds but the C# checker explicitly replaces it with `Timeout.InfiniteTimeSpan` and a linked token canceled after ten seconds. [Request version](https://learn.microsoft.com/en-us/dotnet/api/system.net.http.httprequestmessage.version), [SendAsync version rule](https://learn.microsoft.com/en-us/dotnet/api/system.net.http.httpclient.defaultrequestversion), [header limit](https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/ca2262), [timeout](https://learn.microsoft.com/en-us/dotnet/api/system.net.http.httpclient.timeout).
+
+**Not verified:** the exact .NET 10 default `AutomaticDecompression` value (the public page states `None` only for .NET Framework 4.x), request version policy, Windows trust store scope, exact redirect status/method edge cases, exact WinHTTP error-code mapping, whether proxy auto-discovery time is included in the WinHTTP deadline, and repository-wide absence of an external `HttpClient.DefaultProxy` setter. Probe these locally or inspect pinned runtime sources before implementation; do not encode guessed values as parity. The local tests must not call the internet.
+
+### Wave 10 release lane (W10-R1..R5)
+
+Contracts only; the decisions below are open for the lead. The release workflow draft is `docs/drafts/release.yml` (not in `.github/workflows`).
+
+| Unit | Contract | Size | Model for later porter | Depends on |
+|---|---|---:|---|---|
+| R1 | `contracts/W10-R1.md` | M | Sonnet 5.5 medium | R2, R4, W8-17a, W8-20a/20b |
+| R2 | `contracts/W10-R2.md` | M | Sonnet 5.5 medium | W8-20a resource writer, P-47, icon sync |
+| R3 | `contracts/W10-R3.md` | S | Sonnet 5.5 medium | lockfile licence review, CI owner |
+| R4 | `contracts/W10-R4.md` | M | Sonnet 5.5 medium | C# native pins, licence/source review |
+| R5 | `contracts/W10-R5.md` | M | Sonnet 5.5 medium | R0002, Rust update checker correction, W8-20a process test |
+
+Sizes describe implementation scope, not measured effort. The model entries are recommendations constrained by AGENTS.md P-34, not spawned agents.
+
+#### Decisions for lead
+
+| ID | State and options (benefit / cost) | Recommendation and next action |
+|---|---|---|
+| D-W10release-1 | Open. A: independent `vX.Y.Z` manual tags (clear product identity / manual version governance); B: mirror C# `v2.0.N` (familiar / collides conceptually with C# and cannot derive from this Rust repo); C: use Cargo `0.1.0` (automatic / mismatches external tag). | A. R1 validates existing tag and R2 embeds its exact version. Lead records an ADR and writes tag policy. |
+| D-W10release-2 | Open. A: unsigned (no secret handling / Windows reputation warning); B: signtool with protected cert (familiar signed binary / certificate lifecycle and secret handling); C: Azure Trusted Signing (managed signing / external setup and cost). | A for first release. Document unsigned status; revisit signing after a certificate/service exists. |
+| D-W10release-3 | Open; conflicts with P-47/D-W8B6-53. A: retain no RT_VERSION (no writer risk / Properties lacks version); B: release-only RT_VERSION (visible exact tag / new resource parser and ADR); C: all builds RT_VERSION (consistent / `0.0.0-dev` exposed). | B after PE tests pass. Lead resolves P-47, adds ADR and changes `X-exe-versioninfo` from Different to Done when proved. |
+| D-W10release-4 | Open. A: pinned `cargo install --locked cargo-deny` (simple / build time); B: pinned cargo-deny action SHA (faster / new third-party action to audit); C: no CI audit (no setup / dependency drift). | A after checking a real version and draft schema. Replace the deliberate throw in `docs/drafts/ci-deny-job.yml`; nightly plus Cargo-change PRs. |
+| D-W10release-5 | Open. A: correct Rust update feed to its own release repository (full feature / requires verified URL); B: disable update check for first release (safe / no in-app discovery); C: retain C# feed (no edit / sends Rust users to the wrong product). | B until the Rust release URL is verified, then A with tests. Never C. |
+| D-W10release-6 | Open. A: bundle verified LibRaw source archive and licence/notice (offline source access / larger zip); B: durable source URL with hash (smaller / URL retention duty); C: DLL without source offer (small / unresolved LGPL obligations). | A after validating archive content with maintainer/legal review. R4 verifier makes missing files fatal. |
+| D-W10release-7 | Open. A: ship `Languages/en.json` and `Languages/vi.json` beside the exe (matches `pr-l10n/src/loader.rs` shipped-folder lookup / adds files); B: embed all catalogs (single exe / changes loader and requires matching tests). | A is supported by `crates/pr-l10n/src/loader.rs` and the proposed path in `crates/pr-shell/src/composition/registry.rs`, but that composition method is still a stub. Decide after validating language selection through the built shell; the release verifier checks whichever layout is chosen. |
+| D-W10release-8 | Open. A: runner smoke enabled by default (automatic gate / GitHub-hosted `windows-latest` has a non-interactive session and Direct2D window creation may fail); B: maintainer-machine smoke when runner cannot host the window (real desktop evidence / manual result handling); C: omit smoke (fast / no executable check). | A by default with `continue-on-error: false`. If the runner cannot host the UI, select `run_smoke=false`, run `PhotoReviewRs.exe --smoke` on the maintainer's machine and paste the result through `smoke_result` into release notes before publication. |
+
+#### Open items and not verified
+
+- `crates/pr-shell/build.rs` and `build_support/res_writer.rs` remain W8 stubs. `assets/PhotoReviewRs.ico`, `crates/pr-shell/tests/exe_resources.rs`, root `LICENSE`, native pins/notice files and `THIRD-PARTY-NOTICES.md` (new, synced reviewed copy of the C# root file) do not exist at HEAD. The draft release workflow is **not runnable** before R2/R4 and W8-20a land.
+- `cargo deny` is not installed here; its configuration schema and a safe pinned installer version are unverified. The proposed deny licence list comes from `cargo metadata --locked --offline` at this HEAD, not from a running deny audit.
+- Rust release repository URL, code signing identity, LGPL corresponding-source sufficiency, TurboJPEG package hash/licence path, Windows desktop smoke availability, first-build exe size bounds and SmartScreen display are unverified. English is embedded (`crates/pr-l10n/src/localizer.rs:362`), while `crates/pr-l10n/src/loader.rs` reads shipped catalogs; shell composition for `<exe>/Languages` is still `todo!()` (`crates/pr-shell/src/composition/registry.rs:180-184`). Vietnamese selection in a built release is not verified (D-W10release-7).
+- W8-20b UI smoke is a separate prerequisite; P-46 approved recommended W8-B6 options, while P-47 still proposes no RT_VERSION (`docs/PROPOSED-DECISIONS.md`, `contracts/README.md` D-W8B6-105).
+
+### Wave 10 benchmark lane (W10-B1..B3)
+
+| WU | Unit | Color | Porter | Depends |
+|---|---|---|---|---|
+| W10-B1 | Benchmark comparison harness | 🟡 | Sonnet 5.5 | W7-01a, W7-01b, W7-03a, W7-03c, W7-03d; engine-backed backend wiring |
+| W10-B2 | Attended production re-measure protocol | 🟡 | Manual operator | W8-12d, W8-12e, W8-12h, W8-16a; attended session |
+| W10-B3 | Phase 7 parity report format | 🟡 | Sonnet 5.5 | W10-B1, W10-B2 |
+
+#### Decisions D-W10BENCH
+
+- **D-W10BENCH-1 — Proposed numeric parity rule.** Rule: compare paired repeats by index and use medians; `allowed=max(5%*|B|,1 ms)`, `d=R-B`; below `-allowed` Improvement, `[-allowed,0]` Pass, `(0,allowed]` WithinNoise, above allowed Regression only when a strict majority of paired differences exceed allowed, otherwise WithinNoise/unstable. Only p95 Regression fails exit code 1; p50/max Regression is a warning. Rationale: explicit Phase 7 gate using C# PerfComparer defaults. Who may overrule: project lead by recorded decision.
+- **D-W10BENCH-2 — Sequential same-machine runs.** Rule: C# and Rust never run concurrently and use the same fixture, profile list, display/power conditions, and separate output folders. Rationale: avoid resource contention and input drift. Who may overrule: project lead with an ADR describing the controlled parallel setup.
+- **D-W10BENCH-3 — Comparison preconditions.** Rule: no parity claim before Rust engine-backed backend wiring and schema parity. Rationale: `main.rs` currently selects `UnwiredBackend`, which cannot provide valid batch results. Who may overrule: none for a claim; implementation can change the backend but must meet the same evidence gate.
+- **D-W10BENCH-4 — Conditional UI experiment gate.** Rule: W8-12j is started or canceled using W8-12j's attended keep-warm-on trigger and repeat evidence; B1 batch numbers do not replace it. Rationale: benchmark workload and production frame stalls are different measures. Who may overrule: project lead by ADR.
+- **D-W10BENCH-5 — Metrics are diagnostic.** Rule: every `ReviewMetricsSnapshot` value is reported as C#, Rust, and delta and never fails parity; Metrics presence and key shape remain schema-exact. Rationale: timing and scheduling can legitimately change counters. Who may overrule: project lead by ADR.
+- **D-W10BENCH-6 — P0 production measurement driver.** Rule: production p95 requires `PhotoReviewRs.exe` plus frame log and automated 250 ms Right-arrow driver, or an updated production-surface spike; old spike subset is indicative only. Rationale: old spike lacks keep-warm and is not production surface. Who may overrule: project lead only after equivalent production evidence is documented.
+
+#### Preconditions
+
+- Engine-backed benchmark backend wired in `main.rs` (not yet done).
+- W8-12d, W8-12e, and W8-12h merged before the attended production measurement.
+- P0 measurement driver exists; no suitable input driver was found and it is to be added by a later unit.
+- W8-16a frame logging available; `PHOTOREVIEW_RS_FRAME_LOG` accepts a file path.
+- Attended session with AC power, display setup, IME checks, and fixture generation.
+
+#### Open questions
+
+- Confirm the B1 JSON envelope against its public API when implementation begins.
+
+### Wave 10 RAW/native lane (W10-N1..N4)
+
+Roster:
+
+| WU | Unit | Rust area | Porter | Evidence |
+|---|---|---|---|---|
+| W10-N1 | Stage pinned native DLLs | `native/x64/` staging procedure | Sonnet | Hash verification; no committed DLLs |
+| W10-N2 | Execute native tests | `pr-libraw`, `pr-turbojpeg` ignored native tests | Sonnet | Windows x64, pinned DLLs, timeout |
+| W10-N3 | RAW corpus and strict run | `pr-test-support::raw`, RAW integration tests | Sonnet | Consent, manifest hashes, strict mode |
+| W10-N4 | Wave 5 mutation survivors | W5 Rust test suites | Sonnet | Identity-reconciled mutation evidence |
+
+Decisions D-W10RAW-1..4 (proposed; open for the lead):
+
+- **D-W10RAW-1 — DLLs stay local and pinned.** Stage only SHA-256-verified C# baseline DLLs under Rust `native/x64/`; never commit DLLs. Network fetch requires owner consent.
+- **D-W10RAW-2 — Native run is desktop/manual.** Run ignored LibRaw/TurboJPEG suites on Windows x64 with explicit timeout and serial test threads. Regular CI does not execute them unless it stages verified binaries.
+- **D-W10RAW-3 — Corpus fetch requires consent.** The approximately 590 MB CC0 corpus remains absent until the owner explicitly approves the fetch; strict mode makes missing samples fail.
+- **D-W10RAW-4 — Mutation status follows identities.** Preserve caught/equivalent/unreconstructed distinctions; do not combine overlapping counts or describe partial scans as complete.
+
+References: contracts/W10-N1.md through W10-N4.md. Hash pins and limitations are transcribed there.

@@ -14,6 +14,8 @@
     <!-- W4-02b/W4-11c: fixture generation uses System.Windows.Media.Imaging (the WPF JPEG/PNG encoders). -->
     <UseWPF>true</UseWPF>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <!-- Wave 9: -p:W9RenameBaseline=true when the baseline build already contains FEAT-RENAME (7eaee2a2 or later). -->
+    <DefineConstants Condition="'$(W9RenameBaseline)' == 'true'">$(DefineConstants);W9_RENAME_BASELINE</DefineConstants>
     <!-- Set by tools/oracle.ps1: folder holding the baseline build of PhotoReview.Core.dll. -->
     <CSharpCoreDir Condition="'$(CSharpCoreDir)' == ''">..\..\work\oracle\core</CSharpCoreDir>
   </PropertyGroup>

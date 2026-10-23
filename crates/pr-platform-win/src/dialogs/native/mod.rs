@@ -12,3 +12,7 @@ pub mod dialog;
 
 // W8-18l..18n (contract group G4): the hand-painted dark look of the controls (kinds and window procedures, push button and shared drawing, the other widgets and borders).
 pub mod painter;
+
+pub mod external_editor_product_name;
+pub mod external_editors_dialog;
+pub mod text_prompt_dialog;

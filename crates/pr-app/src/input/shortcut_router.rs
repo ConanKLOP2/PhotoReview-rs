@@ -46,7 +46,7 @@ pub struct ActionBinding {
     pub index: usize,
 }
 
-/// The 27 single-key bindings of C# (`_fullscreenKey` ... `_refreshKey`). `None` = disabled (empty or unparseable).
+/// The single-key bindings of C# (`_fullscreenKey` ... `_renameFileKey`). `None` = disabled (empty or unparseable).
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
 struct Bindings {
     fullscreen: Option<KeyId>,
@@ -76,6 +76,7 @@ struct Bindings {
     custom_zoom: Option<KeyId>,
     toggle_capture_member: Option<KeyId>,
     refresh: Option<KeyId>,
+    rename_file: Option<KeyId>,
 }
 
 /// C# `ShortcutRouter`: the key table built from the settings. Holds no UI state.
@@ -130,6 +131,7 @@ impl ShortcutRouter {
             custom_zoom: p(&shortcuts.custom_zoom),
             toggle_capture_member: p(&shortcuts.toggle_capture_member),
             refresh: p(&shortcuts.refresh),
+            rename_file: p(&shortcuts.rename_file),
         };
         // The index is the position in the FULL list: a skipped entry does not renumber the later ones.
         self.actions = actions
@@ -206,6 +208,9 @@ impl ShortcutRouter {
             }
             if is(b.recycle) {
                 return Some(ReviewCommand::RECYCLE);
+            }
+            if is(b.rename_file) {
+                return Some(ReviewCommand::RENAME_FILE);
             }
         }
         let simple: [(Option<KeyId>, ReviewCommand); 13] = [

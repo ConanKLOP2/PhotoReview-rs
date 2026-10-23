@@ -163,6 +163,11 @@ fn compare_retained_ids_skip_missing_and_disposed_images() {
     assert!(compare_retained_ids([None, None]).is_empty());
 }
 
+// equivalent/native gap: `MainWindowPrefetchHost::path_at` requires a live MainWindowInner and a non-empty
+// ReviewCatalog. The current main_window_fixture builds an empty MainViewModel catalog; fabricating a
+// parallel catalog here would not exercise the real host method, so the surviving path_at mutant needs
+// a fixture extension that can seed the real view model before construction.
+
 // ---- native -------------------------------------------------------------------------------------------------------------------------------------
 
 #[test]

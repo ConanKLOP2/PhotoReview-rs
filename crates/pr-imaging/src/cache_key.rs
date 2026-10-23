@@ -113,6 +113,10 @@ pub struct ImageCacheKey {
 }
 
 impl ImageCacheKey {
+    /// FEAT-RENAME: copy this identity under a newly normalized path without statting the renamed file.
+    pub fn with_path(&self, _new_path: &str) -> Result<Self, PathError> {
+        todo!()
+    }
     /// Full path, upper-cased with `ToUpperInvariant` (ordinal-comparable; NOT the on-disk spelling).
     pub fn path(&self) -> &str {
         &self.path

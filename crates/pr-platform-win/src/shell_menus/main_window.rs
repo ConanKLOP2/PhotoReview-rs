@@ -221,6 +221,18 @@ impl ContextMenuActions for MainWindowMenuActions {
             None => Ok(()),
         }
     }
+    /// W9-E9: `vm.open_in_external_editor_by_id(editor_id)`, an `Err(ExternalEditorBug)` becomes the `Err` (same shape as `open_in_external_editor`).
+    fn open_in_external_editor_by_id(&self, _editor_id: &str) -> ActionResult {
+        todo!()
+    }
+    /// W9-E9: `vm.add_external_editor()` (C# `ShellMainWindow.Menus.cs`: `_viewModel.AddExternalEditor()`).
+    fn add_external_editor(&self) -> ActionResult {
+        todo!()
+    }
+    /// W9-E9: `vm.choose_default_external_editor()`.
+    fn choose_default_external_editor(&self) -> ActionResult {
+        todo!()
+    }
     fn copy_file_name(&self) -> ActionResult {
         self.services.with_view_model(&mut |vm| vm.copy_file_name());
         Ok(())

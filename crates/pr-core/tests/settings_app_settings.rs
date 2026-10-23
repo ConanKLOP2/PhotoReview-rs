@@ -1,4 +1,4 @@
-//! Port of `PhotoReview.Core/Settings/AppSettings.cs` and `AppSettingsJsonContext.cs` tests (baseline d92d6aae).
+//! Port of `PhotoReview.Core/Settings/AppSettings.cs` and `AppSettingsJsonContext.cs` tests (baseline 7eaee2a2).
 //! Golden: `tests/golden/settings-json.json` (785 cases).
 
 use std::collections::BTreeMap;
@@ -95,7 +95,7 @@ fn check_read_case(case: &Value) {
 
 fn golden_cases(kind: &str) -> Vec<Value> {
     let g = golden::load("settings-json");
-    assert!(g.csharp_commit.starts_with("d92d6aae"), "baseline {}", g.csharp_commit);
+    assert!(g.csharp_commit.starts_with("7eaee2a2"), "baseline {}", g.csharp_commit);
     g.cases.into_iter().filter(|c| c["kind"] == kind).collect()
 }
 
@@ -255,7 +255,7 @@ fn golden_settings_json() {
 #[test]
 fn app_settings_defaults() {
     let s = AppSettings::default();
-    assert_eq!(s.config_version, 3);
+    assert_eq!(s.config_version, 4);
     assert_eq!(s.ui_language, "auto");
     assert_eq!(s.initial_view_mode, InitialViewMode::Fit);
     assert_eq!(s.loading_mode, Some(LoadingMode::Preview));
@@ -310,7 +310,7 @@ fn frozen_keys_have_no_duplicates() {
     keys.sort_unstable();
     keys.dedup();
     assert_eq!(keys.len(), JSON_KEYS.len());
-    assert_eq!(JSON_KEYS.len(), 70);
+    assert_eq!(JSON_KEYS.len(), 73);
 }
 
 // C#: SettingsDefaultsLiteralTests.PerformanceDefaults_AreTheShippedLiterals

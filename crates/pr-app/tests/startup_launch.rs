@@ -108,17 +108,26 @@ fn parse_smoke_flag_is_extracted_and_not_treated_as_a_path() {
 // C#: ShellLaunchTests.Parse_MissingPath_IsNotOpenedNorForwarded
 #[rustfmt::skip]
 fn parse_missing_path_is_not_opened_nor_forwarded() {
-    let launch = parse(&["definitely-missing-photo-review-file.jpg"], &FakeFileSystem::new(), &RecordingLog::default());
+    let argument = "definitely-missing-photo-review-file.jpg";
+    let launch = parse(&[argument], &FakeFileSystem::new(), &RecordingLog::default());
     assert!(launch.initial_file.is_none());
+    assert!(launch.initial_path().is_none());
     assert!(launch.existing_paths().is_empty());
+    assert_eq!(launch.arguments, [argument]);
 }
 
 #[test]
 // C#: ShellLaunchTests.Parse_RelativeFile_YieldsTheDirectoryOfItsFullPathNotAnEmptyName
 #[rustfmt::skip]
 fn parse_relative_file_uses_full_path_directory() {
-    let launch = parse(&["relative-photo.jpg"], &FakeFileSystem::new(), &RecordingLog::default());
-    assert!(launch.launch_folder.as_ref().is_none_or(|p| !p.is_empty()));
+    let fs = FakeFileSystem::new(); fs.add_file("relative-photo.jpg", b"photo");
+    let full_file = pr_core::text::dotnet_path::get_full_path("relative-photo.jpg").unwrap();
+    let expected_folder = pr_core::text::dotnet_path::get_directory_name(&full_file).unwrap();
+    let launch = parse(&["relative-photo.jpg"], &fs, &RecordingLog::default());
+    assert_eq!(launch.initial_file.as_deref(), Some("relative-photo.jpg"));
+    assert_eq!(launch.initial_path(), Some("relative-photo.jpg"));
+    assert_eq!(launch.launch_folder.as_deref(), Some(expected_folder.as_str()));
+    assert_eq!(launch.existing_paths(), &[full_file]);
 }
 
 #[test]
@@ -133,7 +142,10 @@ fn instance_prefix_is_not_the_prefix_of_the_csharp_apps() {
 #[test]
 #[rustfmt::skip]
 fn shell_launch_golden_cases_match_oracle() {
-    let _ = ShellLaunch::parse(&["--smoke"], &FakeFileSystem::new(), &RecordingLog::default());
+    let launch = ShellLaunch::parse(&["--smoke"], &FakeFileSystem::new(), &RecordingLog::default());
+    assert!(launch.smoke);
+    assert!(launch.arguments.is_empty());
+    assert!(launch.initial_path().is_none());
 }
 
 #[test]

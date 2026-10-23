@@ -6,8 +6,8 @@
 
 use pr_app::input::review_command::{ReviewCommand, ReviewCommandType};
 
-/// All 30 kinds in C# declaration order (implicit values 0..=29). Its length is part of the type.
-const ALL_KINDS: [ReviewCommandType; 30] = [
+/// All 32 kinds in C# declaration order (implicit values 0..=31). Its length is part of the type.
+const ALL_KINDS: [ReviewCommandType; 32] = [
     ReviewCommandType::Fullscreen,
     ReviewCommandType::ExitFullscreen,
     ReviewCommandType::Close,
@@ -38,10 +38,12 @@ const ALL_KINDS: [ReviewCommandType; 30] = [
     ReviewCommandType::ToggleCaptureMember,
     ReviewCommandType::FitWidth2,
     ReviewCommandType::Refresh,
+    ReviewCommandType::OpenInDefaultEditor,
+    ReviewCommandType::RenameFile,
 ];
 
-/// The 14 kinds for which C# `IgnoresAutoRepeat` is true.
-const IGNORE_AUTO_REPEAT: [ReviewCommandType; 14] = [
+/// The 16 kinds for which C# `IgnoresAutoRepeat` is true.
+const IGNORE_AUTO_REPEAT: [ReviewCommandType; 16] = [
     ReviewCommandType::Recycle,
     ReviewCommandType::RunAction,
     ReviewCommandType::Undo,
@@ -56,6 +58,8 @@ const IGNORE_AUTO_REPEAT: [ReviewCommandType; 14] = [
     ReviewCommandType::CustomZoom,
     ReviewCommandType::ToggleCaptureMember,
     ReviewCommandType::Refresh,
+    ReviewCommandType::OpenInDefaultEditor,
+    ReviewCommandType::RenameFile,
 ];
 
 // C#: ReviewCommandAutoRepeatTests.FileChangingCommandsIgnoreAutoRepeat (10 InlineData rows, one test here)
@@ -101,11 +105,11 @@ fn navigation_commands_keep_auto_repeat() {
     }
 }
 
-// new: the C# method is true for exactly 14 kinds. The two C# tests above do not cover ToggleCaptureMember or
+// new: the C# method is true for exactly 16 kinds. The two C# tests above do not cover ToggleCaptureMember or
 // ExitFullscreen, so every kind is checked here against the full list.
 #[test]
-fn ignore_auto_repeat_is_exactly_the_fourteen_listed_commands() {
-    assert_eq!(IGNORE_AUTO_REPEAT.len(), 14);
+fn ignore_auto_repeat_is_exactly_the_sixteen_listed_commands() {
+    assert_eq!(IGNORE_AUTO_REPEAT.len(), 16);
     for kind in ALL_KINDS {
         let expected = IGNORE_AUTO_REPEAT.contains(&kind);
         assert_eq!(kind.ignores_auto_repeat(), expected, "{kind:?}");
@@ -122,6 +126,8 @@ fn discriminants_follow_csharp_declaration_order() {
     }
     assert_eq!(ReviewCommandType::Fullscreen as u8, 0);
     assert_eq!(ReviewCommandType::Refresh as u8, 29);
+    assert_eq!(ReviewCommandType::OpenInDefaultEditor as u8, 30);
+    assert_eq!(ReviewCommandType::RenameFile as u8, 31);
 }
 
 // new: `new(kind)` and the constants use ActionIndex -1, and only `action` sets a real index.

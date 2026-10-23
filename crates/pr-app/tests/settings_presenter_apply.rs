@@ -403,7 +403,7 @@ fn context_menu_rows_match_the_item_list() {
     let env = Env::new();
     let rows = SettingsPresenter::context_menu_rows(&env.ctx());
     assert_eq!(rows.len(), ITEMS.len());
-    assert_eq!(rows.len(), 18);
+    assert_eq!(rows.len(), 19);
     for (row, item) in rows.iter().zip(ITEMS.iter()) {
         let info = item_info(row.id);
         assert_eq!(row.id, item.id, "table order");

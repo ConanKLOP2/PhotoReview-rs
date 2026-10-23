@@ -17,6 +17,7 @@ pub mod missing;
 pub mod photo_info;
 pub mod present_a;
 pub mod present_b;
+pub mod rename;
 pub mod state;
 pub mod zoom;
 

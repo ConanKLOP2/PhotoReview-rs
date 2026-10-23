@@ -3,6 +3,7 @@
 
 pub mod bench_recycle_bin;
 pub mod cli;
+pub mod compare;
 pub mod engine;
 pub mod image_executor;
 pub mod metrics;

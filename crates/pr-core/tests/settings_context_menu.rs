@@ -1,4 +1,4 @@
-//! Port of `PhotoReview.Core/Settings/ContextMenuLayout.cs` tests (baseline d92d6aae). Golden: `tests/golden/context-menu.json`.
+//! Port of `PhotoReview.Core/Settings/ContextMenuLayout.cs` tests (baseline 7eaee2a2). Golden: `tests/golden/context-menu.json`.
 
 use std::collections::HashSet;
 
@@ -10,8 +10,18 @@ use pr_core::settings::context_menu::{
 use pr_test_support::golden::{self, bool_of, str_of};
 use serde_json::Value;
 
-const WITH_PHOTO: ContextMenuContext = ContextMenuContext { has_photo: true };
-const NO_PHOTO: ContextMenuContext = ContextMenuContext { has_photo: false };
+const WITH_PHOTO: ContextMenuContext = ContextMenuContext {
+    has_photo: true,
+    include_shell_only: false,
+};
+const NO_PHOTO: ContextMenuContext = ContextMenuContext {
+    has_photo: false,
+    include_shell_only: false,
+};
+const SHELL_WITH_PHOTO: ContextMenuContext = ContextMenuContext {
+    has_photo: true,
+    include_shell_only: true,
+};
 
 fn hide(ids: &[Id]) -> HashSet<Id> {
     ids.iter().copied().collect()
@@ -69,7 +79,7 @@ fn names_of(set: &HashSet<Id>) -> Vec<String> {
 fn kind_cases(kind: &str) -> Vec<Value> {
     let g = golden::load("context-menu");
     assert!(
-        g.csharp_commit.starts_with("d92d6aae"),
+        g.csharp_commit.starts_with("7eaee2a2"),
         "golden baseline {}",
         g.csharp_commit
     );
@@ -101,6 +111,14 @@ fn nothing_hidden_shows_every_item_with_a_separator_between_each_group() {
     );
 }
 
+#[test]
+fn rename_file_is_visible_only_in_the_shell_with_a_photo() {
+    assert!(item_info(Id::RenameFile).shell_only);
+    assert!(!compute(&hide(&[]), WITH_PHOTO, None).is_visible(Id::RenameFile));
+    assert!(!compute(&hide(&[]), NO_PHOTO, None).is_visible(Id::RenameFile));
+    assert!(compute(&hide(&[]), SHELL_WITH_PHOTO, None).is_visible(Id::RenameFile));
+}
+
 // C#: ContextMenuLayoutTests.Item_ids_are_stable_names_and_the_table_has_no_duplicates
 #[test]
 fn item_ids_are_stable_names_and_the_table_has_no_duplicates() {
@@ -127,7 +145,8 @@ fn item_ids_are_stable_names_and_the_table_has_no_duplicates() {
             "ZoomFitHeight",
             "ZoomPresets",
             "ZoomLevelOptions",
-            "Refresh"
+            "Refresh",
+            "RenameFile"
         ],
         names
     );
@@ -192,7 +211,7 @@ fn settings_cannot_be_hidden_even_when_listed() {
 #[test]
 fn menu_always_has_at_least_one_item_for_every_combination_of_flags() {
     let hideable = hideable_top_level();
-    assert_eq!(12, hideable.len());
+    assert_eq!(13, hideable.len());
     for mask in 0..(1u32 << hideable.len()) {
         let hidden: HashSet<Id> = hideable
             .iter()
@@ -460,6 +479,7 @@ fn golden_compute_top_level() {
             .collect();
         let ctx = ContextMenuContext {
             has_photo: bool_of(&c, "has_photo"),
+            include_shell_only: false,
         };
         let layout = compute(&hidden, ctx, None);
         assert_eq!(str_of(&c, "render"), render(&layout), "{c}");

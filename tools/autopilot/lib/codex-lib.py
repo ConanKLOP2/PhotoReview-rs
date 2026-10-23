@@ -8,19 +8,31 @@ def read(p):
         return f.read()
 
 def plan_rows(plan):
-    """Yield dicts for table rows `| W8-04a | files | rust | col | model | test | deps | batch |`."""
+    """Yield parsed Wave 8 and Wave 9 plan rows, preserving the source line."""
     for line in read(plan).splitlines():
-        if not re.match(r"^\|\s*W\d+-\d\d[a-z]\s*\|", line):
+        if not re.match(r"^\|\s*(?:W\d+-\d\d[a-z]|W9-[A-Z]\d+)\s*\|", line):
             continue
         c = [x.strip() for x in line.strip().strip("|").split("|")]
-        if len(c) < 8:
-            continue
-        yield {"id": c[0], "deps_raw": c[6], "batch": c[7], "line": line}
+        if re.fullmatch(r"W9-[A-Z]\d+", c[0]) and len(c) == 6:
+            yield {"id": c[0], "deps_raw": c[5], "batch": c[0][3], "line": line, "col": c[3], "test": c[4]}
+        elif re.fullmatch(r"W\d+-\d\d[a-z]", c[0]) and len(c) >= 8:
+            yield {"id": c[0], "deps_raw": c[6], "batch": c[7], "line": line, "col": c[3], "test": c[5]}
 
 def expand_deps(raw, uid):
+    if re.fullmatch(r"W9-[A-Z]\d+", uid):
+        raw = re.split(r"\bnot\b", raw, maxsplit=1, flags=re.I)[0]
+        raw = re.sub(r"`[^`]*`", " ", raw)
+        out = re.findall(r"\b" + re.escape(uid[3]) + r"\d+\b", raw)
+        seen, res = set(), []
+        for token in out:
+            d = "W9-" + token
+            if d not in seen: seen.add(d); res.append(d)
+        return res
     prefix = uid.rsplit("-", 1)[0]
     raw = re.sub(r"`[^`]*`", " ", raw)
     out = []
+    for a, b in re.findall(r"\b(\d\d[a-z])\.\.([a-z])\b", raw):
+        out += [a[:2] + chr(x) for x in range(ord(a[2]), ord(b) + 1)]
     for a, b in re.findall(r"\b(\d\d[a-z])\.\.(\d\d[a-z])\b", raw):
         if a[:2] == b[:2]:
             out += [a[:2] + chr(x) for x in range(ord(a[2]), ord(b[2]) + 1)]
@@ -34,8 +46,34 @@ def expand_deps(raw, uid):
             seen.add(d); res.append(d)
     return res
 
+def expand_unit_ids(text):
+    """Expand W8 ids, including abbreviated ranges and slash lists, in source order."""
+    token_re = re.compile(r"\bW\d+-\d\d[a-z](?:\.\.(?:W\d+-)?(?:\d\d)?[a-z])?(?:/\d\d[a-z])*")
+    out = []
+    for match in token_re.finditer(text):
+        token = match.group(0)
+        if ".." in token:
+            first, last = token.split("..", 1)
+            m1 = re.fullmatch(r"(W\d+)-(\d\d)([a-z])", first)
+            m2 = re.fullmatch(r"(?:(W\d+)-)?(?:(\d\d))?([a-z])", last)
+            if m1 and m2 and (not m2.group(1) or m2.group(1) == m1.group(1)) and (not m2.group(2) or m2.group(2) == m1.group(2)):
+                wave, digits, start = m1.groups()
+                end = m2.group(3)
+                if ord(start) <= ord(end):
+                    out.extend(wave + "-" + digits + chr(n) for n in range(ord(start), ord(end) + 1))
+                else:
+                    out.append(first)
+            else:
+                out.extend((first, last))
+        else:
+            parts = token.split("/")
+            wave, _, _ = re.fullmatch(r"(W\d+)-(\d\d)([a-z])", parts[0]).groups()
+            out.append(parts[0])
+            out.extend(wave + "-" + part for part in parts[1:])
+    return list(dict.fromkeys(out))
+
 def cmd_order(plan, batch, only=None):
-    rows = [r for r in plan_rows(plan) if r["batch"].upper() == batch.upper()]
+    rows = [r for r in plan_rows(plan) if (r["batch"].upper() == batch.upper())]
     ids = [r["id"] for r in rows]
     deps = {r["id"]: [d for d in expand_deps(r["deps_raw"], r["id"]) if d in ids and d != r["id"]] for r in rows}
     done, order = set(), []
@@ -50,6 +88,50 @@ def cmd_order(plan, batch, only=None):
     for i in order:
         if sel is None or i in sel:
             print(i + "\t" + ",".join(deps[i]))
+
+def cmd_extdeps(plan, uid):
+    rows = {r["id"]: r for r in plan_rows(plan)}
+    r = rows.get(uid)
+    if r:
+        raw = re.sub(r"`[^`]*`", " ", r["deps_raw"])
+        raw = re.split(r"\bnot\b", raw, maxsplit=1, flags=re.I)[0]
+        print("\n".join(expand_unit_ids(raw)))
+
+def cmd_planfor(root, ident):
+    if ident.startswith("W9-"):
+        lane = ident[3]
+    elif re.fullmatch(r"wave9-[a-z]", ident):
+        lane = ident[-1].upper()
+    else:
+        print("docs/WAVE-8-PLAN.md"); return
+    matches = []
+    for name in sorted(os.listdir(os.path.join(root, "docs"))):
+        if not name.startswith("WAVE-9-PLAN-") or not name.endswith(".md"): continue
+        path = os.path.join(root, "docs", name)
+        if any(re.match(r"^\|\s*W9-%s\d+\s*\|" % lane, x) for x in read(path).splitlines()): matches.append(name)
+    if len(matches) != 1:
+        if not matches: sys.exit("no Wave 9 plan with rows W9-%s* in docs/" % lane)
+        sys.exit("multiple Wave 9 plans with rows W9-%s* in docs/: %s" % (lane, ", ".join(matches)))
+    print("docs/" + matches[0])
+
+def cmd_extsat(repo, statedir, uid):
+    log = subprocess.run(["git", "-C", repo, "log", "origin/master", "--format=%s%x1f%b%x1e"], capture_output=True, text=True)
+    merged = False
+    for entry in log.stdout.split("\x1e"):
+        subject, _, body = entry.partition("\x1f")
+        subject = subject.lstrip()
+        # Skip documentation, maintenance, CI and style commits; other subjects may identify implementation units.
+        if subject.startswith(("docs(", "docs:", "chore(", "chore:", "ci(", "style(")):
+            continue
+        if uid in expand_unit_ids(subject + "\n" + body):
+            merged = True
+            break
+    if not merged:
+        for name in os.listdir(statedir) if os.path.isdir(statedir) else []:
+            if not name.endswith(".json"): continue
+            if state_load(os.path.join(statedir, name)).get("units", {}).get(uid, {}).get("status") in ("done", "partial"):
+                merged = True; break
+    if not merged: print(uid)
 
 def cmd_row(plan, uid):
     for r in plan_rows(plan):
@@ -166,22 +248,20 @@ def cmd_avgpct(path):
     print(("%.1f" % (sum(v) / len(v))) if v else "")
 
 def cmd_table(path):
-    print("| Unit | Status | Rounds | Codex tokens in/cached/out | Seconds | Mutants killed/survived/budgeted-out | Pack KB |")
-    print("|---|---|---|---|---|---|---|")
+    print("| Unit | Status | Rounds | Fixup | Codex tokens in/cached/out | Seconds | Mutants killed/survived/budgeted-out | Pack KB |")
+    print("|---|---|---|---|---|---|---|---|")
     for k, v in sorted(state_load(path)["units"].items()):
         mut = "-" if "killed" not in v else "%d/%d/%d" % (v.get("killed", 0), v.get("survivors", 0), v.get("budgeted", 0))
         pk = "%.1f" % (v["pack_bytes"] / 1024) if v.get("pack_bytes") else "-"
-        print("| %s | %s | %d | %d/%d/%d | %d | %s | %s |" % (k, v.get("status", ""), v.get("rounds", 0), v.get("tin", 0),
+        print("| %s | %s | %d | %s | %d/%d/%d | %d | %s | %s |" % (k, v.get("status", ""), v.get("rounds", 0), v.get("fixup", 0), v.get("tin", 0),
               v.get("tcached", 0), v.get("tout", 0), v.get("secs", 0), mut, pk))
 
 # ------------------------------------------------------------------ tier / pack trimming
 def cmd_tier(plan, uid):
     """skip (green or golden-covered), yellow or red - read from the plan row's Col and Test cells."""
-    for line in read(plan).splitlines():
-        if not re.match(r"^\|\s*" + re.escape(uid) + r"\s*\|", line):
-            continue
-        c = [x.strip() for x in line.strip().strip("|").split("|")]
-        col, test = c[3].lower(), c[5]
+    for row in plan_rows(plan):
+        if row["id"] != uid: continue
+        col, test = row["col"].lower(), row["test"]
         if "\U0001F7E2" in col or "green" in col: return "skip"
         if re.match(r"^G\b", test): return "skip"
         if "\U0001F534" in col or "red" in col: return "red"
@@ -190,7 +270,7 @@ def cmd_tier(plan, uid):
 
 def trim_cs(text, cap):
     """Strip BOM, the leading license/header comment block, XML doc lines, trailing blanks and blank runs; cap the size."""
-    lines = text.replace("﻿", "").replace("\r", "").split("\n")
+    lines = text.replace("\ufeff", "").replace("\r", "").split("\n")
     i = 0
     while i < len(lines):
         t = lines[i].strip()
@@ -363,7 +443,7 @@ def _fn_bodies(src):
         res.setdefault(m.group(1), body)
     return res
 
-def cmd_testguard(wt, base, ownedfile):
+def cmd_testguard(wt, base, ownedfile, relaxed=False):
     """Test files that existed at <base> may only grow: every old fn keeps all its old lines (in order); no ignore/should_panic added."""
     bad = []
     for f in [l.strip() for l in read(ownedfile).splitlines() if l.strip()]:
@@ -375,6 +455,14 @@ def cmd_testguard(wt, base, ownedfile):
             bad.append("%s: red/test file deleted" % f); continue
         new = read(pth).replace("\r", "")
         ob, nb = _fn_bodies(old), _fn_bodies(new)
+        if relaxed:
+            old_asserts = len(re.findall(r"\bassert(?:_eq|_ne)?\s*!", old))
+            new_asserts = len(re.findall(r"\bassert(?:_eq|_ne)?\s*!", new))
+            if len(nb) < len(ob): bad.append("%s: number of test functions decreased" % f)
+            if new_asserts < old_asserts: bad.append("%s: number of assert macro occurrences decreased" % f)
+            if len(re.findall(r"#\[ignore(?:\s*(?:=|\]))", new)) > len(re.findall(r"#\[ignore(?:\s*(?:=|\]))", old)):
+                bad.append("%s: a previously runnable test was marked #[ignore]" % f)
+            continue
         for name, lines in ob.items():
             if name not in nb:
                 bad.append("%s: test fn `%s` removed or renamed" % (f, name)); continue
@@ -387,6 +475,20 @@ def cmd_testguard(wt, base, ownedfile):
     if bad:
         print("Red/test files of the red-tests commit must not be modified or weakened:")
         print("\n".join(bad[:30])); sys.exit(1)
+
+def cmd_fixupreport(wt, base, ownedfile, lastmsg, out):
+    """Require the fixup summary to cite C# and name every changed Rust test function."""
+    changed = []
+    for f in [x.strip() for x in read(ownedfile).splitlines() if x.strip() and "/tests/" in x.strip() and x.strip().endswith(".rs")]:
+        old = _fn_bodies(_git(wt, "show", "%s:%s" % (base, f)).replace("\r", ""))
+        p = os.path.join(wt, f)
+        if not os.path.isfile(p): continue
+        new = _fn_bodies(read(p).replace("\r", ""))
+        changed += [name for name in new if name not in old or new[name] != old.get(name)]
+    msg = read(lastmsg) if os.path.isfile(lastmsg) else ""
+    if changed and (not re.search(r"C#.*\.cs|\.cs.*C#", msg, re.I) or any(n not in msg for n in changed)):
+        sys.exit("fixup summary must cite a C# .cs test and name changed Rust test functions: " + ", ".join(changed))
+    with open(out, "w", encoding="utf-8", newline="\n") as f: f.write(",".join(changed))
 
 # ------------------------------------------------------------------ failure triage (<= 3 KB)
 def cmd_triage(out, uid, reason, errfile, wt, lastmsg):
@@ -443,6 +545,9 @@ def cmd_redcheck(path):
 def main(a):
     c = a[0]
     if c == "order": cmd_order(a[1], a[2], a[3] if len(a) > 3 else None)
+    elif c == "extdeps": cmd_extdeps(a[1], a[2])
+    elif c == "planfor": cmd_planfor(a[1], a[2])
+    elif c == "extsat": cmd_extsat(a[1], a[2], a[3])
     elif c == "row": cmd_row(a[1], a[2])
     elif c == "deps": cmd_deps(a[1], a[2])
     elif c == "owned": print("\n".join(owned(a[1])))
@@ -468,7 +573,8 @@ def main(a):
     elif c == "mutstat": cmd_mutstat(a[1])
     elif c == "mutregex": cmd_mutregex(a[1])
     elif c == "lint": cmd_lint(a[1], a[2])
-    elif c == "testguard": cmd_testguard(a[1], a[2], a[3])
+    elif c == "testguard": cmd_testguard(a[1], a[2], a[3], len(a) > 4 and a[4] == "relaxed")
+    elif c == "fixupreport": cmd_fixupreport(a[1], a[2], a[3], a[4], a[5])
     elif c == "members": cmd_members()
     elif c == "sreset": cmd_sreset(a[1], a[2])
     elif c == "redcheck": cmd_redcheck(a[1])

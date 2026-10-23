@@ -82,7 +82,7 @@ riêng. Có dừng bản C# hay không là quyết định của người dùng.
 
 ## Cơ chế đảm bảo "y chang"
 1. [PARITY.md](PARITY.md): mỗi tính năng/INV có trạng thái và test chứng minh.
-2. Oracle harness (dự kiến `tools/oracle`): chạy C# và Rust trên cùng fixture rồi diff output.
+2. Oracle harness (`tools/oracle.ps1`): chạy C# và Rust trên cùng fixture rồi diff output.
 3. Test port giữ tên C# gốc trong comment.
 4. Dùng chung JSON ngôn ngữ, kiểm tra không thiếu key.
 

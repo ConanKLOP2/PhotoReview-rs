@@ -407,3 +407,15 @@ fn debug_output_names_the_types() {
     assert!(format!("{:?}", actions(&rig)).contains("MainWindowMenuActions"));
     let _: &dyn Error = &Boom("x");
 }
+
+#[test]
+fn logged_menu_error_displays_exact_original_text() {
+    let rig = MenuRig::new();
+    rig.menus.report_menu_failed("ToolsMenu", &Boom("menu exact text"));
+    assert_eq!(
+        (LogLevel::Error, "ToolsMenu failed: menu exact text".to_owned()),
+        rig.services.log.entries()[0]
+    );
+    assert_eq!("menu exact text", rig.services.shell_errors.borrow()[0].1);
+    assert_eq!("Menu error: menu exact text", rig.rig.env.borrow().vm.status_text());
+}

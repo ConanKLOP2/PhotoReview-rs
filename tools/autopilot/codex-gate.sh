@@ -28,7 +28,11 @@ fi
 # 2. cheap deterministic review gates
 $LIB lint "$WT" "$T.owned" > "$T.l" 2>&1 || { rm -f "$T" "$T.owned" "$T.changed"; fail "static review gate" 5 "$T.l"; }
 if [ -n "${GATE_TEST_BASE:-}" ]; then
-  $LIB testguard "$WT" "$GATE_TEST_BASE" "$T.owned" > "$T.l" 2>&1 || { rm -f "$T" "$T.owned" "$T.changed"; fail "red-test guard" 6 "$T.l"; }
+  if [ "${GATE_TEST_RELAXED:-0}" = 1 ]; then
+    $LIB testguard "$WT" "$GATE_TEST_BASE" "$T.owned" relaxed > "$T.l" 2>&1 || { rm -f "$T" "$T.owned" "$T.changed"; fail "fixup test guard" 6 "$T.l"; }
+  else
+    $LIB testguard "$WT" "$GATE_TEST_BASE" "$T.owned" > "$T.l" 2>&1 || { rm -f "$T" "$T.owned" "$T.changed"; fail "red-test guard" 6 "$T.l"; }
+  fi
 fi
 rm -f "$T.l"
 

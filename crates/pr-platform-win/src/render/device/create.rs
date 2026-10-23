@@ -295,11 +295,33 @@ mod tests {
         let height = RenderFault::ArgumentOutOfRange { param: "pixelHeight" };
         assert_eq!(DeviceResources::create_offscreen(0, 0, 1.0, true).unwrap_err(), width);
         assert_eq!(DeviceResources::create_offscreen(-1, 5, 1.0, true).unwrap_err(), width);
+        assert_eq!(DeviceResources::create_offscreen(1, 0, 1.0, true).unwrap_err(), height);
+        assert_eq!(DeviceResources::create_offscreen(1, -1, 1.0, true).unwrap_err(), height);
+        assert_eq!(
+            DeviceResources::create_offscreen(1, i32::MIN, 1.0, true).unwrap_err(),
+            height
+        );
         assert_eq!(DeviceResources::create_offscreen(5, 0, 1.0, true).unwrap_err(), height);
         assert_eq!(
             DeviceResources::create_offscreen(5, i32::MIN, 1.0, true).unwrap_err(),
             height
         );
+    }
+
+    #[test]
+    #[ignore = "native: needs desktop"]
+    fn create_offscreen_accepts_one_by_one_dimensions() {
+        let resources = DeviceResources::create_offscreen(1, 1, 1.0, true).unwrap();
+        assert_eq!(resources.pixel_width(), 1);
+        assert_eq!(resources.pixel_height(), 1);
+    }
+
+    #[test]
+    #[ignore = "native: needs desktop"]
+    fn create_offscreen_does_not_create_a_swap_chain() {
+        let resources = DeviceResources::create_offscreen(5, 1, 1.0, true).unwrap();
+        assert!(!resources.has_swap_chain());
+        assert_eq!(resources.frame_latency_wait_handle(), 0);
     }
 
     // C#: CreateDevice (WARP when asked); no target yet, so this is green before the target exists

@@ -14,3 +14,5 @@ pub mod main_view_model;
 pub mod platform;
 pub mod registry;
 pub mod texts;
+#[cfg(windows)]
+pub mod update_http;

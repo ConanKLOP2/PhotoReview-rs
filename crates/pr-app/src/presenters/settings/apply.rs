@@ -350,6 +350,7 @@ impl SettingsPresenter {
             ContextMenuItemId::ZoomPresets => "zoomPresets",
             ContextMenuItemId::ZoomLevelOptions => "zoomLevelOptions",
             ContextMenuItemId::Refresh => "refresh",
+            ContextMenuItemId::RenameFile => "renameFile",
         };
         ctx.texts.get(&format!("settings.contextMenu.item.{name}"))
     }

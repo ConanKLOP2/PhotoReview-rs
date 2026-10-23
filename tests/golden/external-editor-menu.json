@@ -1,0 +1,904 @@
+{
+  "generator": "oracle-cs external-editor-menu",
+  "csharp_commit": "7eaee2a2b071c7ca05291c86fb78a347f9e6a15f",
+  "cases": [
+    {
+      "name": "no editor keeps the single command",
+      "render": "Undo,|,Refresh,|,OpenFolder,NextFolder,PreviousFolder,|,ExternalEditor,|,RenameFile,CopyFileName,CopyFullPath,|,Settings",
+      "item": {
+        "id": "ExternalEditor",
+        "kind": "Command",
+        "text": "Open in External Editor",
+        "shortcut": null,
+        "enabled": true,
+        "checked": false,
+        "automation": "Open the current photo in the external editor",
+        "children": []
+      }
+    },
+    {
+      "name": "no editor, no image",
+      "render": "Undo,|,Refresh,|,OpenFolder,NextFolder,PreviousFolder,|,ExternalEditor,|,Settings",
+      "item": {
+        "id": "ExternalEditor",
+        "kind": "Command",
+        "text": "Open in External Editor",
+        "shortcut": null,
+        "enabled": true,
+        "checked": false,
+        "automation": "Open the current photo in the external editor",
+        "children": []
+      }
+    },
+    {
+      "name": "one editor",
+      "render": "Undo,|,Refresh,|,OpenFolder,NextFolder,PreviousFolder,|,ExternalEditor,|,RenameFile,CopyFileName,CopyFullPath,|,Settings",
+      "item": {
+        "id": "ExternalEditor",
+        "kind": "Submenu",
+        "text": "Open in External Editor",
+        "shortcut": null,
+        "enabled": true,
+        "checked": false,
+        "automation": "Open the current photo in the external editor",
+        "children": [
+          {
+            "id": "ExternalEditor.Open.a",
+            "kind": "Toggle",
+            "text": "Alpha",
+            "shortcut": null,
+            "enabled": true,
+            "checked": true,
+            "automation": "Open the current photo in Alpha",
+            "children": []
+          },
+          {
+            "id": "Separator.ExternalEditor",
+            "kind": "Separator",
+            "text": "",
+            "shortcut": null,
+            "enabled": false,
+            "checked": false,
+            "automation": null,
+            "children": []
+          },
+          {
+            "id": "ExternalEditor.Add",
+            "kind": "Command",
+            "text": "Add more editors…",
+            "shortcut": null,
+            "enabled": true,
+            "checked": false,
+            "automation": "Add another external editor program to this menu",
+            "children": []
+          },
+          {
+            "id": "ExternalEditor.SetDefault",
+            "kind": "Command",
+            "text": "Set default editor…",
+            "shortcut": null,
+            "enabled": true,
+            "checked": false,
+            "automation": "Choose which external editor is the default",
+            "children": []
+          }
+        ]
+      }
+    },
+    {
+      "name": "two editors, the second is the default, with a shortcut",
+      "render": "Undo,|,Refresh,|,OpenFolder,NextFolder,PreviousFolder,|,ExternalEditor,|,RenameFile,CopyFileName,CopyFullPath,|,Settings",
+      "item": {
+        "id": "ExternalEditor",
+        "kind": "Submenu",
+        "text": "Open in External Editor",
+        "shortcut": null,
+        "enabled": true,
+        "checked": false,
+        "automation": "Open the current photo in the external editor",
+        "children": [
+          {
+            "id": "ExternalEditor.Open.a",
+            "kind": "Toggle",
+            "text": "Alpha",
+            "shortcut": null,
+            "enabled": true,
+            "checked": false,
+            "automation": "Open the current photo in Alpha",
+            "children": []
+          },
+          {
+            "id": "ExternalEditor.Open.b",
+            "kind": "Toggle",
+            "text": "Beta",
+            "shortcut": "F6",
+            "enabled": true,
+            "checked": true,
+            "automation": "Open the current photo in Beta",
+            "children": []
+          },
+          {
+            "id": "Separator.ExternalEditor",
+            "kind": "Separator",
+            "text": "",
+            "shortcut": null,
+            "enabled": false,
+            "checked": false,
+            "automation": null,
+            "children": []
+          },
+          {
+            "id": "ExternalEditor.Add",
+            "kind": "Command",
+            "text": "Add more editors…",
+            "shortcut": null,
+            "enabled": true,
+            "checked": false,
+            "automation": "Add another external editor program to this menu",
+            "children": []
+          },
+          {
+            "id": "ExternalEditor.SetDefault",
+            "kind": "Command",
+            "text": "Set default editor…",
+            "shortcut": null,
+            "enabled": true,
+            "checked": false,
+            "automation": "Choose which external editor is the default",
+            "children": []
+          }
+        ]
+      }
+    },
+    {
+      "name": "two editors, a shortcut that is blank is not shown",
+      "render": "Undo,|,Refresh,|,OpenFolder,NextFolder,PreviousFolder,|,ExternalEditor,|,RenameFile,CopyFileName,CopyFullPath,|,Settings",
+      "item": {
+        "id": "ExternalEditor",
+        "kind": "Submenu",
+        "text": "Open in External Editor",
+        "shortcut": null,
+        "enabled": true,
+        "checked": false,
+        "automation": "Open the current photo in the external editor",
+        "children": [
+          {
+            "id": "ExternalEditor.Open.a",
+            "kind": "Toggle",
+            "text": "Alpha",
+            "shortcut": null,
+            "enabled": true,
+            "checked": true,
+            "automation": "Open the current photo in Alpha",
+            "children": []
+          },
+          {
+            "id": "ExternalEditor.Open.b",
+            "kind": "Toggle",
+            "text": "Beta",
+            "shortcut": null,
+            "enabled": true,
+            "checked": false,
+            "automation": "Open the current photo in Beta",
+            "children": []
+          },
+          {
+            "id": "Separator.ExternalEditor",
+            "kind": "Separator",
+            "text": "",
+            "shortcut": null,
+            "enabled": false,
+            "checked": false,
+            "automation": null,
+            "children": []
+          },
+          {
+            "id": "ExternalEditor.Add",
+            "kind": "Command",
+            "text": "Add more editors…",
+            "shortcut": null,
+            "enabled": true,
+            "checked": false,
+            "automation": "Add another external editor program to this menu",
+            "children": []
+          },
+          {
+            "id": "ExternalEditor.SetDefault",
+            "kind": "Command",
+            "text": "Set default editor…",
+            "shortcut": null,
+            "enabled": true,
+            "checked": false,
+            "automation": "Choose which external editor is the default",
+            "children": []
+          }
+        ]
+      }
+    },
+    {
+      "name": "unknown default id marks the first",
+      "render": "Undo,|,Refresh,|,OpenFolder,NextFolder,PreviousFolder,|,ExternalEditor,|,RenameFile,CopyFileName,CopyFullPath,|,Settings",
+      "item": {
+        "id": "ExternalEditor",
+        "kind": "Submenu",
+        "text": "Open in External Editor",
+        "shortcut": null,
+        "enabled": true,
+        "checked": false,
+        "automation": "Open the current photo in the external editor",
+        "children": [
+          {
+            "id": "ExternalEditor.Open.a",
+            "kind": "Toggle",
+            "text": "Alpha",
+            "shortcut": "F6",
+            "enabled": true,
+            "checked": true,
+            "automation": "Open the current photo in Alpha",
+            "children": []
+          },
+          {
+            "id": "ExternalEditor.Open.b",
+            "kind": "Toggle",
+            "text": "Beta",
+            "shortcut": null,
+            "enabled": true,
+            "checked": false,
+            "automation": "Open the current photo in Beta",
+            "children": []
+          },
+          {
+            "id": "Separator.ExternalEditor",
+            "kind": "Separator",
+            "text": "",
+            "shortcut": null,
+            "enabled": false,
+            "checked": false,
+            "automation": null,
+            "children": []
+          },
+          {
+            "id": "ExternalEditor.Add",
+            "kind": "Command",
+            "text": "Add more editors…",
+            "shortcut": null,
+            "enabled": true,
+            "checked": false,
+            "automation": "Add another external editor program to this menu",
+            "children": []
+          },
+          {
+            "id": "ExternalEditor.SetDefault",
+            "kind": "Command",
+            "text": "Set default editor…",
+            "shortcut": null,
+            "enabled": true,
+            "checked": false,
+            "automation": "Choose which external editor is the default",
+            "children": []
+          }
+        ]
+      }
+    },
+    {
+      "name": "blank default id marks the first",
+      "render": "Undo,|,Refresh,|,OpenFolder,NextFolder,PreviousFolder,|,ExternalEditor,|,RenameFile,CopyFileName,CopyFullPath,|,Settings",
+      "item": {
+        "id": "ExternalEditor",
+        "kind": "Submenu",
+        "text": "Open in External Editor",
+        "shortcut": null,
+        "enabled": true,
+        "checked": false,
+        "automation": "Open the current photo in the external editor",
+        "children": [
+          {
+            "id": "ExternalEditor.Open.a",
+            "kind": "Toggle",
+            "text": "Alpha",
+            "shortcut": null,
+            "enabled": true,
+            "checked": true,
+            "automation": "Open the current photo in Alpha",
+            "children": []
+          },
+          {
+            "id": "ExternalEditor.Open.b",
+            "kind": "Toggle",
+            "text": "Beta",
+            "shortcut": null,
+            "enabled": true,
+            "checked": false,
+            "automation": "Open the current photo in Beta",
+            "children": []
+          },
+          {
+            "id": "Separator.ExternalEditor",
+            "kind": "Separator",
+            "text": "",
+            "shortcut": null,
+            "enabled": false,
+            "checked": false,
+            "automation": null,
+            "children": []
+          },
+          {
+            "id": "ExternalEditor.Add",
+            "kind": "Command",
+            "text": "Add more editors…",
+            "shortcut": null,
+            "enabled": true,
+            "checked": false,
+            "automation": "Add another external editor program to this menu",
+            "children": []
+          },
+          {
+            "id": "ExternalEditor.SetDefault",
+            "kind": "Command",
+            "text": "Set default editor…",
+            "shortcut": null,
+            "enabled": true,
+            "checked": false,
+            "automation": "Choose which external editor is the default",
+            "children": []
+          }
+        ]
+      }
+    },
+    {
+      "name": "no image disables the editors but not Add or Set default",
+      "render": "Undo,|,Refresh,|,OpenFolder,NextFolder,PreviousFolder,|,ExternalEditor,|,Settings",
+      "item": {
+        "id": "ExternalEditor",
+        "kind": "Submenu",
+        "text": "Open in External Editor",
+        "shortcut": null,
+        "enabled": true,
+        "checked": false,
+        "automation": "Open the current photo in the external editor",
+        "children": [
+          {
+            "id": "ExternalEditor.Open.a",
+            "kind": "Toggle",
+            "text": "Alpha",
+            "shortcut": "F6",
+            "enabled": false,
+            "checked": true,
+            "automation": "Open the current photo in Alpha",
+            "children": []
+          },
+          {
+            "id": "ExternalEditor.Open.b",
+            "kind": "Toggle",
+            "text": "Beta",
+            "shortcut": null,
+            "enabled": false,
+            "checked": false,
+            "automation": "Open the current photo in Beta",
+            "children": []
+          },
+          {
+            "id": "Separator.ExternalEditor",
+            "kind": "Separator",
+            "text": "",
+            "shortcut": null,
+            "enabled": false,
+            "checked": false,
+            "automation": null,
+            "children": []
+          },
+          {
+            "id": "ExternalEditor.Add",
+            "kind": "Command",
+            "text": "Add more editors…",
+            "shortcut": null,
+            "enabled": true,
+            "checked": false,
+            "automation": "Add another external editor program to this menu",
+            "children": []
+          },
+          {
+            "id": "ExternalEditor.SetDefault",
+            "kind": "Command",
+            "text": "Set default editor…",
+            "shortcut": null,
+            "enabled": true,
+            "checked": false,
+            "automation": "Choose which external editor is the default",
+            "children": []
+          }
+        ]
+      }
+    },
+    {
+      "name": "legacy path only is one implicit editor",
+      "render": "Undo,|,Refresh,|,OpenFolder,NextFolder,PreviousFolder,|,ExternalEditor,|,RenameFile,CopyFileName,CopyFullPath,|,Settings",
+      "item": {
+        "id": "ExternalEditor",
+        "kind": "Submenu",
+        "text": "Open in External Editor",
+        "shortcut": null,
+        "enabled": true,
+        "checked": false,
+        "automation": "Open the current photo in the external editor",
+        "children": [
+          {
+            "id": "ExternalEditor.Open.legacy",
+            "kind": "Toggle",
+            "text": "Affinity Photo",
+            "shortcut": "F6",
+            "enabled": true,
+            "checked": true,
+            "automation": "Open the current photo in Affinity Photo",
+            "children": []
+          },
+          {
+            "id": "Separator.ExternalEditor",
+            "kind": "Separator",
+            "text": "",
+            "shortcut": null,
+            "enabled": false,
+            "checked": false,
+            "automation": null,
+            "children": []
+          },
+          {
+            "id": "ExternalEditor.Add",
+            "kind": "Command",
+            "text": "Add more editors…",
+            "shortcut": null,
+            "enabled": true,
+            "checked": false,
+            "automation": "Add another external editor program to this menu",
+            "children": []
+          },
+          {
+            "id": "ExternalEditor.SetDefault",
+            "kind": "Command",
+            "text": "Set default editor…",
+            "shortcut": null,
+            "enabled": true,
+            "checked": false,
+            "automation": "Choose which external editor is the default",
+            "children": []
+          }
+        ]
+      }
+    },
+    {
+      "name": "legacy path only, no image",
+      "render": "Undo,|,Refresh,|,OpenFolder,NextFolder,PreviousFolder,|,ExternalEditor,|,Settings",
+      "item": {
+        "id": "ExternalEditor",
+        "kind": "Submenu",
+        "text": "Open in External Editor",
+        "shortcut": null,
+        "enabled": true,
+        "checked": false,
+        "automation": "Open the current photo in the external editor",
+        "children": [
+          {
+            "id": "ExternalEditor.Open.legacy",
+            "kind": "Toggle",
+            "text": "Affinity Photo",
+            "shortcut": null,
+            "enabled": false,
+            "checked": true,
+            "automation": "Open the current photo in Affinity Photo",
+            "children": []
+          },
+          {
+            "id": "Separator.ExternalEditor",
+            "kind": "Separator",
+            "text": "",
+            "shortcut": null,
+            "enabled": false,
+            "checked": false,
+            "automation": null,
+            "children": []
+          },
+          {
+            "id": "ExternalEditor.Add",
+            "kind": "Command",
+            "text": "Add more editors…",
+            "shortcut": null,
+            "enabled": true,
+            "checked": false,
+            "automation": "Add another external editor program to this menu",
+            "children": []
+          },
+          {
+            "id": "ExternalEditor.SetDefault",
+            "kind": "Command",
+            "text": "Set default editor…",
+            "shortcut": null,
+            "enabled": true,
+            "checked": false,
+            "automation": "Choose which external editor is the default",
+            "children": []
+          }
+        ]
+      }
+    },
+    {
+      "name": "blank name falls back to the file name",
+      "render": "Undo,|,Refresh,|,OpenFolder,NextFolder,PreviousFolder,|,ExternalEditor,|,RenameFile,CopyFileName,CopyFullPath,|,Settings",
+      "item": {
+        "id": "ExternalEditor",
+        "kind": "Submenu",
+        "text": "Open in External Editor",
+        "shortcut": null,
+        "enabled": true,
+        "checked": false,
+        "automation": "Open the current photo in the external editor",
+        "children": [
+          {
+            "id": "ExternalEditor.Open.a",
+            "kind": "Toggle",
+            "text": "Retouch",
+            "shortcut": null,
+            "enabled": true,
+            "checked": true,
+            "automation": "Open the current photo in Retouch",
+            "children": []
+          },
+          {
+            "id": "Separator.ExternalEditor",
+            "kind": "Separator",
+            "text": "",
+            "shortcut": null,
+            "enabled": false,
+            "checked": false,
+            "automation": null,
+            "children": []
+          },
+          {
+            "id": "ExternalEditor.Add",
+            "kind": "Command",
+            "text": "Add more editors…",
+            "shortcut": null,
+            "enabled": true,
+            "checked": false,
+            "automation": "Add another external editor program to this menu",
+            "children": []
+          },
+          {
+            "id": "ExternalEditor.SetDefault",
+            "kind": "Command",
+            "text": "Set default editor…",
+            "shortcut": null,
+            "enabled": true,
+            "checked": false,
+            "automation": "Choose which external editor is the default",
+            "children": []
+          }
+        ]
+      }
+    },
+    {
+      "name": "name is trimmed",
+      "render": "Undo,|,Refresh,|,OpenFolder,NextFolder,PreviousFolder,|,ExternalEditor,|,RenameFile,CopyFileName,CopyFullPath,|,Settings",
+      "item": {
+        "id": "ExternalEditor",
+        "kind": "Submenu",
+        "text": "Open in External Editor",
+        "shortcut": null,
+        "enabled": true,
+        "checked": false,
+        "automation": "Open the current photo in the external editor",
+        "children": [
+          {
+            "id": "ExternalEditor.Open.a",
+            "kind": "Toggle",
+            "text": "Padded",
+            "shortcut": null,
+            "enabled": true,
+            "checked": true,
+            "automation": "Open the current photo in Padded",
+            "children": []
+          },
+          {
+            "id": "Separator.ExternalEditor",
+            "kind": "Separator",
+            "text": "",
+            "shortcut": null,
+            "enabled": false,
+            "checked": false,
+            "automation": null,
+            "children": []
+          },
+          {
+            "id": "ExternalEditor.Add",
+            "kind": "Command",
+            "text": "Add more editors…",
+            "shortcut": null,
+            "enabled": true,
+            "checked": false,
+            "automation": "Add another external editor program to this menu",
+            "children": []
+          },
+          {
+            "id": "ExternalEditor.SetDefault",
+            "kind": "Command",
+            "text": "Set default editor…",
+            "shortcut": null,
+            "enabled": true,
+            "checked": false,
+            "automation": "Choose which external editor is the default",
+            "children": []
+          }
+        ]
+      }
+    },
+    {
+      "name": "id with dots keeps the whole id",
+      "render": "Undo,|,Refresh,|,OpenFolder,NextFolder,PreviousFolder,|,ExternalEditor,|,RenameFile,CopyFileName,CopyFullPath,|,Settings",
+      "item": {
+        "id": "ExternalEditor",
+        "kind": "Submenu",
+        "text": "Open in External Editor",
+        "shortcut": null,
+        "enabled": true,
+        "checked": false,
+        "automation": "Open the current photo in the external editor",
+        "children": [
+          {
+            "id": "ExternalEditor.Open.x.y",
+            "kind": "Toggle",
+            "text": "Dotted",
+            "shortcut": null,
+            "enabled": true,
+            "checked": true,
+            "automation": "Open the current photo in Dotted",
+            "children": []
+          },
+          {
+            "id": "Separator.ExternalEditor",
+            "kind": "Separator",
+            "text": "",
+            "shortcut": null,
+            "enabled": false,
+            "checked": false,
+            "automation": null,
+            "children": []
+          },
+          {
+            "id": "ExternalEditor.Add",
+            "kind": "Command",
+            "text": "Add more editors…",
+            "shortcut": null,
+            "enabled": true,
+            "checked": false,
+            "automation": "Add another external editor program to this menu",
+            "children": []
+          },
+          {
+            "id": "ExternalEditor.SetDefault",
+            "kind": "Command",
+            "text": "Set default editor…",
+            "shortcut": null,
+            "enabled": true,
+            "checked": false,
+            "automation": "Choose which external editor is the default",
+            "children": []
+          }
+        ]
+      }
+    },
+    {
+      "name": "layout hiding the entry removes the whole submenu",
+      "render": "Undo,MoveToRecycleBin,|,Fit,ZoomToLevel,ZoomSubmenu,Refresh,|,OpenFolder,NextFolder,PreviousFolder,|,RenameFile,CopyFileName,CopyFullPath,|,Settings",
+      "item": null
+    },
+    {
+      "name": "layout hiding the entry, no editor",
+      "render": "Undo,MoveToRecycleBin,|,Fit,ZoomToLevel,ZoomSubmenu,Refresh,|,OpenFolder,NextFolder,PreviousFolder,|,RenameFile,CopyFileName,CopyFullPath,|,Settings",
+      "item": null
+    },
+    {
+      "name": "many editors keep their order",
+      "render": "Undo,|,Refresh,|,OpenFolder,NextFolder,PreviousFolder,|,ExternalEditor,|,RenameFile,CopyFileName,CopyFullPath,|,Settings",
+      "item": {
+        "id": "ExternalEditor",
+        "kind": "Submenu",
+        "text": "Open in External Editor",
+        "shortcut": null,
+        "enabled": true,
+        "checked": false,
+        "automation": "Open the current photo in the external editor",
+        "children": [
+          {
+            "id": "ExternalEditor.Open.e0",
+            "kind": "Toggle",
+            "text": "Editor 9",
+            "shortcut": null,
+            "enabled": true,
+            "checked": false,
+            "automation": "Open the current photo in Editor 9",
+            "children": []
+          },
+          {
+            "id": "ExternalEditor.Open.e1",
+            "kind": "Toggle",
+            "text": "Editor 8",
+            "shortcut": null,
+            "enabled": true,
+            "checked": false,
+            "automation": "Open the current photo in Editor 8",
+            "children": []
+          },
+          {
+            "id": "ExternalEditor.Open.e2",
+            "kind": "Toggle",
+            "text": "Editor 7",
+            "shortcut": null,
+            "enabled": true,
+            "checked": false,
+            "automation": "Open the current photo in Editor 7",
+            "children": []
+          },
+          {
+            "id": "ExternalEditor.Open.e3",
+            "kind": "Toggle",
+            "text": "Editor 6",
+            "shortcut": "Ctrl+E",
+            "enabled": true,
+            "checked": true,
+            "automation": "Open the current photo in Editor 6",
+            "children": []
+          },
+          {
+            "id": "ExternalEditor.Open.e4",
+            "kind": "Toggle",
+            "text": "Editor 5",
+            "shortcut": null,
+            "enabled": true,
+            "checked": false,
+            "automation": "Open the current photo in Editor 5",
+            "children": []
+          },
+          {
+            "id": "Separator.ExternalEditor",
+            "kind": "Separator",
+            "text": "",
+            "shortcut": null,
+            "enabled": false,
+            "checked": false,
+            "automation": null,
+            "children": []
+          },
+          {
+            "id": "ExternalEditor.Add",
+            "kind": "Command",
+            "text": "Add more editors…",
+            "shortcut": null,
+            "enabled": true,
+            "checked": false,
+            "automation": "Add another external editor program to this menu",
+            "children": []
+          },
+          {
+            "id": "ExternalEditor.SetDefault",
+            "kind": "Command",
+            "text": "Set default editor…",
+            "shortcut": null,
+            "enabled": true,
+            "checked": false,
+            "automation": "Choose which external editor is the default",
+            "children": []
+          }
+        ]
+      }
+    },
+    {
+      "name": "a list wins over the legacy path",
+      "render": "Undo,|,Refresh,|,OpenFolder,NextFolder,PreviousFolder,|,ExternalEditor,|,RenameFile,CopyFileName,CopyFullPath,|,Settings",
+      "item": {
+        "id": "ExternalEditor",
+        "kind": "Submenu",
+        "text": "Open in External Editor",
+        "shortcut": null,
+        "enabled": true,
+        "checked": false,
+        "automation": "Open the current photo in the external editor",
+        "children": [
+          {
+            "id": "ExternalEditor.Open.a",
+            "kind": "Toggle",
+            "text": "Alpha",
+            "shortcut": null,
+            "enabled": true,
+            "checked": true,
+            "automation": "Open the current photo in Alpha",
+            "children": []
+          },
+          {
+            "id": "Separator.ExternalEditor",
+            "kind": "Separator",
+            "text": "",
+            "shortcut": null,
+            "enabled": false,
+            "checked": false,
+            "automation": null,
+            "children": []
+          },
+          {
+            "id": "ExternalEditor.Add",
+            "kind": "Command",
+            "text": "Add more editors…",
+            "shortcut": null,
+            "enabled": true,
+            "checked": false,
+            "automation": "Add another external editor program to this menu",
+            "children": []
+          },
+          {
+            "id": "ExternalEditor.SetDefault",
+            "kind": "Command",
+            "text": "Set default editor…",
+            "shortcut": null,
+            "enabled": true,
+            "checked": false,
+            "automation": "Choose which external editor is the default",
+            "children": []
+          }
+        ]
+      }
+    },
+    {
+      "name": "zoom submenu hidden does not touch the editors",
+      "render": "Undo,MoveToRecycleBin,|,Fit,ZoomToLevel,Refresh,|,OpenFolder,NextFolder,PreviousFolder,|,ExternalEditor,|,RenameFile,CopyFileName,CopyFullPath,|,Settings",
+      "item": {
+        "id": "ExternalEditor",
+        "kind": "Submenu",
+        "text": "Open in External Editor",
+        "shortcut": null,
+        "enabled": true,
+        "checked": false,
+        "automation": "Open the current photo in the external editor",
+        "children": [
+          {
+            "id": "ExternalEditor.Open.a",
+            "kind": "Toggle",
+            "text": "Alpha",
+            "shortcut": null,
+            "enabled": true,
+            "checked": true,
+            "automation": "Open the current photo in Alpha",
+            "children": []
+          },
+          {
+            "id": "Separator.ExternalEditor",
+            "kind": "Separator",
+            "text": "",
+            "shortcut": null,
+            "enabled": false,
+            "checked": false,
+            "automation": null,
+            "children": []
+          },
+          {
+            "id": "ExternalEditor.Add",
+            "kind": "Command",
+            "text": "Add more editors…",
+            "shortcut": null,
+            "enabled": true,
+            "checked": false,
+            "automation": "Add another external editor program to this menu",
+            "children": []
+          },
+          {
+            "id": "ExternalEditor.SetDefault",
+            "kind": "Command",
+            "text": "Set default editor…",
+            "shortcut": null,
+            "enabled": true,
+            "checked": false,
+            "automation": "Choose which external editor is the default",
+            "children": []
+          }
+        ]
+      }
+    }
+  ]
+}
