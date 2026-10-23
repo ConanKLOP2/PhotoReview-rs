@@ -18,6 +18,7 @@ check() { if eval "$2"; then ok "$1"; else bad "$1  [$2]"; fi; }
 mkdir -p "$T/cs" && git -C "$T/cs" init -q -b master && git -C "$T/cs" -c user.name=t -c user.email=t@e.com commit -q --allow-empty -m init
 
 git init -q --bare "$ORIGIN"; git init -q -b master "$W"; cd "$W" || exit 1
+W_WIN="$(cygpath -w "$W")"
 git config user.name selftest; git config user.email selftest@example.com
 mkdir -p crates/demo/src crates/demo/tests contracts docs tools/autopilot
 cat > Cargo.toml <<'X'
@@ -49,6 +50,18 @@ mkc() { # id title
 X
 }
 mkc W8-90g merged; mkc W8-90h preexisting; mkc W8-90i redfix; mkc W8-90j redbad; mkc W8-90a sign; mkc W8-90b sub; mkc W8-90c double; mkc W8-90d never; mkc W8-90e inc; mkc W8-90f triple
+for n in 1 2 3 4 5; do
+  printf 'pub mod w9x%s;\n' "$n" >> crates/demo/src/lib.rs
+  printf 'pub fn run() -> i32 {\n    todo!()\n}\n' > "crates/demo/src/w9x$n.rs"
+  cat > "contracts/W9-X$n.md" <<X
+# W9-X$n
+- Baseline C# \`7eaee2a2\`.
+
+## Owned files (the ONLY files the porter may create or modify)
+    crates/demo/src/w9x$n.rs
+    crates/demo/tests/w9x$n.rs
+X
+done
 sed -i 's#/\(90.\)\.rs#/u\1.rs#' contracts/W8-90?.md
 cat > docs/WAVE-8-PLAN.md <<'X'
 | WU | C# files (lines) | Rust | Col | Model | Test | Depends on | Batch |
@@ -84,7 +97,7 @@ if [ -n "$RESUME" ]; then
   if [ -f "$FS/fail-resume-once" ]; then rm -f "$FS/fail-resume-once"; echo "resume failed" >&2; echo "resume-failed $SID" >> "$FS/calls"; exit 1; fi
   U="$(cat "$FS/sess-$SID" 2>/dev/null)"
 else
-  SID="sess-$RANDOM$RANDOM"; U="$(printf '%s' "$P" | grep -o 'Unit: W8-90.' | head -1 | sed 's/Unit: W8-//')"; echo "$U" > "$FS/sess-$SID"
+  SID="sess-$RANDOM$RANDOM"; U="$(printf '%s' "$P" | grep -o 'Unit: W[A-Za-z0-9-]*' | head -1 | cut -d' ' -f2)"; U="${U#W8-}"; echo "$U" > "$FS/sess-$SID"
 fi
 TASK="$(printf '%s' "$P" | grep -o 'TASK: [a-z-]*' | head -1 | cut -d' ' -f2)"
 echo "{\"type\":\"thread.started\",\"thread_id\":\"$SID\"}"; echo "FAKE TRANSCRIPT NOISE $TASK $U"
@@ -182,6 +195,11 @@ fn triple() {
   implement:90f) src 90f 'pub fn run(a: i32) -> i32 {
     a * 3
 }';;
+  red-tests:W9-X1|red-tests:W9-X2|red-tests:W9-X3)
+    n="${U#W9-X}"; mkdir -p crates/demo/tests
+    printf '%s\n' '#[test]' 'fn returns_value() {' "    assert_eq!(demo::w9x$n::run(), $((10+n)));" '}' > "crates/demo/tests/w9x$n.rs";;
+  implement:W9-X1|implement:W9-X2|implement:W9-X3)
+    n="${U#W9-X}"; printf 'pub fn run() -> i32 {\n    %s\n}\n' "$((10+n))" > "crates/demo/src/w9x$n.rs";;
 esac
 if [ "$TASK" = fixup ]; then echo 'C# oracle: Oracle.cs CSharpCase; changed Rust test: wrong_value' > "$O"; else echo "summary: done" > "$O"; fi
 echo '{"type":"turn.completed","usage":{"input_tokens":1000,"cached_input_tokens":200,"output_tokens":50}}'
@@ -398,6 +416,81 @@ check "triage note is capped at 3 KB" '[ "$(wc -c < "$T/tri.md")" -le 3072 ]'
 check "tier helper" '[ "$(python $LIBPY tier docs/WAVE-8-PLAN.md W8-90a)" = yellow ] && [ "$(python $LIBPY tier docs/WAVE-8-PLAN.md W8-90c)" = red ] && [ "$(python $LIBPY tier docs/WAVE-8-PLAN.md W8-90e)" = skip ]'
 printf '{"type":"thread.started","thread_id":"abc"}\nnoise\n{"type":"turn.completed","usage":{"input_tokens":5,"cached_input_tokens":2,"output_tokens":3}}\n{"type":"turn.completed","usage":{"input_tokens":1,"cached_input_tokens":0,"output_tokens":1}}\n' > "$T/cx.log"
 check "codexparse reads session id and sums usage" '[ "$(python $LIBPY codexparse $T/cx.log 0)" = "abc|6|2|4" ]'
+
+echo "== Wave 9 plan parsing and external dependencies"
+cat > docs/WAVE-9-PLAN-fake.md <<'X'
+| Unit | C# files | Rust | Col | Test | Depends on |
+|---|---|---|---|---|---|
+| W9-X1 | a | a | yellow | F | none |
+| W9-X2 | b | b | yellow | F | X1 |
+| W9-X3 | c | c | yellow | F | X1, W8-90a |
+| W9-X4 | d | d | yellow | F | W8-77z |
+| W9-X5 | e | e | yellow | F | X4 |
+| W9-X6 | f | f | yellow | F | W8-18h..k; W8-14c/14e/14f; `W8-99q`; W8-18o (stub); Not E8 |
+X
+git add docs/WAVE-9-PLAN-fake.md && git commit -q -m "Add fake Wave 9 plan" && git push -q origin master
+check "Wave 9 plan auto lookup finds rows by tag lane" '[ "$(python $LIBPY planfor "$W" wave9-x)" = docs/WAVE-9-PLAN-fake.md ]'
+cat > docs/WAVE-9-PLAN-fake-e.md <<'X'
+| Unit | C# files | Rust | Col | Test | Depends on |
+|---|---|---|---|---|---|
+| W9-E1 | a | a | yellow | F | none |
+X
+cat > docs/WAVE-9-PLAN-fake-r.md <<'X'
+| Unit | C# files | Rust | Col | Test | Depends on |
+|---|---|---|---|---|---|
+| W9-R1 | a | a | yellow | F | none |
+X
+check "planfor finds the Wave 9 E lane plan" '[ "$(python $LIBPY planfor "$W" wave9-e)" = docs/WAVE-9-PLAN-fake-e.md ]'
+check "planfor finds the Wave 9 R lane plan" '[ "$(python $LIBPY planfor "$W" wave9-r)" = docs/WAVE-9-PLAN-fake-r.md ]'
+W9_ORDER_EXPECTED="$(printf 'W9-X1\t\nW9-X2\tW9-X1\nW9-X3\tW9-X1\nW9-X4\t\nW9-X5\tW9-X4\nW9-X6\t')"
+check "Wave 9 dependency order lists same-lane dependencies only" '[ "$(python $LIBPY order docs/WAVE-9-PLAN-fake.md X)" = "$W9_ORDER_EXPECTED" ]'
+check "Wave 9 deps returns its same-lane unit edge" '[ "$(python $LIBPY deps docs/WAVE-9-PLAN-fake.md W9-X2)" = W9-X1 ]'
+W9_EXT_EXPECTED="$(printf 'W8-18h\nW8-18i\nW8-18j\nW8-18k\nW8-14c\nW8-14e\nW8-14f\nW8-18o')"
+check "Wave 9 extdeps expands ranges and slash lists, ignores backticks and Not tail" '[ "$(python $LIBPY extdeps docs/WAVE-9-PLAN-fake.md W9-X6)" = "$W9_EXT_EXPECTED" ]'
+W8_ORDER_EXPECTED="$(printf 'W8-90a\t\nW8-90b\tW8-90a\nW8-90c\tW8-90a\nW8-90d\tW8-90c\nW8-90e\t')"
+check "Wave 8 order output remains byte-for-byte stable" '[ "$(python $LIBPY order docs/WAVE-8-PLAN.md B9)" = "$W8_ORDER_EXPECTED" ]'
+check "Wave 8 row output remains byte-for-byte stable" '[ "$(python $LIBPY row docs/WAVE-8-PLAN.md W8-90a)" = "| W8-90a | a | a | yellow | Sonnet | F | none | B9 |" ]'
+check "Wave 8 deps and tier output remain byte-for-byte stable" '[ "$(python $LIBPY deps docs/WAVE-8-PLAN.md W8-90b)" = W8-90a ] && [ "$(python $LIBPY tier docs/WAVE-8-PLAN.md W8-90a)" = yellow ]'
+check "missing Wave 9 plan reports lane-specific error" 'python $LIBPY planfor "$W" wave9-z > "$T/noplan.out" 2>&1; [ $? = 1 ] && grep -q "no Wave 9 plan with rows W9-Z\* in docs/" "$T/noplan.out"'
+cp docs/WAVE-9-PLAN-fake.md docs/WAVE-9-PLAN-fake2.md
+check "ambiguous Wave 9 plan lookup lists matching files" 'python $LIBPY planfor "$W" wave9-x > "$T/ambig.out" 2>&1; [ $? = 1 ] && grep -q "WAVE-9-PLAN-fake2.md" "$T/ambig.out"'
+rm docs/WAVE-9-PLAN-fake2.md
+python $LIBPY sset tools/autopilot/state/test-other.json W8-90a done "other tag" 0
+check "external dependency is satisfied by another tag state" '[ -z "$(python $LIBPY extsat "$W" tools/autopilot/state W8-90a)" ]'
+check "external dependency absent from master and all state remains unsatisfied" '[ "$(python $LIBPY extsat "$W" tools/autopilot/state W8-77z)" = W8-77z ]'
+git -C "$W" -c user.name=selftest -c user.email=selftest@example.com commit -q --allow-empty -m "Complete W8-18p layout unit"
+git -C "$W" push -q origin master
+check "external dependency is satisfied by a token in origin/master history" '[ -z "$(python $LIBPY extsat "$W_WIN" tools/autopilot/state W8-18p)" ]'
+git -C "$W" -c user.name=selftest -c user.email=selftest@example.com commit -q --allow-empty -m "feat(W8-18l..18n): fake range implementation"
+git -C "$W" -c user.name=selftest -c user.email=selftest@example.com commit -q --allow-empty -m "perf(W8-18x..z): fake short-range implementation"
+git -C "$W" -c user.name=selftest -c user.email=selftest@example.com commit -q --allow-empty -m "fix(W8-18a, W8-18c): fake listed implementation"
+git -C "$W" -c user.name=selftest -c user.email=selftest@example.com commit -q --allow-empty -m "refactor(W8-18p/18q): fake slash-list implementation"
+git -C "$W" -c user.name=selftest -c user.email=selftest@example.com commit -q --allow-empty -m "docs(W8-B5): contracts (W8-18a..18v)"
+git -C "$W" push -q origin master
+check "external dependency range with full endpoint matches a unit inside it" '[ -z "$(python $LIBPY extsat "$W_WIN" tools/autopilot/state W8-18m)" ]'
+check "external dependency range with short endpoint matches a unit inside it" '[ -z "$(python $LIBPY extsat "$W_WIN" tools/autopilot/state W8-18y)" ]'
+check "external dependency comma-list subject matches a listed unit" '[ -z "$(python $LIBPY extsat "$W_WIN" tools/autopilot/state W8-18c)" ]'
+check "external dependency slash-list subject matches a listed unit" '[ -z "$(python $LIBPY extsat "$W_WIN" tools/autopilot/state W8-18q)" ]'
+check "docs commit mentioning a unit range does not satisfy it" '[ "$(python $LIBPY extsat "$W_WIN" tools/autopilot/state W8-18s)" = W8-18s ]'
+check "W9 mutation tier reads six-column Test and Col cells" '[ "$(python $LIBPY tier docs/WAVE-9-PLAN-fake.md W9-X1)" = yellow ]'
+echo "== Wave 9 pipeline dry-run and fake Codex run"
+bash tools/autopilot/codex-pipeline.sh wave9-x --dry-run > "$T/w9-dry.out" 2>&1; rc=$?
+check "wave9-x auto-detects its plan and dry-run shows internal and external deps" '[ $rc = 0 ] && grep -q "W9-X3.*deps=W9-X1.*extdeps=-" "$T/w9-dry.out" && grep -q "W9-X4.*extdeps=W8-77z" "$T/w9-dry.out"'
+bash tools/autopilot/codex-pipeline.sh wave9-x --plan docs/WAVE-9-PLAN-fake.md --dry-run > "$T/w9-cli-plan.out" 2>&1; rc=$?
+check "--plan selects a Wave 9 plan" '[ $rc = 0 ] && grep -q "units=6" "$T/w9-cli-plan.out"'
+cat > docs/WAVE-9-PLAN-alt.md <<'X'
+| Unit | C# files | Rust | Col | Test | Depends on |
+|---|---|---|---|---|---|
+| W9-X1 | a | a | yellow | F | none |
+X
+PLAN_REL=docs/WAVE-9-PLAN-alt.md bash tools/autopilot/codex-pipeline.sh wave9-x --dry-run > "$T/w9-env-plan.out" 2>&1; rc=$?
+check "PLAN_REL overrides the automatically selected plan" '[ $rc = 0 ] && grep -q "units=1" "$T/w9-env-plan.out"'
+rm docs/WAVE-9-PLAN-alt.md
+MIN_DISK_GB=0 SKIP_MUTANTS=1 PIPELINE_NO_PR=1 bash tools/autopilot/codex-pipeline.sh wave9-x --only W9-X1,W9-X2,W9-X3,W9-X4,W9-X5 --jobs 1 > "$T/w9-run.out" 2>&1; rc=$?
+check "W9 fake Codex run finishes X1-X3 and skips unsatisfied X4 and dependent X5" '[ $rc = 0 ] && [ "$(python $LIBPY sget tools/autopilot/state/wave9-x.json W9-X1)" = done ] && [ "$(python $LIBPY sget tools/autopilot/state/wave9-x.json W9-X2)" = done ] && [ "$(python $LIBPY sget tools/autopilot/state/wave9-x.json W9-X3)" = done ] && [ "$(python $LIBPY sget tools/autopilot/state/wave9-x.json W9-X4)" = skipped ] && [ "$(python $LIBPY sget tools/autopilot/state/wave9-x.json W9-X5)" = skipped ]'
+check "unsatisfied external dependency skip includes the waiting note" 'grep -q "waiting for W8-77z (not on master)" "$T/w9-run.out" && grep -q "W9-X4.*skipped" "$T/w9-run.out" && grep -q "W9-X5.*skipped" "$T/w9-run.out"'
+check "Wave 9 units merge into integration/wave9-x" 'git log integration/wave9-x --format=%s | grep -q "Merge W9-X1" && git log integration/wave9-x --format=%s | grep -q "Merge W9-X3"'
+check "Wave 9 pipeline uses Wave 9 PR title and body wording" 'grep -q "Wave \$wave batch \$BATCH" tools/autopilot/codex-pipeline.sh && grep -q "feat: Wave \$wave" tools/autopilot/codex-pipeline.sh'
 
 echo; if [ "$FAILS" = 0 ]; then echo "selftest PASSED"; else echo "selftest: $FAILS FAILED (work dir kept: $T)"; exit 1; fi
 cd /; git -C "$W" worktree prune 2>/dev/null; rm -rf "$T"

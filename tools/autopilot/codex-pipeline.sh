@@ -13,10 +13,10 @@ export PATH="$HOME/.cargo/bin:$PATH"
 SELF="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 export PYTHONUTF8=1
 LIB="python $SELF/lib/codex-lib.py"
-TAG=""; DRY=0; ONLY=""; JOBS=2; SMOKE=0; REDO=""
+TAG=""; DRY=0; ONLY=""; JOBS=2; SMOKE=0; REDO=""; CLI_PLAN=""
 while [ $# -gt 0 ]; do
   case "$1" in
-    --dry-run) DRY=1;; --only) shift; ONLY="${1:-}";; --redo) shift; REDO=",${1:-},";; --jobs) shift; JOBS="${1:-2}";; --smoke) SMOKE=1;;
+    --dry-run) DRY=1;; --only) shift; ONLY="${1:-}";; --redo) shift; REDO=",${1:-},";; --jobs) shift; JOBS="${1:-2}";; --plan) shift; CLI_PLAN="${1:-}";; --smoke) SMOKE=1;;
     -*) echo "unknown arg $1" >&2; exit 2;;
     *) [ -z "$TAG" ] && TAG="$1" || { echo "unexpected arg $1" >&2; exit 2; };;
   esac; shift
@@ -25,7 +25,10 @@ case "$JOBS" in 1|2|3|4) ;; *) echo "--jobs must be 1..4" >&2; exit 2;; esac
 [ "$SMOKE" = 1 ] || [ -n "$TAG" ] || { echo "usage: $0 <wave-tag e.g. wave8-b2> [--dry-run] [--only U1,U2] [--jobs N] | --smoke" >&2; exit 2; }
 BATCH="$(echo "${TAG##*-}" | tr a-z A-Z)"
 COMMON="$(git -C "$SELF" rev-parse --path-format=absolute --git-common-dir)"; REPO="$(dirname "$COMMON")"
-PLAN_REL="${PLAN_REL:-docs/WAVE-8-PLAN.md}"
+if [ -n "$CLI_PLAN" ]; then PLAN_REL="$CLI_PLAN"
+elif [ -n "${PLAN_REL:-}" ]; then PLAN_REL="$PLAN_REL"
+else PLAN_REL="$(cd "$SELF/../.." && $LIB planfor "$(pwd)" "$TAG")" || exit 1; fi
+export PLAN_REL
 USAGE="${CODEX_USAGE_SH:-$SELF/codex-usage.sh}"
 CODEX_BIN="${CODEX_BIN:-$HOME/.codex/plugins/.plugin-appserver/codex.exe}"; export CODEX_BIN
 CS_REPO="${CS_REPO:-C:/MyProjects/PhotoReview}"; export CS_REPO
@@ -35,7 +38,8 @@ IBR="integration/$TAG"; INT="$REPO/.claude/worktrees/int-$TAG"
 TDB="$REPO/target-wave-pipe-$TAG"
 CODEX_TIMEOUT="${CODEX_TIMEOUT:-2400}"; MUT_JOBS="${MUT_JOBS:-4}"
 QUOTA_MAX="${QUOTA_MAX:-95}"; QUOTA_MARGIN="${QUOTA_MARGIN:-1.2}"
-PLAN="$SELF/../../$PLAN_REL"; [ -f "$INT/$PLAN_REL" ] && PLAN="$INT/$PLAN_REL"
+if [[ "$PLAN_REL" = /* ]]; then PLAN="$PLAN_REL"; else PLAN="$SELF/../../$PLAN_REL"; fi
+[ -f "$INT/$PLAN_REL" ] && [[ "$PLAN_REL" != /* ]] && PLAN="$INT/$PLAN_REL"
 say() { local m; m="[$(date +%H:%M:%S)] $*"; echo "$m"; mkdir -p "$LOGDIR"; echo "$m" >> "$LOGDIR/pipeline-${TAG:-smoke}.log"; }
 now() { date +%s; }
 
@@ -103,7 +107,12 @@ if [ "$DRY" = 1 ]; then
   for l in "${ORDER[@]}"; do
     n=$((n+1)); u="${l%%$'\t'*}"; d="${l#*$'\t'}"
     st="$($LIB sget "$STATE" "$u")"; c="$SELF/../../contracts/$u.md"
-    printf '%3d. %-8s deps=%-28s state=%-8s mutation=%-6s contract=%s\n' "$n" "$u" "${d:--}" "${st:--}" "$($LIB tier "$PLAN" "$u" | tr -d '\r')" "$([ -f "$c" ] && echo yes || echo MISSING)"
+    if [[ "$u" == W9-* ]]; then
+      ext=""; while IFS= read -r ed; do [ -n "$ed" ] || continue; miss="$($LIB extsat "$REPO" "$STATE_DIR" "$ed" | tr -d '\r')"; [ -n "$miss" ] && ext="${ext:+$ext, }$miss"; done < <($LIB extdeps "$PLAN" "$u")
+      printf '%3d. %-8s deps=%-28s extdeps=%-28s state=%-8s mutation=%-6s contract=%s\n' "$n" "$u" "${d:--}" "${ext:--}" "${st:--}" "$($LIB tier "$PLAN" "$u" | tr -d '\r')" "$([ -f "$c" ] && echo yes || echo MISSING)"
+    else
+      printf '%3d. %-8s deps=%-28s state=%-8s mutation=%-6s contract=%s\n' "$n" "$u" "${d:--}" "${st:--}" "$($LIB tier "$PLAN" "$u" | tr -d '\r')" "$([ -f "$c" ] && echo yes || echo MISSING)"
+    fi
   done
   exit 0
 fi
@@ -496,7 +505,7 @@ mapfile -t ORDER < <($LIB order "$PLAN" "$BATCH" "$ONLY" | tr -d '\r')
 say "pipeline $TAG: ${#ORDER[@]} units, integration $IBR, jobs $JOBS"
 # units already merged on the integration branch (merge commits since origin/master, e.g. "Merge W8-04a (Codex pipeline)" or
 # "merge(W8-15c)") are marked done, so no seeded state file is needed after a restart or a manual merge
-MERGED_ON_IBR="$(git -C "$REPO" log --merges --format=%s origin/master.."$IBR" 2>/dev/null | grep -oE 'W[0-9]+-[0-9]+[a-z]+' | sort -u)"
+MERGED_ON_IBR="$(git -C "$REPO" log --merges --format=%s origin/master.."$IBR" 2>/dev/null | grep -oE 'W[0-9]+-[0-9]+[a-z]+|W9-[A-Z][0-9]+' | sort -u)"
 for l in "${ORDER[@]}"; do
   u="${l%%$'\t'*}"
   if [ -n "$REDO" ] && case "$REDO" in *",$u,"*) true;; *) false;; esac; then $LIB sset "$STATE" "$u" failed "redo requested" 0 >/dev/null; say "$u: redo requested, state reset"; continue; fi
@@ -535,6 +544,10 @@ while :; do
       case "$ds" in done|partial) ;; *) bad="$d (${ds:-not run})";; esac
     done
     if [ -n "$bad" ]; then $LIB sset "$STATE" "$u" skipped "dependency $bad is not merged" >/dev/null; say "$u: skipped, dependency $bad"; unset "LIVE[$u]"; continue; fi
+    if [[ "$u" == W9-* ]]; then
+      extbad=""; while IFS= read -r ed; do [ -n "$ed" ] || continue; missing="$($LIB extsat "$REPO" "$STATE_DIR" "$ed")"; [ -n "$missing" ] && extbad="${extbad:+$extbad, }$missing"; done < <($LIB extdeps "$PLAN" "$u")
+      if [ -n "$extbad" ]; then note="waiting for $extbad (not on master)"; $LIB sset "$STATE" "$u" skipped "$note" >/dev/null; say "$u: skipped, $note"; unset "LIVE[$u]"; continue; fi
+    fi
     if [ "$waitdep" = 1 ] || [ "$running" -ge "$JOBS" ]; then REMAIN+=("$l"); continue; fi
     # several machines: a unit is claimed through git before it starts (docs/MULTI-MACHINE.md); 1 = another machine holds it, 2 = origin unreachable (go on)
     bash "$SELF/claim.sh" claim "$u" "pipeline $TAG" >>"$LOGDIR/claims.log" 2>&1; crc=$?
@@ -563,7 +576,8 @@ if [ "${PIPELINE_NO_PR:-0}" = 1 ]; then say "PIPELINE_NO_PR=1: not pushing"; exi
 
 BODY="$LOGDIR/pr-body-$TAG.md"
 {
-  echo "Wave 8 batch $BATCH ported by the Claude-free Codex pipeline (Codex gpt-6-luna, effort low). Review the diff before merging."; echo
+  wave="8"; [[ "$TAG" == wave9-* ]] && wave="9"
+  echo "Wave $wave batch $BATCH ported by the Claude-free Codex pipeline (Codex gpt-6-luna, effort low). Review the diff before merging."; echo
   echo "Workspace gate (fmt, clippy --workspace -D warnings, test --workspace): $([ $WGOK = 1 ] && echo PASSED || echo '**FAILED**, auto-merge not enabled')"
   if [ $WGOK = 0 ]; then echo '```'; tail -n 40 "$WG"; echo '```'; fi
   echo; echo "## Telemetry"; $LIB table "$STATE"
@@ -587,7 +601,7 @@ git -C "$INT" push -q -u origin "$IBR" >>"$LOGDIR/pipeline-$TAG.log" 2>&1 || { s
 if ( cd "$INT" && gh pr view "$IBR" >/dev/null 2>&1 ); then
   ( cd "$INT" && gh pr edit "$IBR" --body-file "$BODY" >/dev/null 2>&1 )
 else
-  ( cd "$INT" && gh pr create --base master --head "$IBR" --title "feat: Wave 8 $BATCH ported by Codex pipeline ($TAG)" --body-file "$BODY" ) >>"$LOGDIR/pipeline-$TAG.log" 2>&1 || say "gh pr create failed"
+  ( cd "$INT" && gh pr create --base master --head "$IBR" --title "feat: Wave $wave $BATCH ported by Codex pipeline ($TAG)" --body-file "$BODY" ) >>"$LOGDIR/pipeline-$TAG.log" 2>&1 || say "gh pr create failed"
 fi
 if [ $WGOK = 1 ]; then ( cd "$INT" && gh pr merge "$IBR" --auto --squash ) >>"$LOGDIR/pipeline-$TAG.log" 2>&1; fi
 say "done. Summary:"; $LIB slist "$STATE"
