@@ -265,7 +265,10 @@ fn burst_skips_passed_images() {
     }
     let first = burst.index_of(&target.next_start());
     let second = burst.index_of(&target.next_start());
-    assert_eq!([24, 25], [first, second]);
+    // Two workers race to record their starts; C# has the same latent race, so compare the pair sorted.
+    let mut first_pair = [first, second];
+    first_pair.sort_unstable();
+    assert_eq!([24, 25], first_pair);
     for i in 13..=30 {
         burst.advance(33.0);
         scheduler.notify_navigation(i);

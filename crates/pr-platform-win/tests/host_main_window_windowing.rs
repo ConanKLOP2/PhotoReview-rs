@@ -125,6 +125,15 @@ fn apply_enter_then_exit_calls_ops_in_the_documented_order() {
     assert!(!fullscreen.is_active());
 }
 
+#[test]
+fn fullscreen_set_window_pos_flags_contain_each_required_bit() {
+    let (ops, _native, fullscreen) = baseline();
+    assert!(fullscreen.apply(HWND, true));
+    assert_eq!(ops.ops()[1], Op::SetPos(MONITOR, 4 | 0x10 | 0x20));
+    assert!(fullscreen.apply(HWND, false));
+    assert_eq!(ops.ops()[3], Op::SetPos(WINDOW, 4 | 0x10 | 0x20));
+}
+
 // T2: a second enter must not overwrite the state from before the first one.
 #[test]
 fn second_enter_does_not_overwrite_the_state_before_the_first() {

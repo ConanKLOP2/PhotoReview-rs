@@ -34,7 +34,7 @@ text input, keyboard-first navigation, zoom in source pixels (C# ADR 0008), side
 ### What the spike is
 
 `cargo run -p pr-app --release --features ui-spike --bin r0001-spike -- <folder> [--measure N] [--interval-ms MS] [--size WxH] [--full]`
-(`crates/pr-app/src/spike`, window host `crates/pr-platform-win/src/spike_ui.rs`; both behind the `ui-spike` feature, so the
+(`crates/pr-shell/src/spike`, window host `crates/pr-platform-win/src/spike_ui.rs`; both behind the `ui-spike` feature, so the
 normal build and tests are unchanged; all spike `unsafe` is in `spike_ui.rs`, each block has `// SAFETY:`).
 It opens a window, decodes with the production `WicDirectDecoder` (`pr-platform-win`) into `PixelBuffer`, switches with
 Left/Right (1-ahead/1-behind preload on 2 worker threads), Fit + source-pixel zoom (wheel, nearest above 100%), drag pan,
