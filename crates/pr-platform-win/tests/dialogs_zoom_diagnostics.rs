@@ -8,6 +8,7 @@ use pr_platform_win::dialogs::{diagnostics, zoom_prompt};
 
 // C#: ZoomPromptDialogTests.ClientWidth_IsTwoHundredDialogUnits_OfTheBodyFont
 #[test]
+#[rustfmt::skip]
 fn zoom_layout_matches_the_worked_example() {
     let mut m = FakeMeasure { avg_char_width: 6, line_height: 15, ..Default::default() };
     m.item_heights.insert(zoom_prompt::LABEL_ID, 30);
@@ -25,6 +26,7 @@ fn zoom_layout_matches_the_worked_example() {
 
 // C#: DiagnosticsAndListDialogTests.Diagnostics_ShowsTheFifteenLabelValuePairs_InTheOrderOfTheWpfWindow
 #[test]
+#[rustfmt::skip]
 fn diagnostics_layout_matches_the_worked_example() {
     let mut m = FakeMeasure { avg_char_width: 6, line_height: 15, ..Default::default() };
     m.item_heights.insert(diagnostics::HEADER_ID, 20);

@@ -8,6 +8,7 @@ use pr_platform_win::dialogs::zoom_prompt::DialogMeasure;
 
 static SERIAL: OnceLock<Mutex<()>> = OnceLock::new();
 
+#[rustfmt::skip]
 pub fn serial() -> MutexGuard<'static, ()> {
     SERIAL.get_or_init(|| Mutex::new(())).lock().unwrap_or_else(std::sync::PoisonError::into_inner)
 }
@@ -16,6 +17,7 @@ pub struct LanguageGuard {
     _guard: MutexGuard<'static, ()>,
 }
 
+#[rustfmt::skip]
 impl LanguageGuard {
     pub fn english() -> Self { Self { _guard: serial() } }
     pub fn vietnamese() -> Self { Self { _guard: serial() } }
@@ -24,6 +26,7 @@ impl LanguageGuard {
 #[derive(Default)]
 pub struct EnUs;
 
+#[rustfmt::skip]
 impl NumberFormatting for EnUs {
     fn grouped_i64(&self, value: i64) -> String { value.to_string() }
     fn grouped_f64(&self, value: f64) -> String { value.to_string() }
@@ -42,6 +45,7 @@ pub struct FakeMeasure {
     pub button_width_override: Option<i32>,
 }
 
+#[rustfmt::skip]
 impl DialogMeasure for FakeMeasure {
     fn dx(&self, n: i32) -> i32 { n.wrapping_mul(self.avg_char_width).wrapping_add(2) / 4 }
     fn dy(&self, n: i32) -> i32 { n.wrapping_mul(self.line_height).wrapping_add(4) / 8 }
