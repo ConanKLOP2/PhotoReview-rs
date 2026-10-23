@@ -196,3 +196,7 @@ Kiểm tra lại sau khi sửa: `git diff --stat` chỉ gồm `contracts/W9-*.md
 - R1 blank current path (`D-W9R-12`) và khác biệt exception/Empty vẫn cần quyết định/ADR như contract đã ghi; review không tự tạo hành vi mới.
 - L11/Q8: đã đọc `pr-l10n/build/keygen.rs:783-823` (snake_case, fn_name) và build.rs dùng generator đó. Có căn cứ quy tắc sinh tên; chưa build/đối chiếu toàn bộ accessors nên không tuyên bố mọi tên tr:: đã compile.
 - R2/R3 toàn bộ fault interleaving và handle native vẫn chưa chạy; bảng trên là đối chiếu có chọn lọc, không phủ mọi dòng source của từng class lớn. Các giới hạn ở phần “Không kiểm tra được” cũ vẫn được giữ nếu chưa có bằng chứng mới nêu rõ.
+
+## Trạng thái đóng việc sau #216 (2026-10-23)
+
+Các nhãn H1/L6..L10 ở phần đầu là snapshot lúc viết báo cáo, không phải danh sách còn mở hiện tại. #216 đã sửa Survey H1/L9, E5 no-save L6, các chữ ký L7 được liệt kê ở phần tái kiểm và một phần phân công test L10. L8 scaffold/generator còn mở. Q1..Q8 thuộc P-52 đã quyết định, nhưng implementation tương ứng chưa được review docs chứng minh hoàn tất. Xem bảng trạng thái G21/G24 trong BACKLOG.md; không chạy lại oracle hoặc sửa fixtures để đóng mục chỉ dựa vào metadata. Suy luận từ mã, chưa chạy thử.

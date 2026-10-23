@@ -103,3 +103,7 @@ REVIEW-RECOVERY-FLOW đã merge PR #219 (a9ed01d), claim nhả và worktree dọ
 ## 2026-10-23 — Machine C REVIEW-RECYCLE-POLICY
 
 REVIEW-HOST-DISPATCHER đã merge #220 (8042d67), nhả claim và dọn worktree. Review Recycle Bin policy/selection tại 8042d67: 0 cao / 1 trung bình / 1 thấp. Thêm recycle-policy.md, G30/G31 và crosslink invariant. Không sửa Rust, không chạy Cargo/native/registry/bin; suy luận từ mã, chưa chạy thử. Tiếp theo: PR docs auto squash, nhả claim sau merge; vùng chưa phủ gồm số học render tile và Settings host còn stub.
+
+## 2026-10-23 — Machine C REVIEW-BACKLOG-CLOSEOUT
+
+PR #221 đã merged b5d1327, claim REVIEW-RECYCLE-POLICY nhả, worktree/branch dọn. Rà 18 báo cáo và BACKLOG: đưa G30/G31 vào bảng chính, phân biệt 31 nhóm còn triển khai với quyết định đã chốt và tài liệu đã sửa. G21 đã sửa một phần #207/#216; không giao lại prompt lỗi thời toàn bộ. Không sửa Rust hoặc chạy Cargo/native; suy luận từ mã, chưa chạy thử. Đã hỏi làm rõ việc mở rộng lệnh chỉ đọc sang implementation, chưa nhận câu trả lời tại thời điểm ghi. Tài liệu touched UTF-8 không BOM, CRLF theo chỉ dẫn AGENTS.md do người dùng cung cấp sau lệnh LF cũ.
