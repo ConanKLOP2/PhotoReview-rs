@@ -1,0 +1,558 @@
+{
+  "generator": "oracle-cs open-in-default-editor-shortcut",
+  "csharp_commit": "7eaee2a2b071c7ca05291c86fb78a347f9e6a15f",
+  "cases": [
+    {
+      "name": "default is empty: nothing resolves",
+      "steps": [
+        {
+          "op": "resolve",
+          "key": "F9",
+          "system_key": "None",
+          "modifiers": 0,
+          "state": 0,
+          "command": null
+        },
+        {
+          "op": "resolve",
+          "key": "F10",
+          "system_key": "None",
+          "modifiers": 0,
+          "state": 0,
+          "command": null
+        },
+        {
+          "op": "resolve",
+          "key": "D9",
+          "system_key": "None",
+          "modifiers": 0,
+          "state": 0,
+          "command": null
+        },
+        {
+          "op": "resolve",
+          "key": "Return",
+          "system_key": "None",
+          "modifiers": 0,
+          "state": 0,
+          "command": {
+            "type": "RunAction",
+            "action_index": 0,
+            "force_picker": false
+          }
+        }
+      ]
+    },
+    {
+      "name": "a bound key resolves",
+      "steps": [
+        {
+          "op": "resolve",
+          "key": "F9",
+          "system_key": "None",
+          "modifiers": 0,
+          "state": 0,
+          "command": {
+            "type": "OpenInDefaultEditor",
+            "action_index": -1,
+            "force_picker": false
+          }
+        },
+        {
+          "op": "resolve",
+          "key": "F9",
+          "system_key": "None",
+          "modifiers": 0,
+          "state": 1,
+          "command": null
+        },
+        {
+          "op": "resolve",
+          "key": "F9",
+          "system_key": "None",
+          "modifiers": 0,
+          "state": 2,
+          "command": {
+            "type": "OpenInDefaultEditor",
+            "action_index": -1,
+            "force_picker": false
+          }
+        },
+        {
+          "op": "resolve",
+          "key": "F10",
+          "system_key": "None",
+          "modifiers": 0,
+          "state": 0,
+          "command": null
+        },
+        {
+          "op": "resolve",
+          "key": "F8",
+          "system_key": "None",
+          "modifiers": 0,
+          "state": 0,
+          "command": null
+        }
+      ]
+    },
+    {
+      "name": "modifiers do not matter to the binding",
+      "steps": [
+        {
+          "op": "resolve",
+          "key": "F9",
+          "system_key": "None",
+          "modifiers": 0,
+          "state": 0,
+          "command": {
+            "type": "OpenInDefaultEditor",
+            "action_index": -1,
+            "force_picker": false
+          }
+        },
+        {
+          "op": "resolve",
+          "key": "F9",
+          "system_key": "None",
+          "modifiers": 1,
+          "state": 0,
+          "command": {
+            "type": "OpenInDefaultEditor",
+            "action_index": -1,
+            "force_picker": false
+          }
+        },
+        {
+          "op": "resolve",
+          "key": "F9",
+          "system_key": "None",
+          "modifiers": 2,
+          "state": 0,
+          "command": {
+            "type": "OpenInDefaultEditor",
+            "action_index": -1,
+            "force_picker": false
+          }
+        },
+        {
+          "op": "resolve",
+          "key": "F9",
+          "system_key": "None",
+          "modifiers": 3,
+          "state": 0,
+          "command": {
+            "type": "OpenInDefaultEditor",
+            "action_index": -1,
+            "force_picker": false
+          }
+        },
+        {
+          "op": "resolve",
+          "key": "F9",
+          "system_key": "None",
+          "modifiers": 4,
+          "state": 0,
+          "command": {
+            "type": "OpenInDefaultEditor",
+            "action_index": -1,
+            "force_picker": false
+          }
+        },
+        {
+          "op": "resolve",
+          "key": "F9",
+          "system_key": "None",
+          "modifiers": 6,
+          "state": 0,
+          "command": {
+            "type": "OpenInDefaultEditor",
+            "action_index": -1,
+            "force_picker": false
+          }
+        }
+      ]
+    },
+    {
+      "name": "a system key payload does not match",
+      "steps": [
+        {
+          "op": "resolve",
+          "key": "System",
+          "system_key": "F9",
+          "modifiers": 1,
+          "state": 0,
+          "command": null
+        },
+        {
+          "op": "resolve",
+          "key": "System",
+          "system_key": "F9",
+          "modifiers": 0,
+          "state": 0,
+          "command": null
+        }
+      ]
+    },
+    {
+      "name": "whitespace around the key is trimmed",
+      "steps": [
+        {
+          "op": "resolve",
+          "key": "F9",
+          "system_key": "None",
+          "modifiers": 0,
+          "state": 0,
+          "command": {
+            "type": "OpenInDefaultEditor",
+            "action_index": -1,
+            "force_picker": false
+          }
+        }
+      ]
+    },
+    {
+      "name": "an unparseable key disables it",
+      "steps": [
+        {
+          "op": "resolve",
+          "key": "F9",
+          "system_key": "None",
+          "modifiers": 0,
+          "state": 0,
+          "command": null
+        },
+        {
+          "op": "resolve",
+          "key": "None",
+          "system_key": "None",
+          "modifiers": 0,
+          "state": 0,
+          "command": null
+        }
+      ]
+    },
+    {
+      "name": "a blank key disables it",
+      "steps": [
+        {
+          "op": "resolve",
+          "key": "F9",
+          "system_key": "None",
+          "modifiers": 0,
+          "state": 0,
+          "command": null
+        }
+      ]
+    },
+    {
+      "name": "rebind follows Rebuild",
+      "steps": [
+        {
+          "op": "resolve",
+          "key": "F9",
+          "system_key": "None",
+          "modifiers": 0,
+          "state": 0,
+          "command": {
+            "type": "OpenInDefaultEditor",
+            "action_index": -1,
+            "force_picker": false
+          }
+        },
+        {
+          "op": "rebuild",
+          "fixture": "f10"
+        },
+        {
+          "op": "resolve",
+          "key": "F9",
+          "system_key": "None",
+          "modifiers": 0,
+          "state": 0,
+          "command": null
+        },
+        {
+          "op": "resolve",
+          "key": "F10",
+          "system_key": "None",
+          "modifiers": 0,
+          "state": 0,
+          "command": {
+            "type": "OpenInDefaultEditor",
+            "action_index": -1,
+            "force_picker": false
+          }
+        },
+        {
+          "op": "rebuild",
+          "fixture": "cleared"
+        },
+        {
+          "op": "resolve",
+          "key": "F10",
+          "system_key": "None",
+          "modifiers": 0,
+          "state": 0,
+          "command": null
+        }
+      ]
+    },
+    {
+      "name": "an earlier rule wins when the key is shared (Skip)",
+      "steps": [
+        {
+          "op": "resolve",
+          "key": "Space",
+          "system_key": "None",
+          "modifiers": 0,
+          "state": 0,
+          "command": {
+            "type": "Skip",
+            "action_index": -1,
+            "force_picker": false
+          }
+        }
+      ]
+    },
+    {
+      "name": "an earlier rule wins when the key is shared (Refresh is step 12e)",
+      "steps": [
+        {
+          "op": "resolve",
+          "key": "R",
+          "system_key": "None",
+          "modifiers": 0,
+          "state": 0,
+          "command": {
+            "type": "Refresh",
+            "action_index": -1,
+            "force_picker": false
+          }
+        }
+      ]
+    },
+    {
+      "name": "it wins against Next and Previous (step 13)",
+      "steps": [
+        {
+          "op": "resolve",
+          "key": "Right",
+          "system_key": "None",
+          "modifiers": 0,
+          "state": 0,
+          "command": {
+            "type": "OpenInDefaultEditor",
+            "action_index": -1,
+            "force_picker": false
+          }
+        },
+        {
+          "op": "resolve",
+          "key": "Left",
+          "system_key": "None",
+          "modifiers": 0,
+          "state": 0,
+          "command": {
+            "type": "Previous",
+            "action_index": -1,
+            "force_picker": false
+          }
+        }
+      ]
+    },
+    {
+      "name": "an action key wins when shared",
+      "steps": [
+        {
+          "op": "resolve",
+          "key": "F5",
+          "system_key": "None",
+          "modifiers": 0,
+          "state": 0,
+          "command": {
+            "type": "RunAction",
+            "action_index": 3,
+            "force_picker": false
+          }
+        }
+      ]
+    },
+    {
+      "name": "fullscreen does not gate it, a state with no image resolves nothing at all",
+      "steps": [
+        {
+          "op": "resolve",
+          "key": "F9",
+          "system_key": "None",
+          "modifiers": 0,
+          "state": 2,
+          "command": {
+            "type": "OpenInDefaultEditor",
+            "action_index": -1,
+            "force_picker": false
+          }
+        },
+        {
+          "op": "resolve",
+          "key": "F9",
+          "system_key": "None",
+          "modifiers": 0,
+          "state": 1,
+          "command": null
+        }
+      ]
+    },
+    {
+      "kind": "auto_repeat",
+      "ignores": [
+        "Fullscreen",
+        "Undo",
+        "ToggleCompare",
+        "RunAction",
+        "Recycle",
+        "ToggleInfoOverlay",
+        "MoveToFolder",
+        "CopyToFolder",
+        "ClickZoom",
+        "ToggleKeepZoom",
+        "OpenFolder",
+        "CustomZoom",
+        "ToggleCaptureMember",
+        "Refresh",
+        "OpenInDefaultEditor",
+        "RenameFile"
+      ],
+      "types": [
+        {
+          "name": "Fullscreen",
+          "value": 0
+        },
+        {
+          "name": "ExitFullscreen",
+          "value": 1
+        },
+        {
+          "name": "Close",
+          "value": 2
+        },
+        {
+          "name": "NextFolder",
+          "value": 3
+        },
+        {
+          "name": "PreviousFolder",
+          "value": 4
+        },
+        {
+          "name": "FirstImage",
+          "value": 5
+        },
+        {
+          "name": "LastImage",
+          "value": 6
+        },
+        {
+          "name": "Undo",
+          "value": 7
+        },
+        {
+          "name": "ToggleCompare",
+          "value": 8
+        },
+        {
+          "name": "RunAction",
+          "value": 9
+        },
+        {
+          "name": "Recycle",
+          "value": 10
+        },
+        {
+          "name": "Skip",
+          "value": 11
+        },
+        {
+          "name": "ToggleFit",
+          "value": 12
+        },
+        {
+          "name": "ZoomIn",
+          "value": 13
+        },
+        {
+          "name": "ZoomOut",
+          "value": 14
+        },
+        {
+          "name": "ZoomActualSize",
+          "value": 15
+        },
+        {
+          "name": "ToggleInfoOverlay",
+          "value": 16
+        },
+        {
+          "name": "Next",
+          "value": 17
+        },
+        {
+          "name": "Previous",
+          "value": 18
+        },
+        {
+          "name": "MoveToFolder",
+          "value": 19
+        },
+        {
+          "name": "CopyToFolder",
+          "value": 20
+        },
+        {
+          "name": "ClickZoom",
+          "value": 21
+        },
+        {
+          "name": "FitWidth",
+          "value": 22
+        },
+        {
+          "name": "FitHeight",
+          "value": 23
+        },
+        {
+          "name": "ToggleKeepZoom",
+          "value": 24
+        },
+        {
+          "name": "OpenFolder",
+          "value": 25
+        },
+        {
+          "name": "CustomZoom",
+          "value": 26
+        },
+        {
+          "name": "ToggleCaptureMember",
+          "value": 27
+        },
+        {
+          "name": "FitWidth2",
+          "value": 28
+        },
+        {
+          "name": "Refresh",
+          "value": 29
+        },
+        {
+          "name": "OpenInDefaultEditor",
+          "value": 30
+        },
+        {
+          "name": "RenameFile",
+          "value": 31
+        }
+      ]
+    }
+  ]
+}

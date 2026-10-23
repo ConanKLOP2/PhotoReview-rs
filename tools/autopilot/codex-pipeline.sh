@@ -6,17 +6,17 @@
 # Env: CODEX_BIN, CODEX_USAGE_SH, PLAN_REL, CODEX_TIMEOUT (s per Codex call, default 2400), SKIP_MUTANTS=1, PIPELINE_NO_PR=1,
 #      MUT_JOBS (cargo-mutants --jobs, default 4), MUT_BUDGET_YELLOW (s, default 900), MUT_BUDGET_RED (s, default 1800),
 #      MUTANTS_TIMEOUT (s; overrides both budgets), MUT_TEST_TIMEOUT (s per mutant test run, default 90),
-#      MIN_DISK_GB (default 20), QUOTA_MAX (percent of the 5 h window never exceeded, default 99), QUOTA_MARGIN (default 1.2),
-#      CS_REPO (C# checkout), GATE_NEXTEST=0 (never use cargo-nextest).
+#      MIN_DISK_GB (default 20), QUOTA_MAX (percent of the 5 h window never exceeded, default 95), QUOTA_MARGIN (default 1.2),
+#      CS_REPO (C# checkout), GATE_NEXTEST=0 (never use cargo-nextest), FIXUP=0 (disable one final repair round).
 set -u
 export PATH="$HOME/.cargo/bin:$PATH"
 SELF="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 export PYTHONUTF8=1
 LIB="python $SELF/lib/codex-lib.py"
-TAG=""; DRY=0; ONLY=""; JOBS=2; SMOKE=0; REDO=""
+TAG=""; DRY=0; ONLY=""; JOBS=2; SMOKE=0; REDO=""; CLI_PLAN=""
 while [ $# -gt 0 ]; do
   case "$1" in
-    --dry-run) DRY=1;; --only) shift; ONLY="${1:-}";; --redo) shift; REDO=",${1:-},";; --jobs) shift; JOBS="${1:-2}";; --smoke) SMOKE=1;;
+    --dry-run) DRY=1;; --only) shift; ONLY="${1:-}";; --redo) shift; REDO=",${1:-},";; --jobs) shift; JOBS="${1:-2}";; --plan) shift; CLI_PLAN="${1:-}";; --smoke) SMOKE=1;;
     -*) echo "unknown arg $1" >&2; exit 2;;
     *) [ -z "$TAG" ] && TAG="$1" || { echo "unexpected arg $1" >&2; exit 2; };;
   esac; shift
@@ -25,7 +25,10 @@ case "$JOBS" in 1|2|3|4) ;; *) echo "--jobs must be 1..4" >&2; exit 2;; esac
 [ "$SMOKE" = 1 ] || [ -n "$TAG" ] || { echo "usage: $0 <wave-tag e.g. wave8-b2> [--dry-run] [--only U1,U2] [--jobs N] | --smoke" >&2; exit 2; }
 BATCH="$(echo "${TAG##*-}" | tr a-z A-Z)"
 COMMON="$(git -C "$SELF" rev-parse --path-format=absolute --git-common-dir)"; REPO="$(dirname "$COMMON")"
-PLAN_REL="${PLAN_REL:-docs/WAVE-8-PLAN.md}"
+if [ -n "$CLI_PLAN" ]; then PLAN_REL="$CLI_PLAN"
+elif [ -n "${PLAN_REL:-}" ]; then PLAN_REL="$PLAN_REL"
+else PLAN_REL="$(cd "$SELF/../.." && $LIB planfor "$(pwd)" "$TAG")" || exit 1; fi
+export PLAN_REL
 USAGE="${CODEX_USAGE_SH:-$SELF/codex-usage.sh}"
 CODEX_BIN="${CODEX_BIN:-$HOME/.codex/plugins/.plugin-appserver/codex.exe}"; export CODEX_BIN
 CS_REPO="${CS_REPO:-C:/MyProjects/PhotoReview}"; export CS_REPO
@@ -34,8 +37,9 @@ UCACHE="$STATE_DIR/usage.cache"
 IBR="integration/$TAG"; INT="$REPO/.claude/worktrees/int-$TAG"
 TDB="$REPO/target-wave-pipe-$TAG"
 CODEX_TIMEOUT="${CODEX_TIMEOUT:-2400}"; MUT_JOBS="${MUT_JOBS:-4}"
-QUOTA_MAX="${QUOTA_MAX:-99}"; QUOTA_MARGIN="${QUOTA_MARGIN:-1.2}"
-PLAN="$SELF/../../$PLAN_REL"; [ -f "$INT/$PLAN_REL" ] && PLAN="$INT/$PLAN_REL"
+QUOTA_MAX="${QUOTA_MAX:-95}"; QUOTA_MARGIN="${QUOTA_MARGIN:-1.2}"
+if [[ "$PLAN_REL" = /* ]]; then PLAN="$PLAN_REL"; else PLAN="$SELF/../../$PLAN_REL"; fi
+[ -f "$INT/$PLAN_REL" ] && [[ "$PLAN_REL" != /* ]] && PLAN="$INT/$PLAN_REL"
 say() { local m; m="[$(date +%H:%M:%S)] $*"; echo "$m"; mkdir -p "$LOGDIR"; echo "$m" >> "$LOGDIR/pipeline-${TAG:-smoke}.log"; }
 now() { date +%s; }
 
@@ -103,7 +107,12 @@ if [ "$DRY" = 1 ]; then
   for l in "${ORDER[@]}"; do
     n=$((n+1)); u="${l%%$'\t'*}"; d="${l#*$'\t'}"
     st="$($LIB sget "$STATE" "$u")"; c="$SELF/../../contracts/$u.md"
-    printf '%3d. %-8s deps=%-28s state=%-8s mutation=%-6s contract=%s\n' "$n" "$u" "${d:--}" "${st:--}" "$($LIB tier "$PLAN" "$u" | tr -d '\r')" "$([ -f "$c" ] && echo yes || echo MISSING)"
+    if [[ "$u" == W9-* ]]; then
+      ext=""; while IFS= read -r ed; do [ -n "$ed" ] || continue; miss="$($LIB extsat "$REPO" "$STATE_DIR" "$ed" | tr -d '\r')"; [ -n "$miss" ] && ext="${ext:+$ext, }$miss"; done < <($LIB extdeps "$PLAN" "$u")
+      printf '%3d. %-8s deps=%-28s extdeps=%-28s state=%-8s mutation=%-6s contract=%s\n' "$n" "$u" "${d:--}" "${ext:--}" "${st:--}" "$($LIB tier "$PLAN" "$u" | tr -d '\r')" "$([ -f "$c" ] && echo yes || echo MISSING)"
+    else
+      printf '%3d. %-8s deps=%-28s state=%-8s mutation=%-6s contract=%s\n' "$n" "$u" "${d:--}" "${st:--}" "$($LIB tier "$PLAN" "$u" | tr -d '\r')" "$([ -f "$c" ] && echo yes || echo MISSING)"
+    fi
   done
   exit 0
 fi
@@ -198,7 +207,7 @@ codex_call() {
 gate_loop() {
   local u="$1" wt="$2" crate="$3" mode="$4" stop="$5" round=0 out rc pf
   while :; do
-    out="$(GATE_TEST_BASE="${REDBASE:-}" bash "$SELF/codex-gate.sh" "$u" "$wt" "$crate" "$mode" 2>&1 </dev/null)"; rc=$?
+    out="$(GATE_TEST_BASE="${REDBASE:-}" GATE_TEST_RELAXED="${FIXUP_GUARD:-0}" bash "$SELF/codex-gate.sh" "$u" "$wt" "$crate" "$mode" 2>&1 </dev/null)"; rc=$?
     if [ "$rc" = 0 ]; then
       [ "$mode" = "$stop" ] && return 0
       mode="$stop"; continue
@@ -210,6 +219,24 @@ gate_loop() {
     codex_call "$wt" "$pf" "$u" "repair$round"
     mode=fast
   done
+}
+
+# fixup_once <unit> <wt> <crate> <phase> <error>: one final Codex attempt; changed tests must preserve counts.
+fixup_once() {
+  local u="$1" wt="$2" crate="$3" phase="$4" err="$5" pf="$LOGDIR/$1.fixup.prompt.md" base changed
+  [ "${FIXUP:-1}" != 0 ] && [ "${FIXUP_USED:-0}" = 0 ] || return 1
+  FIXUP_USED=1
+  base="${REDBASE:-$(git -C "$wt" rev-parse HEAD)}"
+  { printf 'TASK: fixup. This is the one final fixup round after %s failed. Read the pack. You may edit owned test files only when the test contradicts the C# oracle; cite the exact C# file and test in your final message and list every changed Rust test function. Never weaken tests, reduce test functions/assert macro occurrences, or add #[ignore]. You may fix rustfmt-only test formatting. If the implementation is wrong, fix owned source. Tail (<= 60 lines):\n\n```\n' "$phase"; printf '%s\n' "$err" | tail -n 60; printf '```\n'; } > "$pf"
+  codex_call "$wt" "$pf" "$u" fixup || return 1
+  printf '%s\n' "${OWN[@]}" > "$LOGDIR/$u.owned.txt"
+  $LIB testguard "$wt" "$base" "$LOGDIR/$u.owned.txt" relaxed > "$LOGDIR/$u.fixup-guard.txt" 2>&1 || return 1
+  $LIB fixupreport "$wt" "$base" "$LOGDIR/$u.owned.txt" "$wt/.codex-last-message.txt" "$LOGDIR/$u.fixup-tests.txt" > "$LOGDIR/$u.fixup-report.txt" 2>&1 || return 1
+  changed="$(cat "$LOGDIR/$u.fixup-tests.txt")"
+  [ -n "$changed" ] || changed="none"
+  $LIB supd "$STATE" "$u" "fixup=1" "fixup_tests=$changed" >/dev/null
+  FIXUP_GUARD=1
+  return 0
 }
 
 # ---------------------------------------------------------------- mutation (cargo mutants --in-diff, owned src files only)
@@ -340,8 +367,8 @@ red_loop() {
 # ---------------------------------------------------------------- one unit
 # run_unit <unit> <slot> : state done/partial = merged, failed otherwise. Runs in a subshell (its variables are private).
 run_unit() {
-  local u="$1" slot="$2" lcu wt br crate c pf has_t=0 f round tier pct0 pct1 packout pb
-  UNIT_T0=$(now); SID=""; CUR_CRATE=""; REDBASE=""
+  local u="$1" slot="$2" lcu wt br crate c pf has_t=0 f round tier pct0 pct1 packout pb RED_COMMITTED=0
+  UNIT_T0=$(now); SID=""; CUR_CRATE=""; REDBASE=""; FIXUP_USED=0; FIXUP_GUARD=0
   lcu="$(echo "$u" | tr A-Z a-z)"; wt="$REPO/.claude/worktrees/wu-$lcu"; br="wu/$u"
   # one target dir per integration tag, shared by units run one after another (deps compile once); one per slot when jobs > 1
   pick_target_dir "$slot"
@@ -372,10 +399,25 @@ run_unit() {
     # compile gate: the red tests must compile and fail only through todo!() (up to 3 repair rounds; no red-test guard in this phase)
     RED_ERR=""
     if ! red_loop "$u" "$wt" "$crate"; then
-      printf '%s\n' "$RED_ERR" > "$LOGDIR/$u.gate-error.txt"; fail_unit "$u" "$wt" "red tests invalid after 3 repair rounds" "$LOGDIR/$u.gate-error.txt"; return 1
+      printf '%s\n' "$RED_ERR" > "$LOGDIR/$u.gate-error.txt"
+      if [ "${FIXUP:-1}" != 0 ]; then
+        ( cd "$wt" && git add -A -- . ':!.codex-*' && git commit -q --allow-empty -m "test($u): red tests (Codex pipeline)" ) >>"$LOGDIR/$u.log" 2>&1
+        RED_COMMITTED=1
+        REDBASE="$(git -C "$wt" rev-parse HEAD)"
+        if fixup_once "$u" "$wt" "$crate" red-tests "$RED_ERR" && red_loop "$u" "$wt" "$crate"; then
+          ( cd "$wt" && git add -A -- '*/tests/*.rs' && git commit -q -m "test($u): corrected tests (Codex fixup)" ) >>"$LOGDIR/$u.log" 2>&1
+          REDBASE="$(git -C "$wt" rev-parse HEAD)"
+        else
+          fail_unit "$u" "$wt" "red tests invalid after 3 repair rounds" "$LOGDIR/$u.gate-error.txt"; return 1
+        fi
+      else
+        fail_unit "$u" "$wt" "red tests invalid after 3 repair rounds" "$LOGDIR/$u.gate-error.txt"; return 1
+      fi
     fi
     # freeze the red tests in their own commit: later gates verify they are only ever extended, never weakened
-    ( cd "$wt" && git add -A -- . ':!.codex-*' && git commit -q --allow-empty -m "test($u): red tests (Codex pipeline)" ) >>"$LOGDIR/$u.log" 2>&1
+    if [ "$RED_COMMITTED" = 0 ]; then
+      ( cd "$wt" && git add -A -- . ':!.codex-*' && git commit -q --allow-empty -m "test($u): red tests (Codex pipeline)" ) >>"$LOGDIR/$u.log" 2>&1
+    fi
   fi
   REDBASE="$(git -C "$wt" rev-parse HEAD)"
   pf="$LOGDIR/$u.impl.prompt.md"
@@ -384,14 +426,24 @@ run_unit() {
 
   GATE_ERR=""
   if ! gate_loop "$u" "$wt" "$crate" fast fast; then
-    printf '%s\n' "$GATE_ERR" > "$LOGDIR/$u.gate-error.txt"; fail_unit "$u" "$wt" "gate failed after 3 repair rounds" "$LOGDIR/$u.gate-error.txt"; return 1
+    if fixup_once "$u" "$wt" "$crate" fast-gate "$GATE_ERR" && gate_loop "$u" "$wt" "$crate" fast fast; then
+      ( cd "$wt" && git add -A -- '*/tests/*.rs' && git diff --cached --quiet || git commit -q -m "test($u): corrected tests (Codex fixup)" ) >>"$LOGDIR/$u.log" 2>&1
+      REDBASE="$(git -C "$wt" rev-parse HEAD)"
+    else
+      printf '%s\n' "$GATE_ERR" > "$LOGDIR/$u.gate-error.txt"; fail_unit "$u" "$wt" "gate failed after 3 repair rounds" "$LOGDIR/$u.gate-error.txt"; return 1
+    fi
   fi
 
   # full gate (clippy + the unit's own test binaries) BEFORE mutants: when it fails, the ~15 min mutants run is not wasted on code
   # that is about to change. It runs again after the mutant rounds only if those rounds changed the tests.
   GATE_ERR=""
   if ! gate_loop "$u" "$wt" "$crate" full full; then
-    printf '%s\n' "$GATE_ERR" > "$LOGDIR/$u.gate-error.txt"; fail_unit "$u" "$wt" "gate (clippy + crate tests) failed after 3 repair rounds" "$LOGDIR/$u.gate-error.txt"; return 1
+    if fixup_once "$u" "$wt" "$crate" full-gate "$GATE_ERR" && gate_loop "$u" "$wt" "$crate" full full; then
+      ( cd "$wt" && git add -A -- '*/tests/*.rs' && git diff --cached --quiet || git commit -q -m "test($u): corrected tests (Codex fixup)" ) >>"$LOGDIR/$u.log" 2>&1
+      REDBASE="$(git -C "$wt" rev-parse HEAD)"
+    else
+      printf '%s\n' "$GATE_ERR" > "$LOGDIR/$u.gate-error.txt"; fail_unit "$u" "$wt" "gate (clippy + crate tests) failed after 3 repair rounds" "$LOGDIR/$u.gate-error.txt"; return 1
+    fi
   fi
 
   run_mutants "$u" "$wt" "$crate" "$tier"; round=0
@@ -414,11 +466,16 @@ run_unit() {
   if [ "$round" -gt 0 ]; then
     GATE_ERR=""
     if ! gate_loop "$u" "$wt" "$crate" full full; then
-      printf '%s\n' "$GATE_ERR" > "$LOGDIR/$u.gate-error.txt"; fail_unit "$u" "$wt" "final gate (clippy + crate tests) failed after 3 repair rounds" "$LOGDIR/$u.gate-error.txt"; return 1
+      if fixup_once "$u" "$wt" "$crate" final-gate "$GATE_ERR" && gate_loop "$u" "$wt" "$crate" full full; then
+        ( cd "$wt" && git add -A -- '*/tests/*.rs' && git diff --cached --quiet || git commit -q -m "test($u): corrected tests (Codex fixup)" ) >>"$LOGDIR/$u.log" 2>&1
+        REDBASE="$(git -C "$wt" rev-parse HEAD)"
+      else
+        printf '%s\n' "$GATE_ERR" > "$LOGDIR/$u.gate-error.txt"; fail_unit "$u" "$wt" "final gate (clippy + crate tests) failed after 3 repair rounds" "$LOGDIR/$u.gate-error.txt"; return 1
+      fi
     fi
   fi
 
-  ( cd "$wt" && git add -A -- . ':!.codex-*' && git commit -q -m "feat($u): port $u via Codex pipeline" -m "Co-Authored-By: Codex gpt-6-luna <noreply@openai.com>" ) >>"$LOGDIR/$u.log" 2>&1 \
+  ( cd "$wt" && git add -A -- . ':!.codex-*' && git commit -q --allow-empty -m "feat($u): port $u via Codex pipeline" -m "Co-Authored-By: Codex gpt-6-luna <noreply@openai.com>" ) >>"$LOGDIR/$u.log" 2>&1 \
     || { fail_unit "$u" "$wt" "commit failed"; return 1; }
   merge_unit() { git -C "$INT" merge --no-ff -q "$br" -m "Merge $u (Codex pipeline)" >>"$LOGDIR/$u.log" 2>&1 || { git -C "$INT" merge --abort >/dev/null 2>&1; return 1; }; }
   if ! with_merge_lock merge_unit; then
@@ -448,7 +505,7 @@ mapfile -t ORDER < <($LIB order "$PLAN" "$BATCH" "$ONLY" | tr -d '\r')
 say "pipeline $TAG: ${#ORDER[@]} units, integration $IBR, jobs $JOBS"
 # units already merged on the integration branch (merge commits since origin/master, e.g. "Merge W8-04a (Codex pipeline)" or
 # "merge(W8-15c)") are marked done, so no seeded state file is needed after a restart or a manual merge
-MERGED_ON_IBR="$(git -C "$REPO" log --merges --format=%s origin/master.."$IBR" 2>/dev/null | grep -oE 'W[0-9]+-[0-9]+[a-z]+' | sort -u)"
+MERGED_ON_IBR="$(git -C "$REPO" log --merges --format=%s origin/master.."$IBR" 2>/dev/null | grep -oE 'W[0-9]+-[0-9]+[a-z]+|W9-[A-Z][0-9]+' | sort -u)"
 for l in "${ORDER[@]}"; do
   u="${l%%$'\t'*}"
   if [ -n "$REDO" ] && case "$REDO" in *",$u,"*) true;; *) false;; esac; then $LIB sset "$STATE" "$u" failed "redo requested" 0 >/dev/null; say "$u: redo requested, state reset"; continue; fi
@@ -487,7 +544,14 @@ while :; do
       case "$ds" in done|partial) ;; *) bad="$d (${ds:-not run})";; esac
     done
     if [ -n "$bad" ]; then $LIB sset "$STATE" "$u" skipped "dependency $bad is not merged" >/dev/null; say "$u: skipped, dependency $bad"; unset "LIVE[$u]"; continue; fi
+    if [[ "$u" == W9-* ]]; then
+      extbad=""; while IFS= read -r ed; do [ -n "$ed" ] || continue; missing="$($LIB extsat "$REPO" "$STATE_DIR" "$ed")"; [ -n "$missing" ] && extbad="${extbad:+$extbad, }$missing"; done < <($LIB extdeps "$PLAN" "$u")
+      if [ -n "$extbad" ]; then note="waiting for $extbad (not on master)"; $LIB sset "$STATE" "$u" skipped "$note" >/dev/null; say "$u: skipped, $note"; unset "LIVE[$u]"; continue; fi
+    fi
     if [ "$waitdep" = 1 ] || [ "$running" -ge "$JOBS" ]; then REMAIN+=("$l"); continue; fi
+    # several machines: a unit is claimed through git before it starts (docs/MULTI-MACHINE.md); 1 = another machine holds it, 2 = origin unreachable (go on)
+    bash "$SELF/claim.sh" claim "$u" "pipeline $TAG" >>"$LOGDIR/claims.log" 2>&1; crc=$?
+    if [ "$crc" = 1 ]; then $LIB sset "$STATE" "$u" skipped "claimed by $(bash "$SELF/claim.sh" who "$u")" >/dev/null; say "$u: skipped, claimed by another machine"; unset "LIVE[$u]"; continue; fi
     need="$(start_need)"; wait_quota "$need"
     slot="$(free_slot)"; say "$u: start (slot $slot, quota need ${need}%)"
     ( run_unit "$u" "$slot" ) &
@@ -512,7 +576,8 @@ if [ "${PIPELINE_NO_PR:-0}" = 1 ]; then say "PIPELINE_NO_PR=1: not pushing"; exi
 
 BODY="$LOGDIR/pr-body-$TAG.md"
 {
-  echo "Wave 8 batch $BATCH ported by the Claude-free Codex pipeline (Codex gpt-6-luna, effort low). Review the diff before merging."; echo
+  wave="8"; [[ "$TAG" == wave9-* ]] && wave="9"
+  echo "Wave $wave batch $BATCH ported by the Claude-free Codex pipeline (Codex gpt-6-luna, effort low). Review the diff before merging."; echo
   echo "Workspace gate (fmt, clippy --workspace -D warnings, test --workspace): $([ $WGOK = 1 ] && echo PASSED || echo '**FAILED**, auto-merge not enabled')"
   if [ $WGOK = 0 ]; then echo '```'; tail -n 40 "$WG"; echo '```'; fi
   echo; echo "## Telemetry"; $LIB table "$STATE"
@@ -536,7 +601,7 @@ git -C "$INT" push -q -u origin "$IBR" >>"$LOGDIR/pipeline-$TAG.log" 2>&1 || { s
 if ( cd "$INT" && gh pr view "$IBR" >/dev/null 2>&1 ); then
   ( cd "$INT" && gh pr edit "$IBR" --body-file "$BODY" >/dev/null 2>&1 )
 else
-  ( cd "$INT" && gh pr create --base master --head "$IBR" --title "feat: Wave 8 $BATCH ported by Codex pipeline ($TAG)" --body-file "$BODY" ) >>"$LOGDIR/pipeline-$TAG.log" 2>&1 || say "gh pr create failed"
+  ( cd "$INT" && gh pr create --base master --head "$IBR" --title "feat: Wave $wave $BATCH ported by Codex pipeline ($TAG)" --body-file "$BODY" ) >>"$LOGDIR/pipeline-$TAG.log" 2>&1 || say "gh pr create failed"
 fi
 if [ $WGOK = 1 ]; then ( cd "$INT" && gh pr merge "$IBR" --auto --squash ) >>"$LOGDIR/pipeline-$TAG.log" 2>&1; fi
 say "done. Summary:"; $LIB slist "$STATE"

@@ -8,10 +8,14 @@ set -u
 U="${1:?unit}"; WT="${2:?worktree}"
 SELF="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 LIB="python $SELF/lib/codex-lib.py"
-PLAN_REL="${PLAN_REL:-docs/WAVE-8-PLAN.md}"
+if [ -z "${PLAN_REL:-}" ]; then
+  ROOT="$(git -C "$WT" rev-parse --show-toplevel 2>/dev/null)" || ROOT="$(cd "$SELF/../.." && pwd)"
+  PLAN_REL="$(cd "$ROOT" && $LIB planfor "$ROOT" "$U")" || exit 1
+fi
 CS_REPO="${CS_REPO:-C:/MyProjects/PhotoReview}"
 pick() { [ -f "$WT/$1" ] && echo "$WT/$1" || echo "$SELF/../../$1"; }
-CONTRACT="$(pick contracts/$U.md)"; PLAN="$(pick "$PLAN_REL")"
+CONTRACT="$(pick contracts/$U.md)"
+if [[ "$PLAN_REL" = /* ]]; then PLAN="$PLAN_REL"; else PLAN="$(pick "$PLAN_REL")"; fi
 [ -f "$CONTRACT" ] || { echo "codex-pack: no contract for $U" >&2; exit 1; }
 BASE="$($LIB baseline "$CONTRACT" | tr -d '\r')"; BASE="${BASE:-${CS_BASELINE:-d92d6aae}}"
 csgit() { git -c safe.directory="$CS_REPO" -C "$CS_REPO" "$@"; }

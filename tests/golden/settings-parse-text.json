@@ -1,6 +1,6 @@
 {
   "generator": "oracle-cs settings-parse-text",
-  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "csharp_commit": "7eaee2a2b071c7ca05291c86fb78a347f9e6a15f",
   "cases": [
     {
       "name": "empty object",
@@ -12,7 +12,7 @@
       "disabled_shortcuts": [],
       "repairs": [],
       "salvage_cause": null,
-      "config_version": 3,
+      "config_version": 4,
       "repair_text": "",
       "changed": {
         "UiLanguage": "\"vi\"",
@@ -29,7 +29,7 @@
       "disabled_shortcuts": [],
       "repairs": [],
       "salvage_cause": null,
-      "config_version": 3,
+      "config_version": 4,
       "repair_text": "",
       "changed": {
         "HiddenContextMenuItems": "[\r\n    \"MoveToRecycleBin\",\r\n    \"Fit\",\r\n    \"ZoomToLevel\",\r\n    \"ZoomSubmenu\"\r\n  ]"
@@ -102,11 +102,11 @@
         "Shortcuts.ToggleKeepZoom"
       ],
       "salvage_cause": "JsonException",
-      "config_version": 3,
+      "config_version": 4,
       "repair_text": "config.json contained invalid values. These settings were reset to their defaults: ClickZoomPercent.\r\nThe shortcut for ToggleKeepZoom conflicted with another action and was turned off. You can assign it again in Settings > Shortcuts.",
       "changed": {
         "Actions": "[\r\n    {\r\n      \"Name\": \"Mine\",\r\n      \"Shortcut\": \"K\",\r\n      \"Operation\": \"Move\",\r\n      \"Destination\": \"Group-2\",\r\n      \"Confirm\": false\r\n    }\r\n  ]",
-        "Shortcuts": "{\r\n    \"Next\": \"N\",\r\n    \"Previous\": \"Left\",\r\n    \"MoveToFolder2\": \"Enter\",\r\n    \"SendToRecycleBin\": \"Delete\",\r\n    \"Compare\": \"C\",\r\n    \"NextFolder\": \"PageDown\",\r\n    \"PreviousFolder\": \"PageUp\",\r\n    \"FirstImage\": \"Home\",\r\n    \"ZoomIn\": \"Add\",\r\n    \"ZoomOut\": \"Subtract\",\r\n    \"ToggleFit\": \"F\",\r\n    \"Skip\": \"Space\",\r\n    \"Undo\": \"Z\",\r\n    \"Fullscreen\": \"F11\",\r\n    \"MoveToFolder\": \"M\",\r\n    \"CopyToFolder\": \"Y\",\r\n    \"LastImage\": \"End\",\r\n    \"ZoomActualSize\": \"D1\",\r\n    \"ToggleInfoOverlay\": \"I\",\r\n    \"ClickZoom\": \"D2\",\r\n    \"FitWidth\": \"W\",\r\n    \"FitHeight\": \"H\",\r\n    \"ToggleKeepZoom\": \"\",\r\n    \"OpenFolder\": \"O\",\r\n    \"CustomZoom\": \"D3\",\r\n    \"ToggleCaptureMember\": \"\",\r\n    \"FitWidth2\": \"D4\",\r\n    \"Refresh\": \"R\"\r\n  }",
+        "Shortcuts": "{\r\n    \"Next\": \"N\",\r\n    \"Previous\": \"Left\",\r\n    \"MoveToFolder2\": \"Enter\",\r\n    \"SendToRecycleBin\": \"Delete\",\r\n    \"Compare\": \"C\",\r\n    \"NextFolder\": \"PageDown\",\r\n    \"PreviousFolder\": \"PageUp\",\r\n    \"FirstImage\": \"Home\",\r\n    \"ZoomIn\": \"Add\",\r\n    \"ZoomOut\": \"Subtract\",\r\n    \"ToggleFit\": \"F\",\r\n    \"Skip\": \"Space\",\r\n    \"Undo\": \"Z\",\r\n    \"Fullscreen\": \"F11\",\r\n    \"MoveToFolder\": \"M\",\r\n    \"CopyToFolder\": \"Y\",\r\n    \"LastImage\": \"End\",\r\n    \"ZoomActualSize\": \"D1\",\r\n    \"ToggleInfoOverlay\": \"I\",\r\n    \"ClickZoom\": \"D2\",\r\n    \"FitWidth\": \"W\",\r\n    \"FitHeight\": \"H\",\r\n    \"ToggleKeepZoom\": \"\",\r\n    \"OpenFolder\": \"O\",\r\n    \"CustomZoom\": \"D3\",\r\n    \"ToggleCaptureMember\": \"\",\r\n    \"FitWidth2\": \"D4\",\r\n    \"Refresh\": \"R\",\r\n    \"OpenInDefaultEditor\": \"\",\r\n    \"RenameFile\": \"F2\"\r\n  }",
         "UiLanguage": "\"en\"",
         "KeyboardZoomStepPercent": "40",
         "HiddenContextMenuItems": "[\r\n    \"MoveToRecycleBin\",\r\n    \"Fit\",\r\n    \"ZoomToLevel\",\r\n    \"ZoomSubmenu\"\r\n  ]"
@@ -126,7 +126,7 @@
         "LoadingMode"
       ],
       "salvage_cause": null,
-      "config_version": 3,
+      "config_version": 4,
       "repair_text": "config.json contained invalid values. These settings were reset to their defaults: LoadingMode.",
       "changed": {
         "KeyboardZoomStepPercent": "40",
@@ -147,7 +147,7 @@
         "ClickZoomPercent"
       ],
       "salvage_cause": null,
-      "config_version": 3,
+      "config_version": 4,
       "repair_text": "config.json contained invalid values. These settings were reset to their defaults: ClickZoomPercent.",
       "changed": {
         "ClickZoomPercent": "800",
@@ -164,7 +164,7 @@
       "disabled_shortcuts": [],
       "repairs": [],
       "salvage_cause": null,
-      "config_version": 3,
+      "config_version": 4,
       "repair_text": "",
       "changed": {
         "UiLanguage": "\"vi\"",
@@ -182,7 +182,7 @@
       "disabled_shortcuts": [],
       "repairs": [],
       "salvage_cause": null,
-      "config_version": 3,
+      "config_version": 4,
       "repair_text": "",
       "changed": {
         "UiLanguage": "\"en\"",
@@ -243,11 +243,11 @@
         "Shortcuts.ToggleKeepZoom"
       ],
       "salvage_cause": null,
-      "config_version": 3,
+      "config_version": 4,
       "repair_text": "The shortcut for ToggleKeepZoom conflicted with another action and was turned off. You can assign it again in Settings > Shortcuts.",
       "changed": {
         "Actions": "[\r\n    {\r\n      \"Name\": \"Mine\",\r\n      \"Shortcut\": \"K\",\r\n      \"Operation\": \"Move\",\r\n      \"Destination\": \"Group-2\",\r\n      \"Confirm\": false\r\n    }\r\n  ]",
-        "Shortcuts": "{\r\n    \"Next\": \"Right\",\r\n    \"Previous\": \"Left\",\r\n    \"MoveToFolder2\": \"Enter\",\r\n    \"SendToRecycleBin\": \"Delete\",\r\n    \"Compare\": \"C\",\r\n    \"NextFolder\": \"PageDown\",\r\n    \"PreviousFolder\": \"PageUp\",\r\n    \"FirstImage\": \"Home\",\r\n    \"ZoomIn\": \"Add\",\r\n    \"ZoomOut\": \"Subtract\",\r\n    \"ToggleFit\": \"F\",\r\n    \"Skip\": \"Space\",\r\n    \"Undo\": \"Z\",\r\n    \"Fullscreen\": \"F11\",\r\n    \"MoveToFolder\": \"M\",\r\n    \"CopyToFolder\": \"Y\",\r\n    \"LastImage\": \"End\",\r\n    \"ZoomActualSize\": \"D1\",\r\n    \"ToggleInfoOverlay\": \"I\",\r\n    \"ClickZoom\": \"D2\",\r\n    \"FitWidth\": \"W\",\r\n    \"FitHeight\": \"H\",\r\n    \"ToggleKeepZoom\": \"\",\r\n    \"OpenFolder\": \"O\",\r\n    \"CustomZoom\": \"D3\",\r\n    \"ToggleCaptureMember\": \"\",\r\n    \"FitWidth2\": \"D4\",\r\n    \"Refresh\": \"R\"\r\n  }",
+        "Shortcuts": "{\r\n    \"Next\": \"Right\",\r\n    \"Previous\": \"Left\",\r\n    \"MoveToFolder2\": \"Enter\",\r\n    \"SendToRecycleBin\": \"Delete\",\r\n    \"Compare\": \"C\",\r\n    \"NextFolder\": \"PageDown\",\r\n    \"PreviousFolder\": \"PageUp\",\r\n    \"FirstImage\": \"Home\",\r\n    \"ZoomIn\": \"Add\",\r\n    \"ZoomOut\": \"Subtract\",\r\n    \"ToggleFit\": \"F\",\r\n    \"Skip\": \"Space\",\r\n    \"Undo\": \"Z\",\r\n    \"Fullscreen\": \"F11\",\r\n    \"MoveToFolder\": \"M\",\r\n    \"CopyToFolder\": \"Y\",\r\n    \"LastImage\": \"End\",\r\n    \"ZoomActualSize\": \"D1\",\r\n    \"ToggleInfoOverlay\": \"I\",\r\n    \"ClickZoom\": \"D2\",\r\n    \"FitWidth\": \"W\",\r\n    \"FitHeight\": \"H\",\r\n    \"ToggleKeepZoom\": \"\",\r\n    \"OpenFolder\": \"O\",\r\n    \"CustomZoom\": \"D3\",\r\n    \"ToggleCaptureMember\": \"\",\r\n    \"FitWidth2\": \"D4\",\r\n    \"Refresh\": \"R\",\r\n    \"OpenInDefaultEditor\": \"\",\r\n    \"RenameFile\": \"F2\"\r\n  }",
         "HiddenContextMenuItems": "[\r\n    \"MoveToRecycleBin\",\r\n    \"Fit\",\r\n    \"ZoomToLevel\",\r\n    \"ZoomSubmenu\"\r\n  ]"
       }
     },
@@ -267,11 +267,11 @@
         "Shortcuts.CustomZoom"
       ],
       "salvage_cause": null,
-      "config_version": 3,
+      "config_version": 4,
       "repair_text": "The shortcut for OpenFolder conflicted with another action and was turned off. You can assign it again in Settings > Shortcuts.\r\nThe shortcut for CustomZoom conflicted with another action and was turned off. You can assign it again in Settings > Shortcuts.",
       "changed": {
         "Actions": "[\r\n    {\r\n      \"Name\": \"Mine\",\r\n      \"Shortcut\": \"O\",\r\n      \"Operation\": \"Move\",\r\n      \"Destination\": \"Group-2\",\r\n      \"Confirm\": false\r\n    },\r\n    {\r\n      \"Name\": \"Zoomed\",\r\n      \"Shortcut\": \"D3\",\r\n      \"Operation\": \"Move\",\r\n      \"Destination\": \"Group-2\",\r\n      \"Confirm\": false\r\n    }\r\n  ]",
-        "Shortcuts": "{\r\n    \"Next\": \"Right\",\r\n    \"Previous\": \"Left\",\r\n    \"MoveToFolder2\": \"Enter\",\r\n    \"SendToRecycleBin\": \"Delete\",\r\n    \"Compare\": \"C\",\r\n    \"NextFolder\": \"PageDown\",\r\n    \"PreviousFolder\": \"PageUp\",\r\n    \"FirstImage\": \"Home\",\r\n    \"ZoomIn\": \"Add\",\r\n    \"ZoomOut\": \"Subtract\",\r\n    \"ToggleFit\": \"F\",\r\n    \"Skip\": \"Space\",\r\n    \"Undo\": \"Z\",\r\n    \"Fullscreen\": \"F11\",\r\n    \"MoveToFolder\": \"M\",\r\n    \"CopyToFolder\": \"Y\",\r\n    \"LastImage\": \"End\",\r\n    \"ZoomActualSize\": \"D1\",\r\n    \"ToggleInfoOverlay\": \"I\",\r\n    \"ClickZoom\": \"D2\",\r\n    \"FitWidth\": \"W\",\r\n    \"FitHeight\": \"H\",\r\n    \"ToggleKeepZoom\": \"K\",\r\n    \"OpenFolder\": \"\",\r\n    \"CustomZoom\": \"\",\r\n    \"ToggleCaptureMember\": \"\",\r\n    \"FitWidth2\": \"D4\",\r\n    \"Refresh\": \"R\"\r\n  }",
+        "Shortcuts": "{\r\n    \"Next\": \"Right\",\r\n    \"Previous\": \"Left\",\r\n    \"MoveToFolder2\": \"Enter\",\r\n    \"SendToRecycleBin\": \"Delete\",\r\n    \"Compare\": \"C\",\r\n    \"NextFolder\": \"PageDown\",\r\n    \"PreviousFolder\": \"PageUp\",\r\n    \"FirstImage\": \"Home\",\r\n    \"ZoomIn\": \"Add\",\r\n    \"ZoomOut\": \"Subtract\",\r\n    \"ToggleFit\": \"F\",\r\n    \"Skip\": \"Space\",\r\n    \"Undo\": \"Z\",\r\n    \"Fullscreen\": \"F11\",\r\n    \"MoveToFolder\": \"M\",\r\n    \"CopyToFolder\": \"Y\",\r\n    \"LastImage\": \"End\",\r\n    \"ZoomActualSize\": \"D1\",\r\n    \"ToggleInfoOverlay\": \"I\",\r\n    \"ClickZoom\": \"D2\",\r\n    \"FitWidth\": \"W\",\r\n    \"FitHeight\": \"H\",\r\n    \"ToggleKeepZoom\": \"K\",\r\n    \"OpenFolder\": \"\",\r\n    \"CustomZoom\": \"\",\r\n    \"ToggleCaptureMember\": \"\",\r\n    \"FitWidth2\": \"D4\",\r\n    \"Refresh\": \"R\",\r\n    \"OpenInDefaultEditor\": \"\",\r\n    \"RenameFile\": \"F2\"\r\n  }",
         "HiddenContextMenuItems": "[\r\n    \"MoveToRecycleBin\",\r\n    \"Fit\",\r\n    \"ZoomToLevel\",\r\n    \"ZoomSubmenu\"\r\n  ]"
       }
     },
@@ -285,7 +285,7 @@
       "disabled_shortcuts": [],
       "repairs": [],
       "salvage_cause": null,
-      "config_version": 3,
+      "config_version": 4,
       "repair_text": "",
       "changed": {
         "UiLanguage": "\"en\"",
@@ -303,7 +303,7 @@
       "disabled_shortcuts": [],
       "repairs": [],
       "salvage_cause": null,
-      "config_version": 3,
+      "config_version": 4,
       "repair_text": "",
       "changed": {
         "HiddenContextMenuItems": "[\r\n    \"MoveToRecycleBin\",\r\n    \"Fit\",\r\n    \"ZoomToLevel\",\r\n    \"ZoomSubmenu\"\r\n  ]"
@@ -319,7 +319,7 @@
       "disabled_shortcuts": [],
       "repairs": [],
       "salvage_cause": null,
-      "config_version": 3,
+      "config_version": 4,
       "repair_text": "",
       "changed": {
         "UiLanguage": "\"en\"",
@@ -336,7 +336,7 @@
       "disabled_shortcuts": [],
       "repairs": [],
       "salvage_cause": null,
-      "config_version": 3,
+      "config_version": 4,
       "repair_text": "",
       "changed": {
         "UiLanguage": "\"en\"",
@@ -353,7 +353,7 @@
       "disabled_shortcuts": [],
       "repairs": [],
       "salvage_cause": null,
-      "config_version": 3,
+      "config_version": 4,
       "repair_text": "",
       "changed": {
         "HiddenContextMenuItems": "[\r\n    \"MoveToRecycleBin\",\r\n    \"Fit\",\r\n    \"ZoomToLevel\",\r\n    \"ZoomSubmenu\"\r\n  ]"
@@ -369,7 +369,7 @@
       "disabled_shortcuts": [],
       "repairs": [],
       "salvage_cause": null,
-      "config_version": 3,
+      "config_version": 4,
       "repair_text": "",
       "changed": {
         "UiLanguage": "\"vi\"",
@@ -386,7 +386,7 @@
       "disabled_shortcuts": [],
       "repairs": [],
       "salvage_cause": null,
-      "config_version": 3,
+      "config_version": 4,
       "repair_text": "",
       "changed": {
         "UiLanguage": "\"vi\"",
@@ -404,7 +404,7 @@
       "disabled_shortcuts": [],
       "repairs": [],
       "salvage_cause": null,
-      "config_version": 3,
+      "config_version": 4,
       "repair_text": "",
       "changed": {
         "UiLanguage": "\"vi\"",
@@ -421,7 +421,7 @@
       "disabled_shortcuts": [],
       "repairs": [],
       "salvage_cause": null,
-      "config_version": 3,
+      "config_version": 4,
       "repair_text": "",
       "changed": {
         "HiddenContextMenuItems": "[\r\n    \"MoveToRecycleBin\",\r\n    \"Fit\",\r\n    \"ZoomToLevel\",\r\n    \"ZoomSubmenu\"\r\n  ]"
@@ -437,7 +437,7 @@
       "disabled_shortcuts": [],
       "repairs": [],
       "salvage_cause": null,
-      "config_version": 3,
+      "config_version": 4,
       "repair_text": "",
       "changed": {
         "HiddenContextMenuItems": "[\r\n    \"MoveToRecycleBin\",\r\n    \"Fit\",\r\n    \"ZoomToLevel\",\r\n    \"ZoomSubmenu\"\r\n  ]"
@@ -453,7 +453,7 @@
       "disabled_shortcuts": [],
       "repairs": [],
       "salvage_cause": null,
-      "config_version": 3,
+      "config_version": 4,
       "repair_text": "",
       "changed": {
         "HiddenContextMenuItems": "[\r\n    \"MoveToRecycleBin\",\r\n    \"Fit\",\r\n    \"ZoomToLevel\",\r\n    \"ZoomSubmenu\"\r\n  ]"
@@ -469,7 +469,7 @@
       "disabled_shortcuts": [],
       "repairs": [],
       "salvage_cause": null,
-      "config_version": 3,
+      "config_version": 4,
       "repair_text": "",
       "changed": {
         "UiLanguage": "\"AUTO\"",
@@ -486,7 +486,7 @@
       "disabled_shortcuts": [],
       "repairs": [],
       "salvage_cause": null,
-      "config_version": 3,
+      "config_version": 4,
       "repair_text": "",
       "changed": {
         "UiLanguage": "\"vi\"",
@@ -509,7 +509,7 @@
         "ConfigVersion"
       ],
       "salvage_cause": "JsonException",
-      "config_version": 3,
+      "config_version": 4,
       "repair_text": "config.json contained invalid values. These settings were reset to their defaults: ConfigVersion.",
       "changed": {
         "HiddenContextMenuItems": "[\r\n    \"MoveToRecycleBin\",\r\n    \"Fit\",\r\n    \"ZoomToLevel\",\r\n    \"ZoomSubmenu\"\r\n  ]"
@@ -525,7 +525,7 @@
       "disabled_shortcuts": [],
       "repairs": [],
       "salvage_cause": null,
-      "config_version": 3,
+      "config_version": 4,
       "repair_text": "",
       "changed": {
         "UiLanguage": "\"en\"",
@@ -542,7 +542,7 @@
       "disabled_shortcuts": [],
       "repairs": [],
       "salvage_cause": null,
-      "config_version": 3,
+      "config_version": 4,
       "repair_text": "",
       "changed": {
         "UiLanguage": "\"vi\"",
@@ -565,11 +565,11 @@
         "Actions"
       ],
       "salvage_cause": "JsonException",
-      "config_version": 3,
+      "config_version": 4,
       "repair_text": "config.json contained invalid values. These settings were reset to their defaults: Actions.",
       "changed": {
         "LoggingEnabled": "true",
-        "Shortcuts": "{\r\n    \"Next\": \"N\",\r\n    \"Previous\": \"Left\",\r\n    \"MoveToFolder2\": \"Enter\",\r\n    \"SendToRecycleBin\": \"Delete\",\r\n    \"Compare\": \"C\",\r\n    \"NextFolder\": \"PageDown\",\r\n    \"PreviousFolder\": \"PageUp\",\r\n    \"FirstImage\": \"Home\",\r\n    \"ZoomIn\": \"Add\",\r\n    \"ZoomOut\": \"Subtract\",\r\n    \"ToggleFit\": \"F\",\r\n    \"Skip\": \"Space\",\r\n    \"Undo\": \"Z\",\r\n    \"Fullscreen\": \"F11\",\r\n    \"MoveToFolder\": \"M\",\r\n    \"CopyToFolder\": \"Y\",\r\n    \"LastImage\": \"End\",\r\n    \"ZoomActualSize\": \"D1\",\r\n    \"ToggleInfoOverlay\": \"I\",\r\n    \"ClickZoom\": \"D2\",\r\n    \"FitWidth\": \"W\",\r\n    \"FitHeight\": \"H\",\r\n    \"ToggleKeepZoom\": \"K\",\r\n    \"OpenFolder\": \"O\",\r\n    \"CustomZoom\": \"D3\",\r\n    \"ToggleCaptureMember\": \"\",\r\n    \"FitWidth2\": \"D4\",\r\n    \"Refresh\": \"R\"\r\n  }",
+        "Shortcuts": "{\r\n    \"Next\": \"N\",\r\n    \"Previous\": \"Left\",\r\n    \"MoveToFolder2\": \"Enter\",\r\n    \"SendToRecycleBin\": \"Delete\",\r\n    \"Compare\": \"C\",\r\n    \"NextFolder\": \"PageDown\",\r\n    \"PreviousFolder\": \"PageUp\",\r\n    \"FirstImage\": \"Home\",\r\n    \"ZoomIn\": \"Add\",\r\n    \"ZoomOut\": \"Subtract\",\r\n    \"ToggleFit\": \"F\",\r\n    \"Skip\": \"Space\",\r\n    \"Undo\": \"Z\",\r\n    \"Fullscreen\": \"F11\",\r\n    \"MoveToFolder\": \"M\",\r\n    \"CopyToFolder\": \"Y\",\r\n    \"LastImage\": \"End\",\r\n    \"ZoomActualSize\": \"D1\",\r\n    \"ToggleInfoOverlay\": \"I\",\r\n    \"ClickZoom\": \"D2\",\r\n    \"FitWidth\": \"W\",\r\n    \"FitHeight\": \"H\",\r\n    \"ToggleKeepZoom\": \"K\",\r\n    \"OpenFolder\": \"O\",\r\n    \"CustomZoom\": \"D3\",\r\n    \"ToggleCaptureMember\": \"\",\r\n    \"FitWidth2\": \"D4\",\r\n    \"Refresh\": \"R\",\r\n    \"OpenInDefaultEditor\": \"\",\r\n    \"RenameFile\": \"F2\"\r\n  }",
         "HiddenContextMenuItems": "[\r\n    \"MoveToRecycleBin\",\r\n    \"Fit\",\r\n    \"ZoomToLevel\",\r\n    \"ZoomSubmenu\"\r\n  ]"
       }
     },
@@ -592,11 +592,11 @@
         "Shortcuts.ToggleKeepZoom"
       ],
       "salvage_cause": "JsonException",
-      "config_version": 3,
+      "config_version": 4,
       "repair_text": "config.json contained invalid values. These settings were reset to their defaults: Shortcuts.\r\nThe shortcut for ToggleKeepZoom conflicted with another action and was turned off. You can assign it again in Settings > Shortcuts.",
       "changed": {
         "Actions": "[\r\n    {\r\n      \"Name\": \"Keep\",\r\n      \"Shortcut\": \"K\",\r\n      \"Operation\": \"Move\",\r\n      \"Destination\": \"Group-2\",\r\n      \"Confirm\": false\r\n    }\r\n  ]",
-        "Shortcuts": "{\r\n    \"Next\": \"Right\",\r\n    \"Previous\": \"Left\",\r\n    \"MoveToFolder2\": \"Enter\",\r\n    \"SendToRecycleBin\": \"Delete\",\r\n    \"Compare\": \"C\",\r\n    \"NextFolder\": \"PageDown\",\r\n    \"PreviousFolder\": \"PageUp\",\r\n    \"FirstImage\": \"Home\",\r\n    \"ZoomIn\": \"Add\",\r\n    \"ZoomOut\": \"Subtract\",\r\n    \"ToggleFit\": \"F\",\r\n    \"Skip\": \"Space\",\r\n    \"Undo\": \"Z\",\r\n    \"Fullscreen\": \"F11\",\r\n    \"MoveToFolder\": \"M\",\r\n    \"CopyToFolder\": \"Y\",\r\n    \"LastImage\": \"End\",\r\n    \"ZoomActualSize\": \"D1\",\r\n    \"ToggleInfoOverlay\": \"I\",\r\n    \"ClickZoom\": \"D2\",\r\n    \"FitWidth\": \"W\",\r\n    \"FitHeight\": \"H\",\r\n    \"ToggleKeepZoom\": \"\",\r\n    \"OpenFolder\": \"O\",\r\n    \"CustomZoom\": \"D3\",\r\n    \"ToggleCaptureMember\": \"\",\r\n    \"FitWidth2\": \"D4\",\r\n    \"Refresh\": \"R\"\r\n  }",
+        "Shortcuts": "{\r\n    \"Next\": \"Right\",\r\n    \"Previous\": \"Left\",\r\n    \"MoveToFolder2\": \"Enter\",\r\n    \"SendToRecycleBin\": \"Delete\",\r\n    \"Compare\": \"C\",\r\n    \"NextFolder\": \"PageDown\",\r\n    \"PreviousFolder\": \"PageUp\",\r\n    \"FirstImage\": \"Home\",\r\n    \"ZoomIn\": \"Add\",\r\n    \"ZoomOut\": \"Subtract\",\r\n    \"ToggleFit\": \"F\",\r\n    \"Skip\": \"Space\",\r\n    \"Undo\": \"Z\",\r\n    \"Fullscreen\": \"F11\",\r\n    \"MoveToFolder\": \"M\",\r\n    \"CopyToFolder\": \"Y\",\r\n    \"LastImage\": \"End\",\r\n    \"ZoomActualSize\": \"D1\",\r\n    \"ToggleInfoOverlay\": \"I\",\r\n    \"ClickZoom\": \"D2\",\r\n    \"FitWidth\": \"W\",\r\n    \"FitHeight\": \"H\",\r\n    \"ToggleKeepZoom\": \"\",\r\n    \"OpenFolder\": \"O\",\r\n    \"CustomZoom\": \"D3\",\r\n    \"ToggleCaptureMember\": \"\",\r\n    \"FitWidth2\": \"D4\",\r\n    \"Refresh\": \"R\",\r\n    \"OpenInDefaultEditor\": \"\",\r\n    \"RenameFile\": \"F2\"\r\n  }",
         "HiddenContextMenuItems": "[\r\n    \"MoveToRecycleBin\",\r\n    \"Fit\",\r\n    \"ZoomToLevel\",\r\n    \"ZoomSubmenu\"\r\n  ]"
       }
     },
@@ -616,7 +616,7 @@
         "HiddenContextMenuItems"
       ],
       "salvage_cause": "JsonException",
-      "config_version": 3,
+      "config_version": 4,
       "repair_text": "config.json contained invalid values. These settings were reset to their defaults: HiddenContextMenuItems.",
       "changed": {
         "PreloadWorkerCount": "7",
@@ -645,7 +645,7 @@
         "LoggingEnabled"
       ],
       "salvage_cause": "JsonException",
-      "config_version": 3,
+      "config_version": 4,
       "repair_text": "config.json contained invalid values. These settings were reset to their defaults: PreloadWorkerCount, ClickZoomPercent, LoggingEnabled.",
       "changed": {
         "HiddenContextMenuItems": "[\r\n    \"MoveToRecycleBin\",\r\n    \"Fit\",\r\n    \"ZoomToLevel\",\r\n    \"ZoomSubmenu\"\r\n  ]"
@@ -667,7 +667,7 @@
         "ClickZoomPercent"
       ],
       "salvage_cause": "JsonException",
-      "config_version": 3,
+      "config_version": 4,
       "repair_text": "config.json contained invalid values. These settings were reset to their defaults: ClickZoomPercent.",
       "changed": {
         "ClickZoomPercent": "10",
@@ -690,7 +690,7 @@
         "ClickZoomPercent"
       ],
       "salvage_cause": "JsonException",
-      "config_version": 3,
+      "config_version": 4,
       "repair_text": "config.json contained invalid values. These settings were reset to their defaults: ClickZoomPercent.",
       "changed": {
         "ClickZoomPercent": "10",
@@ -716,7 +716,7 @@
         "ClickZoomPercent"
       ],
       "salvage_cause": "JsonException",
-      "config_version": 3,
+      "config_version": 4,
       "repair_text": "config.json contained invalid values. These settings were reset to their defaults: LoggingEnabled, ClickZoomPercent.",
       "changed": {
         "HiddenContextMenuItems": "[\r\n    \"MoveToRecycleBin\",\r\n    \"Fit\",\r\n    \"ZoomToLevel\",\r\n    \"ZoomSubmenu\"\r\n  ]"
@@ -732,7 +732,7 @@
       "disabled_shortcuts": [],
       "repairs": [],
       "salvage_cause": null,
-      "config_version": 3,
+      "config_version": 4,
       "repair_text": "",
       "changed": {
         "HiddenContextMenuItems": "[\r\n    \"MoveToRecycleBin\",\r\n    \"Fit\",\r\n    \"ZoomToLevel\",\r\n    \"ZoomSubmenu\"\r\n  ]"
@@ -758,7 +758,7 @@
         "Actions"
       ],
       "salvage_cause": "JsonException",
-      "config_version": 3,
+      "config_version": 4,
       "repair_text": "config.json contained invalid values. These settings were reset to their defaults: ClickZoomPercent, PreloadWorkerCount, Actions.",
       "changed": {
         "LoadingMode": "\"Fast\"",
@@ -782,7 +782,7 @@
         "UiLanguage"
       ],
       "salvage_cause": "JsonException",
-      "config_version": 3,
+      "config_version": 4,
       "repair_text": "config.json contained invalid values. These settings were reset to their defaults: UiLanguage.",
       "changed": {
         "LoggingEnabled": "true",
@@ -811,7 +811,7 @@
         "ClickZoomPercent"
       ],
       "salvage_cause": "JsonException",
-      "config_version": 3,
+      "config_version": 4,
       "repair_text": "config.json contained invalid values. These settings were reset to their defaults: ClickZoomPercent.",
       "changed": {
         "Actions": "[\r\n    {\r\n      \"Name\": \"Mine\",\r\n      \"Shortcut\": \"F9\",\r\n      \"Operation\": \"Copy\",\r\n      \"Destination\": \"D\",\r\n      \"Confirm\": false\r\n    }\r\n  ]",
@@ -834,7 +834,7 @@
         "Actions[0].Shortcut"
       ],
       "salvage_cause": null,
-      "config_version": 3,
+      "config_version": 4,
       "repair_text": "config.json contained invalid values. These settings were reset to their defaults: Shortcuts, Actions[0].Shortcut.",
       "changed": {
         "Actions": "[\r\n    {\r\n      \"Name\": \"Mine\",\r\n      \"Shortcut\": \"\",\r\n      \"Operation\": \"Move\",\r\n      \"Destination\": \"Group-2\",\r\n      \"Confirm\": false\r\n    },\r\n    {\r\n      \"Name\": \"Other\",\r\n      \"Shortcut\": \"Z\",\r\n      \"Operation\": \"Move\",\r\n      \"Destination\": \"Group-2\",\r\n      \"Confirm\": false\r\n    }\r\n  ]",
@@ -855,7 +855,7 @@
         "Shortcuts"
       ],
       "salvage_cause": null,
-      "config_version": 3,
+      "config_version": 4,
       "repair_text": "config.json contained invalid values. These settings were reset to their defaults: Shortcuts.",
       "changed": {
         "HiddenContextMenuItems": "[\r\n    \"MoveToRecycleBin\",\r\n    \"Fit\",\r\n    \"ZoomToLevel\",\r\n    \"ZoomSubmenu\"\r\n  ]"
@@ -871,7 +871,7 @@
       "disabled_shortcuts": [],
       "repairs": [],
       "salvage_cause": null,
-      "config_version": 3,
+      "config_version": 4,
       "repair_text": "",
       "changed": {
         "ShowFolderMenuItems": "false",
@@ -890,7 +890,7 @@
       "disabled_shortcuts": [],
       "repairs": [],
       "salvage_cause": null,
-      "config_version": 3,
+      "config_version": 4,
       "repair_text": "",
       "changed": {
         "ShowZoomMenuItems": "true",
@@ -908,7 +908,7 @@
       "disabled_shortcuts": [],
       "repairs": [],
       "salvage_cause": null,
-      "config_version": 3,
+      "config_version": 4,
       "repair_text": "",
       "changed": {
         "ShowZoomMenuItems": "true",
@@ -925,7 +925,7 @@
       "disabled_shortcuts": [],
       "repairs": [],
       "salvage_cause": null,
-      "config_version": 3,
+      "config_version": 4,
       "repair_text": "",
       "changed": {
         "HiddenContextMenuItems": "[\r\n    \"MoveToRecycleBin\",\r\n    \"Fit\",\r\n    \"ZoomToLevel\",\r\n    \"ZoomSubmenu\"\r\n  ]"
@@ -941,7 +941,7 @@
       "disabled_shortcuts": [],
       "repairs": [],
       "salvage_cause": null,
-      "config_version": 3,
+      "config_version": 4,
       "repair_text": "",
       "changed": {
         "ShowFolderMenuItems": "false",
@@ -958,7 +958,7 @@
       "disabled_shortcuts": [],
       "repairs": [],
       "salvage_cause": null,
-      "config_version": 3,
+      "config_version": 4,
       "repair_text": "",
       "changed": {
         "ShowFolderMenuItems": "false",
@@ -979,7 +979,7 @@
         "HiddenContextMenuItems"
       ],
       "salvage_cause": null,
-      "config_version": 3,
+      "config_version": 4,
       "repair_text": "config.json contained invalid values. These settings were reset to their defaults: HiddenContextMenuItems.",
       "changed": {
         "HiddenContextMenuItems": "[\r\n    \"Fit\",\r\n    \"CopyFullPath\"\r\n  ]"
@@ -995,7 +995,7 @@
       "disabled_shortcuts": [],
       "repairs": [],
       "salvage_cause": null,
-      "config_version": 3,
+      "config_version": 4,
       "repair_text": "",
       "changed": {
         "ImageSortMode": "\"SizeDescending\"",
@@ -1014,7 +1014,7 @@
       "disabled_shortcuts": [],
       "repairs": [],
       "salvage_cause": null,
-      "config_version": 3,
+      "config_version": 4,
       "repair_text": "",
       "changed": {
         "InitialViewMode": "\"200%\"",
@@ -1036,7 +1036,7 @@
       "disabled_shortcuts": [],
       "repairs": [],
       "salvage_cause": null,
-      "config_version": 3,
+      "config_version": 4,
       "repair_text": "",
       "changed": {
         "Actions": "[\r\n    {\r\n      \"Name\": \"Trash it\",\r\n      \"Shortcut\": \"F7\",\r\n      \"Operation\": \"Recycle\",\r\n      \"Destination\": \"\",\r\n      \"Confirm\": true\r\n    },\r\n    {\r\n      \"Name\": \"Keep\",\r\n      \"Shortcut\": \"F8\",\r\n      \"Operation\": \"Move\",\r\n      \"Destination\": \"Keepers\",\r\n      \"Confirm\": false\r\n    }\r\n  ]",
@@ -1065,7 +1065,7 @@
         "Actions"
       ],
       "salvage_cause": null,
-      "config_version": 3,
+      "config_version": 4,
       "repair_text": "config.json contained invalid values. These settings were reset to their defaults: ImageCacheCapacityBytes, SourceBytesCapacityBytes, PreloadWorkerCount, PreloadMemoryLoadLimit, Actions.",
       "changed": {
         "Actions": "[\r\n    {\r\n      \"Name\": \"Keep\",\r\n      \"Shortcut\": \"F9\",\r\n      \"Operation\": \"Move\",\r\n      \"Destination\": \"K\",\r\n      \"Confirm\": false\r\n    }\r\n  ]",
@@ -1087,7 +1087,7 @@
         "InfoOverlayFontSize"
       ],
       "salvage_cause": null,
-      "config_version": 3,
+      "config_version": 4,
       "repair_text": "config.json contained invalid values. These settings were reset to their defaults: InfoOverlayFontSize.",
       "changed": {
         "HiddenContextMenuItems": "[\r\n    \"MoveToRecycleBin\",\r\n    \"Fit\",\r\n    \"ZoomToLevel\",\r\n    \"ZoomSubmenu\"\r\n  ]"
@@ -1107,7 +1107,7 @@
         "InfoOverlayFontSize"
       ],
       "salvage_cause": null,
-      "config_version": 3,
+      "config_version": 4,
       "repair_text": "config.json contained invalid values. These settings were reset to their defaults: InfoOverlayFontSize.",
       "changed": {
         "HiddenContextMenuItems": "[\r\n    \"MoveToRecycleBin\",\r\n    \"Fit\",\r\n    \"ZoomToLevel\",\r\n    \"ZoomSubmenu\"\r\n  ]"
@@ -1127,7 +1127,7 @@
         "DecoderBackend"
       ],
       "salvage_cause": null,
-      "config_version": 3,
+      "config_version": 4,
       "repair_text": "config.json contained invalid values. These settings were reset to their defaults: DecoderBackend.",
       "changed": {
         "HiddenContextMenuItems": "[\r\n    \"MoveToRecycleBin\",\r\n    \"Fit\",\r\n    \"ZoomToLevel\",\r\n    \"ZoomSubmenu\"\r\n  ]"
@@ -1147,7 +1147,7 @@
         "InitialViewMode"
       ],
       "salvage_cause": null,
-      "config_version": 3,
+      "config_version": 4,
       "repair_text": "config.json contained invalid values. These settings were reset to their defaults: InitialViewMode.",
       "changed": {
         "InitialViewMode": "\"200%\"",
@@ -1170,11 +1170,11 @@
         "Shortcuts.Refresh"
       ],
       "salvage_cause": null,
-      "config_version": 3,
+      "config_version": 4,
       "repair_text": "The shortcut for FitWidth2 conflicted with another action and was turned off. You can assign it again in Settings > Shortcuts.\r\nThe shortcut for Refresh conflicted with another action and was turned off. You can assign it again in Settings > Shortcuts.",
       "changed": {
         "Actions": "[\r\n    {\r\n      \"Name\": \"A\",\r\n      \"Shortcut\": \"D4\",\r\n      \"Operation\": \"Move\",\r\n      \"Destination\": \"Group-2\",\r\n      \"Confirm\": false\r\n    },\r\n    {\r\n      \"Name\": \"B\",\r\n      \"Shortcut\": \"R\",\r\n      \"Operation\": \"Move\",\r\n      \"Destination\": \"Group-2\",\r\n      \"Confirm\": false\r\n    }\r\n  ]",
-        "Shortcuts": "{\r\n    \"Next\": \"Right\",\r\n    \"Previous\": \"Left\",\r\n    \"MoveToFolder2\": \"Enter\",\r\n    \"SendToRecycleBin\": \"Delete\",\r\n    \"Compare\": \"C\",\r\n    \"NextFolder\": \"PageDown\",\r\n    \"PreviousFolder\": \"PageUp\",\r\n    \"FirstImage\": \"Home\",\r\n    \"ZoomIn\": \"Add\",\r\n    \"ZoomOut\": \"Subtract\",\r\n    \"ToggleFit\": \"F\",\r\n    \"Skip\": \"Space\",\r\n    \"Undo\": \"Z\",\r\n    \"Fullscreen\": \"F11\",\r\n    \"MoveToFolder\": \"M\",\r\n    \"CopyToFolder\": \"Y\",\r\n    \"LastImage\": \"End\",\r\n    \"ZoomActualSize\": \"D1\",\r\n    \"ToggleInfoOverlay\": \"I\",\r\n    \"ClickZoom\": \"D2\",\r\n    \"FitWidth\": \"W\",\r\n    \"FitHeight\": \"H\",\r\n    \"ToggleKeepZoom\": \"K\",\r\n    \"OpenFolder\": \"O\",\r\n    \"CustomZoom\": \"D3\",\r\n    \"ToggleCaptureMember\": \"\",\r\n    \"FitWidth2\": \"\",\r\n    \"Refresh\": \"\"\r\n  }",
+        "Shortcuts": "{\r\n    \"Next\": \"Right\",\r\n    \"Previous\": \"Left\",\r\n    \"MoveToFolder2\": \"Enter\",\r\n    \"SendToRecycleBin\": \"Delete\",\r\n    \"Compare\": \"C\",\r\n    \"NextFolder\": \"PageDown\",\r\n    \"PreviousFolder\": \"PageUp\",\r\n    \"FirstImage\": \"Home\",\r\n    \"ZoomIn\": \"Add\",\r\n    \"ZoomOut\": \"Subtract\",\r\n    \"ToggleFit\": \"F\",\r\n    \"Skip\": \"Space\",\r\n    \"Undo\": \"Z\",\r\n    \"Fullscreen\": \"F11\",\r\n    \"MoveToFolder\": \"M\",\r\n    \"CopyToFolder\": \"Y\",\r\n    \"LastImage\": \"End\",\r\n    \"ZoomActualSize\": \"D1\",\r\n    \"ToggleInfoOverlay\": \"I\",\r\n    \"ClickZoom\": \"D2\",\r\n    \"FitWidth\": \"W\",\r\n    \"FitHeight\": \"H\",\r\n    \"ToggleKeepZoom\": \"K\",\r\n    \"OpenFolder\": \"O\",\r\n    \"CustomZoom\": \"D3\",\r\n    \"ToggleCaptureMember\": \"\",\r\n    \"FitWidth2\": \"\",\r\n    \"Refresh\": \"\",\r\n    \"OpenInDefaultEditor\": \"\",\r\n    \"RenameFile\": \"F2\"\r\n  }",
         "HiddenContextMenuItems": "[\r\n    \"MoveToRecycleBin\",\r\n    \"Fit\",\r\n    \"ZoomToLevel\",\r\n    \"ZoomSubmenu\"\r\n  ]"
       }
     },
@@ -1188,7 +1188,7 @@
       "disabled_shortcuts": [],
       "repairs": [],
       "salvage_cause": null,
-      "config_version": 3,
+      "config_version": 4,
       "repair_text": "",
       "changed": {
         "Actions": "[\r\n    {\r\n      \"Name\": \"A\",\r\n      \"Shortcut\": \"Enter\",\r\n      \"Operation\": \"Move\",\r\n      \"Destination\": \"x\",\r\n      \"Confirm\": false\r\n    }\r\n  ]",

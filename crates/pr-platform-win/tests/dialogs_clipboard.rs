@@ -166,6 +166,15 @@ fn block_byte_len_is_twice_the_units_plus_one_and_none_on_overflow() {
 }
 
 #[test]
+fn debug_output_names_the_service_without_leaking_its_fields() {
+    // Guards the hand-written Debug impl (no C# twin; a Rust-only formatting contract).
+    let state = state(0, Ok(true));
+    let service = make_service(&state, 1, Rc::new(RefCell::new(Vec::new())));
+    let text = format!("{service:?}");
+    assert!(text.starts_with("Win32ClipboardService"), "{text}");
+}
+
+#[test]
 fn constants_are_five_attempts_and_twenty_milliseconds() {
     assert_eq!(ATTEMPTS, 5);
     assert_eq!(RETRY_DELAY_MILLISECONDS, 20);
@@ -200,7 +209,19 @@ mod native {
     }
 
     fn read_text(owner: Hwnd) -> Option<String> {
-        user32::open_clipboard(owner).ok()?;
+        // Clipboard monitors (history, cloud sync) hold the clipboard for a few ms after a change, so a read-back retries the open like the product does.
+        // This waits for a foreign holder; it is not a fixed delay before an assertion.
+        let mut opened = user32::open_clipboard(owner).is_ok();
+        for _ in 0..ATTEMPTS * 10 {
+            if opened {
+                break;
+            }
+            std::thread::sleep(std::time::Duration::from_millis(RETRY_DELAY_MILLISECONDS.into()));
+            opened = user32::open_clipboard(owner).is_ok();
+        }
+        if !opened {
+            return None;
+        }
         let text = (|| {
             let handle = user32::get_clipboard_data(CF_UNICODETEXT).ok()?;
             let pointer = kernel32::global_lock(handle).ok()?;
@@ -250,5 +271,39 @@ mod native {
         if let Some(previous) = previous {
             assert!(service.try_set_text(&previous));
         }
+    }
+
+    #[test]
+    #[ignore = "native: needs desktop"]
+    fn native_clipboard_close_releases_the_clipboard_for_other_threads() {
+        // C#: NativeClipboardApi.Close (a clipboard left open would block every other process; Win32 allows one open window at a time).
+        let hwnd = unsafe {
+            // SAFETY: creates a simple STATIC owner window on this test thread; Owner destroys it on drop.
+            user32::create_window_ex(0, "STATIC", "", 0, 0, 0, 0, 0, 0, 0, 0, 0)
+        }
+        .expect("create STATIC owner window");
+        let owner = Owner(hwnd);
+        let api = NativeClipboardApi;
+        let other_thread_can_open = || {
+            std::thread::scope(|scope| {
+                scope
+                    .spawn(|| {
+                        let opened = NativeClipboardApi.open(0);
+                        if opened {
+                            NativeClipboardApi.close();
+                        }
+                        opened
+                    })
+                    .join()
+                    .expect("probe thread")
+            })
+        };
+        assert!(api.open(owner.0));
+        assert!(
+            !other_thread_can_open(),
+            "control: an open clipboard must block another window"
+        );
+        api.close();
+        assert!(other_thread_can_open(), "close must release the clipboard");
     }
 }

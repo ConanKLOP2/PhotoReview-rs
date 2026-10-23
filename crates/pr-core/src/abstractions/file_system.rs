@@ -88,6 +88,27 @@ impl CopyCreationProof {
 /// The file-system operations PhotoReview needs.
 pub trait FileSystem: Send + Sync {
     fn file_exists(&self, path: &Path) -> bool;
+    /// FEAT-RENAME (C# default interface member `GetStoredFileNames`): the file names STORED on disk (exact letter case) in
+    /// the folder of `path` that equal its name ignoring case. Usually 0 or 1 entries; 2 = two different files in a
+    /// case-sensitive folder. `file_exists` ignores case, so only this listing tells `a.jpg` from `A.jpg`. The default
+    /// body is the C# one (folder listing filtered by the name), so existing implementations need no change.
+    fn get_stored_file_names(&self, path: &Path) -> io::Result<Vec<String>> {
+        let (Some(directory), Some(name)) = (path.parent(), path.file_name().and_then(|n| n.to_str())) else {
+            return Ok(Vec::new());
+        };
+        if directory.as_os_str().is_empty() || name.is_empty() {
+            return Ok(Vec::new());
+        }
+        let mut found = Vec::new();
+        for file in self.enumerate_files(directory, name)? {
+            if let Some(stored) = file.file_name().and_then(|n| n.to_str())
+                && crate::text::eq_ignore_case(stored, name)
+            {
+                found.push(stored.to_owned());
+            }
+        }
+        Ok(found)
+    }
     fn directory_exists(&self, path: &Path) -> bool;
     /// `None` when the file does not exist (or cannot be stat'ed).
     fn get_file_stat(&self, path: &Path) -> Option<FileStat>;

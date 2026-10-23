@@ -5,7 +5,7 @@
 //! Contract: `contracts/W2-20/contract.md`.
 //!
 //! The enum member NAMES are written to `config.json` (`AppSettings.HiddenContextMenuItems`), so they and their
-//! numeric values (declaration order, 0..=17) never change; new members go at the end.
+//! numeric values (declaration order, 0..=18) never change; new members go at the end.
 
 use std::collections::HashSet;
 
@@ -38,11 +38,12 @@ pub enum ContextMenuItemId {
     /// Refresh (re-render the current view at full quality); sits at the end of the zoom cluster so it follows that
     /// cluster's separator. Declared last (value 17) but placed in group 2 of the table.
     Refresh = 17,
+    RenameFile = 18,
 }
 
 impl ContextMenuItemId {
     /// Every member in declaration order (`Enum.GetValues<ContextMenuItemId>()`).
-    pub const ALL: [ContextMenuItemId; 18] = [
+    pub const ALL: [ContextMenuItemId; 19] = [
         Self::Undo,
         Self::MoveToRecycleBin,
         Self::Fit,
@@ -61,6 +62,7 @@ impl ContextMenuItemId {
         Self::ZoomPresets,
         Self::ZoomLevelOptions,
         Self::Refresh,
+        Self::RenameFile,
     ];
 
     /// The C# identifier (`id.ToString()`), the text stored in `config.json`.
@@ -84,6 +86,7 @@ impl ContextMenuItemId {
             Self::ZoomPresets => "ZoomPresets",
             Self::ZoomLevelOptions => "ZoomLevelOptions",
             Self::Refresh => "Refresh",
+            Self::RenameFile => "RenameFile",
         }
     }
 
@@ -93,7 +96,7 @@ impl ContextMenuItemId {
     }
 }
 
-/// One entry of the item table: where it sits (parent, group), and whether it can be turned off / needs an open photo.
+/// One entry of the item table: where it sits (parent, group), and whether it can be turned off, needs a photo, or is shell-only.
 /// `ContextMenuItemInfo(Id, Parent, Group, Locked = false, NeedsPhoto = false)`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct ContextMenuItemInfo {
@@ -102,12 +105,15 @@ pub struct ContextMenuItemInfo {
     pub group: i32,
     pub locked: bool,
     pub needs_photo: bool,
+    /// The frozen WPF menu omits this row; the Win32 shell includes it.
+    pub shell_only: bool,
 }
 
-/// What the menu is opened over (`ContextMenuContext(HasPhoto)`).
+/// What the menu is opened over (`ContextMenuContext(HasPhoto, IncludeShellOnly = false)`).
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct ContextMenuContext {
     pub has_photo: bool,
+    pub include_shell_only: bool,
 }
 
 /// One line of a computed menu: an item, or (`item` is `None`) the separator drawn right before `group`.
@@ -149,6 +155,18 @@ const fn info(
         group,
         locked,
         needs_photo,
+        shell_only: false,
+    }
+}
+
+const fn shell_only_info(id: ContextMenuItemId, group: i32, needs_photo: bool) -> ContextMenuItemInfo {
+    ContextMenuItemInfo {
+        id,
+        parent: None,
+        group,
+        locked: false,
+        needs_photo,
+        shell_only: true,
     }
 }
 
@@ -157,7 +175,7 @@ use ContextMenuItemId as Id;
 /// `ContextMenuItems.Items`: every item, in menu order (top level first, then the Zoom submenu's children).
 /// Order matters: [`compute`] groups by first appearance in this table, and [`to_stored`] emits in this order
 /// (so `Refresh` precedes `OpenFolder` even though its enum value is 17).
-pub const ITEMS: [ContextMenuItemInfo; 18] = [
+pub const ITEMS: [ContextMenuItemInfo; 19] = [
     info(Id::Undo, None, 1, false, false),
     info(Id::MoveToRecycleBin, None, 1, false, false),
     info(Id::Fit, None, 2, false, false),
@@ -168,6 +186,7 @@ pub const ITEMS: [ContextMenuItemInfo; 18] = [
     info(Id::NextFolder, None, 3, false, false),
     info(Id::PreviousFolder, None, 3, false, false),
     info(Id::ExternalEditor, None, 4, false, false),
+    shell_only_info(Id::RenameFile, 5, true),
     info(Id::CopyFileName, None, 5, false, true),
     info(Id::CopyFullPath, None, 5, false, true),
     info(Id::Settings, None, 6, true, false),
@@ -259,7 +278,7 @@ pub fn apply_hidden(settings: &mut AppSettings, hidden: impl IntoIterator<Item =
 /// level, else that submenu's children).
 ///
 /// An item shows when it is not hidden by the user (the locked `Settings` item always shows), its context allows it
-/// (`needs_photo` needs `context.has_photo`) and, for an item that has children, at least one child shows. Groups are
+/// (`needs_photo` needs `context.has_photo`, `shell_only` needs `context.include_shell_only`) and, for an item that has children, at least one child shows. Groups are
 /// taken in order of first appearance in [`ITEMS`]; a separator entry (`item: None`, `group` = the group about to
 /// start) is added before a group only when an earlier group had visible items.
 pub fn compute(
@@ -298,6 +317,9 @@ fn item_shows(item: &ContextMenuItemInfo, hidden: &HashSet<ContextMenuItemId>, c
         return false;
     }
     if item.needs_photo && !context.has_photo {
+        return false;
+    }
+    if item.shell_only && !context.include_shell_only {
         return false;
     }
     let mut children = ITEMS.iter().filter(|row| row.parent == Some(item.id)).peekable();

@@ -1,0 +1,458 @@
+{
+  "generator": "oracle-cs dialog-external-editors",
+  "csharp_commit": "7eaee2a2b071c7ca05291c86fb78a347f9e6a15f",
+  "cases": [
+    {
+      "name": "dialog with named and blank editor",
+      "kind": "dialog",
+      "default_id": "ed-2",
+      "editors": [
+        {
+          "id": "ed-1",
+          "name": "Photoshop",
+          "path": "C:\\Program Files\\Adobe\\Photoshop.exe",
+          "arguments": "\"{file}\""
+        },
+        {
+          "id": "ed-2",
+          "name": "   ",
+          "path": "D:\\Tools\\Photo Editor.exe",
+          "arguments": "--open {file}"
+        },
+        {
+          "id": "ed-3",
+          "name": "写真編集",
+          "path": "C:\\写真\\編集.exe",
+          "arguments": "{file}"
+        }
+      ],
+      "title": "External editors",
+      "items": [
+        {
+          "class": "Static",
+          "id": 100,
+          "text": "Editors",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "ListBox",
+          "id": 101,
+          "text": "",
+          "style": 1344340305,
+          "ex_style": 512
+        },
+        {
+          "class": "Button",
+          "id": 102,
+          "text": "+ Add",
+          "style": 1342242816,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 103,
+          "text": "Remove",
+          "style": 1342242816,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 104,
+          "text": "Set default",
+          "style": 1342242816,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 106,
+          "text": "Details",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 110,
+          "text": "Name",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Edit",
+          "id": 111,
+          "text": "",
+          "style": 1342242944,
+          "ex_style": 512
+        },
+        {
+          "class": "Static",
+          "id": 112,
+          "text": "Program (.exe)",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Edit",
+          "id": 113,
+          "text": "",
+          "style": 1342242944,
+          "ex_style": 512
+        },
+        {
+          "class": "Button",
+          "id": 114,
+          "text": "Browse…",
+          "style": 1342242816,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 116,
+          "text": "Arguments ({file} = the photo's path)",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Edit",
+          "id": 117,
+          "text": "",
+          "style": 1342242944,
+          "ex_style": 512
+        },
+        {
+          "class": "Static",
+          "id": 118,
+          "text": "Default: \"{file}\". Some programs (for example Lightroom Classic) do not open a file given on the command line.",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 2,
+          "text": "Cancel",
+          "style": 1342242816,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 1,
+          "text": "Apply",
+          "style": 1342242817,
+          "ex_style": 0
+        }
+      ],
+      "initial_focus_id": 101,
+      "default_button_id": 1,
+      "resizable": true,
+      "header_ids": [
+        100,
+        106
+      ],
+      "uses_modal_frame": true,
+      "extra_window_style": 0
+    },
+    {
+      "name": "empty dialog",
+      "kind": "dialog",
+      "default_id": "missing",
+      "editors": [],
+      "title": "External editors",
+      "items": [
+        {
+          "class": "Static",
+          "id": 100,
+          "text": "Editors",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "ListBox",
+          "id": 101,
+          "text": "",
+          "style": 1344340305,
+          "ex_style": 512
+        },
+        {
+          "class": "Button",
+          "id": 102,
+          "text": "+ Add",
+          "style": 1342242816,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 103,
+          "text": "Remove",
+          "style": 1342242816,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 104,
+          "text": "Set default",
+          "style": 1342242816,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 106,
+          "text": "Details",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 110,
+          "text": "Name",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Edit",
+          "id": 111,
+          "text": "",
+          "style": 1342242944,
+          "ex_style": 512
+        },
+        {
+          "class": "Static",
+          "id": 112,
+          "text": "Program (.exe)",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Edit",
+          "id": 113,
+          "text": "",
+          "style": 1342242944,
+          "ex_style": 512
+        },
+        {
+          "class": "Button",
+          "id": 114,
+          "text": "Browse…",
+          "style": 1342242816,
+          "ex_style": 0
+        },
+        {
+          "class": "Static",
+          "id": 116,
+          "text": "Arguments ({file} = the photo's path)",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Edit",
+          "id": 117,
+          "text": "",
+          "style": 1342242944,
+          "ex_style": 512
+        },
+        {
+          "class": "Static",
+          "id": 118,
+          "text": "Default: \"{file}\". Some programs (for example Lightroom Classic) do not open a file given on the command line.",
+          "style": 1342177408,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 2,
+          "text": "Cancel",
+          "style": 1342242816,
+          "ex_style": 0
+        },
+        {
+          "class": "Button",
+          "id": 1,
+          "text": "Apply",
+          "style": 1342242817,
+          "ex_style": 0
+        }
+      ],
+      "initial_focus_id": 101,
+      "default_button_id": 1,
+      "resizable": true,
+      "header_ids": [
+        100,
+        106
+      ],
+      "uses_modal_frame": true,
+      "extra_window_style": 0
+    },
+    {
+      "name": "default row",
+      "kind": "row_text",
+      "default_id": "ed-2",
+      "index": 1,
+      "editors": [
+        {
+          "id": "ed-1",
+          "name": "Photoshop",
+          "path": "C:\\Program Files\\Adobe\\Photoshop.exe"
+        },
+        {
+          "id": "ed-2",
+          "name": "Pixel Lab",
+          "path": "C:\\Pixel.exe"
+        }
+      ],
+      "text": "Pixel Lab",
+      "badge": "default"
+    },
+    {
+      "name": "blank name uses executable filename",
+      "kind": "row_text",
+      "default_id": "absent",
+      "index": 0,
+      "editors": [
+        {
+          "id": "ed-1",
+          "name": " ",
+          "path": "C:\\Program Files\\Photo Editor.exe"
+        }
+      ],
+      "text": "Photo Editor",
+      "badge": "default"
+    },
+    {
+      "name": "empty row list fallback",
+      "kind": "row_text",
+      "default_id": "absent",
+      "index": 0,
+      "editors": [],
+      "text": "",
+      "badge": null
+    },
+    {
+      "name": "known default",
+      "kind": "effective_default",
+      "default_id": "ed-2",
+      "editors": [
+        {
+          "id": "ed-1",
+          "name": "One",
+          "path": "one.exe"
+        },
+        {
+          "id": "ed-2",
+          "name": "Two",
+          "path": "two.exe"
+        }
+      ],
+      "effective_default_id": "ed-2",
+      "index_of_default": 1
+    },
+    {
+      "name": "unknown default falls back to first",
+      "kind": "effective_default",
+      "default_id": "missing",
+      "editors": [
+        {
+          "id": "ed-1",
+          "name": "One",
+          "path": "one.exe"
+        },
+        {
+          "id": "ed-2",
+          "name": "Two",
+          "path": "two.exe"
+        }
+      ],
+      "effective_default_id": "ed-1",
+      "index_of_default": 0
+    },
+    {
+      "name": "duplicate ids use first matching index",
+      "kind": "effective_default",
+      "default_id": "dup",
+      "editors": [
+        {
+          "id": "dup",
+          "name": "One",
+          "path": "one.exe"
+        },
+        {
+          "id": "dup",
+          "name": "Two",
+          "path": "two.exe"
+        }
+      ],
+      "effective_default_id": "dup",
+      "index_of_default": 0
+    },
+    {
+      "name": "empty default",
+      "kind": "effective_default",
+      "default_id": "missing",
+      "editors": [],
+      "effective_default_id": "",
+      "index_of_default": -1
+    },
+    {
+      "name": "preferred 6 15",
+      "kind": "preferred",
+      "avg": 6,
+      "line": 15,
+      "preferred_width": 705,
+      "preferred_height": 356,
+      "minimum_width": 570,
+      "minimum_height": 319
+    },
+    {
+      "name": "preferred 9 24",
+      "kind": "preferred",
+      "avg": 9,
+      "line": 24,
+      "preferred_width": 1058,
+      "preferred_height": 570,
+      "minimum_width": 855,
+      "minimum_height": 510
+    },
+    {
+      "name": "metrics narrow width",
+      "kind": "metrics",
+      "avg": 6,
+      "line": 15,
+      "client_width": 299,
+      "margin": 15,
+      "field_height": 26,
+      "button_height": 26,
+      "left_width": 150
+    },
+    {
+      "name": "metrics wide width",
+      "kind": "metrics",
+      "avg": 10,
+      "line": 29,
+      "client_width": 1000,
+      "margin": 25,
+      "field_height": 51,
+      "button_height": 51,
+      "left_width": 333
+    },
+    {
+      "name": "all dialog ids",
+      "kind": "constants",
+      "values": {
+        "list_header_id": 100,
+        "list_id": 101,
+        "add_id": 102,
+        "remove_id": 103,
+        "set_default_id": 104,
+        "details_header_id": 106,
+        "name_label_id": 110,
+        "name_id": 111,
+        "path_label_id": 112,
+        "path_id": 113,
+        "browse_id": 114,
+        "arguments_label_id": 116,
+        "arguments_id": 117,
+        "hint_id": 118,
+        "cancel_id": 2,
+        "apply_id": 1
+      }
+    }
+  ]
+}

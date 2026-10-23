@@ -41,10 +41,20 @@ It checks same-batch dependencies on `origin/master`, then copies owned source f
 Failing `not yet implemented` tests may pull in completed source modules for up to four test rounds.
 Cargo output goes to `tools/autopilot/state/logs/<unit>.pr.log`; the worktree keeps its own target directory.
 `--dry-run` runs the checks without staging, committing, pushing, or opening a PR.
+### Wave 9
+
+Use lane tags such as `wave9-e`; the integration branch is `integration/wave9-e`. The pipeline finds the unique
+`docs/WAVE-9-PLAN-*.md` containing rows for that lane, or accepts `--plan docs/WAVE-9-PLAN-edt.md` to choose explicitly.
+`PLAN_REL` takes precedence over automatic lookup. A W8 dependency is ready when its id appears in `origin/master` history or
+any `tools/autopilot/state/*.json` records it as `done` or `partial`.
+
 Ports the units of one Wave 8 batch with Codex CLI (gpt-6-luna, effort low) driven by plain bash. Optimised for Codex quota and
 Claude tokens, not for wall-clock time. Files: `codex-pipeline.sh` (driver), `codex-pack.sh` (context pack), `codex-gate.sh` (machine
 checks), `codex-run.sh` (one Codex call, `--json`, `resume`), `CODEX-RULES.md`, `lib/codex-lib.py` (plan/contract/state/lint/telemetry
 helpers), `test/pipeline-selftest.sh` (fake-Codex control-flow test, also covers every gate and helper).
+
+## Routing
+Follow [AGENTS.md](../../AGENTS.md#who-does-what-codex-first): use `codex-pipeline.sh` for units, `codex-run.sh` for one-off tasks, and `claim.sh` for coordination.
 
 Run (terminal, main checkout, contracts of the batch already merged to `master`):
 ```
@@ -59,6 +69,7 @@ its own commit; later gates verify the tests are only extended), Codex "implemen
 
 Pipeline hardening:
 - **Red-test compile gate**: after the Codex red step the owned test files must pass `cargo test --no-run` and every failing test must fail only through `todo!()` (`codex-lib.py redcheck`); up to 3 `red-repair` Codex rounds, the red-test guard is not applied in this phase; invalid after 3 rounds = failed unit with triage note. If the red tests already exist on the integration branch (written by Claude) the Codex red step is skipped.
+- **Fixup**: after a red-test or fast/full gate failure exhausts its 3 repair rounds, one final Codex fixup is attempted per unit. It may correct owned tests only when they contradict the C# oracle (the final message must cite the C# test and name changed Rust test functions), or fix implementation/rustfmt issues. The relaxed guard still forbids reducing test-function/assert counts or adding `#[ignore]`; a passing test correction is committed separately and recorded in telemetry. Set `FIXUP=0` to preserve the old fail behavior.
 - **Rerun of a failed unit**: the unit is reset first (any worktree holding `wu/<id>`, the branch, triage note and state/telemetry removed; an unmerged old tip is kept under `refs/pipeline-old/<id>`), no more `worktree add failed`.
 - **Merged units**: at start, units with a merge commit on `integration/<tag>` (since `origin/master`) are marked done, no seeded state file.
 - **Target dirs**: one per slot (`-s<slot>`), mutants `-mut`; a dir whose `.cargo-build-lock` is held by a stray process (`Access is denied`) is skipped for an alternate `-x<n>` dir. At the end: workspace gate, telemetry table, push, PR,
@@ -77,7 +88,7 @@ Savings built in:
   `-j` `MUT_JOBS` (default 3), only the unit's test binaries, Debug/Display/`fmt`/`Default` impls excluded, re-runs only the survivors
   (`-F`). Budget exhausted = status `partial` (not failure). Note: with `-j > 1` cargo-mutants builds share the dedicated target dir; set `MUT_JOBS=1` if you ever see odd mutant results.
 - **Quota**: tokens, seconds and 5 h-quota percent are recorded per unit; a unit is not started when `100 - used%` is below the average
-  cost per unit x `QUOTA_MARGIN` (1.2); the 99 % ceiling (`QUOTA_MAX`) is never crossed; waits sleep until the reset (+2 min), no busy loops.
+  cost per unit x `QUOTA_MARGIN` (1.2); the 95 % ceiling (`QUOTA_MAX`) is never crossed; waits sleep until the reset (+2 min), no busy loops.
 - **Parallelism**: `--jobs N` runs independent units (dependencies merged) concurrently in separate worktrees with separate target dirs.
 - **Deterministic review gates** (no LLM, in `codex-gate.sh`): files outside Owned files, `unwrap()`/`expect(` on file-system/user-data lines
   (`// allow-unwrap` opts out), `unsafe` outside `pr-platform-win`, `unsafe` blocks without `// SAFETY:`, `todo!()`/`unimplemented!()`

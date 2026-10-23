@@ -7,6 +7,7 @@ pub mod explorer_reason;
 pub mod explorer_types;
 pub mod generation;
 pub mod natural_cmp;
+pub mod rename;
 pub mod review_catalog;
 pub mod snapshot_validator;
 pub mod sorting;

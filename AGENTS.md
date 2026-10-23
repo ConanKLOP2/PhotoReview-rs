@@ -58,6 +58,21 @@ the C# code at the baseline in [`docs/SYNC-LEDGER.md`](docs/SYNC-LEDGER.md) deci
 - A squash-merged branch head is NOT an ancestor of master (merge-base check says no). Confirm the content is in master (`git diff <head> origin/master` shows only unrelated files), then delete branch and worktree.
 - Worktrees: every worktree builds in its own cargo target dir (`tools/wave.ps1` does it); a shared one hands one worktree another one's stale artifacts.
 
+## Who does what: Codex first
+
+- Give every task to Codex CLI first: implementation, tests, failure repair (including `needs-claude` notes), mutant-killer tests, contracts, infrastructure/scripts, and docs. Use `tools/autopilot/codex-run.sh` or the pipeline.
+- Claude only orchestrates: prepare the prompt, start Codex, inspect its diff, rerun fmt/clippy/tests before trusting its report, merge and open PRs, and handle work Codex cannot do (for example `git index.lock`, PR/CI/claim tools). Claude sub-agents are at most Sonnet.
+- Claude writes code only after Codex fails twice for quota or tool reasons; state this in the PR.
+- Keep Codex lanes busy within the 95% quota limit for the 5-hour window and week.
+- A unit that fails the pipeline gate gets one automatic Codex fixup round (`FIXUP=1` by default; see `tools/autopilot/README.md`) before human or Claude triage.
+- The Codex Windows sandbox writes only to its working directory: run Codex cargo builds with `CARGO_TARGET_DIR` inside the worktree and `cargo-mutants` with its target directory outside the worktree.
+
+## Several machines
+
+When more than one machine works on the port, read [`docs/MULTI-MACHINE.md`](docs/MULTI-MACHINE.md) first: set `PR_MACHINE`, claim every unit with 
+`bash tools/autopilot/claim.sh claim <unit>` before the first edit (the pipeline does it for you), work only on the units of your machine, and keep 
+the state of `tools/autopilot/state/` local.
+
 ## Pull requests: auto-fix and auto-merge (do this every time, without being asked)
 
 - Open ONE PR per wave/change (base `master`, never stacked) with `gh pr create`, then immediately call

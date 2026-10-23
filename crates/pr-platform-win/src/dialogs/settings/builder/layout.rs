@@ -2,8 +2,6 @@
 //! (`SettingsKeyCell`, `SettingsKeyCellSpec`, `SettingsKeyGridElement`). Unit W8-19c. Contract: `contracts/W8-19c.md`.
 //!
 //! Pure, same conventions as [`super::rows`]. The grid lays "label + key box (+ clear button)" cells out row by row in one or two columns.
-#![allow(unused_variables, dead_code)] // stub: the porter removes this line with the last `todo!()`
-
 use std::fmt;
 
 use super::rows::{SettingsLayoutElement, SettingsLayoutSurface};
@@ -41,7 +39,7 @@ pub struct KeyGridElement {
 
 impl KeyGridElement {
     pub fn new(cells: Vec<SettingsKeyCell>) -> Self {
-        todo!()
+        Self { visible: true, cells }
     }
 
     /// C# `Cells`.
@@ -59,9 +57,83 @@ impl SettingsLayoutElement for KeyGridElement {
     }
     /// Per cell in order: `label, box` and, when `clear != 0`, `clear` (C# `ControlIds`).
     fn control_ids(&self) -> Vec<i32> {
-        todo!()
+        let mut ids = Vec::with_capacity(self.cells.len().saturating_mul(3));
+        for cell in &self.cells {
+            ids.push(cell.label);
+            ids.push(cell.box_id);
+            if cell.clear != 0 {
+                ids.push(cell.clear);
+            }
+        }
+        ids
     }
     fn place_visible(&self, surface: &mut dyn SettingsLayoutSurface, x: i32, y: i32, width: i32) -> i32 {
-        todo!()
+        if !self.visible || self.cells.is_empty() {
+            return 0;
+        }
+
+        let cell_min = surface.dx(160);
+        let column_gap = surface.dx(12);
+        let divisor = cell_min.saturating_add(column_gap);
+        let columns = if divisor == 0 {
+            1
+        } else {
+            width
+                .saturating_add(column_gap)
+                .checked_div(divisor)
+                .unwrap_or(1)
+                .clamp(1, 2)
+        };
+        let cell_width = surface
+            .dx(100)
+            .max(width.saturating_sub(columns.saturating_sub(1).saturating_mul(column_gap)) / columns);
+        let gap = surface.dx(4);
+        let box_width = surface.dx(40).max(cell_width / 2).min(surface.dx(64));
+        let field_height = surface.field_height();
+        let clear_width = field_height;
+        let label_width = surface.dx(30).max(
+            cell_width
+                .saturating_sub(box_width)
+                .saturating_sub(clear_width)
+                .saturating_sub(gap.saturating_mul(2)),
+        );
+
+        let mut cursor = y;
+        let step = usize::try_from(columns).unwrap_or(1);
+        let mut start = 0usize;
+        while start < self.cells.len() {
+            let end = start.saturating_add(step).min(self.cells.len());
+            let mut row_height = field_height;
+            for cell in self.cells.get(start..end).unwrap_or_default() {
+                row_height = row_height.max(surface.text_height(cell.label, label_width));
+            }
+            for (column, cell) in self.cells.get(start..end).unwrap_or_default().iter().enumerate() {
+                let column = i32::try_from(column).unwrap_or(i32::MAX);
+                let left = x.saturating_add(column.saturating_mul(cell_width.saturating_add(column_gap)));
+                let label_height = surface.text_height(cell.label, label_width);
+                surface.place(
+                    cell.label,
+                    left,
+                    cursor.saturating_add(row_height.saturating_sub(label_height) / 2),
+                    label_width,
+                    label_height,
+                );
+                let box_left = left.saturating_add(label_width).saturating_add(gap);
+                let field_y = cursor.saturating_add(row_height.saturating_sub(field_height) / 2);
+                surface.place(cell.box_id, box_left, field_y, box_width, field_height);
+                if cell.clear != 0 {
+                    surface.place(
+                        cell.clear,
+                        box_left.saturating_add(box_width).saturating_add(gap),
+                        field_y,
+                        clear_width,
+                        field_height,
+                    );
+                }
+            }
+            cursor = cursor.saturating_add(row_height).saturating_add(surface.dy(5));
+            start = end;
+        }
+        cursor.saturating_sub(y)
     }
 }

@@ -1685,3 +1685,153 @@ Written by the contract writer of group H3. The lead merges the table into `cont
 ### Not verified
 
 No port exists: every body is `todo!()`. The oracle ran (twice, identical) but no Rust test compares against the new goldens yet. The native tests (`#[ignore = "native: needs desktop"]`) were not run. The R0001 attended performance measurement, the icon sync and the `RT_VERSION` resource were not done. The expectations the oracle cannot reach (`DpiAwarenessBootstrap`, `ForwardedOpenHandler`) are hand-written from the C# tests, not from a run.
+
+### Wave 8 batch B6, group H4 (W8-09b: the shared service graph): decisions, lead actions and cross-unit notes
+
+Written by the contract writer of W8-09b (`contracts/W8-09b.md`) AFTER the B6 reconciliation above, from the code on `master` (47ae13f). Numbers `D-W8B6-150..159` are the block reserved for H4; no earlier decision is changed (D-W8B6-10, -11, -15, -24, -47 and -106 are closed or corrected by the rows below, each saying which part). The contract has four independent slices (one PR each): S1 `composition::{texts, adapters}`, S2 five `pr-platform-win` adapters, S3 `composition::{platform, registry}`, S4 `composition::{main_view_model, graph}` plus the cross-unit edit of `startup/graph.rs`. Stubs compile (`cargo check -p pr-shell -p pr-platform-win --locked`); every body is `todo!()`. No oracle command: the golden `shell-composition-registrations` of W8-17c already lists the 36 registrations of `AddPhotoReviewShared` (indices 12 to 47).
+
+| # | Decision (acted on) | Unit |
+|---|---|---|
+| D-W8B6-150 | **Scope: the localized text adapters belong to 09b.** Every library below `pr-app` takes an injected `*Texts` trait (D13/D41) and ships only an English implementation: `JournalTexts`, `FileActionTexts`, `UndoTexts`, `RecoveryRetryTexts`, `FileHashTexts`, `SourceBytesTexts`, `WebpHeicTexts`, `RawDecoderTexts`, `RawRoutingTexts`, `TurboJpegTexts`, `SettingsTexts` and the `TextSource` of the coordinators (W3-06 and W8-08a both say "the App composition root provides it"). No unit in the plan wrote them. `composition::texts::LocalizedTexts` is ONE zero-sized type implementing all twelve (74 + 2 methods) over `Localizer::current()` / `number_culture()` at every call (language switch applies at once). `SettingsTexts` uses it too, instead of 17d's `LocalizerSettingsTexts` (fixed localizer at construction) for the store built before the language is loaded. | 09b S1 |
+| D-W8B6-151 | **Scope: five OS adapters belong to 09b (slice S2).** Found by grep at `47ae13f`: (a) `ExplorerOrderService` and `explorer_native_view::query_shell` are `pub(crate)` and the service has only `with_query`, so no code outside `pr-platform-win` can build the production provider: `explorer_order_provider::production_explorer_order(log)`; (b) no `PhysicalMemorySource` / `MemoryInfoSource` for Windows (C# `RamBudgetPolicy`, `MemoryHeadroom`): `physical_memory::WindowsPhysicalMemory`; (c) no `WindowsShellIntegration` (only the trait and the pure `shell_menu_command`): `shell_integration` (port of the 77-line C# class + its 6 native tests, private registry key); (d) no `CultureLookup`, installed UI culture, `utc_to_local` or `DateText` for Windows: `culture`; (e) `PreviewPayloadCodec` and `CacheImageReader` have no production implementation although `wic::cache_image` has the free functions: `wic::cache_adapters`. A sixth gap, the WIC `EmbeddedThumbnailBackend`, is NOT included (open question O1): `UnavailableEmbeddedThumbnails` stands in and `X-embedded-thumbnail-backend` is a `Different`/Todo row. The lead may split S2 into a W8-09c; the slices do not depend on each other. | 09b S2 |
+| D-W8B6-152 | **The OS seams are ONE struct, `PlatformServices`** (`composition::platform`): 17 public fields (recycle bin, live-operation registry, memory probe, natural comparer, display clock, Explorer provider, physical memory, memory info, shell integration, payload codec, cache image reader, embedded thumbnails, fine scaler, LibRaw API, culture lookup, installed UI culture, platform codec), `PlatformServices::production(log, PlatformOverrides)` for the real ones. A test builds it field by field from fakes (no `Default`, a missing seam is a compile error: the Rust form of "fails loudly when missing"). `GraphOverrides::{recycle_bin, explorer_order}` reach `production` BEFORE the adapters are created (no Explorer pump thread, no real bin facade for nothing). The live-operation registry uses `INSTANCE_PREFIX` (`PhotoReviewRs`) instead of the C# default `PhotoReview` (R0002). | 09b S3 |
+| D-W8B6-153 | **Bridges, and WHO fills `DialogServices`.** (a) `ShellServices` holds `Rc<Win32DialogService>`, `Rc<Win32ClipboardService>`, `Rc<Win32PresentationSinkFactory>`; `MainViewModelDeps` takes `Arc<dyn DialogService>`, `Box<dyn ClipboardService>` and the composition `PresentationSinkFactory`; the orphan rule forbids impls on `Rc<..>`, so `adapters::{SharedDialogService, SharedClipboard, Win32SinkFactoryAdapter}` (one-field newtypes; the sink adapter exists until 16i implements the trait itself, D-W8B4V-11 / A11). `Arc::new(SharedDialogService(..))` carries `#[allow(clippy::arc_with_non_send_sync)]` (UI thread only). (b) **Corrects D-W8B6-10 and D-W8B6-15 (c):** the builder of 09b fills `DialogServices` (17d's `StartupGraph::dialog_services` and its phase-one step 1 already bind it); 17e does nothing with the registry. The 14 field values are in the contract table; `update_checker` is `None` (the C# graph registers no `IUpdateChecker`), `decoder_factory` is a lazy wrapper, `benchmark_sessions` is `production_session_factory(BenchmarkSessionDeps { .. })` (closes 17c Q7). | 09b S1, S4 |
+| D-W8B6-154 | **Lazy singletons, and the settings read order (the load-bearing rule).** C# DI created every singleton at its first `GetRequiredService`; `PreviewImageService` and `SourceBytesCachePolicy` read the settings THEN (capacity, RAM percent, preload window: "applies after a restart"), which in C# was after `store.Load()`. In Rust 17d builds the graph before the settings worker runs. So `SharedServices::build` creates nothing; every accessor is a `OnceLock` cell; `StartupGraph::previews` is `LazyPrewarmPreviews` and `DialogServices::decoder_factory` is `LazyDecoderFactory`. **Blocking item B1 (lead):** `StartupGraph::view_model` is an eager field, so building the view model at `servicesBuilt` resolves the preview service with DEFAULT settings. Recommended: amend 17d/17e so `view_model` is a factory called by 17e's `create_main_window` after `apply_loaded_settings` (about 5 lines in `graph.rs` and `window.rs`); fallback: the builder calls `settings_store.load(None)` itself (a second small read); rejected: accept the defaults. | 09b S3, S4 / 17d, 17e |
+| D-W8B6-155 | **Blocking item B2: the preload scheduler cannot see the catalog.** `PreloadScheduler`'s `EntriesSnapshotFn` / `SnapshotVersionFn` are `Send + Sync` closures called on the UI thread when a run starts; the `ReviewCatalog` is owned by value by `MainViewModel` and is `!Sync`; nothing in `pr-app` publishes it. `CatalogFeed` (a shared cell: structural version + `Arc<[CatalogEntry]>` with stable identity) is what the closures read; it is filled through a NEW defaulted trait method `IPreloadController::catalog_changed(&self, &ReviewCatalog)` (amendment **A12**, pr-app, about 20 lines) called right before each of the four `preload_around` call sites (`present_a.rs` 615 and 630, `file_actions/undo.rs` 188, `viewmodels/main/notify_move.rs` 520-522). `FeedPreloadController` overrides it. Without A12 the preload sees an empty list (no preload). | 09b S4 / pr-app |
+| D-W8B6-156 | **No oracle command.** The registrations golden exists (17c, 50 descriptors, two runs byte-identical per D-W8B6-102); 09b's pure logic is wiring whose expectations come from the C# tests. `shared_registrations_are_all_mapped` consumes golden indices 12 to 47 with a hand-written map (a registration missing from the map fails the test). | 09b |
+| D-W8B6-157 | **Module homes.** Crate home `pr-shell` (D-W8B1-1, as 09a): `composition::{registry, main_view_model}` as the plan says, plus `platform`, `texts`, `adapters` (pure) and `graph` (`#[cfg(windows)]`, needs `startup`). OS adapters in `pr-platform-win` at crate level (`culture`, `explorer_order_provider`, `physical_memory`, `shell_integration`) and `wic::cache_adapters`. Plan row text "`composition::{registry, main_view_model}`" stays true; the row grows by the modules above. | 09b |
+| D-W8B6-158 | **`GraphOverrides` / `production_graph_builder_with` are defined in `composition::graph` and re-exported by `startup::graph`** (closes the lead action of D-W8B6-47 / -106: the contract provides them, so 20b's amendment A1 is not needed). The six fields are exactly D-W8B6-47's. The ONE cross-unit edit of 09b in 17d's file is three lines: `production_graph_builder()` delegates to `production_graph_builder_with(GraphOverrides::default())`, and `pub use` of the two names. If B1 resolves as (a), two more lines in `startup/graph.rs` (field type) and `startup/window.rs`. | 09b S4 |
+| D-W8B6-159 | **PARITY.** New rows `X-composition-registry`, `X-composition-main-view-model`, `X-composition-texts-adapters`, `X-platform-adapters` (status `Contract (W8-09b)`), `X-embedded-thumbnail-backend` (`Different`/Todo, O1). `Different` also: `AddPhotoReviewShared` null-argument and "missing host service" tests are unrepresentable (types); the Wpf-only registrations (`WpfKeyNameValidator`, `WpfClipboardService`, `WpfPresentationSinkFactory`) are retired. | 09b |
+| D-W8B6-160 | **B1 approved (option a).** `StartupGraph::view_model` becomes a factory (`ViewModelFactory`) that W8-17e's `create_main_window` calls right after `apply_loaded_settings`, so the preview service reads the LOADED settings (capacity, RAM percent, preload window) when the view model is built; `build_shared_view_model` is the body of that factory. Cross-unit edit of 17d/17e files, done in slice S4 of W8-09b. Approved by the lead (Machine B session, 2026-10-22), following the recommendation in `contracts/W8-09b.md`. |
+| D-W8B6-161 | **B2 approved (amendment A12 to pr-app).** `IPreloadController::catalog_changed(&self, &ReviewCatalog)` is added with a default no-op body and is called, with the catalog the caller already holds, immediately before each of the four `preload_around` call sites (`present_a.rs` x2, `undo.rs`, `notify_move.rs`); `FeedPreloadController` overrides it to publish the entries to the `CatalogFeed` (D-W8B6-155). Belongs to slice S4 of W8-09b. Approved by the lead (Machine B session, 2026-10-22), following the recommendation in `contracts/W8-09b.md`. |
+
+#### Lead actions (not done in the contract PR)
+1. Answer **B1** (view model timing) and approve amendment **A12** (B2); both gate slice S4 only.
+2. `docs/WAVE-8-PLAN.md` row W8-09b: files `composition::{registry, main_view_model, platform, texts, adapters, graph}` + the five `pr-platform-win` modules; dependencies add 17c, 17d (code), 08a..08e, 10d, 10i, 13h, 16i ("`AppHost` folded in" means `production_graph_builder_with`). Plan edge corrections of D-W8B6-14 / -52 already name 09b.
+3. If the lead prefers, split S2 into **W8-09c** (and add the sixth gap, the WIC `EmbeddedThumbnailBackend`, as W8-09d).
+4. 17d / 17e porters: the corrected seam (D-W8B6-153 b) and, after B1 (a), the `view_model` field type.
+
+#### Cross-unit assumptions made without a stub to check
+- `shell_startup::locale::group_separator()` (17c) is callable by `LocalizedFormat::new` (it is `pub` in the 17c stub). `PresentationBridge::apply_initial_view`, `MainWorkerPort`, `remember_move_copy_folder`, `SettingsSource`, `ViewerHandle` are merged (08a, 08e).
+- `OperationJournal::live_operations()`, `ThumbnailCache::disk_directory()` and `PreviewImageService::disk_directory()` exist (used by the ported tests); there is no accessor for the scheduler's memory probe nor for the preview service's source-bytes cache, so those C# tests become behaviour probes (contract text says how).
+- `SettingsPresenterOptions { update_checker: None }` builds the default `UpdateChecker` (O5, a 10e matter).
+
+#### Not done and out of scope here
+No unit is ported; no stub body exists. S2's native tests, the desktop runs, the mutation runs and the IDs of the new PARITY rows' tests are unrecorded. The oracle was not run (D-W8B6-156).
+
+## Wave 9 sync (EXTERNAL-EDITORS UI)
+
+Contract-only lane E of Wave 9 (plan: `docs/WAVE-9-PLAN-edt.md`; C# baseline `7eaee2a2`, feature commit `d9623945`): 9 contracts (`contracts/W9-E1.md` .. `W9-E9.md`), stubs in `pr-core` settings, `pr-app` menus/input/presenters/viewmodels and `pr-platform-win` dialogs/shell, three oracle commands with goldens. No unit is ported; no stub body is implemented.
+
+| Unit | Contract | Kind | Oracle command (golden cases) | Depends on |
+|---|---|---|---|---|
+| W9-E1 settings: `ExternalEditor` and its rules, `AppSettings`/normalizer/store v3 to v4, `ShortcutMappings.open_in_default_editor`, `DialogService` trait members | `contracts/W9-E1.md` | G + F | `external-editor-rules` | none |
+| W9-E2 `ExternalEditorsDialog` (native) | `contracts/W9-E2.md` | N | none | E1, W8-18p, W8-18q |
+| W9-E3 `ExternalEditorProductName`, `TextPromptDialog`, `ListDialog` choice list | `contracts/W9-E3.md` | F + N | none (machine dependent, D-W9E-3) | E1, W8-18p |
+| W9-E4 settings field map, form state, presenter, Files and Shortcuts pages | `contracts/W9-E4.md` | F + N | none | E1, W8-19f, W8-19i, W8-19j..m |
+| W9-E5 `MainViewModel` editor members, launcher seam | `contracts/W9-E5.md` | F | none (fakes) | E1 |
+| W9-E6 `ContextMenuModelBuilder` editors submenu | `contracts/W9-E6.md` | G | `external-editor-menu` | E1 |
+| W9-E7 `ReviewCommand`, `ShortcutRouter` default-editor shortcut | `contracts/W9-E7.md` | G | `open-in-default-editor-shortcut` | E1 |
+| W9-E8 `SecondaryWindowPort` and `DialogService` members | `contracts/W9-E8.md` | F | none | E1, E2, E3, E4, W8-18o |
+| W9-E9 `ContextMenuController`, `ShellMainWindow` Menus and Input | `contracts/W9-E9.md` | F + N | none | E5, E6, E7 |
+
+### Unconfirmed sources
+- The C# `FEAT-EXTERNAL-EDITORS.md` design describes the proposal for editor records, list editing, name suggestion, and shortcut/default-editor behaviour; it is marked unconfirmed in the C# repository. The contracts take behaviour from the implementation and its tests, not from the proposal. `ExternalEditors.Reconcile`, `ApplyLegacyPath` and `BuildArguments` decide repair, migration and quoting where the proposal is silent. No other code/design conflict is asserted without evidence.
+- C# `FEAT-RENAME*.md` is also unconfirmed. `RenamePromptDialog`, F2 rename, the rename menu entry, `RenameFile` shortcut and rename localization are excluded (another lane).
+
+### Wave 9 lane E decisions (D-W9E-1..12; P-48 in `docs/PROPOSED-DECISIONS.md`)
+- **D-W9E-1 persisted settings (W9-E1).** List plus default id plus RAW switch with the v3 -> v4 migration, config version 4, `external_editor_path` kept as a mirror of the default editor's path (the frozen WPF build reads it). Alternatives: keep only the legacy path; materialise lazily after launch.
+- **D-W9E-2 repair and launch arguments (W9-E1).** C# repair rules, cap 32, arguments longer than 4000 UTF-16 units reset, default falls back to the first valid editor, `{file}` replaced in one left-to-right pass with Windows argument escaping. Alternatives: reject the file; accept raw values.
+- **D-W9E-3 product-name lookup (W9-E3).** OS version-resource lookup stays in `pr-platform-win` (`ExternalEditorProductName::suggest`, ProductName then FileDescription, the caller falls back to the file name). No oracle (machine dependent); the pure choice `first_non_blank` is a unit test.
+- **D-W9E-4 dialog capability (W9-E2/E3/E8). CORRECTED.** The first draft said `Supports(ExternalEditors)` stays false until dispatch is wired. In C# it is `true` in the same commit (`Win32SecondaryWindowPort.Supports`); the optional members of `ISecondaryWindowPort` default to `None` only for ports that do not implement them. W9-E8 makes it `true` and updates the golden `secondary-window-supports`.
+- **D-W9E-5 shortcut and duplicate rules (W9-E1/E7).** The default-editor key is optional (empty = disabled), part of `OPTIONAL_NAMES`, and takes part in the duplicate check; the router resolves it at step 12f with no modifier, independent of fullscreen (the shared no-image early return still applies); the command ignores key auto-repeat; enum value 30. The first draft put the `ShortcutMappings` field in E7: moved to E1 because persistence and validation need it first.
+- **D-W9E-6 menu structure and command ids (W9-E6/E9).** Submenu in list order, ids `ExternalEditor.Open.<id>` / `ExternalEditor.Add` / `ExternalEditor.SetDefault`, separator `Separator.ExternalEditor`, the default is checked and alone carries the default-editor key (an unknown default id marks the first editor). With no editor the entry is the single command it was.
+- **D-W9E-7 language catalogs (W9-E2/E4/E6/E8).** The new en/vi keys (34 at `7eaee2a2`) come from a separate asset synchronisation at the new baseline; the synced JSON is never hand-edited by these contracts. Tests that read texts are blocked on it.
+- **D-W9E-8 unit order.** E1 (Core) first; then E2, E3, E5, E6, E7; then E4, E8, E9. Each downstream unit consumes compiled upstream stubs.
+- **D-W9E-9 JSON `null` elements in `ExternalEditors` (W9-E1).** C# keeps a `null` list element and `Reconcile` counts dropping it as a repair; `Vec<ExternalEditor>` cannot hold it. Recommended: the Rust reader drops `null` elements silently (no `repaired` flag, so `last_load_repairs` omits `ExternalEditors` for that one corner); alternative: `Vec<Option<ExternalEditor>>` like `hidden_context_menu_items`. Needs a product/lead call.
+- **D-W9E-10 where `ExternalEditorsEdit` lives (W9-E2).** `pr_platform_win::dialogs::native::external_editors_dialog`, as in C# (internal to `Shell.Win32`). The first draft put it in `pr-core` and added a `show_external_editors` method to `pr_core::abstractions::DialogService`; the C# `IDialogService` has only the two `Prompt*` methods, so the third was invented and is removed.
+- **D-W9E-11 the `SecondaryWindowDialogs` seam grows (W9-E8).** Five additive members with default bodies (`settings_with_editors`, `external_editors`, `pick_executable`, `text_prompt`, `choice_list`) and an `ExternalEditorsOpener` alias, so the W8-18o fakes keep compiling. Alternative: change `settings(...)` itself and update the W8-18o tests (the porter may fold `settings_with_editors` into `settings` once nothing depends on the old signature).
+- **D-W9E-12 launcher seam (W9-E5).** `ExternalEditorLauncher::launch` gets a third `command_line` argument (C# `Action<string,string,string>`); the production launcher passes it with `raw_arg` and uses the editor's folder as the working directory. The merged test that asserted "one argument without a shell" is renamed: the contract is now the C# command-line text.
+
+### Needs a human or product decision (acted on as recommended, P-48)
+1. Move the spec baseline in `docs/SYNC-LEDGER.md` to `7eaee2a2` and regenerate the existing goldens (settings-*, shortcut-canonical, secondary-window-supports, settings-page-*): the diff must contain only version 4, three new keys, one more shortcut, plus the FEAT-RENAME effects.
+2. Run the catalog sync (en/vi, 34 keys at `7eaee2a2`, about 29 for this lane) before porting E2, E4, E6, E8.
+3. Order of the two lanes (external editors, rename): they edit the same files on disjoint lines; decide which merges first (the enum value 31 of `RenameFile` and the config version 4 are identical in both).
+4. D-W9E-9 above (null list elements).
+5. Whether the native dialogs of W9-E2/E3 may be ported before W8-18p/18q merge (they need `DialogMeasure`, `DialogWarningSink` and `FileFilterText`); the plan says no.
+
+### Not verified
+The three new oracle commands were run twice at `7eaee2a2` with byte-identical goldens. No oracle exists for E2, E3, E4, E5, E8 and E9. The mutation runs, the native tests and the desktop run are not done. The en/vi catalog keys are not synced. No unit is ported.
+
+## Wave 9 sync (FEAT-RENAME)
+
+Contract-only lane R of Wave 9 (plan: `docs/WAVE-9-PLAN-ren.md`; C# baseline `7eaee2a2`, compared with `d92d6aae`; feature commits `55a37986` core, `9800058e` state, `170a2d19` UI): 11 contracts (`contracts/W9-R1.md` .. `W9-R11.md`). These are planned ports, not implemented Rust behavior or an advance of `docs/SYNC-LEDGER.md`. Lane E merged first.
+
+| Unit | Contract | Kind | Oracle command (golden cases) | Depends on |
+|---|---|---|---|---|
+| W9-R1 rename name policy and JPEG+RAW+XMP plan | `contracts/W9-R1.md` | G | `w9-r1-rename-policy` (input staged in `tests/golden-inputs/staged/`) | none |
+| W9-R2 case-only rename and `FileActionService.rename` | `contracts/W9-R2.md` | F + N | none | R1 |
+| W9-R3 journal, undo and recovery for case-only pairs | `contracts/W9-R3.md` | F + N | none | R2 |
+| W9-R4 catalog rekey and cache key | `contracts/W9-R4.md` | F | none | R1 |
+| W9-R5 `FileActionController` rename | `contracts/W9-R5.md` | F | none | R1–R4 |
+| W9-R6 `ImagePresenter`, `ZoomDetailLoader`, `MainViewModel` retarget | `contracts/W9-R6.md` | F | none | R4, R5 |
+| W9-R7 settings, menu, shortcut and `RenamePromptPresenter` | `contracts/W9-R7.md` | F | none | R1, R6 |
+| W9-R8 native `RenamePromptDialog` and shell wiring | `contracts/W9-R8.md` | N | none | R7 |
+| W9-R9 core rename and fault matrix test owner | `contracts/W9-R9.md` | F + N | none | R2, R3 |
+| W9-R10 controller, presenter and view-model test owner | `contracts/W9-R10.md` | F | none | R5, R6, R7 |
+| W9-R11 native dialog and shell end-to-end test owner | `contracts/W9-R11.md` | N | none | R8 |
+
+### Decisions
+
+| ID | Decision |
+|---|---|
+| D-W9R-1 | The name policy and JPEG+RAW+XMP plan are pure `pr_core::file_actions::rename` APIs; string comparison follows C# OrdinalIgnoreCase, but name bytes and extension spelling are preserved. |
+| D-W9R-2 | Rename is a same-folder Move using the existing journal schema and service gate. The Rust operation is blocking on the file-action lane per R0003; no new async runtime or `FileOperationType` variant. |
+| D-W9R-3 | Undo, reconcile and recovery use stored spelling for case-only pairs; a third spelling is ambiguous and stays recoverable. |
+| D-W9R-4 | Catalog rekey is atomic and in place; preserve index/metadata, bump one structural version, invalidate old-path caches. |
+| D-W9R-5 | Controller order is validation, generation stop, preload cancel, worker I/O, catalog/session/presenter/cache rekey, preload restart; same name changes nothing. |
+| D-W9R-6 | Retarget displayed state without decoding when possible. MainViewModel methods mutate and return `ChangeSet`; off-thread completion uses existing event plumbing. |
+| D-W9R-7 | Menu item is Win32-only, appended as ID 18; F2 is optional default and an Action shortcut wins collision. Prompt validation checks catalog while typing and disk only on commit. |
+| D-W9R-8 | Native rename dialog is separate from `TextPromptDialog` (the latter belongs to FEAT-EXTERNAL-EDITORS). F2 and right-click menu use one command path. |
+| D-W9R-9 | Core fault matrix is a separate test owner because the C# test file exceeds a production slice; no real Recycle Bin operation. |
+| D-W9R-10 | Large controller/presenter/view-model test suites are separate test owners; deterministic fakes replace sleeps. |
+| D-W9R-11 | Native dialog and shell end-to-end tests remain `Partial` until an attended/hidden desktop run, regardless of cargo check. |
+| D-W9R-12 | **Needs a human decision:** C# `RenameNamePolicy.Check` throws on a blank current path; Rust returns `RenameNameProblem::Empty` instead of panicking (default chosen, change only if a hard error type is wanted). |
+| D-W9R-13 | Merge order resolved: lane E merged first. `RenameFile` stays last after `OpenInDefaultEditor`; `ReviewCommandType::RenameFile = 31`. |
+| D-W9R-14 | Golden-pinned settings cases stay at `d92d6aae` until the lead advances `SYNC-LEDGER`; R7 updates rename expectations by hand. |
+
+### Unconfirmed sources
+
+For every item here the binding decision is **the C# code as implemented at `7eaee2a2` is the spec**. The older document at `57b04243` is a design rationale and was never confirmed as a behavior override.
+
+| Design item or open question | Implemented C# resolution / divergence |
+|---|---|
+| Q1 case-only rename | Supported with `CaseOnlyRename` and stored-name enumeration; no temporary file name. |
+| Q2 F2 default | `ShortcutMappings.RenameFile = "F2"`, optional/clearable; conflicting Action wins. |
+| Q3 single Undo slot | Rename registers as Move and replaces the latest Undo action. |
+| Q4 sidecar scope | JPEG+RAW group with known `.xmp` only. PR4 sidecar discovery is absent; do not invent `.dop`, `.pp3`, `.acr` support. |
+| Q5 UI scope | **Divergence:** design recommends both Win32 and WPF, PR3 implements Win32 only. `ContextMenuItemInfo.ShellOnly` hides it from WPF and WPF settings preserves the hidden choice. |
+| Q6 location after rename | Preserve index and viewer state; no sort or folder reload. |
+| Q7 untouched failure | Journal line is Dismissed when unchanged is proven; ambiguous mutation stays Failed. |
+| Design R36 title bar path was not checked | Implemented presenter/session notification and title propagation are the spec; tests must check displayed name rather than assume the old design inventory. |
+| Manifest `longPathAware` was not checked | Implemented `RenameNamePolicy.Check` defaults to `longPathAware=false`; reject a new path reaching 260 only when longer than the existing one. |
+| LibRaw file share mode was not checked | No claim that native RAW decode permits rename; cancel ZoomDetail pending work and require native verification. |
+| Failure message for file locked by an external editor | **Divergence:** design suggests text telling user to close the editor; PR3 shows the generic `status.renameFailed` message on status bar, without an error dialog or special close-editor hint. |
+| Preview cache re-key was optional in design | **Divergence:** code evicts old-path cache and original dimensions; it does not re-key decoded RAM image under the new name. |
+| Design estimated four PRs | Implemented FEAT-RENAME commits are design, core, state and UI; the planned PR4 advanced sidecar discovery is absent. |
+| Design says no code until confirmation | Historical statement is obsolete after #527/#529/#530. Contract source is implemented code, status label remains unconfirmed. |
+
+### Localisation ownership
+
+The source of all text is C# `src/PhotoReview.Core/Localization/Languages/{en,vi}.json` at `7eaee2a2`; the Rust catalog lives in `assets/languages/{en,vi}.json` and generated flat `pr_l10n::keys`/`tr`. Do not hand-edit synced language assets; the integration lead runs the sync tool after the baseline moves.
+
+- R2: `core.fileAction.renameInvalidName`.
+- R5/R6: `status.renamed`, `status.renameFailed`, `status.renameUnchanged`, `status.renameUndone`.
+- R7/R8: `main.menu.renameFile`, `main.menu.renameFile.automationName`, `settings.contextMenu.item.renameFile`, `settings.shortcut.renameFile`, `settings.shortcut.renameFile.clearAutomationName`, `dialog.rename.title`, `dialog.rename.label`, `dialog.rename.ok`, `dialog.rename.error.empty`, `.invalidCharacter`, `.trailingDot`, `.reservedName`, `.tooLong`, `.pathTooLong`, `.sidecarNotMappable`, `.exists` (the last eight suffixes are under `dialog.rename.error`).
+
+### Needs a human or product decision (acted on as recommended, P-49)
+
+1. D-W9R-12: blank current path maps to `RenameNameProblem::Empty`.
+2. Keep WPF-only `ShellOnly` semantics for parity; no WPF window port is planned.
+3. The lead advances `docs/SYNC-LEDGER.md` only after triaging unrelated C# changes in the range; golden-pinned settings stay at `d92d6aae` until then.
+4. Generate the `w9-r1-rename-policy` oracle golden with `-p:W9RenameBaseline=true`; the golden generator moves its input out of `tests/golden-inputs/staged/` in the same change.

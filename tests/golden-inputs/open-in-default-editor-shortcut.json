@@ -1,0 +1,412 @@
+{
+ "command": "open-in-default-editor-shortcut",
+ "note": "Inputs for tools/oracle-cs/Commands/W9-E7.cs (W9-E7); the shapes are in the header of the command. Fixtures use the ShortcutMappings property names of the C# code.",
+ "states": [
+  {
+   "is_fullscreen": false,
+   "has_image": true,
+   "has_compare_pair": false,
+   "is_compare_visible": false,
+   "has_capture_pair": false
+  },
+  {
+   "is_fullscreen": false,
+   "has_image": false,
+   "has_compare_pair": false,
+   "is_compare_visible": false,
+   "has_capture_pair": false
+  },
+  {
+   "is_fullscreen": true,
+   "has_image": true,
+   "has_compare_pair": true,
+   "is_compare_visible": true,
+   "has_capture_pair": true
+  }
+ ],
+ "scenarios": [
+  {
+   "name": "default is empty: nothing resolves",
+   "fixture": {
+    "name": "defaults"
+   },
+   "steps": [
+    {
+     "op": "resolve",
+     "key": "F9",
+     "system_key": "None",
+     "modifiers": 0,
+     "state": 0
+    },
+    {
+     "op": "resolve",
+     "key": "F10",
+     "system_key": "None",
+     "modifiers": 0,
+     "state": 0
+    },
+    {
+     "op": "resolve",
+     "key": "D9",
+     "system_key": "None",
+     "modifiers": 0,
+     "state": 0
+    },
+    {
+     "op": "resolve",
+     "key": "Return",
+     "system_key": "None",
+     "modifiers": 0,
+     "state": 0
+    }
+   ]
+  },
+  {
+   "name": "a bound key resolves",
+   "fixture": {
+    "name": "f9",
+    "shortcuts": {
+     "OpenInDefaultEditor": "F9"
+    }
+   },
+   "steps": [
+    {
+     "op": "resolve",
+     "key": "F9",
+     "system_key": "None",
+     "modifiers": 0,
+     "state": 0
+    },
+    {
+     "op": "resolve",
+     "key": "F9",
+     "system_key": "None",
+     "modifiers": 0,
+     "state": 1
+    },
+    {
+     "op": "resolve",
+     "key": "F9",
+     "system_key": "None",
+     "modifiers": 0,
+     "state": 2
+    },
+    {
+     "op": "resolve",
+     "key": "F10",
+     "system_key": "None",
+     "modifiers": 0,
+     "state": 0
+    },
+    {
+     "op": "resolve",
+     "key": "F8",
+     "system_key": "None",
+     "modifiers": 0,
+     "state": 0
+    }
+   ]
+  },
+  {
+   "name": "modifiers do not matter to the binding",
+   "fixture": {
+    "name": "f9",
+    "shortcuts": {
+     "OpenInDefaultEditor": "F9"
+    }
+   },
+   "steps": [
+    {
+     "op": "resolve",
+     "key": "F9",
+     "system_key": "None",
+     "modifiers": 0,
+     "state": 0
+    },
+    {
+     "op": "resolve",
+     "key": "F9",
+     "system_key": "None",
+     "modifiers": 1,
+     "state": 0
+    },
+    {
+     "op": "resolve",
+     "key": "F9",
+     "system_key": "None",
+     "modifiers": 2,
+     "state": 0
+    },
+    {
+     "op": "resolve",
+     "key": "F9",
+     "system_key": "None",
+     "modifiers": 3,
+     "state": 0
+    },
+    {
+     "op": "resolve",
+     "key": "F9",
+     "system_key": "None",
+     "modifiers": 4,
+     "state": 0
+    },
+    {
+     "op": "resolve",
+     "key": "F9",
+     "system_key": "None",
+     "modifiers": 6,
+     "state": 0
+    }
+   ]
+  },
+  {
+   "name": "a system key payload does not match",
+   "fixture": {
+    "name": "f9",
+    "shortcuts": {
+     "OpenInDefaultEditor": "F9"
+    }
+   },
+   "steps": [
+    {
+     "op": "resolve",
+     "key": "System",
+     "system_key": "F9",
+     "modifiers": 1,
+     "state": 0
+    },
+    {
+     "op": "resolve",
+     "key": "System",
+     "system_key": "F9",
+     "modifiers": 0,
+     "state": 0
+    }
+   ]
+  },
+  {
+   "name": "whitespace around the key is trimmed",
+   "fixture": {
+    "name": "padded",
+    "shortcuts": {
+     "OpenInDefaultEditor": "  F9 "
+    }
+   },
+   "steps": [
+    {
+     "op": "resolve",
+     "key": "F9",
+     "system_key": "None",
+     "modifiers": 0,
+     "state": 0
+    }
+   ]
+  },
+  {
+   "name": "an unparseable key disables it",
+   "fixture": {
+    "name": "bad",
+    "shortcuts": {
+     "OpenInDefaultEditor": "NotAKey"
+    }
+   },
+   "steps": [
+    {
+     "op": "resolve",
+     "key": "F9",
+     "system_key": "None",
+     "modifiers": 0,
+     "state": 0
+    },
+    {
+     "op": "resolve",
+     "key": "None",
+     "system_key": "None",
+     "modifiers": 0,
+     "state": 0
+    }
+   ]
+  },
+  {
+   "name": "a blank key disables it",
+   "fixture": {
+    "name": "blank",
+    "shortcuts": {
+     "OpenInDefaultEditor": "   "
+    }
+   },
+   "steps": [
+    {
+     "op": "resolve",
+     "key": "F9",
+     "system_key": "None",
+     "modifiers": 0,
+     "state": 0
+    }
+   ]
+  },
+  {
+   "name": "rebind follows Rebuild",
+   "fixture": {
+    "name": "f9",
+    "shortcuts": {
+     "OpenInDefaultEditor": "F9"
+    }
+   },
+   "steps": [
+    {
+     "op": "resolve",
+     "key": "F9",
+     "system_key": "None",
+     "modifiers": 0,
+     "state": 0
+    },
+    {
+     "op": "rebuild",
+     "fixture": {
+      "name": "f10",
+      "shortcuts": {
+       "OpenInDefaultEditor": "F10"
+      }
+     }
+    },
+    {
+     "op": "resolve",
+     "key": "F9",
+     "system_key": "None",
+     "modifiers": 0,
+     "state": 0
+    },
+    {
+     "op": "resolve",
+     "key": "F10",
+     "system_key": "None",
+     "modifiers": 0,
+     "state": 0
+    },
+    {
+     "op": "rebuild",
+     "fixture": {
+      "name": "cleared",
+      "shortcuts": {
+       "OpenInDefaultEditor": ""
+      }
+     }
+    },
+    {
+     "op": "resolve",
+     "key": "F10",
+     "system_key": "None",
+     "modifiers": 0,
+     "state": 0
+    }
+   ]
+  },
+  {
+   "name": "an earlier rule wins when the key is shared (Skip)",
+   "fixture": {
+    "name": "shared-skip",
+    "shortcuts": {
+     "OpenInDefaultEditor": "Space",
+     "Skip": "Space"
+    }
+   },
+   "steps": [
+    {
+     "op": "resolve",
+     "key": "Space",
+     "system_key": "None",
+     "modifiers": 0,
+     "state": 0
+    }
+   ]
+  },
+  {
+   "name": "an earlier rule wins when the key is shared (Refresh is step 12e)",
+   "fixture": {
+    "name": "shared-refresh",
+    "shortcuts": {
+     "OpenInDefaultEditor": "R"
+    }
+   },
+   "steps": [
+    {
+     "op": "resolve",
+     "key": "R",
+     "system_key": "None",
+     "modifiers": 0,
+     "state": 0
+    }
+   ]
+  },
+  {
+   "name": "it wins against Next and Previous (step 13)",
+   "fixture": {
+    "name": "shared-next",
+    "shortcuts": {
+     "OpenInDefaultEditor": "Right"
+    }
+   },
+   "steps": [
+    {
+     "op": "resolve",
+     "key": "Right",
+     "system_key": "None",
+     "modifiers": 0,
+     "state": 0
+    },
+    {
+     "op": "resolve",
+     "key": "Left",
+     "system_key": "None",
+     "modifiers": 0,
+     "state": 0
+    }
+   ]
+  },
+  {
+   "name": "an action key wins when shared",
+   "fixture": {
+    "name": "shared-action",
+    "shortcuts": {
+     "OpenInDefaultEditor": "F5"
+    }
+   },
+   "steps": [
+    {
+     "op": "resolve",
+     "key": "F5",
+     "system_key": "None",
+     "modifiers": 0,
+     "state": 0
+    }
+   ]
+  },
+  {
+   "name": "fullscreen does not gate it, a state with no image resolves nothing at all",
+   "fixture": {
+    "name": "f9",
+    "shortcuts": {
+     "OpenInDefaultEditor": "F9"
+    }
+   },
+   "steps": [
+    {
+     "op": "resolve",
+     "key": "F9",
+     "system_key": "None",
+     "modifiers": 0,
+     "state": 2
+    },
+    {
+     "op": "resolve",
+     "key": "F9",
+     "system_key": "None",
+     "modifiers": 0,
+     "state": 1
+    }
+   ]
+  }
+ ]
+}

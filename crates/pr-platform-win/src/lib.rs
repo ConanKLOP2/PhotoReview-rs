@@ -28,6 +28,9 @@ pub mod forward_server;
 pub mod forward_client;
 
 #[cfg(windows)]
+pub mod http;
+
+#[cfg(windows)]
 pub mod instance_scope;
 
 #[cfg(windows)]
@@ -67,6 +70,16 @@ pub mod live_operation_registry;
 
 #[cfg(windows)]
 pub mod memory_probe;
+
+/// W8-09b slice S2 (`contracts/W8-09b.md`, D-W8B6-151): production adapters the shared service graph needs and no merged unit implements.
+#[cfg(windows)]
+pub mod culture;
+#[cfg(windows)]
+pub mod explorer_order_provider;
+#[cfg(windows)]
+pub mod physical_memory;
+#[cfg(windows)]
+pub mod shell_integration;
 
 #[cfg(windows)]
 pub mod natural_comparer;

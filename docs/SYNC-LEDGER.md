@@ -1,6 +1,6 @@
 # Sync ledger (C# → Rust)
 
-**Current spec baseline:** C# `master` at `d92d6aae` (2026-10-14, after #523), version line 2.0.N.
+**Current spec baseline:** C# `master` at `7eaee2a2` (2026-10-21, after #533), version line 2.0.N.
 Assets synced from that commit: see `assets/SYNC-MANIFEST.txt`. Goldens regenerated at that commit.
 
 ## How to advance the baseline
@@ -24,5 +24,10 @@ Assets synced from that commit: see `assets/SYNC-MANIFEST.txt`. Goldens regenera
 | same range | `FileActionService` +117, `UndoService`, `RecoveryRetryService`, `OperationJournal`, `JournalTransaction`, `PartialDestinationCleanup` | Yes | Not ported yet: Wave 3 contracts must use `d92d6aae` or later | Wave 3 |
 | same range | Languages (en/vi +113 lines, notes) and test fixtures (pixel goldens, viewport layout, PreviewCache) | Yes (text) | Synced | sync PR |
 | `d92d6aae` (no baseline change) | P-15: `tools/sync-from-csharp.ps1` also maps `tests/PhotoReview.Core.Tests/Fixtures/` files: `operations-legacy.jsonl`, `journal-older-build/*.jsonl` (5, Wave 3 W3-01/W3-03) and `config-v1.json`/`config-v2.json` (W2-03, copied by hand before, now hash-checked; bytes unchanged). Re-run at `d92d6aae`: 81 files, only additions to `assets/SYNC-MANIFEST.txt` | No (test inputs) | Synced | Wave 3 integration |
-| `d92d6aae..origin/master` (C#) | External editors: `ExternalEditor.cs` new, `AppSettings` +18, `SettingsNormalizer` +4, `SettingsStore` +6, `ShortcutMappings` +8, `IDialogService` +12, languages +34 | Yes | NOT ported; patch WU after Wave 3 (W2-S1), see docs/PROPOSED-DECISIONS.md P-17 | W2-S1 |
-| `7eaee2a2` (#533) | `ActionListJson.Deserialize`/`DeserializeOrNull` (Settings JSON box, Action Profiles import) throw `JsonException` for an unknown `Operation` (name, number, empty, null, bool) instead of the lenient Move; `LenientEnumConverter.TryReadStrict` added; `config.json` loading unchanged (lenient) | Yes | Rust already rejects in `presenters::action_list_json` (golden + tests T12); `config.json` load differs on purpose: Rust `settings_field_map` drops the whole actions list (`None`), C# keeps the lenient Move (PARITY row `D-actions-unknown-operation`) | this PR |
+| `57b04243` (#524) | NOWPF WARP edge documentation | No | Reference only | — |
+| `46d33fa1`, `55a37986`, `9800058e`, `170a2d19` (#525, #527, #529, #530) | FEAT-RENAME design, Core rename actions, catalog/session/presenter/cache state, Win32 UI and F2 shortcut | Yes | Deferred; baseline lane only syncs golden-driven settings and shortcut data. No W9-R owner found in contracts or wave plans | Unassigned |
+| `d9623945` (#526) | External editors list, settings migration/repair, default editor shortcut and submenu | Yes | Golden-driven settings/shortcut data in this lane; editor rules and UI deferred to W9-E1..E9 | W9-E1..E9 |
+| `f6662778` (#528) | STA test host timing fix | No | Test infrastructure only | — |
+| `a6e530f2` (#531) | Shell-only release workflow | Packaging | Deferred to release tooling owner | — |
+| `02aaee0a` (#532) | Language convention documentation | No | Reference only | — |
+| `7eaee2a2` (#533) | Unknown `Operation` in typed/imported action list is a JSON error; config loader remains lenient | Yes | Rust action-list parser checked against regenerated golden; config loader parity tracked separately | baseline lane |

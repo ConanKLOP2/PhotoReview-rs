@@ -15,6 +15,7 @@ use pr_app::presenters::settings::{SettingsExplorerRequest, SettingsPresenter};
 use pr_app::presenters::settings_field_map::FieldContext;
 use pr_core::abstractions::{ShellIntegration, ShellMenuState};
 use pr_core::settings::app_settings::{AppSettings, EnglishSettingsTexts};
+use pr_core::settings::external_editors::ExternalEditor;
 use pr_core::settings::shortcuts::ReviewAction;
 use pr_imaging::decoder_traits::ImageDecoderFactory;
 use pr_l10n::{
@@ -24,6 +25,7 @@ use pr_l10n::{
 
 use super::page_view::TextFn;
 use crate::dialogs::file_dialog::ShellFileDialog;
+use crate::dialogs::native::external_editors_dialog::ExternalEditorsEdit;
 use crate::win32::structs::Hwnd;
 
 /// The presenter the dialog shares with its pages (C# `SettingsPresenter Presenter`). The dialog and the pages borrow it briefly on the UI thread; nobody holds a
@@ -69,6 +71,16 @@ pub trait SettingsPageHost {
         owner: Hwnd,
         actions: &[ReviewAction],
     ) -> Result<Option<Vec<ReviewAction>>, ActionProfilesUnavailable>;
+    /// W9-E4, C# `Options.ShowExternalEditors(owner, editors, defaultId)`: `Ok(Some(edit))` = the edit after Apply, `Ok(None)` = cancelled, `Err` = not wired or could not
+    /// open. Default (so the merged implementors keep compiling): `Err(ActionProfilesUnavailable)` (= `ShowExternalEditors == null`).
+    fn show_external_editors(
+        &self,
+        _owner: Hwnd,
+        _editors: &[ExternalEditor],
+        _default_id: Option<&str>,
+    ) -> Result<Option<ExternalEditorsEdit>, ActionProfilesUnavailable> {
+        Err(ActionProfilesUnavailable)
+    }
 
     /// C# `GetControlText(id)`.
     fn control_text(&self, id: i32) -> String;
@@ -354,6 +366,19 @@ impl SettingsPageContext {
                 None
             }
         }
+    }
+}
+
+impl SettingsPageContext {
+    /// W9-E4, C# `EditExternalEditors(editors, defaultId)`: the nested editors dialog over the Settings window. `Ok(Some(edit))` -> `Some(edit)`; `Ok(None)`
+    /// (cancelled) -> `None` with NO notice; `Err(ActionProfilesUnavailable)` -> the same notice as `edit_action_profiles`
+    /// (`show_warning(dialog.openEditorFailed.title, dialog.openEditorFailed.message)`) and `None`.
+    pub fn edit_external_editors(
+        &self,
+        _editors: &[ExternalEditor],
+        _default_id: Option<&str>,
+    ) -> Option<ExternalEditorsEdit> {
+        todo!()
     }
 }
 
