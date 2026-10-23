@@ -47,7 +47,7 @@ use crate::settings::shortcuts::{ReviewAction, ShortcutMappings, canonicalize_al
 // ---------------------------------------------------------------------------------------------------------------
 
 /// `AppSettings.CurrentConfigVersion`.
-pub const CURRENT_CONFIG_VERSION: i32 = 3;
+pub const CURRENT_CONFIG_VERSION: i32 = 4;
 /// `LanguageLoader.AutoCode`: follow the Windows UI language. (Lives here because `pr-core` cannot see `pr-l10n`.)
 pub const AUTO_LANGUAGE_CODE: &str = "auto";
 
@@ -80,8 +80,8 @@ pub const MAX_TOUCHPAD_SWIPE_DISTANCE_PER_IMAGE: i32 = 2400;
 pub const DEFAULT_TOUCHPAD_SWIPE_DISTANCE_PER_IMAGE: i32 = 200;
 
 /// The JSON property names of `AppSettings`, in the order System.Text.Json writes them (C# declaration order).
-/// 70 entries; pinned by the golden `settings-json` (`defaults.keys`) and by C# `ConfigKeyContractTests`.
-pub const JSON_KEYS: [&str; 70] = [
+/// 73 entries; pinned by the golden `settings-json` (`defaults.keys`) and by C# `ConfigKeyContractTests`.
+pub const JSON_KEYS: [&str; 73] = [
     "ConfigVersion",
     "InitialViewMode",
     "LoadingMode",
@@ -127,6 +127,9 @@ pub const JSON_KEYS: [&str; 70] = [
     "ConfirmBeforeDelete",
     "ShowZoomIndicator",
     "ExternalEditorPath",
+    "ExternalEditors",
+    "DefaultExternalEditorId",
+    "ExternalEditorSendsRawOriginal",
     "KineticGlideSmoothing",
     "InfoOverlayAutoHide",
     "InfoOverlayAutoHideDelayMs",
@@ -626,6 +629,9 @@ impl AppSettings {
             "ConfirmBeforeDelete" => set!(confirm_before_delete, read_bool),
             "ShowZoomIndicator" => set!(show_zoom_indicator, read_bool),
             "ExternalEditorPath" => set!(external_editor_path, read_string),
+            "ExternalEditors" => self.external_editors = read_external_editors(value)?,
+            "DefaultExternalEditorId" => set!(default_external_editor_id, read_string),
+            "ExternalEditorSendsRawOriginal" => set!(external_editor_sends_raw_original, read_bool),
             "KineticGlideSmoothing" => set!(kinetic_glide_smoothing, read_settings_enum),
             "InfoOverlayAutoHide" => set!(info_overlay_auto_hide, read_bool),
             "InfoOverlayAutoHideDelayMs" => set!(info_overlay_auto_hide_delay_ms, read_i32),
@@ -800,6 +806,31 @@ impl AppSettings {
             "ConfirmBeforeDelete" => boolean(out, self.confirm_before_delete),
             "ShowZoomIndicator" => boolean(out, self.show_zoom_indicator),
             "ExternalEditorPath" => text(out, &self.external_editor_path),
+            "ExternalEditors" => {
+                if self.external_editors.is_empty() {
+                    out.push_str("[]");
+                } else {
+                    out.push_str("[\r\n");
+                    for (i, editor) in self.external_editors.iter().enumerate() {
+                        out.push_str("    {\r\n      \"Id\": ");
+                        text(out, &editor.id);
+                        out.push_str(",\r\n      \"Name\": ");
+                        text(out, &editor.name);
+                        out.push_str(",\r\n      \"Path\": ");
+                        text(out, &editor.path);
+                        out.push_str(",\r\n      \"Arguments\": ");
+                        text(out, &editor.arguments);
+                        out.push_str("\r\n    }");
+                        if i + 1 < self.external_editors.len() {
+                            out.push(',');
+                        }
+                        out.push_str("\r\n");
+                    }
+                    out.push_str("  ]");
+                }
+            }
+            "DefaultExternalEditorId" => text(out, &self.default_external_editor_id),
+            "ExternalEditorSendsRawOriginal" => boolean(out, self.external_editor_sends_raw_original),
             "KineticGlideSmoothing" => settings_enum(out, self.kinetic_glide_smoothing),
             "InfoOverlayAutoHide" => boolean(out, self.info_overlay_auto_hide),
             "InfoOverlayAutoHideDelayMs" => int(out, self.info_overlay_auto_hide_delay_ms),
@@ -932,6 +963,43 @@ fn read_string_list(value: &json::JsonValue, name: &str) -> Result<Option<Vec<Op
             Ok(Some(out))
         }
         _ => Err(conversion_error(name, "List<String>")),
+    }
+}
+
+/// `List<ExternalEditor>`: a null list is empty; a null element is dropped before normalization.
+fn read_external_editors(value: &json::JsonValue) -> Result<Vec<ExternalEditor>, SettingsJsonError> {
+    match value {
+        json::JsonValue::Null => Ok(Vec::new()),
+        json::JsonValue::Array(items) => {
+            let mut editors = Vec::with_capacity(items.len());
+            for item in items {
+                let json::JsonValue::Object(entries) = item else {
+                    if matches!(item, json::JsonValue::Null) {
+                        continue;
+                    }
+                    return Err(conversion_error("ExternalEditors", "ExternalEditor"));
+                };
+                let mut editor = ExternalEditor {
+                    id: crate::io::physical::new_guid_n(),
+                    name: String::new(),
+                    path: String::new(),
+                    arguments: ExternalEditor::DEFAULT_ARGUMENTS.to_owned(),
+                };
+                for (key, item_value) in entries {
+                    match key.as_deref() {
+                        Some("Id") => editor.id = read_string(item_value, "Id")?,
+                        Some("Name") => editor.name = read_string(item_value, "Name")?,
+                        Some("Path") => editor.path = read_string(item_value, "Path")?,
+                        Some("Arguments") => editor.arguments = read_string(item_value, "Arguments")?,
+                        Some(_) => {}
+                        None => return Err(conversion_error("ExternalEditors", "ExternalEditor")),
+                    }
+                }
+                editors.push(editor);
+            }
+            Ok(editors)
+        }
+        _ => Err(conversion_error("ExternalEditors", "List<ExternalEditor>")),
     }
 }
 

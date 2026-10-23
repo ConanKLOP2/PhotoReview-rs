@@ -1,6 +1,6 @@
 {
   "generator": "oracle-cs settings-dialog-state",
-  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "csharp_commit": "7eaee2a2b071c7ca05291c86fb78a347f9e6a15f",
   "cases": [
     {
       "name": "key_capture_plain",
@@ -704,8 +704,8 @@
         6004,
         6014,
         6022,
-        6027,
-        6033,
+        6031,
+        6037,
         7001
       ],
       "values": [
@@ -764,7 +764,9 @@
         5066,
         5068,
         5071,
-        5074
+        5074,
+        5076,
+        5079
       ],
       "results": [
         false,

@@ -1,6 +1,6 @@
 {
   "generator": "oracle-cs preview-service-sequence",
-  "csharp_commit": "d92d6aae639a40eede232948f9bce97ecfd02c10",
+  "csharp_commit": "7eaee2a2b071c7ca05291c86fb78a347f9e6a15f",
   "cases": [
     {
       "name": "preview-miss-then-ram-hit",
@@ -2355,8 +2355,7 @@
             "key": "k"
           },
           "result": {
-            "w": 4000,
-            "h": 3000
+            "known": false
           },
           "decoder_calls": [],
           "metrics": {

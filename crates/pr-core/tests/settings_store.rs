@@ -1,4 +1,4 @@
-//! W2-03: port of `PhotoReview.Core/Settings/SettingsStore.cs` tests (baseline d92d6aae) plus the Rust-only first-run
+//! W2-03: port of `PhotoReview.Core/Settings/SettingsStore.cs` tests (baseline 7eaee2a2) plus the Rust-only first-run
 //! import (docs/adr/R0002). Goldens: `tests/golden/settings-parse-text.json` (66 cases), `tests/golden/settings-store.json`
 //! (43 scenarios).
 //!
@@ -412,10 +412,10 @@ fn load_when_file_does_not_exist_creates_and_saves_default() {
 
     let loaded = store.load(None).expect("load");
 
-    assert_eq!(loaded.config_version, 3);
+    assert_eq!(loaded.config_version, 4);
     assert_eq!(loaded.loading_mode, Some(LoadingMode::Preview));
     assert!(r.fs.file_exists(&r.cfg()));
-    assert!(r.read().contains("\"ConfigVersion\": 3"));
+    assert!(r.read().contains("\"ConfigVersion\": 4"));
 }
 
 // C#: SettingsStoreTests.Load_WhenActionUsesLegacyDeleteOperation_KeepsItAsRecycle
@@ -494,7 +494,7 @@ fn load_inv11_when_corrupt_config_backs_up_and_resets_to_default() {
     let loaded = r.store().load(None).expect("load");
 
     assert_eq!(loaded.loading_mode, Some(LoadingMode::Preview));
-    assert_eq!(loaded.config_version, 3);
+    assert_eq!(loaded.config_version, 4);
     let errors = r.startup_errors();
     assert_eq!(errors.len(), 1);
     assert!(errors[0].0.contains("Corrupt config.json detected"));
@@ -630,7 +630,7 @@ fn migrate_upgrades_v1_to_current() {
 
     SettingsStore::migrate(&mut v1);
 
-    assert_eq!(v1.config_version, 3);
+    assert_eq!(v1.config_version, 4);
     assert!(v1.hidden_context_menu_items.is_some());
 }
 
@@ -781,7 +781,7 @@ fn parse_v1_fixture_migrates_properly() {
 fn parse_v2_fixture_parses_correctly() {
     let settings = SettingsStore::parse(&fixture_text("config-v2.json"), &EnglishSettingsTexts).expect("parse");
 
-    assert_eq!(settings.config_version, 3);
+    assert_eq!(settings.config_version, 4);
     assert_eq!(settings.ui_language, "vi"); // Q-L1: pre-i18n configs keep Vietnamese
     assert_eq!(settings.loading_mode, Some(LoadingMode::Original));
     assert_eq!(settings.image_sort_mode, Some(ImageSortMode::SizeAscending));
@@ -1128,7 +1128,7 @@ fn load_corrupt_config_default_write_fails_returns_in_memory_defaults() {
 
     let loaded = r.store().load(None).expect("load");
 
-    assert_eq!(loaded.config_version, 3);
+    assert_eq!(loaded.config_version, 4);
     assert!(r.startup_messages().iter().any(|m| m.contains("default config.json")));
 }
 
@@ -1141,7 +1141,7 @@ fn load_config_without_version_key_keeps_vietnamese() {
     let loaded = r.store().load(None).expect("load");
 
     assert_eq!(loaded.ui_language, "vi");
-    assert_eq!(loaded.config_version, 3);
+    assert_eq!(loaded.config_version, 4);
 }
 
 // C#: SettingsStoreLegacyAndWriteFailureTests.Load_UnversionedSalvagedConfig_KeepsVietnamese
@@ -1664,10 +1664,10 @@ fn save_after_loading_newer_version_writes_current_version_without_unknown_field
     store.save(edited).expect("save");
 
     let written = r.read();
-    assert!(written.contains("\"ConfigVersion\": 3"));
+    assert!(written.contains("\"ConfigVersion\": 4"));
     assert!(!written.contains("FutureField"));
     assert!(written.contains("\"ClickZoomPercent\": 300"));
-    assert_eq!(store.current().config_version, 3);
+    assert_eq!(store.current().config_version, 4);
 }
 
 // C#: SettingsStoreSaveAfterNewerVersionLoadTests.Save_AfterLoadingNewerVersion_KeepsVerbatimBackupOfTheOriginal
@@ -1772,7 +1772,7 @@ fn save_when_backup_fails_still_writes_the_config() {
 
     assert!(r.newer_backups().is_empty());
     let written = r.read();
-    assert!(written.contains("\"ConfigVersion\": 3"));
+    assert!(written.contains("\"ConfigVersion\": 4"));
     assert!(written.contains("\"ClickZoomPercent\": 310"));
     assert!(r.has(
         Lv::Warn,
@@ -1792,7 +1792,7 @@ fn load_after_save_of_newer_version_file_reads_back_current_version() {
     let second = r.store();
     let reloaded = second.load(None).expect("reload");
 
-    assert_eq!(reloaded.config_version, 3);
+    assert_eq!(reloaded.config_version, 4);
     assert_eq!(reloaded.click_zoom_percent, 250);
     assert!(second.last_load_repairs().is_empty());
 }
@@ -1807,7 +1807,7 @@ fn save_always_stamps_current_config_version() {
 
     store.save(settings).expect("save");
 
-    assert!(r.read().contains("\"ConfigVersion\": 3"));
+    assert!(r.read().contains("\"ConfigVersion\": 4"));
 }
 
 // ---- newer-backup prune paths the C# tests only reach through the proxy (contract note 8) ----
@@ -1830,7 +1830,7 @@ fn newer_backup_prune_failures_are_logged_and_never_block_the_save() {
 
     assert!(r.has(Lv::Warn, "Could not delete an old newer-build config backup: "));
     assert!(r.fs.file_exists(&oldest));
-    assert!(r.read().contains("\"ConfigVersion\": 3"));
+    assert!(r.read().contains("\"ConfigVersion\": 4"));
 
     // Listing failure: the name picker's listing fails too, so the copy branch takes the warning and prunes nothing.
     let r = Rig::new();
@@ -1845,7 +1845,7 @@ fn newer_backup_prune_failures_are_logged_and_never_block_the_save() {
         Lv::Warn,
         "Could not back up the newer-build config.json before overwriting it: "
     ));
-    assert!(r.read().contains("\"ConfigVersion\": 3"));
+    assert!(r.read().contains("\"ConfigVersion\": 4"));
 }
 
 // ---------------------------------------------------------------------------------------------------------------
@@ -2030,7 +2030,7 @@ fn import_first_run_with_csharp_config_imports_it_read_only() {
     assert_eq!(changed.load(Ordering::SeqCst), 1);
     let own = r.read();
     assert!(own.contains("\"ClickZoomPercent\": 250"));
-    assert!(own.contains("\"ConfigVersion\": 3"));
+    assert!(own.contains("\"ConfigVersion\": 4"));
     // Nothing is ever written into the C# folder.
     assert_eq!(r.fs.count(FsOp::Copy), 0);
     assert_eq!(r.fs.count(FsOp::Delete), 0);
@@ -2065,7 +2065,7 @@ fn import_when_csharp_config_is_missing_writes_defaults() {
 
     assert_eq!(*loaded, {
         let mut d = defaults();
-        d.config_version = 3;
+        d.config_version = 4;
         d
     });
     assert!(r.fs.file_exists(&r.cfg()));
@@ -2115,7 +2115,7 @@ fn import_of_a_newer_csharp_config_makes_no_newer_backup() {
 
     let loaded = store.load_first_run_with_import(&csharp_cfg()).expect("import");
 
-    assert_eq!(loaded.config_version, 3); // written as the current version of the OWN file
+    assert_eq!(loaded.config_version, 4); // written as the current version of the OWN file
     assert!(r.newer_backups().is_empty());
     assert!(r.siblings().is_empty());
     assert_eq!(r.fs.count(FsOp::Copy), 0);
@@ -2150,7 +2150,7 @@ fn import_with_repairs_sets_last_load_repairs_and_write_failure_keeps_the_import
 #[test]
 fn golden_settings_parse_text() {
     let g = golden::load("settings-parse-text");
-    assert!(g.csharp_commit.starts_with("d92d6aae"), "baseline {}", g.csharp_commit);
+    assert!(g.csharp_commit.starts_with("7eaee2a2"), "baseline {}", g.csharp_commit);
     assert_eq!(g.cases.len(), 66);
     // Every case runs; failures are collected so one bad case does not hide the others.
     let mut failures: Vec<String> = Vec::new();
@@ -2277,7 +2277,7 @@ fn read_dir_files(dir: &Path) -> Vec<(String, Vec<u8>)> {
 #[test]
 fn golden_settings_store() {
     let expected_all = golden::load("settings-store");
-    assert!(expected_all.csharp_commit.starts_with("d92d6aae"));
+    assert!(expected_all.csharp_commit.starts_with("7eaee2a2"));
     let inputs = golden_inputs("settings-store");
     let scenarios = inputs["scenarios"].as_array().expect("scenarios");
     assert_eq!(scenarios.len(), 43);
@@ -2560,7 +2560,7 @@ fn explicit_salvage_backup_failure_does_not_block_default_save() {
     store.save((*loaded).clone()).expect("save");
 
     assert!(r.fs.file_exists(&r.cfg()));
-    assert!(r.read().contains("\"ConfigVersion\": 3"));
+    assert!(r.read().contains("\"ConfigVersion\": 4"));
 }
 
 // Guard: the import resets the keep-corrupt flag set by an earlier locked default load.
@@ -2594,7 +2594,7 @@ fn import_of_json_null_is_not_an_import() {
     let loaded = store.load_first_run_with_import(&csharp_cfg()).expect("import");
 
     let mut expected = defaults();
-    expected.config_version = 3;
+    expected.config_version = 4;
     assert_eq!(*loaded, expected);
     assert!(r.has(Lv::Warn, "not a JSON object"));
     assert!(!r.has(Lv::Info, "Imported the settings of the C# app"));
@@ -2616,7 +2616,7 @@ fn explicit_corrupt_backup_failure_does_not_block_default_save() {
     store.save((*loaded).clone()).expect("save");
 
     assert!(r.fs.file_exists(&r.cfg()));
-    assert!(r.read().contains("\"ConfigVersion\": 3"));
+    assert!(r.read().contains("\"ConfigVersion\": 4"));
 }
 
 // C#: NewerBackupSortKey uses int.TryParse(NumberStyles.None): a signed counter is unparseable (counter 0, whole
@@ -2679,7 +2679,7 @@ fn explicit_unreadable_file_does_not_block_default_save() {
     store.save((*loaded).clone()).expect("save");
 
     assert!(r.fs.file_exists(&r.cfg()));
-    assert!(r.read().contains("\"ConfigVersion\": 3"));
+    assert!(r.read().contains("\"ConfigVersion\": 4"));
     assert!(!r.has(Lv::Warn, "Settings kept in memory only"));
 }
 
@@ -2773,7 +2773,7 @@ fn newer_backup_is_skipped_when_the_file_vanished_before_the_save() {
 
     assert!(!r.has(Lv::Warn, "Could not back up the newer-build"));
     assert!(r.newer_backups().is_empty());
-    assert!(r.read().contains("\"ConfigVersion\": 3"));
+    assert!(r.read().contains("\"ConfigVersion\": 4"));
 }
 
 // A failed newer backup prunes nothing (contract note 8), even with more than three old backups around.

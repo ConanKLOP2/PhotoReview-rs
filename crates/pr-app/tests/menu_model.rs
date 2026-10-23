@@ -164,6 +164,7 @@ fn build_default_settings_matches_default_wpf_menu() {
             "-",
             "ExternalEditor",
             "-",
+            "RenameFile",
             "CopyFileName",
             "CopyFullPath",
             "-",
@@ -195,6 +196,7 @@ fn build_nothing_hidden_lists_every_item_in_xaml_order_with_zoom_submenu() {
             "-",
             "ExternalEditor",
             "-",
+            "RenameFile",
             "CopyFileName",
             "CopyFullPath",
             "-",
@@ -288,6 +290,7 @@ fn build_legacy_flags_config_uses_same_hidden_set_as_wpf() {
             "-",
             "ExternalEditor",
             "-",
+            "RenameFile",
             "CopyFileName",
             "CopyFullPath",
             "-",
@@ -297,12 +300,12 @@ fn build_legacy_flags_config_uses_same_hidden_set_as_wpf() {
 }
 
 // C#: ContextMenuModelBuilderTests.Build_EveryHiddenSubset_MatchesComputeAndNeverLeavesStraySeparators
-// 17 unlocked ids, step 3 (about 43k subsets, 2 contexts); must finish in a few seconds.
+// 18 unlocked ids, step 3 (about 87k subsets, 2 contexts); must finish in a few seconds.
 #[test]
 fn build_every_hidden_subset_matches_compute_and_never_leaves_stray_separators() {
     let _en = english();
     let unlocked: Vec<Id> = ITEMS.iter().filter(|i| !i.locked).map(|i| i.id).collect();
-    assert_eq!(unlocked.len(), 17);
+    assert_eq!(unlocked.len(), 18);
     let subsets: u32 = 1 << unlocked.len();
     let mut mask = 0u32;
     while mask < subsets {
@@ -317,7 +320,14 @@ fn build_every_hidden_subset_matches_compute_and_never_leaves_stray_separators()
             apply_hidden(&mut settings, hidden.iter().copied());
             let items = build(&context(&settings, has_photo, has_photo, Some(1.0))).expect("build");
 
-            let expected = compute(&effective_hidden(&settings), ContextMenuContext { has_photo }, None);
+            let expected = compute(
+                &effective_hidden(&settings),
+                ContextMenuContext {
+                    has_photo,
+                    include_shell_only: true,
+                },
+                None,
+            );
             let expected_ids: Vec<String> = expected
                 .entries
                 .iter()

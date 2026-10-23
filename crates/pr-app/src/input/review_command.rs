@@ -1,9 +1,9 @@
 //! Port of `PhotoReview.App.Shared/Input/ReviewCommand.cs`: the command kinds and the routed command record.
 //!
-//! The `ReviewCommandType` values are the C# enum's implicit values (0..=29, declaration order). Do not reorder.
-//! Baseline `d92d6aae`. The shortcut routing that produces these commands is `input::shortcut_router` (W8-05d).
+//! The `ReviewCommandType` values are the C# enum's implicit values (0..=31, declaration order). Do not reorder.
+//! Baseline `7eaee2a2`. The shortcut routing that produces these commands is `input::shortcut_router` (W8-05d).
 
-/// C# `ReviewCommandType`. Variant order = C# declaration order = implicit values 0..=29.
+/// C# `ReviewCommandType`. Variant order = C# declaration order = implicit values 0..=31.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 #[repr(u8)]
 pub enum ReviewCommandType {
@@ -37,17 +37,16 @@ pub enum ReviewCommandType {
     ToggleCaptureMember = 27,
     FitWidth2 = 28,
     Refresh = 29,
-    /// W9-E7 (FEAT-EXTERNAL-EDITORS): sends the current photo to the default external editor. C# declares it right after `Refresh` (value 30);
-    /// FEAT-RENAME's `RenameFile` follows it (value 31, not part of lane W9-E).
+    /// W9-E7 (FEAT-EXTERNAL-EDITORS): sends the current photo to the default external editor.
     OpenInDefaultEditor = 30,
     /// FEAT-RENAME: F2 or Win32 context-menu command.
     RenameFile = 31,
 }
 
 impl ReviewCommandType {
-    /// C# `IgnoresAutoRepeat(this ReviewCommandType)` (`ReviewCommandTypeExtensions`). True for exactly these 14 kinds:
+    /// C# `IgnoresAutoRepeat(this ReviewCommandType)` (`ReviewCommandTypeExtensions`). True for exactly these 16 kinds:
     /// Recycle, RunAction, Undo, MoveToFolder, CopyToFolder, ToggleInfoOverlay, Fullscreen, ToggleCompare, ClickZoom,
-    /// ToggleKeepZoom, OpenFolder, CustomZoom, ToggleCaptureMember, Refresh. Every other kind is false.
+    /// ToggleKeepZoom, OpenFolder, CustomZoom, ToggleCaptureMember, Refresh, OpenInDefaultEditor, RenameFile. Every other kind is false.
     pub fn ignores_auto_repeat(self) -> bool {
         matches!(
             self,
@@ -65,6 +64,7 @@ impl ReviewCommandType {
                 | Self::CustomZoom
                 | Self::ToggleCaptureMember
                 | Self::Refresh
+                | Self::OpenInDefaultEditor
                 | Self::RenameFile
         )
     }
@@ -118,7 +118,7 @@ impl ReviewCommand {
         }
     }
 
-    // The 27 C# static properties (`ReviewCommand.Fullscreen`, ...): each is `new(kind)`. Associated constants, not functions.
+    // The C# static properties (`ReviewCommand.Fullscreen`, ...): each is `new(kind)`. Associated constants, not functions.
     pub const FULLSCREEN: Self = Self::new(ReviewCommandType::Fullscreen);
     pub const EXIT_FULLSCREEN: Self = Self::new(ReviewCommandType::ExitFullscreen);
     pub const CLOSE: Self = Self::new(ReviewCommandType::Close);

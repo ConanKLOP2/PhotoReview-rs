@@ -549,10 +549,10 @@ fn turbo_jpeg_availability() {
 fn shortcuts_round_trip_each_property() {
     // C#: SettingsFieldMapTests.Shortcuts_RoundTripEachProperty
     let env = Env::new();
-    // Distinct valid key names for the 27 boxes (a duplicate would be refused by the validator).
+    // Distinct valid key names for the 29 boxes (a duplicate would be refused by the validator).
     let keys = [
         "A", "B", "C", "D", "E", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W",
-        "X", "Y", "Z", "F1", "F2",
+        "X", "Y", "Z", "F1", "F2", "F3", "F4",
     ];
     let properties = shortcut_properties();
     assert_eq!(properties.len(), keys.len());
@@ -641,6 +641,26 @@ fn property_table() -> Vec<PropertyRow> {
             "ExternalEditorPath",
             external_editor_path,
             "probe-ExternalEditorPath".to_owned()
+        ),
+        row!(
+            "ExternalEditors",
+            external_editors,
+            vec![pr_core::settings::external_editors::ExternalEditor {
+                id: "probe-editor".to_owned(),
+                name: "Probe".to_owned(),
+                path: "C:\\probe.exe".to_owned(),
+                arguments: "\"{file}\"".to_owned(),
+            }]
+        ),
+        row!(
+            "DefaultExternalEditorId",
+            default_external_editor_id,
+            "probe-editor".to_owned()
+        ),
+        row!(
+            "ExternalEditorSendsRawOriginal",
+            external_editor_sends_raw_original,
+            false
         ),
         row!(
             "JournalDurability",

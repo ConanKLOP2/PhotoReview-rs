@@ -1,9 +1,9 @@
-//! Port of `PhotoReview.Shell.Win32/Dialogs/SettingsUi/Pages/ShortcutsSettingsPage.cs` (323 lines, baseline `d92d6aae`): the "Shortcuts" page (WPF `ShortcutsPage`,
-//! 27 key capture boxes): one read-only key box per command (the capture itself is the FRAME's key box subclass, W8-19j/19k), a clear button for the 14 optional
+//! Port of `PhotoReview.Shell.Win32/Dialogs/SettingsUi/Pages/ShortcutsSettingsPage.cs` (baseline `7eaee2a2`): the "Shortcuts" page (WPF `ShortcutsPage`,
+//! 29 key capture boxes): one read-only key box per command (the capture itself is the FRAME's key box subclass, W8-19j/19k), a clear button for the 16 optional
 //! keys, "restore default keys", the live duplicate-key warning, the "warning sign" mark on the label of a bad box, and the Action profiles button (nested modal).
 //! Unit W8-19i. Contract: `contracts/W8-19i.md`.
 //!
-//! Properties owned: the 27 shortcut texts (`SettingsFormState::shortcut_texts`) and, through the shared JSON, the actions.
+//! Properties owned: the 29 shortcut texts (`SettingsFormState::shortcut_texts`) and, through the shared JSON, the actions.
 use std::cell::RefCell;
 use std::collections::{BTreeMap, BTreeSet};
 use std::rc::Rc;
@@ -132,8 +132,8 @@ pub const VIEW_ROWS: [ShortcutRow; 13] = [
     ),
 ];
 
-/// C# `ActionRows` (6 rows). Real code (data).
-pub const ACTION_ROWS: [ShortcutRow; 6] = [
+/// C# `ActionRows` (8 rows). Real code (data).
+pub const ACTION_ROWS: [ShortcutRow; 8] = [
     required("Skip", tr::settings_shortcut_skip),
     required("Undo", tr::settings_shortcut_undo),
     required("Compare", tr::settings_shortcut_compare),
@@ -148,9 +148,19 @@ pub const ACTION_ROWS: [ShortcutRow; 6] = [
         tr::settings_shortcut_copy_to_folder_clear_automation_name,
     ),
     required("SendToRecycleBin", tr::settings_shortcut_recycle),
+    optional(
+        "OpenInDefaultEditor",
+        tr::settings_shortcut_open_in_default_editor,
+        tr::settings_shortcut_open_in_default_editor_clear_automation_name,
+    ),
+    optional(
+        "RenameFile",
+        tr::settings_shortcut_rename_file,
+        tr::settings_shortcut_rename_file_clear_automation_name,
+    ),
 ];
 
-/// C# `AllRows`: navigation, view, actions (27 rows, display order).
+/// C# `AllRows`: navigation, view, actions (29 rows, display order).
 pub fn all_rows() -> impl Iterator<Item = &'static ShortcutRow> {
     NAVIGATION_ROWS.iter().chain(VIEW_ROWS.iter()).chain(ACTION_ROWS.iter())
 }
