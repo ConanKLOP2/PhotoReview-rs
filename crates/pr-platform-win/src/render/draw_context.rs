@@ -1378,6 +1378,56 @@ mod tests {
         assert_eq!(a, 255);
     }
 
+    // C#: D2DRenderSurfaceTests.DrawImage_EmptySourceOrDestination_IsSkipped (native regression for mutant 12e-3)
+    #[test]
+    #[ignore = "native: needs desktop"]
+    fn draw_image_empty_source_or_destination_leaves_target_untouched() {
+        let source = create_solid(4, 4, 0, 0, 255, 255);
+        let clear = color(0.0, 1.0, 0.0, 1.0);
+        let cleared = create_solid(8, 8, 0, 255, 0, 255);
+
+        let mut source_empty_surface = surface(8, 8, 1.0);
+        let source_empty_image = upload_single(source_empty_surface.resources(), &source);
+        let source_empty = render(&mut source_empty_surface, |dc| {
+            dc.clear(clear);
+            dc.draw_image(
+                &source_empty_image,
+                rect(1.0, 1.0, 6.0, 6.0),
+                Some(rect(2.0, 1.0, 0.0, 2.0)),
+                ImageInterpolation::Linear,
+                1.0,
+            );
+        });
+        assert_identical(&cleared, &source_empty);
+
+        let mut destination_empty_surface = surface(8, 8, 1.0);
+        let destination_empty_image = upload_single(destination_empty_surface.resources(), &source);
+        let destination_empty = render(&mut destination_empty_surface, |dc| {
+            dc.clear(clear);
+            dc.draw_image(
+                &destination_empty_image,
+                rect(1.0, 1.0, 0.0, 6.0),
+                Some(rect(0.0, 0.0, 4.0, 4.0)),
+                ImageInterpolation::Linear,
+                1.0,
+            );
+        });
+        assert_identical(&cleared, &destination_empty);
+
+        let mut control_surface = surface(4, 4, 1.0);
+        let control_image = upload_single(control_surface.resources(), &source);
+        let control = render(&mut control_surface, |dc| {
+            dc.clear(BLACK);
+            dc.draw_image(
+                &control_image,
+                rect(0.0, 0.0, 4.0, 4.0),
+                Some(rect(0.0, 0.0, 4.0, 4.0)),
+                ImageInterpolation::NearestNeighbor,
+                1.0,
+            );
+        });
+        assert_identical(&source, &control);
+    }
     // C#: D2DRenderSurfaceTests.PushTransform_Nested_AppliesInnerFirstThenOuter (real pixels)
     #[test]
     #[ignore = "native: needs desktop"]
