@@ -71,3 +71,7 @@
 - REVIEW-BACKLOG #213 đã merged tại 45fdb48; content diff sạch, claim nhả, branch local/worktree đã dọn. REVIEW-PRS claim bởi C.
 - PR mở có mã: #164 head 6e45777 không đổi; đọc lại diff/contract/C# 7eaee2a2. Báo cáo giữ 0 cao / 4 trung bình / 6 thấp trên head, phân biệt master đã có #177/#179, không đăng lại toàn bộ phát hiện cũ như lỗi mới.
 - Docs-only; mọi phát hiện là suy luận từ mã, chưa chạy thử. Không chạy Cargo/oracle/mutation, không sửa mã. Tiếp REVIEW-B4 sau merge PR docs này.
+## Review B4, machine C, 2026-10-23 (tái kiểm)
+- REVIEW-PRS #214 merged tại 48f96aa; content diff sạch, claim nhả, branch local/worktree dọn. Nhận xét đã đăng #164; head PR không đổi. REVIEW-B4 claim bởi C.
+- Giữ 3 cao / 2 trung bình / 5 thấp, không lỗi mới. Bổ sung đường H1/H2/H3, đọc vùng layout/hit-test, quét chú thích unsafe (54 file/38 dòng block), test inventory 121/82 ignore; sửa đường file sai trong prompt G1/G2 của BACKLOG.
+- Mọi phát hiện là suy luận từ mã, chưa chạy thử. Không Cargo/oracle/mutation/native UI. Tiếp W9-CONTRACTS sau merge.
