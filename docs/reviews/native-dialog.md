@@ -53,3 +53,7 @@ Counts of `#[ignore` per file: close 22 of 25 tests, events_native 25 of 25, lay
 - DPI change behaviour on two monitors with different scaling (`on_dpi_changed`), and the `WM_GETMINMAXINFO` minimum.
 - GDI/user object counts before and after opening and closing a dialog many times (`GetGuiResources`), to confirm cleanup leaks nothing.
 - A hook that panics during `WM_INITDIALOG` of a modeless dialog: the captured panic stays in the thread-local slot until someone calls `rethrow_pending`; I did not trace who does on the shell loop.
+
+## Bổ sung 2026-10-23 — đường modeless filter
+
+Nhận định tổng quát ở phần đọc đúng rằng mọi hook panic đều được rethrow cần giới hạn: message loop chỉ resume sau claim hoặc dispatch; ModelessFilter trả true sau IsDialogMessage không đi qua bước đó. Xem [host-dispatcher M1](host-dispatcher.md) (G11); giải quyết một phần câu hỏi ai rethrow trên shell loop. C# cùng cấu trúc, cần quyết định parity. Suy luận từ mã, chưa chạy thử; không cộng lại M1 vào tổng lịch sử của báo cáo này.

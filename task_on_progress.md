@@ -95,3 +95,7 @@
 ## 2026-10-23 — Machine C REVIEW-RECOVERY-FLOW
 
 Review tĩnh tại bb5c02a, oracle 7eaee2a2: 0 cao / 1 trung bình (test) / 0 thấp. Báo cáo recovery-flow.md; nối M1 vào G17, không đếm lại G25/G7/G3. Phân biệt presenter đã port với 96 todo native; không yêu cầu catch panic UI trái R0003. Không sửa Rust, không chạy Cargo/native; suy luận từ mã, chưa chạy thử. Tiếp theo: PR docs, auto squash, nhả claim sau merge; tiếp tục vùng host/dialog khác.
+
+## 2026-10-23 — Machine C REVIEW-HOST-DISPATCHER
+
+REVIEW-RECOVERY-FLOW đã merge PR #219 (a9ed01d), claim nhả và worktree dọn. Review host tại a9ed01d: 0 cao / 1 trung bình / 0 thấp; thêm host-dispatcher.md và nối G11, cập nhật giới hạn native-dialog. Suy luận từ mã, chưa chạy thử; không sửa Rust/Cargo/native. Tiếp theo: PR docs auto squash, nhả claim khi merge, tiếp tục review vùng chưa phủ.
