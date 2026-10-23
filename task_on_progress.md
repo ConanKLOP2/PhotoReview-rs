@@ -2,6 +2,18 @@
 
 **Updated:** 2026-10-23 (older entries moved to `docs/archive/`; the sections below are the latest ones; where two sections disagree the later date wins, not the later position)
 
+## 2026-10-23 (PR #164 merge-conflict resolution)
+- Merged `origin/master` into `integration/wave8-b6` and resolved add/add conflicts by taking the current `origin/master` variants for:
+  - `crates/pr-app/tests/startup_error_log.rs`
+  - `crates/pr-app/tests/startup_forwarded_open.rs`
+  - `crates/pr-app/tests/startup_launch.rs`
+  - `crates/pr-platform-win/tests/shell_startup_cloak.rs`
+- Verified no remaining conflict markers (`git grep -n -I '^<<<<<<<'`).
+- Targeted validation command was attempted:
+  - `cargo test -p pr-app --test startup_error_log --test startup_forwarded_open --test startup_launch --locked`
+  - `cargo test -p pr-platform-win --test shell_startup_cloak --locked`
+  - Result on this Linux host: blocked at compile time in `pr-app` by Windows-only `std::os::windows::process::CommandExt` usage (`E0433`, `E0599`), so these test binaries cannot run here.
+
 ## How to resume (read this first)
 1. Read `AGENTS.md`, this file, `docs/PROPOSED-DECISIONS.md` (P-01..P-33: unconfirmed proposals, all acted on),
    `docs/MULTI-AGENT-PLAN.md`, `docs/PARITY.md` ("Wave 4 final status"), `contracts/README.md` ("Wave 5 roster", D45..D58), `tools/autopilot/README.md`.
