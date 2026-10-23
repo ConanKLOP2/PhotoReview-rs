@@ -1,4 +1,4 @@
-# Parity checklist (C# ? Rust)
+# Parity checklist (C# → Rust)
 
 Inventory of the C# app at baseline `e441d67a` (see SYNC-LEDGER.md), generated 2026-10-14 by a read-only pass over the C# code. C# paths are relative to the C# repo root.
 
