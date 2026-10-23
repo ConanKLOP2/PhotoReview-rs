@@ -28,7 +28,7 @@ Tổng: 0 cao / 4 trung bình / 3 thấp. Kèm bảng theo crate và 30 ví dụ
 - 148 test `#[ignore]` cũng không có assert; trong đó 39 là chỗ giữ chỗ `todo!("W8-20b …")` (`pr-shell/tests/ui_smoke*.rs`, `ui_parity_map.rs`), 1 là thân rỗng.
 - Lý do `#[ignore]` phổ biến: "native: needs desktop" (611), "native: needs WIC" (143), "native" (64), "needs turbojpeg.dll" (59), "needs the OS graphics stack" (46), "real files under TempRoot" (27).
 - Không tìm thấy `assert!(true)` hay `assert_eq!(x, x)` theo kiểu vô ý; 4 ca `assert_eq!(a, a)` ở `pr-app/tests/input_frame_clock.rs:17,48`, `input_primitives.rs:107`, `verify_w8_01a.rs:255` là kiểm tra có chủ đích của `PartialEq` với NaN.
-- Không tìm thấy `#[should_panic]` mới thêm bất thường; không có kiểm tra lịch sử git cho từng test (không so diff từng commit).
+- Không kiểm tra `#[should_panic]` và không so lịch sử git cho từng test (không so diff từng commit).
 
 ## Phát hiện
 
