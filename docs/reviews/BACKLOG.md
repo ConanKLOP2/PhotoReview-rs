@@ -41,6 +41,8 @@ Rủi ro: **D** = có thể mất/sai dữ liệu người dùng, **C** = crash/
 | 27 | G27 Backup config newer lỗi nhưng vẫn downgrade, mất field chưa biết | invariants-storage M2 | trung bình | D (config) | W2-03 | cần quyết định sản phẩm |
 | 28 | G28 Log short-write rồi retry lỗi làm lặp/dính dòng | invariants-storage L1 | thấp | T | W2-16 | thêm test + hardening log |
 | 29 | G29 Cache read cấp phát toàn file trước kiểm header/length; phân loại I/O OOM | invariants-storage M3 | trung bình | C/B | W4-08b, W4-14c | sửa mã + test |
+| 30 | G30 Kiểm output của lần registry read thứ hai | recycle-policy M1 | trung bình | D/B | W6-02b | sửa mã + test fake |
+| 31 | G31 Nối restore verb helper vào adapter | recycle-policy L1 | thấp | B/T | W6-02d/e | tích hợp hoặc ADR, giữ Partial |
 
 Thứ tự đề xuất sau tái kiểm: G25 (nguy cơ xoá vĩnh viễn), rồi G3, G4, G1, G2 (lỗi người dùng thấy ngay); G5, G7, G6 (an toàn dữ liệu); sau đó G10, G11, G9; test (G17..G20) song song vì không xung đột file; G16 độc lập; G21..G23 tài liệu cuối cùng (chạm PARITY, gộp theo hàng).
 
@@ -297,7 +299,7 @@ CẤM: làm yếu test; bỏ ca khỏi danh sách 17.
 Kiểm tra: cargo fmt -p pr-app --check && cargo fmt -p pr-core --check; cargo clippy -p pr-app -p pr-core --all-targets --locked -- -D warnings; cargo test -p pr-app -p pr-core --locked.
 ```
 
-### G21 tài liệu: contract W9
+### G21 tài liệu: contract W9 (đã sửa một phần trong #207/#216)
 - w9-contracts H1 (nội dung "Rust đang có/thiếu gì" lỗi thời sau #182; bảng Survey của `docs/WAVE-9-PLAN-edt.md` chưa sửa), L6 (E5 mục 5), L7 (chữ ký stub khác contract), L8 (trạng thái "staged" oracle R1), L9, L10 (thay đổi test C# không có đơn vị chủ), L11. Phần đã sửa nằm trong PR #207.
 
 **PROMPT Codex G21**
@@ -457,3 +459,25 @@ G11 nhận thêm host-dispatcher M1 (trung bình, W8-13c/18h..18k): filtered mes
 | G31 Nối restore verb helper vào adapter | recycle-policy L1 | thấp | B/T | W6-02d/e | tích hợp hoặc ADR, giữ Partial |
 
 Bằng chứng, kịch bản và hai PROMPT có phạm vi/lệnh kiểm tra: [recycle-policy.md](recycle-policy.md). Không gộp với G25 (fingerprint nguồn) hoặc G12 (journal/Undo), không đếm lại test ignored của G17. Suy luận từ mã, chưa chạy thử.
+
+## Trạng thái xử lý tại master b5d1327 (2026-10-23)
+
+**Review đã merge không có nghĩa mã đã sửa.** Các PR #204..#221 là bằng chứng tài liệu, trừ các thay đổi sự thật contract được nêu cụ thể. Không có kết quả Cargo mới trong lần rà này; mọi nhận định kỹ thuật vẫn là suy luận từ mã, chưa chạy thử. Bảng chính có đủ G1..G31; các mục bổ sung cuối tệp giữ bằng chứng/prompt chi tiết.
+
+| Nhóm | Trạng thái và bước tiếp theo |
+|---|---|
+| G1, G2, G5, G10, G14 | Còn triển khai và test hồi quy; không đóng theo việc đã xuất bản review |
+| G3, G4, G7, G9, G11, G13, G15, G18 | Còn mở; có phần chồng vùng máy A/B đang claim. Phải kiểm claim đúng unit và bàn giao trước sửa phần đó; không dùng claim REVIEW để chiếm quyền sửa unit |
+| G6, G8 | Quyết định Q3/Q4 đã có P-52; còn implementation. Không hỏi lại quyết định đã chốt |
+| G12, G19 | Hardening/test còn mở; Q1 giữ Fast, Q2 giữ shell flags và thêm waiting notice đã chốt. Không tự đổi mặc định durability |
+| G16 | Script/tooling còn mở; đọc lại phát hiện theo phiên bản thực tế trước sửa và không chạy mutation bin thật |
+| G17, G20, G23 | Các đề xuất test/comment chưa được thực hiện bởi PR review. 81 mục test là kế hoạch, không phải 81 test đã chạy; recovery-flow M1 thuộc G17 |
+| G21 | Đã sửa một phần trong #207/#216: facts H1/L9 Survey, L6 no-save khi full, các chữ ký L7 đã đối chiếu, phân công test L10 một phần. Còn scaffold/generator L8 và các mục chưa có bằng chứng hoàn tất. Không giao lại toàn bộ prompt cũ như việc mới |
+| G22 | Còn rà PARITY theo master và phân biệt head #164 với port đã merge; PR #164 vẫn mở, head 6e45777 không đổi khi kiểm lần này |
+| G24 | Q1..Q8 đã được P-52 chấp nhận; chỉ đóng phần quyết định đó. Không coi quyết định là bằng chứng implementation/test |
+| G25, G26 | Còn sửa; khác biệt an toàn so với C# cần ADR/Different theo prompt, không tự ghi là đã được P-52 chốt |
+| G27 | Còn quyết định về backup config newer khi backup lỗi; chưa nằm trong Q1..Q8 |
+| G28, G29, G30 | Còn sửa/test fake; các báo cáo #218/#221 chưa sửa production |
+| G31 | Còn nối helper hoặc ADR canonical-only; P-03 hiện Partial, không cần sửa trạng thái thành Full chỉ vì helper có pure test |
+
+Đã kiểm trực tiếp trạng thái merged của #219/#220/#221 và nội dung master; các claim review của ba việc đã nhả, worktree/branch đã dọn. Claim live ngày này có các unit A/B/VTI, nên danh sách sở hữu trong bảng là cảnh báo phạm vi, không phải quyền tự động cho máy C. Trước mỗi sửa phải lấy lại danh sách claim hiện hành.
