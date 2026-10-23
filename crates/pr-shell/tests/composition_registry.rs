@@ -654,3 +654,42 @@ fn wic_fine_scaler_resizes_a_pixel_buffer() {
     let scaled = pr_turbojpeg::decoder::FineScaler::resize(&WicFineScaler, &source, 1, 1).unwrap();
     assert_eq!((scaled.width(), scaled.height()), (1, 1));
 }
+
+#[test]
+fn preload_scheduler_factory_does_not_retain_its_service_graph() {
+    // Rust ownership regression: the C# GC can collect the provider/delegate cycle.
+    let (services, _root, log) = composition_fixture::shared_services();
+    let weak_log = Arc::downgrade(&log);
+    let factory = services.preload_scheduler_factory();
+    assert!(Arc::ptr_eq(&factory, &services.preload_scheduler_factory()));
+    drop(log);
+    drop(services);
+    assert!(weak_log.upgrade().is_none(), "cached factory keeps the graph alive");
+    drop(factory);
+    let (services, _root, log) = composition_fixture::shared_services();
+    let weak_log = Arc::downgrade(&log);
+    drop(services.preload_scheduler_factory());
+    drop(log);
+    drop(services);
+    assert!(
+        weak_log.upgrade().is_none(),
+        "cached factory alone keeps the graph alive"
+    );
+}
+
+#[test]
+fn preload_scheduler_factory_after_graph_drop_returns_registry_error() {
+    // Rust ownership regression: a retained delegate must not resurrect the disposed graph.
+    let (services, _root, log) = composition_fixture::shared_services();
+    let factory = services.preload_scheduler_factory();
+    drop(services);
+    drop(log);
+    let entries = Arc::new(|| Ok(Arc::from([])));
+    let version = Arc::new(|| Ok(0));
+    let error = match factory(entries, version) {
+        Ok(_) => panic!("factory created a scheduler after graph disposal"),
+        Err(error) => error,
+    };
+    assert_eq!(error.service, "preload_scheduler_factory");
+    assert_eq!(error.message, "shared service graph has been dropped");
+}

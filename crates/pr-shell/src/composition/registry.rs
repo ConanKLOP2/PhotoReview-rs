@@ -52,7 +52,7 @@ pub type DecoderFactoryWrapper =
 pub type PreloadSchedulerFactory =
     Arc<dyn Fn(EntriesSnapshotFn, SnapshotVersionFn) -> Result<Arc<PreloadScheduler>, RegistryError> + Send + Sync>;
 
-/// A lazily built service could not be created. The only real causes are constructor errors of the imaging services (blank cache directory, a thread that cannot start); the C#
+/// A lazily built service could not be created. A retained factory may also outlive its graph. Constructor errors include a blank cache directory or a thread that cannot start; the C#
 /// container threw the same from `GetRequiredService`.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct RegistryError {
@@ -694,8 +694,14 @@ impl SharedServices {
     /// factories::create_source_prefetch(c, webp_heic_enabled, codecs)), snapshot_version: Some(version), ..Default::default() })` with `s` read at THAT call.
     pub fn preload_scheduler_factory(&self) -> PreloadSchedulerFactory {
         Arc::clone(self.inner.preload_scheduler_factory.get_or_init(|| {
-            let shared = self.clone();
+            // Inner caches this factory: a strong capture would retain the entire graph forever.
+            let weak = Arc::downgrade(&self.inner);
             Arc::new(move |entries, version| {
+                let inner = weak.upgrade().ok_or_else(|| RegistryError {
+                    service: "preload_scheduler_factory",
+                    message: "shared service graph has been dropped".to_owned(),
+                })?;
+                let shared = SharedServices { inner };
                 let settings = shared.settings_store().current();
                 let service = shared.preview_service()?;
                 let thresholds = pr_imaging::preload::scheduler::ThresholdOptions {
