@@ -67,3 +67,7 @@
 - REVIEW-INVARIANTS #212 đã merged tại e25f8bf; content diff đã xác nhận, claim nhả; worktree và branch local đã dọn, remote branch đã được GitHub xoá tự động (lệnh delete báo ref không tồn tại; không thử lại).
 - Claim REVIEW-BACKLOG bởi C. Bổ sung G25 rủi ro permanent-delete từ invariants H1, prompt/test/phạm vi riêng; cập nhật Q1..Q8 theo P-52/#211; bỏ đề nghị che test đỏ bằng ignore và cảnh báo blanket native run trái quy tắc bin.
 - Docs-only; suy luận từ mã, chưa chạy thử. Không chạy Cargo/oracle/mutation. Tiếp theo REVIEW-PRS; nhả claim sau merge PR docs này.
+## Review PRS, machine C, 2026-10-23 (tái kiểm)
+- REVIEW-BACKLOG #213 đã merged tại 45fdb48; content diff sạch, claim nhả, branch local/worktree đã dọn. REVIEW-PRS claim bởi C.
+- PR mở có mã: #164 head 6e45777 không đổi; đọc lại diff/contract/C# 7eaee2a2. Báo cáo giữ 0 cao / 4 trung bình / 6 thấp trên head, phân biệt master đã có #177/#179, không đăng lại toàn bộ phát hiện cũ như lỗi mới.
+- Docs-only; mọi phát hiện là suy luận từ mã, chưa chạy thử. Không chạy Cargo/oracle/mutation, không sửa mã. Tiếp REVIEW-B4 sau merge PR docs này.
