@@ -79,3 +79,9 @@
 - REVIEW-B4 #215 merged tại f795e18; content diff sạch, claim nhả, branch local/worktree dọn. REVIEW-W9-CONTRACTS claim bởi C.
 - Đối chiếu E1..E9/R1..R11 với C# 7eaee2a2 và crates. 254 tên test inventory tìm thấy, không phải test runner. Sửa docs E1/E3/E5/R1/R6/R7 và hai plan: baseline/golden, Option/Localizer, no-save khi full, empty-map rearm, trạng thái pages. Không sửa Rust/assets/goldens.
 - Tổng lịch sử báo cáo 1 cao / 5 trung bình / 11 thấp gồm mục đã sửa; không phát hiện mới trùng. Mọi phát hiện là suy luận từ mã, chưa chạy thử. Không Cargo/oracle/mutation/native. Tiếp REVIEW-TEST-PLAN sau merge.
+## Review TEST-PLAN và bàn giao 6 việc, machine C, 2026-10-23
+- REVIEW-W9-CONTRACTS #216 merged tại 65b1597; content diff sạch, claim nhả, branch local/worktree dọn. REVIEW-TEST-PLAN claim bởi C cho PR docs cuối.
+- Các việc 1-5 đã merge theo đúng thứ tự: INVARIANTS #212, BACKLOG #213, PRS #214 (comment #164 issuecomment-6362445502), B4 #215, W9-CONTRACTS #216. TEST-PLAN: nội dung review hoàn tất, PR docs cuối dùng auto squash; trạng thái merge được xác minh trực tiếp qua GitHub khi bàn giao.
+- 81 mục test/12 crate, mỗi crate tối đa 14 mục (core T4 hai matrix vẫn tối đa 15 test); thêm regression G25/durability, sửa kỳ vọng stale-preview/LibRaw248/overflow và constructor retry; tách perf1e400 chờ oracle. Không biến đề xuất thành tuyên bố test đã chạy.
+- Mọi phát hiện: suy luận từ mã, chưa chạy thử. Không sửa Rust, assets, fixture/golden, dependency, hay repo C#. Không chạy cargo fmt/clippy/test/oracle/mutation/native bin. git diff --check, tên/dòng nguồn, inventory và UTF-8 không BOM/LF được kiểm. Không có tool ccd_pr/set_monitor trong phiên; auto-merge dùng gh như yêu cầu.
+- Công việc tiếp theo là implementation theo BACKLOG/P-52/G25 của máy sở hữu, ngoài phạm vi session chỉ đọc. Claim cuối nhả và worktree/branch của session dọn sau merge; không có target build của session này.
