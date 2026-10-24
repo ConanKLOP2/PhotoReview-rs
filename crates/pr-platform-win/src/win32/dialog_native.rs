@@ -287,6 +287,11 @@ pub mod user32 {
     /// the length as `count` (no NUL needed) and clears `DT_MODIFYSTRING` (0x10000) from `format`, because the text is read-only (D-W8B3-9).
     pub fn draw_text(hdc: Hdc, text: &str, rect: &mut Rect, format: u32) -> i32 {
         let mut units: Vec<u16> = text.encode_utf16().collect();
+        // DrawTextW has no characters to measure here; passing an empty Rust slice
+        // through the Windows binding can give USER32 a dangling buffer pointer.
+        if units.is_empty() {
+            return 0;
+        }
         if i32::try_from(units.len()).is_err() {
             return 0;
         }
