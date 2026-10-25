@@ -9,7 +9,6 @@
 //! - a `RefCell` borrow is NEVER held across an OS call, a page call, a hook or a callback: copy what is needed, release, then act;
 //! - a page is reached with `try_borrow_mut`; a page that is already borrowed (it is the one running) is skipped, never panics;
 //! - the content never stores a `NativeDialog` except in `link` (set by `on_initialized`, taken by `on_closed`, so the `Rc` cycle ends with the window).
-#![allow(unused_variables, dead_code)] // stub: the porter removes this line with the last `todo!()`
 
 use std::cell::{Cell, RefCell};
 use std::collections::{BTreeMap, BTreeSet, HashMap, HashSet, VecDeque};
@@ -34,11 +33,16 @@ use crate::dialogs::native::dialog::{DialogContent, DialogError, NativeDialog};
 use crate::dialogs::native::template::DialogItem;
 use crate::dialogs::settings::builder::inputs::SettingsPageBuilder;
 use crate::dialogs::settings::context::{
-    ActionProfilesUnavailable, ContextUiAction, SettingsPageContext, SharedSettingsPresenter,
+    ActionProfilesUnavailable, ContextUiAction, SettingsPageContext, SettingsUiPost, SharedSettingsPresenter,
 };
 use crate::dialogs::settings::page_view::{SettingsPageView, TextFn};
 use crate::host::message_loop::MessageLoop;
 use crate::win32::structs::{Hgdi, Hwnd, Lparam, Lresult, Msg, Wparam};
+
+thread_local! {
+    static SUBCLASS_REGISTRY: RefCell<HashMap<usize, std::rc::Weak<SettingsContent>>> = RefCell::new(HashMap::new());
+    static NEXT_SUBCLASS_KEY: Cell<usize> = const { Cell::new(1) };
+}
 
 // ---- ids of the frame (C# lines 54 to 76; a page control id is `1000 * (page index + 1) + n`) -------------------------------------------------------------
 
@@ -84,12 +88,12 @@ pub const KEY_BOX_SUBCLASS_ID: usize = 0x4B42_3335;
 
 /// C# `ViewportId(pageIndex)`: `VIEWPORT_BASE + page_index` (wrapping).
 pub fn viewport_id(page_index: i32) -> i32 {
-    todo!()
+    VIEWPORT_BASE.wrapping_add(page_index)
 }
 
 /// C# `PageIdBase(pageIndex)`: `PAGE_ID_STRIDE * (page_index + 1)` (wrapping). The first control id of the page is this value plus 1.
 pub fn page_id_base(page_index: i32) -> i32 {
-    todo!()
+    PAGE_ID_STRIDE.wrapping_mul(page_index.wrapping_add(1))
 }
 
 // ---- options and arguments ---------------------------------------------------------------------------------------------------------------------------
@@ -175,7 +179,12 @@ pub enum SettingsDialogError {
 impl fmt::Display for SettingsDialogError {
     /// `PageCountMismatch`: `"A settings page is required for every SettingsPresenter.Pages entry (expected {expected}, got {actual})."`.
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        todo!()
+        match self {
+            Self::PageCountMismatch { expected, actual } => write!(
+                f,
+                "A settings page is required for every SettingsPresenter.Pages entry (expected {expected}, got {actual})."
+            ),
+        }
     }
 }
 
@@ -206,7 +215,18 @@ pub(super) struct ScratchSeed {
 impl ScratchSeed {
     /// `SettingsPresenter::new(settings, SettingsPresenterOptions { store: None, localization: None, update_checker: None, ..seed })`.
     pub(super) fn presenter(&self, settings: &AppSettings) -> SettingsPresenter {
-        todo!()
+        SettingsPresenter::new(
+            settings,
+            SettingsPresenterOptions {
+                store: None,
+                localization: None,
+                update_checker: None,
+                physical_memory_bytes: self.physical_memory_bytes,
+                settings_texts: Arc::clone(&self.settings_texts),
+                shell_integration: Arc::clone(&self.shell_integration),
+                executable_path: None,
+            },
+        )
     }
 }
 
@@ -312,7 +332,83 @@ impl SettingsContent {
     /// the pages (`options.pages` or `catalog::create_pages()`), `Err(PageCountMismatch)` when their number differs from `PAGES.len()`; `build_items(..)`; the context over a
     /// `PageHost` that holds a `Weak` (`Rc::new_cyclic`); `register_subclass_key()`. Nothing touches the OS.
     pub(super) fn new(args: SettingsDialogArgs) -> Result<Rc<SettingsContent>, SettingsDialogError> {
-        todo!()
+        let scratch = ScratchSeed {
+            physical_memory_bytes: args.presenter.physical_memory_bytes,
+            settings_texts: Arc::clone(&args.presenter.settings_texts),
+            shell_integration: Arc::clone(&args.presenter.shell_integration),
+        };
+        let presenter = Rc::new(RefCell::new(SettingsPresenter::new(&args.current, args.presenter)));
+        let SettingsDialogOptions {
+            files,
+            warnings,
+            target,
+            pages,
+            open_url,
+            start_explorer,
+            version,
+            control_key_down,
+            show_action_profiles,
+        } = args.options;
+        let warnings = warnings.unwrap_or_else(crate::dialogs::action_profiles::TaskDialogWarningSink::instance);
+        let pages = pages.unwrap_or_else(crate::dialogs::settings::catalog::create_pages);
+        let expected = pr_app::presenters::settings::load::PAGES.len();
+        if pages.len() != expected {
+            return Err(SettingsDialogError::PageCountMismatch {
+                expected,
+                actual: pages.len(),
+            });
+        }
+        let pages: Vec<PageHandle> = pages.into_iter().map(|page| Rc::new(RefCell::new(page))).collect();
+        let declaration = Self::build_items(&pages, version.as_deref());
+        let page_views = vec![PageView::default(); pages.len()];
+        let options = ContentOptions {
+            files,
+            target,
+            open_url,
+            start_explorer,
+            version,
+            control_key_down,
+            show_action_profiles,
+        };
+        let decoder_factory = args.decoder_factory;
+        let content = Rc::new_cyclic(|weak| {
+            let host = Rc::new(crate::dialogs::settings::dialog::host::PageHost::new(weak.clone()));
+            let context = SettingsPageContext::new(host);
+            SettingsContent {
+                presenter,
+                options,
+                scratch,
+                decoder_factory,
+                warnings,
+                pages,
+                builders: declaration.builders.into_iter().map(RefCell::new).collect(),
+                items: declaration.items,
+                declared: declaration.declared,
+                context,
+                poster: Arc::new(WindowPoster::new()),
+                local_queue: RefCell::new(VecDeque::new()),
+                subclass_key: Cell::new(0),
+                link: RefCell::new(None),
+                subscription: RefCell::new(None),
+                view: ViewState {
+                    active: Cell::new(-1),
+                    saved: Cell::new(false),
+                    loading: Cell::new(false),
+                    attached: Cell::new(false),
+                    in_language_refresh: Cell::new(false),
+                    viewport_width: Cell::new(0),
+                    viewport_height: Cell::new(0),
+                    pages: RefCell::new(page_views),
+                    hidden: RefCell::new(BTreeSet::new()),
+                    placed: RefCell::new(HashMap::new()),
+                    page_combos: RefCell::new(HashSet::new()),
+                    actions_json: RefCell::new(None),
+                    key_box_brush: Cell::new(0),
+                },
+            }
+        });
+        content.register_subclass_key();
+        Ok(content)
     }
 
     /// C# `BuildItems` (lines 200 to 252) and `Flatten`, as a PURE function (no window, no content yet): `items` = header (`Static`, `tr::settings_header`), navigation list
@@ -321,57 +417,207 @@ impl SettingsContent {
     /// A builder with `error().is_some()` (D-W8B5-704) makes this function replace that page (inside its `RefCell`) by `PendingSettingsPage::new(key)` declared on a fresh
     /// builder. The sets of the builders are merged into `declared`.
     pub(super) fn build_items(pages: &[PageHandle], version: Option<&str>) -> Declaration {
-        todo!()
+        use crate::dialogs::native::template::{DIALOG_STYLE_CHILD, DialogControlClass as Class};
+        const TAB: u32 = 0x0001_0000;
+        const TEXT: u32 = DIALOG_STYLE_CHILD | 0x80;
+        let mut items = vec![
+            DialogItem::new(Class::Static, HEADER_ID, pr_l10n::tr::settings_header(), TEXT),
+            DialogItem::new(
+                Class::ListBox,
+                NAV_ID,
+                "",
+                DIALOG_STYLE_CHILD | TAB | 1 | 0x100 | 0x10 | 0x40,
+            )
+            .with_ex_style(0x200),
+            DialogItem::new(Class::Static, VERSION_ID, version.unwrap_or_default(), TEXT),
+            DialogItem::new(Class::Static, PAGE_TITLE_ID, "", TEXT),
+            DialogItem::new(Class::ScrollBar, SCROLL_ID, "", DIALOG_STYLE_CHILD | 1),
+        ];
+        for index in 0..pages.len() {
+            items.push(
+                DialogItem::new(
+                    Class::Static,
+                    viewport_id(i32::try_from(index).unwrap_or(i32::MAX)),
+                    "",
+                    TEXT | 0x0200_0000 | 0x0400_0000,
+                )
+                .with_ex_style(0x0001_0000),
+            );
+        }
+        for (id, text) in [
+            (DEFAULTS_ID, pr_l10n::tr::settings_restore_defaults()),
+            (RESET_PAGE_ID, pr_l10n::tr::settings_reset_page()),
+            (EXPORT_ID, pr_l10n::tr::settings_export_settings()),
+            (IMPORT_ID, pr_l10n::tr::settings_import_settings()),
+            (CANCEL_ID, pr_l10n::tr::common_cancel()),
+            (APPLY_ID, pr_l10n::tr::common_apply()),
+            (SAVE_ID, pr_l10n::tr::common_save()),
+        ] {
+            items.push(DialogItem::new(
+                Class::Button,
+                id,
+                text,
+                DIALOG_STYLE_CHILD | TAB | if id == SAVE_ID { 1 } else { 0 },
+            ));
+        }
+        let mut builders = Vec::with_capacity(pages.len());
+        let mut declared = DeclaredSets::default();
+        for (index, page_handle) in pages.iter().enumerate() {
+            let Some(mut page) = page_handle.try_borrow_mut().ok() else {
+                continue;
+            };
+            let key = page.key().to_owned();
+            let mut builder = SettingsPageBuilder::new(page_id_base(i32::try_from(index).unwrap_or(i32::MAX)));
+            page.declare(&mut builder);
+            if builder.error().is_some() {
+                *page = Box::new(crate::dialogs::settings::catalog::PendingSettingsPage::new(key));
+                builder = SettingsPageBuilder::new(page_id_base(i32::try_from(index).unwrap_or(i32::MAX)));
+                page.declare(&mut builder);
+            }
+            declared.combo_items.extend(builder.combo_items().clone());
+            declared.notes.extend(builder.notes().iter().copied());
+            declared.key_boxes.extend(builder.key_boxes().iter().copied());
+            declared.warning_texts.extend(builder.warning_texts().iter().copied());
+            builders.push(builder);
+        }
+        Declaration {
+            items,
+            builders,
+            declared,
+        }
     }
 
     /// C# `OnInitialized` (lines 271 to 305): hides and registers the viewports, subscribes the language event, fills the navigation list, selects the initial page, sets
     /// `attached`, activates the page without layout, posts the external-editor focus. Stores `link` and the window in the poster.
     pub(super) fn initialize(&self, dialog: &NativeDialog) {
-        todo!()
+        if let Ok(mut link) = self.link.try_borrow_mut() {
+            *link = Some(dialog.clone());
+        }
+        for index in 0..self.pages.len() {
+            let id = viewport_id(i32::try_from(index).unwrap_or(i32::MAX));
+            let viewport = crate::win32::dialog_native::user32::get_dlg_item(dialog.hwnd(), id);
+            dialog.add_child_host(viewport);
+            self.forward(dialog, viewport, true);
+            crate::win32::api::user32::show_window(viewport, crate::win32::messages::SW_HIDE as i32);
+        }
+        let nav = dialog.item(NAV_ID);
+        self.forward(dialog, nav, false);
+        crate::dialogs::native::controls::basic::ListBoxControl::clear(nav);
+        for page in &self.pages {
+            if let Ok(page) = page.try_borrow() {
+                crate::dialogs::native::controls::basic::ListBoxControl::add(nav, &page.title());
+            }
+        }
+        let key = if self.options.target == SettingsTarget::ExternalEditor {
+            "Files".to_owned()
+        } else {
+            SettingsPresenter::initial_page_key()
+        };
+        let index = self
+            .pages
+            .iter()
+            .position(|page| page.borrow().key() == key)
+            .unwrap_or(0);
+        crate::dialogs::native::controls::basic::ListBoxControl::select_single(nav, i32::try_from(index).unwrap_or(0));
+        let poster = Arc::clone(&self.poster);
+        *self.subscription.borrow_mut() = Some(pr_l10n::localizer::on_current_changed(move || {
+            poster.post_language_changed()
+        }));
+        self.poster.set_hwnd(dialog.hwnd());
+        self.view.attached.set(true);
+        self.activate_page(
+            dialog,
+            i32::try_from(index).unwrap_or(0),
+            self.options.target != SettingsTarget::ExternalEditor,
+            false,
+        );
+        if self.options.target == SettingsTarget::ExternalEditor {
+            self.post_local(
+                dialog,
+                Box::new(|content, dialog| {
+                    content.focus_external_editor(dialog);
+                }),
+            );
+        }
     }
 
     /// C# `FocusExternalEditor` (lines 307 to 331): the Files page creates its controls, becomes the showing page (without remembering it) and focuses its editor path box;
     /// `false` when no page handles it.
     pub fn focus_external_editor(&self, dialog: &NativeDialog) -> bool {
-        todo!()
+        let Some(index) = self.pages.iter().position(|page| page.borrow().key() == "Files") else {
+            return false;
+        };
+        self.ensure_page_created(dialog, index);
+        if self.view.active.get() != i32::try_from(index).unwrap_or(-1) {
+            self.activate_page(dialog, i32::try_from(index).unwrap_or(-1), false, true);
+        }
+        self.pages
+            .get(index)
+            .and_then(|page| page.try_borrow_mut().ok())
+            .is_some_and(|mut page| page.focus_external_editor())
     }
 
     /// The live dialog (`None` before `on_initialized` and after `on_closed`).
     pub(super) fn native(&self) -> Option<NativeDialog> {
-        todo!()
+        self.link.try_borrow().ok()?.as_ref().cloned()
     }
 
     /// The window handle of the live dialog; `0` when there is none.
     pub(super) fn hwnd(&self) -> Hwnd {
-        todo!()
+        self.native().map_or(0, |dialog| dialog.hwnd())
     }
 
     /// Runs `f` with the live dialog; `None` (and `f` is not called) when the window does not exist. Used by the weak adapter. The handle is CLONED out of `link` and the
     /// `link` borrow is released BEFORE `f` runs (`f` re-enters the dialog procedure; a held borrow would make the next `hwnd()` or `with_native` panic).
     pub(super) fn with_native<R>(&self, f: impl FnOnce(&NativeDialog) -> R) -> Option<R> {
-        todo!()
+        let dialog = self.native()?;
+        Some(f(&dialog))
     }
 
     /// `pages[index]` for `index` in range (`None` otherwise, never panics).
     pub(super) fn page(&self, index: i32) -> Option<PageHandle> {
-        todo!()
+        let index = usize::try_from(index).ok()?;
+        self.pages.get(index).cloned()
     }
 
     /// Registers this content in the subclass registry (a `thread_local!` map from a non-zero counter value to a `Weak<SettingsContent>`) and stores the key in `subclass_key`.
     /// Called once at the end of `new`. The key is the `ref_data` of every subclass procedure of this window (D-W8B5-908); a pointer is never used.
     pub(super) fn register_subclass_key(self: &Rc<Self>) {
-        todo!()
+        let key = NEXT_SUBCLASS_KEY.with(|next| {
+            let current = next.get().max(1);
+            next.set(current.wrapping_add(1).max(1));
+            current
+        });
+        self.subclass_key.set(key);
+        SUBCLASS_REGISTRY.with(|registry| {
+            if let Ok(mut registry) = registry.try_borrow_mut() {
+                registry.insert(key, Rc::downgrade(self));
+            }
+        });
     }
 
     /// The content registered under `key`, `None` when the key is unknown or the window is closed (the procedure then passes the message on).
     pub(super) fn from_subclass_key(key: usize) -> Option<Rc<SettingsContent>> {
-        todo!()
+        if key == 0 {
+            return None;
+        }
+        SUBCLASS_REGISTRY
+            .try_with(|registry| registry.try_borrow().ok()?.get(&key)?.upgrade())
+            .ok()
+            .flatten()
     }
 
     /// Removes the registry entry and zeroes `subclass_key` (called by `close::on_closed` and by `Drop`; idempotent: a second call, or a call after the registry was torn down
     /// at thread exit, does nothing and never panics).
     pub(super) fn forget_subclass_key(&self) {
-        todo!()
+        let key = self.subclass_key.replace(0);
+        if key != 0 {
+            let _ = SUBCLASS_REGISTRY.try_with(|registry| {
+                if let Ok(mut registry) = registry.try_borrow_mut() {
+                    registry.remove(&key);
+                }
+            });
+        }
     }
 }
 
@@ -386,67 +632,67 @@ impl Drop for SettingsContent {
 impl DialogContent for SettingsContent {
     /// C# `Title` = `tr::settings_window_title()`.
     fn title(&self) -> String {
-        todo!()
+        pr_l10n::tr::settings_window_title()
     }
 
     /// C# `Items`: a clone of `items`.
     fn items(&self) -> Vec<DialogItem> {
-        todo!()
+        self.items.clone()
     }
 
     /// C# `Resizable` = `true`.
     fn resizable(&self) -> bool {
-        todo!()
+        true
     }
 
     /// C# `HeaderControlIds` = `[HEADER_ID, PAGE_TITLE_ID]`.
     fn header_control_ids(&self) -> Vec<i32> {
-        todo!()
+        vec![HEADER_ID, PAGE_TITLE_ID]
     }
 
     /// C# `InitialFocusId` = `NAV_ID`.
     fn initial_focus_id(&self) -> i32 {
-        todo!()
+        NAV_ID
     }
 
     /// C# `DefaultButtonId` = `SAVE_ID`.
     fn default_button_id(&self) -> i32 {
-        todo!()
+        SAVE_ID
     }
 
     /// C# `PreferredClientSize` -> `footer` (19m).
     fn preferred_client_size(&self, dialog: &NativeDialog) -> (i32, i32) {
-        todo!()
+        self.preferred_size(dialog)
     }
 
     /// C# `MinimumClientSize` -> `footer` (19m).
     fn minimum_client_size(&self, dialog: &NativeDialog) -> (i32, i32) {
-        todo!()
+        self.minimum_size(dialog)
     }
 
     /// C# `LayoutControls` -> `footer` (19m).
     fn layout_controls(&self, dialog: &NativeDialog, client_width: i32, client_height: i32) {
-        todo!()
+        self.layout_controls(dialog, client_width, client_height)
     }
 
     /// C# `OnInitialized` -> [`SettingsContent::initialize`].
     fn on_initialized(&self, dialog: &NativeDialog) {
-        todo!()
+        self.initialize(dialog)
     }
 
     /// C# `OnOk` -> `apply::try_save_all` (19l).
     fn on_ok(&self, dialog: &NativeDialog) -> bool {
-        todo!()
+        self.try_save_all(dialog)
     }
 
     /// C# `OnCommand` -> `apply::handle_command` (19l).
     fn on_command(&self, dialog: &NativeDialog, id: i32, notification: i32) -> bool {
-        todo!()
+        self.handle_command(dialog, id, notification)
     }
 
     /// C# `OnScroll` -> `page_layout::handle_scroll` (19m).
     fn on_scroll(&self, dialog: &NativeDialog, id: i32, code: i32) {
-        todo!()
+        self.handle_scroll(dialog, id, code)
     }
 
     /// C# `OnWindowMessage` -> `messages::handle_window_message` (19l).
@@ -457,22 +703,22 @@ impl DialogContent for SettingsContent {
         wparam: Wparam,
         lparam: Lparam,
     ) -> Option<Lresult> {
-        todo!()
+        self.handle_window_message(dialog, message, wparam, lparam)
     }
 
     /// C# `OnDialogKey` -> `nav::handle_dialog_key` (19j).
     fn on_dialog_key(&self, dialog: &NativeDialog, message: &Msg) -> bool {
-        todo!()
+        self.handle_dialog_key(dialog, message)
     }
 
     /// C# `StaticTextColor` -> `surface::static_text_color` (19m).
     fn static_text_color(&self, dialog: &NativeDialog, id: i32) -> u32 {
-        todo!()
+        self.static_text_color(dialog, id)
     }
 
     /// C# `OnClosed` -> `close::on_closed` (19m).
     fn on_closed(&self, dialog: &NativeDialog) {
-        todo!()
+        self.on_closed(dialog)
     }
 }
 
@@ -494,7 +740,10 @@ impl std::fmt::Debug for SettingsDialog {
 impl SettingsDialog {
     /// C# constructor: `SettingsContent::new(args)`, then `NativeDialog::with_chrome(content, chrome)`. No window yet.
     pub fn new(args: SettingsDialogArgs) -> Result<SettingsDialog, SettingsDialogError> {
-        todo!()
+        let chrome = args.chrome.clone();
+        let content = SettingsContent::new(args)?;
+        let native = NativeDialog::with_chrome(content.clone(), chrome);
+        Ok(Self { native, content })
     }
 
     /// The native base (for `hwnd`, `dpi`, `item`, test helpers).
@@ -514,271 +763,294 @@ impl SettingsDialog {
         ready: Option<&dyn Fn(&SettingsDialog)>,
         message_loop: Option<&Rc<MessageLoop>>,
     ) -> Result<i32, DialogError> {
-        todo!()
+        let ready_callback = |_: &NativeDialog| {
+            if let Some(callback) = ready {
+                callback(self);
+            }
+        };
+        self.native.show_modal(owner, Some(&ready_callback), message_loop)
     }
 
     /// C# `Close()` (= cancel).
     pub fn close(&self) {
-        todo!()
+        self.native.close()
     }
 
     /// C# `Hwnd`.
     pub fn hwnd(&self) -> Hwnd {
-        todo!()
+        self.native.hwnd()
     }
 
     /// C# `IsClosed`.
     pub fn is_closed(&self) -> bool {
-        todo!()
+        self.native.is_closed()
     }
 
     /// C# `Presenter` (test seam).
     pub fn presenter(&self) -> SharedSettingsPresenter {
-        todo!()
+        Rc::clone(&self.content.presenter)
     }
 
     /// C# `Settings`: a clone of the working copy; after a successful Save/Apply it is the saved one.
     pub fn settings(&self) -> AppSettings {
-        todo!()
+        self.content.presenter.borrow().settings().clone()
     }
 
     /// C# `Saved`: at least one Save/Apply succeeded (also when Cancel followed).
     pub fn saved(&self) -> bool {
-        todo!()
+        self.content.view.saved.get()
     }
 
     /// C# `Pages.Count`.
     pub fn page_count(&self) -> usize {
-        todo!()
+        self.content.pages.len()
     }
 
     /// C# `Pages[index].Key`; `None` out of range.
     pub fn page_key(&self, index: usize) -> Option<String> {
-        todo!()
+        self.content.pages.get(index).map(|page| page.borrow().key().to_owned())
     }
 
     /// C# `ActivePageIndex`.
     pub fn active_page_index(&self) -> i32 {
-        todo!()
+        self.content.view.active.get()
     }
 
     /// C# `ActivePageKey` (`""` before the first activation).
     pub fn active_page_key(&self) -> String {
-        todo!()
+        let index = self.active_page_index();
+        self.page_key(usize::try_from(index).unwrap_or(usize::MAX))
+            .unwrap_or_default()
     }
 
     /// C# `ScrollOffset(index)`; `0` out of range.
     pub fn scroll_offset(&self, index: usize) -> i32 {
-        todo!()
+        self.content
+            .view
+            .pages
+            .try_borrow()
+            .ok()
+            .and_then(|pages| pages.get(index).map(|page| page.scroll))
+            .unwrap_or(0)
     }
 
     /// C# `ContentHeight(index)`; `0` out of range.
     pub fn content_height(&self, index: usize) -> i32 {
-        todo!()
+        self.content
+            .view
+            .pages
+            .try_borrow()
+            .ok()
+            .and_then(|pages| pages.get(index).map(|page| page.content_height))
+            .unwrap_or(0)
     }
 
     /// C# `ViewportHeight`.
     pub fn viewport_height(&self) -> i32 {
-        todo!()
+        self.content.view.viewport_height.get()
     }
 
     /// C# `PageItems(index)`: the declared items of the page in declaration order (= Tab order); empty out of range.
     pub fn page_items(&self, index: usize) -> Vec<DialogItem> {
-        todo!()
+        self.content
+            .builders
+            .get(index)
+            .and_then(|builder| builder.try_borrow().ok().map(|builder| builder.items().to_vec()))
+            .unwrap_or_default()
     }
 
     /// C# `IsPageCreated(index)`.
     pub fn is_page_created(&self, index: usize) -> bool {
-        todo!()
+        self.content.is_page_created(index)
     }
 
     /// C# `FocusExternalEditor()`.
     pub fn focus_external_editor(&self) -> bool {
-        todo!()
+        self.content.focus_external_editor(&self.native)
     }
 
     /// C# `EnsurePageCreated(index)`.
     pub fn ensure_page_created(&self, index: usize) {
-        todo!()
+        self.content.ensure_page_created(&self.native, index)
     }
 
     /// C# `EnsureAllPagesCreated()`.
     pub fn ensure_all_pages_created(&self) {
-        todo!()
+        self.content.ensure_all_pages_created(&self.native)
     }
 
     /// C# `ActivatePage(index, remember, layout)`.
     pub fn activate_page(&self, index: i32, remember: bool, layout: bool) {
-        todo!()
+        self.content.activate_page(&self.native, index, remember, layout)
     }
 
     /// C# `CyclePage(forward)`.
     pub fn cycle_page(&self, forward: bool) {
-        todo!()
+        self.content.cycle_page(&self.native, forward)
     }
 
     /// C# `HandleKeyForTest(in Msg)`.
     pub fn handle_key_for_test(&self, message: &Msg) -> bool {
-        todo!()
+        self.content.handle_dialog_key(&self.native, message)
     }
 
     /// C# `IsKeyBox(hwnd)`.
     pub fn is_key_box(&self, hwnd: Hwnd) -> bool {
-        todo!()
+        self.content.is_key_box(&self.native, hwnd)
     }
 
     /// C# `IsKeyBoxId(id)`.
     pub fn is_key_box_id(&self, id: i32) -> bool {
-        todo!()
+        self.content.is_key_box_id(id)
     }
 
     /// C# `CaptureKey(hwnd, wParam, lParam)`.
     pub fn capture_key(&self, hwnd: Hwnd, wparam: Wparam, lparam: Lparam) -> bool {
-        todo!()
+        self.content.capture_key(&self.native, hwnd, wparam, lparam)
     }
 
     /// C# `ActionsJson`.
     pub fn actions_json(&self) -> String {
-        todo!()
+        self.content.actions_json()
     }
 
     /// C# `RefreshActionsJsonFromPages()`.
     pub fn refresh_actions_json_from_pages(&self) -> String {
-        todo!()
+        self.content.refresh_actions_json_from_pages()
     }
 
     /// C# `SetActionsJson(json, source)`; `source_key` is the key of the calling page (`""` = none).
     pub fn set_actions_json(&self, json: &str, source_key: &str) {
-        todo!()
+        self.content.set_actions_json(&self.native, json, source_key)
     }
 
     /// C# `CollectAll()`.
     pub fn collect_all(&self) -> SettingsFormState {
-        todo!()
+        self.content.collect_all()
     }
 
     /// C# `TrySaveAll()`.
     pub fn try_save_all(&self) -> bool {
-        todo!()
+        self.content.try_save_all(&self.native)
     }
 
     /// C# `ResetActivePage()`.
     pub fn reset_active_page(&self) {
-        todo!()
+        self.content.reset_active_page(&self.native)
     }
 
     /// C# `ImportSettingsFrom(path)`.
     pub fn import_settings_from(&self, path: &std::path::Path) {
-        todo!()
+        self.content.import_settings_from(&self.native, path)
     }
 
     /// C# `Warn(title, message)`.
     pub fn warn(&self, title: &str, message: &str) {
-        todo!()
+        self.content.warn(&self.native, title, message)
     }
 
     /// C# `PostToUi(action)` from any thread (through the `Send + Sync` poster).
     pub fn post_to_ui(&self, action: ContextUiAction) {
-        todo!()
+        self.content.poster.post(action)
     }
 
     /// C# `RefreshLocalizedTexts()`.
     pub fn refresh_localized_texts(&self) {
-        todo!()
+        self.content.refresh_localized_texts(&self.native)
     }
 
     /// C# `SetControlTooltip(id, Func<string>)`: the text is asked again each time the tip is shown.
     pub fn set_control_tooltip_fn(&self, id: i32, text: TextFn) {
-        todo!()
+        self.content.set_control_tooltip_fn(&self.native, id, text)
     }
 
     /// C# `SetControlTooltip(id, string)`: a fixed text, set once.
     pub fn set_control_tooltip_text(&self, id: i32, text: &str) {
-        todo!()
+        self.content.set_control_tooltip_text(&self.native, id, text)
     }
 
     /// C# `GetControlText(id)`.
     pub fn control_text(&self, id: i32) -> String {
-        todo!()
+        self.content.get_control_text(&self.native, id)
     }
 
     /// C# `SetControlText(id, text)`.
     pub fn set_control_text(&self, id: i32, text: &str) {
-        todo!()
+        self.content.set_control_text(&self.native, id, text)
     }
 
     /// C# `IsControlChecked(id)`.
     pub fn is_control_checked(&self, id: i32) -> bool {
-        todo!()
+        self.content.is_control_checked(&self.native, id)
     }
 
     /// C# `SetControlChecked(id, value)`.
     pub fn set_control_checked(&self, id: i32, value: bool) {
-        todo!()
+        self.content.set_control_checked(&self.native, id, value)
     }
 
     /// C# `ComboSelectedIndex(id)`.
     pub fn combo_selected_index(&self, id: i32) -> i32 {
-        todo!()
+        self.content.combo_selected_index(&self.native, id)
     }
 
     /// C# `SetComboSelectedIndex(id, index)`.
     pub fn set_combo_selected_index(&self, id: i32, index: i32) {
-        todo!()
+        self.content.set_combo_selected_index(&self.native, id, index)
     }
 
     /// C# `SetComboItems(id, items, selected)`.
     pub fn set_combo_items(&self, id: i32, items: &[String], selected: i32) {
-        todo!()
+        self.content.set_combo_items(&self.native, id, items, selected)
     }
 
     /// C# `SliderValue(id)`.
     pub fn slider_value(&self, id: i32) -> i32 {
-        todo!()
+        self.content.slider_value(&self.native, id)
     }
 
     /// C# `SetSliderValue(id, value)`.
     pub fn set_slider_value(&self, id: i32, value: i32) {
-        todo!()
+        self.content.set_slider_value(&self.native, id, value)
     }
 
     /// C# `SetSliderRange(id, min, max)`.
     pub fn set_slider_range(&self, id: i32, min: i32, max: i32) {
-        todo!()
+        self.content.set_slider_range(&self.native, id, min, max)
     }
 
     /// C# `SetControlEnabled(id, enabled)`.
     pub fn set_control_enabled(&self, id: i32, enabled: bool) {
-        todo!()
+        self.content.set_control_enabled(&self.native, id, enabled)
     }
 
     /// C# `IsControlEnabled(id)`.
     pub fn is_control_enabled(&self, id: i32) -> bool {
-        todo!()
+        self.content.is_control_enabled(&self.native, id)
     }
 
     /// C# `SetControlVisible(id, visible)`.
     pub fn set_control_visible(&self, id: i32, visible: bool) {
-        todo!()
+        self.content.set_control_visible(&self.native, id, visible)
     }
 
     /// C# `IsControlVisible(id)`.
     pub fn is_control_visible(&self, id: i32) -> bool {
-        todo!()
+        self.content.is_control_visible(id)
     }
 
     /// C# `FocusControl(id)`.
     pub fn focus_control(&self, id: i32) {
-        todo!()
+        self.content.focus_control(&self.native, id)
     }
 
     /// C# `RelayoutActivePage()`.
     pub fn relayout_active_page(&self) {
-        todo!()
+        self.content.relayout_active_page(&self.native)
     }
 
     /// C# `EnsureVisible(id)`.
     pub fn ensure_visible(&self, id: i32) {
-        todo!()
+        self.content.ensure_visible(&self.native, id)
     }
 }

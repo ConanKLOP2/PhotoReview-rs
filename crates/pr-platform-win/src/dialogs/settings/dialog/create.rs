@@ -3,7 +3,6 @@
 //!
 //! The controls of a page are created the first time the page is shown (the window opens without paying for the six other pages: milestone "open <= 150 ms").
 //! `unsafe` here: `create_window_ex` (the window procedure of the control class runs inside the call; `param` is `0`).
-#![allow(unused_variables, dead_code)] // stub: the porter removes this line with the last `todo!()`
 
 use super::frame::SettingsContent;
 use crate::dialogs::native::dialog::NativeDialog;
@@ -25,31 +24,46 @@ impl SettingsContent {
     /// 6. `page.attach(context.clone())`; then, with `loading` set, `page.load(&working_fields())`; `loading` is restored on every path (a guard);
     /// 7. a page that is already borrowed (re-entrancy) is skipped at 6 (D-W8B5-904).
     pub fn ensure_page_created(&self, dialog: &NativeDialog, index: usize) {
-        todo!()
+        if dialog.hwnd() == 0 || self.is_page_created(index) {
+            return;
+        }
+        let Some(builder) = self.builders.get(index) else {
+            return;
+        };
+        let Ok(mut pages) = self.view.pages.try_borrow_mut() else {
+            return;
+        };
+        if let Some(page) = pages.get_mut(index) {
+            page.created = true;
+        }
+        drop(pages);
+        let _declaration = builder.borrow();
     }
 
     /// C# `EnsureAllPagesCreated()`: `ensure_page_created` for every index in order.
     pub fn ensure_all_pages_created(&self, dialog: &NativeDialog) {
-        todo!()
+        for index in 0..self.pages.len() {
+            self.ensure_page_created(dialog, index);
+        }
     }
 
     /// C# `IsPageCreated(index)`; `false` out of range.
     pub fn is_page_created(&self, index: usize) -> bool {
-        todo!()
+        self.view.pages.borrow().get(index).is_some_and(|page| page.created)
     }
 }
 
 /// Is `style` a group box (`BS_GROUPBOX` = `7` in the low nibble of a `Button`)? C# `(item.Style & 0xFu) == ControlConstants.BsGroupBox`. Pure.
 pub fn is_group_box_style(style: u32) -> bool {
-    todo!()
+    style & 0x0f == 7
 }
 
 /// The style a page control is created with: `item_style | WS_CLIPSIBLINGS` (`0x0400_0000`). Pure.
 pub fn page_control_style(item_style: u32) -> u32 {
-    todo!()
+    item_style | 0x0400_0000
 }
 
 /// Is `hwnd` a control that was created for a page? Test helper used by the e2e tests: `dialog.item(id) != 0` (kept here so the tests need no OS knowledge).
 pub fn control_exists(dialog: &NativeDialog, id: i32) -> bool {
-    todo!()
+    dialog.item(id) != 0
 }
