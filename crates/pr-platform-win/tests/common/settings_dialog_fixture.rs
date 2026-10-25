@@ -44,3 +44,27 @@ pub fn args() -> SettingsDialogArgs {
 pub fn dialog() -> SettingsDialog {
     SettingsDialog::new(args()).unwrap()
 }
+
+/// Page with observable lifecycle callbacks for frame ownership tests.
+pub struct ProbePage {
+    pub key: &'static str,
+    pub events: Rc<RefCell<Vec<String>>>,
+}
+impl pr_platform_win::dialogs::settings::page_view::SettingsPageView for ProbePage {
+    fn key(&self) -> &str {
+        self.key
+    }
+    fn declare(&mut self, page: &mut pr_platform_win::dialogs::settings::builder::inputs::SettingsPageBuilder) {
+        page.note(
+            Some(pr_platform_win::dialogs::settings::page_view::fixed_text(self.key)),
+            false,
+        );
+        self.events.borrow_mut().push(format!("declare:{}", self.key));
+    }
+    fn attach(&mut self, _: pr_platform_win::dialogs::settings::context::SettingsPageContext) {}
+    fn load(&mut self, _: &pr_app::presenters::settings_form_state::SettingsFormState) {}
+    fn collect(&mut self, _: &mut pr_app::presenters::settings_form_state::SettingsFormState) {}
+    fn on_closed(&mut self) {
+        self.events.borrow_mut().push(format!("close:{}", self.key));
+    }
+}

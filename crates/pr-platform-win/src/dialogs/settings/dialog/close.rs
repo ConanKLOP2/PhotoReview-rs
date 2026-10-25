@@ -17,6 +17,9 @@ impl SettingsContent {
     /// 6. `forget_subclass_key()` (after this the subclass procedures of the children pass messages on);
     /// 7. `link.take()` (breaks the `NativeDialog` <-> content cycle). Nothing may use `dialog` after this call returns, except the base class destroying the window.
     pub(super) fn on_closed(&self, _dialog: &NativeDialog) {
+        if self.view.closed.replace(true) {
+            return;
+        }
         if let Ok(mut subscription) = self.subscription.try_borrow_mut() {
             subscription.take();
         }

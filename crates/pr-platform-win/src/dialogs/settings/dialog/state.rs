@@ -115,3 +115,77 @@ impl SettingsContent {
         state
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::dialogs::settings::{
+        builder::inputs::SettingsPageBuilder, context::SettingsPageContext, page_view::SettingsPageView,
+    };
+    use std::{cell::RefCell, rc::Rc};
+
+    struct Page {
+        name: &'static str,
+        loads: Rc<RefCell<Vec<String>>>,
+    }
+    impl SettingsPageView for Page {
+        fn key(&self) -> &str {
+            self.name
+        }
+        fn declare(&mut self, _: &mut SettingsPageBuilder) {}
+        fn attach(&mut self, _: SettingsPageContext) {}
+        fn load(&mut self, state: &SettingsFormState) {
+            self.loads.borrow_mut().push(state.actions_json.clone());
+        }
+        fn collect(&mut self, state: &mut SettingsFormState) {
+            state.logging_enabled = true;
+        }
+    }
+    #[test]
+    fn collect_and_load_skip_the_running_page_and_keep_other_created_pages() {
+        let content = super::super::frame::test_content();
+        let loads = Rc::new(RefCell::new(Vec::new()));
+        for (i, name) in ["General", "Display"].into_iter().enumerate() {
+            *content.pages[i].borrow_mut() = Box::new(Page {
+                name,
+                loads: loads.clone(),
+            });
+            content.view.pages.borrow_mut()[i].created = true;
+        }
+        let dialog = NativeDialog::new(content.clone());
+        let _running = content.pages[0].borrow_mut();
+        let state = content.collect_all();
+        assert!(state.logging_enabled, "other created page was not collected");
+        content.load_all(&dialog, &state);
+        assert_eq!(
+            loads.borrow().len(),
+            1,
+            "borrowed page was loaded or remaining page was skipped"
+        );
+        content.set_actions_json(&dialog, "[]", "General");
+        assert_eq!(&*loads.borrow(), &[state.actions_json, "[]".to_owned()]);
+        assert_eq!(content.actions_json(), "[]");
+        assert!(!content.view.loading.get());
+    }
+
+    #[test]
+    fn set_actions_json_preserves_unsaved_fields_and_does_not_reload_the_source_page() {
+        let content = super::super::frame::test_content();
+        let first = Rc::new(RefCell::new(Vec::new()));
+        let second = Rc::new(RefCell::new(Vec::new()));
+        for (i, (name, loads)) in [("General", first.clone()), ("Display", second.clone())]
+            .into_iter()
+            .enumerate()
+        {
+            *content.pages[i].borrow_mut() = Box::new(Page { name, loads });
+            content.view.pages.borrow_mut()[i].created = true;
+        }
+        let dialog = NativeDialog::new(content.clone());
+        content.set_actions_json(&dialog, "", "General");
+        assert!(first.borrow().is_empty());
+        assert_eq!(&*second.borrow(), &[String::new()]);
+        let state = content.collect_all();
+        assert!(state.logging_enabled);
+        assert_eq!(state.actions_json, "");
+    }
+}

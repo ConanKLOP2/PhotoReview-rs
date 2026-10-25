@@ -177,3 +177,31 @@ impl SettingsContent {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn visibility_survives_a_builder_borrow_without_losing_plain_control_visibility() {
+        let content = super::super::frame::test_content();
+        let dialog = NativeDialog::new(content.clone());
+        let builder = content.builders[0].borrow();
+        let group = builder
+            .items()
+            .iter()
+            .find(|item| {
+                item.class == crate::dialogs::native::template::DialogControlClass::Button && item.style & 15 == 7
+            })
+            .unwrap()
+            .id;
+        content.set_control_visible(&dialog, 9999, false);
+        assert!(!content.is_control_visible(9999));
+        content.set_control_visible(&dialog, group, false); // Borrowed group's flag cannot be changed by a reentrant layout notification.
+        assert!(content.is_control_visible(group));
+        drop(builder);
+        content.set_control_visible(&dialog, group, false);
+        assert!(!content.is_control_visible(group));
+        content.set_control_visible(&dialog, group, true);
+        assert!(content.is_control_visible(group));
+    }
+}

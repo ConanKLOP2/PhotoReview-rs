@@ -5,6 +5,53 @@ mod desktop;
 mod fixture;
 use pr_platform_win::dialogs::settings::dialog::{SettingsDialog, frame::APPLY_ID};
 
+#[test]
+#[ignore = "native: needs desktop"]
+fn worker_post_runs_on_the_ui_thread_and_posts_after_close_are_dropped() {
+    desktop::on_sta(|| {
+        use pr_platform_win::dialogs::settings::{
+            context::SettingsPageHost,
+            dialog::{frame::WM_APP_QUEUE, host::PageHost},
+        };
+        let _styles = desktop::activate_visual_styles();
+        let d = fixture::dialog();
+        let host = PageHost::new(std::rc::Rc::downgrade(d.content()));
+        let retained = std::cell::RefCell::new(None);
+        let observed = std::sync::Arc::new(std::sync::Mutex::new(None));
+        let ui = std::thread::current().id();
+        let ready = |d: &SettingsDialog| {
+            let poster = host.ui_post();
+            let seen = observed.clone();
+            let worker_poster = poster.clone();
+            std::thread::spawn(move || {
+                worker_poster.post(Box::new(move |_| {
+                    *seen.lock().unwrap() = Some(std::thread::current().id());
+                }))
+            })
+            .join()
+            .unwrap();
+            assert!(observed.lock().unwrap().is_none());
+            // SAFETY: integer-only queue wake to this test's own dialog; queued work is owned by the WindowPoster.
+            unsafe {
+                pr_platform_win::win32::dialog_native::user32::send_message(d.hwnd(), WM_APP_QUEUE, 0, 0);
+            }
+            assert_eq!(*observed.lock().unwrap(), Some(ui));
+            *retained.borrow_mut() = Some(poster);
+            d.close();
+        };
+        assert_eq!(d.show_modal(0, Some(&ready), None).unwrap(), 2);
+        // Close requests end the modal loop; cleanup happens when show_modal returns.
+        assert_eq!(host.hwnd(), 0);
+        assert_eq!(host.control_text(1), "");
+        assert_eq!(host.combo_selected_index(1), -1);
+        retained
+            .borrow()
+            .as_ref()
+            .unwrap()
+            .post(Box::new(|_| panic!("post after close executed")));
+    });
+}
+
 // C#: Apply_SavesAndStaysOpen_AndASubsequentCancelStillReportsSaved;
 // AMandatoryBoxEmptied_IsRefusedAtSave_WithTheInvalidShortcutMessage.
 #[test]

@@ -1,6 +1,43 @@
 //! C# SettingsDialog layout/scroll oracle and exact worked placement checks (W8-19m).
 use pr_platform_win::dialogs::settings::dialog::{footer::*, page_layout::*, surface::*};
 use pr_platform_win::dialogs::zoom_prompt::{DialogMeasure, Placement};
+#[path = "common/settings_dialog_fixture.rs"]
+mod fixture;
+
+#[test]
+fn on_closed_calls_each_page_once_even_when_cleanup_is_requested_twice() {
+    use pr_platform_win::dialogs::native::dialog::core::DialogContent;
+    use pr_platform_win::dialogs::settings::dialog::SettingsDialog;
+    let events = std::rc::Rc::new(std::cell::RefCell::new(Vec::new()));
+    let keys = [
+        "General",
+        "Display",
+        "Mouse",
+        "Performance",
+        "Shortcuts",
+        "Files",
+        "Diagnostics",
+    ];
+    let mut args = fixture::args();
+    args.options.pages = Some(
+        keys.iter()
+            .map(|&key| {
+                Box::new(fixture::ProbePage {
+                    key,
+                    events: events.clone(),
+                }) as Box<dyn pr_platform_win::dialogs::settings::page_view::SettingsPageView>
+            })
+            .collect(),
+    );
+    let d = SettingsDialog::new(args).unwrap();
+    events.borrow_mut().clear();
+    DialogContent::on_closed(d.content().as_ref(), d.native());
+    DialogContent::on_closed(d.content().as_ref(), d.native());
+    assert_eq!(
+        *events.borrow(),
+        keys.iter().map(|key| format!("close:{key}")).collect::<Vec<_>>()
+    );
+}
 
 struct Metrics {
     avg: i32,

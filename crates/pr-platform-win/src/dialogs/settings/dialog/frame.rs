@@ -258,6 +258,8 @@ pub(super) struct ViewState {
     pub(super) loading: Cell<bool>,
     /// C# `_attached`: set by `on_initialized`, gates `layout_page`.
     pub(super) attached: Cell<bool>,
+    /// Rust lifecycle guard: cleanup and page callbacks run at most once, including reentrant cleanup.
+    pub(super) closed: Cell<bool>,
     /// C# `_inLanguageRefresh`.
     pub(super) in_language_refresh: Cell<bool>,
     /// C# `_viewportWidth`.
@@ -276,6 +278,34 @@ pub(super) struct ViewState {
     pub(super) actions_json: RefCell<Option<String>>,
     /// C# `_keyBoxBrush` (`0` = none yet).
     pub(super) key_box_brush: Cell<Hgdi>,
+}
+
+#[cfg(test)]
+pub(super) fn test_content() -> Rc<SettingsContent> {
+    struct InertShell;
+    impl pr_core::abstractions::ShellIntegration for InertShell {
+        fn get_state(&self, _: &str) -> pr_core::abstractions::ShellMenuState {
+            pr_core::abstractions::ShellMenuState::NotRegistered
+        }
+        fn register(&self, _: &str) -> std::io::Result<()> {
+            panic!("unexpected Shell write")
+        }
+        fn unregister(&self) -> std::io::Result<()> {
+            panic!("unexpected Shell write")
+        }
+    }
+    SettingsContent::new(SettingsDialogArgs {
+        current: AppSettings::new(&pr_core::settings::app_settings::EnglishSettingsTexts),
+        presenter: SettingsPresenterOptions::new(
+            16 << 30,
+            Arc::new(pr_core::settings::app_settings::EnglishSettingsTexts),
+            Arc::new(InertShell),
+        ),
+        decoder_factory: None,
+        options: SettingsDialogOptions::default(),
+        chrome: None,
+    })
+    .unwrap()
 }
 
 /// What [`SettingsContent::build_items`] produces.
@@ -395,6 +425,7 @@ impl SettingsContent {
                     saved: Cell::new(false),
                     loading: Cell::new(false),
                     attached: Cell::new(false),
+                    closed: Cell::new(false),
                     in_language_refresh: Cell::new(false),
                     viewport_width: Cell::new(0),
                     viewport_height: Cell::new(0),

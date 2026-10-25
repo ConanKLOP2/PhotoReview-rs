@@ -10,6 +10,32 @@ use pr_platform_win::dialogs::settings::dialog::{dirty::*, host::*, keybox::*};
 mod fixture;
 
 #[test]
+fn loading_guard_restores_nested_state_and_restores_after_panic() {
+    use pr_platform_win::dialogs::native::dialog::core::DialogContent;
+    use pr_platform_win::dialogs::settings::dialog::state::LoadingGuard;
+    let d = fixture::dialog();
+    let notification = || DialogContent::on_command(d.content().as_ref(), d.native(), 999, 99);
+    assert!(!notification());
+    {
+        let _outer = LoadingGuard::new(d.content());
+        assert!(notification());
+        {
+            let _inner = LoadingGuard::new(d.content());
+            assert!(notification());
+        }
+        assert!(notification(), "inner guard cleared the outer loading state");
+    }
+    assert!(!notification());
+    let panic = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+        let _guard = LoadingGuard::new(d.content());
+        assert!(notification());
+        panic!("simulated page-load failure");
+    }));
+    assert!(panic.is_err());
+    assert!(!notification(), "page notifications still swallowed after panic");
+}
+
+#[test]
 fn action_json_visibility_and_key_box_rows_match_the_csharp_golden() {
     let golden: serde_json::Value =
         serde_json::from_str(include_str!("../../../tests/golden/settings-dialog-state.json")).unwrap();
