@@ -11,7 +11,7 @@
 
 use std::collections::VecDeque;
 use std::sync::Mutex;
-use std::sync::atomic::AtomicIsize;
+use std::sync::atomic::{AtomicIsize, Ordering};
 
 use super::frame::SettingsContent;
 use crate::dialogs::native::dialog::NativeDialog;
@@ -36,32 +36,50 @@ impl std::fmt::Debug for WindowPoster {
 impl WindowPoster {
     /// A poster with no window (every `post` is dropped until `set_hwnd`).
     pub fn new() -> Self {
-        todo!()
+        Self {
+            hwnd: AtomicIsize::new(0),
+            queue: Mutex::new(VecDeque::new()),
+        }
     }
 
     /// Sets the window the messages go to (`initialize`), `0` when it closes (`close::on_closed`; also clears the queue: queued actions of a closed window are dropped).
     pub fn set_hwnd(&self, hwnd: Hwnd) {
-        todo!()
+        let mut queue = self.queue.lock().unwrap_or_else(std::sync::PoisonError::into_inner);
+        self.hwnd.store(hwnd, Ordering::Release);
+        if hwnd == 0 {
+            queue.clear();
+        }
     }
 
     /// The window (`0` = none).
     pub fn hwnd(&self) -> Hwnd {
-        todo!()
+        self.hwnd.load(Ordering::Acquire)
     }
 
     /// Takes every queued action in FIFO order (the queue is empty afterwards). The mutex is held only for the swap, never while an action runs.
     pub fn drain(&self) -> Vec<ContextUiAction> {
-        todo!()
+        self.queue
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner)
+            .drain(..)
+            .collect()
     }
 
     /// How many actions wait (tests).
     pub fn pending(&self) -> usize {
-        todo!()
+        self.queue
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner)
+            .len()
     }
 
     /// C# `OnLocalizerChanged`: `hwnd != 0` -> `post_message(hwnd, WM_APP_LANGUAGE, 0, 0)` (any thread); the error is ignored.
     pub fn post_language_changed(&self) {
-        todo!()
+        let hwnd = self.hwnd();
+        if hwnd != 0 {
+            // SAFETY: integer-only wake message, no borrowed data; the OS validates the window handle.
+            let _ = unsafe { crate::win32::api::user32::post_message(hwnd, super::frame::WM_APP_LANGUAGE, 0, 0) };
+        }
     }
 }
 
@@ -75,13 +93,23 @@ impl SettingsUiPost for WindowPoster {
     /// C# `PostToUi`: `hwnd == 0` -> the action is dropped; else it is queued and `post_message(hwnd, WM_APP_QUEUE, 0, 0)` wakes the window (a failed post leaves the action
     /// queued: the next wake runs it). Safe from any thread.
     fn post(&self, action: ContextUiAction) {
-        todo!()
+        let hwnd = {
+            let mut queue = self.queue.lock().unwrap_or_else(std::sync::PoisonError::into_inner);
+            let hwnd = self.hwnd();
+            if hwnd == 0 {
+                return;
+            }
+            queue.push_back(action);
+            hwnd
+        };
+        // SAFETY: integer-only wake message, no borrowed data; queued actions are owned by the poster.
+        let _ = unsafe { crate::win32::api::user32::post_message(hwnd, super::frame::WM_APP_QUEUE, 0, 0) };
     }
 }
 
 /// C# `(short)((long)wParam >> 16 & 0xFFFF)`: the signed high word of a `WM_MOUSEWHEEL` `wParam` (the wheel delta; 120 = one notch). Pure.
 pub fn wheel_delta(wparam: Wparam) -> i32 {
-    todo!()
+    ((wparam >> 16) as u16 as i16) as i32
 }
 
 /// Does `ForwardProc` send this message on to the dialog? Pure. `wheel_only` is `subclass_id == WHEEL_SUBCLASS_ID`.
@@ -90,7 +118,14 @@ pub fn wheel_delta(wparam: Wparam) -> i32 {
 ///   (`0x0132 ..= 0x0138`);
 /// - everything else: `false`.
 pub fn is_forwarded(message: u32, wheel_only: bool, combo_is_dropped: bool) -> bool {
-    todo!()
+    if message == 0x020a {
+        return !combo_is_dropped;
+    }
+    !wheel_only
+        && matches!(
+            message,
+            0x0111 | 0x004e | 0x002b | 0x002c | 0x0114 | 0x0115 | 0x0132..=0x0138
+        )
 }
 
 impl SettingsContent {

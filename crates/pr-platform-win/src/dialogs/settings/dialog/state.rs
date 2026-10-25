@@ -24,8 +24,8 @@ impl<'a> std::fmt::Debug for LoadingGuard<'a> {
 impl<'a> LoadingGuard<'a> {
     /// Sets `loading` and remembers the previous value.
     pub fn new(content: &'a SettingsContent) -> Self {
-        let previous=content.view.loading.replace(true);
-        Self {content,previous}
+        let previous = content.view.loading.replace(true);
+        Self { content, previous }
     }
 }
 
@@ -39,21 +39,26 @@ impl SettingsContent {
     /// C# `WorkingFields()`: `state = presenter.load_fields()`; when `actions_json` is `Some(json)` the state's `actions_json` becomes `json`, else `actions_json` becomes
     /// `Some(state.actions_json.clone())`. The presenter is borrowed for the call only.
     pub(super) fn working_fields(&self) -> SettingsFormState {
-        let mut state=self.presenter.borrow().load_fields();
-        let stored=self.view.actions_json.borrow().clone();
-        if let Some(json)=stored {state.actions_json=json;} else {*self.view.actions_json.borrow_mut()=Some(state.actions_json.clone());}
+        let mut state = self.presenter.borrow().load_fields();
+        let stored = self.view.actions_json.borrow().clone();
+        if let Some(json) = stored {
+            state.actions_json = json;
+        } else {
+            *self.view.actions_json.borrow_mut() = Some(state.actions_json.clone());
+        }
         state
     }
 
     /// C# `ActionsJson` (`_actionsJson ??= LoadFields().ActionsJson`): the working action JSON shared by the Files/Shortcuts pages.
     pub fn actions_json(&self) -> String {
-        self.working_fields().actions_json
+        let stored = self.view.actions_json.borrow().clone();
+        stored.unwrap_or_else(|| self.working_fields().actions_json)
     }
 
     /// C# `RefreshActionsJsonFromPages()`: `json = collect_all().actions_json`; stored as the working value; returned.
     pub fn refresh_actions_json_from_pages(&self) -> String {
-        let json=self.collect_all().actions_json;
-        *self.view.actions_json.borrow_mut()=Some(json.clone());
+        let json = self.collect_all().actions_json;
+        *self.view.actions_json.borrow_mut() = Some(json.clone());
         json
     }
 
@@ -61,12 +66,19 @@ impl SettingsContent {
     /// json` (a page with its own JSON box collected stale text); then, with `loading` set, `page.load(&state)` for every CREATED page whose key is not `source_key` (a page that
     /// is borrowed is skipped); then `relayout_active_page`. (The C# also marks every page dirty: write-only, not ported, D-W8B5-907.)
     pub fn set_actions_json(&self, dialog: &NativeDialog, json: &str, source_key: &str) {
-        *self.view.actions_json.borrow_mut()=Some(json.to_owned());
-        let mut state=self.collect_all();state.actions_json=json.to_owned();
+        *self.view.actions_json.borrow_mut() = Some(json.to_owned());
+        let mut state = self.collect_all();
+        state.actions_json = json.to_owned();
         {
-            let _loading=LoadingGuard::new(self);
-            for (index,page) in self.pages.iter().enumerate() {
-                if self.is_page_created(index) {if let Ok(mut page)=page.try_borrow_mut() {if page.key()!=source_key {page.load(&state);}}}
+            let _loading = LoadingGuard::new(self);
+            for (index, page) in self.pages.iter().enumerate() {
+                if self.is_page_created(index) {
+                    if let Ok(mut page) = page.try_borrow_mut() {
+                        if page.key() != source_key {
+                            page.load(&state);
+                        }
+                    }
+                }
             }
         }
         self.relayout_active_page(dialog);
@@ -75,10 +87,16 @@ impl SettingsContent {
     /// C# `LoadAll(state)`: `actions_json = state.actions_json`; with `loading` set, `page.load(state)` for every CREATED page (borrowed pages skipped); when a page is showing
     /// (`active >= 0`) `relayout_active_page`. Used by Defaults, Import and the C# `ImportSettingsFrom` refresh callback.
     pub fn load_all(&self, dialog: &NativeDialog, state: &SettingsFormState) {
-        *self.view.actions_json.borrow_mut()=Some(state.actions_json.clone());
+        *self.view.actions_json.borrow_mut() = Some(state.actions_json.clone());
         {
-            let _loading=LoadingGuard::new(self);
-            for (index,page) in self.pages.iter().enumerate() {if self.is_page_created(index) {if let Ok(mut page)=page.try_borrow_mut(){page.load(state);}}}
+            let _loading = LoadingGuard::new(self);
+            for (index, page) in self.pages.iter().enumerate() {
+                if self.is_page_created(index) {
+                    if let Ok(mut page) = page.try_borrow_mut() {
+                        page.load(state);
+                    }
+                }
+            }
         }
         self.relayout_active_page(dialog);
     }
@@ -86,8 +104,14 @@ impl SettingsContent {
     /// C# `CollectAll()`: `state = working_fields()`; every CREATED page, in order, `page.collect(&mut state)` (a page that is borrowed is skipped: only the CALLER can be
     /// borrowed and no page's `collect` writes `actions_json`, D-W8B5-904). Pages never created keep the loaded values.
     pub fn collect_all(&self) -> SettingsFormState {
-        let mut state=self.working_fields();
-        for (index,page) in self.pages.iter().enumerate() {if self.is_page_created(index) {if let Ok(mut page)=page.try_borrow_mut(){page.collect(&mut state);}}}
+        let mut state = self.working_fields();
+        for (index, page) in self.pages.iter().enumerate() {
+            if self.is_page_created(index) {
+                if let Ok(mut page) = page.try_borrow_mut() {
+                    page.collect(&mut state);
+                }
+            }
+        }
         state
     }
 }

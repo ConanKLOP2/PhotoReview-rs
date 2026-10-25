@@ -5,7 +5,13 @@
 //! `unsafe` here: `create_window_ex` (the window procedure of the control class runs inside the call; `param` is `0`).
 
 use super::frame::SettingsContent;
+use crate::dialogs::native::controls::{basic::ComboBoxControl, custom::TrackbarControl};
 use crate::dialogs::native::dialog::NativeDialog;
+use crate::dialogs::native::{
+    chrome::DialogChromeControl,
+    template::{DialogControlClass, window_class_name},
+};
+use crate::win32::api::{kernel32, user32};
 
 impl SettingsContent {
     /// C# `EnsurePageCreated(index)`. `index` out of range, the page already created, or `dialog.hwnd() == 0` -> nothing (the "created" flag is NOT set when there is no
@@ -30,14 +36,98 @@ impl SettingsContent {
         let Some(builder) = self.builders.get(index) else {
             return;
         };
+        let Ok(declaration) = builder.try_borrow() else {
+            return;
+        };
+        let items = declaration.items().to_vec();
+        let texts = declaration.texts().clone();
+        let combos = declaration.combo_items().clone();
+        let sliders = declaration.sliders().clone();
+        let key_boxes = declaration.key_boxes().clone();
+        drop(declaration);
         let Ok(mut pages) = self.view.pages.try_borrow_mut() else {
             return;
         };
-        if let Some(page) = pages.get_mut(index) {
-            page.created = true;
-        }
+        let Some(page) = pages.get_mut(index) else {
+            return;
+        };
+        page.created = true;
         drop(pages);
-        let _declaration = builder.borrow();
+        let viewport = dialog.item(super::frame::viewport_id(index as i32));
+        let instance = kernel32::get_module_handle().unwrap_or(0);
+        let mut controls = Vec::new();
+        let mut group_boxes = Vec::new();
+        for item in items {
+            let text = texts
+                .get(&item.id)
+                .map_or_else(|| item.text.clone(), |provider| provider());
+            // SAFETY: class/text are borrowed strings kept alive through the call; integer styles/ids and OS-validated handles, with no creation parameter.
+            let control = unsafe {
+                user32::create_window_ex(
+                    item.ex_style,
+                    window_class_name(item.class),
+                    &text,
+                    page_control_style(item.style),
+                    0,
+                    0,
+                    0,
+                    0,
+                    viewport,
+                    item.id as isize,
+                    instance,
+                    0,
+                )
+            };
+            let Ok(control) = control else {
+                continue;
+            };
+            dialog.register_child(control);
+            if item.class == DialogControlClass::Button && is_group_box_style(item.style) {
+                group_boxes.push(control);
+            }
+            controls.push(DialogChromeControl {
+                hwnd: control,
+                class: item.class,
+            });
+            if item.class == DialogControlClass::ComboBox {
+                self.view.page_combos.borrow_mut().insert(control);
+                self.forward(dialog, control, false);
+            } else if item.class == DialogControlClass::Edit && item.style & 4 == 0 {
+                crate::dialogs::native::edit_centering::attach(control);
+            }
+        }
+        for group_box in group_boxes {
+            let _ = user32::set_window_pos(group_box, 1, 0, 0, 0, 0, 0x0002 | 0x0001 | 0x0010);
+        }
+        dialog.apply_chrome(&controls);
+        for (id, texts) in combos {
+            let combo = dialog.item(id);
+            ComboBoxControl::clear(combo);
+            for text in texts {
+                ComboBoxControl::add(combo, &text());
+            }
+            ComboBoxControl::select(combo, 0);
+        }
+        for (id, (min, max)) in sliders {
+            TrackbarControl::configure(
+                dialog.item(id),
+                min,
+                max,
+                1,
+                1,
+                super::dirty::slider_page_size(min, max),
+            );
+        }
+        for id in key_boxes {
+            self.hook_key_box(dialog, dialog.item(id));
+        }
+        if let Some(page) = self.pages.get(index) {
+            if let Ok(mut page) = page.try_borrow_mut() {
+                page.attach(self.context.clone());
+                let _loading = super::state::LoadingGuard::new(self);
+                page.load(&self.working_fields());
+            }
+        }
     }
 
     /// C# `EnsureAllPagesCreated()`: `ensure_page_created` for every index in order.
