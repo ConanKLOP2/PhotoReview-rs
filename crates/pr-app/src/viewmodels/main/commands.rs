@@ -2,6 +2,7 @@
 //! `WaitForQueuedTurnAsync`, `RecycleAsync`, the file-action gate members, `UndoAsync` / `UndoCoreAsync`, the zoom / fit /
 //! fullscreen / info-overlay commands, `RefreshView`, the external editor, the clipboard copies, `PickAndOpenFolderAsync`, the
 //! duplicate commands, `ClearCacheAsync` and the dialog shortcuts (contract `contracts/W8-08c.md`).
+//! External editor members port MainViewModel.cs lines774-880 at7eaee2a2 (W9-E5).
 //! Target: `crates/pr-app/src/viewmodels/main/commands.rs` (`viewmodels::main::commands`).
 //!
 //! The file-action gate is held by the view model, not by the controllers (contracts W8-07c, W8-07f). D-W8-2 shape:
@@ -18,6 +19,7 @@ use std::path::Path;
 use pr_core::abstractions::{SettingsTarget, UiAction};
 use pr_core::file_actions::types::UndoResult;
 use pr_core::model::{FileOperationType, ScalingQuality};
+use pr_core::settings::external_editors::{ExternalEditor, ExternalEditors};
 use pr_core::text::dotnet_path::{get_directory_name, get_file_name};
 use pr_l10n::template::LocArg;
 
@@ -518,40 +520,61 @@ impl MainViewModel {
         self.external_editor = launcher;
     }
 
-    /// C# `CanOpenInExternalEditor`. W9-E5 CHANGES the rule (d92d6aae: legacy path not blank): `ExternalEditors::effective_default(settings).is_some() && has_images()`.
+    /// C# `CanOpenInExternalEditor` at 7eaee2a2: an effective editor and an open image.
     pub fn can_open_in_external_editor(&self) -> bool {
-        !self.settings.current().external_editor_path.trim().is_empty() && self.has_images()
+        ExternalEditors::effective_default(&self.settings.current()).is_some() && self.has_images()
     }
 
-    /// C# `OpenInExternalEditor()` (the DEFAULT editor). W9-E5 REWRITES the body (the text below is the d92d6aae behaviour): the editor is
-    /// `ExternalEditors::effective_default`, the launch is the shared private `launch_external_editor(editor)` of the contract. No editor configured: `show_settings_at(SettingsTarget::ExternalEditor)` (W8-08d) and stop.
-    /// `path = compare().selected_path() or else presenter.current_presented_path() or else catalog.current().path`; empty -> nothing. A missing file
-    /// -> `dialog.show_error(dialog.externalEditor.failedTitle, dialog.externalEditor.fileMissing {fileName})`. `launcher.launch(editor, path)`:
-    /// `Expected` -> the same error dialog with the failure text; `Unexpected` -> `Err(ExternalEditorBug)`, no dialog.
+    /// C# `OpenInExternalEditor()`: launch the effective default; no editor opens Settings at its editor field.
     pub fn open_in_external_editor(&mut self) -> Result<ChangeSet, ExternalEditorBug> {
-        let editor = self.settings.current().external_editor_path.clone();
-        if editor.trim().is_empty() {
-            // Not configured yet: take the user to the field that sets it.
+        let Some(editor) = ExternalEditors::effective_default(&self.settings.current()) else {
             return Ok(self.show_settings_at(SettingsTarget::ExternalEditor));
-        }
-        let Some(path) = self.current_file_path() else {
+        };
+        self.launch_external_editor(&editor)
+    }
+
+    /// Port of MainViewModel.LaunchExternalEditor, C# 7eaee2a2 lines805-829.
+    fn launch_external_editor(&mut self, editor: &ExternalEditor) -> Result<ChangeSet, ExternalEditorBug> {
+        let Some(shown) = self.current_file_path() else {
             return Ok(ChangeSet::default());
         };
         let title = self.with_ctx(|ctx| ctx.texts.get("dialog.externalEditor.failedTitle"));
-        if !self.file_system.file_exists(Path::new(&path)) {
+        if !self.file_system.file_exists(Path::new(&shown)) {
             let message = self.with_ctx(|ctx| {
                 ctx.texts.format_with(
                     "dialog.externalEditor.fileMissing",
-                    &[LocArg::new("fileName", get_file_name(&path))],
+                    &[LocArg::new("fileName", get_file_name(&shown))],
                     ctx.numbers,
                 )
             });
             self.dialog_service.show_error(&title, &message);
             return Ok(ChangeSet::default());
         }
-        // Interim (until W9-E5 rewrites this body): the default template `"{file}"`, so the merged behaviour and tests do not change.
-        let command_line = format!("\"{path}\"");
-        match self.external_editor.launch(&editor, &path, &command_line) {
+        let paired = self
+            .catalog
+            .find(&shown)
+            .and_then(|entry| entry.capture_group.as_ref())
+            .map(|group| group.raw_path());
+        let path = ExternalEditors::resolve_file_to_send(
+            &shown,
+            paired,
+            self.settings.current().external_editor_sends_raw_original,
+            &|path| self.file_system.file_exists(Path::new(path)),
+        );
+        if editor.path.trim().is_empty() || !self.file_system.file_exists(Path::new(&editor.path)) {
+            let message = self.with_ctx(|ctx| {
+                ctx.texts.format_with(
+                    "dialog.externalEditor.exeMissing",
+                    &[LocArg::new("path", editor.path.as_str())],
+                    ctx.numbers,
+                )
+            });
+            self.dialog_service.show_error(&title, &message);
+            return Ok(ChangeSet::default());
+        }
+        let command_line = ExternalEditors::build_arguments(Some(&editor.arguments), &path)
+            .ok_or_else(|| ExternalEditorBug("Cannot build external editor arguments for an empty path".into()))?;
+        match self.external_editor.launch(&editor.path, &path, &command_line) {
             Ok(()) => Ok(ChangeSet::default()),
             Err(ExternalEditorFailure::Expected { message }) => {
                 self.dialog_service.show_error(&title, &message);
@@ -788,17 +811,79 @@ impl From<crate::coordinators::zoom_detail::ZoomDetailRefreshResult> for ZoomDet
 impl MainViewModel {
     /// W9-E5, C# `OpenInExternalEditor(string editorId)`: sends the photo to the declared editor with this id (ordinal) among `ExternalEditors::effective`;
     /// an unknown id does nothing. Same `Result` contract as `open_in_external_editor` (`Err` only for an `Unexpected` launch failure).
-    pub fn open_in_external_editor_by_id(&mut self, _editor_id: &str) -> Result<ChangeSet, ExternalEditorBug> {
-        todo!()
+    pub fn open_in_external_editor_by_id(&mut self, editor_id: &str) -> Result<ChangeSet, ExternalEditorBug> {
+        match ExternalEditors::effective(&self.settings.current())
+            .into_iter()
+            .find(|editor| editor.id == editor_id)
+        {
+            Some(editor) => self.launch_external_editor(&editor),
+            None => Ok(ChangeSet::default()),
+        }
     }
 
     /// W9-E5, C# `AddExternalEditor()` ("Add more editors..."): see the contract (dialog prompt, legacy materialisation, 32 cap, fresh id, `reconcile`, save).
     pub fn add_external_editor(&mut self) -> ChangeSet {
-        todo!()
+        let initial = ExternalEditors::effective_default(&self.settings.current())
+            .filter(|editor| !editor.path.trim().is_empty())
+            .and_then(|editor| get_directory_name(&editor.path));
+        let Some(mut added) = self
+            .dialog_service
+            .prompt_add_external_editor(initial.as_deref().map(Path::new))
+        else {
+            return ChangeSet::default();
+        };
+        if added.path.trim().is_empty() {
+            return ChangeSet::default();
+        }
+        let mut settings = (*self.settings.current()).clone();
+        Self::materialize_legacy_editor(&mut settings);
+        if settings.external_editors.len() >= ExternalEditors::MAX_EDITORS {
+            return ChangeSet::default();
+        }
+        added.id = ExternalEditor::new_id();
+        settings.external_editors.push(added);
+        ExternalEditors::reconcile(&mut settings);
+        self.save_external_editor_settings(settings);
+        ChangeSet::default()
     }
 
     /// W9-E5, C# `ChooseDefaultExternalEditor()` ("Set default editor..."): see the contract.
     pub fn choose_default_external_editor(&mut self) -> ChangeSet {
-        todo!()
+        let mut settings = (*self.settings.current()).clone();
+        if Self::materialize_legacy_editor(&mut settings) {
+            // C# materializes the live legacy list before the modal, even on Cancel; no save yet.
+            self.settings.begin_edit(|current| *current = settings.clone());
+        }
+        if settings.external_editors.is_empty() {
+            return ChangeSet::default();
+        }
+        let default = ExternalEditors::default(&settings);
+        let chosen = self.dialog_service.prompt_default_external_editor(
+            &settings.external_editors,
+            default.as_ref().map(|editor| editor.id.as_str()),
+        );
+        let Some(chosen) = chosen.filter(|id| ExternalEditors::find(&settings, Some(id)).is_some()) else {
+            return ChangeSet::default();
+        };
+        settings.default_external_editor_id = chosen;
+        ExternalEditors::reconcile(&mut settings);
+        self.save_external_editor_settings(settings);
+        ChangeSet::default()
+    }
+
+    fn materialize_legacy_editor(settings: &mut pr_core::settings::app_settings::AppSettings) -> bool {
+        if !settings.external_editors.is_empty() || settings.external_editor_path.trim().is_empty() {
+            return false;
+        }
+        ExternalEditors::reconcile(settings);
+        true
+    }
+
+    fn save_external_editor_settings(&self, settings: pr_core::settings::app_settings::AppSettings) {
+        let edit = self.settings.begin_edit(|current| *current = settings);
+        if let Err(error) = self.settings.commit_edit(edit) {
+            self.log
+                .error("Could not save the external editors setting", Some(&error));
+        }
     }
 }

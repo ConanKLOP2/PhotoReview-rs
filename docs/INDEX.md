@@ -14,6 +14,7 @@
 | [`adr/`](adr/) | R0001 UI framework (proposed; spike done, Win32 + Direct2D) · R0002 coexistence · R0003 concurrency + C#→Rust mapping (accepted) | Relevant area; R0003 before any port |
 | [`ARCHITECTURE.md`](ARCHITECTURE.md) | Crates, dependency direction, how the pieces fit | Before touching crate boundaries |
 | [`DEVELOPING.md`](DEVELOPING.md) | Prerequisites, build, test and gate commands | Setting up a machine |
+| [`LESSONS.md`](LESSONS.md) | Rules learned from the parallel Codex port | Before launching Codex lanes or cleanup |
 | [`RUNBOOK-AUTOPILOT.md`](RUNBOOK-AUTOPILOT.md) | Operator runbook for the Codex pipeline (`tools/autopilot/`) | Before running or debugging the pipeline |
 | [`WAVE-8-REPORT.md`](WAVE-8-REPORT.md) | Wave 8 closing report (status at 2026-10-22) | Picking up after Wave 8 |
 | [`TRIAL-PLAN.md`](TRIAL-PLAN.md) | Two-week real-user trial: purpose and entry gate | Before the trial |
