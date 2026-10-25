@@ -2,6 +2,12 @@
 
 **Updated:** 2026-10-23 (older entries moved to `docs/archive/`; the sections below are the latest ones; where two sections disagree the later date wins, not the later position)
 
+## Wave 9 rename ownership, machine A, 2026-10-26
+
+- Assigned W9-R1..R11 to A in MULTI-MACHINE before any rename implementation. No active W9-R claims appeared in the live claim inventory. Existing B ownership/claims are unchanged. Claim W9-RENAME-ROSTER belongs to A; claim each production/test unit separately only after this roster PR merges and its dependencies are on master.
+- Reused clean inactive E1 worktree sequentially for docs-only branch codex/w9-rename-roster from mastera91eb7f (PR240). Preserved the old E1 branch and retained its idle same-root target; no new build or target sharing. No rename source/test/asset edits.
+- Validation: git diff --check and owned-file diff. Cargo fmt/clippy/test, oracle, native and mutation NOT run for this docs-only allocation. Whole-port completion is not claimed. Open one master-based docs PR with immediate squashauto; app monitor tools unavailable. Release roster claim after verified merge.
+
 ## 2026-10-23 (PR #164 merge-conflict resolution)
 - Merged `origin/master` into `integration/wave8-b6` and resolved add/add conflicts by taking the current `origin/master` variants for:
   - `crates/pr-app/tests/startup_error_log.rs`
