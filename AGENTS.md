@@ -60,6 +60,7 @@ the C# code at the baseline in [`docs/SYNC-LEDGER.md`](docs/SYNC-LEDGER.md) deci
 
 ## Who does what: Codex first
 
+- Read docs/LESSONS.md before launching Codex lanes: it lists the traps that already cost hours.
 - Give every task to Codex CLI first: implementation, tests, failure repair (including `needs-claude` notes), mutant-killer tests, contracts, infrastructure/scripts, and docs. Use `tools/autopilot/codex-run.sh` or the pipeline.
 - Claude only orchestrates: prepare the prompt, start Codex, inspect its diff, rerun fmt/clippy/tests before trusting its report, merge and open PRs, and handle work Codex cannot do (for example `git index.lock`, PR/CI/claim tools). Claude sub-agents are at most Sonnet.
 - Claude writes code only after Codex fails twice for quota or tool reasons; state this in the PR.
