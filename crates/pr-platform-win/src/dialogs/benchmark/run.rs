@@ -355,6 +355,8 @@ impl BenchmarkContent {
         for event in self.run.inbox.drain() {
             let step = with_field_context(|ctx| {
                 let Ok(mut presenter) = self.presenter.try_borrow_mut() else {
+                    pr_app::misc::app_log::AppLog::global()
+                        .error("Benchmark completion arrived while the presenter was borrowed", None);
                     return BenchmarkStep::Idle;
                 };
                 let mut view = DialogView { dialog, content: self };

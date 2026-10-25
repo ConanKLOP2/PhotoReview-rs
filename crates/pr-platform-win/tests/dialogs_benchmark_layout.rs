@@ -84,6 +84,42 @@ fn language_headers_and_culture_compare_are_available() {
     let _ = compare_rows;
 }
 
+// C#: BenchmarkDialogTests.ClickingAColumnHeader_SortsAscendingThenDescending_NumericColumnsByValue
+// The text-column leg uses CultureInfo.CurrentCulture, so compare against the OS locale service.
+#[test]
+fn culture_compare_matches_windows_linguistic_order_for_text_columns() {
+    use windows::Win32::Globalization::{
+        COMPARE_STRING_FLAGS, CSTR_EQUAL, CSTR_GREATER_THAN, CSTR_LESS_THAN, CompareStringEx,
+    };
+    use windows::core::PCWSTR;
+    for (left, right) in [("ä", "z"), ("a", "A"), ("file-2", "file2"), ("ß", "ss")] {
+        let left_wide: Vec<u16> = left.encode_utf16().collect();
+        let right_wide: Vec<u16> = right.encode_utf16().collect();
+        // SAFETY: both UTF-16 slices are live and nonempty; null locale selects the user's locale, and no optional pointers are supplied.
+        let reference = unsafe {
+            CompareStringEx(
+                PCWSTR::null(),
+                COMPARE_STRING_FLAGS(0),
+                &left_wide,
+                &right_wide,
+                None,
+                None,
+                None,
+            )
+        };
+        let expected = match reference {
+            CSTR_LESS_THAN => Ordering::Less,
+            CSTR_EQUAL => Ordering::Equal,
+            CSTR_GREATER_THAN => Ordering::Greater,
+            other => panic!("CompareStringEx failed: {other:?}"),
+        };
+        assert_eq!(culture_compare(left, right), expected, "{left:?} vs {right:?}");
+    }
+    assert_eq!(culture_compare("", "a"), Ordering::Less);
+    assert_eq!(culture_compare("a", ""), Ordering::Greater);
+    assert_eq!(culture_compare("", ""), Ordering::Equal);
+}
+
 fn golden() -> serde_json::Value {
     serde_json::from_str(include_str!("../../../tests/golden/dialog-benchmark-layout.json")).unwrap()
 }

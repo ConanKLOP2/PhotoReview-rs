@@ -89,7 +89,10 @@ pub fn pictures_folder() -> String {
 /// C# `StartExplorer(arguments)`, the default of `openInExplorer`: `SettingsPresenter::try_start_explorer(arguments)`; `Some(message)` is logged as
 /// `AppLog::global().error("Could not start Explorer", ...)` and swallowed (C# caught `Win32Exception` and `InvalidOperationException`).
 pub fn default_open_in_explorer(arguments: &str) {
-    let _ = pr_app::presenters::settings::SettingsPresenter::try_start_explorer(arguments);
+    if let Some(message) = pr_app::presenters::settings::SettingsPresenter::try_start_explorer(arguments) {
+        let error = std::io::Error::other(message);
+        pr_app::misc::app_log::AppLog::global().error("Could not start Explorer", Some(&error));
+    }
 }
 
 /// C# `ColumnHeaders()`: `[BEST_SYMBOL, benchmark.column.profile, benchmark.column.loadingMode, benchmark.column.workload, benchmark.column.samples, "P50", "P95",
@@ -112,7 +115,22 @@ pub fn column_headers(texts: &Localizer) -> [String; COLUMN_COUNT] {
 /// .NET `CultureInfo.CurrentCulture.CompareInfo.Compare(a, b, CompareOptions.None)` for the text columns: `CompareStringEx(LOCALE_NAME_USER_DEFAULT, 0, a, b)`
 /// (`CSTR_LESS_THAN` / `CSTR_EQUAL` / `CSTR_GREATER_THAN`); a failure (`0`) falls back to `pr_core::text::cmp_ignore_case`, then to the ordinal order (D-W8B5-509).
 pub fn culture_compare(a: &str, b: &str) -> Ordering {
-    pr_core::text::cmp_ignore_case(a, b).then_with(|| a.cmp(b))
+    use windows::Win32::Globalization::{
+        COMPARE_STRING_FLAGS, CSTR_EQUAL, CSTR_GREATER_THAN, CSTR_LESS_THAN, CompareStringEx,
+    };
+    use windows::core::PCWSTR;
+    if a.is_empty() || b.is_empty() {
+        return a.len().cmp(&b.len());
+    }
+    let left: Vec<u16> = a.encode_utf16().collect();
+    let right: Vec<u16> = b.encode_utf16().collect();
+    // SAFETY: both slices hold live UTF-16 data for the synchronous comparison; null locale selects the user's locale, and optional pointers are absent.
+    match unsafe { CompareStringEx(PCWSTR::null(), COMPARE_STRING_FLAGS(0), &left, &right, None, None, None) } {
+        CSTR_LESS_THAN => Ordering::Less,
+        CSTR_EQUAL => Ordering::Equal,
+        CSTR_GREATER_THAN => Ordering::Greater,
+        _ => pr_core::text::cmp_ignore_case(a, b).then_with(|| a.cmp(b)),
+    }
 }
 
 /// .NET `double.CompareTo`: NaN is less than every number and equal to NaN; `-0.0` equals `0.0`.
