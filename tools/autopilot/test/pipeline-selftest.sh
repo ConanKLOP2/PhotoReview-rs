@@ -268,7 +268,7 @@ check "implement and kill-mutants continued the same session (resume), red-tests
 check "first prompt carries the pack instruction, resumed prompts do not" 'grep -q "codex-pack.md" $LOGS/W8-90a.red.prompt.md.send && ! grep -q "codex-pack.md" $LOGS/W8-90a.mut1.prompt.md.send'
 check "codex transcript is not printed" '! grep -q "FAKE TRANSCRIPT NOISE" "$T/run1.out"'
 check "codex transcript is in the log file" 'grep -q "FAKE TRANSCRIPT NOISE" $LOGS/W8-90a.log'
-check "merged into integration branch with trailer" 'git log integration/test-b9 --format=%B | grep -q "Co-Authored-By: Codex gpt-6-luna"'
+check "merged into integration branch with trailer" 'git log integration/test-b9 --format=%B | grep -q "Co-Authored-By: Codex gpt-6.1-sol"'
 check "red tests frozen in their own commit" 'git log wu/W8-90a --format=%s 2>/dev/null | grep -q "red tests" || git log integration/test-b9 --format=%s | grep -q "red tests"'
 check "telemetry: 3 codex rounds, tokens summed from the --json log" '[ "$($SF W8-90a rounds)" = 3 ] && [ "$($SF W8-90a tin)" = 3000 ] && [ "$($SF W8-90a tout)" = 150 ]'
 check "telemetry: pack size and seconds recorded, tier yellow" '[ "$($SF W8-90a pack_bytes)" -gt 100 ] && [ "$($SF W8-90a secs)" -ge 0 ] && [ "$($SF W8-90a tier)" = yellow ]'

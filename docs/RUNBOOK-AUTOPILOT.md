@@ -17,7 +17,7 @@ These are the operator-controlled environment variables read by the pipeline or 
 | Variable | Default / effect |
 |---|---|
 | `CODEX_BIN` | `$HOME/.codex/plugins/.plugin-appserver/codex.exe` |
-| `CODEX_MODEL`, `CODEX_EFFORT` | `gpt-6-luna`, `low`; passed by `codex-run.sh` for fresh and resumed sessions |
+| `CODEX_MODEL`, `CODEX_EFFORT` | `gpt-6.1-sol`, `medium`; passed by `codex-run.sh` for fresh and resumed sessions |
 | `CODEX_USAGE_SH` | `tools/autopilot/codex-usage.sh` |
 | `CODEX_TIMEOUT` | `2400` seconds per Codex call |
 | `PLAN_REL` | `docs/WAVE-8-PLAN.md` |
@@ -55,6 +55,8 @@ These are the operator-controlled environment variables read by the pipeline or 
 ## 4. Helper scripts
 
 `codex-run.sh <worktree> <prompt-file> [last-message-file] [session-id]` starts `codex exec --json` in workspace-write mode. With a session ID it uses `codex exec resume` from that worktree; the driver gets the ID and token totals from JSONL. A failed resume falls back to a new call with the pack. `CODEX_MODEL` and `CODEX_EFFORT` select the model and effort.
+
+luna/low is cheaper but gave wrong reports and stopped early; sol/medium costs more quota per call, so run at most 1-2 Codex lanes at the same time (use `tools/dev/codex-sched.sh` when it exists on master).
 
 `codex-usage.sh [threshold_percent]` asks the Codex app server for the five-hour and weekly usage percentages and reset times. It returns JSON and exit `0` only when ordinary use is allowed, no rate limit is reported, and five-hour use is below the passed threshold; otherwise exit `1`. `QUOTA_MAX=95` is the pipeline's five-hour ceiling. [MULTI-MACHINE.md](MULTI-MACHINE.md) also sets a 95 percent weekly operator limit: the helper reports weekly use, but its exit condition does **not** compare weekly percent with `QUOTA_MAX`. Watch that field across machines. The driver estimates the next unit's cost from completed units times `QUOTA_MARGIN`, waits when capacity is insufficient, and sleeps until a reset rather than busy polling.
 
