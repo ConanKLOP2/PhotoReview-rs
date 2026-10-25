@@ -560,7 +560,7 @@ impl DialogContent for ExternalEditorsContent {
     /// C# `OnCommand(id, notification)`: `LIST_ID` + `LBN_SELCHANGE` -> selection changed (`save_current`, then show the selected row); `ADD_ID`, `REMOVE_ID`,
     /// `SET_DEFAULT_ID`, `BROWSE_ID` + `BN_CLICKED` -> the matching method; each returns `true`; anything else `false`.
     fn on_command(&self, dialog: &NativeDialog, id: i32, notification: i32) -> bool {
-        if id == LIST_ID && notification == crate::win32::control_constants::LBN_SELCHANGE as i32 {
+        if id == LIST_ID && notification == crate::win32::control_constants::LBN_SELCHANGE {
             self.on_selection_changed(dialog);
             return true;
         }
