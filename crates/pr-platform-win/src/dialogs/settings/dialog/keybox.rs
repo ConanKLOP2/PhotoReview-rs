@@ -168,9 +168,9 @@ pub(super) unsafe extern "system" fn key_box_proc(
             let content = SettingsContent::from_subclass_key(ref_data)?;
             content
                 .with_native(|dialog| {
-                    if matches!(message, 0x0100 | 0x0104) && content.capture_key(dialog, hwnd, wparam, lparam) {
-                        Some(0)
-                    } else if is_swallowed_message(message) {
+                    if (matches!(message, 0x0100 | 0x0104) && content.capture_key(dialog, hwnd, wparam, lparam))
+                        || is_swallowed_message(message)
+                    {
                         Some(0)
                     } else {
                         None

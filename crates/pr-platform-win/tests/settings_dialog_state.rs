@@ -6,6 +6,84 @@ use pr_app::input::key_mapping::from_virtual_key;
 use pr_app::services::shortcut_key_name::try_parse;
 use pr_platform_win::dialogs::settings::context::{ActionProfilesUnavailable, SettingsPageHost};
 use pr_platform_win::dialogs::settings::dialog::{dirty::*, host::*, keybox::*};
+#[path = "common/settings_dialog_fixture.rs"]
+mod fixture;
+
+#[test]
+fn action_json_visibility_and_key_box_rows_match_the_csharp_golden() {
+    let golden: serde_json::Value =
+        serde_json::from_str(include_str!("../../../tests/golden/settings-dialog-state.json")).unwrap();
+    let mut covered = 0;
+    for row in golden["cases"].as_array().unwrap() {
+        let kind = row["kind"].as_str().unwrap();
+        if kind == "key_capture" {
+            continue;
+        }
+        let mut args = fixture::args();
+        if row["settings"]["ActionsText"] == "[]" {
+            args.current.actions.clear();
+        }
+        let dialog = pr_platform_win::dialogs::settings::dialog::SettingsDialog::new(args).unwrap();
+        match kind {
+            "actions_json" => {
+                let mut actual = Vec::new();
+                for op in row["ops"].as_array().unwrap() {
+                    let value = match op["op"].as_str().unwrap() {
+                        "get" => dialog.actions_json(),
+                        "refresh" => dialog.refresh_actions_json_from_pages(),
+                        "set" => {
+                            dialog.set_actions_json(op["json"].as_str().unwrap(), "");
+                            dialog.actions_json()
+                        }
+                        other => panic!("unknown actions op {other}"),
+                    };
+                    actual.push(serde_json::Value::String(value));
+                }
+                assert_eq!(actual, *row["values"].as_array().unwrap(), "{}", row["name"]);
+            }
+            "visibility" => {
+                let groups: Vec<_> = (0..dialog.page_count())
+                    .flat_map(|i| dialog.page_items(i))
+                    .filter(|item| {
+                        item.class == pr_platform_win::dialogs::native::template::DialogControlClass::Button
+                            && item.style & 15 == 7
+                    })
+                    .map(|item| item.id)
+                    .collect();
+                assert!(groups.len() >= 2);
+                let mut actual = Vec::new();
+                for op in row["ops"].as_array().unwrap() {
+                    let group = op["group"].as_u64().map(|i| groups[i as usize]);
+                    let id = group.unwrap_or_else(|| op["id"].as_i64().unwrap() as i32);
+                    match op["op"].as_str().unwrap() {
+                        "set" | "set_group" => dialog.set_control_visible(id, op["visible"].as_bool().unwrap()),
+                        "is" | "is_group" => actual.push(serde_json::Value::Bool(dialog.is_control_visible(id))),
+                        other => panic!("unknown visibility op {other}"),
+                    }
+                }
+                assert_eq!(actual, *row["values"].as_array().unwrap());
+            }
+            "key_boxes" => {
+                let ids: Vec<_> = (0..dialog.page_count())
+                    .flat_map(|i| dialog.page_items(i))
+                    .filter(|item| dialog.content().is_key_box_id(item.id))
+                    .map(|item| serde_json::Value::from(item.id))
+                    .collect();
+                assert_eq!(ids, *row["key_box_ids"].as_array().unwrap());
+                let actual: Vec<_> = row["probes"]
+                    .as_array()
+                    .unwrap()
+                    .iter()
+                    .map(|id| serde_json::Value::Bool(dialog.content().is_key_box_id(id.as_i64().unwrap() as i32)))
+                    .collect();
+                assert_eq!(actual, *row["results"].as_array().unwrap());
+            }
+            other => panic!("unhandled golden kind {other}"),
+        }
+        covered += 1;
+    }
+    assert_eq!(covered, 4);
+}
 
 #[test]
 fn key_capture_matches_the_golden_for_every_virtual_key() {

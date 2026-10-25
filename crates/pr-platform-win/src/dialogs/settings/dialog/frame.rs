@@ -498,7 +498,7 @@ impl SettingsContent {
             let viewport = crate::win32::dialog_native::user32::get_dlg_item(dialog.hwnd(), id);
             dialog.add_child_host(viewport);
             self.forward(dialog, viewport, true);
-            crate::win32::api::user32::show_window(viewport, crate::win32::messages::SW_HIDE as i32);
+            crate::win32::api::user32::show_window(viewport, crate::win32::messages::SW_HIDE);
         }
         let nav = dialog.item(NAV_ID);
         self.forward(dialog, nav, false);

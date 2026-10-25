@@ -2,6 +2,173 @@
 use pr_platform_win::dialogs::settings::context::{SettingsPageContext, SettingsUiPost};
 use pr_platform_win::dialogs::settings::dialog::messages::{WindowPoster, is_forwarded, wheel_delta};
 use std::sync::{Arc, Mutex};
+#[path = "common/settings_dialog_fixture.rs"]
+mod fixture;
+
+struct Files {
+    calls: std::cell::RefCell<Vec<serde_json::Value>>,
+    path: Option<String>,
+}
+impl pr_platform_win::dialogs::file_dialog::ShellFileDialog for Files {
+    fn pick_open_file(
+        &self,
+        _: isize,
+        title: &str,
+        filters: &[pr_platform_win::dialogs::file_dialog::FileDialogFilter],
+        initial: Option<&str>,
+    ) -> Result<Option<String>, pr_platform_win::win32::structs::Hresult> {
+        self.calls.borrow_mut().push(serde_json::json!({"call":"open","title":title,"filters":filters.iter().map(|f|serde_json::json!({"name":f.name,"pattern":f.pattern})).collect::<Vec<_>>(),"initial_folder_set":initial.is_some()}));
+        Ok(self.path.clone())
+    }
+    fn pick_save_file(
+        &self,
+        _: isize,
+        title: &str,
+        filters: &[pr_platform_win::dialogs::file_dialog::FileDialogFilter],
+        extension: Option<&str>,
+        name: Option<&str>,
+        initial: Option<&str>,
+    ) -> Result<Option<String>, pr_platform_win::win32::structs::Hresult> {
+        self.calls.borrow_mut().push(serde_json::json!({"call":"save","title":title,"filters":filters.iter().map(|f|serde_json::json!({"name":f.name,"pattern":f.pattern})).collect::<Vec<_>>(),"default_extension":extension,"suggested_file_name":name,"initial_folder_set":initial.is_some()}));
+        Ok(self.path.clone())
+    }
+}
+
+#[test]
+fn every_apply_case_matches_the_csharp_golden() {
+    use pr_platform_win::dialogs::native::dialog::core::DialogContent;
+    use pr_platform_win::dialogs::settings::dialog::{SettingsDialog, frame::*};
+    use std::rc::Rc;
+    let golden: serde_json::Value =
+        serde_json::from_str(include_str!("../../../tests/golden/settings-dialog-apply.json")).unwrap();
+    let cases = golden["cases"].as_array().unwrap();
+    assert_eq!(cases.len(), 14);
+    for row in cases {
+        let root = pr_test_support::TempRoot::new("settings-dialog-apply");
+        let path = root.join("settings.json");
+        let mut args = fixture::args();
+        if let Some(logging) = row["settings"]["LoggingEnabled"].as_bool() {
+            args.current.logging_enabled = logging;
+        }
+        if let Some(shortcuts) = row["settings"]["Shortcuts"].as_object() {
+            for (name, value) in shortcuts {
+                *args.current.shortcuts.get_mut(name).unwrap() = value.as_str().unwrap().to_owned();
+            }
+        }
+        let warnings = Rc::new(fixture::Warnings::default());
+        args.options.warnings = Some(warnings.clone());
+        let files = Rc::new(Files {
+            calls: Default::default(),
+            path: if row["save_result"] == "file" || row["pick"] == "file" {
+                Some(path.to_str().unwrap().to_owned())
+            } else {
+                None
+            },
+        });
+        if row["files"] == true {
+            args.options.files = Some(files.clone());
+        }
+        if let Some(text) = row["file_text"].as_str() {
+            std::fs::write(&path, text).unwrap();
+        }
+        let dialog = SettingsDialog::new(args).unwrap();
+        match row["kind"].as_str().unwrap() {
+            "focus_targets" => {
+                use pr_app::presenters::settings_form_state::SettingsFocusField as F;
+                use pr_platform_win::dialogs::settings::builder::inputs::SettingsPageBuilder;
+                let mut pages = pr_platform_win::dialogs::settings::catalog::create_pages();
+                for (i, page) in pages.iter_mut().enumerate() {
+                    page.declare(&mut SettingsPageBuilder::new(page_id_base(i as i32)));
+                }
+                for target in row["targets"].as_array().unwrap() {
+                    let field = match target["field"].as_str().unwrap() {
+                        "None" => F::None,
+                        "ArrowPanStep" => F::ArrowPanStep,
+                        "KeyboardZoomStep" => F::KeyboardZoomStep,
+                        "ImageTransitionMs" => F::ImageTransitionMs,
+                        "TouchpadSwipeDistance" => F::TouchpadSwipeDistance,
+                        "PreloadForward" => F::PreloadForward,
+                        "PreloadBackward" => F::PreloadBackward,
+                        "InfoOverlayAutoHideDelay" => F::InfoOverlayAutoHideDelay,
+                        other => panic!("unknown focus {other}"),
+                    };
+                    let actual = pages
+                        .iter()
+                        .enumerate()
+                        .find_map(|(i, p)| p.focus_target(field).map(|id| (i as i64, i64::from(id))));
+                    let expected = target["page"].as_i64().map(|i| (i, target["id"].as_i64().unwrap()));
+                    assert_eq!(actual, expected);
+                }
+            }
+            "save_flow" => {
+                let actual: Vec<_> = (0..row["calls"].as_u64().unwrap())
+                    .map(|_| serde_json::Value::Bool(dialog.try_save_all()))
+                    .collect();
+                assert_eq!(actual, *row["results"].as_array().unwrap(), "{}", row["name"]);
+                assert_eq!(dialog.saved(), row["saved"].as_bool().unwrap());
+            }
+            "export" => {
+                assert!(DialogContent::on_command(
+                    dialog.content().as_ref(),
+                    dialog.native(),
+                    EXPORT_ID,
+                    0
+                ));
+                assert_eq!(path.exists(), row["file_written"].as_bool().unwrap());
+                if path.exists() {
+                    let written: serde_json::Value =
+                        serde_json::from_str(&std::fs::read_to_string(&path).unwrap()).unwrap();
+                    assert_eq!(written["LoggingEnabled"], row["logging_enabled_in_file"]);
+                }
+            }
+            "import" => {
+                if row["mode"] == "from_path" {
+                    dialog.import_settings_from(&path);
+                } else {
+                    assert!(DialogContent::on_command(
+                        dialog.content().as_ref(),
+                        dialog.native(),
+                        IMPORT_ID,
+                        0
+                    ));
+                }
+                assert_eq!(
+                    dialog.settings().logging_enabled,
+                    row["logging_enabled"].as_bool().unwrap()
+                );
+                if row["file_read"] == true {
+                    assert_eq!(
+                        std::fs::read_to_string(&path).unwrap(),
+                        row["file_text"].as_str().unwrap()
+                    );
+                }
+            }
+            other => panic!("unhandled kind {other}"),
+        }
+        let expected = row["warnings"].as_array();
+        if let Some(expected) = expected {
+            let observed = warnings.0.borrow();
+            assert_eq!(observed.len(), expected.len(), "{}", row["name"]);
+            for ((title, message), expected) in observed.iter().zip(expected) {
+                assert_eq!(title, expected["title"].as_str().unwrap());
+                if let Some(nonempty) = expected["message_nonempty"].as_bool() {
+                    assert_eq!(!message.is_empty(), nonempty);
+                }
+                if let Some(text) = expected["message"].as_str() {
+                    assert_eq!(message, text);
+                }
+            }
+        }
+        if row["calls"].is_array() {
+            assert_eq!(
+                *files.calls.borrow(),
+                *row["calls"].as_array().unwrap(),
+                "{}",
+                row["name"]
+            );
+        }
+    }
+}
 
 #[test]
 fn new_poster_drops_posts_and_close_discards_pending_actions() {

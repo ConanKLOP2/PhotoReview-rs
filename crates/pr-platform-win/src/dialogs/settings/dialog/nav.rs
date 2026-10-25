@@ -73,7 +73,7 @@ impl SettingsContent {
         if old >= 0 && old != index {
             crate::win32::api::user32::show_window(
                 dialog.item(crate::dialogs::settings::dialog::frame::viewport_id(old)),
-                crate::win32::messages::SW_HIDE as i32,
+                crate::win32::messages::SW_HIDE,
             );
         }
         self.ensure_page_created(dialog, index_usize);
@@ -103,7 +103,7 @@ impl SettingsContent {
         }
         crate::win32::api::user32::show_window(
             dialog.item(crate::dialogs::settings::dialog::frame::viewport_id(index)),
-            crate::win32::messages::SW_SHOW as i32,
+            crate::win32::messages::SW_SHOW,
         );
         if layout {
             dialog.run_layout();
