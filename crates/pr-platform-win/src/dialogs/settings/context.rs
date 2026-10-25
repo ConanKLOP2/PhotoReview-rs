@@ -375,10 +375,20 @@ impl SettingsPageContext {
     /// (`show_warning(dialog.openEditorFailed.title, dialog.openEditorFailed.message)`) and `None`.
     pub fn edit_external_editors(
         &self,
-        _editors: &[ExternalEditor],
-        _default_id: Option<&str>,
+        editors: &[ExternalEditor],
+        default_id: Option<&str>,
     ) -> Option<ExternalEditorsEdit> {
-        todo!()
+        match self.host.show_external_editors(self.owner(), editors, default_id) {
+            Ok(result) => result,
+            Err(_) => {
+                let localizer = Localizer::current();
+                self.show_warning(
+                    &localizer.get(keys::DIALOG_OPEN_EDITOR_FAILED_TITLE),
+                    &localizer.get(keys::DIALOG_OPEN_EDITOR_FAILED_MESSAGE),
+                );
+                None
+            }
+        }
     }
 }
 
