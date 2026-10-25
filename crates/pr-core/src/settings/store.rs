@@ -636,6 +636,7 @@ impl SettingsStore {
             lock(&self.state).newer_file_on_disk = false;
         }
         settings.canonicalize_all();
+        super::external_editors::ExternalEditors::reconcile(&mut settings);
         settings.config_version = CURRENT_CONFIG_VERSION;
         let json = settings.to_json()?;
         self.file_system.write_all_text_atomic(&file_path, &json, true)?;
@@ -821,6 +822,9 @@ impl SettingsStore {
     fn migrate_core(settings: &mut AppSettings, ui_language_declared: bool) {
         if settings.config_version < 3 && !ui_language_declared {
             settings.ui_language = "vi".to_owned();
+        }
+        if settings.config_version < 4 {
+            super::external_editors::ExternalEditors::reconcile(settings);
         }
         if settings.config_version < CURRENT_CONFIG_VERSION {
             settings.config_version = CURRENT_CONFIG_VERSION;
