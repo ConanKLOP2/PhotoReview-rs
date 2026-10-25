@@ -231,3 +231,44 @@ fn build_long_path_aware_skips_path_budget() {
 
 // C# Build_NullGroup_Throws is enforced by the non-null &CaptureGroup parameter.
 // There is no nullable group value at this Rust API boundary.
+
+#[test]
+fn build_rejects_raw_or_sidecar_component_overflow_without_partial_map() {
+    // JPEG fits exactly at 255 UTF-16 units; the longer companion extension does not.
+    for group in [
+        group("a.jpg", "a.long", None),
+        group("a.jpg", "a.cr2", Some("a.cr2.xmp")),
+    ] {
+        let plan = CaptureGroupRenamePlan::build(&group, Some(&"x".repeat(251)), true);
+        assert_eq!(plan.check.problem, Problem::NameTooLong);
+        assert!(plan.check.new_file_name.is_empty());
+        assert!(plan.file_names.is_none());
+    }
+}
+
+#[test]
+fn build_rejects_only_sidecar_path_overflow_and_accepts_long_path_mode() {
+    let xmp = format!("C:\\{}\\a.cr2.xmp", "d".repeat(197));
+    let group = CaptureGroup::new(r"C:\p\a.jpg", r"C:\p\a.cr2", Some(xmp)).unwrap();
+    let typed = "x".repeat(52);
+    let plan = CaptureGroupRenamePlan::build(&group, Some(&typed), false);
+    assert_eq!(plan.check.problem, Problem::PathTooLong);
+    assert!(plan.file_names.is_none());
+    let accepted = CaptureGroupRenamePlan::build(&group, Some(&typed), true);
+    assert!(accepted.check.is_valid());
+    assert_eq!(accepted.file_names.unwrap().len(), 3);
+}
+
+#[test]
+fn build_flags_consider_all_members_and_duplicate_keys_keep_first_spelling() {
+    let plan = CaptureGroupRenamePlan::build(&group("IMG.jpg", "other.cr2", None), Some("IMG"), false);
+    assert!(plan.check.is_valid());
+    assert!(!plan.check.is_unchanged && !plan.check.differs_only_by_case);
+    let same_paths = group("IMG.jpg", "img.JPG", None);
+    let plan = CaptureGroupRenamePlan::build(&same_paths, Some("new"), false);
+    let names = plan.file_names.unwrap();
+    assert_eq!(names.len(), 1);
+    let (key, value) = names.iter().next().unwrap();
+    assert_eq!(key, r"C:\Shots\IMG.jpg");
+    assert_eq!(value, "new.JPG");
+}

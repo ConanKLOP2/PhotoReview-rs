@@ -309,32 +309,105 @@ fn exceeds_path_budget_table() {
     assert!(!Policy::exceeds_path_budget("a.jpg", &"x".repeat(260), false));
 }
 
-// C#: Check_SameName_IsUnchanged; Check_SameNameWithTypedExtension_IsUnchanged;
-// Check_ExtensionCaseOfCurrentFile_IsKept; Check_LowerToUpperCaseOnlyOfA_IsCaseOnly;
-// Check_DifferentName_IsNeitherUnchangedNorCaseOnly; Check_NfcTypedForNfdCurrent_IsKeptAsTyped.
+macro_rules! spelling_case {
+    ($test:ident, $source:literal, $typed:literal, $path:expr, $name:literal, $unchanged:literal, $case_only:literal) => {
+        #[doc = concat!("C#: RenameNamePolicyTests.", $source)]
+        #[test]
+        fn $test() {
+            let check = Policy::check(Some($typed), $path, false);
+            assert!(check.is_valid());
+            assert_eq!(
+                (
+                    check.new_file_name.as_str(),
+                    check.is_unchanged,
+                    check.differs_only_by_case
+                ),
+                ($name, $unchanged, $case_only)
+            );
+        }
+    };
+}
+spelling_case!(
+    check_same_name_is_unchanged,
+    "Check_SameName_IsUnchanged",
+    "IMG_0001",
+    CURRENT,
+    "IMG_0001.jpg",
+    true,
+    false
+);
+spelling_case!(
+    check_same_name_with_typed_extension_is_unchanged,
+    "Check_SameNameWithTypedExtension_IsUnchanged",
+    "IMG_0001.jpg",
+    CURRENT,
+    "IMG_0001.jpg",
+    true,
+    false
+);
+spelling_case!(
+    check_extension_case_of_current_file_is_kept,
+    "Check_ExtensionCaseOfCurrentFile_IsKept",
+    "a.jpg",
+    r"C:\Photos\IMG.JPG",
+    "a.JPG",
+    false,
+    false
+);
+spelling_case!(
+    check_lower_to_upper_case_only_of_a_is_case_only,
+    "Check_LowerToUpperCaseOnlyOfA_IsCaseOnly",
+    "A",
+    r"C:\Photos\a.jpg",
+    "A.jpg",
+    false,
+    true
+);
+spelling_case!(
+    check_different_name_is_neither_unchanged_nor_case_only,
+    "Check_DifferentName_IsNeitherUnchangedNorCaseOnly",
+    "other",
+    CURRENT,
+    "other.jpg",
+    false,
+    false
+);
+spelling_case!(
+    check_nfc_typed_for_nfd_current_is_kept_as_typed,
+    "Check_NfcTypedForNfdCurrent_IsKeptAsTyped",
+    "é",
+    "C:\\Photos\\e\u{301}.jpg",
+    "é.jpg",
+    false,
+    false
+);
+
+// C#: RenameNamePolicyTests.Check_NullStem_ReturnsEmpty.
 #[test]
-fn check_name_spelling_and_flags_match_csharp() {
-    for (typed, path, name, unchanged, case_only) in [
-        ("IMG_0001", CURRENT, "IMG_0001.jpg", true, false),
-        ("IMG_0001.jpg", CURRENT, "IMG_0001.jpg", true, false),
-        ("a.jpg", r"C:\Photos\IMG.JPG", "a.JPG", false, false),
-        ("A", r"C:\Photos\a.jpg", "A.jpg", false, true),
-        ("other", CURRENT, "other.jpg", false, false),
-        ("é", "C:\\Photos\\e\u{301}.jpg", "é.jpg", false, false),
-    ] {
-        let check = Policy::check(Some(typed), path, false);
-        assert!(check.is_valid());
-        assert_eq!(
-            (
-                check.new_file_name.as_str(),
-                check.is_unchanged,
-                check.differs_only_by_case
-            ),
-            (name, unchanged, case_only)
-        );
-    }
+fn check_null_stem_returns_empty() {
+    assert_eq!(Policy::check(None, CURRENT, false).problem, Problem::Empty);
 }
 
+#[test]
+fn supplementary_characters_count_as_two_utf16_units() {
+    let accepted = format!("{}x", "😀".repeat(125));
+    assert_eq!(
+        Policy::check(Some(&accepted), CURRENT, true)
+            .new_file_name
+            .encode_utf16()
+            .count(),
+        255
+    );
+    assert_eq!(
+        Policy::check(Some(&"😀".repeat(126)), CURRENT, true).problem,
+        Problem::NameTooLong
+    );
+    let current = format!("C:\\{}\\a.jpg", "😀".repeat(100));
+    assert_eq!(
+        Policy::check(Some(&"x".repeat(56)), &current, false).problem,
+        Problem::PathTooLong
+    );
+}
 // C#: RenameNamePolicyTests.Check_BlankCurrentPath_Throws; D-W9R-12 maps exception to verdict.
 #[test]
 fn check_blank_current_path_returns_empty() {
