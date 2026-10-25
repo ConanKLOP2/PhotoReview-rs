@@ -1503,7 +1503,13 @@ fn can_open_in_external_editor_is_true_only_when_the_path_is_set_and_an_image_is
     assert!(env.vm.has_images());
     assert!(env.vm.can_open_in_external_editor(), "both conditions now hold");
 
-    env.update_settings(|settings| settings.external_editor_path = "   ".to_owned());
+    env.update_settings(|settings| {
+        // Saving now materializes the legacy editor. Clear the declared list as well
+        // when arranging "no editor"; changing only the mirror preserves the editor.
+        settings.external_editors.clear();
+        settings.default_external_editor_id.clear();
+        settings.external_editor_path = "   ".to_owned();
+    });
     assert!(
         !env.vm.can_open_in_external_editor(),
         "a whitespace-only path counts as not configured"
