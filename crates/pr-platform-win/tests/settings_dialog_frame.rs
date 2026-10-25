@@ -42,11 +42,7 @@ fn every_frame_case_matches_the_csharp_golden() {
                     serde_json::json!((0..d.page_count()).map(|i| d.page_key(i).unwrap()).collect::<Vec<_>>()),
                     row["page_keys"]
                 );
-                let mut expected_counts = row["page_item_counts"].as_array().unwrap().clone();
-                assert_eq!(expected_counts[5], 39); // Refreshed oracle includes the four external-editor controls assigned to W9-E4.
-                // Pinned d92d6aae FilesSettingsPage.Declare has no Manage/Summary/SendRaw/SendRawHint (D-W8B5-808).
-                // Both refreshed goldens now include these four; this explicit W8 expectation is debt until W9-E4 merges.
-                expected_counts[5] = serde_json::Value::from(35);
+                let expected_counts = row["page_item_counts"].as_array().unwrap().clone();
                 assert_eq!(
                     serde_json::json!((0..d.page_count()).map(|i| d.page_items(i).len()).collect::<Vec<_>>()),
                     serde_json::Value::Array(expected_counts)

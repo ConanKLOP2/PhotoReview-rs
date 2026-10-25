@@ -2,11 +2,13 @@
 //! duplicate compare, camera RAW, WebP/HEIC with the machine codec status, delete safety, external editor path with Browse, operation journal (two radios),
 //! "reuse the last Move/Copy folder". Unit W8-19f. Contract: `contracts/W8-19f.md`.
 //!
-//! The C# HEAD (after the baseline) adds the external editors list ("Manage editors..."): NOT ported here (sync patch P-17), see the contract.
+//! W9-E4 adds the declared editor manager, summary and RAW switch from baseline `7eaee2a2`.
 use std::rc::Rc;
 
 use pr_app::presenters::settings::SettingsPresenter;
 use pr_app::presenters::settings_form_state::SettingsFormState;
+use pr_core::settings::app_settings::AppSettings;
+use pr_core::settings::external_editors::{ExternalEditor, ExternalEditors};
 use pr_imaging::webp_heic::WicCodecSupport;
 use pr_l10n::tr;
 
@@ -38,12 +40,23 @@ pub struct FilesIds {
     pub reuse_last_folder: i32,
 }
 
+/// C# `EditorIds`: the manager button, RAW switch and summary note (W9-E4).
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+pub struct FilesEditorIds {
+    pub manage: i32,
+    pub send_raw: i32,
+    pub summary: i32,
+}
+
 /// C# `FilesSettingsPage`.
 pub struct FilesSettingsPage {
     codecs: CodecSource,
     context: PageContextSlot,
     ids: FilesIds,
     journal_radios: Vec<i32>,
+    editor_ids: FilesEditorIds,
+    editors: Vec<ExternalEditor>,
+    default_editor_id: String,
 }
 
 impl std::fmt::Debug for FilesSettingsPage {
@@ -87,6 +100,9 @@ impl FilesSettingsPage {
                 reuse_last_folder: 0,
             },
             journal_radios: Vec::new(),
+            editor_ids: FilesEditorIds::default(),
+            editors: Vec::new(),
+            default_editor_id: String::new(),
         }
     }
 
@@ -98,6 +114,10 @@ impl FilesSettingsPage {
     /// C# `JournalRadios`: 2 ids after `declare` (0 = Fast, 1 = Power-loss safe).
     pub fn journal_radios(&self) -> &[i32] {
         &self.journal_radios
+    }
+
+    pub fn editor_ids(&self) -> FilesEditorIds {
+        self.editor_ids
     }
 }
 
@@ -124,6 +144,7 @@ impl SettingsPageView for FilesSettingsPage {
     /// Six groups and two loose checks, exactly the C# order and texts (see the contract table).
     fn declare(&mut self, page: &mut SettingsPageBuilder) {
         let ids = &mut self.ids;
+        let editor_ids = &mut self.editor_ids;
         page.group(text_fn(tr::settings_group_compare_options), |group| {
             ids.compare_hash = group.check(text_fn(tr::settings_compare_hash_label), 0);
             ids.compare_size = group.check(text_fn(tr::settings_compare_size_label), 0);
@@ -175,6 +196,14 @@ impl SettingsPageView for FilesSettingsPage {
                 .copied()
                 .unwrap_or(0);
             group.note(Some(text_fn(tr::settings_external_editor_path_hint)), false);
+            editor_ids.manage = group
+                .buttons(true, &[text_fn(tr::settings_external_editors_manage)])
+                .first()
+                .copied()
+                .unwrap_or(0);
+            editor_ids.summary = group.note(None, false);
+            editor_ids.send_raw = group.check(text_fn(tr::settings_external_editors_send_raw), 0);
+            group.note(Some(text_fn(tr::settings_external_editors_send_raw_hint)), false);
         });
         page.group(text_fn(tr::settings_group_journal_durability), |group| {
             ids.journal = group.text(Some(text_fn(tr::settings_journal_durability_label)));
@@ -213,6 +242,10 @@ impl SettingsPageView for FilesSettingsPage {
         context.set_checked(self.ids.allow_permanent_delete, state.allow_permanent_delete);
         context.set_checked(self.ids.confirm_before_delete, state.confirm_before_delete);
         context.set_text(self.ids.editor_path, &state.external_editor_path);
+        self.editors = state.external_editors.clone();
+        self.default_editor_id = state.default_external_editor_id.clone();
+        context.set_checked(self.editor_ids.send_raw, state.external_editor_sends_raw_original);
+        self.show_editor_summary();
         context.set_radio_index(&self.journal_radios, i32::from(state.journal_safe));
         context.set_checked(self.ids.reuse_last_folder, state.move_copy_reuse_last_folder);
     }
@@ -228,13 +261,23 @@ impl SettingsPageView for FilesSettingsPage {
         state.allow_permanent_delete = context.is_checked(self.ids.allow_permanent_delete);
         state.confirm_before_delete = context.is_checked(self.ids.confirm_before_delete);
         state.external_editor_path = context.text(self.ids.editor_path);
+        state.external_editors = self.editors.clone();
+        state.default_external_editor_id = self.default_editor_id.clone();
+        state.external_editor_sends_raw_original = context.is_checked(self.editor_ids.send_raw);
         state.journal_safe = context.radio_index(&self.journal_radios) == 1;
         state.move_copy_reuse_last_folder = context.is_checked(self.ids.reuse_last_folder);
     }
 
-    /// `BN_CLICKED` of `browse` -> `browse_for_editor()`, handled; else `false`.
+    /// `BN_CLICKED` dispatches the manager or executable browser.
     fn on_command(&mut self, id: i32, notification: u32) -> bool {
-        if id != self.ids.browse || notification != BN_CLICKED {
+        if notification != BN_CLICKED {
+            return false;
+        }
+        if id == self.editor_ids.manage {
+            self.manage_editors();
+            return true;
+        }
+        if id != self.ids.browse {
             return false;
         }
         self.browse_for_editor();
@@ -248,11 +291,55 @@ impl SettingsPageView for FilesSettingsPage {
     }
 
     fn on_language_changed(&mut self) {
-        self.show_codec_status()
+        self.show_codec_status();
+        self.show_editor_summary();
     }
 }
 
 impl FilesSettingsPage {
+    fn manage_editors(&mut self) {
+        let context = self.context.context();
+        let mut working = AppSettings {
+            external_editors: self.editors.clone(),
+            default_external_editor_id: self.default_editor_id.clone(),
+            ..AppSettings::default()
+        };
+        ExternalEditors::apply_legacy_path(&mut working, Some(&context.text(self.ids.editor_path)));
+        let Some(edit) =
+            context.edit_external_editors(&working.external_editors, Some(&working.default_external_editor_id))
+        else {
+            return;
+        };
+        self.editors = edit.editors;
+        self.default_editor_id = edit.default_id;
+        let current = self
+            .editors
+            .iter()
+            .find(|editor| editor.id == self.default_editor_id)
+            .or_else(|| self.editors.first());
+        context.set_text(self.ids.editor_path, current.map_or("", |editor| editor.path.as_str()));
+        self.show_editor_summary();
+    }
+
+    fn show_editor_summary(&self) {
+        let current = self
+            .editors
+            .iter()
+            .find(|editor| editor.id == self.default_editor_id)
+            .or_else(|| self.editors.first());
+        let text = if self.editors.is_empty() {
+            tr::settings_external_editors_summary_none()
+        } else {
+            tr::settings_external_editors_summary(
+                self.editors.len() as i64,
+                current.map(ExternalEditor::display_name).unwrap_or_default(),
+            )
+        };
+        let context = self.context.context();
+        context.set_text(self.editor_ids.summary, &text);
+        context.relayout();
+    }
+
     fn browse_for_editor(&mut self) {
         let context = self.context.context();
         let Some(files) = context.files() else {

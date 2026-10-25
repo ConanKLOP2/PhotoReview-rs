@@ -33,6 +33,182 @@ use pr_test_support::{FakeClock, FakeFileSystem, FsOp, RecordingLog};
 
 const PHYSICAL_MEMORY: i64 = 32 * 1024 * 1024 * 1024;
 
+fn with_two_external_editors() -> AppSettings {
+    use pr_core::settings::external_editors::ExternalEditor;
+    let mut settings = default_settings();
+    settings.external_editors = vec![
+        ExternalEditor {
+            id: "lr".to_owned(),
+            name: "Lightroom".to_owned(),
+            path: r"C:\LR\lightroom.exe".to_owned(),
+            arguments: ExternalEditor::DEFAULT_ARGUMENTS.to_owned(),
+        },
+        ExternalEditor {
+            id: "tp".to_owned(),
+            name: "Topaz AI".to_owned(),
+            path: r"C:\TP\topaz.exe".to_owned(),
+            arguments: "-o {file}".to_owned(),
+        },
+    ];
+    settings.default_external_editor_id = "tp".to_owned();
+    settings.external_editor_path = r"C:\TP\topaz.exe".to_owned();
+    settings
+}
+
+// C#: ExternalEditorsSettingsPresenterTests.Load_CarriesTheEditorsIntoTheForm.
+#[test]
+fn external_editors_load_carries_the_editors_into_the_form() {
+    let presenter = new_presenter(&with_two_external_editors());
+    let state = presenter.load_fields();
+    assert_eq!(
+        state
+            .external_editors
+            .iter()
+            .map(|editor| editor.name.as_str())
+            .collect::<Vec<_>>(),
+        ["Lightroom", "Topaz AI"]
+    );
+    assert_eq!(state.default_external_editor_id, "tp");
+    assert_eq!(state.external_editor_path, r"C:\TP\topaz.exe");
+    assert!(state.external_editor_sends_raw_original);
+}
+
+// Source-derived W9-E4: Default(s)?.Path wins over the stale legacy mirror, and form records are clones.
+#[test]
+fn external_editors_load_default_wins_over_stale_mirror_and_form_is_a_copy() {
+    let mut settings = with_two_external_editors();
+    settings.external_editor_path = "stale.exe".to_owned();
+    let presenter = new_presenter(&settings);
+    let mut state = presenter.load_fields();
+    assert_eq!(state.external_editor_path, r"C:\TP\topaz.exe");
+    state.external_editors[0].name = "Changed".to_owned();
+    assert_eq!(presenter.settings().external_editors[0].name, "Lightroom");
+}
+
+// C#: ExternalEditorsSettingsPresenterTests.Save_Untouched_KeepsTheListAndIsStable.
+#[test]
+fn external_editors_save_untouched_keeps_the_list_and_is_stable() {
+    let env = Env::new();
+    let mut presenter = new_presenter(&with_two_external_editors());
+    let state = presenter.load_fields();
+    assert!(ok(&mut presenter, &state, &env));
+    let first = json_of(presenter.settings());
+    let state = presenter.load_fields();
+    assert!(ok(&mut presenter, &state, &env));
+    assert_eq!(json_of(presenter.settings()), first);
+    assert_eq!(presenter.settings().external_editors[1].arguments, "-o {file}");
+    assert_eq!(presenter.settings().default_external_editor_id, "tp");
+}
+
+// C#: ExternalEditorsSettingsPresenterTests.Save_EditedForm_IsWrittenAndThePathFollowsTheDefault.
+#[test]
+fn external_editors_save_edited_form_is_written_and_path_follows_default() {
+    use pr_core::settings::external_editors::ExternalEditor;
+    let env = Env::new();
+    let mut presenter = new_presenter(&with_two_external_editors());
+    let mut state = presenter.load_fields();
+    state.external_editors.push(ExternalEditor {
+        id: "dxo".to_owned(),
+        name: "DxO".to_owned(),
+        path: r"C:\DxO\dxo.exe".to_owned(),
+        arguments: ExternalEditor::DEFAULT_ARGUMENTS.to_owned(),
+    });
+    state.default_external_editor_id = "dxo".to_owned();
+    state.external_editor_path = r"C:\DxO\dxo.exe".to_owned();
+    state.external_editor_sends_raw_original = false;
+    assert!(ok(&mut presenter, &state, &env));
+    assert_eq!(
+        presenter
+            .settings()
+            .external_editors
+            .iter()
+            .map(|editor| editor.id.as_str())
+            .collect::<Vec<_>>(),
+        ["lr", "tp", "dxo"]
+    );
+    assert_eq!(presenter.settings().default_external_editor_id, "dxo");
+    assert_eq!(presenter.settings().external_editor_path, r"C:\DxO\dxo.exe");
+    assert!(!presenter.settings().external_editor_sends_raw_original);
+}
+
+// C#: ExternalEditorsSettingsPresenterTests.Save_TypedPath_MovesTheDefaultEditor.
+#[test]
+fn external_editors_save_typed_path_moves_default_editor() {
+    let env = Env::new();
+    let mut presenter = new_presenter(&with_two_external_editors());
+    let mut state = presenter.load_fields();
+    state.external_editor_path = r"  C:\New\topaz2.exe  ".to_owned();
+    assert!(ok(&mut presenter, &state, &env));
+    assert_eq!(presenter.settings().external_editors.len(), 2);
+    assert_eq!(presenter.settings().external_editors[1].path, r"C:\New\topaz2.exe");
+    assert_eq!(presenter.settings().external_editor_path, r"C:\New\topaz2.exe");
+    assert_eq!(presenter.settings().external_editors[0].path, r"C:\LR\lightroom.exe");
+}
+
+// C#: ExternalEditorsSettingsPresenterTests.Save_ClearedPath_RemovesTheDefaultEditor.
+#[test]
+fn external_editors_save_cleared_path_removes_default_editor() {
+    let env = Env::new();
+    let mut presenter = new_presenter(&with_two_external_editors());
+    let mut state = presenter.load_fields();
+    state.external_editor_path.clear();
+    assert!(ok(&mut presenter, &state, &env));
+    assert_eq!(presenter.settings().external_editors.len(), 1);
+    assert_eq!(presenter.settings().external_editors[0].id, "lr");
+    assert_eq!(presenter.settings().default_external_editor_id, "lr");
+}
+
+// C#: ExternalEditorsSettingsPresenterTests.Save_TypedPathWithoutList_CreatesAnEditor.
+#[test]
+fn external_editors_save_typed_path_without_list_creates_editor() {
+    let env = Env::new();
+    let mut presenter = new_presenter(&default_settings());
+    let mut state = presenter.load_fields();
+    state.external_editor_path = r"C:\Tools\Capture One\CaptureOne.exe".to_owned();
+    assert!(ok(&mut presenter, &state, &env));
+    assert_eq!(presenter.settings().external_editors.len(), 1);
+    let editor = &presenter.settings().external_editors[0];
+    assert_eq!(editor.name, "CaptureOne");
+    assert_eq!(editor.id, presenter.settings().default_external_editor_id);
+}
+
+// C#: ExternalEditorsSettingsPresenterTests.Defaults_ClearsTheList.
+#[test]
+fn external_editors_defaults_clears_list() {
+    let mut settings = with_two_external_editors();
+    settings.external_editor_sends_raw_original = false;
+    let mut presenter = new_presenter(&settings);
+    let state = presenter.apply_defaults();
+    assert!(presenter.settings().external_editors.is_empty());
+    assert!(presenter.settings().default_external_editor_id.is_empty());
+    assert!(presenter.settings().external_editor_sends_raw_original);
+    assert!(state.external_editors.is_empty());
+    assert!(state.external_editor_path.is_empty());
+}
+
+// C#: ExternalEditorsSettingsPresenterTests.Shortcut_RoundTripsAndConflictsAreRefused.
+#[test]
+fn external_editors_shortcut_round_trips_and_conflicts_are_refused() {
+    let env = Env::new();
+    let mut presenter = new_presenter(&default_settings());
+    let mut state = presenter.load_fields();
+    assert_eq!(
+        state.shortcut_texts.get("OpenInDefaultEditor").map(String::as_str),
+        Some("")
+    );
+    state
+        .shortcut_texts
+        .insert("OpenInDefaultEditor".to_owned(), "F9".to_owned());
+    assert!(ok(&mut presenter, &state, &env));
+    assert_eq!(presenter.settings().shortcuts.open_in_default_editor, "F9");
+    let mut clash = presenter.load_fields();
+    clash.shortcut_texts.insert(
+        "OpenInDefaultEditor".to_owned(),
+        presenter.settings().actions[0].shortcut.clone(),
+    );
+    assert!(!ok(&mut presenter, &clash, &env));
+}
+
 // ---------------------------------------------------------------------------------------------------------------
 // Fixture
 // ---------------------------------------------------------------------------------------------------------------

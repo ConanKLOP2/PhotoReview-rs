@@ -11,6 +11,8 @@ use std::collections::BTreeMap;
 use std::rc::{Rc, Weak};
 use std::sync::Arc;
 
+use crate::dialogs::native::external_editors_dialog::ExternalEditorsEdit;
+use pr_core::settings::external_editors::ExternalEditor;
 use pr_core::settings::shortcuts::ReviewAction;
 use pr_imaging::decoder_traits::ImageDecoderFactory;
 
@@ -140,6 +142,20 @@ impl SettingsPageHost for PageHost {
             .show_action_profiles
             .as_ref()
             .ok_or(ActionProfilesUnavailable)?(owner, actions)
+    }
+
+    fn show_external_editors(
+        &self,
+        owner: Hwnd,
+        editors: &[ExternalEditor],
+        default_id: Option<&str>,
+    ) -> Result<Option<ExternalEditorsEdit>, ActionProfilesUnavailable> {
+        let content = self.live().ok_or(ActionProfilesUnavailable)?;
+        content
+            .options
+            .show_external_editors
+            .as_ref()
+            .ok_or(ActionProfilesUnavailable)?(owner, editors, default_id)
     }
 
     /// `dirty::get_control_text`.

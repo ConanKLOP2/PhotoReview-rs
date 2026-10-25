@@ -154,6 +154,19 @@ fn row_order_is_the_documented_reading_order_of_the_29_commands() {
     assert_eq!(NAVIGATION_ROWS.len(), 8);
     assert_eq!(VIEW_ROWS.len(), 13);
     assert_eq!(ACTION_ROWS.len(), 8);
+    assert_eq!(
+        ACTION_ROWS.iter().map(|row| row.property).collect::<Vec<_>>(),
+        [
+            "Skip",
+            "Undo",
+            "Compare",
+            "MoveToFolder",
+            "CopyToFolder",
+            "SendToRecycleBin",
+            "OpenInDefaultEditor",
+            "RenameFile",
+        ]
+    );
     let rows: Vec<_> = all_rows().map(|row| row.property).collect();
     let expected: Vec<_> = NAVIGATION_ROWS
         .iter()
