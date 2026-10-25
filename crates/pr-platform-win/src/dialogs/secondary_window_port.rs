@@ -9,8 +9,6 @@
 //! The C# builds each dialog from the DI container (`IServiceProvider`). Rust has no container (plan section 09): the port holds a [`SecondaryWindowDialogs`], the
 //! seam that builds the dialog of each window and says how to read its result, so the whole routing, bookkeeping and dispose logic is tested with fake dialogs
 //! (D-W8B5-413). The production implementation of that seam is one adapter in the composition (see the contract, "Unplanned").
-#![allow(unused_variables, dead_code)] // stub: the porter removes this line with the last `todo!()`
-
 use std::cell::{Cell, RefCell};
 use std::path::Path;
 use std::rc::{Rc, Weak};
@@ -105,7 +103,7 @@ pub trait SecondaryWindowDialogs {
         &self,
         target: SettingsTarget,
         show_action_profiles: ActionProfilesOpener,
-        show_external_editors: ExternalEditorsOpener,
+        _show_external_editors: ExternalEditorsOpener,
     ) -> Option<PreparedDialog<bool>> {
         self.settings(target, show_action_profiles)
     }
@@ -114,27 +112,27 @@ pub trait SecondaryWindowDialogs {
     /// other id `None`. Default `None` (no such window).
     fn external_editors(
         &self,
-        editors: &[ExternalEditor],
-        default_id: Option<&str>,
+        _editors: &[ExternalEditor],
+        _default_id: Option<&str>,
     ) -> Option<PreparedDialog<Option<ExternalEditorsEdit>>> {
         None
     }
 
     /// W9-E8, the file-picker half of C# `PromptAddExternalEditor`: `files.PickOpenFile(owner, dialog.externalEditor.addTitle,
     /// FileFilterText.Parse(dialog.fileFilter.executable), initialFolder)`. `None` = cancelled, no file dialog service, or a blank result.
-    fn pick_executable(&self, owner: Hwnd, initial_folder: Option<&str>) -> Option<String> {
+    fn pick_executable(&self, _owner: Hwnd, _initial_folder: Option<&str>) -> Option<String> {
         None
     }
 
     /// W9-E8, the name-prompt half: `new TextPromptDialog(dialog.externalEditor.nameTitle, dialog.externalEditor.nameLabel, initial, chrome)`; `finish(ID_OK)` is
     /// `Some(value)` (trimmed, non-blank), any other id `None`. Default `None`.
-    fn text_prompt(&self, title: &str, label: &str, initial: &str) -> Option<PreparedDialog<Option<String>>> {
+    fn text_prompt(&self, _title: &str, _label: &str, _initial: &str) -> Option<PreparedDialog<Option<String>>> {
         None
     }
 
     /// W9-E8, C# `new ListDialog(content, chrome)` over a choice list (`ListDialogContent::for_choice`); `finish(ID_OK)` is `Some(selected_index)` (a valid index), any
     /// other id `None`. Default `None`.
-    fn choice_list(&self, content: ListDialogContent) -> Option<PreparedDialog<Option<usize>>> {
+    fn choice_list(&self, _content: ListDialogContent) -> Option<PreparedDialog<Option<usize>>> {
         None
     }
 }
@@ -172,6 +170,17 @@ struct PortState {
     disposed: Cell<bool>,
 }
 
+struct OpenDialogGuard {
+    state: Rc<PortState>,
+    id: u64,
+}
+
+impl Drop for OpenDialogGuard {
+    fn drop(&mut self) {
+        self.state.open.borrow_mut().retain(|entry| entry.id != self.id);
+    }
+}
+
 /// C# `Win32SecondaryWindowPort : ISecondaryWindowPort, IDisposable`. UI thread only (`!Send`: the C# `VerifyUiThread` is a compile-time property here).
 pub struct Win32SecondaryWindowPort {
     dialogs: Rc<dyn SecondaryWindowDialogs>,
@@ -184,34 +193,71 @@ pub struct Win32SecondaryWindowPort {
 impl Win32SecondaryWindowPort {
     /// C# constructor. Returns an `Rc` because the Settings window needs a `Weak` of the port to reach the Action profiles editor (`Rc::new_cyclic`).
     pub fn new(dialogs: Rc<dyn SecondaryWindowDialogs>, log: Arc<dyn Log>, options: PortOptions) -> Rc<Self> {
-        todo!()
+        Rc::new_cyclic(|me| Self {
+            dialogs,
+            options,
+            log,
+            state: Rc::new(PortState {
+                open: RefCell::new(Vec::new()),
+                benchmark: RefCell::new(None),
+                next_id: Cell::new(1),
+                disposed: Cell::new(false),
+            }),
+            me: me.clone(),
+        })
     }
 
     /// C# `OpenCount`: the number of dialogs that are open now (nested ones included; the modeless Benchmark counts).
     pub fn open_count(&self) -> usize {
-        todo!()
+        self.state.open.borrow().len()
     }
 
     /// C# `IsBenchmarkOpen`: the Benchmark window exists and is not closed.
     pub fn is_benchmark_open(&self) -> bool {
-        todo!()
+        self.state
+            .benchmark
+            .borrow()
+            .as_ref()
+            .is_some_and(|entry| !entry.dialog.is_closed())
     }
 
     /// C# `SettingsEnabled`: `options.settings_enabled` when given, else `settings::catalog::is_complete()`.
     pub fn settings_enabled(&self) -> bool {
-        todo!()
+        self.options
+            .settings_enabled
+            .as_ref()
+            .map_or_else(crate::dialogs::settings::catalog::is_complete, |enabled| enabled())
     }
 
     /// C# `Run(dialog, owner)` (lines 272-290): disposed -> `ID_CANCEL` without showing. Else registers the dialog in `open`, `dialog.show_modal(owner,
     /// ready, message_loop)`, removes it from `open` on every path (also when `show_modal` fails or a hook panics: a guard). `Err(DialogError)` is logged
     /// (`"Secondary window failed"`) and answers `ID_CANCEL` (the C# exception reached the guarded caller, D-W8B5-414). A pending panic is NOT caught here.
     fn run(&self, dialog: &NativeDialog, owner: Hwnd) -> i32 {
-        todo!()
+        if self.state.disposed.get() {
+            return super::native::dialog::ID_CANCEL;
+        }
+        let id = self.state.next_id.get();
+        self.state.next_id.set(id.wrapping_add(1));
+        self.state.open.borrow_mut().push(OpenDialog {
+            id,
+            dialog: dialog.clone(),
+        });
+        let _guard = OpenDialogGuard {
+            state: Rc::clone(&self.state),
+            id,
+        };
+        match dialog.show_modal(owner, self.options.ready.as_deref(), self.options.message_loop.as_ref()) {
+            Ok(result) => result,
+            Err(error) => {
+                self.log.error("Secondary window failed", Some(&error));
+                super::native::dialog::ID_CANCEL
+            }
+        }
     }
 
     /// `run` + `finish`: the result of a `PreparedDialog`.
     fn run_prepared<T>(&self, prepared: PreparedDialog<T>, owner: Hwnd) -> T {
-        todo!()
+        (prepared.finish)(self.run(&prepared.dialog, owner))
     }
 }
 
@@ -225,23 +271,51 @@ impl SecondaryWindowPort for Win32SecondaryWindowPort {
     /// C# `Supports(kind)` (baseline): `true` for Diagnostics, SkippedFiles, BatchReview, ZoomPrompt, Benchmark, ActionProfiles, Recovery; `settings_enabled()`
     /// for Settings; `false` for ExternalEditors and RenamePrompt (not in the baseline, D-W8B5-415).
     fn supports(&self, kind: SecondaryWindowKind) -> bool {
-        todo!()
+        match kind {
+            SecondaryWindowKind::Settings => self.settings_enabled(),
+            SecondaryWindowKind::Recovery
+            | SecondaryWindowKind::Diagnostics
+            | SecondaryWindowKind::Benchmark
+            | SecondaryWindowKind::SkippedFiles
+            | SecondaryWindowKind::BatchReview
+            | SecondaryWindowKind::ZoomPrompt
+            | SecondaryWindowKind::ActionProfiles => true,
+            SecondaryWindowKind::ExternalEditors | SecondaryWindowKind::RenamePrompt => false,
+        }
     }
 
     /// C# `ShowSettings` (lines 90-115): disposed -> `false`; `dialogs.settings(target, opener)` is `None` -> `false`; else `run_prepared` (`finish` reads
     /// `Saved`).
     fn show_settings(&self, owner: Hwnd, target: SettingsTarget) -> bool {
-        todo!()
+        if self.state.disposed.get() {
+            return false;
+        }
+        let weak = self.me.clone();
+        let opener: ActionProfilesOpener = Rc::new(move |owner, actions| {
+            weak.upgrade()
+                .and_then(|port| port.show_action_profiles(owner, actions))
+        });
+        self.dialogs
+            .settings(target, opener)
+            .is_some_and(|prepared| self.run_prepared(prepared, owner))
     }
 
     /// C# `ShowRecovery` (lines 123-160): disposed -> nothing; `dialogs.recovery(owner)` is `None` -> nothing; else `run_prepared`.
     fn show_recovery(&self, owner: Hwnd) {
-        todo!()
+        if !self.state.disposed.get() {
+            if let Some(prepared) = self.dialogs.recovery(owner) {
+                self.run_prepared(prepared, owner);
+            }
+        }
     }
 
     /// C# `ShowDiagnostics` (lines 241-252): disposed -> nothing; `dialogs.diagnostics()`; `run_prepared`.
     fn show_diagnostics(&self, owner: Hwnd) {
-        todo!()
+        if !self.state.disposed.get() {
+            if let Some(prepared) = self.dialogs.diagnostics() {
+                self.run_prepared(prepared, owner);
+            }
+        }
     }
 
     /// C# `ShowBenchmark` (lines 181-228): disposed -> nothing. A Benchmark window that is open -> `activate()` it and return. Else `dialogs.benchmark(folder)`
@@ -249,33 +323,119 @@ impl SecondaryWindowPort for Win32SecondaryWindowPort {
     /// `closed` removes it from `open` and clears the single instance when it is still this one; when `show_modeless` fails the dialog is removed and the
     /// instance cleared (the C# `catch { ...; throw; }`) and the error is logged.
     fn show_benchmark(&self, owner: Hwnd, folder: Option<&Path>) {
-        todo!()
+        if self.state.disposed.get() {
+            return;
+        }
+        let existing = self
+            .state
+            .benchmark
+            .borrow()
+            .as_ref()
+            .filter(|entry| !entry.dialog.is_closed())
+            .map(|entry| entry.dialog.clone());
+        if let Some(dialog) = existing {
+            dialog.activate();
+            return;
+        }
+        if let Some(dialog) = self.dialogs.benchmark(folder) {
+            let id = self.state.next_id.get();
+            self.state.next_id.set(id.wrapping_add(1));
+            self.state.open.borrow_mut().push(OpenDialog {
+                id,
+                dialog: dialog.clone(),
+            });
+            *self.state.benchmark.borrow_mut() = Some(OpenDialog {
+                id,
+                dialog: dialog.clone(),
+            });
+            let weak = Rc::downgrade(&self.state);
+            let closed = Box::new(move || {
+                if let Some(state) = weak.upgrade() {
+                    state.open.borrow_mut().retain(|entry| entry.id != id);
+                    if state.benchmark.borrow().as_ref().is_some_and(|entry| entry.id == id) {
+                        state.benchmark.borrow_mut().take();
+                    }
+                }
+            });
+            if let Err(error) = dialog.show_modeless(
+                owner,
+                self.options.message_loop.clone(),
+                self.options.ready.as_deref(),
+                Some(closed),
+            ) {
+                self.state.open.borrow_mut().retain(|entry| entry.id != id);
+                if self
+                    .state
+                    .benchmark
+                    .borrow()
+                    .as_ref()
+                    .is_some_and(|entry| entry.id == id)
+                {
+                    self.state.benchmark.borrow_mut().take();
+                }
+                self.log.error("Secondary window failed", Some(&error));
+            }
+        }
     }
 
     /// C# `ShowSkippedFiles` (lines 254-258).
     fn show_skipped_files(&self, owner: Hwnd, entries: &[SkippedEntry]) {
-        todo!()
+        if !self.state.disposed.get() {
+            if let Some(prepared) = self.dialogs.skipped_files(entries) {
+                self.run_prepared(prepared, owner);
+            }
+        }
     }
 
     /// C# `ShowBatchReview` (lines 260-264): `true` only for `ID_OK`; disposed -> `false`.
     fn show_batch_review(&self, owner: Hwnd, items: &[BatchReviewItem]) -> bool {
-        todo!()
+        if self.state.disposed.get() {
+            return false;
+        }
+        self.dialogs
+            .batch_review(items)
+            .is_some_and(|prepared| self.run_prepared(prepared, owner))
     }
 
     /// C# `PromptCustomZoom` (lines 266-270): `Some(value)` for `ID_OK`; disposed or cancelled -> `None`.
     fn prompt_custom_zoom(&self, owner: Hwnd, current_percent: i32) -> Option<i32> {
-        todo!()
+        if self.state.disposed.get() {
+            return None;
+        }
+        self.dialogs
+            .custom_zoom(current_percent)
+            .and_then(|prepared| self.run_prepared(prepared, owner))
     }
 
     /// C# `ShowActionProfiles` (lines 234-239): the edited list for `ID_OK`, else `None`.
     fn show_action_profiles(&self, owner: Hwnd, actions: &[ReviewAction]) -> Option<Vec<ReviewAction>> {
-        todo!()
+        if self.state.disposed.get() {
+            return None;
+        }
+        self.dialogs
+            .action_profiles(actions)
+            .and_then(|prepared| self.run_prepared(prepared, owner))
     }
 
     /// C# `Dispose` (lines 301-314): idempotent. `disposed = true`; snapshot of `open`; `close()` each from the LAST to the first (innermost first; a modeless
     /// dialog removes itself from `open` when it closes, hence the snapshot). After it every command answers as "cancelled".
     fn dispose(&self) {
-        todo!()
+        if self.state.disposed.replace(true) {
+            return;
+        }
+        let mut dialogs = self
+            .state
+            .open
+            .borrow()
+            .iter()
+            .map(|entry| entry.dialog.clone())
+            .collect::<Vec<_>>();
+        dialogs.reverse();
+        for dialog in dialogs {
+            dialog.close();
+        }
+        // Modal registrations are removed by their Run guards after the nested loops return.
+        // Modeless Benchmark removes itself through its closed callback, as in C# Dispose.
     }
 }
 
@@ -293,7 +453,11 @@ impl SecondaryWindowRouter {
 
     /// C# `Pick(kind)`: the native port when `native.supports(kind)`, else `None`.
     fn pick(&self, kind: SecondaryWindowKind) -> Option<&Rc<dyn SecondaryWindowPort>> {
-        todo!()
+        if self.native.supports(kind) {
+            Some(&self.native)
+        } else {
+            None
+        }
     }
 }
 
@@ -306,48 +470,61 @@ impl std::fmt::Debug for SecondaryWindowRouter {
 impl SecondaryWindowPort for SecondaryWindowRouter {
     /// C# `Supports(kind) => true`.
     fn supports(&self, kind: SecondaryWindowKind) -> bool {
-        todo!()
+        let _ = kind;
+        true
     }
 
     /// `pick(Settings)` -> `native.show_settings`, else `false`.
     fn show_settings(&self, owner: Hwnd, target: SettingsTarget) -> bool {
-        todo!()
+        self.pick(SecondaryWindowKind::Settings)
+            .is_some_and(|port| port.show_settings(owner, target))
     }
 
     fn show_recovery(&self, owner: Hwnd) {
-        todo!()
+        if let Some(port) = self.pick(SecondaryWindowKind::Recovery) {
+            port.show_recovery(owner);
+        }
     }
 
     fn show_diagnostics(&self, owner: Hwnd) {
-        todo!()
+        if let Some(port) = self.pick(SecondaryWindowKind::Diagnostics) {
+            port.show_diagnostics(owner);
+        }
     }
 
     fn show_benchmark(&self, owner: Hwnd, folder: Option<&Path>) {
-        todo!()
+        if let Some(port) = self.pick(SecondaryWindowKind::Benchmark) {
+            port.show_benchmark(owner, folder);
+        }
     }
 
     fn show_skipped_files(&self, owner: Hwnd, entries: &[SkippedEntry]) {
-        todo!()
+        if let Some(port) = self.pick(SecondaryWindowKind::SkippedFiles) {
+            port.show_skipped_files(owner, entries);
+        }
     }
 
     /// `pick(BatchReview)` -> `native.show_batch_review`, else `false`.
     fn show_batch_review(&self, owner: Hwnd, items: &[BatchReviewItem]) -> bool {
-        todo!()
+        self.pick(SecondaryWindowKind::BatchReview)
+            .is_some_and(|port| port.show_batch_review(owner, items))
     }
 
     /// `pick(ZoomPrompt)` -> `native.prompt_custom_zoom`, else `None`.
     fn prompt_custom_zoom(&self, owner: Hwnd, current_percent: i32) -> Option<i32> {
-        todo!()
+        self.pick(SecondaryWindowKind::ZoomPrompt)
+            .and_then(|port| port.prompt_custom_zoom(owner, current_percent))
     }
 
     /// `pick(ActionProfiles)` -> `native.show_action_profiles`, else `None`.
     fn show_action_profiles(&self, owner: Hwnd, actions: &[ReviewAction]) -> Option<Vec<ReviewAction>> {
-        todo!()
+        self.pick(SecondaryWindowKind::ActionProfiles)
+            .and_then(|port| port.show_action_profiles(owner, actions))
     }
 
     /// C# `Dispose() => (_native as IDisposable)?.Dispose()`.
     fn dispose(&self) {
-        todo!()
+        self.native.dispose()
     }
 }
 
@@ -359,5 +536,18 @@ pub fn try_read_recovery_entries<E>(
     log: &dyn Log,
     show_error: &dyn Fn(&str, &str),
 ) -> Option<Vec<E>> {
-    todo!()
+    match read() {
+        Ok(entries) => Some(entries),
+        Err(error) => {
+            log.error(
+                "Could not read the operation journal for the Recovery window",
+                Some(&error),
+            );
+            show_error(
+                &pr_l10n::tr::recovery_title(),
+                &pr_l10n::tr::recovery_read_failed(error.to_string()),
+            );
+            None
+        }
+    }
 }
