@@ -8,7 +8,7 @@ Status: accepted as the root-cause repair required by the standing CI auto-fix w
 
 PR #239 failed `concurrent_requests_for_same_key_decode_once` in Windows CI run `40213093475`, job `121228379134`: SourceReads was 2 instead of 1. The aggregate build-test check failed because that shard failed. The failing test belongs to pr-imaging and is unchanged by W9-E5.
 
-Both Rust `service/decode.rs::get_preview_attempt` and C# `PhotoReview.Imaging/Caching/PreviewImageService.cs::GetPreviewOnceAsync` (line452 at the pinned baseline) first check RAM and then fetch or create an in-flight entry. Between those operations, an earlier decode can publish its image and remove its entry. A caller that already saw the RAM miss then finds no entry and unnecessarily starts another decode. Atomic fetch-or-insert alone does not close this completed-load window.
+Both Rust `service/decode.rs::get_preview_attempt` and C# `PhotoReview.Imaging/Caching/PreviewImageService.cs::GetPreviewOnceAsync` (line452 at the pinned baseline) first check RAM and then fetch or create an in-flight entry. Between those operations, an earlier decode can publish its image and remove its entry. A caller that already saw the RAM miss then finds no entry and unnecessarily starts another decode. Atomic fetch-or-insert alone does not close this completed-load window. The shared C# window is a source-order inference, not a measured C# race reproduction.
 
 ## Decision
 
