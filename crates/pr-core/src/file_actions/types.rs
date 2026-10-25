@@ -134,7 +134,7 @@ pub struct CaptureGroupActionRequest {
     pub destination: Option<String>,
     pub allow_permanent_delete: bool,
     /// FEAT-RENAME: optional source-path to complete target-file-name map.
-    pub destination_file_names: Option<std::collections::HashMap<String, String>>,
+    pub destination_file_names: Option<super::rename::PathKeyMap>,
 }
 
 impl CaptureGroupActionRequest {
