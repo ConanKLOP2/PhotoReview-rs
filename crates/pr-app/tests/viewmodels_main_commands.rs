@@ -1688,6 +1688,32 @@ fn add_external_editor_full_list_or_blank_path_never_saves_or_installs_an_overri
     }
 }
 
+// Source-derived cap guard: an unwritable destination distinguishes no save from saving identical bytes.
+#[test]
+fn add_external_editor_full_list_skips_save_even_when_config_cannot_be_written() {
+    let mut env = MainEnv::new();
+    env.update_settings(|settings| {
+        settings.external_editors = (0..32)
+            .map(|i| editor_fixture(&format!("e{i}"), &format!(r"C:\e{i}.exe")))
+            .collect();
+        settings.default_external_editor_id = "e0".into();
+    });
+    let config = env.paths.config_file.clone();
+    std::fs::remove_file(&config).unwrap();
+    std::fs::create_dir_all(&config).unwrap();
+    *lock(&env.dialog.added_editor) = Some(editor_fixture("added", r"C:\added.exe"));
+    env.vm.add_external_editor();
+    assert!(
+        !env.settings.has_override(),
+        "a full list must not begin/commit an edit"
+    );
+    assert!(!env.log.contains(
+        pr_test_support::LogLevel::Error,
+        "Could not save the external editors setting"
+    ));
+    assert_eq!(env.settings.current().external_editors.len(), 32);
+}
+
 // Source-derived W9-E5 persistence failure keeps the edit in this session and logs it.
 #[test]
 fn add_external_editor_save_failure_keeps_session_edit_and_logs_failure() {
