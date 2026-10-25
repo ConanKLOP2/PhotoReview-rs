@@ -16,11 +16,13 @@ use std::fmt;
 use std::rc::Rc;
 use std::sync::Arc;
 
+use crate::dialogs::native::external_editors_dialog::ExternalEditorsEdit;
 use pr_app::presenters::settings::{SettingsPresenter, SettingsPresenterOptions};
 use pr_app::presenters::settings_form_state::SettingsFormState;
 use pr_core::abstractions::SettingsTarget;
 use pr_core::abstractions::ShellIntegration;
 use pr_core::settings::app_settings::{AppSettings, SettingsTexts};
+use pr_core::settings::external_editors::ExternalEditor;
 use pr_core::settings::shortcuts::ReviewAction;
 use pr_imaging::decoder_traits::ImageDecoderFactory;
 use pr_l10n::localizer::CurrentChangedSubscription;
@@ -112,6 +114,10 @@ pub type StartExplorerFn = Rc<dyn Fn(&str) -> Option<String>>;
 pub type ShowActionProfilesFn =
     Rc<dyn Fn(Hwnd, &[ReviewAction]) -> Result<Option<Vec<ReviewAction>>, ActionProfilesUnavailable>>;
 
+/// W9-E4: nested editor manager, C# `SettingsDialogOptions.ShowExternalEditors` (7eaee2a2).
+pub type ShowExternalEditorsFn =
+    Rc<dyn Fn(Hwnd, &[ExternalEditor], Option<&str>) -> Result<Option<ExternalEditorsEdit>, ActionProfilesUnavailable>>;
+
 /// C# `SettingsDialogOptions` (`null` member = the real thing). Differences: `Pages` are MOVED in; `OpenUrl` returns the failure text instead of throwing; `PhysicalMemoryBytes`
 /// is `SettingsDialogArgs::presenter.physical_memory_bytes`; `Version` has no assembly to read (the composition root passes it, D-W8B5-903).
 #[derive(Default)]
@@ -134,6 +140,8 @@ pub struct SettingsDialogOptions {
     pub control_key_down: Option<Rc<dyn Fn() -> bool>>,
     /// Nested Action profiles editor; `None` = the Shortcuts page says "could not open the editor".
     pub show_action_profiles: Option<ShowActionProfilesFn>,
+    /// Nested external editor manager; `None` reports unavailable through the page context.
+    pub show_external_editors: Option<ShowExternalEditorsFn>,
 }
 
 impl std::fmt::Debug for SettingsDialogOptions {
@@ -201,6 +209,7 @@ pub(super) struct ContentOptions {
     pub(super) version: Option<String>,
     pub(super) control_key_down: Option<Rc<dyn Fn() -> bool>>,
     pub(super) show_action_profiles: Option<ShowActionProfilesFn>,
+    pub(super) show_external_editors: Option<ShowExternalEditorsFn>,
 }
 
 /// What `reset_active_page` needs to build the throw-away presenter of the C# (`new SettingsPresenter(Settings, store: null, localization: null)`): the pieces of the real
@@ -378,6 +387,7 @@ impl SettingsContent {
             version,
             control_key_down,
             show_action_profiles,
+            show_external_editors,
         } = args.options;
         let warnings = warnings.unwrap_or_else(crate::dialogs::action_profiles::TaskDialogWarningSink::instance);
         let pages = pages.unwrap_or_else(crate::dialogs::settings::catalog::create_pages);
@@ -399,6 +409,7 @@ impl SettingsContent {
             version,
             control_key_down,
             show_action_profiles,
+            show_external_editors,
         };
         let decoder_factory = args.decoder_factory;
         let content = Rc::new_cyclic(|weak| {
