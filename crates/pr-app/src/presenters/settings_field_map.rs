@@ -875,16 +875,19 @@ fn apply_delete(f: &SettingsFormState, s: &mut AppSettings, _: &FieldContext<'_>
     None
 }
 fn load_editor(s: &AppSettings, f: &mut SettingsFormState) {
-    f.external_editor_path = s.external_editor_path.clone();
+    f.external_editor_path = pr_core::settings::external_editors::ExternalEditors::default(s)
+        .map_or_else(|| s.external_editor_path.clone(), |editor| editor.path);
     f.external_editors = s.external_editors.clone();
     f.default_external_editor_id = s.default_external_editor_id.clone();
     f.external_editor_sends_raw_original = s.external_editor_sends_raw_original;
 }
 fn apply_editor(f: &SettingsFormState, s: &mut AppSettings, _: &FieldContext<'_>) -> Option<SettingsFieldError> {
-    s.external_editor_path = f.external_editor_path.trim().to_owned();
     s.external_editors = f.external_editors.clone();
     s.default_external_editor_id = f.default_external_editor_id.clone();
     s.external_editor_sends_raw_original = f.external_editor_sends_raw_original;
+    s.external_editor_path =
+        pr_core::settings::external_editors::ExternalEditors::default(s).map_or_else(String::new, |editor| editor.path);
+    pr_core::settings::external_editors::ExternalEditors::apply_legacy_path(s, Some(&f.external_editor_path));
     None
 }
 fn load_journal(s: &AppSettings, f: &mut SettingsFormState) {
