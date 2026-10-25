@@ -1,5 +1,5 @@
-//! Port of `PhotoReview.Shell.Win32/Dialogs/Native/ListDialog.cs` at the BASELINE `d92d6aae` (183 lines; the checkout of the C# repo is newer and also holds
-//! `ForChoice`, `InitialSelectedIndex`, `SelectedIndex` and `OnOk`, which belong to the external-editors feature and are NOT ported here, D-W8B5-208).
+//! Port of `PhotoReview.Shell.Win32/Dialogs/Native/ListDialog.cs` at baseline `d92d6aae` (183 lines).
+//! The choice-list additions (`ForChoice`, `InitialSelectedIndex`, `SelectedIndex`, `OnOk`) are ported from `7eaee2a2` in W9-E3.
 //! Unit W8-18e. Contract: `contracts/W8-18e.md`.
 //!
 //! The Win32 view of `SkippedFilesPresenter` and `BatchReviewPresenter`: a read-only list box plus one or two buttons. Resizable, vertical and horizontal
@@ -13,6 +13,7 @@ use pr_app::presenters::secondary::{BatchReviewPresenter, SkippedFilesPresenter}
 use pr_core::abstractions::{BatchReviewItem, SkippedEntry};
 use pr_l10n::keys::{BATCH_REVIEW_CONFIRM, BATCH_REVIEW_TITLE, COMMON_CANCEL};
 use pr_l10n::localizer::Localizer;
+use std::cell::Cell;
 
 use super::dialog::{DialogContent, NativeDialog};
 use super::template::DialogItem;
@@ -82,8 +83,19 @@ impl ListDialogContent {
 
     /// W9-E3, C# `ForChoice(title, intro, lines, selected)`: title `title`, no heading, intro `intro` in `Dark.TextSecondary`, the `lines`, confirm text
     /// `dialog.externalEditor.setDefaultConfirm`, cancel `common.cancel`, 260 x 150 dialog units, `initial_selected_index = selected`.
-    pub fn for_choice(_title: &str, _intro: &str, _lines: &[String], _selected: i32, _localizer: &Localizer) -> Self {
-        todo!()
+    pub fn for_choice(title: &str, intro: &str, lines: &[String], selected: i32, localizer: &Localizer) -> Self {
+        Self {
+            title: title.to_owned(),
+            heading: None,
+            intro: Some(intro.to_owned()),
+            intro_color_key: "Dark.TextSecondary",
+            lines: lines.to_vec(),
+            confirm_text: Some(localizer.get("dialog.externalEditor.setDefaultConfirm")),
+            cancel_text: localizer.get(COMMON_CANCEL),
+            initial_width_dlu: 260,
+            initial_height_dlu: 150,
+            initial_selected_index: selected,
+        }
     }
 }
 
@@ -126,13 +138,23 @@ pub trait ListDialogBase {
 pub struct ListDialog {
     content: ListDialogContent,
     items: Vec<DialogItem>,
+    selected_index: Cell<i32>,
 }
 
 impl ListDialog {
     /// C# constructor (the `chrome` argument belongs to the base class `NativeDialog`, W8-18h): builds `items` with `build_items`.
     pub fn new(content: ListDialogContent) -> Self {
         let items = Self::build_items(&content);
-        Self { content, items }
+        Self {
+            content,
+            items,
+            selected_index: Cell::new(-1),
+        }
+    }
+
+    /// C# `SelectedIndex`: -1 until confirmation, then the current selection (possibly -1).
+    pub fn selected_index(&self) -> i32 {
+        self.selected_index.get()
     }
 
     /// C# `BuildItems()` (pure, the order is the tab order): Static `HEADING_ID` (text = heading, style `DIALOG_STYLE_CHILD | SS_NOPREFIX`) when there is a
@@ -279,6 +301,18 @@ impl ListDialog {
                 0,
             )
         };
+        let selected = self.content.initial_selected_index;
+        if selected >= 0 && (selected as usize) < count {
+            // SAFETY: LB_SETCURSEL takes a validated scalar list index and no pointers.
+            unsafe {
+                send_message(
+                    list,
+                    crate::win32::control_constants::LB_SETCURSEL,
+                    selected as usize,
+                    0,
+                );
+            }
+        }
     }
 
     /// C# `PreferredClientSize()`: `(dx(initial_width_dlu), dy(initial_height_dlu))`.
@@ -385,6 +419,25 @@ impl DialogContent for ListDialog {
 
     fn on_initialized(&self, dialog: &NativeDialog) {
         ListDialog::on_initialized(self, dialog)
+    }
+
+    fn on_ok(&self, dialog: &NativeDialog) -> bool {
+        let list = dialog.item(LIST_ID);
+        let selected = if list == 0 {
+            -1
+        } else {
+            // SAFETY: LB_GETCURSEL queries a live list handle on this dialog's UI thread; no pointer parameters.
+            unsafe {
+                crate::win32::dialog_native::user32::send_message(
+                    list,
+                    crate::win32::control_constants::LB_GETCURSEL,
+                    0,
+                    0,
+                ) as i32
+            }
+        };
+        self.selected_index.set(selected);
+        self.content.initial_selected_index < 0 || selected >= 0
     }
 
     fn static_text_color(&self, _dialog: &NativeDialog, id: i32) -> u32 {

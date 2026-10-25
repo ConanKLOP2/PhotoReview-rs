@@ -3,6 +3,40 @@ use pr_platform_win::dialogs::native::external_editor_product_name::first_non_bl
 use pr_platform_win::dialogs::native::text_prompt_dialog as prompt;
 use pr_platform_win::dialogs::zoom_prompt::{DialogMeasure, Placement};
 
+// C#: ListDialogContent.ForChoice has no heading and retains selected index and list order.
+#[test]
+fn choice_content_preserves_selection_and_copies_lines_with_choice_labels() {
+    let mut warnings = Vec::new();
+    let english = pr_l10n::catalog::LanguageCatalog::try_parse(
+        include_str!("../../../assets/languages/en.json"),
+        "en.json",
+        &mut warnings,
+    )
+    .unwrap();
+    let localizer = pr_l10n::localizer::Localizer::create(&english, &[], &warnings);
+    let mut lines = vec!["First".to_owned(), "Second".to_owned()];
+    let content = pr_platform_win::dialogs::native::list_dialog::ListDialogContent::for_choice(
+        "Choose",
+        "An editor",
+        &lines,
+        1,
+        &localizer,
+    );
+    lines.clear();
+    assert_eq!(content.title, "Choose");
+    assert_eq!(content.heading, None);
+    assert_eq!(content.intro.as_deref(), Some("An editor"));
+    assert_eq!(content.intro_color_key, "Dark.TextSecondary");
+    assert_eq!(content.lines, ["First", "Second"]);
+    assert_eq!(content.initial_selected_index, 1);
+    assert_eq!((content.initial_width_dlu, content.initial_height_dlu), (260, 150));
+    assert_eq!(
+        content.confirm_text,
+        Some(localizer.get("dialog.externalEditor.setDefaultConfirm"))
+    );
+    assert_eq!(content.cancel_text, localizer.get("common.cancel"));
+}
+
 #[test]
 fn first_non_blank_product_name_wins_else_description_trimmed_else_none() {
     assert_eq!(
