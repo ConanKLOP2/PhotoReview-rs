@@ -4,3 +4,7 @@
 assets/** -text
 tests/fixtures/** -text
 *.icc binary
+# merge=union decision (replay evidence: tools/dev/docs/union-merge.md): NO file is union-merged yet.
+# docs/PROPOSED-DECISIONS.md, contracts/README.md, docs/SYNC-LEDGER.md, task_on_progress.md and docs/PARITY.md were all replayed;
+# every one has in-place row edits where a union merge silently keeps the stale row next to the new one, so none is listed.
+# To enable one later, add "<path> merge=union" here AND the path to the approved list in tools/dev/test/union-merge-selftest.sh.
