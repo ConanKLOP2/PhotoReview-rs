@@ -48,7 +48,7 @@ Use lane tags such as `wave9-e`; the integration branch is `integration/wave9-e`
 `PLAN_REL` takes precedence over automatic lookup. A W8 dependency is ready when its id appears in `origin/master` history or
 any `tools/autopilot/state/*.json` records it as `done` or `partial`.
 
-Ports the units of one Wave 8 batch with Codex CLI (gpt-6-luna, effort low) driven by plain bash. Optimised for Codex quota and
+Ports the units of one Wave 8 batch with Codex CLI (gpt-6.1-sol, effort medium) driven by plain bash. Optimised for Codex quota and
 Claude tokens, not for wall-clock time. Files: `codex-pipeline.sh` (driver), `codex-pack.sh` (context pack), `codex-gate.sh` (machine
 checks), `codex-run.sh` (one Codex call, `--json`, `resume`), `CODEX-RULES.md`, `lib/codex-lib.py` (plan/contract/state/lint/telemetry
 helpers), `test/pipeline-selftest.sh` (fake-Codex control-flow test, also covers every gate and helper).
@@ -64,7 +64,7 @@ bash tools/autopilot/codex-pipeline.sh wave8-b2 --jobs 2           # real run; -
 ```
 Per unit: worktree `wu/<id>` from `integration/<tag>`, pack (built once), Codex "red tests" if the test files are missing (committed as
 its own commit; later gates verify the tests are only extended), Codex "implement", fast gate with up to 3 repair rounds, mutation
-(by tier), up to 2 kill-mutant rounds, one full gate (clippy + whole crate test), commit (trailer `Co-Authored-By: Codex gpt-6-luna`),
+(by tier), up to 2 kill-mutant rounds, one full gate (clippy + whole crate test), commit (trailer `Co-Authored-By: Codex gpt-6.1-sol`),
 `merge --no-ff` under one lock per integration branch.
 
 Pipeline hardening:
@@ -101,7 +101,9 @@ Savings built in:
 
 Resume: run the same command again. `tools/autopilot/state/<tag>.json` (gitignored) records `done`/`partial`/`failed`/`skipped` per unit;
 merged units are skipped, failed and skipped ones are retried. `CODEX_BIN`, `CODEX_MODEL`, `CODEX_EFFORT`, `CODEX_TIMEOUT`, `SKIP_MUTANTS=1`,
-`PIPELINE_NO_PR=1` override defaults (see the header of `codex-pipeline.sh`).
+`PIPELINE_NO_PR=1` override defaults (see the header of `codex-pipeline.sh`); `CODEX_MODEL` defaults to `gpt-6.1-sol` and `CODEX_EFFORT` to `medium`.
+
+luna/low is cheaper but gave wrong reports and stopped early; sol/medium costs more quota per call, so run at most 1-2 Codex lanes at the same time (use `tools/dev/codex-sched.sh` when it exists on master).
 
 What Claude (or you) must still do: write the contracts, stubs and goldens (Codex low cannot design); fix units marked `failed` or `skipped`
 (read `state/needs-claude/<id>.md` first; the worktree is kept); read the final PR diff (Codex output is data, not authority); decide on
