@@ -28,6 +28,7 @@ use pr_core::app_paths::AppPaths;
 use pr_core::io::physical::PhysicalFileSystem;
 use pr_core::model::enums::{FileOperationType, ImageSortMode, InitialViewMode, LoadingMode};
 use pr_core::settings::app_settings::{AppSettings, EnglishSettingsTexts, SettingsJsonError, SettingsTexts};
+use pr_core::settings::external_editors::{ExternalEditor, ExternalEditors};
 use pr_core::settings::normalizer::build_repair_text;
 use pr_core::settings::store::{
     CONFIG_FILE_NAME, SettingsSaveError, SettingsStore, SimpleKeyNameValidator, csharp_config_path,
@@ -35,6 +36,125 @@ use pr_core::settings::store::{
 use pr_test_support::golden::{self, str_of};
 use pr_test_support::{FakeClock, FakeFileSystem, FsOp, RecordingLog, TempRoot};
 use serde_json::Value;
+
+// C#: ExternalEditorsTests.Load_ConfigVersion3WithLegacyPath_MigratesIntoTheListAndSavesAsVersion4.
+#[test]
+fn load_config_version3_with_legacy_path_migrates_into_the_list_and_saves_as_version4() {
+    let r = Rig::new();
+    r.put(r#"{"ConfigVersion":3,"UiLanguage":"en","ExternalEditorPath":"C:\\Tools\\Affinity Photo.exe"}"#);
+    let store = r.store();
+    let loaded = store.load(None).unwrap();
+    assert_eq!(loaded.external_editors.len(), 1);
+    let editor = &loaded.external_editors[0];
+    assert_eq!(editor.name, "Affinity Photo");
+    assert_eq!(editor.path, r"C:\Tools\Affinity Photo.exe");
+    assert_eq!(editor.id, loaded.default_external_editor_id);
+    assert_eq!(loaded.config_version, 4);
+    assert!(loaded.external_editor_sends_raw_original);
+    assert!(store.last_load_repairs().is_empty());
+    store.save((*loaded).clone()).unwrap();
+    let json: Value = serde_json::from_str(&r.read()).unwrap();
+    assert_eq!(json["ConfigVersion"], 4);
+    assert_eq!(json["ExternalEditors"].as_array().unwrap().len(), 1);
+    assert_eq!(json["ExternalEditorPath"], editor.path);
+}
+
+// C#: ExternalEditorsTests.Migrate_InMemoryVersion3Settings_GetsTheEditorFromTheLegacyPath_AndIsStampedVersion4.
+#[test]
+fn migrate_in_memory_version3_settings_gets_the_editor_from_the_legacy_path_and_is_stamped_version4() {
+    let mut settings = defaults();
+    settings.config_version = 3;
+    settings.external_editor_path = r"C:\Tools\Retouch.exe".to_owned();
+    SettingsStore::migrate(&mut settings);
+    assert_eq!(settings.config_version, 4);
+    assert_eq!(settings.external_editors.len(), 1);
+    assert_eq!(settings.external_editors[0].name, "Retouch");
+    assert_eq!(settings.external_editors[0].id, settings.default_external_editor_id);
+}
+
+// C#: ExternalEditorsTests.SaveThenLoad_RoundTripsTheListTheDefaultTheArgumentsAndTheRawSwitch.
+#[test]
+fn save_then_load_round_trips_the_list_the_default_the_arguments_and_the_raw_switch() {
+    let r = Rig::new();
+    let mut settings = defaults();
+    settings.external_editors = vec![
+        ExternalEditor {
+            id: "lr".to_owned(),
+            name: "Lightroom".to_owned(),
+            path: r"C:\LR\lightroom.exe".to_owned(),
+            arguments: ExternalEditor::DEFAULT_ARGUMENTS.to_owned(),
+        },
+        ExternalEditor {
+            id: "topaz".to_owned(),
+            name: "Topaz AI".to_owned(),
+            path: r"C:\T\topaz.exe".to_owned(),
+            arguments: "--open \"{file}\"".to_owned(),
+        },
+    ];
+    settings.default_external_editor_id = "topaz".to_owned();
+    settings.external_editor_sends_raw_original = false;
+    settings.shortcuts.open_in_default_editor = "F6".to_owned();
+    let expected = settings.external_editors.clone();
+    r.store().save(settings).unwrap();
+    let reloaded = r.store().load(None).unwrap();
+    assert_eq!(reloaded.external_editors, expected);
+    assert_eq!(reloaded.default_external_editor_id, "topaz");
+    assert_eq!(reloaded.external_editor_path, r"C:\T\topaz.exe");
+    assert!(!reloaded.external_editor_sends_raw_original);
+    assert_eq!(reloaded.shortcuts.open_in_default_editor, "F6");
+    let text = r.read();
+    assert!(!text.contains("DisplayName"));
+    assert!(!text.contains("null_external_editors"));
+}
+
+// C#: ExternalEditorsTests.Load_HandEditedList_IsRepairedAndReported, plus JSON-null regression.
+#[test]
+fn load_hand_edited_list_is_repaired_and_reported() {
+    for list in [
+        r#"[{"Id":"x","Name":"Ok","Path":"C:\\ok.exe"},{"Id":"y","Path":""}]"#,
+        r#"[null,{"Id":"x","Name":"Ok","Path":"C:\\ok.exe"}]"#,
+    ] {
+        let r = Rig::new();
+        r.put(&format!(
+            r#"{{"ConfigVersion":4,"UiLanguage":"en","ExternalEditors":{list},"DefaultExternalEditorId":"missing"}}"#
+        ));
+        let store = r.store();
+        let loaded = store.load(None).unwrap();
+        assert_eq!(loaded.external_editors.len(), 1);
+        assert_eq!(loaded.external_editors[0].id, "x");
+        assert_eq!(loaded.default_external_editor_id, "x");
+        assert!(store.last_load_repairs().iter().any(|name| name == "ExternalEditors"));
+        assert!(r.store().load(None).is_ok());
+    }
+}
+
+// C# Reconcile must report a dropped null slot even when the default ID needs no repair.
+#[test]
+fn load_null_editor_slot_alone_reports_once_and_persists_the_repair() {
+    let r = Rig::new();
+    r.put(r#"{"ConfigVersion":4,"UiLanguage":"en","ExternalEditors":[null,{"Id":"x","Path":"C:\\ok.exe"}],"DefaultExternalEditorId":"x"}"#);
+    let store = r.store();
+    let loaded = store.load(None).unwrap();
+    assert_eq!(store.last_load_repairs(), vec!["ExternalEditors"]);
+    assert_eq!(loaded.external_editors.len(), 1);
+    let next = r.store();
+    next.load(None).unwrap();
+    assert!(next.last_load_repairs().is_empty());
+    let mut loaded = (*loaded).clone();
+    assert!(!ExternalEditors::reconcile(&mut loaded));
+}
+
+// C#: pre-v4 reconciliation happens in migration before normalizer repair reporting.
+#[test]
+fn load_version3_null_editor_slot_is_consumed_by_silent_migration() {
+    let r = Rig::new();
+    r.put(r#"{"ConfigVersion":3,"UiLanguage":"en","ExternalEditors":[null],"ExternalEditorPath":"C:\\legacy.exe"}"#);
+    let store = r.store();
+    let loaded = store.load(None).unwrap();
+    assert_eq!(loaded.external_editors.len(), 1);
+    assert_eq!(loaded.external_editors[0].name, "legacy");
+    assert!(store.last_load_repairs().is_empty());
+}
 
 // ---------------------------------------------------------------------------------------------------------------
 // Helpers
