@@ -2,6 +2,10 @@
 
 **Updated:** 2026-10-23 (older entries moved to `docs/archive/`; the sections below are the latest ones; where two sections disagree the later date wins, not the later position)
 
+## Wave 9 E5 merged and E8 integration, machine A, 2026-10-26
+
+- E5 PR #239 merged a7efe09; fetched master75ceca6 owned command source/tests and PARITY match reviewed494313c (other differences are unrelated tooling/docs). Postmerge selected pure hand-breaks3/3runtime caught (effective default versus stale mirror,32cap boundary,ID equality); exact bytes restored SHA256 A318F592F80EEF7746CE59A68DED277630405DBD9D65016563D00644C1F9E6B9, restored114command baseline PASS. Total possible mutants not enumerated; no cargo-mutants/full mutation claim. PR body updated; W9-E5 claim released. Local cleanup remains deferred after prior approval rejection.
+- E8 merged current master including E5 at2f59af3, retained both sides of task history and all PARITY rows; production factory composition W8-17c remains machineB-owned. Final fmt-all attempted error206, all12package format checks PASS. Bounded final Clippy/workspace runner active session28806, TEMP/w9-e8-integrated-{clippy,test}-*. No final integrated verdict or E8 PR yet.
 ## Wave 9 E5 final integration gates, machine A, 2026-10-26
 
 - PR #240 is merged as a91eb7f and roster #241 as57ec6e9. Integrated both in E5 source/test head7c4dc66; retained both task sections and the preview concurrency Different row. The prior CI race was repaired separately; no failing test was ignored or rerun unchanged.
