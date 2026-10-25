@@ -217,7 +217,8 @@ impl ServiceInner {
     /// `PreviewHandle::wait`):
     /// 1. `token` already cancelled -> `Ready(Err(Canceled))` (C# `ThrowIfCancellationRequested` at the loop top).
     /// 2. RAM hit -> `record_cache_hit`, `Ready(Ok)`.
-    /// 3. `epoch = current_epoch()`; under the in-flight lock: fetch `(key, epoch)` or insert a NEW cell (creator).
+    /// 3. `epoch = current_epoch()`; under the in-flight lock: fetch `(key, epoch)`, or recheck RAM before inserting
+    ///    a NEW cell (creator). The recheck closes a completed-load registration race (ADR-I-07).
     ///    Creator -> `record_cache_miss`, then (outside the lock) start the load (`start_load`); a start failure
     ///    completes the cell with `Err(Spawn)` and removes it. Joiner -> `record_inflight_join` (+ perf `JoinStart`).
     /// 4. Return `PreviewHandle::load(cell, Some(retry context))`.
@@ -236,6 +237,19 @@ impl ServiceInner {
             self.metrics.record_cache_hit();
             return PreviewHandle::ready(Ok(cached));
         }
+        self.get_preview_after_cache_miss(path, key, viewer, start_delay, token)
+    }
+
+    /// Registration after the optimistic RAM miss. Kept as one stage so tests can arrange a completed
+    /// publication between that miss and registration without timing, sleeps, or a production test hook.
+    pub(super) fn get_preview_after_cache_miss(
+        self: &Arc<Self>,
+        path: &str,
+        key: &ImageCacheKey,
+        viewer: bool,
+        start_delay: Duration,
+        token: &CancelToken,
+    ) -> PreviewHandle {
         // C# `cacheEpoch`: read before the registration; the load publishes and persists only under it (INV-2).
         let cache_epoch = self.current_epoch();
         let load_key: LoadKey = (key.clone(), cache_epoch);
@@ -245,6 +259,12 @@ impl ServiceInner {
             match in_flight.entry(load_key.clone()) {
                 Entry::Occupied(entry) => (Arc::clone(entry.get()), false),
                 Entry::Vacant(entry) => {
+                    // A prior decode can publish and unregister after our optimistic RAM miss.
+                    // Recheck while registration is locked so that completed work is not decoded again.
+                    if let Some(cached) = self.cache.try_get(key) {
+                        self.metrics.record_cache_hit();
+                        return PreviewHandle::ready(Ok(cached));
+                    }
                     let candidate = Arc::new(LoadCell::new());
                     entry.insert(Arc::clone(&candidate));
                     (candidate, true)

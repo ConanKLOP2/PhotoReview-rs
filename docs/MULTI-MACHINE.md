@@ -16,6 +16,7 @@ in a small PR to `master` before a machine starts a new batch. A machine never w
 | A | Wave 8 B5 remainder (18h-18k, 18o-18v, 19d-19m, mutation debts) | `integration/wave8-b5` | `wave8-b5` |
 | B | Wave 8 B6 (17a-17e, 20a; 20b last, after B5) | `integration/wave8-b6` | `wave8-b6` |
 | A | Wave 9 external editors W9-E1..E9 after B5; follow contract dependency order (E1 rules before dialogs and Settings), claim each unit before editing | separate master-based `codex/w9-*` worktrees | manual (no shared pipeline tag) |
+| A | Wave 9 rename W9-R1..R11; follow contracts dependency order, claim every unit before editing, and start only from merged master dependencies | separate master-based `codex/w9-rename-*` worktrees | manual (no shared pipeline tag) |
 
 Rules: one pipeline tag per machine; the tag name is the integration branch name (`integration/<tag>`); never run a pipeline with a tag that another
 machine owns. Hand-over of a unit = the owner releases the claim (section 3) and the table row is changed.
