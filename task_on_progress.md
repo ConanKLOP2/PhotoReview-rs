@@ -2,6 +2,11 @@
 
 **Updated:** 2026-10-23 (older entries moved to `docs/archive/`; the sections below are the latest ones; where two sections disagree the later date wins, not the later position)
 
+## Wave 9 E9 popup native evidence, machine A, 2026-10-26
+
+- Added C# Menu_EditorSubmenu_PaintsItsEntries twin in shell_menus_e2e: production model and OwnerDrawMenuSession with explicit96/144DPI, three editors, RenameFile hidden, keyboard Down/Right into submenu, actual window-DC BitBlt capture of root+submenu, unchanged >=3colours/dominant<99% criterion and submenu height threshold. All four en/vi x96/144rows PASS in selected native run, exit0 (one Rust test, four rows/eight captures), TEMP/w9-e9-paint5-*. No actual editor process launched.
+- Harness uses WM_ENTERIDLE, synchronous redraw, GDI/DWM flush and a15second channel watchdog; no fixed sleeps/polling. Initial harness failed flat pixels during popup animation (en96passed,144failed); test-only TPM_NOANIMATION makes the visible frame match the completed paint. Native production menu animation behavior is not claimed by this fixture. Root owns/destroys appended menus; owner/factory cleanup remains test-owned.
+- Previous53controller functions and pre-paint package Clippy PASS. New native test still needs final Clippy/integration gates; input/menu wiring evidence where feasible, PR/merge and postmerge checks remain. Whole-port/native production composition/corpus/full mutation unverified. E8 and R1 workspace runners remain active; no restart.
 ## Wave 9 E9 shell forwarding, machine A, 2026-10-26
 
 - E5 is merged a7efe09; E6/E7 also on master. Claimed W9-E9 for A and reused clean inactive E7/root-fix worktree sequentially; new codex/w9-editor-shell from master75ceca6, own same-root target-w9-e7. Read E9 contract and pinned C# shell wiring. No edits to machineB composition.

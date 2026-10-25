@@ -22,6 +22,8 @@ mod support {
     #[path = "../../../pr-app/tests/support/preview_fakes.rs"]
     pub mod preview_fakes;
 }
+#[path = "common/w9_e2_capture.rs"]
+mod editor_menu_capture;
 #[path = "common/ui_thread.rs"]
 mod ui_thread;
 
@@ -52,6 +54,303 @@ const VK_ESCAPE: usize = 0x1B;
 const VK_RETURN: usize = 0x0D;
 const VK_DOWN: usize = 0x28;
 const VK_RIGHT: usize = 0x27;
+
+/// W9-E9: event-driven twin of ExternalEditorsUiTests.Menu_EditorSubmenu_PaintsItsEntries.
+/// WM_ENTERIDLE marks a painted menu with an empty input queue; no fixed paint delays.
+mod editor_popup_paint {
+    use super::*;
+    use pr_app::menus::{
+        builder,
+        model::{ContextMenuBuildContext, MenuItemKind},
+    };
+    use pr_core::settings::{
+        app_settings::EnglishSettingsTexts, context_menu::ContextMenuItemId, external_editors::ExternalEditor,
+    };
+    use pr_l10n::{catalog::LanguageCatalog, localizer::Localizer};
+    use pr_platform_win::{
+        shell_menus::{
+            mapping,
+            owner_draw::{OwnerDrawItem, OwnerDrawMenuSession},
+        },
+        win32::{api, messages, structs::Hmenu},
+    };
+    use std::any::Any;
+    use std::cell::Cell;
+    use std::panic::{AssertUnwindSafe, catch_unwind, resume_unwind};
+    use std::sync::{Arc, mpsc};
+    use windows::{
+        Win32::{
+            Graphics::Gdi::HBRUSH,
+            UI::WindowsAndMessaging::{AppendMenuW, HMENU, MENU_ITEM_FLAGS, MENUINFO, MENUINFO_MASK, SetMenuInfo},
+        },
+        core::PCWSTR,
+    };
+
+    struct Menu(Hmenu);
+    impl Drop for Menu {
+        fn drop(&mut self) {
+            let _ = api::user32::destroy_menu(self.0);
+        }
+    }
+    struct RestoreLocalizer(Arc<Localizer>);
+    impl Drop for RestoreLocalizer {
+        fn drop(&mut self) {
+            Localizer::set_current(self.0.clone());
+        }
+    }
+    fn post(owner: isize, message: u32, key: usize) {
+        // SAFETY: posts integer-only messages to the live test-owned owner; no borrowed pointer crosses threads.
+        unsafe {
+            PostMessageW(Some(HWND(owner as *mut _)), message, WPARAM(key), LPARAM(0)).unwrap();
+        }
+    }
+
+    struct IdleCapture {
+        dpi: u32,
+        editor_index: usize,
+        root: Cell<isize>,
+        completed: Cell<bool>,
+        failure: RefCell<Option<Box<dyn Any + Send>>>,
+    }
+    #[link(name = "dwmapi")]
+    unsafe extern "system" {
+        fn DwmFlush() -> i32;
+    }
+    fn flush_compositor(hwnd: isize) {
+        use windows::Win32::Graphics::Gdi::{RDW_ALLCHILDREN, RDW_INVALIDATE, RDW_UPDATENOW, RedrawWindow};
+        // SAFETY: both flush calls take no pointers; synchronize completed GDI draws and the compositor before reading the real window DC.
+        unsafe {
+            // SAFETY: the live popup belongs to this UI thread; synchronous paint completes before its real DC is captured.
+            assert!(
+                RedrawWindow(
+                    Some(HWND(hwnd as *mut _)),
+                    None,
+                    None,
+                    RDW_INVALIDATE | RDW_UPDATENOW | RDW_ALLCHILDREN
+                )
+                .as_bool()
+            );
+            assert!(windows::Win32::Graphics::Gdi::GdiFlush().as_bool());
+            assert!(DwmFlush() >= 0, "DWM flush failed");
+        }
+    }
+    impl IdleCapture {
+        fn idle(&self, message: &WindowMessage) {
+            if self.root.get() == 0 {
+                self.root.set(message.lparam);
+                flush_compositor(message.lparam);
+                let shot = editor_menu_capture::Shot::capture(message.lparam);
+                shot.assert_not_flat(message.lparam, "editor root menu");
+                for _ in 0..=self.editor_index {
+                    post(message.hwnd, WM_KEYDOWN, VK_DOWN);
+                }
+                post(message.hwnd, WM_KEYDOWN, VK_RIGHT);
+                post(message.hwnd, WM_KEYDOWN, VK_DOWN);
+            } else if message.lparam != self.root.get() && !self.completed.get() {
+                flush_compositor(message.lparam);
+                let shot = editor_menu_capture::Shot::capture(message.lparam);
+                shot.assert_not_flat(message.lparam, "editor submenu");
+                let rect = api::user32::get_window_rect(message.lparam).unwrap();
+                assert!(
+                    rect.bottom - rect.top > 4 * (16 * self.dpi / 96) as i32,
+                    "submenu height at DPI {}",
+                    self.dpi
+                );
+                self.completed.set(true);
+                post(message.hwnd, WM_KEYDOWN, VK_ESCAPE);
+                post(message.hwnd, WM_KEYDOWN, VK_ESCAPE);
+            }
+        }
+    }
+    impl WindowMessageHandler for IdleCapture {
+        fn try_handle(&self, message: &WindowMessage) -> Option<isize> {
+            if message.msg != messages::WM_ENTERIDLE || message.wparam != 2 || message.lparam == 0 {
+                return None;
+            }
+            if let Err(error) = catch_unwind(AssertUnwindSafe(|| self.idle(message))) {
+                *self.failure.borrow_mut() = Some(error);
+                post(message.hwnd, windows::Win32::UI::WindowsAndMessaging::WM_CANCELMODE, 0);
+            }
+            Some(0)
+        }
+    }
+
+    // Test-side C# Populate: real HMENUs and the production OwnerDrawMenuSession, at an explicit test DPI.
+    fn populate(menu: Hmenu, items: &[MenuItemModel], session: &OwnerDrawMenuSession, next_id: &mut usize) {
+        for item in items {
+            let separator = item.kind == MenuItemKind::Separator;
+            let submenu = item.kind == MenuItemKind::Submenu && !item.children.is_empty();
+            let mut child = if submenu {
+                Some(Menu(api::user32::create_popup_menu().unwrap()))
+            } else {
+                None
+            };
+            if let Some(child) = &child {
+                populate(child.0, &item.children, session, next_id);
+            }
+            let id = if let Some(child) = &child {
+                child.0 as usize
+            } else if separator {
+                0
+            } else {
+                *next_id += 1;
+                *next_id
+            };
+            let data = session.register(OwnerDrawItem {
+                text: item.text.clone(),
+                shortcut: item.shortcut_text.clone(),
+                is_separator: separator,
+                is_submenu: submenu,
+            });
+            let flags = mapping::item_flags(item)
+                | 0x100
+                | if separator {
+                    messages::MF_SEPARATOR
+                } else if submenu {
+                    messages::MF_POPUP
+                } else {
+                    0
+                };
+            // SAFETY: MF_OWNERDRAW treats data as an integer token; session owns its item until the menu is destroyed.
+            unsafe {
+                AppendMenuW(
+                    HMENU(menu as *mut _),
+                    MENU_ITEM_FLAGS(flags),
+                    id,
+                    PCWSTR(data as *const u16),
+                )
+                .unwrap();
+            }
+            if let Some(child) = child.take() {
+                std::mem::forget(child);
+            } // Root now owns the appended child.
+        }
+    }
+
+    fn paint(dpi: u32, language: &'static str) {
+        let rig = start(&[], None);
+        run(&rig.ui, move || {
+            let _restore = RestoreLocalizer(Localizer::current());
+            let mut warnings = Vec::new();
+            let english = LanguageCatalog::try_parse(
+                include_str!("../../../assets/languages/en.json"),
+                "en.json",
+                &mut warnings,
+            )
+            .unwrap();
+            let overlays = if language == "vi" {
+                vec![
+                    LanguageCatalog::try_parse(
+                        include_str!("../../../assets/languages/vi.json"),
+                        "vi.json",
+                        &mut warnings,
+                    )
+                    .unwrap(),
+                ]
+            } else {
+                Vec::new()
+            };
+            Localizer::set_current(Arc::new(Localizer::create(&english, &overlays, &warnings)));
+            let mut settings = AppSettings::new(&EnglishSettingsTexts);
+            settings.external_editors = ["First editor", "Second editor", "Third editor"]
+                .into_iter()
+                .enumerate()
+                .map(|(index, name)| ExternalEditor {
+                    id: format!("e{index}"),
+                    name: name.into(),
+                    path: format!(r"C:\test-editor{index}.exe"),
+                    arguments: ExternalEditor::DEFAULT_ARGUMENTS.into(),
+                })
+                .collect();
+            settings.default_external_editor_id = "e0".into();
+            apply_hidden(&mut settings, [ContextMenuItemId::RenameFile]);
+            let items = builder::build(&ContextMenuBuildContext {
+                settings: &settings,
+                has_image: true,
+                can_undo: true,
+                is_fit: true,
+                effective_zoom: None,
+                can_open_in_external_editor: true,
+                can_copy_path: true,
+                is_compare_visible: false,
+            })
+            .unwrap();
+            let top = items
+                .iter()
+                .filter(|item| item.kind != MenuItemKind::Separator)
+                .collect::<Vec<_>>();
+            let editor_index = top.iter().position(|item| item.id == "ExternalEditor").unwrap();
+            assert_eq!(top[editor_index].kind, MenuItemKind::Submenu);
+            assert_eq!(top[editor_index].children.len(), 6);
+            let owner = built().shell.hwnd();
+            let session = OwnerDrawMenuSession::new(owner, dpi, None);
+            assert!(session.attach());
+            let root = Menu(api::user32::create_popup_menu().unwrap());
+            populate(root.0, &items, &session, &mut 0);
+            let info = MENUINFO {
+                cbSize: std::mem::size_of::<MENUINFO>() as u32,
+                fMask: MENUINFO_MASK(0x8000_0002),
+                hbrBack: HBRUSH(session.background_brush() as *mut _),
+                ..Default::default()
+            };
+            // SAFETY: root and session's brush are live until after TrackPopupMenuEx and menu destruction.
+            unsafe {
+                SetMenuInfo(HMENU(root.0 as *mut _), &info).unwrap();
+            }
+            let capture = Rc::new(IdleCapture {
+                dpi,
+                editor_index,
+                root: Cell::new(0),
+                completed: Cell::new(false),
+                failure: RefCell::new(None),
+            });
+            built().shell.insert_message_handler_first(capture.clone());
+            let (done, receiver) = mpsc::channel();
+            let watchdog = std::thread::spawn(move || {
+                if receiver.recv_timeout(Duration::from_secs(15)).is_err() {
+                    post(owner, windows::Win32::UI::WindowsAndMessaging::WM_CANCELMODE, 0);
+                    post(owner, WM_KEYDOWN, VK_ESCAPE);
+                    true
+                } else {
+                    false
+                }
+            });
+            // Test-only: bypass popup animation so completed GDI/DWM paint is the visible frame.
+            api::user32::track_popup_menu_ex(
+                root.0,
+                messages::TPM_RETURNCMD | windows::Win32::UI::WindowsAndMessaging::TPM_NOANIMATION.0,
+                150,
+                150,
+                owner,
+            );
+            let _ = done.send(());
+            let timed_out = watchdog.join().unwrap();
+            drop(root);
+            session.dispose();
+            if let Some(error) = capture.failure.borrow_mut().take() {
+                resume_unwind(error);
+            }
+            assert!(!timed_out, "menu idle/capture timed out: {language} {dpi}");
+            assert!(
+                capture.completed.get(),
+                "root and submenu were not both captured: {language} {dpi}"
+            );
+            eprintln!("BitBlt root+submenu PASS: {language} {dpi}");
+        });
+        rig.finish();
+    }
+
+    // C#: ExternalEditorsUiTests.Menu_EditorSubmenu_PaintsItsEntries, all four theory rows.
+    #[test]
+    #[ignore = "native: needs interactive desktop for real popup BitBlt"]
+    fn menu_editor_submenu_paints_its_entries() {
+        for language in ["en", "vi"] {
+            for dpi in [96, 144] {
+                paint(dpi, language);
+            }
+        }
+    }
+}
 
 // ---- the observing host ---------------------------------------------------------------------------------------------------------------------------
 
