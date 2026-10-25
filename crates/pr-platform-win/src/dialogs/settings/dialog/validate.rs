@@ -2,9 +2,8 @@
 //!
 //! The rules of validation live in the presenter (`SettingsPresenter::try_save`); this file is the UI decision about its answer, in pure form so it is tested without a
 //! window: which warning (title, text) a refusal shows, whether the focus moves, and which page owns a field.
-#![allow(unused_variables, dead_code)] // stub: the porter removes this line with the last `todo!()`
 
-use pr_app::presenters::settings_form_state::{SettingsFocusField, SettingsSaveResult};
+use pr_app::presenters::settings_form_state::{SettingsFocusField, SettingsSaveOutcome, SettingsSaveResult};
 
 use super::frame::SettingsContent;
 use crate::dialogs::native::dialog::NativeDialog;
@@ -27,19 +26,45 @@ pub enum SavePlan {
 
 /// The pure plan of a save result. Reads the ambient language for the title.
 pub fn plan_for(result: &SettingsSaveResult) -> SavePlan {
-    todo!()
+    match result.outcome {
+        SettingsSaveOutcome::Saved => SavePlan::Saved,
+        SettingsSaveOutcome::Invalid => SavePlan::Warn {
+            title: pr_l10n::tr::dialog_settings_invalid_title(),
+            message: result.message.clone().unwrap_or_default(),
+            focus: result.focus,
+        },
+        SettingsSaveOutcome::SaveFailed => SavePlan::Warn {
+            title: pr_l10n::tr::dialog_settings_save_failed_title(),
+            message: result.message.clone().unwrap_or_default(),
+            focus: SettingsFocusField::None,
+        },
+    }
 }
 
 /// C# `FocusField`'s search (lines 815 to 832), pure: `targets[i]` is `pages[i].focus_target(field)`; the answer is the FIRST page that has a target, as `(page index, control
 /// id)`; `None` when no page has one. (`SettingsFocusField::None` is handled by the caller before: nothing happens.)
 pub fn locate_focus(targets: &[Option<i32>]) -> Option<(usize, i32)> {
-    todo!()
+    targets
+        .iter()
+        .enumerate()
+        .find_map(|(index, target)| target.map(|id| (index, id)))
 }
 
 impl SettingsContent {
     /// C# `FocusField(field)`: `field == None` -> nothing. Else `targets` = `pages[i].focus_target(field)` for every page in order (a page that is borrowed answers `None`),
     /// `locate_focus(&targets)`: `Some((i, id))` -> `activate_page(i, true, true)` (this creates the page controls when needed) then `focus_control(id)`.
     pub(super) fn focus_field(&self, dialog: &NativeDialog, field: SettingsFocusField) {
-        todo!()
+        if field == SettingsFocusField::None {
+            return;
+        }
+        let targets: Vec<_> = self
+            .pages
+            .iter()
+            .map(|page| page.try_borrow().ok().and_then(|page| page.focus_target(field)))
+            .collect();
+        if let Some((index, id)) = locate_focus(&targets) {
+            self.activate_page(dialog, index as i32, true, true);
+            self.focus_control(dialog, id);
+        }
     }
 }
