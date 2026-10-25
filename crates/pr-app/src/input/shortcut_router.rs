@@ -3,6 +3,7 @@
 //! Pure: no `windows` crate, no `unsafe`, no clock, no I/O. One key event becomes at most one `ReviewCommand`: the first
 //! match in the precedence order of contract W8-05d, section "Precedence". Key names go through
 //! `services::shortcut_key_name::try_parse` (W8-04c, port of `Services/ShortcutKeyName.cs`).
+//! W9-E7 ports the default-editor binding and step 12f from baseline `7eaee2a2`.
 //!
 //! Lead-owned file `input/mod.rs` gets `pub mod shortcut_router;` when this unit merges (contract W8-05d, "Owned files").
 
@@ -76,6 +77,7 @@ struct Bindings {
     custom_zoom: Option<KeyId>,
     toggle_capture_member: Option<KeyId>,
     refresh: Option<KeyId>,
+    open_in_default_editor: Option<KeyId>,
     rename_file: Option<KeyId>,
 }
 
@@ -131,6 +133,7 @@ impl ShortcutRouter {
             custom_zoom: p(&shortcuts.custom_zoom),
             toggle_capture_member: p(&shortcuts.toggle_capture_member),
             refresh: p(&shortcuts.refresh),
+            open_in_default_editor: p(&shortcuts.open_in_default_editor),
             rename_file: p(&shortcuts.rename_file),
         };
         // The index is the position in the FULL list: a skipped entry does not renumber the later ones.
@@ -213,7 +216,7 @@ impl ShortcutRouter {
                 return Some(ReviewCommand::RENAME_FILE);
             }
         }
-        let simple: [(Option<KeyId>, ReviewCommand); 13] = [
+        let simple: [(Option<KeyId>, ReviewCommand); 14] = [
             (b.skip, ReviewCommand::SKIP),
             (b.toggle_fit, ReviewCommand::TOGGLE_FIT),
             (b.zoom_in, ReviewCommand::ZOOM_IN),
@@ -225,6 +228,7 @@ impl ShortcutRouter {
             (b.fit_height, ReviewCommand::FIT_HEIGHT),
             (b.custom_zoom, ReviewCommand::CUSTOM_ZOOM),
             (b.refresh, ReviewCommand::REFRESH),
+            (b.open_in_default_editor, ReviewCommand::OPEN_IN_DEFAULT_EDITOR),
             (b.next, ReviewCommand::NEXT),
             (b.previous, ReviewCommand::PREVIOUS),
         ];
