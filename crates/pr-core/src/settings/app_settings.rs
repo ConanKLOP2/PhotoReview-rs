@@ -255,11 +255,13 @@ impl Error for SettingsJsonError {}
 // ---------------------------------------------------------------------------------------------------------------
 
 /// Facts the JSON reader saw that an `AppSettings` value cannot show. Transient: never written, cleared by
-/// `normalizer::normalize`, ignored by `Default` (all zero).
+/// normalization/reconciliation, ignored by `Default` (all zero).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub struct ReadNotes {
     /// How many `null` entries the reader dropped from `Actions` (C# keeps them and `Normalize` removes them).
     pub null_actions: u32,
+    /// Null editor slots dropped by JSON reading, consumed by `ExternalEditors::reconcile`.
+    pub null_external_editors: usize,
 }
 
 /// `AppSettings`: every persisted setting. Field order = C# declaration order = `config.json` order = [`JSON_KEYS`].
@@ -629,7 +631,16 @@ impl AppSettings {
             "ConfirmBeforeDelete" => set!(confirm_before_delete, read_bool),
             "ShowZoomIndicator" => set!(show_zoom_indicator, read_bool),
             "ExternalEditorPath" => set!(external_editor_path, read_string),
-            "ExternalEditors" => self.external_editors = read_external_editors(value)?,
+            "ExternalEditors" => {
+                self.external_editors = read_external_editors(value)?;
+                self.read_notes.null_external_editors = match value {
+                    json::JsonValue::Array(items) => items
+                        .iter()
+                        .filter(|item| matches!(item, json::JsonValue::Null))
+                        .count(),
+                    _ => 0,
+                };
+            }
             "DefaultExternalEditorId" => set!(default_external_editor_id, read_string),
             "ExternalEditorSendsRawOriginal" => set!(external_editor_sends_raw_original, read_bool),
             "KineticGlideSmoothing" => set!(kinetic_glide_smoothing, read_settings_enum),

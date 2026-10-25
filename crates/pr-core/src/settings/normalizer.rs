@@ -300,6 +300,10 @@ pub fn normalize(settings: &mut AppSettings) -> Vec<String> {
         }
     }
 
+    if super::external_editors::ExternalEditors::reconcile(settings) {
+        fixed.push("ExternalEditors".to_owned());
+    }
+
     // Not a setting: a second `normalize` must report nothing.
     settings.read_notes = ReadNotes::default();
     fixed
