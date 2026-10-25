@@ -366,7 +366,7 @@ pub fn place_path_group(base: &dyn RecoveryLayoutBase, x: i32, y: i32, width: i3
         x.wrapping_add(path_w).wrapping_add(gap),
         py,
         buttons_w,
-        path_h,
+        super::layout::button_height(base),
     );
     base.place(
         ids.show,

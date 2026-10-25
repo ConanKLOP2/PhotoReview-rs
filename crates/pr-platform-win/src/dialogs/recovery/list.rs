@@ -224,48 +224,80 @@ pub fn refresh_entries(content: &RecoveryContent, dialog: &NativeDialog) {
     if hwnd == 0 {
         return;
     }
-    let selected_ids: HashSet<String> = selected_rows(content, dialog)
-        .into_iter()
-        .filter_map(|row| content.list.visible_ids.borrow().get(row).cloned())
-        .collect();
+    let selected_positions = ListBoxControl::selected_indices(hwnd);
+    let selected_ids: HashSet<String> = {
+        let old_ids = content.list.visible_ids.borrow();
+        selected_positions
+            .into_iter()
+            .filter_map(|position| usize::try_from(position).ok())
+            .filter_map(|position| old_ids.get(position).cloned())
+            .collect()
+    };
+    // SAFETY: LB_GETTOPINDEX accepts only integer parameters and this is the live test-independent list handle.
+    let top = unsafe {
+        crate::win32::dialog_native::user32::send_message(hwnd, crate::win32::control_constants::LB_GETTOPINDEX, 0, 0)
+    } as i32;
+    let filter = filter_from_index(
+        crate::dialogs::native::controls::basic::ComboBoxControl::selected_index(dialog.item(super::layout::FILTER_ID)),
+    );
+    let (shown, ids, titles, summary, empty) = {
+        let presenter = content.presenter.borrow();
+        let shown = presenter.shown(filter);
+        let rows: Vec<_> = shown.iter().filter_map(|&index| presenter.rows().get(index)).collect();
+        let ids = rows.iter().map(|row| row.entry().id.clone()).collect::<Vec<_>>();
+        let titles = rows
+            .iter()
+            .map(|row| row.title(&content.texts.texts()))
+            .collect::<Vec<_>>();
+        let empty = presenter.filter_empty_visible(shown.len());
+        (
+            shown,
+            ids,
+            titles,
+            presenter.summary_text(content.texts.localizer()),
+            empty,
+        )
+    };
     // Snapshot vectors are replaced before any list-box message can synchronously re-enter owner-draw hooks.
-    let shown = content
-        .presenter
-        .try_borrow()
-        .map(|p| {
-            p.shown(filter_from_index(
-                crate::dialogs::native::controls::basic::ComboBoxControl::selected_index(
-                    dialog.item(super::layout::FILTER_ID),
-                ),
-            ))
-        })
-        .unwrap_or_default();
-    let ids = content
-        .presenter
-        .try_borrow()
-        .map(|p| {
-            shown
-                .iter()
-                .filter_map(|&i| p.rows().get(i).map(|r| r.entry().id.clone()))
-                .collect::<Vec<_>>()
-        })
-        .unwrap_or_default();
     *content.list.visible.borrow_mut() = shown;
     *content.list.visible_ids.borrow_mut() = ids.clone();
     ListBoxControl::clear(hwnd);
-    for (position, _) in ids.iter().enumerate() {
-        let _ = ListBoxControl::add(
+    // SAFETY: LB_INITSTORAGE consumes a count and byte estimate, with no pointer arguments.
+    unsafe {
+        crate::win32::dialog_native::user32::send_message(
             hwnd,
-            row_view(content, dialog, i32::try_from(position).unwrap_or(-1))
-                .text
-                .as_str(),
+            crate::win32::dialog_native::LB_INITSTORAGE,
+            ids.len(),
+            ids.len().saturating_mul(64) as isize,
         );
+    }
+    for title in titles {
+        ListBoxControl::add(hwnd, &title);
     }
     for position in carried_selection(&selected_ids, &ids) {
         if let Ok(i) = i32::try_from(position) {
             ListBoxControl::set_selected(hwnd, i, true);
         }
     }
+    if let Some(top) = top_index_to_restore(top, ids.len()) {
+        // SAFETY: LB_SETTOPINDEX consumes an in-range index and no pointer arguments.
+        unsafe {
+            crate::win32::dialog_native::user32::send_message(
+                hwnd,
+                crate::win32::control_constants::LB_SETTOPINDEX,
+                top as usize,
+                0,
+            );
+        }
+    }
+    dialog.set_item_text(super::layout::SUMMARY_ID, &summary);
+    dialog.show_item(super::layout::FILTER_EMPTY_ID, empty);
+    if empty && crate::win32::dialog_native::user32::get_focus() == hwnd {
+        crate::win32::dialog_native::user32::set_focus(dialog.item(super::layout::FILTER_ID));
+    }
+    dialog.show_item(super::layout::LIST_ID, !empty);
+    super::path_panel::update_details(content, dialog);
+    super::actions::update_buttons(content, dialog);
 }
 
 /// C# `OnSelectionChanged()`: `path_panel::update_details` then `actions::update_buttons`.

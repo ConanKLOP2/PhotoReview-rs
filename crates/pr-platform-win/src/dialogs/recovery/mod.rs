@@ -328,7 +328,13 @@ impl DialogContent for RecoveryContent {
         self.presenter.borrow_mut().cancel_check();
         self.actions.closed.store(true, std::sync::atomic::Ordering::SeqCst);
         self.actions.wake_target.store(0, std::sync::atomic::Ordering::SeqCst);
-        let _ = self.actions.inbox.drain();
+        let mut remaining = self.actions.inbox.drain();
+        remaining.extend(self.actions.ready.borrow_mut().drain(..));
+        for completion in remaining {
+            if let actions::RecoveryCompletion::Retry { outcome, .. } = completion {
+                restore::log_closed(&outcome);
+            }
+        }
     }
     /// `actions::on_window_message` (only [`WM_RECOVERY_COMPLETIONS`] is handled).
     fn on_window_message(

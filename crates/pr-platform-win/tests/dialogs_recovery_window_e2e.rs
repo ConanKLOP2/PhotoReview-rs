@@ -1,29 +1,182 @@
-//! Native desktop behavior ports for the recovery dialog.
+//! Native RecoveryDialog view checks; the other C# native scenarios remain tracked in PARITY.
+#[path = "common/dialogs_dialog_fixture.rs"]
+mod desktop;
+#[path = "common/dialogs_recovery_fixture.rs"]
+mod fixture;
+use pr_app::presenters::recovery_window::RecoveryChecker;
+use pr_core::file_actions::journal::DismissOutcome;
+use pr_core::file_actions::journal_line::JournalEntry;
+use pr_core::file_actions::recovery_check::{
+    RecoveryCheckResult, RecoveryPathCheck, RecoveryPathStatus, RecoveryVerdict,
+};
+use pr_platform_win::dialogs::native::controls::basic::ComboBoxControl;
+use pr_platform_win::dialogs::native::controls::basic::ListBoxControl;
+use pr_platform_win::dialogs::recovery::{RecoveryDialog, RecoveryDialogSeams, layout::*};
+use std::sync::Arc;
 
-macro_rules! native_case {
-    ($name:ident) => {
-        #[test]
-        #[ignore = "native: needs desktop"]
-        fn $name() {}
-    };
+struct CheckedRows;
+impl RecoveryChecker for CheckedRows {
+    fn check(&self, entry: &JournalEntry) -> Result<RecoveryCheckResult, String> {
+        Ok(RecoveryCheckResult {
+            entry: entry.clone(),
+            source: RecoveryPathCheck::new(
+                entry.source.clone(),
+                RecoveryPathStatus::Exists,
+                Some(entry.size),
+                None,
+                true,
+            ),
+            destination: None,
+            group_members: None,
+            verdict: if entry.id == "e1" {
+                RecoveryVerdict::AlreadyDone
+            } else {
+                RecoveryVerdict::CanRetry
+            },
+        })
+    }
 }
 
-native_case!(opens_with_the_rows_before_the_checks_as_checking_neutral_badges);
-native_case!(empty_journal_shows_the_empty_summary_and_no_rows);
-native_case!(after_the_check_badges_carry_the_verdict_text_and_tone_colour);
-native_case!(filter_shows_only_the_matching_verdict_and_flags_an_empty_result);
-native_case!(filter_with_no_match_shows_the_empty_notice_in_place_of_the_list);
-native_case!(filter_keeps_the_selection_of_rows_that_stay_visible);
-native_case!(multi_select_enables_clear_selected_but_not_retry_and_shows_no_details);
-native_case!(layout_at_two_scales_nothing_visible_overlaps_or_leaves_the_client);
-native_case!(the_layout_follows_the_window_size_and_the_list_grows_with_it);
-native_case!(the_dialog_is_dark_theme_is_applied_once_to_the_list_combo_and_buttons);
-native_case!(opening_and_closing_repeatedly_does_not_leak_gdi_or_user_objects);
-native_case!(everything_the_view_tells_comes_from_the_localizer);
-native_case!(modal_disables_the_owner_and_esc_and_the_close_button_close);
-native_case!(refresh_keeps_the_list_scrolled_where_the_user_left_it);
-native_case!(when_the_check_completes_the_list_is_filtered_again_by_the_new_verdicts);
-native_case!(when_the_filter_empties_the_list_the_focus_moves_to_the_filter);
-native_case!(a_row_shows_the_title_above_the_subtitle_below_and_a_badge_in_the_tone_colour);
-native_case!(a_selected_row_uses_the_selection_colour);
-native_case!(the_badge_pill_is_filled_with_the_panel_colour_not_the_input_colour);
+// C#: RecoveryDialogTests.Filter_KeepsTheSelection_OfRowsThatStayVisible
+#[test]
+#[ignore = "native: needs desktop"]
+fn filter_carries_selection_by_identity_when_visible_positions_differ_from_presenter_indices() {
+    desktop::on_sta(|| {
+        let _styles = desktop::activate_visual_styles();
+        let owner = desktop::create_owner();
+        let runner = Arc::new(fixture::QueuedRunner::default());
+        let mut options = fixture::options();
+        options.checker = Arc::new(CheckedRows);
+        let mut services = fixture::services();
+        services.runner = runner.clone();
+        let d = RecoveryDialog::new(
+            vec![fixture::entry("e1"), fixture::entry("e2"), fixture::entry("e3")],
+            options,
+            services,
+            RecoveryDialogSeams {
+                messages: Some(fixture::FakeMessages::yes()),
+                auto_check: false,
+                ..Default::default()
+            },
+            None,
+        );
+        d.show_modeless(owner, None, None).unwrap();
+        d.start_checks();
+        runner.run_all();
+        d.pump_completions();
+        ComboBoxControl::select(d.native().item(FILTER_ID), 1);
+        desktop::command(d.native(), FILTER_ID, 1);
+        assert_eq!(d.visible_rows(), vec![1, 2]);
+        d.select_rows(&[0]);
+        assert_eq!(d.selected_rows(), vec![1]);
+        ComboBoxControl::select(d.native().item(FILTER_ID), 0);
+        desktop::command(d.native(), FILTER_ID, 1);
+        assert_eq!(d.selected_rows(), vec![1]);
+        ComboBoxControl::select(d.native().item(FILTER_ID), 1);
+        desktop::command(d.native(), FILTER_ID, 1);
+        assert_eq!(d.selected_rows(), vec![1]);
+        d.close();
+        desktop::destroy_owner(owner);
+    });
+}
+
+// C#: RecoveryDialogTests.Opens_WithTheRowsBeforeTheChecks_AsCheckingNeutralBadges
+#[test]
+#[ignore = "native: needs desktop"]
+fn opens_with_rows_and_summary_before_checks() {
+    desktop::on_sta(|| {
+        let _styles = desktop::activate_visual_styles();
+        let owner = desktop::create_owner();
+        let dialog = RecoveryDialog::new(
+            vec![fixture::entry("e1"), fixture::entry("e2"), fixture::entry("e3")],
+            fixture::options(),
+            fixture::services(),
+            RecoveryDialogSeams {
+                messages: Some(fixture::FakeMessages::yes()),
+                auto_check: false,
+                ..Default::default()
+            },
+            None,
+        );
+        dialog.show_modeless(owner, None, None).unwrap();
+        assert_eq!(ListBoxControl::count(dialog.native().item(LIST_ID)), 3);
+        assert_eq!(dialog.visible_rows(), vec![0, 1, 2]);
+        let summary = dialog.with_presenter(|p| p.summary_text(&pr_l10n::localizer::built_in_english_localizer()));
+        assert_eq!(dialog.native().get_item_text(SUMMARY_ID), summary);
+        assert!(!dialog.row_view(0).text.is_empty());
+        assert!(!dialog.row_view(0).badge.unwrap().is_empty());
+        assert!(desktop::is_visible(dialog.native(), DETAILS_EMPTY_ID));
+        dialog.close();
+        desktop::destroy_owner(owner);
+    });
+}
+
+// C#: RecoveryDialogTests.EmptyJournal_ShowsTheEmptySummary_AndNoRows
+#[test]
+#[ignore = "native: needs desktop"]
+fn empty_journal_shows_its_summary_and_no_rows() {
+    desktop::on_sta(|| {
+        let _styles = desktop::activate_visual_styles();
+        let owner = desktop::create_owner();
+        let dialog = RecoveryDialog::new(
+            Vec::new(),
+            fixture::options(),
+            fixture::services(),
+            RecoveryDialogSeams {
+                messages: Some(fixture::FakeMessages::yes()),
+                auto_check: false,
+                ..Default::default()
+            },
+            None,
+        );
+        dialog.show_modeless(owner, None, None).unwrap();
+        assert_eq!(ListBoxControl::count(dialog.native().item(LIST_ID)), 0);
+        assert!(!dialog.native().get_item_text(SUMMARY_ID).is_empty());
+        assert!(!dialog.is_enabled(RETRY_ID));
+        assert!(!dialog.is_enabled(CLEAR_ALL_ID));
+        dialog.close();
+        desktop::destroy_owner(owner);
+    });
+}
+
+// C#: RecoveryDialogTests.ClearSelected_RemovesRowsWithoutSelectingNeighbours
+#[test]
+#[ignore = "native: needs desktop"]
+fn removing_selected_entry_does_not_select_its_neighbour_and_refreshes_buttons() {
+    desktop::on_sta(|| {
+        let _styles = desktop::activate_visual_styles();
+        let owner = desktop::create_owner();
+        let mut options = fixture::options();
+        options.dismiss = Some(Box::new(|entries| {
+            Ok(DismissOutcome {
+                dismissed: entries.to_vec(),
+                skipped: vec![],
+            })
+        }));
+        let dialog = RecoveryDialog::new(
+            vec![fixture::entry("e1"), fixture::entry("e2"), fixture::entry("e3")],
+            options,
+            fixture::services(),
+            RecoveryDialogSeams {
+                messages: Some(fixture::FakeMessages::yes()),
+                auto_check: false,
+                ..Default::default()
+            },
+            None,
+        );
+        dialog.show_modeless(owner, None, None).unwrap();
+        dialog.select_rows(&[1]);
+        assert!(dialog.is_enabled(CLEAR_SELECTED_ID));
+        desktop::command(dialog.native(), CLEAR_SELECTED_ID, 0);
+        assert_eq!(
+            dialog.with_presenter(|p| p.rows().iter().map(|r| r.entry().id.clone()).collect::<Vec<_>>()),
+            vec!["e1", "e3"]
+        );
+        assert_eq!(ListBoxControl::count(dialog.native().item(LIST_ID)), 2);
+        assert!(dialog.selected_rows().is_empty());
+        assert!(!dialog.is_enabled(CLEAR_SELECTED_ID));
+        assert!(desktop::is_visible(dialog.native(), DETAILS_EMPTY_ID));
+        dialog.close();
+        desktop::destroy_owner(owner);
+    });
+}

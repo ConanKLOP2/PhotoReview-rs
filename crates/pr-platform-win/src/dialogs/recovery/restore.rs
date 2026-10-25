@@ -172,12 +172,21 @@ pub fn retry(content: &RecoveryContent, dialog: &NativeDialog) {
                 log_closed(&outcome);
             } else {
                 inbox.send(super::actions::RecoveryCompletion::Retry { entry_id, outcome });
+                // Closing may drain the inbox between the first closed check and this send.
+                // Both drains consume messages, so either the UI or this worker logs each late result once.
+                if closed.load(std::sync::atomic::Ordering::Acquire) {
+                    for completion in inbox.drain() {
+                        if let super::actions::RecoveryCompletion::Retry { outcome, .. } = completion {
+                            log_closed(&outcome);
+                        }
+                    }
+                }
             }
         }),
     );
 }
 
-fn log_closed(outcome: &Result<RecoveryRetryResult, String>) {
+pub(super) fn log_closed(outcome: &Result<RecoveryRetryResult, String>) {
     let log = pr_app::misc::app_log::AppLog::global();
     match outcome {
         Ok(result) => log.info(&format!(

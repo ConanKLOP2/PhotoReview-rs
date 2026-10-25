@@ -11,6 +11,35 @@ fn number(value: &serde_json::Value, key: &str) -> i32 {
     value[key].as_i64().unwrap() as i32
 }
 
+// C#: RecoveryDialog.LayoutControls, worked at avg=6, line=15 and client=1050x619.
+#[test]
+fn layout_controls_matches_the_csharp_call_sequence_and_worked_coordinates() {
+    let base = fixture::WindowLayout::default();
+    layout_controls(&base, DetailsLayout::default(), 1050, 619);
+    assert_eq!(
+        &*base.placements.borrow(),
+        &[
+            (HEADER_ID, 15, 15, 1020, 20),
+            (SUMMARY_ID, 15, 39, 1020, 24),
+            (FILTER_LABEL_ID, 15, 79, 33, 15),
+            (FILTER_ID, 57, 74, 128, 102),
+            (RECHECK_ID, 197, 74, 75, 26),
+            (CHECK_STATUS_ID, 284, 79, 751, 15),
+            (LIST_ID, 15, 111, 456, 452),
+            (FILTER_EMPTY_ID, 15, 328, 456, 18),
+            (DETAILS_EMPTY_ID, 486, 328, 549, 18)
+        ]
+    );
+    assert_eq!(
+        &*base.button_rows.borrow(),
+        &[
+            (1050, 15, 578, 26, vec![RETRY_ID, CLOSE_ID]),
+            (1050, 198, 578, 26, vec![CLEAR_SELECTED_ID, CLEAR_ALL_ID])
+        ]
+    );
+    assert_eq!(&*base.item_heights.borrow(), &[(LIST_ID, 39)]);
+}
+
 // C#: RecoveryDialog.BuildItems / PreferredClientSize / MinimumClientSize and ToColorRef oracle.
 #[test]
 fn every_recovery_layout_case_matches_the_csharp_golden() {

@@ -373,32 +373,21 @@ pub fn minimum_client_size(base: &dyn RecoveryLayoutBase) -> (i32, i32) {
 pub fn layout_controls(base: &dyn RecoveryLayoutBase, details: DetailsLayout, client_width: i32, client_height: i32) {
     let m = margin(base);
     let gap = base.dx(10);
+    let content = client_width.wrapping_sub(m.wrapping_mul(2)).max(1);
     let header_y = m;
-    let header_h = base.measure_item_height(HEADER_ID, client_width.wrapping_sub(m.wrapping_mul(2)));
-    base.place(
-        HEADER_ID,
-        m,
-        header_y,
-        client_width.wrapping_sub(m.wrapping_mul(2)),
-        header_h,
-    );
-    let summary_y = header_y.wrapping_add(header_h).wrapping_add(base.dy(4));
-    let summary_h = base.measure_item_height(SUMMARY_ID, client_width.wrapping_sub(m.wrapping_mul(2)));
-    base.place(
-        SUMMARY_ID,
-        m,
-        summary_y,
-        client_width.wrapping_sub(m.wrapping_mul(2)),
-        summary_h,
-    );
-    let row_y = summary_y.wrapping_add(summary_h).wrapping_add(base.dy(8));
+    let header_h = base.measure_item_height(HEADER_ID, content);
+    base.place(HEADER_ID, m, header_y, content, header_h);
+    let summary_y = header_y.wrapping_add(header_h).wrapping_add(base.dy(2));
+    let summary_h = base.measure_item_height(SUMMARY_ID, content);
+    base.place(SUMMARY_ID, m, summary_y, content, summary_h);
+    let row_y = summary_y.wrapping_add(summary_h).wrapping_add(base.dy(6));
     let label_w = base.measure_text_width(&base.get_item_text(FILTER_LABEL_ID));
     let field_h = field_height(base);
     base.place(
         FILTER_LABEL_ID,
         m,
-        row_y.wrapping_add(field_h / 2).wrapping_sub(base.line_height() / 2),
-        label_w,
+        row_y.wrapping_add(field_h.wrapping_sub(base.line_height()) / 2),
+        label_w.wrapping_add(base.dx(2)),
         base.line_height(),
     );
     let combo_x = m.wrapping_add(label_w).wrapping_add(base.dx(8));
@@ -412,17 +401,15 @@ pub fn layout_controls(base: &dyn RecoveryLayoutBase, details: DetailsLayout, cl
     base.place(
         CHECK_STATUS_ID,
         status_x,
-        row_y.wrapping_add(field_h / 2).wrapping_sub(base.line_height() / 2),
-        client_width.wrapping_sub(status_x).wrapping_sub(m),
+        row_y.wrapping_add(field_h.wrapping_sub(base.line_height()) / 2),
+        base.dx(40).max(client_width.wrapping_sub(status_x).wrapping_sub(m)),
         base.line_height(),
     );
     let bottom_y = client_height.wrapping_sub(m).wrapping_sub(field_h);
-    base.place_button_row(client_width, m, bottom_y, field_h, &[RETRY_ID, CLOSE_ID]);
+    let right_row = base.place_button_row(client_width, m, bottom_y, field_h, &[RETRY_ID, CLOSE_ID]);
     base.place_button_row(
-        client_width
-            .wrapping_sub(base.button_row_width(&[RETRY_ID, CLOSE_ID]))
-            .wrapping_sub(gap),
-        m,
+        client_width,
+        m.wrapping_add(right_row).wrapping_add(base.dx(16)),
         bottom_y,
         field_h,
         &[CLEAR_SELECTED_ID, CLEAR_ALL_ID],
@@ -430,25 +417,18 @@ pub fn layout_controls(base: &dyn RecoveryLayoutBase, details: DetailsLayout, cl
     let content_top = row_y.wrapping_add(field_h).wrapping_add(base.dy(6));
     let content_bottom = bottom_y.wrapping_sub(base.dy(8));
     let content_h = content_bottom.wrapping_sub(content_top).max(base.dy(30));
-    let inner = client_width.wrapping_sub(m.wrapping_mul(2));
-    let left_w = base.dx(150).max(inner.wrapping_sub(gap).wrapping_mul(5) / 11);
+    let left_w = base.dx(150).max(content.wrapping_sub(gap).wrapping_mul(5) / 11);
     let right_x = m.wrapping_add(left_w).wrapping_add(gap);
     let right_w = base.dx(150).max(client_width.wrapping_sub(m).wrapping_sub(right_x));
     base.place(LIST_ID, m, content_top, left_w, content_h);
     base.set_list_item_height(LIST_ID, base.line_height().wrapping_mul(2).wrapping_add(base.dy(5)));
+    let empty_h = base.measure_item_height(FILTER_EMPTY_ID, left_w);
     base.place(
         FILTER_EMPTY_ID,
         m,
-        content_top.wrapping_add(content_h / 2),
+        content_top.wrapping_add((content_h.wrapping_sub(empty_h) / 2).max(0)),
         left_w,
-        base.line_height(),
-    );
-    base.place(
-        DETAILS_EMPTY_ID,
-        right_x,
-        content_top.wrapping_add(content_h / 2),
-        right_w,
-        base.line_height(),
+        empty_h,
     );
     super::path_panel::layout_details(base, details, right_x, content_top, right_w, content_bottom);
 }
