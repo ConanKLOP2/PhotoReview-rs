@@ -12,5 +12,10 @@ pub fn suggest(exe_path: &str) -> Option<String> {
 
 /// The pure choice of `suggest`, testable without a file: the first of `product_name`, `file_description` that is not blank (`trim().is_empty()`), trimmed.
 pub fn first_non_blank(product_name: Option<&str>, file_description: Option<&str>) -> Option<String> {
-    todo!()
+    [product_name, file_description]
+        .into_iter()
+        .flatten()
+        .map(str::trim)
+        .find(|text| !text.is_empty())
+        .map(str::to_owned)
 }
