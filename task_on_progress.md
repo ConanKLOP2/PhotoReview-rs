@@ -2,6 +2,11 @@
 
 **Updated:** 2026-10-23 (older entries moved to `docs/archive/`; the sections below are the latest ones; where two sections disagree the later date wins, not the later position)
 
+## Wave 9 E5 final integration gates, machine A, 2026-10-26
+
+- PR #240 is merged as a91eb7f and roster #241 as57ec6e9. Integrated both in E5 source/test head7c4dc66; retained both task sections and the preview concurrency Different row. The prior CI race was repaired separately; no failing test was ignored or rerun unchanged.
+- Final integrated validation: fmt-all attempted (Windows error206), all12package format checks PASS; workspace all-target Clippy locked -D warnings PASS; workspace tests locked PASS, 9845passed/0failed/1325ignored across563result lines, authoritative runner exit0. The E5 fake command suite has114tests. No native process launch, corpus or full mutation claim.
+- Push this verified integration to PR #239, whose squash auto-merge is already enabled. App monitor tools remain unavailable. E5 is pending until verified merged; selected postmerge guard mutations and claim release follow. No local cleanup retry after the earlier approval rejection.
 ## Wave 9 rename ownership, machine A, 2026-10-26
 
 - Assigned W9-R1..R11 to A in MULTI-MACHINE before any rename implementation. No active W9-R claims appeared in the live claim inventory. Existing B ownership/claims are unchanged. Claim W9-RENAME-ROSTER belongs to A; claim each production/test unit separately only after this roster PR merges and its dependencies are on master.
