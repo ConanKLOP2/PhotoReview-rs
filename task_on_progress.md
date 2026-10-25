@@ -2,6 +2,11 @@
 
 **Updated:** 2026-10-23 (older entries moved to `docs/archive/`; the sections below are the latest ones; where two sections disagree the later date wins, not the later position)
 
+## Wave 9 E9 shell forwarding, machine A, 2026-10-26
+
+- E5 is merged a7efe09; E6/E7 also on master. Claimed W9-E9 for A and reused clean inactive E7/root-fix worktree sequentially; new codex/w9-editor-shell from master75ceca6, own same-root target-w9-e7. Read E9 contract and pinned C# shell wiring. No edits to machineB composition.
+- C# controller dispatch twin red before implementation (only legacy ExternalEditor recorded). Implemented Add/SetDefault/by-ID guarded dispatch, by-ID MainWindowMenuActions error propagation and Add/Choose forwarding, plus OpenInDefaultEditor input forwarding with unexpected-error propagation. Module docs name7eaee2a2 slices.
+- Expanded controller suite PASS53functions: C# sequence, verbatim empty/dotted/spaced suffixes, ordinal prefix, model constants, each pre-W9 interface default and guarded failure reporting. No native test or full workspace verdict for E9 yet. Remaining: real root/submenu BitBlt paint at en/vi x96/144 with event synchronization, input/menu wiring evidence where feasible, final integration gates, PR/merge and selected postmerge checks. Keep Partial; no production/native completion claim.
 ## Wave 9 E5 final integration gates, machine A, 2026-10-26
 
 - PR #240 is merged as a91eb7f and roster #241 as57ec6e9. Integrated both in E5 source/test head7c4dc66; retained both task sections and the preview concurrency Different row. The prior CI race was repaired separately; no failing test was ignored or rerun unchanged.

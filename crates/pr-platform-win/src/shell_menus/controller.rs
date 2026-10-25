@@ -1,3 +1,4 @@
+//! W9-E9 editor forwarding ports the corresponding C# source at baseline `7eaee2a2`.
 //! Port of `PhotoReview.Shell.Win32/Menus/ContextMenuController.cs` (207 lines, with `IContextMenuActions`) and `Menus/IPopupMenuHost.cs` (10 lines),
 //! baseline `d92d6aae`. Unit W8-14e. Contract: `contracts/W8-14e.md`.
 //!
@@ -214,6 +215,11 @@ impl ContextMenuController {
             "CopyFileName" => self.run(|| actions.copy_file_name()),
             "CopyFullPath" => self.run(|| actions.copy_full_pathname()),
             "Settings" => self.run(|| actions.show_settings()),
+            EXTERNAL_EDITOR_ADD_ID => self.run(|| actions.add_external_editor()),
+            EXTERNAL_EDITOR_SET_DEFAULT_ID => self.run(|| actions.choose_default_external_editor()),
+            _ if id.starts_with(EXTERNAL_EDITOR_OPEN_PREFIX) => self.run(|| {
+                actions.open_in_external_editor_by_id(id.strip_prefix(EXTERNAL_EDITOR_OPEN_PREFIX).unwrap_or_default())
+            }),
             "Zoom.Custom" => self.guard_zoom(|| actions.custom_zoom()),
             "Zoom.AlsoSetClickLevel" => {
                 let current = actions.settings().set_zoom_also_sets_click_level;

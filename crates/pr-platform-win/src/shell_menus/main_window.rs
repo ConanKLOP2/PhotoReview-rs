@@ -1,3 +1,4 @@
+//! W9-E9 editor forwarding ports the corresponding C# source at baseline `7eaee2a2`.
 //! Port of `PhotoReview.Shell.Win32/Menus/ShellMainWindow.Menus.cs` (92 lines, baseline `d92d6aae`). Unit W8-14f. Contract: `contracts/W8-14f.md`.
 //!
 //! The menu part of the main window (WP-24): `RegisterContextMenu`, the `IContextMenuActions` implementation (the `MainViewModel` and `ShellInput` calls
@@ -222,16 +223,31 @@ impl ContextMenuActions for MainWindowMenuActions {
         }
     }
     /// W9-E9: `vm.open_in_external_editor_by_id(editor_id)`, an `Err(ExternalEditorBug)` becomes the `Err` (same shape as `open_in_external_editor`).
-    fn open_in_external_editor_by_id(&self, _editor_id: &str) -> ActionResult {
-        todo!()
+    fn open_in_external_editor_by_id(&self, editor_id: &str) -> ActionResult {
+        let mut failure = None;
+        self.services
+            .with_view_model(&mut |vm| match vm.open_in_external_editor_by_id(editor_id) {
+                Ok(changes) => changes,
+                Err(bug) => {
+                    failure = Some(bug);
+                    ChangeSet::default()
+                }
+            });
+        match failure {
+            Some(bug) => Err(Box::new(bug)),
+            None => Ok(()),
+        }
     }
     /// W9-E9: `vm.add_external_editor()` (C# `ShellMainWindow.Menus.cs`: `_viewModel.AddExternalEditor()`).
     fn add_external_editor(&self) -> ActionResult {
-        todo!()
+        self.services.with_view_model(&mut |vm| vm.add_external_editor());
+        Ok(())
     }
     /// W9-E9: `vm.choose_default_external_editor()`.
     fn choose_default_external_editor(&self) -> ActionResult {
-        todo!()
+        self.services
+            .with_view_model(&mut |vm| vm.choose_default_external_editor());
+        Ok(())
     }
     fn copy_file_name(&self) -> ActionResult {
         self.services.with_view_model(&mut |vm| vm.copy_file_name());
