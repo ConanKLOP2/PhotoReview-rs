@@ -25,6 +25,92 @@ use pr_core::settings::shortcuts::{ReviewAction, ShortcutMappings};
 use pr_test_support::golden;
 use serde_json::Value;
 
+// C#: OpenInDefaultEditorShortcutRouterTests.NoDefaultKey_NothingResolves,
+// ABoundKey_ResolvesToTheCommand_AndFollowsARebind, HoldingTheKey_DoesNotLaunchTheEditorRepeatedly,
+// plus the committed W9-E7 precedence/modifier/state/rebind oracle scenarios.
+#[test]
+fn golden_open_in_default_editor_shortcut_scenarios_and_auto_repeat_table() {
+    use serde_json::json;
+    let inputs: Value = serde_json::from_str(include_str!(
+        "../../../tests/golden-inputs/open-in-default-editor-shortcut.json"
+    ))
+    .unwrap();
+    let expected: Value = serde_json::from_str(include_str!(
+        "../../../tests/golden/open-in-default-editor-shortcut.json"
+    ))
+    .unwrap();
+    let scenarios = inputs["scenarios"].as_array().unwrap();
+    let cases = expected["cases"].as_array().unwrap();
+    assert_eq!(scenarios.len(), 13);
+    assert_eq!(cases.len(), 14);
+    for (scenario, expected) in scenarios.iter().zip(cases) {
+        let mut router = router_from_fixture(&scenario["fixture"]);
+        let mut steps = Vec::new();
+        for step in scenario["steps"].as_array().unwrap() {
+            if step["op"] == "rebuild" {
+                let settings = settings_from_fixture(&step["fixture"]);
+                router.rebuild(&settings.shortcuts, &settings.actions);
+                steps.push(json!({"op":"rebuild","fixture":step["fixture"]["name"]}));
+            } else {
+                let key = key_named(step["key"].as_str().unwrap());
+                let system = key_named(step["system_key"].as_str().unwrap());
+                let modifiers = KeyModifiers(u8::try_from(step["modifiers"].as_u64().unwrap()).unwrap());
+                let command = router.try_resolve(
+                    key,
+                    system,
+                    modifiers,
+                    state_at(&inputs, step["state"].as_i64().unwrap()),
+                );
+                let command=command.map(|command|json!({"type":format!("{:?}",command.kind),"action_index":command.action_index,"force_picker":command.force_picker}));
+                steps.push(json!({"op":"resolve","key":step["key"],"system_key":step["system_key"],"modifiers":step["modifiers"],"state":step["state"],"command":command}));
+            }
+        }
+        assert_eq!(
+            json!({"name":scenario["name"],"steps":steps}),
+            *expected,
+            "{}",
+            scenario["name"]
+        );
+    }
+    use ReviewCommandType::*;
+    let types = [
+        Fullscreen,
+        ExitFullscreen,
+        Close,
+        NextFolder,
+        PreviousFolder,
+        FirstImage,
+        LastImage,
+        Undo,
+        ToggleCompare,
+        RunAction,
+        Recycle,
+        Skip,
+        ToggleFit,
+        ZoomIn,
+        ZoomOut,
+        ZoomActualSize,
+        ToggleInfoOverlay,
+        Next,
+        Previous,
+        MoveToFolder,
+        CopyToFolder,
+        ClickZoom,
+        FitWidth,
+        FitHeight,
+        ToggleKeepZoom,
+        OpenFolder,
+        CustomZoom,
+        ToggleCaptureMember,
+        FitWidth2,
+        Refresh,
+        OpenInDefaultEditor,
+        RenameFile,
+    ];
+    let actual = json!({"kind":"auto_repeat","ignores":types.iter().filter(|kind|kind.ignores_auto_repeat()).map(|kind|format!("{kind:?}")).collect::<Vec<_>>(),"types":types.iter().map(|kind|json!({"name":format!("{kind:?}"),"value":*kind as u8})).collect::<Vec<_>>()});
+    assert_eq!(actual, cases[13]);
+}
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------------------------------------------------
