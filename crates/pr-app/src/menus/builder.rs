@@ -183,13 +183,7 @@ fn top_level_item(
             tr::main_menu_previous_folder_automation_name(),
             true,
         ),
-        ContextMenuItemId::ExternalEditor => command(
-            id.name(),
-            tr::main_menu_open_in_external_editor(),
-            None,
-            tr::main_menu_open_in_external_editor_automation_name(),
-            true,
-        ),
+        ContextMenuItemId::ExternalEditor => super::external_editors::external_editor_item(context),
         ContextMenuItemId::RenameFile => command(
             id.name(),
             tr::main_menu_rename_file(),
@@ -308,7 +302,13 @@ fn zoom_children(
 
 /// `Command(id, text, shortcut, automationName, isEnabled)`: a Command with the given text. The shortcut is `None` when
 /// it is absent, empty or whitespace only (`string.IsNullOrWhiteSpace`); a non-empty shortcut is kept byte for byte.
-fn command(id: &str, text: String, shortcut: Option<&str>, automation_name: String, is_enabled: bool) -> MenuItemModel {
+pub(super) fn command(
+    id: &str,
+    text: String,
+    shortcut: Option<&str>,
+    automation_name: String,
+    is_enabled: bool,
+) -> MenuItemModel {
     let shortcut_text = shortcut
         .filter(|s| {
             !s.chars()
@@ -328,7 +328,7 @@ fn command(id: &str, text: String, shortcut: Option<&str>, automation_name: Stri
 }
 
 /// `Separator(id)`: kind Separator, empty text, disabled, no shortcut, no automation name, no children.
-fn separator(id: String) -> MenuItemModel {
+pub(super) fn separator(id: String) -> MenuItemModel {
     MenuItemModel {
         id,
         kind: MenuItemKind::Separator,

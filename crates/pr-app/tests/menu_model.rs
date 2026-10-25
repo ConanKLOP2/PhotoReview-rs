@@ -26,6 +26,205 @@ use ContextMenuItemId as Id;
 
 static GLOBAL: Mutex<()> = Mutex::new(());
 
+fn declared_editors(count: usize, default: &str) -> AppSettings {
+    use pr_core::settings::external_editors::ExternalEditor;
+    let mut settings = AppSettings::default();
+    apply_hidden(&mut settings, []);
+    settings.external_editors = (0..count)
+        .map(|i| ExternalEditor {
+            id: format!("e{i}"),
+            name: format!("Editor {i}"),
+            path: format!(r"C:\editor{i}.exe"),
+            ..ExternalEditor::default()
+        })
+        .collect();
+    settings.default_external_editor_id = default.to_owned();
+    settings
+}
+
+fn editor_entry(settings: &AppSettings, has_image: bool) -> MenuItemModel {
+    build(&context(settings, has_image, has_image, None))
+        .unwrap()
+        .into_iter()
+        .find(|item| item.id == "ExternalEditor")
+        .unwrap()
+}
+
+// C#: ExternalEditorsMenuModelTests.NoEditorDeclared_KeepsTheSingleCommandThatOpensSettings.
+#[test]
+fn no_editor_declared_keeps_the_single_command_that_opens_settings() {
+    let _en = english();
+    let item = editor_entry(&declared_editors(0, ""), true);
+    assert_eq!(item.kind, MenuItemKind::Command);
+    assert!(item.is_enabled && item.children.is_empty());
+}
+
+// C#: ExternalEditorsMenuModelTests.EditorsDeclared_BecomeASubmenuWithOneEntryEachThenAddAndSetDefault.
+#[test]
+fn editors_declared_become_a_submenu_with_one_entry_each_then_add_and_set_default() {
+    let _en = english();
+    for count in [1, 2, 5, 12] {
+        let item = editor_entry(&declared_editors(count, "e0"), true);
+        assert_eq!(item.kind, MenuItemKind::Submenu);
+        assert_eq!(item.children.len(), count + 3);
+        for (i, child) in item.children[..count].iter().enumerate() {
+            assert_eq!(child.id, format!("ExternalEditor.Open.e{i}"));
+            assert_eq!(child.text, format!("Editor {i}"));
+            assert_eq!(child.kind, MenuItemKind::Toggle);
+        }
+        assert_eq!(item.children[count].kind, MenuItemKind::Separator);
+        assert_eq!(item.children[count + 1].id, "ExternalEditor.Add");
+        assert_eq!(item.children[count + 2].id, "ExternalEditor.SetDefault");
+    }
+}
+
+// C#: ExternalEditorsMenuModelTests.ExactlyTheDefaultEditorIsMarked_AndOnlyItCarriesTheDefaultEditorKey.
+#[test]
+fn exactly_the_default_editor_is_marked_and_only_it_carries_the_default_editor_key() {
+    let _en = english();
+    let mut settings = declared_editors(3, "e1");
+    settings.shortcuts.open_in_default_editor = "F9".into();
+    let item = editor_entry(&settings, true);
+    assert_eq!(
+        item.children[..3].iter().map(|i| i.is_checked).collect::<Vec<_>>(),
+        [false, true, false]
+    );
+    assert_eq!(
+        item.children[..3]
+            .iter()
+            .map(|i| i.shortcut_text.as_deref())
+            .collect::<Vec<_>>(),
+        [None, Some("F9"), None]
+    );
+}
+
+// C#: ExternalEditorsMenuModelTests.UnknownDefaultId_MarksTheFirstEditor.
+#[test]
+fn unknown_default_id_marks_the_first_editor() {
+    let _en = english();
+    let item = editor_entry(&declared_editors(3, "gone"), true);
+    assert_eq!(
+        item.children[..3].iter().map(|i| i.is_checked).collect::<Vec<_>>(),
+        [true, false, false]
+    );
+}
+
+// C#: ExternalEditorsMenuModelTests.NoImage_DisablesTheEditorEntries_ButNotAddOrSetDefault.
+#[test]
+fn no_image_disables_the_editor_entries_but_not_add_or_set_default() {
+    let _en = english();
+    let item = editor_entry(&declared_editors(2, "e0"), false);
+    assert!(item.children[..2].iter().all(|i| !i.is_enabled));
+    assert!(item.children[3..].iter().all(|i| i.is_enabled));
+}
+
+// C#: ExternalEditorsMenuModelTests.LegacyPathOnly_IsOneImplicitEditor.
+#[test]
+fn legacy_path_only_is_one_implicit_editor() {
+    let _en = english();
+    let mut settings = declared_editors(0, "");
+    settings.external_editor_path = r"C:\Old\Retoucher.exe".into();
+    let item = editor_entry(&settings, true);
+    assert_eq!(item.children.len(), 4);
+    assert_eq!(item.children[0].id, "ExternalEditor.Open.legacy");
+    assert_eq!(item.children[0].text, "Retoucher");
+    assert!(item.children[0].is_checked);
+}
+
+// C#: ExternalEditorsMenuModelTests.BlankName_FallsBackToTheProgramFileName.
+#[test]
+fn blank_name_falls_back_to_the_program_file_name() {
+    let _en = english();
+    let mut settings = declared_editors(1, "e0");
+    settings.external_editors[0].name = " ".into();
+    settings.external_editors[0].path = r"C:\Tools\Capture One\CaptureOne.exe".into();
+    assert_eq!(editor_entry(&settings, true).children[0].text, "CaptureOne");
+}
+
+// C#: ExternalEditorsMenuModelTests.LayoutHidingTheEntry_RemovesTheWholeSubmenu.
+#[test]
+fn layout_hiding_the_entry_removes_the_whole_submenu() {
+    let _en = english();
+    let mut settings = declared_editors(3, "e0");
+    apply_hidden(&mut settings, [Id::ExternalEditor]);
+    let items = build_default_context(&settings);
+    assert!(
+        !items
+            .iter()
+            .any(|i| i.id == "ExternalEditor" || i.id.starts_with("ExternalEditor."))
+    );
+}
+
+// C#: ExternalEditorsMenuModelTests (all eight scenarios), oracle W9-E6.cs at 7eaee2a2.
+#[test]
+fn external_editor_menu_replays_all_18_oracle_cases() {
+    use pr_core::settings::external_editors::ExternalEditor;
+    let _en = english();
+    let inputs: Value =
+        serde_json::from_str(include_str!("../../../tests/golden-inputs/external-editor-menu.json")).unwrap();
+    let expected = golden::load("external-editor-menu");
+    let cases = inputs["cases"].as_array().unwrap();
+    assert_eq!(cases.len(), 18);
+    assert_eq!(expected.cases.len(), 18);
+    for (case, expected) in cases.iter().zip(&expected.cases) {
+        assert_eq!(case["name"], expected["name"]);
+        let mut settings = AppSettings::default();
+        if let Some(editors) = case["editors"].as_array() {
+            settings.external_editors = editors
+                .iter()
+                .map(|editor| ExternalEditor {
+                    id: editor["id"].as_str().unwrap().to_owned(),
+                    name: editor["name"].as_str().unwrap_or_default().to_owned(),
+                    path: editor["path"].as_str().unwrap_or_default().to_owned(),
+                    ..ExternalEditor::default()
+                })
+                .collect();
+        }
+        settings.default_external_editor_id = case["default_id"].as_str().unwrap_or_default().to_owned();
+        settings.external_editor_path = case["legacy_path"].as_str().unwrap_or_default().to_owned();
+        settings.shortcuts.open_in_default_editor = case["shortcut"].as_str().unwrap_or_default().to_owned();
+        if let Some(hidden) = case["hidden"].as_array() {
+            apply_hidden(
+                &mut settings,
+                hidden.iter().map(|id| {
+                    ContextMenuItemId::ALL
+                        .iter()
+                        .copied()
+                        .find(|item| item.name() == id.as_str().unwrap())
+                        .unwrap()
+                }),
+            );
+        }
+        let has_image = case["has_image"].as_bool().unwrap();
+        let mut context = context(&settings, has_image, has_image, None);
+        context.is_fit = true;
+        let items = build(&context).unwrap();
+        let entry = items.iter().find(|item| item.id == "ExternalEditor");
+        let actual = entry
+            .map(|item| tree_json(std::slice::from_ref(item))[0].clone())
+            .unwrap_or(Value::Null);
+        assert_eq!(actual, expected["item"], "{}", case["name"]);
+        assert_eq!(render(&items), expected["render"], "{}", case["name"]);
+        if let Some(entry) = entry {
+            assert!(entry.is_enabled);
+            if !entry.children.is_empty() {
+                let count = entry.children.len() - 3;
+                assert!(
+                    entry.children[..count]
+                        .iter()
+                        .all(|item| item.kind == MenuItemKind::Toggle)
+                );
+                assert!(entry.children[..count].iter().all(|item| item.is_enabled == has_image));
+                assert_eq!(entry.children[..count].iter().filter(|item| item.is_checked).count(), 1);
+                assert_eq!(entry.children[count].kind, MenuItemKind::Separator);
+                assert_eq!(entry.children[count + 1].id, "ExternalEditor.Add");
+                assert_eq!(entry.children[count + 2].id, "ExternalEditor.SetDefault");
+                assert!(entry.children[count + 1..].iter().all(|item| item.is_enabled));
+            }
+        }
+    }
+}
+
 /// Holds the process-wide lock, pins the ambient localizer to English and restores the previous one on drop.
 struct English {
     previous: Arc<Localizer>,
