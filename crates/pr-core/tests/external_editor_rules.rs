@@ -21,6 +21,28 @@ fn defaults_nothing_declared_raw_on_shortcut_empty_and_optional() {
 
 struct AlwaysValid;
 
+// C#: ResolveFileToSend uses IsNullOrEmpty(stem), allowing a nonempty whitespace-only file stem.
+#[test]
+fn resolve_file_to_send_nonempty_whitespace_stem_still_checks_raw_companion() {
+    assert_eq!(
+        ExternalEditors::resolve_file_to_send(r"C:\p\ .jpg", None, true, &|path| path == r"C:\p\ .arw"),
+        r"C:\p\ .arw"
+    );
+}
+
+// C#: ResolveFileToSend returns immediately when RAW is disabled or the displayed file is already RAW.
+#[test]
+fn resolve_file_to_send_raw_off_or_already_raw_never_probes_the_file_system() {
+    for (path, enabled) in [(r"C:\p\a.jpg", false), (r"C:\p\a.NEF", true)] {
+        assert_eq!(
+            ExternalEditors::resolve_file_to_send(path, Some(r"C:\p\a.cr3"), enabled, &|_| panic!(
+                "unexpected disk probe"
+            )),
+            path
+        );
+    }
+}
+
 // C#: ExternalEditors.Reconcile uses string.Length (UTF-16), not UTF-8 bytes or scalar count.
 #[test]
 fn reconcile_argument_limit_counts_utf16_and_preserves_valid_nonblank_text() {

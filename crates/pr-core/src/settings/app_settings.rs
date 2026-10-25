@@ -24,6 +24,8 @@
 //!   shortcuts (`SettingsStore.FinishDeserialize` does the same), and for a string it becomes `""`.
 //! * `null` entries inside `Actions` are dropped by the reader and counted in [`ReadNotes::null_actions`]; the
 //!   normalizer reports `Actions` for them, exactly like C#'s `RemoveAll(a => a is null)`.
+//! * Null editor slots are similarly counted in [`ReadNotes::null_external_editors`], consumed by editor
+//!   reconciliation so migration stays silent while a current-version repair is reported.
 
 use std::error::Error;
 use std::fmt;

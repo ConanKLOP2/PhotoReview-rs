@@ -286,7 +286,7 @@ impl ExternalEditors {
             return path.to_owned();
         };
         let stem = dotnet_path::get_file_name_without_extension(path);
-        if stem.trim().is_empty() {
+        if stem.is_empty() {
             return path.to_owned();
         }
         let mut extensions = RAW_EXTENSIONS.to_vec();
