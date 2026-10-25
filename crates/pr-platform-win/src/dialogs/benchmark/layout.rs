@@ -3,8 +3,6 @@
 //!
 //! Everything arithmetic is a pure function of a `&dyn DialogMeasure` (D-W8B5-501) that returns a plan; `apply_layout` executes the plan on a real dialog. The
 //! status-line height of the last layout is the only state ([`LayoutState`], C# `_statusHeight`).
-#![allow(unused_variables, dead_code)] // stub: the porter removes this line with the last `todo!()`
-
 use std::cell::Cell;
 
 use crate::dialogs::native::dialog::NativeDialog;
@@ -67,34 +65,145 @@ pub const FIXED_COLUMN_UNITS: [i32; COLUMN_COUNT] = [16, 0, 54, 62, 32, 36, 36, 
 /// (`""`, `child | ListViewControl::DEFAULT_STYLE`); Button `OPEN_REPORT_ID` (`benchmark_open_report`), `OPEN_FOLDER_ID` (`benchmark_open_result_folder`), `CLOSE_ID`
 /// (`common_close`), each `child | tab | BS_PUSHBUTTON`. Texts are the ambient language at the call.
 pub fn build_items() -> Vec<DialogItem> {
-    todo!()
+    use crate::dialogs::native::controls::{custom::ProgressControl, list_tree::ListViewControl};
+    use crate::dialogs::native::template::{DIALOG_STYLE_CHILD as child, DialogControlClass as C, DialogItem as I};
+    use crate::win32::control_constants::{LBS_HASSTRINGS, LBS_MULTIPLESEL, LBS_OWNERDRAWFIXED};
+    use crate::win32::dialog_native as n;
+    let tab = n::WS_TABSTOP;
+    let text = child | n::SS_NOPREFIX;
+    let edit = child | tab | n::ES_AUTOHSCROLL;
+    vec![
+        I::new(C::Static, HEADER_ID, pr_l10n::tr::benchmark_header(), text),
+        I::new(C::Static, DESCRIPTION_ID, pr_l10n::tr::benchmark_description(), text),
+        I::new(C::Edit, FOLDER_ID, "", edit).with_ex_style(n::WS_EX_CLIENTEDGE),
+        I::new(
+            C::Button,
+            BROWSE_ID,
+            pr_l10n::tr::benchmark_browse(),
+            child | tab | n::BS_PUSHBUTTON,
+        ),
+        I::new(
+            C::Static,
+            LIMIT_LABEL_ID,
+            pr_l10n::tr::benchmark_image_limit_label(),
+            text,
+        ),
+        I::new(C::Edit, LIMIT_ID, "", edit).with_ex_style(n::WS_EX_CLIENTEDGE),
+        I::new(
+            C::Static,
+            PROFILES_LABEL_ID,
+            pr_l10n::tr::benchmark_profiles_label(),
+            text,
+        ),
+        I::new(
+            C::Button,
+            SELECT_ALL_ID,
+            pr_l10n::tr::benchmark_select_all(),
+            child | tab | n::BS_PUSHBUTTON,
+        ),
+        I::new(
+            C::Button,
+            SELECT_NONE_ID,
+            pr_l10n::tr::benchmark_select_none(),
+            child | tab | n::BS_PUSHBUTTON,
+        ),
+        I::new(
+            C::ListBox,
+            PROFILES_ID,
+            "",
+            child
+                | tab
+                | n::WS_VSCROLL
+                | n::LBS_NOTIFY
+                | n::LBS_NOINTEGRALHEIGHT
+                | LBS_MULTIPLESEL
+                | LBS_OWNERDRAWFIXED
+                | LBS_HASSTRINGS,
+        )
+        .with_ex_style(n::WS_EX_CLIENTEDGE),
+        I::new(
+            C::Button,
+            RUN_ID,
+            pr_l10n::tr::benchmark_run(),
+            child | tab | n::BS_DEFPUSHBUTTON,
+        ),
+        I::new(
+            C::Button,
+            QUICK_CHECK_ID,
+            pr_l10n::tr::benchmark_quick_check(),
+            child | tab | n::BS_PUSHBUTTON,
+        ),
+        I::new(
+            C::Button,
+            CANCEL_RUN_ID,
+            pr_l10n::tr::common_cancel(),
+            child | tab | n::BS_PUSHBUTTON | n::WS_DISABLED,
+        ),
+        I::new(C::Progress, PROGRESS_ID, "", child | ProgressControl::DEFAULT_STYLE),
+        I::new(C::Static, STATUS_ID, "", text),
+        I::new(C::ListView, RESULTS_ID, "", child | ListViewControl::DEFAULT_STYLE),
+        I::new(
+            C::Button,
+            OPEN_REPORT_ID,
+            pr_l10n::tr::benchmark_open_report(),
+            child | tab | n::BS_PUSHBUTTON,
+        ),
+        I::new(
+            C::Button,
+            OPEN_FOLDER_ID,
+            pr_l10n::tr::benchmark_open_result_folder(),
+            child | tab | n::BS_PUSHBUTTON,
+        ),
+        I::new(
+            C::Button,
+            CLOSE_ID,
+            pr_l10n::tr::common_close(),
+            child | tab | n::BS_PUSHBUTTON,
+        ),
+    ]
 }
 
 /// C# `Margin` = `dx(10)`.
 pub fn margin(m: &dyn DialogMeasure) -> i32 {
-    todo!()
+    m.dx(10)
 }
 
 /// C# `FieldHeight` and `ButtonHeight` (equal): `max(dy(14), line_height + dy(6))`.
 pub fn field_height(m: &dyn DialogMeasure) -> i32 {
-    todo!()
+    m.dy(14).max(m.line_height().wrapping_add(m.dy(6)))
 }
 
 /// C# `PreferredClientSize()` = `(dx(520), dy(330))`.
 pub fn preferred_client_size(m: &dyn DialogMeasure) -> (i32, i32) {
-    todo!()
+    (m.dx(520), m.dy(330))
 }
 
 /// C# `MinimumClientSize()` = `(max(dx(400), button_row_width([OPEN_REPORT_ID, OPEN_FOLDER_ID, CLOSE_ID]) + 2 * margin), dy(280))`.
 pub fn minimum_client_size(m: &dyn DialogMeasure) -> (i32, i32) {
-    todo!()
+    (
+        m.dx(400).max(
+            m.button_row_width(&[OPEN_REPORT_ID, OPEN_FOLDER_ID, CLOSE_ID])
+                .wrapping_add(margin(m).wrapping_mul(2)),
+        ),
+        m.dy(280),
+    )
 }
 
 /// C# `FitColumns(listWidth)` arithmetic, pure: `fixed_px = sum(dx(u) for u in FIXED_COLUMN_UNITS)` (each unit converted separately); `flex = max(0, list_width -
 /// fixed_px - dx(14))` (the vertical scroll bar); `profile = max(dx(70), flex * 2 / 3)`; `status = max(dx(50), flex - profile)`; column `i` is `profile` for 1, `status` for
 /// 9, else `dx(FIXED_COLUMN_UNITS[i])`.
 pub fn column_widths(m: &dyn DialogMeasure, list_width: i32) -> [i32; COLUMN_COUNT] {
-    todo!()
+    let fixed = FIXED_COLUMN_UNITS
+        .iter()
+        .fold(0i32, |sum, u| sum.wrapping_add(m.dx(*u)));
+    let flex = list_width.wrapping_sub(fixed).wrapping_sub(m.dx(14)).max(0);
+    let profile = m.dx(70).max(flex.wrapping_mul(2) / 3);
+    let status = m.dx(50).max(flex.wrapping_sub(profile));
+    std::array::from_fn(|i| match i {
+        1 => profile,
+        9 => status,
+        _ => m.dx(FIXED_COLUMN_UNITS[i]),
+    })
 }
 
 /// What `layout_plan` decided, in the C# call order.
@@ -128,7 +237,111 @@ pub struct BenchmarkLayoutPlan {
 /// `bottom_top` (right margin `m`, height `fh`); `results = max(dy(30), bottom_top - dy(8) - y)`; `Place(RESULTS_ID, m, y, content, results)`; `column_widths(m, content)`.
 /// Wrapping `i32` arithmetic and truncating division (D-W8B5-312).
 pub fn layout_plan(m: &dyn DialogMeasure, client_width: i32, client_height: i32) -> BenchmarkLayoutPlan {
-    todo!()
+    let x = margin(m);
+    let content = client_width.wrapping_sub(x.wrapping_mul(2)).max(1);
+    let fh = field_height(m);
+    let line = m.line_height();
+    let mut y = x;
+    let mut p = Vec::with_capacity(16);
+    let mut place = |id, px, py, w, h| p.push(Placement::new(id, px, py, w, h));
+    let h = m.measure_item_height(HEADER_ID, content);
+    place(HEADER_ID, x, y, content, h);
+    y = y.wrapping_add(h).wrapping_add(m.dy(2));
+    let h = m.measure_item_height(DESCRIPTION_ID, content);
+    place(DESCRIPTION_ID, x, y, content, h);
+    y = y.wrapping_add(h).wrapping_add(m.dy(8));
+    let browse = m.button_width(&[BROWSE_ID]);
+    place(
+        FOLDER_ID,
+        x,
+        y,
+        m.dx(40).max(content.wrapping_sub(browse).wrapping_sub(m.dx(4))),
+        fh,
+    );
+    place(BROWSE_ID, x.wrapping_add(content).wrapping_sub(browse), y, browse, fh);
+    y = y.wrapping_add(fh).wrapping_add(m.dy(6));
+    let lw = m.measure_text_width(&m.item_text(LIMIT_LABEL_ID));
+    place(
+        LIMIT_LABEL_ID,
+        x,
+        y.wrapping_add(fh.wrapping_sub(line) / 2),
+        lw.wrapping_add(m.dx(2)),
+        line,
+    );
+    place(LIMIT_ID, x.wrapping_add(lw).wrapping_add(m.dx(8)), y, m.dx(40), fh);
+    y = y.wrapping_add(fh).wrapping_add(m.dy(6));
+    let buttons = m.button_width(&[SELECT_ALL_ID, SELECT_NONE_ID]);
+    let label_width = m
+        .dx(60)
+        .max(content.wrapping_sub(buttons.wrapping_mul(2)).wrapping_sub(m.dx(12)));
+    let label = m.measure_item_height(PROFILES_LABEL_ID, label_width);
+    let row = label.max(fh);
+    place(
+        PROFILES_LABEL_ID,
+        x,
+        y.wrapping_add(row.wrapping_sub(label) / 2),
+        label_width,
+        label,
+    );
+    let by = y.wrapping_add(row.wrapping_sub(fh) / 2);
+    place(
+        SELECT_ALL_ID,
+        x.wrapping_add(content)
+            .wrapping_sub(buttons.wrapping_mul(2))
+            .wrapping_sub(m.dx(4)),
+        by,
+        buttons,
+        fh,
+    );
+    place(
+        SELECT_NONE_ID,
+        x.wrapping_add(content).wrapping_sub(buttons),
+        by,
+        buttons,
+        fh,
+    );
+    y = y.wrapping_add(row).wrapping_add(m.dy(3));
+    let profiles_item_height = line.wrapping_add(m.dy(5));
+    let list_height = m.dy(64);
+    place(PROFILES_ID, x, y, content, list_height);
+    y = y.wrapping_add(list_height).wrapping_add(m.dy(6));
+    let run = m.button_width(&[RUN_ID, QUICK_CHECK_ID, CANCEL_RUN_ID]);
+    place(RUN_ID, x, y, run, fh);
+    place(QUICK_CHECK_ID, x.wrapping_add(run).wrapping_add(m.dx(6)), y, run, fh);
+    place(
+        CANCEL_RUN_ID,
+        x.wrapping_add(run.wrapping_add(m.dx(6)).wrapping_mul(2)),
+        y,
+        run,
+        fh,
+    );
+    y = y.wrapping_add(fh).wrapping_add(m.dy(8));
+    place(PROGRESS_ID, x, y, content, m.dy(4).max(m.dy(5)));
+    y = y.wrapping_add(m.dy(5)).wrapping_add(m.dy(4));
+    let status_height = if m.item_text(STATUS_ID).is_empty() {
+        0
+    } else {
+        m.measure_item_height(STATUS_ID, content)
+    };
+    place(STATUS_ID, x, y, content, status_height);
+    y = y.wrapping_add(status_height).wrapping_add(m.dy(6));
+    let bottom_top = client_height.wrapping_sub(x).wrapping_sub(fh);
+    let button_row = ButtonRowPlan {
+        client_width,
+        right_margin: x,
+        top: bottom_top,
+        height: fh,
+        ids: vec![OPEN_REPORT_ID, OPEN_FOLDER_ID, CLOSE_ID],
+    };
+    let results_height = m.dy(30).max(bottom_top.wrapping_sub(m.dy(8)).wrapping_sub(y));
+    place(RESULTS_ID, x, y, content, results_height);
+    BenchmarkLayoutPlan {
+        placements: p,
+        profiles_item_height,
+        button_row,
+        status_height,
+        column_widths: column_widths(m, content),
+    }
 }
 
 /// C# `_statusHeight`: the status-line height the last layout gave (`SetStatus` re-runs the layout only when the new text needs another height).
@@ -142,5 +355,26 @@ pub struct LayoutState {
 /// `PROFILES_ID` placement), the rest, the bottom button row right before the `RESULTS_ID` placement, then the column widths (`ListViewControl::set_column_width` for
 /// each column, only when the grid window exists) and `state.status_height.set(plan.status_height)`.
 pub fn apply_layout(dialog: &NativeDialog, plan: &BenchmarkLayoutPlan, state: &LayoutState) {
-    todo!()
+    use crate::dialogs::native::controls::list_tree::ListViewControl;
+    for p in &plan.placements {
+        if p.id == PROFILES_ID {
+            dialog.set_list_item_height(PROFILES_ID, plan.profiles_item_height);
+        }
+        if p.id == RESULTS_ID {
+            dialog.place_button_row(
+                plan.button_row.client_width,
+                plan.button_row.right_margin,
+                plan.button_row.top,
+                plan.button_row.height,
+                &plan.button_row.ids,
+            );
+        }
+        dialog.place(p.id, p.x, p.y, p.width, p.height);
+    }
+    if dialog.item(RESULTS_ID) != 0 {
+        for (i, width) in plan.column_widths.iter().enumerate() {
+            ListViewControl::set_column_width(dialog.item(RESULTS_ID), i as i32, *width);
+        }
+    }
+    state.status_height.set(plan.status_height);
 }
