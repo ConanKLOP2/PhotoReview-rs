@@ -1,0 +1,95 @@
+# unsafe-audit baseline. Format: RULE<TAB>path<TAB>normalized unsafe line (no line numbers). A = no SAFETY comment, B = unsafe outside allowed crates.
+# Regenerate with: bash tools/dev/unsafe-audit.sh --update-baseline. It should only shrink.
+A	crates/pr-core/src/io/journal_compaction_files.rs	unsafe extern "system" {
+A	crates/pr-core/src/io/physical.rs	unsafe extern "system" {
+A	crates/pr-core/src/text/dotnet_path.rs	unsafe extern "system" {
+A	crates/pr-imaging/src/cache/atomic_file.rs	unsafe extern "system" {
+A	crates/pr-imaging/src/pixels.rs	unsafe { std::slice::from_raw_parts(ptr, byte_count as usize) }
+A	crates/pr-imaging/tests/pixel_memory.rs	unsafe fn alloc_zeroed(&self, layout: Layout) -> *mut u8 {
+A	crates/pr-imaging/tests/pixel_memory.rs	unsafe fn dealloc(&self, ptr: *mut u8, layout: Layout) {
+A	crates/pr-libraw/src/native.rs	unsafe extern "C" fn cancellation_progress_callback(
+A	crates/pr-libraw/src/native.rs	unsafe extern "system" {
+A	crates/pr-platform-win/src/dialogs/native/edit_centering.rs	unsafe extern "system" fn subclass_proc(
+A	crates/pr-platform-win/src/dialogs/native/painter/widgets.rs	.map(|index| unsafe { pointer.add(index).read_unaligned() })
+A	crates/pr-platform-win/src/dialogs/task_dialog.rs	unsafe extern "system" fn on_callback(
+A	crates/pr-platform-win/src/display_clock.rs	unsafe extern "system" {
+A	crates/pr-platform-win/src/explorer_com_interop.rs	unsafe extern "system" fn add_ref(this: *mut c_void) -> u32 {
+A	crates/pr-platform-win/src/explorer_com_interop.rs	unsafe extern "system" fn count(this: *mut c_void, output: *mut i32) -> i32 {
+A	crates/pr-platform-win/src/explorer_com_interop.rs	unsafe extern "system" fn item(this: *mut c_void, variant: TestVariant, output: *mut *mut c_void) -> i32 {
+A	crates/pr-platform-win/src/explorer_com_interop.rs	unsafe extern "system" fn location(this: *mut c_void, output: *mut *mut u16) -> i32 {
+A	crates/pr-platform-win/src/explorer_com_interop.rs	unsafe extern "system" fn query_active_view(this: *mut c_void, output: *mut *mut c_void) -> i32 {
+A	crates/pr-platform-win/src/explorer_com_interop.rs	unsafe extern "system" fn query_service(
+A	crates/pr-platform-win/src/explorer_com_interop.rs	unsafe extern "system" fn release(this: *mut c_void) -> u32 {
+A	crates/pr-platform-win/src/explorer_com_interop.rs	unsafe extern "system" {
+A	crates/pr-platform-win/src/explorer_com_interop.rs	unsafe extern "system" {
+A	crates/pr-platform-win/src/explorer_native_view.rs	unsafe extern "system" {
+A	crates/pr-platform-win/src/explorer_order_service.rs	unsafe extern "system" {
+A	crates/pr-platform-win/src/recycle_bin_shell.rs	} = match unsafe { self.item.GetFileTime(&PKEY_DATE_MODIFIED) } {
+A	crates/pr-platform-win/src/shell_menus/owner_draw.rs	unsafe extern "system" fn subclass_proc(
+A	crates/pr-platform-win/src/vblank_driver.rs	unsafe extern "system" {
+A	crates/pr-platform-win/src/vblank_driver.rs	unsafe extern "system" {
+A	crates/pr-platform-win/src/vblank_driver.rs	unsafe extern "system" {
+A	crates/pr-platform-win/src/vblank_driver.rs	unsafe fn with_optional_dwm<T>(
+A	crates/pr-platform-win/src/vblank_driver.rs	unsafe fn with_optional_gdi_symbol<T>(
+A	crates/pr-platform-win/src/wic/availability.rs	unsafe extern "system" {
+A	crates/pr-platform-win/src/wic/availability.rs	unsafe extern "system" {
+A	crates/pr-platform-win/src/wic/exif_reader.rs	unsafe extern "system" {
+A	crates/pr-platform-win/src/wic/interop.rs	unsafe extern "system" {
+A	crates/pr-platform-win/src/wic/interop.rs	unsafe extern "system" {
+A	crates/pr-platform-win/src/win32/api.rs	unsafe extern "system" fn enum_monitor_proc(
+A	crates/pr-platform-win/tests/common/dialogs_painter_fixture.rs	unsafe extern "system" fn dark_owner_proc(
+A	crates/pr-platform-win/tests/common/dialogs_painter_fixture.rs	unsafe extern "system" {
+A	crates/pr-platform-win/tests/dialogs_native_template.rs	unsafe extern "system" fn trivial_dialog_proc(
+A	crates/pr-platform-win/tests/explorer_native_view.rs	unsafe extern "system" fn active_view_failure(this: *mut c_void, output: *mut *mut c_void) -> i32 {
+A	crates/pr-platform-win/tests/explorer_native_view.rs	unsafe extern "system" fn active_view_success(this: *mut c_void, output: *mut *mut c_void) -> i32 {
+A	crates/pr-platform-win/tests/explorer_native_view.rs	unsafe extern "system" fn display_name(this: *mut c_void, _kind: u32, output: *mut *mut u16) -> i32 {
+A	crates/pr-platform-win/tests/explorer_native_view.rs	unsafe extern "system" fn enum_next(
+A	crates/pr-platform-win/tests/explorer_native_view.rs	unsafe extern "system" fn get_item(
+A	crates/pr-platform-win/tests/explorer_native_view.rs	unsafe extern "system" fn group_by(this: *mut c_void, key: *mut PropertyKey, ascending: *mut i32) -> i32 {
+A	crates/pr-platform-win/tests/explorer_native_view.rs	unsafe extern "system" fn items(
+A	crates/pr-platform-win/tests/explorer_native_view.rs	unsafe extern "system" fn partial_query(
+A	crates/pr-platform-win/tests/explorer_native_view.rs	unsafe extern "system" fn query_service(
+A	crates/pr-platform-win/tests/explorer_native_view.rs	unsafe extern "system" fn release(this: *mut c_void) -> u32 {
+A	crates/pr-platform-win/tests/explorer_native_view.rs	unsafe extern "system" fn self_query(
+A	crates/pr-platform-win/tests/explorer_native_view.rs	unsafe extern "system" fn sort_columns(this: *mut c_void, output: *mut SortColumn, count: i32) -> i32 {
+A	crates/pr-platform-win/tests/explorer_native_view.rs	unsafe extern "system" fn sort_count(this: *mut c_void, count: *mut i32) -> i32 {
+A	crates/pr-platform-win/tests/explorer_native_view.rs	unsafe extern "system" fn unsupported_query(
+A	crates/pr-platform-win/tests/explorer_native_view.rs	unsafe extern "system" fn view_item_count(this: *mut c_void, _flags: u32, output: *mut i32) -> i32 {
+A	crates/pr-platform-win/tests/explorer_native_view.rs	unsafe extern "system" {
+A	crates/pr-platform-win/tests/explorer_order_service.rs	unsafe extern "system" {
+A	crates/pr-platform-win/tests/host_ui_dispatcher_native.rs	unsafe extern "system" fn recorder_proc(hwnd: HWND, message: u32, wparam: WPARAM, lparam: LPARAM) -> LRESULT {
+A	crates/pr-platform-win/tests/shell_menus_host.rs	unsafe extern "system" {
+A	crates/pr-platform-win/tests/win32_api.rs	unsafe extern "system" fn test_proc(hwnd: HWND, message: u32, wparam: WPARAM, lparam: LPARAM) -> LRESULT {
+A	crates/pr-platform-win/tests/win32_comctl.rs	unsafe extern "system" fn test_subclass(
+A	crates/pr-platform-win/tests/win32_dialog_native.rs	unsafe extern "system" fn paint_proc(hwnd: HWND, message: u32, wparam: WPARAM, lparam: LPARAM) -> LRESULT {
+A	crates/pr-turbojpeg/src/native.rs	let code = unsafe {
+A	crates/pr-turbojpeg/src/native.rs	let code = unsafe {
+A	crates/pr-turbojpeg/src/native.rs	let code = unsafe { header(self.ptr(), jpeg.as_ptr(), jpeg.len()) };
+A	crates/pr-turbojpeg/src/native.rs	unsafe extern "system" {
+B	crates/pr-core/src/io/journal_compaction_files.rs	let ok = unsafe {
+B	crates/pr-core/src/io/journal_compaction_files.rs	let ok = unsafe { win32::DeleteFileW(wide.as_ptr()) };
+B	crates/pr-core/src/io/journal_compaction_files.rs	unsafe extern "system" {
+B	crates/pr-core/src/io/physical.rs	check(unsafe {
+B	crates/pr-core/src/io/physical.rs	check(unsafe { DeleteFileW(path.as_ptr()) })
+B	crates/pr-core/src/io/physical.rs	check(unsafe { MoveFileExW(source.as_ptr(), destination.as_ptr(), flags) })
+B	crates/pr-core/src/io/physical.rs	unsafe extern "system" {
+B	crates/pr-core/src/text/dotnet_path.rs	let n = unsafe { GetLongPathNameW(input.as_ptr(), buf.as_mut_ptr(), cap) } as usize;
+B	crates/pr-core/src/text/dotnet_path.rs	unsafe extern "system" {
+B	crates/pr-imaging/src/cache/atomic_file.rs	let ok = unsafe { MoveFileExW(source.as_ptr(), destination.as_ptr(), MOVEFILE_REPLACE_EXISTING) };
+B	crates/pr-imaging/src/cache/atomic_file.rs	unsafe extern "system" {
+B	crates/pr-imaging/src/pixel_memory.rs	let raw = unsafe { alloc_zeroed(layout) };
+B	crates/pr-imaging/src/pixel_memory.rs	unsafe { dealloc(raw, layout) };
+B	crates/pr-imaging/src/pixels.rs	unsafe { std::slice::from_raw_parts(ptr, byte_count as usize) }
+B	crates/pr-imaging/src/pixels.rs	unsafe { std::slice::from_raw_parts_mut(ptr, byte_count as usize) }
+B	crates/pr-imaging/tests/pixel_memory.rs	let bytes = unsafe { std::slice::from_raw_parts(address as *const u8, size) };
+B	crates/pr-imaging/tests/pixel_memory.rs	let bytes = unsafe { std::slice::from_raw_parts(second.as_mut_ptr().cast_const(), 256) };
+B	crates/pr-imaging/tests/pixel_memory.rs	unsafe fn alloc(&self, layout: Layout) -> *mut u8 {
+B	crates/pr-imaging/tests/pixel_memory.rs	unsafe fn alloc_zeroed(&self, layout: Layout) -> *mut u8 {
+B	crates/pr-imaging/tests/pixel_memory.rs	unsafe fn dealloc(&self, ptr: *mut u8, layout: Layout) {
+B	crates/pr-imaging/tests/pixel_memory.rs	unsafe fn realloc(&self, ptr: *mut u8, layout: Layout, new_size: usize) -> *mut u8 {
+B	crates/pr-imaging/tests/pixel_memory.rs	unsafe impl GlobalAlloc for CountingAllocator {
+B	crates/pr-imaging/tests/pixel_memory.rs	unsafe { System.alloc(layout) }
+B	crates/pr-imaging/tests/pixel_memory.rs	unsafe { System.alloc_zeroed(layout) }
+B	crates/pr-imaging/tests/pixel_memory.rs	unsafe { System.dealloc(ptr, layout) }
+B	crates/pr-imaging/tests/pixel_memory.rs	unsafe { System.realloc(ptr, layout, new_size) }
+B	crates/pr-imaging/tests/pixel_memory.rs	unsafe { ptr::write_bytes(first.as_mut_ptr(), 0xAB, 256) };
