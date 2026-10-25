@@ -1453,7 +1453,298 @@ fn refresh_view_without_images_does_nothing() {
 
 // ---- external editor and clipboard ------------------------------------------------------------------------------------------
 
-const EDITOR: &str = r"C:\Tools\editor.exe";
+fn fake_editor_exe(env: &MainEnv, name: &str) -> String {
+    let path = env.root.join(name);
+    std::fs::write(&path, b"fake editor; never executed").unwrap();
+    path.to_string_lossy().into_owned()
+}
+
+fn configure_editor(env: &MainEnv) {
+    let path = fake_editor_exe(env, "editor.exe");
+    env.update_settings(|settings| settings.external_editor_path = path);
+}
+
+type TemplateLaunches = Arc<Mutex<Vec<(String, String, String)>>>;
+struct TemplateLauncher(TemplateLaunches);
+impl ExternalEditorLauncher for TemplateLauncher {
+    fn launch(&mut self, exe: &str, file: &str, arguments: &str) -> Result<(), ExternalEditorFailure> {
+        lock(&self.0).push((exe.into(), file.into(), arguments.into()));
+        Ok(())
+    }
+}
+
+fn template_launcher(env: &mut MainEnv) -> TemplateLaunches {
+    let trace = Arc::new(Mutex::new(Vec::new()));
+    env.vm
+        .set_external_editor_launcher(Box::new(TemplateLauncher(trace.clone())));
+    trace
+}
+
+// C#: MainViewModelAdvancedTests.OpenInExternalEditor_ById_LaunchesThatEditorWithItsArgumentTemplate.
+#[test]
+fn open_in_external_editor_by_id_launches_that_editor_with_its_argument_template() {
+    let mut env = MainEnv::new();
+    let exe = fake_editor_exe(&env, "second.exe");
+    env.update_settings(|s| {
+        let mut editor = editor_fixture("second", &exe);
+        editor.arguments = "--edit {file}".into();
+        s.external_editors = vec![editor_fixture("first", "missing.exe"), editor];
+        s.default_external_editor_id = "first".into();
+    });
+    let (_, photo) = single_image_album(&mut env, "editor_by_id");
+    let trace = template_launcher(&mut env);
+    env.vm.open_in_external_editor_by_id("second").unwrap();
+    assert_eq!(*lock(&trace), [(exe, photo.clone(), format!("--edit \"{photo}\""))]);
+}
+
+// C#: MainViewModelAdvancedTests.OpenInExternalEditor_NoId_UsesTheDefaultEditor_AndAnUnknownIdDoesNothing.
+#[test]
+fn open_in_external_editor_no_id_uses_default_and_unknown_id_does_nothing() {
+    let mut env = MainEnv::new();
+    let exe = fake_editor_exe(&env, "default.exe");
+    let mut settings = (*env.settings.current()).clone();
+    settings.external_editors = vec![editor_fixture("a", "missing.exe"), editor_fixture("b", &exe)];
+    settings.default_external_editor_id = "b".into();
+    settings.external_editor_path.clear(); // stale mirror must not override the declared default.
+    env.settings.set_override(Some(Arc::new(settings)));
+    let (_, photo) = single_image_album(&mut env, "editor_default");
+    assert!(env.vm.can_open_in_external_editor());
+    let trace = template_launcher(&mut env);
+    env.vm.open_in_external_editor().unwrap();
+    env.vm.open_in_external_editor_by_id("unknown").unwrap();
+    assert_eq!(*lock(&trace), [(exe, photo.clone(), format!("\"{photo}\""))]);
+    assert!(lock(&env.dialog.settings_targets).is_empty());
+    assert!(error_dialogs(&env).is_empty());
+}
+
+// C#: MainViewModelAdvancedTests.OpenInExternalEditor_RawCompanionOn_SendsTheRawOriginal_Off_SendsTheShownFile.
+#[test]
+fn open_in_external_editor_raw_companion_on_sends_raw_off_sends_shown_file() {
+    let mut env = MainEnv::new();
+    configure_editor(&env);
+    let (_, photo) = single_image_album(&mut env, "editor_raw");
+    let raw = Path::new(&photo).with_extension("arw");
+    std::fs::write(&raw, b"fake raw; never decoded").unwrap();
+    let trace = template_launcher(&mut env);
+    env.vm.open_in_external_editor().unwrap();
+    env.update_settings(|s| s.external_editor_sends_raw_original = false);
+    env.vm.open_in_external_editor().unwrap();
+    let trace = lock(&trace);
+    assert_eq!(trace[0].1, raw.to_string_lossy());
+    assert_eq!(trace[1].1, photo);
+    assert_eq!(trace[0].2, format!("\"{}\"", raw.display()));
+}
+
+// Source-derived: catalog pairing wins over sibling search, even when its RAW has a different stem.
+#[test]
+fn open_in_external_editor_prefers_catalog_raw_pair_over_sibling_search() {
+    let mut env = MainEnv::with_options(EnvOptions {
+        catalog_builder: Some(Box::new(|photos| {
+            use pr_core::catalog::{
+                review_catalog::ReviewCatalog,
+                types::{CaptureGroup, CatalogEntry},
+            };
+            let shown = photos.join("shown.png");
+            let paired = photos.join("catalog-pair.nef");
+            let sibling = photos.join("shown.arw");
+            for path in [&shown, &paired, &sibling] {
+                std::fs::write(path, b"fake image; never decoded").unwrap();
+            }
+            let shown = shown.to_string_lossy().into_owned();
+            let mut entry = CatalogEntry::new(shown.clone()).unwrap();
+            entry.capture_group = Some(CaptureGroup::new(shown, paired.to_string_lossy().into_owned(), None).unwrap());
+            let mut catalog = ReviewCatalog::new();
+            catalog.reset(vec![entry], pr_core::model::RawPairMode::PreferJpeg, None);
+            catalog
+        })),
+        ..EnvOptions::default()
+    });
+    configure_editor(&env);
+    let trace = template_launcher(&mut env);
+    env.vm.open_in_external_editor().unwrap();
+    assert_eq!(lock(&trace)[0].1, env.photos.join("catalog-pair.nef").to_string_lossy());
+}
+
+// C#: MainViewModelAdvancedTests.OpenInExternalEditor_EditorProgramMissing_ShowsAnErrorAndDoesNotLaunch.
+#[test]
+fn open_in_external_editor_editor_program_missing_shows_error_and_does_not_launch() {
+    let mut env = MainEnv::new();
+    let missing = env.root.join("missing-editor.exe").to_string_lossy().into_owned();
+    env.update_settings(|s| s.external_editor_path = missing.clone());
+    single_image_album(&mut env, "editor_exe_missing");
+    let trace = template_launcher(&mut env);
+    env.vm.open_in_external_editor().unwrap();
+    assert!(lock(&trace).is_empty());
+    let errors = error_dialogs(&env);
+    assert_eq!(errors.len(), 1);
+    assert!(errors[0].1.contains(&missing));
+}
+
+fn editor_fixture(id: &str, path: &str) -> pr_core::settings::external_editors::ExternalEditor {
+    pr_core::settings::external_editors::ExternalEditor {
+        id: id.into(),
+        name: id.into(),
+        path: path.into(),
+        ..pr_core::settings::external_editors::ExternalEditor::default()
+    }
+}
+
+// C#: MainViewModelAdvancedTests.AddExternalEditor_AppendsTheChosenEditor_AssignsAFreshId_AndKeepsTheDefault.
+#[test]
+fn add_external_editor_appends_the_chosen_editor_assigns_a_fresh_id_and_keeps_the_default() {
+    let mut env = MainEnv::new();
+    env.update_settings(|s| {
+        s.external_editors = vec![editor_fixture("old", r"C:\Old\editor.exe")];
+        s.default_external_editor_id = "old".into();
+    });
+    *lock(&env.dialog.added_editor) = Some(editor_fixture("from-dialog", r"C:\New\editor.exe"));
+    env.vm.add_external_editor();
+    let settings = env.settings.current();
+    assert_eq!(settings.external_editors.len(), 2);
+    assert_eq!(settings.default_external_editor_id, "old");
+    assert_eq!(settings.external_editors[1].path, r"C:\New\editor.exe");
+    assert_ne!(settings.external_editors[1].id, "from-dialog");
+    assert_ne!(settings.external_editors[1].id, "old");
+    assert_eq!(*lock(&env.dialog.editor_initials), [Some(PathBuf::from(r"C:\Old"))]);
+    assert_eq!(env.store.current().external_editors, settings.external_editors);
+}
+
+// C#: MainViewModelAdvancedTests.AddExternalEditor_Cancelled_ChangesNothing.
+#[test]
+fn add_external_editor_cancelled_changes_nothing() {
+    let mut env = MainEnv::new();
+    let before = env.settings.current();
+    env.vm.add_external_editor();
+    assert_eq!(env.settings.current().external_editors, before.external_editors);
+    assert_eq!(lock(&env.dialog.editor_initials).len(), 1);
+}
+
+// C#: MainViewModelAdvancedTests.AddExternalEditor_WhenOnlyTheLegacyPathExists_KeepsItAsTheDefaultAndAppends.
+#[test]
+fn add_external_editor_when_only_the_legacy_path_exists_keeps_it_as_the_default_and_appends() {
+    let mut env = MainEnv::new();
+    let mut legacy = (*env.settings.current()).clone();
+    legacy.external_editor_path = r"C:\Legacy\retouch.exe".into();
+    env.settings.set_override(Some(Arc::new(legacy)));
+    *lock(&env.dialog.added_editor) = Some(editor_fixture("new", r"C:\New\editor.exe"));
+    env.vm.add_external_editor();
+    let settings = env.settings.current();
+    assert_eq!(settings.external_editors.len(), 2);
+    assert_eq!(settings.external_editors[0].path, r"C:\Legacy\retouch.exe");
+    assert_eq!(settings.default_external_editor_id, settings.external_editors[0].id);
+    assert_eq!(settings.external_editor_path, r"C:\Legacy\retouch.exe");
+}
+
+// C#: MainViewModelAdvancedTests.ChooseDefaultExternalEditor_StoresTheChosenId_AndMirrorsItsPath.
+#[test]
+fn choose_default_external_editor_stores_the_chosen_id_and_mirrors_its_path() {
+    let mut env = MainEnv::new();
+    env.update_settings(|s| {
+        s.external_editors = vec![editor_fixture("a", r"C:\a.exe"), editor_fixture("b", r"C:\b.exe")];
+        s.default_external_editor_id = "a".into();
+    });
+    *lock(&env.dialog.chosen_editor) = Some("b".into());
+    env.vm.choose_default_external_editor();
+    assert_eq!(env.settings.current().default_external_editor_id, "b");
+    assert_eq!(env.settings.current().external_editor_path, r"C:\b.exe");
+    assert_eq!(lock(&env.dialog.editor_choices)[0].1.as_deref(), Some("a"));
+}
+
+// C#: MainViewModelAdvancedTests.ChooseDefaultExternalEditor_CancelledOrUnknownId_KeepsTheDefault.
+#[test]
+fn choose_default_external_editor_cancelled_or_unknown_id_keeps_the_default() {
+    for answer in [None, Some("gone".into())] {
+        let mut env = MainEnv::new();
+        env.update_settings(|s| {
+            s.external_editors = vec![editor_fixture("a", r"C:\a.exe")];
+            s.default_external_editor_id = "a".into();
+        });
+        *lock(&env.dialog.chosen_editor) = answer;
+        env.vm.choose_default_external_editor();
+        assert_eq!(env.settings.current().default_external_editor_id, "a");
+        assert_eq!(lock(&env.dialog.editor_choices).len(), 1);
+    }
+}
+
+// Source-derived W9-E5 cap/blank guards must return before begin_edit or a disk save.
+#[test]
+fn add_external_editor_full_list_or_blank_path_never_saves_or_installs_an_override() {
+    for full in [false, true] {
+        let mut env = MainEnv::new();
+        if full {
+            env.update_settings(|s| {
+                s.external_editors = (0..32)
+                    .map(|i| editor_fixture(&format!("e{i}"), &format!(r"C:\e{i}.exe")))
+                    .collect();
+                s.default_external_editor_id = "e0".into();
+            });
+        }
+        let before = std::fs::read(&env.paths.config_file).unwrap();
+        *lock(&env.dialog.added_editor) = Some(editor_fixture("added", if full { r"C:\added.exe" } else { " " }));
+        env.vm.add_external_editor();
+        assert_eq!(std::fs::read(&env.paths.config_file).unwrap(), before);
+        assert!(!env.settings.has_override());
+        assert_eq!(env.settings.current().external_editors.len(), if full { 32 } else { 0 });
+    }
+}
+
+// Source-derived cap guard: an unwritable destination distinguishes no save from saving identical bytes.
+#[test]
+fn add_external_editor_full_list_skips_save_even_when_config_cannot_be_written() {
+    let mut env = MainEnv::new();
+    env.update_settings(|settings| {
+        settings.external_editors = (0..32)
+            .map(|i| editor_fixture(&format!("e{i}"), &format!(r"C:\e{i}.exe")))
+            .collect();
+        settings.default_external_editor_id = "e0".into();
+    });
+    let config = env.paths.config_file.clone();
+    std::fs::remove_file(&config).unwrap();
+    std::fs::create_dir_all(&config).unwrap();
+    *lock(&env.dialog.added_editor) = Some(editor_fixture("added", r"C:\added.exe"));
+    env.vm.add_external_editor();
+    assert!(
+        !env.settings.has_override(),
+        "a full list must not begin/commit an edit"
+    );
+    assert!(!env.log.contains(
+        pr_test_support::LogLevel::Error,
+        "Could not save the external editors setting"
+    ));
+    assert_eq!(env.settings.current().external_editors.len(), 32);
+}
+
+// Source-derived W9-E5 persistence failure keeps the edit in this session and logs it.
+#[test]
+fn add_external_editor_save_failure_keeps_session_edit_and_logs_failure() {
+    let mut env = MainEnv::new();
+    let config = env.paths.config_file.clone();
+    std::fs::remove_file(&config).unwrap();
+    std::fs::create_dir_all(&config).unwrap();
+    *lock(&env.dialog.added_editor) = Some(editor_fixture("new", r"C:\new.exe"));
+    env.vm.add_external_editor();
+    assert_eq!(env.settings.current().external_editors.len(), 1);
+    assert_eq!(env.settings.current().external_editor_path, r"C:\new.exe");
+    assert!(env.settings.has_override());
+    assert!(env.log.contains(
+        pr_test_support::LogLevel::Error,
+        "Could not save the external editors setting"
+    ));
+}
+
+// C# materializes the live legacy list before prompting even when ChooseDefault is canceled.
+#[test]
+fn choose_default_external_editor_legacy_cancel_materializes_without_saving() {
+    let mut env = MainEnv::new();
+    let mut legacy = (*env.settings.current()).clone();
+    legacy.external_editor_path = r"C:\Legacy\editor.exe".into();
+    env.settings.set_override(Some(Arc::new(legacy)));
+    let before = std::fs::read(&env.paths.config_file).unwrap();
+    env.vm.choose_default_external_editor();
+    assert_eq!(env.settings.current().external_editors.len(), 1);
+    assert_eq!(lock(&env.dialog.editor_choices)[0].0.len(), 1);
+    assert_eq!(std::fs::read(&env.paths.config_file).unwrap(), before);
+}
 
 type Launches = Arc<Mutex<Vec<(String, String)>>>;
 
@@ -1493,7 +1784,7 @@ fn can_open_in_external_editor_is_true_only_when_the_path_is_set_and_an_image_is
     let mut env = MainEnv::new();
     assert!(!env.vm.can_open_in_external_editor(), "no editor path, no image");
 
-    env.update_settings(|settings| settings.external_editor_path = EDITOR.to_owned());
+    configure_editor(&env);
     assert!(
         !env.vm.can_open_in_external_editor(),
         "editor path set, but no image open yet"
@@ -1520,7 +1811,7 @@ fn can_open_in_external_editor_is_true_only_when_the_path_is_set_and_an_image_is
 fn open_in_external_editor_launches_with_the_current_photo_path() {
     // C#: MainViewModelAdvancedTests.OpenInExternalEditor_LaunchesConfiguredEditorWithCurrentPhotoPath
     let mut env = MainEnv::new();
-    env.update_settings(|settings| settings.external_editor_path = EDITOR.to_owned());
+    configure_editor(&env);
     let (_, photo) = single_image_album(&mut env, "editor_launch");
     let (launches, _) = install_launcher(&mut env);
 
@@ -1528,7 +1819,10 @@ fn open_in_external_editor_launches_with_the_current_photo_path() {
         .open_in_external_editor()
         .unwrap_or_else(|error| panic!("{error}"));
 
-    assert_eq!(lock(&launches).clone(), vec![(EDITOR.to_owned(), photo)]);
+    assert_eq!(
+        lock(&launches).clone(),
+        vec![(env.settings.current().external_editor_path.clone(), photo)]
+    );
     assert!(error_dialogs(&env).is_empty());
 }
 
@@ -1536,7 +1830,7 @@ fn open_in_external_editor_launches_with_the_current_photo_path() {
 fn open_in_external_editor_when_the_file_no_longer_exists_shows_an_error_and_does_not_launch() {
     // C#: MainViewModelAdvancedTests.OpenInExternalEditor_FileNoLongerExists_ShowsErrorAndDoesNotLaunch
     let mut env = MainEnv::new();
-    env.update_settings(|settings| settings.external_editor_path = EDITOR.to_owned());
+    configure_editor(&env);
     let (_, photo) = single_image_album(&mut env, "editor_missing_file");
     std::fs::remove_file(&photo).unwrap_or_else(|error| panic!("delete: {error}")); // missing on disk, still the catalog's current entry
     let (launches, _) = install_launcher(&mut env);
@@ -1559,7 +1853,7 @@ fn open_in_external_editor_when_the_file_no_longer_exists_shows_an_error_and_doe
 fn open_in_external_editor_with_an_editor_configured_does_not_open_settings() {
     // C#: MainViewModelAdvancedTests.OpenInExternalEditor_EditorConfigured_DoesNotOpenSettings
     let mut env = MainEnv::new();
-    env.update_settings(|settings| settings.external_editor_path = EDITOR.to_owned());
+    configure_editor(&env);
     single_image_album(&mut env, "editor_configured_no_settings");
     install_launcher(&mut env);
 
@@ -1574,7 +1868,7 @@ fn open_in_external_editor_with_an_editor_configured_does_not_open_settings() {
 fn open_in_external_editor_without_a_selection_uses_the_presented_photo_even_when_the_catalog_moved_on() {
     // C#: AppGaps.OpenInExternalEditor_WithoutASelection_UsesThePresentedPhotoEvenWhenTheCatalogMovedOn
     let mut env = MainEnv::new();
-    env.update_settings(|settings| settings.external_editor_path = EDITOR.to_owned());
+    configure_editor(&env);
     let (_, files) = album(&mut env, "ed_presented", &["a.png", "b.png"]);
     env.vm.catalog_mut_for_tests().set_current(1); // the catalog moved, the presenter still shows a
     let (launches, _) = install_launcher(&mut env);
@@ -1613,7 +1907,7 @@ fn open_in_external_editor_when_nothing_is_presented_yet_falls_back_to_the_catal
     // C#: AppGaps.OpenInExternalEditor_WhenNothingIsPresentedYet_FallsBackToTheCatalogCurrent
     let paths = Arc::new(Mutex::new(None));
     let mut env = MainEnv::with_options(catalog_only_options("ed_catalog", Arc::clone(&paths)));
-    env.update_settings(|settings| settings.external_editor_path = EDITOR.to_owned());
+    configure_editor(&env);
     let (_, image) = lock(&paths).clone().expect("the catalog was built");
     let (launches, _) = install_launcher(&mut env);
 
@@ -1631,7 +1925,7 @@ fn open_in_external_editor_when_nothing_is_presented_yet_falls_back_to_the_catal
 fn open_in_external_editor_with_a_comparison_selection_opens_the_selected_photo() {
     // C#: MutationGaps.OpenInExternalEditor_WithAComparisonSelection_OpensTheSelectedPhoto
     let mut env = MainEnv::new();
-    env.update_settings(|settings| settings.external_editor_path = EDITOR.to_owned());
+    configure_editor(&env);
     let (_, files) = album(&mut env, "editor_compare", &["1.png", "2.png"]);
     env.vm.compare_mut_for_tests().select(Some(files[1].clone()));
     let (launches, _) = install_launcher(&mut env);
@@ -1651,7 +1945,7 @@ fn open_in_external_editor_when_the_launch_fails_shows_the_reason_instead_of_thr
     // C#: MutationGaps.OpenInExternalEditor_WhenTheLaunchFails_ShowsTheReasonInsteadOfThrowing (Win32Exception, InvalidOperation, FileNotFound)
     for message in ["no such editor", "the editor could not start", "file not found"] {
         let mut env = MainEnv::new();
-        env.update_settings(|settings| settings.external_editor_path = EDITOR.to_owned());
+        configure_editor(&env);
         single_image_album(&mut env, "editor_launch_fails");
         let (_, failure) = install_launcher(&mut env);
         *lock(&failure) = Some(ExternalEditorFailure::Expected {
@@ -1673,7 +1967,7 @@ fn open_in_external_editor_when_the_launch_fails_shows_the_reason_instead_of_thr
 fn open_in_external_editor_when_the_launch_is_unexpected_returns_the_bug_and_shows_no_dialog() {
     // C#: MutationGaps.OpenInExternalEditor_WhenTheLaunchThrowsSomethingUnexpected_DoesNotHideIt
     let mut env = MainEnv::new();
-    env.update_settings(|settings| settings.external_editor_path = EDITOR.to_owned());
+    configure_editor(&env);
     single_image_album(&mut env, "editor_launch_unexpected");
     let (_, failure) = install_launcher(&mut env);
     *lock(&failure) = Some(ExternalEditorFailure::Unexpected {
@@ -1687,7 +1981,7 @@ fn open_in_external_editor_when_the_launch_is_unexpected_returns_the_bug_and_sho
 }
 
 #[test]
-fn the_production_launcher_passes_the_file_path_as_one_argument_without_a_shell() {
+fn the_production_launcher_missing_executable_is_an_expected_failure() {
     // New test (T10: a path with spaces or `&` must stay one argument; a missing exe is an expected failure)
     let mut launcher = pr_app::viewmodels::main::ProcessEditorLauncher;
     let missing = launcher.launch(

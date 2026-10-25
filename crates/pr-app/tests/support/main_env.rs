@@ -324,7 +324,13 @@ impl ExplorerOrderProvider for FakeExplorer {
 type SettingsHook = Box<dyn FnMut(SettingsTarget) -> bool + Send>;
 
 /// A scripted [`DialogService`] that records every call.
+pub type EditorChoiceCall = (Vec<pr_core::settings::external_editors::ExternalEditor>, Option<String>);
+
 pub struct TestDialog {
+    pub added_editor: Mutex<Option<pr_core::settings::external_editors::ExternalEditor>>,
+    pub editor_initials: Mutex<Vec<Option<PathBuf>>>,
+    pub chosen_editor: Mutex<Option<String>>,
+    pub editor_choices: Mutex<Vec<EditorChoiceCall>>,
     pub confirm_answer: AtomicBool,
     /// Runs while a confirmation is "open" (the nested loop of the C# dialog): it may change what the shared clock says.
     pub on_confirm: Mutex<Option<Box<dyn FnMut() + Send>>>,
@@ -354,6 +360,10 @@ impl std::fmt::Debug for TestDialog {
 impl TestDialog {
     pub fn new() -> Arc<Self> {
         Arc::new(Self {
+            added_editor: Mutex::new(None),
+            editor_initials: Mutex::new(Vec::new()),
+            chosen_editor: Mutex::new(None),
+            editor_choices: Mutex::new(Vec::new()),
             confirm_answer: AtomicBool::new(true),
             on_confirm: Mutex::new(None),
             confirmations: Mutex::new(Vec::new()),
@@ -380,6 +390,22 @@ impl TestDialog {
 }
 
 impl DialogService for TestDialog {
+    fn prompt_add_external_editor(
+        &self,
+        initial: Option<&Path>,
+    ) -> Option<pr_core::settings::external_editors::ExternalEditor> {
+        lock(&self.editor_initials).push(initial.map(Path::to_path_buf));
+        lock(&self.added_editor).clone()
+    }
+
+    fn prompt_default_external_editor(
+        &self,
+        editors: &[pr_core::settings::external_editors::ExternalEditor],
+        current_id: Option<&str>,
+    ) -> Option<String> {
+        lock(&self.editor_choices).push((editors.to_vec(), current_id.map(str::to_owned)));
+        lock(&self.chosen_editor).clone()
+    }
     fn show_confirmation(&self, title: &str, message: &str) -> bool {
         lock(&self.confirmations).push((title.to_owned(), message.to_owned()));
         if let Some(hook) = lock(&self.on_confirm).as_mut() {
