@@ -25,7 +25,7 @@ fn supports_matches_the_golden() {
     let golden: serde_json::Value =
         serde_json::from_str(include_str!("../../../tests/golden/secondary-window-supports.json")).unwrap();
     let cases = golden["cases"].as_array().unwrap();
-    assert_eq!(cases.len(), 44);
+    assert_eq!(cases.len(), 50);
     let kinds = [
         SecondaryWindowKind::Settings,
         SecondaryWindowKind::Recovery,
@@ -233,7 +233,7 @@ fn settings_enabled_option_and_supports_table_are_exact() {
         ] {
             assert!(port.supports(kind), "{kind:?}");
         }
-        assert!(!port.supports(SecondaryWindowKind::ExternalEditors));
+        assert!(port.supports(SecondaryWindowKind::ExternalEditors));
         assert!(!port.supports(SecondaryWindowKind::RenamePrompt));
         assert_eq!(port.open_count(), 0);
         assert!(!port.is_benchmark_open());

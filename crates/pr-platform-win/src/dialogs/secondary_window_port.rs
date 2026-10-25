@@ -9,6 +9,7 @@
 //! The C# builds each dialog from the DI container (`IServiceProvider`). Rust has no container (plan section 09): the port holds a [`SecondaryWindowDialogs`], the
 //! seam that builds the dialog of each window and says how to read its result, so the whole routing, bookkeeping and dispose logic is tested with fake dialogs
 //! (D-W8B5-413). The production implementation of that seam is one adapter in the composition (see the contract, "Unplanned").
+//! External editor routes port Win32SecondaryWindowPort.cs at7eaee2a2 (W9-E8).
 use std::cell::{Cell, RefCell};
 use std::path::Path;
 use std::rc::{Rc, Weak};
@@ -269,7 +270,7 @@ impl std::fmt::Debug for Win32SecondaryWindowPort {
 
 impl SecondaryWindowPort for Win32SecondaryWindowPort {
     /// C# `Supports(kind)` (baseline): `true` for Diagnostics, SkippedFiles, BatchReview, ZoomPrompt, Benchmark, ActionProfiles, Recovery; `settings_enabled()`
-    /// for Settings; `false` for ExternalEditors and RenamePrompt (not in the baseline, D-W8B5-415).
+    /// for Settings; ExternalEditors is supported at7eaee2a2. RenamePrompt awaits its W9-R8 port.
     fn supports(&self, kind: SecondaryWindowKind) -> bool {
         match kind {
             SecondaryWindowKind::Settings => self.settings_enabled(),
@@ -279,8 +280,9 @@ impl SecondaryWindowPort for Win32SecondaryWindowPort {
             | SecondaryWindowKind::SkippedFiles
             | SecondaryWindowKind::BatchReview
             | SecondaryWindowKind::ZoomPrompt
-            | SecondaryWindowKind::ActionProfiles => true,
-            SecondaryWindowKind::ExternalEditors | SecondaryWindowKind::RenamePrompt => false,
+            | SecondaryWindowKind::ActionProfiles
+            | SecondaryWindowKind::ExternalEditors => true,
+            SecondaryWindowKind::RenamePrompt => false,
         }
     }
 
@@ -295,8 +297,13 @@ impl SecondaryWindowPort for Win32SecondaryWindowPort {
             weak.upgrade()
                 .and_then(|port| port.show_action_profiles(owner, actions))
         });
+        let weak = self.me.clone();
+        let editors: ExternalEditorsOpener = Rc::new(move |owner, editors, default| {
+            weak.upgrade()
+                .and_then(|port| port.show_external_editors(owner, editors, default))
+        });
         self.dialogs
-            .settings(target, opener)
+            .settings_with_editors(target, opener, editors)
             .is_some_and(|prepared| self.run_prepared(prepared, owner))
     }
 
@@ -417,6 +424,74 @@ impl SecondaryWindowPort for Win32SecondaryWindowPort {
             .and_then(|prepared| self.run_prepared(prepared, owner))
     }
 
+    fn show_external_editors(
+        &self,
+        owner: Hwnd,
+        editors: &[ExternalEditor],
+        default: Option<&str>,
+    ) -> Option<ExternalEditorsEdit> {
+        if self.state.disposed.get() {
+            return None;
+        }
+        self.dialogs
+            .external_editors(editors, default)
+            .and_then(|prepared| self.run_prepared(prepared, owner))
+    }
+
+    fn prompt_add_external_editor(&self, owner: Hwnd, initial: Option<&Path>) -> Option<ExternalEditor> {
+        use pr_core::settings::external_editors::ExternalEditors;
+        use pr_l10n::tr;
+        if self.state.disposed.get() {
+            return None;
+        }
+        let initial = initial.map(|path| path.to_string_lossy().into_owned());
+        let picked = self
+            .dialogs
+            .pick_executable(owner, initial.as_deref())
+            .filter(|path| !path.trim().is_empty())?;
+        let suggested = super::native::external_editor_product_name::suggest(&picked)
+            .unwrap_or_else(|| ExternalEditors::name_from_path(Some(&picked)));
+        let prepared = self.dialogs.text_prompt(
+            &tr::dialog_external_editor_name_title(),
+            &tr::dialog_external_editor_name_label(),
+            &suggested,
+        )?;
+        let name = self.run_prepared(prepared, owner)?;
+        Some(ExternalEditor {
+            name,
+            path: picked,
+            ..ExternalEditor::new()
+        })
+    }
+
+    fn prompt_default_external_editor(
+        &self,
+        owner: Hwnd,
+        editors: &[ExternalEditor],
+        current: Option<&str>,
+    ) -> Option<String> {
+        use pr_l10n::{localizer::Localizer, tr};
+        if self.state.disposed.get() || editors.is_empty() {
+            return None;
+        }
+        let selected = editors
+            .iter()
+            .position(|editor| Some(editor.id.as_str()) == current)
+            .and_then(|index| i32::try_from(index).ok())
+            .unwrap_or(0);
+        let names = editors.iter().map(ExternalEditor::display_name).collect::<Vec<_>>();
+        let content = ListDialogContent::for_choice(
+            &tr::dialog_external_editor_set_default_title(),
+            &tr::dialog_external_editor_set_default_intro(),
+            &names,
+            selected,
+            &Localizer::current(),
+        );
+        let prepared = self.dialogs.choice_list(content)?;
+        let index = self.run_prepared(prepared, owner)?;
+        editors.get(index).map(|editor| editor.id.clone())
+    }
+
     /// C# `Dispose` (lines 301-314): idempotent. `disposed = true`; snapshot of `open`; `close()` each from the LAST to the first (innermost first; a modeless
     /// dialog removes itself from `open` when it closes, hence the snapshot). After it every command answers as "cancelled".
     fn dispose(&self) {
@@ -520,6 +595,32 @@ impl SecondaryWindowPort for SecondaryWindowRouter {
     fn show_action_profiles(&self, owner: Hwnd, actions: &[ReviewAction]) -> Option<Vec<ReviewAction>> {
         self.pick(SecondaryWindowKind::ActionProfiles)
             .and_then(|port| port.show_action_profiles(owner, actions))
+    }
+
+    /// C# editor members delegate through `pick(ExternalEditors)`.
+    fn show_external_editors(
+        &self,
+        owner: Hwnd,
+        editors: &[ExternalEditor],
+        default: Option<&str>,
+    ) -> Option<ExternalEditorsEdit> {
+        self.pick(SecondaryWindowKind::ExternalEditors)
+            .and_then(|port| port.show_external_editors(owner, editors, default))
+    }
+
+    fn prompt_add_external_editor(&self, owner: Hwnd, initial: Option<&Path>) -> Option<ExternalEditor> {
+        self.pick(SecondaryWindowKind::ExternalEditors)
+            .and_then(|port| port.prompt_add_external_editor(owner, initial))
+    }
+
+    fn prompt_default_external_editor(
+        &self,
+        owner: Hwnd,
+        editors: &[ExternalEditor],
+        current: Option<&str>,
+    ) -> Option<String> {
+        self.pick(SecondaryWindowKind::ExternalEditors)
+            .and_then(|port| port.prompt_default_external_editor(owner, editors, current))
     }
 
     /// C# `Dispose() => (_native as IDisposable)?.Dispose()`.

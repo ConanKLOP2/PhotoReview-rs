@@ -333,6 +333,48 @@
         8,
         9
       ]
+    },
+    {
+      "name": "E8 supports ExternalEditors settings_enabled true",
+      "kind": "supports",
+      "window": "ExternalEditors",
+      "settings_enabled": "true",
+      "value": true
+    },
+    {
+      "name": "E8 supports ExternalEditors settings_enabled false",
+      "kind": "supports",
+      "window": "ExternalEditors",
+      "settings_enabled": "false",
+      "value": true
+    },
+    {
+      "name": "E8 supports ExternalEditors settings_enabled default",
+      "kind": "supports",
+      "window": "ExternalEditors",
+      "settings_enabled": "default",
+      "value": true
+    },
+    {
+      "name": "E8 router_supports ExternalEditors settings_enabled true",
+      "kind": "router_supports",
+      "window": "ExternalEditors",
+      "settings_enabled": "true",
+      "value": true
+    },
+    {
+      "name": "E8 router_supports ExternalEditors settings_enabled false",
+      "kind": "router_supports",
+      "window": "ExternalEditors",
+      "settings_enabled": "false",
+      "value": true
+    },
+    {
+      "name": "E8 router_supports ExternalEditors settings_enabled default",
+      "kind": "router_supports",
+      "window": "ExternalEditors",
+      "settings_enabled": "default",
+      "value": true
     }
   ]
 }
