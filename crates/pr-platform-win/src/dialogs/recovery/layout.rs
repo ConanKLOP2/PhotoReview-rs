@@ -1,7 +1,6 @@
 //! Port of `RecoveryDialog.cs`: the control ids and `BuildItems` (lines 41-68, 137-179), the sizes and `LayoutControls` (861-923, 863-876). Unit W8-18t.
 //! Contract: `contracts/W8-18t.md`. The arithmetic is pure over the narrow trait [`RecoveryLayoutBase`] (D-W8B5-607, the precedent of `ListDialogBase`), so it is
 //! tested with a recording fake and needs no window; `impl RecoveryLayoutBase for NativeDialog` (below) is the thin delegation to the base-class helpers.
-#![allow(unused_variables, dead_code)] // stub: the porter removes this line with the last `todo!()`
 
 use super::RecoveryTextSource;
 use crate::dialogs::native::dialog::{ID_CANCEL, NativeDialog};
@@ -102,7 +101,147 @@ pub const ALL_CONTROL_IDS: [i32; 28] = [
 /// C# `BuildItems()` (lines 137-179): the 28 children in Z / Tab order, texts from `texts` (the key of each C# `Tr.*` property is listed in the contract),
 /// styles exactly as the C# (`child`, `tab`, `text`, `readOnlyLine`, the list box and combo box words, `WS_EX_CLIENTEDGE` where the C# has it).
 pub fn build_items(texts: &RecoveryTextSource) -> Vec<DialogItem> {
-    todo!()
+    use crate::dialogs::native::template::DialogControlClass::{Button, ComboBox, Edit, ListBox, Static};
+    use crate::win32::control_constants::{
+        ES_AUTOVSCROLL, ES_READONLY, LBS_EXTENDEDSEL, LBS_HASSTRINGS, LBS_OWNERDRAWFIXED,
+    };
+    use crate::win32::dialog_native::{WS_TABSTOP, WS_VSCROLL};
+    use crate::win32::messages::{WS_CHILD, WS_VISIBLE};
+    let child = WS_CHILD | WS_VISIBLE;
+    let tab = WS_TABSTOP;
+    let text_style = child | 0x0080;
+    let button = child | tab;
+    let client_edge = 0x0000_0200;
+    let mut items = vec![
+        DialogItem::new(
+            Static,
+            HEADER_ID,
+            texts.text(pr_l10n::keys::RECOVERY_HEADER),
+            text_style,
+        ),
+        DialogItem::new(Static, SUMMARY_ID, "", text_style),
+        DialogItem::new(
+            Static,
+            FILTER_LABEL_ID,
+            texts.text(pr_l10n::keys::RECOVERY_FILTER_LABEL),
+            text_style,
+        ),
+        DialogItem::new(
+            ComboBox,
+            FILTER_ID,
+            "",
+            child | crate::dialogs::native::controls::basic::ComboBoxControl::DEFAULT_STYLE,
+        ),
+        DialogItem::new(
+            Button,
+            RECHECK_ID,
+            texts.text(pr_l10n::keys::RECOVERY_CHECK_RECHECK),
+            button,
+        ),
+        DialogItem::new(Static, CHECK_STATUS_ID, "", text_style),
+        DialogItem::new(
+            ListBox,
+            LIST_ID,
+            "",
+            child | tab | WS_VSCROLL | 0x0001 | 0x0100 | LBS_EXTENDEDSEL | LBS_OWNERDRAWFIXED | LBS_HASSTRINGS,
+        )
+        .with_ex_style(client_edge),
+        DialogItem::new(
+            Static,
+            FILTER_EMPTY_ID,
+            texts.text(pr_l10n::keys::RECOVERY_FILTER_EMPTY),
+            child | 0x0080 | SS_CENTER,
+        ),
+        DialogItem::new(
+            Static,
+            DETAILS_EMPTY_ID,
+            texts.text(pr_l10n::keys::RECOVERY_DETAIL_EMPTY),
+            child | 0x0080 | SS_CENTER,
+        ),
+        DialogItem::new(
+            Static,
+            VERDICT_LABEL_ID,
+            texts.text(pr_l10n::keys::RECOVERY_DETAIL_VERDICT),
+            text_style,
+        ),
+        DialogItem::new(Static, VERDICT_BADGE_ID, "", text_style),
+        DialogItem::new(Static, ERROR_ID, "", text_style),
+        DialogItem::new(
+            Static,
+            SOURCE_TITLE_ID,
+            texts.text(pr_l10n::keys::RECOVERY_DETAIL_SOURCE),
+            text_style,
+        ),
+        DialogItem::new(Static, SOURCE_STATUS_ID, "", text_style),
+        DialogItem::new(Edit, SOURCE_PATH_ID, "", child | tab | 0x0004 | 0x0800).with_ex_style(client_edge),
+        DialogItem::new(
+            Button,
+            COPY_SOURCE_ID,
+            texts.text(pr_l10n::keys::RECOVERY_DETAIL_COPY_PATH),
+            button,
+        ),
+        DialogItem::new(
+            Button,
+            SHOW_SOURCE_ID,
+            texts.text(pr_l10n::keys::RECOVERY_DETAIL_SHOW_IN_EXPLORER),
+            button,
+        ),
+        DialogItem::new(
+            Static,
+            DESTINATION_TITLE_ID,
+            texts.text(pr_l10n::keys::RECOVERY_DETAIL_DESTINATION),
+            text_style,
+        ),
+        DialogItem::new(Static, DESTINATION_STATUS_ID, "", text_style),
+        DialogItem::new(Edit, DESTINATION_PATH_ID, "", child | tab | 0x0004 | 0x0800).with_ex_style(client_edge),
+        DialogItem::new(
+            Button,
+            COPY_DESTINATION_ID,
+            texts.text(pr_l10n::keys::RECOVERY_DETAIL_COPY_PATH),
+            button,
+        ),
+        DialogItem::new(
+            Button,
+            SHOW_DESTINATION_ID,
+            texts.text(pr_l10n::keys::RECOVERY_DETAIL_SHOW_IN_EXPLORER),
+            button,
+        ),
+        DialogItem::new(
+            Static,
+            NO_DESTINATION_ID,
+            texts.text(pr_l10n::keys::RECOVERY_DETAIL_NO_DESTINATION),
+            text_style,
+        ),
+        DialogItem::new(
+            Edit,
+            DETAILS_ID,
+            "",
+            child | tab | WS_VSCROLL | 0x0004 | ES_AUTOVSCROLL | ES_READONLY,
+        )
+        .with_ex_style(client_edge),
+        DialogItem::new(
+            Button,
+            CLEAR_SELECTED_ID,
+            texts.text(pr_l10n::keys::RECOVERY_CLEAR_SELECTED),
+            button,
+        ),
+        DialogItem::new(
+            Button,
+            CLEAR_ALL_ID,
+            texts.text(pr_l10n::keys::RECOVERY_CLEAR_ALL),
+            button,
+        ),
+        DialogItem::new(Button, RETRY_ID, texts.text(pr_l10n::keys::RECOVERY_RETRY), button),
+        DialogItem::new(
+            Button,
+            CLOSE_ID,
+            texts.text(pr_l10n::keys::COMMON_CLOSE),
+            child | tab | 1,
+        ),
+    ];
+    // Preserve the C# template order exactly; the mut binding also keeps the construction easy to audit.
+    items.shrink_to_fit();
+    items
 }
 
 /// Which parts of the details pane are shown (the C# fields `_hasDetails`, `_errorVisible`, `_sourceVisible`, `_destinationVisible`,
@@ -191,33 +330,105 @@ impl RecoveryLayoutBase for NativeDialog {
 
 /// C# `Margin`: `Dx(10)`.
 pub fn margin(base: &dyn RecoveryLayoutBase) -> i32 {
-    todo!()
+    base.dx(10)
 }
 
 /// C# `FieldHeight`: `max(Dy(14), LineHeight + Dy(6))`.
 pub fn field_height(base: &dyn RecoveryLayoutBase) -> i32 {
-    todo!()
+    base.dy(14).max(base.line_height().wrapping_add(base.dy(6)))
 }
 
 /// C# `ButtonHeight`: `max(Dy(14), LineHeight + Dy(6))`.
 pub fn button_height(base: &dyn RecoveryLayoutBase) -> i32 {
-    todo!()
+    field_height(base)
 }
 
 /// C# `PreferredClientSize()`: `(Dx(700), Dy(330))`.
 pub fn preferred_client_size(base: &dyn RecoveryLayoutBase) -> (i32, i32) {
-    todo!()
+    (base.dx(700), base.dy(330))
 }
 
 /// C# `MinimumClientSize()` (lines 871-876): `buttons = ButtonRowWidth(ClearSelected, ClearAll) + Dx(16) + ButtonRowWidth(Retry, Close) + 2 * Margin`;
 /// `pane = Dx(150) + Dx(10) + 2 * ButtonWidth(CopySource, ShowSource) + Dx(80) + Dx(8) + 2 * Margin`; `(max(max(Dx(440), buttons), pane), Dy(220))`.
 pub fn minimum_client_size(base: &dyn RecoveryLayoutBase) -> (i32, i32) {
-    todo!()
+    let m = margin(base);
+    let buttons = base
+        .button_row_width(&[CLEAR_SELECTED_ID, CLEAR_ALL_ID])
+        .wrapping_add(base.dx(16))
+        .wrapping_add(base.button_row_width(&[RETRY_ID, CLOSE_ID]))
+        .wrapping_add(m.wrapping_mul(2));
+    let pane = base
+        .dx(150)
+        .wrapping_add(base.dx(10))
+        .wrapping_add(base.button_width(&[COPY_SOURCE_ID, SHOW_SOURCE_ID]).wrapping_mul(2))
+        .wrapping_add(base.dx(80))
+        .wrapping_add(base.dx(8))
+        .wrapping_add(m.wrapping_mul(2));
+    (base.dx(440).max(buttons).max(pane), base.dy(220))
 }
 
 /// C# `LayoutControls(clientWidth, clientHeight)` (lines 878-923) in its order: header, summary, the filter row (label, combo box, Re-check, check
 /// status), the bottom button rows, the two columns (list 5/11 with `SetListItemHeight(ListId, 2 * LineHeight + Dy(5))`, the centred "filter empty" static),
 /// then `path_panel::layout_details(base, details, rightX, y, rightWidth, contentBottom)`.
 pub fn layout_controls(base: &dyn RecoveryLayoutBase, details: DetailsLayout, client_width: i32, client_height: i32) {
-    todo!()
+    let m = margin(base);
+    let gap = base.dx(10);
+    let content = client_width.wrapping_sub(m.wrapping_mul(2)).max(1);
+    let header_y = m;
+    let header_h = base.measure_item_height(HEADER_ID, content);
+    base.place(HEADER_ID, m, header_y, content, header_h);
+    let summary_y = header_y.wrapping_add(header_h).wrapping_add(base.dy(2));
+    let summary_h = base.measure_item_height(SUMMARY_ID, content);
+    base.place(SUMMARY_ID, m, summary_y, content, summary_h);
+    let row_y = summary_y.wrapping_add(summary_h).wrapping_add(base.dy(6));
+    let label_w = base.measure_text_width(&base.get_item_text(FILTER_LABEL_ID));
+    let field_h = field_height(base);
+    base.place(
+        FILTER_LABEL_ID,
+        m,
+        row_y.wrapping_add(field_h.wrapping_sub(base.line_height()) / 2),
+        label_w.wrapping_add(base.dx(2)),
+        base.line_height(),
+    );
+    let combo_x = m.wrapping_add(label_w).wrapping_add(base.dx(8));
+    let combo_w = base.dx(85);
+    let combo_h = field_h.wrapping_add(base.line_height().wrapping_add(base.dy(2)).wrapping_mul(4));
+    base.place(FILTER_ID, combo_x, row_y, combo_w, combo_h);
+    let recheck_x = combo_x.wrapping_add(combo_w).wrapping_add(base.dx(8));
+    let recheck_w = base.button_width(&[RECHECK_ID]);
+    base.place(RECHECK_ID, recheck_x, row_y, recheck_w, field_h);
+    let status_x = recheck_x.wrapping_add(recheck_w).wrapping_add(base.dx(8));
+    base.place(
+        CHECK_STATUS_ID,
+        status_x,
+        row_y.wrapping_add(field_h.wrapping_sub(base.line_height()) / 2),
+        base.dx(40).max(client_width.wrapping_sub(status_x).wrapping_sub(m)),
+        base.line_height(),
+    );
+    let bottom_y = client_height.wrapping_sub(m).wrapping_sub(field_h);
+    let right_row = base.place_button_row(client_width, m, bottom_y, field_h, &[RETRY_ID, CLOSE_ID]);
+    base.place_button_row(
+        client_width,
+        m.wrapping_add(right_row).wrapping_add(base.dx(16)),
+        bottom_y,
+        field_h,
+        &[CLEAR_SELECTED_ID, CLEAR_ALL_ID],
+    );
+    let content_top = row_y.wrapping_add(field_h).wrapping_add(base.dy(6));
+    let content_bottom = bottom_y.wrapping_sub(base.dy(8));
+    let content_h = content_bottom.wrapping_sub(content_top).max(base.dy(30));
+    let left_w = base.dx(150).max(content.wrapping_sub(gap).wrapping_mul(5) / 11);
+    let right_x = m.wrapping_add(left_w).wrapping_add(gap);
+    let right_w = base.dx(150).max(client_width.wrapping_sub(m).wrapping_sub(right_x));
+    base.place(LIST_ID, m, content_top, left_w, content_h);
+    base.set_list_item_height(LIST_ID, base.line_height().wrapping_mul(2).wrapping_add(base.dy(5)));
+    let empty_h = base.measure_item_height(FILTER_EMPTY_ID, left_w);
+    base.place(
+        FILTER_EMPTY_ID,
+        m,
+        content_top.wrapping_add((content_h.wrapping_sub(empty_h) / 2).max(0)),
+        left_w,
+        empty_h,
+    );
+    super::path_panel::layout_details(base, details, right_x, content_top, right_w, content_bottom);
 }
