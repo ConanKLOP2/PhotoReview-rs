@@ -1062,6 +1062,37 @@ mod white_box_tests {
         Arc::new(image)
     }
 
+    // Source-derived CI239 regression: an earlier decode publishes/removes its registration after this caller's
+    // optimistic RAM miss but before it acquires the in-flight lock. Original sixteen-thread test stays unchanged.
+    #[test]
+    fn completed_preview_between_ram_miss_and_registration_is_reused() {
+        let root = TempRoot::new("preview-registration-published");
+        let path = source(&root);
+        let service = service(&root);
+        let key = service.get_current_cache_key(&path).expect("key");
+        assert!(service.inner.cache.try_get(&key).is_none());
+        let published = image();
+        assert!(
+            service
+                .inner
+                .publish_if_current(key.clone(), Arc::clone(&published), service.inner.current_epoch())
+        );
+        let handle =
+            service
+                .inner
+                .get_preview_after_cache_miss(&path, &key, false, Duration::ZERO, &CancelToken::none());
+        let actual = handle
+            .wait_timeout(Duration::from_secs(5))
+            .expect("bounded result")
+            .expect("cached image");
+        assert!(Arc::ptr_eq(&actual, &published));
+        let metrics = service.inner.metrics.snapshot();
+        assert_eq!(metrics.cache_hits, 1);
+        assert_eq!(metrics.cache_misses, 0);
+        assert_eq!(metrics.source_reads, 0);
+        assert!(!service.has_inflight_preview(&key));
+    }
+
     // Rust-only: INV-2, a publish that started under the epoch before clear_cache is refused, the current epoch publishes.
     #[test]
     fn clear_cache_bumps_the_epoch_so_publish_if_current_refuses_the_old_epoch() {
