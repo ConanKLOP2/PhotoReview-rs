@@ -1,5 +1,9 @@
 # Wave 8 closing report (status at 2026-10-22)
 
+> **Status: historical snapshot (read 2026-10-22/23; superseded for current state by the banner of [WAVE-8-PLAN.md](WAVE-8-PLAN.md)).** Last verified 2026-10-26 against `origin/master` 8b93fbf.
+> Out of date since the snapshot: it says the B5 native dialog and settings-window units and the B6 startup units are contract only. On master now are W8-18o (#231), 18p (#226), 18q (#227), 18r/18s (#228), 18t..18v (#229), 19j..19m (#230), 17d (#223) and 09b S4 (#224). Wave 8 is 147/151 units on master (`bash tools/dev/dashboard.sh`, counted from commit subjects and bodies of `origin/master`); not found on master: W8-12j (conditional), W8-17e, W8-20a, W8-20b.
+> The numbered statements and tables below are kept as written on the snapshot date.
+
 ## 1. Scope and outcome
 
 1. Wave 8 ports the App/UI path to Win32, Direct2D and DirectWrite, following [the plan](WAVE-8-PLAN.md) and [R0001](adr/R0001-ui-framework.md).

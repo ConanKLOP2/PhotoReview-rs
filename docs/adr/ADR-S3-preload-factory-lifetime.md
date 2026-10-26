@@ -1,5 +1,7 @@
 # S3 preload factory lifetime
 
+- **Status:** Accepted and implemented (the user chose the separate S3 repair PR; merged as #225, 25d88a1, 2026-10-24). Not a row of `docs/PROPOSED-DECISIONS.md`; the decision is recorded here.
+
 Date: 2026-10-24
 
 The W8-17e shutdown regression exposed an Arc cycle: SharedServices owns a cached factory, and that factory owns SharedServices. Unlike the C# garbage-collected provider/delegate cycle, this cycle prevents the Rust graph from being released.

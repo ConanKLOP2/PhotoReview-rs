@@ -1,8 +1,23 @@
 # Wave 10 plan (combined view): update HTTP, release, benchmark parity, RAW/native residual
 
+> **Status: active combined view; Wave 10 is contract and stub only, no W10 unit is implemented.** Last verified 2026-10-26 against `origin/master` 8b93fbf.
+> Evidence: the only W10 commits on master are contracts, stubs and their review (#168, #171, #172, #173, #187, #193); `todo!()` remains in `pr_platform_win::http` and `pr_shell::composition::update_http`, and `crates/pr-bench/src/compare.rs` describes itself as a contract stub. Section 4 is the snapshot of 2026-10-23 and is superseded by section 0.
+
 Written by DOC-WAVE-PLANS (machine C, cloud) from `docs/WAVE-10-PLAN-http.md`, `contracts/W10-H1..H3.md`, `W10-R1..R5.md`, `W10-B1..B3.md`, `W10-N1..N4.md` and the "Wave 10" sections of `contracts/README.md` (decisions D-W10http-n, D-W10release-n, D-W10BENCH-n, D-W10RAW-n), plus the `origin/master` history of 2026-10-23. No new design; every decision stays open for the lead as recorded there.
 
 `docs/WAVE-10-PLAN-http.md` stays as the detailed plan of the HTTP lane (unit gates, expected test counts, risks). Wave 10 contracts are **contracts only**: nothing in this wave is implemented.
+
+## 0. Current state (2026-10-26, `origin/master` 8b93fbf)
+
+| Lane | Units | Status on master | Evidence |
+|---|---|---|---|
+| HTTP | W10-H1..H3 | contract and stub only, not implemented | #171 (`todo!()` in `crates/pr-platform-win/src/http/{policy,transport}.rs`, `crates/pr-shell/src/composition/update_http.rs`) |
+| Release | W10-R1..R5 | contract only; drafts not adopted | #172 (`.github/workflows` holds only `ci.yml`; no `deny.toml`, no `tools/verify-release-native.ps1`; `docs/drafts/{release.yml,ci-deny-job.yml,deny.toml}` still drafts) |
+| Benchmark | W10-B1..B3 | contract and stub only, not implemented | #168 (`crates/pr-bench/src/compare.rs` is a contract stub) |
+| RAW / native | W10-N1..N4 | contract only | #173 |
+
+- Wave 8 dependencies of section 4 that are merged since the snapshot: W8-09b S4 #224, W8-17d #223, W8-18o #231, W8-19j..19m #230. Still not on master: W8-17e, W8-20a, W8-20b and the conditional W8-12j, so R1, R2 and R5 stay gated as written in section 3.
+- Section 6 (machine split) is still a proposal: `docs/MULTI-MACHINE.md` has no Wave 10 row; the Wave 8 B5 remainder that section 6 says machine A is still porting is complete (B5 35/35 per `tools/dev/dashboard.sh`).
 
 ## 1. Units at a glance
 
@@ -75,7 +90,7 @@ Edges between lanes are written in the contracts: R1 and R4 describe the same tw
    - **N3** only after the owner's explicit consent (P-30).
 4. Decisions to take before the dependent unit starts (all recorded in `contracts/README.md`): tag policy and signing (D-W10release-1/2), RT_VERSION (D-W10release-3, P-47), CI audit tool (D-W10release-4), update feed (D-W10release-5), LibRaw source offer (D-W10release-6), catalog layout (D-W10release-7), runner smoke (D-W10release-8), proxy precedence probe (D-W10http-3).
 
-## 4. State of the Wave 8 dependencies (from `git log origin/master`, 2026-10-23)
+## 4. State of the Wave 8 dependencies (from `git log origin/master`, 2026-10-23; snapshot, superseded by section 0)
 
 - In history: W8-09b S1..S3 (#158, #159, #175), W8-17c partial (#177), W8-17a/17b (inside #177, tests #179), W8-12d/12e (#100), W8-12h (#99), W7 units (#30, #31), W2-18 (inside the Wave 2 port #8).
 - Not found in any merged PR title: W8-09b S4 (graph builder), W8-17d, 17e, 18o, 19j..19m, 20a, 20b, 12j.

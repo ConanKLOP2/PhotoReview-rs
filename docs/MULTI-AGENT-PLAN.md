@@ -1,5 +1,9 @@
 # Plan port bằng nhiều agent (ưu tiên Haiku)
 
+> **Trạng thái: lịch sử và tham chiếu quy trình (viết 2026-10-14; bảng wave đã bị thay một phần).** Kiểm lại 2026-10-26 trên `origin/master` 8b93fbf.
+> Điều cần biết: bảng Wave 4 trong mục 3 bị [WAVE-4-PLAN.md](WAVE-4-PLAN.md) thay (P-20), khung Wave 8 bị [WAVE-8-PLAN.md](WAVE-8-PLAN.md) thay (P-38), mọi dòng Opus nay là Sonnet (P-34), và phân vai model ở mục 1 nay theo AGENTS.md "Who does what: Codex first" (P-40, P-42). Wave 1 đến 7 đã có PR port trên master (xem [PLAN.md](PLAN.md)). Mục 5 đến 7 và các mục bài học (10 đến 17) vẫn là tham chiếu quy trình.
+> Văn bản bên dưới giữ nguyên như đã viết; đọc nó như lịch sử, không như trạng thái hiện tại.
+
 **Ngày:** 2026-10-14 · **Phạm vi:** Phase 1–6 trong [PLAN.md](PLAN.md) · **Spec:** C# baseline trong [SYNC-LEDGER.md](SYNC-LEDGER.md)
 
 ## 0. Kết luận ngắn

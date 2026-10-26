@@ -1,5 +1,8 @@
 # Parity closeout
 
+> **Status: active procedure; the counts and row tables below are a snapshot of 2026-10-23, not current.** Last verified 2026-10-26 against `origin/master` 8b93fbf.
+> Current numbers: `bash tools/dev/parity.sh stats` (349 status rows: Done 163, Partial 89, Ported 41, Todo 18, Superseded 17, Different 13, Doing 3, Implementation 3, Contract 2). Its parser is not the one used for the 322-row table below, so the two sets of counts are not comparable row for row. Use `parity.sh reconcile` and `parity.sh unit <ID>` for the live state of a row.
+
 ## Baseline and status inventory
 
 `docs/PARITY.md` names C# inventory baseline `e441d67a`, generated 2026-10-14, in its header. `docs/SYNC-LEDGER.md` separately names current spec baseline `7eaee2a2` (2026-10-21, moved from `d92d6aae` by PR #182). Reconcile the difference before calling the inventory current. These counts parse status cells in the tracking rows, Wave 4 final-status table, and later wave rows. In sections 1–9 (`ID | Item | C# source | Notes`), they include the eight rows whose second cell is a `Doing (...)` or `Different (...)` status; rows whose second cell is a plain item name, such as `F-21`'s “Partial copy policy,” are excluded. They count rows, including repeated IDs and historical snapshots, rather than unique features or achieved parity. Two `Done` rows (`X-main-view-model-session`, `X-main-view-model-notify-move`) have their proving test and note in one cell; the empty Rust-location cell of `X-exe-versioninfo` is retained. The Wave 4 section calls earlier `Superseded` duplicates stale and its summary authoritative (`docs/PARITY.md`).

@@ -1,9 +1,14 @@
 # Wave 9 plan, lane E: external editors UI (FEAT-EXTERNAL-EDITORS)
 
+> **Status: active unit table; lane E is implemented, all of W9-E1..E9 are on master.** Last verified 2026-10-26 against `origin/master` 8b93fbf.
+> Evidence (`git log origin/master`): E1 #233, E3 #234, E2 #235, E7 #236, E4 #237, E6 #238, E5 #239, E8 #254, E9 #256. The "Survey" and "still stubs" sections below are the snapshot of 2026-10-23 (master f795e18) and describe the state before those PRs. Whether native and attended evidence exists for each unit is tracked in `docs/PARITY.md`, not claimed here. Combined view: [WAVE-9-PLAN.md](WAVE-9-PLAN.md).
+
 Baseline: C# `7eaee2a2`; feature commit `d9623945` (`git -C C:\MyProjects\PhotoReview diff d92d6aae 7eaee2a2`). The lane covers only what that change adds for external editors. FEAT-RENAME (F2, `RenameFile`, `RenamePromptDialog`, `FileActionController` rename, ...) is another lane and is excluded; the places where both lanes edit the same file are listed under "Overlap".
 Reviewed against the C# source and the merged Rust crates; the first draft's defects and their fixes are recorded in each `contracts/W9-E*.md` ("Review fixes").
 
 ## Survey (tái kiểm trên master f795e18, 2026-10-23; implementation vẫn chưa chạy thử)
+
+> Snapshot, superseded: the "Rust status" column below is as of master f795e18 (2026-10-23). Since then W9-E1..E9 merged (#233 to #256), so no row is still "missing" or "stub".
 
 | C# member / delta | Rust status | Unit |
 |---|---|---|
@@ -51,6 +56,9 @@ The dispatch lines are in `tools/oracle-cs/Program.cs`. Deleted from the first d
 `pr-core::settings::{app_settings, shortcuts, normalizer, store}` (RenameFile shortcut, F2 default, the same version 4), `pr-app::input::{review_command, shortcut_router}` (enum value 31, step 9b), `pr-app::menus::{builder, model}`, `pr-app::presenters::settings_field_map` (shortcut list, context menu rows), `shell_menus::controller`, `shell_input::main_window`, `secondary_window_port.rs` (`RenamePrompt`), `ShortcutsSettingsPage` rows. Counts that only hold after both lanes: 29 shortcut boxes, 16 optional shortcuts, 8 action rows, 19 context menu ticks.
 
 ## Dependencies on W8 units that are still stubs
+
+> Snapshot, superseded: W8-18o (#231), W8-18p (#226), W8-18q (#227) and W8-19j..19m (#230) are on master now; no lane E dependency on a Wave 8 unit is open.
+
 W8-18o (`secondary_window_port.rs`), W8-18p (`zoom_prompt.rs`: layout vocabulary), W8-18q (`action_profiles.rs`: `DialogWarningSink`, `FileFilterText`), W8-19f (`pages/files.rs`) and W8-19i (`pages/shortcuts.rs`) are already implemented; remaining dialog dependencies: W8-19j..19m (`dialog/frame.rs`, `dialog/host.rs`), W8-17c (the production `SecondaryWindowDialogs` adapter: P-43). E2, E3, E4 and E8 are written against their signatures and must be ported after them.
 
 Historical oracle generation is recorded in the sync ledger. This documentation recheck reads committed metadata only; no oracle, GUI/native test or Rust test was run.
