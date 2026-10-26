@@ -12,7 +12,7 @@ Written by DOC-WAVE-PLANS (machine C, cloud) from `docs/WAVE-10-PLAN-http.md`, `
 | Lane | Units | Status on master | Evidence |
 |---|---|---|---|
 | HTTP | W10-H1..H3 | contract and stub only, not implemented | #171 (`todo!()` in `crates/pr-platform-win/src/http/{policy,transport}.rs`, `crates/pr-shell/src/composition/update_http.rs`) |
-| Release | W10-R1..R5 | contract only; drafts not adopted | #172 (`.github/workflows` holds only `ci.yml`; no `deny.toml`, no `tools/verify-release-native.ps1`; `docs/drafts/{release.yml,ci-deny-job.yml,deny.toml}` still drafts) |
+| Release | W10-R1..R5 | contract only; drafts not adopted | #172 (`.github/workflows` holds only `ci.yml`; no root `deny.toml`; the proposed `tools/verify-release-native.ps1` does not exist; `docs/drafts/{release.yml,ci-deny-job.yml,deny.toml}` are still drafts) |
 | Benchmark | W10-B1..B3 | contract and stub only, not implemented | #168 (`crates/pr-bench/src/compare.rs` is a contract stub) |
 | RAW / native | W10-N1..N4 | contract only | #173 |
 
