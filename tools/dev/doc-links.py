@@ -30,7 +30,7 @@ REFDEF_RE = re.compile(r"^\s{0,3}\[[^\]]+\]:\s*(\S+)")
 TICK_RE = re.compile(r"`([^`\n]+)`")
 HEADING_RE = re.compile(r"^(#{1,6})\s+(.*?)\s*#*\s*$")
 NEW_RE = re.compile(
-    r"\b(new|future|planned|creates?|will|yet|gitignored|removed|branch|not (?:written|exist\w*|created|ported)|"
+    r"\b(new|future|planned|creates?|will|yet|gitignored|removed|branch|target|missing|not (?:written|exist\w*|created|ported)|"
     r"(?:does|do|did|is|are)(?:n\'t| not) exist|none exists|neither exists|no longer)\b|"
     r"mới|không tồn tại|không có|chưa|sẽ", re.I)
 CSHARP_RE = re.compile(r"^(tests|tools)/PhotoReview\.|.*\.(cs|csproj|sln)$")
@@ -225,7 +225,7 @@ def run(root, scope_all=False):
         while d:
             dirs.add(d)
             d = os.path.dirname(d)
-    res = {k: [] for k in ("errors", "proposed", "skipped", "csharp", "runtime", "placeholder")}
+    res = {k: [] for k in ("errors", "proposed", "skipped", "csharp", "runtime", "placeholder", "archive")}
     errors = res["errors"]
     mds = walk_md(root, scope_all)
     for src in mds:
@@ -246,6 +246,11 @@ def run(root, scope_all=False):
             if d:
                 check_link(root, src, i, d.group(1), files, dirs, errors)
             check_ticks(src, i, ln, files, dirs, proposed_ctx, res)
+    # docs/archive/ holds material moved verbatim from another location: its relative links and
+    # paths describe the old place, so they are counted but never edited and never fail the run.
+    keep = [e for e in res["errors"] if not e[0].startswith("docs/archive/")]
+    res["archive"] = [e for e in res["errors"] if e[0].startswith("docs/archive/")]
+    res["errors"][:] = keep
     return mds, res
 
 
@@ -264,7 +269,7 @@ def main(argv=None):
                 print(f"{tag} {src}:{ln}: {kind} `{tgt}`: {why}")
     other = res["csharp"] + res["runtime"] + res["placeholder"] + res["skipped"]
     print(f"doc-links: files={len(mds)} errors={len(errors)} proposed={len(res['proposed'])} "
-          f"csharp_refs={len(res['csharp'])} runtime_paths={len(res['runtime'])} "
+          f"archive_unchecked={len(res['archive'])} csharp_refs={len(res['csharp'])} runtime_paths={len(res['runtime'])} "
           f"placeholders={len(res['placeholder']) + len(res['skipped'])}")
     return 1 if errors else 0
 
