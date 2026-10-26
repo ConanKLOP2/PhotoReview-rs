@@ -360,6 +360,10 @@ impl FileSystem for HookFileSystem {
         self.disk.enumerate_files(directory, pattern)
     }
 
+    fn get_stored_file_names(&self, path: &Path) -> io::Result<Vec<String>> {
+        self.disk.get_stored_file_names(path)
+    }
+
     fn try_probe_readable(&self, path: &Path) -> Result<(), String> {
         self.path_hook(|h| h.open_read.clone(), path)
             .map_err(|err| err.to_string())?;

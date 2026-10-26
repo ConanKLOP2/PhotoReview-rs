@@ -87,6 +87,10 @@ fn localized_texts_equal_the_english_file_action_texts_under_the_english_catalog
     let _ambient = ambient();
     let l = LocalizedTexts;
     let e = EnglishFileActionTexts;
+    assert_eq!(
+        l.core_file_action_rename_invalid_name("bad:{name}"),
+        e.core_file_action_rename_invalid_name("bad:{name}")
+    );
     assert_eq!(l.core_file_action_busy(), e.core_file_action_busy());
     assert_eq!(
         l.core_file_action_group_needs_two_paths(),
@@ -351,6 +355,10 @@ fn localized_texts_read_the_catalog_key_named_in_the_doc_of_each_method() {
     );
 
     // FileActionTexts
+    assert_eq!(
+        l.core_file_action_rename_invalid_name("bad:{name}"),
+        key("core.fileAction.renameInvalidName")
+    );
     assert_eq!(l.core_file_action_busy(), key("core.fileAction.busy"));
     assert_eq!(
         l.core_file_action_group_needs_two_paths(),

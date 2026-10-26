@@ -52,6 +52,7 @@ struct State {
     unreadable: HashMap<String, String>,
     faults: Vec<Fault>,
     counts: HashMap<FsOp, usize>,
+    stored_names_override: Option<Vec<String>>,
 }
 
 /// See the module docs. Cheap to share: wrap in `Arc` and hand clones to the code under test.
@@ -162,6 +163,11 @@ impl FakeFileSystem {
 
     pub fn reset_counts(&self) {
         self.lock().counts.clear();
+    }
+
+    /// Overrides the stored-name query to model two case variants in a case-sensitive directory.
+    pub fn set_stored_file_names_override(&self, names: Option<Vec<String>>) {
+        self.lock().stored_names_override = names;
     }
 
     /// Removes a file and returns its bytes and stat (used by `FakeRecycleBin`).
@@ -317,6 +323,17 @@ impl FileSystem for FakeFileSystem {
         if !state.files.contains_key(&key(source)) {
             return Err(not_found(source));
         }
+        if state.files.contains_key(&key(destination)) && key(source) == key(destination) {
+            let entry = state.files.remove(&key(source)).ok_or_else(|| not_found(source))?;
+            state.files.insert(
+                key(destination),
+                Entry {
+                    path: destination.to_path_buf(),
+                    ..entry
+                },
+            );
+            return Ok(());
+        }
         if state.files.contains_key(&key(destination)) {
             return Err(io::Error::new(
                 io::ErrorKind::AlreadyExists,
@@ -430,6 +447,30 @@ impl FileSystem for FakeFileSystem {
             .collect();
         sort_like_ntfs(&mut found);
         Ok(found)
+    }
+
+    fn get_stored_file_names(&self, path: &Path) -> io::Result<Vec<String>> {
+        let Some(dir) = path.parent() else {
+            return Ok(Vec::new());
+        };
+        let state = self.begin(FsOp::EnumerateFiles, dir)?;
+        if let Some(names) = &state.stored_names_override {
+            return Ok(names.clone());
+        }
+        let Some(directory) = parent_key(path) else {
+            return Ok(Vec::new());
+        };
+        let Some(name) = path.file_name().and_then(|n| n.to_str()) else {
+            return Ok(Vec::new());
+        };
+        Ok(state
+            .files
+            .values()
+            .filter(|entry| parent_key(&entry.path).as_deref() == Some(directory.as_str()))
+            .filter_map(|entry| entry.path.file_name().and_then(|n| n.to_str()))
+            .filter(|stored| cmp_ignore_case(stored, name).is_eq())
+            .map(str::to_owned)
+            .collect())
     }
 
     fn try_probe_readable(&self, path: &Path) -> Result<(), String> {

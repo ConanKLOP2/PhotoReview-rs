@@ -1,4 +1,4 @@
-//! Port of `PhotoReview.Core/FileActions/FileActionService.cs` (C# baseline d92d6aae; PARITY F-01, F-02, F-03, F-04, F-05,
+//! Port of `PhotoReview.Core/FileActions/FileActionService.cs` (C# baseline d92d6aae; W9-R2 rename delta baseline 7eaee2a2; PARITY F-01, F-02, F-03, F-04, F-05,
 //! F-06, F-21, R01, SEC-01, INV-3 (the F3 `source_removed` fact), INV-4). Contract: `contracts/W3-04.md`.
 //!
 //! Runs ONE journaled file action at a time (INV-4):
@@ -29,6 +29,7 @@ use std::sync::Arc;
 use std::sync::atomic::{AtomicI32, Ordering};
 
 use crate::abstractions::{Clock, CopyCreationProof, FileStat, FileSystem, RecycleBin};
+use crate::file_actions::case_only_rename::CaseOnlyRename;
 use crate::file_actions::destination_policy::{self, ActionDestinationCheck};
 use crate::file_actions::errors::{self, JournalCodedError};
 use crate::file_actions::journal::OperationJournal;
@@ -78,6 +79,8 @@ pub const TASK_CANCELED_MESSAGE: &str = "A task was canceled.";
 /// The forward-move test seam is W3-05's [`MoveOverride`] (`Arc<dyn Fn(&Path, &Path) -> io::Result<()>>`): the
 /// composition root hands the SAME override to this service and to `UndoService`.
 pub trait FileActionTexts: Send + Sync {
+    /// C# `Tr.CoreFileActionRenameInvalidName` (`core.fileAction.renameInvalidName`).
+    fn core_file_action_rename_invalid_name(&self, name: &str) -> String;
     /// `Tr.CoreFileActionBusy` (`core.fileAction.busy`).
     fn core_file_action_busy(&self) -> String;
     /// `Tr.CoreFileActionGroupNeedsTwoPaths` (`core.fileAction.groupNeedsTwoPaths`).
@@ -108,6 +111,10 @@ pub trait FileActionTexts: Send + Sync {
 pub struct EnglishFileActionTexts;
 
 impl FileActionTexts for EnglishFileActionTexts {
+    fn core_file_action_rename_invalid_name(&self, name: &str) -> String {
+        format!("The new file name is not valid: {name}")
+    }
+
     fn core_file_action_busy(&self) -> String {
         "A previous operation is still running.".to_owned()
     }
@@ -182,6 +189,9 @@ impl fmt::Debug for FileActionService {
 }
 
 impl FileActionService {
+    pub(crate) fn rename_invalid_name(&self, name: &str) -> String {
+        self.texts.core_file_action_rename_invalid_name(name)
+    }
     /// `new FileActionService(journal, fileSystem, clock, recycleBin)` (no move override, English texts). The C#
     /// `ArgumentNullException` guards have no Rust twin (the arguments cannot be null).
     pub fn new(
@@ -296,7 +306,7 @@ impl FileActionService {
         }
         let gate = GateGuard(self);
         let mut run = SingleRun::new(new_guid_n());
-        let result = match self.run_single(request, cancel, &mut run) {
+        let result = match self.run_single(request, cancel, &mut run, None) {
             Ok(result) => result,
             Err(failure) => self.single_failure(request, &mut run, failure),
         };
@@ -304,6 +314,44 @@ impl FileActionService {
         drop(run);
         drop(gate);
         result
+    }
+
+    /// Execute a FEAT-RENAME request as a journaled same-folder Move.
+    pub(crate) fn execute_rename(
+        &self,
+        request: &FileActionRequest,
+        new_file_name: &str,
+        cancel: &CancelToken,
+    ) -> FileActionResult {
+        if !self.try_begin() {
+            return FileActionResult {
+                rejected: true,
+                ..FileActionResult::new(
+                    false,
+                    request.operation,
+                    request.source.clone(),
+                    None,
+                    0,
+                    DateTimeUtc::MIN,
+                    Some(self.texts.core_file_action_busy()),
+                )
+            };
+        }
+        let _gate = GateGuard(self);
+        let mut run = SingleRun::new(new_guid_n());
+        let outcome = self.run_single(request, cancel, &mut run, Some(new_file_name));
+        outcome.unwrap_or_else(|failure| self.single_failure(request, &mut run, failure))
+    }
+
+    /// Execute a group rename using the ordinary group journal and compensation flow.
+    pub(crate) fn execute_group_rename(
+        &self,
+        request: &CaptureGroupActionRequest,
+        cancel: &CancelToken,
+    ) -> CaptureGroupActionResult {
+        let request = request.clone();
+        // The group engine below recognizes the rename map in its preflight and mutation branches.
+        self.execute_group(&request, cancel)
     }
 
     // -----------------------------------------------------------------------------------------------------------
@@ -316,7 +364,9 @@ impl FileActionService {
         request: &FileActionRequest,
         cancel: &CancelToken,
         run: &mut SingleRun<'a>,
+        rename_file_name: Option<&str>,
     ) -> Result<FileActionResult, ActionFailure> {
+        run.rename_operation = rename_file_name.is_some();
         let source = request.source.as_str();
         match request.operation {
             FileOperationType::Move | FileOperationType::Copy => {
@@ -332,25 +382,40 @@ impl FileActionService {
                 // S3.3: the destination folder first, then the source folder (trap T7).
                 let rooted = is_path_rooted(destination);
                 let source_directory = get_directory_name(source).unwrap_or_default();
-                let destination_folder = full_path(&if rooted {
+                let destination_folder = full_path(&if rename_file_name.is_some() {
+                    source_directory.clone()
+                } else if rooted {
                     destination.to_owned()
                 } else {
                     combine(&source_directory, destination)
                 })?;
                 let source_folder = full_path(&source_directory)?;
                 // S3.4
-                if is_same_path(&destination_folder, &source_folder).map_err(|err| path_error_to_io(err, source))? {
+                if rename_file_name.is_none()
+                    && is_same_path(&destination_folder, &source_folder).map_err(|err| path_error_to_io(err, source))?
+                {
                     return Err(io::Error::other(self.texts.core_file_action_same_folder()).into());
                 }
                 // S3.5
-                if !rooted && !is_inside_folder(&destination_folder, &source_folder) {
+                if rename_file_name.is_none() && !rooted && !is_inside_folder(&destination_folder, &source_folder) {
                     return Err(self.coded_error(errors::DESTINATION_OUTSIDE_SOURCE).into());
                 }
                 // S3.6
-                let destination_path = combine(&destination_folder, get_file_name(source));
+                let destination_path = if let Some(name) = rename_file_name {
+                    if crate::file_actions::rename::RenameNamePolicy::check_file_name(Some(name))
+                        != crate::file_actions::rename::RenameNameProblem::None
+                        || get_file_name(name) != name
+                    {
+                        return Err(io::Error::other(self.texts.core_file_action_rename_invalid_name(name)).into());
+                    }
+                    combine(&source_folder, name)
+                } else {
+                    combine(&destination_folder, get_file_name(source))
+                };
                 run.destination_path = Some(destination_path.clone());
                 // S3.7 (SEC-01): only a relative destination; any non-Ok answer fails closed.
-                if !rooted
+                if rename_file_name.is_none()
+                    && !rooted
                     && !matches!(
                         destination_policy::validate_no_escape_via_reparse_point(
                             &source_folder,
@@ -362,20 +427,54 @@ impl FileActionService {
                 {
                     return Err(self.coded_error(errors::DESTINATION_OUTSIDE_SOURCE).into());
                 }
+                // C# rename preflight stats the source before inspecting the target.
+                let renamed_source_stat = if rename_file_name.is_some() {
+                    Some(
+                        self.fs
+                            .try_get_file_stat(Path::new(source))?
+                            .ok_or_else(|| self.source_missing(source))?,
+                    )
+                } else {
+                    None
+                };
                 // S3.8
-                if self.fs.file_exists(Path::new(&destination_path)) {
+                let (conflict, already_named) = if rename_file_name.is_some() {
+                    CaseOnlyRename::probe_target(&*self.fs, source, &destination_path)?
+                } else {
+                    (self.fs.file_exists(Path::new(&destination_path)), false)
+                };
+                if conflict {
                     return Err(
                         io::Error::other(self.texts.core_file_action_destination_exists(&destination_path)).into(),
                     );
                 }
                 // S3.9
-                let Some(source_stat) = self.fs.try_get_file_stat(Path::new(source))? else {
-                    return Err(self.source_missing(source).into());
+                let source_stat = if let Some(stat) = renamed_source_stat {
+                    stat
+                } else {
+                    self.fs
+                        .try_get_file_stat(Path::new(source))?
+                        .ok_or_else(|| self.source_missing(source))?
                 };
                 run.source_size = size_of(&source_stat);
                 run.source_last_write = source_stat.last_write_utc;
+                if already_named || source == destination_path {
+                    let mut result = FileActionResult::new(
+                        true,
+                        FileOperationType::Move,
+                        source,
+                        Some(destination_path),
+                        run.source_size,
+                        run.source_last_write,
+                        None,
+                    );
+                    result.no_change = true;
+                    return Ok(result);
+                }
                 // S3.10: only after every pre-check passed (a missing source never leaves an empty folder).
-                run.created_folders = self.create_destination_folder(&destination_folder)?;
+                if rename_file_name.is_none() {
+                    run.created_folders = self.create_destination_folder(&destination_folder)?;
+                }
 
                 // S4
                 let prepared = self.prepared_entry(
@@ -414,7 +513,19 @@ impl FileActionService {
                             self.fs.move_file(source_path, target)?;
                         }
                     }
-                    tx.verify_moved(&*self.fs, source, &destination_path, errors::VERIFY_SIZE_CHANGED)?;
+                    if rename_file_name.is_some() {
+                        if CaseOnlyRename::exists_as(&*self.fs, source, Some(&destination_path))? {
+                            return Err(self.coded_error(errors::MOVE_SOURCE_NOT_REMOVED).into());
+                        }
+                        let stat = CaseOnlyRename::stat_as(&*self.fs, &destination_path, Some(source))?
+                            .ok_or_else(|| self.coded_error(errors::VERIFY_SIZE_CHANGED))?;
+                        if !length_is(&stat, run.source_size) {
+                            return Err(self.coded_error(errors::VERIFY_SIZE_CHANGED).into());
+                        }
+                        tx.mark_mutation_completed();
+                    } else {
+                        tx.verify_moved(&*self.fs, source, &destination_path, errors::VERIFY_SIZE_CHANGED)?;
+                    }
                 }
 
                 let (_, journal_error) = tx.commit();
@@ -526,7 +637,17 @@ impl FileActionService {
         // S7.4 (RV-C02): cancelled while the disk is untouched => Dismissed; otherwise Failed.
         let mut journal_error = None;
         if let Some(tx) = run.tx.as_mut() {
-            let dismiss = is_canceled(&failure.error)
+            let dismiss_rename = run.rename_operation && {
+                tx.is_prepared()
+                    && !mutation_completed
+                    && self.is_rename_untouched(
+                        &request.source,
+                        run.source_size,
+                        run.source_last_write,
+                        run.destination_path.as_deref(),
+                    )
+            };
+            let dismiss = (is_canceled(&failure.error)
                 && tx.is_prepared()
                 && !mutation_completed
                 && self.is_untouched(
@@ -534,7 +655,8 @@ impl FileActionService {
                     run.source_size,
                     run.source_last_write,
                     run.destination_path.as_deref(),
-                );
+                ))
+                || dismiss_rename;
             journal_error = if dismiss {
                 tx.dismiss_rolled_back().1
             } else {
@@ -545,7 +667,16 @@ impl FileActionService {
         let source_removed = !mutation_completed
             && request.operation == FileOperationType::Move
             && prepared
-            && self.is_source_gone(&request.source);
+            && !CaseOnlyRename::exists_as(
+                &*self.fs,
+                &request.source,
+                if run.rename_operation {
+                    run.destination_path.as_deref()
+                } else {
+                    None
+                },
+            )
+            .unwrap_or(true);
 
         FileActionResult {
             journal_persisted: journal_error.is_none(),
@@ -586,7 +717,11 @@ impl FileActionService {
         let mut destination_folder: Option<String> = None;
         let mut first_source_folder = String::new();
         let mut rooted = false;
-        if matches!(operation, FileOperationType::Move | FileOperationType::Copy) {
+        let rename_targets = request.destination_file_names.as_ref();
+        if rename_targets.is_some() && operation != FileOperationType::Move {
+            return Err(io::Error::other(self.texts.core_file_action_unsupported_operation(operation)).into());
+        }
+        if rename_targets.is_none() && matches!(operation, FileOperationType::Move | FileOperationType::Copy) {
             let destination = match request.destination.as_deref() {
                 Some(destination) if !destination.trim().is_empty() => destination,
                 _ => return Err(io::Error::other(self.texts.core_file_action_no_destination()).into()),
@@ -614,6 +749,7 @@ impl FileActionService {
         // G3: preflight every path, in group order.
         let image_paths = request.group.image_paths();
         let mut members: Vec<JournalGroupMember> = Vec::with_capacity(paths.len());
+        let mut already_named: Vec<String> = Vec::new();
         for source in paths {
             cancel.check()?;
             // A stale group: a partner vanished outside the app. Skipped and reported. A stat that FAILS is not a missing
@@ -642,6 +778,30 @@ impl FileActionService {
                     return Err(self.coded_error(errors::DESTINATION_OUTSIDE_SOURCE).into());
                 }
                 destination = Some(target);
+            } else if let Some(names) = rename_targets {
+                let Some(name) = names.get(source) else {
+                    return Err(io::Error::other(
+                        self.texts.core_file_action_rename_invalid_name(get_file_name(source)),
+                    )
+                    .into());
+                };
+                if crate::file_actions::rename::RenameNamePolicy::check_file_name(Some(name))
+                    != crate::file_actions::rename::RenameNameProblem::None
+                    || get_file_name(name) != name
+                {
+                    return Err(io::Error::other(self.texts.core_file_action_rename_invalid_name(name)).into());
+                }
+                let directory = get_directory_name(source).unwrap_or_default();
+                let target = combine(&directory, name);
+                let (conflict, already) = CaseOnlyRename::probe_target(&*self.fs, source, &target)?;
+                if conflict {
+                    return Err(io::Error::other(self.texts.core_file_action_destination_exists(&target)).into());
+                }
+                if already || target == *source {
+                    already_named.push(source.clone());
+                    continue;
+                }
+                destination = Some(target);
             }
 
             let mut permanent = false;
@@ -663,9 +823,28 @@ impl FileActionService {
             });
         }
 
+        if rename_targets.is_some() {
+            let mut targets = std::collections::HashSet::new();
+            for member in &members {
+                let target = member.destination.as_deref().unwrap_or_default();
+                if !targets.insert(ignore_case_key(target))
+                    || members
+                        .iter()
+                        .any(|other| other.source != member.source && eq_ignore_case(&other.source, target))
+                {
+                    return Err(io::Error::other(self.texts.core_file_action_destination_exists(target)).into());
+                }
+            }
+            if members.is_empty() && !already_named.is_empty() {
+                let mut result =
+                    CaptureGroupActionResult::new(true, false, operation, group_id.to_owned(), None, Vec::new(), None);
+                result.skipped_missing = (!run.missing.is_empty()).then(|| run.missing.clone());
+                return Ok(result);
+            }
+        }
         // G4: only a sidecar left (or nothing): the photo itself is gone.
         let is_image = |path: &str| image_paths.iter().any(|image| eq_ignore_case(image, path));
-        if !members.iter().any(|member| is_image(&member.source)) {
+        if !members.iter().any(|member| is_image(&member.source)) && !already_named.iter().any(|path| is_image(path)) {
             let gone = run
                 .missing
                 .iter()
@@ -1018,8 +1197,8 @@ impl FileActionService {
             // `Ok(true)` = stuck; any error = stuck (C# catch).
             let attempt = || -> io::Result<bool> {
                 let destination_path = member_destination(member)?;
-                let source = self.stat(&member.source)?;
-                let destination = self.stat(destination_path)?;
+                let source = CaseOnlyRename::stat_as(&*self.fs, &member.source, Some(destination_path))?;
+                let destination = CaseOnlyRename::stat_as(&*self.fs, destination_path, Some(&member.source))?;
                 let destination = match (source, destination) {
                     (Some(_), None) => return Ok(false), // already back
                     // Both present (a conflict) or neither (lost): only a finished member counts as stuck.
@@ -1032,9 +1211,9 @@ impl FileActionService {
                 }
                 self.fs
                     .move_file(Path::new(destination_path), Path::new(&member.source))?;
-                let back = self.stat(&member.source)?;
+                let back = CaseOnlyRename::stat_as(&*self.fs, &member.source, Some(destination_path))?;
                 Ok(!back.is_some_and(|back| length_is(&back, member.size))
-                    || self.fs.file_exists(Path::new(destination_path)))
+                    || CaseOnlyRename::exists_as(&*self.fs, destination_path, Some(&member.source))?)
             };
             if attempt().unwrap_or(true) {
                 stuck += 1;
@@ -1057,13 +1236,13 @@ impl FileActionService {
     /// [`Self::verify_group_destination`] on a fresh `try_get_file_stat(destination)`;
     /// a stat that fails is the action's failure as-is (C# `GetFileStat` throws: no code, raw message; P-12).
     fn verify_group_move(&self, member: &JournalGroupMember) -> io::Result<()> {
-        if self.fs.file_exists(Path::new(&member.source)) {
+        if CaseOnlyRename::exists_as(&*self.fs, &member.source, member.destination.as_deref())? {
             return Err(self.coded_error(errors::MOVE_SOURCE_NOT_REMOVED));
         }
         let destination = member
             .destination
             .as_deref()
-            .map(|destination| self.fs.try_get_file_stat(Path::new(destination)))
+            .map(|destination| CaseOnlyRename::stat_as(&*self.fs, destination, Some(&member.source)))
             .transpose()?
             .flatten();
         self.verify_group_destination(member, destination.as_ref())
@@ -1092,10 +1271,10 @@ impl FileActionService {
             }
 
             let destination = match member.destination.as_deref() {
-                Some(destination) => self.stat(destination)?,
+                Some(destination) => CaseOnlyRename::stat_as(&*self.fs, destination, Some(&member.source))?,
                 None => None,
             };
-            let source = self.stat(&member.source)?;
+            let source = CaseOnlyRename::stat_as(&*self.fs, &member.source, member.destination.as_deref())?;
             let destination_complete = destination.is_some_and(|destination| length_is(&destination, member.size));
             let completed = if operation == FileOperationType::Move {
                 source.is_none() && destination_complete
@@ -1146,9 +1325,26 @@ impl FileActionService {
         }
     }
 
-    /// C# `IsSourceGone` (lines 759-769): `!file_exists(source)` (the Rust `file_exists` cannot fail).
-    fn is_source_gone(&self, source: &str) -> bool {
-        !self.fs.file_exists(Path::new(source))
+    fn is_rename_untouched(
+        &self,
+        source: &str,
+        size: i64,
+        last_write_utc: DateTimeUtc,
+        destination: Option<&str>,
+    ) -> bool {
+        let Some(destination) = destination else { return false };
+        match CaseOnlyRename::stat_as(&*self.fs, source, Some(destination)) {
+            Ok(Some(stat)) if length_is(&stat, size) && stat.last_write_utc == last_write_utc => {
+                if CaseOnlyRename::is_case_only_pair(Some(source), Some(destination)) {
+                    true
+                } else {
+                    self.fs.try_get_file_stat(Path::new(destination)).is_ok_and(|target| {
+                        target.is_none_or(|target| !length_is(&target, size) || target.last_write_utc != last_write_utc)
+                    })
+                }
+            }
+            _ => false,
+        }
     }
 
     /// The "stat that can fail" seam (contract open question P1, shared with W3-07). C# `GetFileStat` returns `null` for
@@ -1193,6 +1389,7 @@ struct SingleRun<'a> {
     copied_stat: Option<FileStat>,
     /// Folders THIS call created for the destination (deepest first).
     created_folders: Vec<String>,
+    rename_operation: bool,
 }
 
 impl SingleRun<'_> {
@@ -1207,6 +1404,7 @@ impl SingleRun<'_> {
             proof: CopyCreationProof::new(),
             copied_stat: None,
             created_folders: Vec::new(),
+            rename_operation: false,
         }
     }
 }
