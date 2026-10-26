@@ -36,3 +36,23 @@ Moved verbatim from the native fixture branch on 2026-10-26. History only; curre
 ---
 
 End of preserved sections.
+
+## Inherited doc-link audit (2026-10-26)
+
+Default-scope checker reports13errors in this clean worktree. Every referenced line is unchanged at immutable baseline4006635 and every target is absent from that tracked tree. New task/archive link targets were checked separately and exist; none is among the reported errors. The default docs check FAIL remains an inherited documentation/staging follow-up, not a passing whole-repo docs verdict. Exact report:
+
+```text
+ERROR contracts/README.md:480: path `assets/AdobeCompat-v2.icc`: path does not exist
+ERROR contracts/README.md:518: path `tests/fixtures/raw-corpus/`: path does not exist
+ERROR contracts/README.md:575: path `tools/stage-native.ps1`: path does not exist
+ERROR contracts/README.md:576: path `tools/fetch-native.ps1`: path does not exist
+ERROR contracts/README.md:734: path `tools/diag/stall-experiment.ps1`: path does not exist
+ERROR contracts/README.md:1718: path `crates/pr-app/src/main.rs`: path does not exist
+ERROR contracts/README.md:1745: path `crates/pr-app/src/main.rs`: path does not exist
+ERROR contracts/README.md:1745: path `crates/pr-app/tests/ui_smoke.rs`: path does not exist
+ERROR docs/PARITY.md:126: path `assets/AdobeCompat-v2.icc`: path does not exist
+ERROR docs/WAVE-9-PLAN-ren.md:6: path `contracts/w9-ren`: path does not exist
+ERROR docs/drafts/README.md:10: path `tools/fetch-raw-samples.ps1`: path does not exist
+ERROR docs/drafts/README.md:10: path `tools/stage-native.ps1`: path does not exist
+ERROR docs/drafts/README.md:10: path `tools/verify-raw-samples.ps1`: path does not exist
+```
