@@ -40,9 +40,14 @@ def clean(p):
  return all(x.startswith('?? ') and any(pathlib.PurePosixPath(x[3:].replace('\\','/')).parts[0].startswith(z) or x[3:].lower().endswith(z) for z in ('.codex','target','mutants.out','.log')) for x in s.splitlines())
 def merged(br):
  if not br:return False
+ # A merged PR counts only when its head commit IS the current tip of the branch: integration branches are reused for
+ # many PRs, and an older merged PR says nothing about commits added to the branch afterwards.
+ tip=out([G,'rev-parse','--verify','-q','refs/heads/'+br])
  try:
-  p=run([H,'pr','list','--head',br,'--state','merged','--json','number']);
-  if p and p.returncode==0 and json.loads(p.stdout):return True
+  p=run([H,'pr','list','--head',br,'--state','merged','--json','number,headRefOid'])
+  if tip and p and p.returncode==0:
+   for x in json.loads(p.stdout or '[]'):
+    if isinstance(x,dict) and x.get('headRefOid')==tip:return True
  except:pass
  q=run([G,'merge-base','--is-ancestor',br,'origin/master']); return q is not None and q.returncode==0
 def process_lines():
