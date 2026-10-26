@@ -13,3 +13,5 @@ Run the matching command from the repo root and show the result:
 Report in Vietnamese: the counts per status, the rows and commits found, and for reconcile the rows that look stale.
 Docs-only commits also count as merged in reconcile, so say that the proposals need a check against the proving test.
 Never edit docs/PARITY.md by hand when `set` can do it.
+
+Run every command from the repository root.

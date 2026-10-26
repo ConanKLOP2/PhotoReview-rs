@@ -287,6 +287,7 @@ mod editor_popup_paint {
         completed: Cell<bool>,
         failure: RefCell<Option<Box<dyn Any + Send>>>,
     }
+    // SAFETY: `DwmFlush` is a plain Win32 call with no arguments or pointers; it only blocks until the next DWM composition pass.
     #[link(name = "dwmapi")]
     unsafe extern "system" {
         fn DwmFlush() -> i32;
