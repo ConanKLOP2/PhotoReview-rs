@@ -123,6 +123,68 @@ fn finish(ui: &UiThread) {
     ui.invoke(dispose_window);
 }
 
+struct WindowOwningHandler {
+    _window: Rc<ShellWindow>,
+}
+
+impl WindowMessageHandler for WindowOwningHandler {
+    fn try_handle(&self, _message: &WindowMessage) -> Option<Lresult> {
+        None
+    }
+}
+
+fn probe_window_owning_handler(throw_from_closed: bool) {
+    let ui = UiThread::start();
+    let (kept_during_closed, released_after_destroy, window_released, panicked) = ui.invoke(move || {
+        let shell = create_window(default_options());
+        let weak_shell = Rc::downgrade(&shell);
+        let handler = Rc::new(WindowOwningHandler {
+            _window: Rc::clone(&shell),
+        });
+        let weak_handler = Rc::downgrade(&handler);
+        shell.add_message_handler(handler);
+        let kept = Rc::new(Cell::new(false));
+        let observed = Rc::clone(&kept);
+        let during_closed = weak_handler.clone();
+        shell.subscribe(
+            ShellWindowEvent::Closed,
+            Box::new(move || {
+                observed.set(during_closed.upgrade().is_some());
+                assert!(!throw_from_closed, "closed lifetime regression");
+            }),
+        );
+        let outcome = catch_unwind(AssertUnwindSafe(|| shell.dispose()));
+        let released = weak_handler.upgrade().is_none();
+        drop(shell);
+        dispose_window();
+        (kept.get(), released, weak_shell.upgrade().is_none(), outcome.is_err())
+    });
+    assert!(kept_during_closed, "Closed observers run before handler release");
+    assert!(
+        released_after_destroy,
+        "native destruction must release the handler chain"
+    );
+    assert!(window_released, "a handler must not keep the destroyed window alive");
+    assert_eq!(
+        panicked, throw_from_closed,
+        "Closed panic still propagates outside the native callback"
+    );
+    finish(&ui);
+}
+
+// Rust ownership regression: C# GC can collect window/handler cycles; Rc needs an explicit release after native destruction.
+#[test]
+#[ignore = "native: needs desktop"]
+fn dispose_releases_window_owning_handlers_after_closed() {
+    probe_window_owning_handler(false);
+}
+
+#[test]
+#[ignore = "native: needs desktop"]
+fn dispose_releases_window_owning_handlers_when_closed_panics() {
+    probe_window_owning_handler(true);
+}
+
 // C#: ShellWindowTests.Close_ClosingCanceled_KeepsTheWindow_ThenClosesWhenAllowed
 #[test]
 #[ignore = "native: needs desktop"]
