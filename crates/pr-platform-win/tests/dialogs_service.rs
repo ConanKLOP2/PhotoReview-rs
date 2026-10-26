@@ -66,6 +66,34 @@ struct PortRecord {
 }
 struct FakePort(Rc<PortRecord>);
 impl SecondaryWindowPort for FakePort {
+    fn prompt_add_external_editor(
+        &self,
+        owner: Hwnd,
+        initial: Option<&Path>,
+    ) -> Option<pr_core::settings::external_editors::ExternalEditor> {
+        self.0
+            .calls
+            .borrow_mut()
+            .push(format!("editor-add:{owner}:{initial:?}"));
+        Some(pr_core::settings::external_editors::ExternalEditor {
+            id: "added".into(),
+            name: "Added".into(),
+            path: "editor.exe".into(),
+            ..Default::default()
+        })
+    }
+    fn prompt_default_external_editor(
+        &self,
+        owner: Hwnd,
+        editors: &[pr_core::settings::external_editors::ExternalEditor],
+        current: Option<&str>,
+    ) -> Option<String> {
+        self.0
+            .calls
+            .borrow_mut()
+            .push(format!("editor-default:{owner}:{editors:?}:{current:?}"));
+        editors.last().map(|editor| editor.id.clone())
+    }
     fn show_settings(&self, owner: Hwnd, target: SettingsTarget) -> bool {
         self.0.calls.borrow_mut().push(format!("settings:{owner}:{target:?}"));
         self.0.settings_result.get()
@@ -100,6 +128,42 @@ impl SecondaryWindowPort for FakePort {
     fn dispose(&self) {
         self.0.dispose_count.set(self.0.dispose_count.get() + 1);
     }
+}
+
+// W9-E8 source-derived Win32DialogService forwarding; the service has no manager method in C#.
+#[test]
+fn editor_prompts_forward_owner_and_arguments_and_no_port_returns_none() {
+    use pr_core::settings::external_editors::ExternalEditor;
+    let record = Rc::new(PortRecord::default());
+    let secondary = Rc::new(LazySecondaryPort::from_value(Some(Rc::new(FakePort(record.clone())))));
+    let (dialog, _) = service(47, IDYES, Rc::new(FolderRecord::default()), secondary);
+    let initial = Some(Path::new(r"C:\initial"));
+    assert_eq!(dialog.prompt_add_external_editor(initial).unwrap().id, "added");
+    let editors = vec![ExternalEditor {
+        id: "a.b".into(),
+        name: "Editor".into(),
+        path: "edit.exe".into(),
+        ..Default::default()
+    }];
+    assert_eq!(
+        dialog.prompt_default_external_editor(&editors, Some("a.b")).as_deref(),
+        Some("a.b")
+    );
+    assert_eq!(
+        *record.calls.borrow(),
+        [
+            format!("editor-add:47:{initial:?}"),
+            format!("editor-default:47:{editors:?}:{:?}", Some("a.b"))
+        ]
+    );
+    let (dialog, _) = service(
+        48,
+        IDYES,
+        Rc::new(FolderRecord::default()),
+        Rc::new(LazySecondaryPort::from_value(None)),
+    );
+    assert!(dialog.prompt_add_external_editor(initial).is_none());
+    assert!(dialog.prompt_default_external_editor(&editors, Some("a.b")).is_none());
 }
 
 #[derive(Default)]
