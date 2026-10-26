@@ -2,6 +2,12 @@
 
 **Updated:** 2026-10-23 (older entries moved to `docs/archive/`; the sections below are the latest ones; where two sections disagree the later date wins, not the later position)
 
+## Native menu zoom root repair, machine A, 2026-10-26 morning
+
+- Claim FIX-zoom-menu-borrow A, independent codex/fix-zoom-menu-borrow from master0fee72c, reused inactive E8 root/target-w9-e3. E9 broad native regression exposed five existing zoom panics plus a stale expected menu row. Unchanged custom-zoom test on master reproduced ViewerHandle shared read versus held mutable guard, exit101/UI timeout60s; E9 source is absent from this branch.
+- Added deterministic pure live-content regression to shell_input_surface: unlike the existing cached fixture it refreshes ContentFromViewer on each source/layout read, failing at the original RefCell borrow. Final fix introduces pure PointerViewer operations (ViewerState implements directly) and SharedViewerAdapter in shell input, mirroring the existing FitViewer borrow pattern. Viewer guards last only an operation; synchronous layout sees the new zoom immediately. No snapshot/try_borrow/empty fallback and no new unsafe/dependency/format change.
+- Corrected DEFAULT_IMAGE_MENU to include RenameFile after Separator.5 exactly as C#7eaee2a2 ShellContextMenuEndToEndTests; does not implement rename command behavior. C# SourceSize/ContentFromViewer read the same live bitmap/viewer data; this is a Rust borrowing repair, no intentional behavior difference.
+- Focused evidence: new pure test red before fix; all27surface functions green after it, immediate layout widths7500 then3000 at250%/100%; all135pointer functions green (16click/47pan/34wheel/38zoom). Unchanged custom-zoom native passes, then all17native menu e2e functions pass serially. Final fmt/Clippy/workspace gates pending. Fix merges first, then integrate into E9 and R1 and rerun their final gates; no unchanged retry-to-green and no full native/GPU/corpus/mutation verdict.
 ## Wave 9 E8 final gates and PR, machine A, 2026-10-26 morning
 
 - Quota reset verified before resuming. Integrated tooling-only master9126ee9 into E8 at4fb32cc; owned source/goldens unchanged from combined E5 integration2f59af3. Final head gates rerun: fmt-all Windows206, all12package fmt PASS; workspace all-target Clippy locked -Dwarnings PASS; workspace test9850passed/0failed/1328ignored across564resultlines, exit0. Focused40functions PASS (7editor-port including3selected native fake-factory modal tests,10existing port,23service). No active gate process remains.
