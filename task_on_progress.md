@@ -2,6 +2,11 @@
 
 **Updated:** 2026-10-23 (older entries moved to `docs/archive/`; the sections below are the latest ones; where two sections disagree the later date wins, not the later position)
 
+## Wave 9 E9 native regression findings, machine A, 2026-10-26 morning
+
+- Final combined source3728b3e fmt12/Clippy PASS; workspace9861passed/0failed/1329ignored across564resultlines, exit0. Serial focused run completed: controller53/53passed; native/e2e file16passed/6failed (22functions, includes4pure wiring +18native). New editor popup en/vi x96/144 and all four wiring cases PASS. No E9 PR or retry-to-green.
+- Five failures are existing zoom routes: custom prompt, native zoom preset, preset with/without save, configured click level. Backtrace shows InputCore holds ViewerHandle.borrow_mut while ViewportController.source_size calls ContentFromViewer and reads the same viewer. Separately reproduced unchanged custom-zoom test on master0fee72c (exit101/UI timeout60s), branch codex/fix-zoom-menu-borrow, claimFIX-zoom-menu-borrow A; root-cause repair in its own PR before E9.
+- Sixth failure is stale DEFAULT_IMAGE_MENU: C#7eaee2a2 ShellContextMenuEndToEndTests expects RenameFile after Separator.5; Rust fixture omits it. Root repair corrects that expected row from the pinned C# test, without hiding the item or claiming rename command behavior is implemented. E9 wiring path assertions also need short-path-safe file identity/tail comparison before final PR per AGENTS Windows CI rule.
 ## Wave 9 E9 combined E8 validation, machine A, 2026-10-26 morning
 
 - Source535fa26 completed workspace gate9856passed/0failed/1326ignored across563resultlines, exit0; all12packagefmt and workspaceClippy passed after fixing the test's public SettingsTarget import. This is pre-E8 integration evidence, not the final combined verdict.
