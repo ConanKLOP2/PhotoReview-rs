@@ -1,6 +1,7 @@
 //! Port of `PhotoReview.Imaging/ImageCacheKey.cs` (C# baseline d92d6aae): [`ImageCacheKey`] (identity of a decoded
 //! bitmap: normalized full path, source length and write time, decode mode and box, orientation, backend, source kind)
 //! and [`ImageSourceKind`] (named values of `SourceKind`). PARITY: see contracts/drafts-w4/W4-01a.
+//! W9-R4 ports the `ImageCacheKey.WithPath` delta from the same C# source at baseline `7eaee2a2`.
 //!
 //! Target path: `crates/pr-imaging/src/cache_key.rs` (lead adds `pub mod cache_key;` to `lib.rs`).
 //!
