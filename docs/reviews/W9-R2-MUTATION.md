@@ -12,6 +12,10 @@ Verified 2026-10-27. Production source is merged PR #278, `2825fbd1b2fea454fa1b0
 - Focused baseline after the new tests:25passed,3native ignored. No native test or real Recycle Bin operation ran during mutation.
 - Both rounds used `--baseline skip --timeout 90 -j 1`, an external target owned by this unit, the `rename_service` test binary, and900-second outer guards (about6minutes total actual run time).
 
+## Integrated validation
+
+Source `a87d543` completed all12package fmt checks (workspace fmt attempted, Windows206), locked workspace all-target Clippy with `-D warnings` (exit0), and locked workspace tests (exit0):9940passed/0failed/1334ignored across567result lines. The production implementation is unchanged; native evidence remains the separately recorded PR #278 run.
+
 ## Selection and reproduction
 
 On cargo-mutants27.1.0, listing this file with `-F FileActionService::is_rename_untouched` alone returned35 mutants, including26 struct-field mutants outside the function. The selected scope was therefore verified with both the function regex and the zero-context hunk containing this helper from the actual `6169bd87..2825fbd1` PR diff. The resulting list contains exactly9 mutants, all owned by this helper. The supplied diff is a selection filter, not another source edit.
