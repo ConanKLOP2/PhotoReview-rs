@@ -1,7 +1,7 @@
 //! Port of `PhotoReview.Core/Catalog/ReviewCatalog.cs` lines 527-621 at 7eaee2a2.
 #![allow(unused_variables, dead_code)] // Stub-only: remove after the Wave 9 implementation.
 use super::review_catalog::ReviewCatalog;
-use std::collections::HashMap;
+use crate::file_actions::rename::PathKeyMap;
 
 impl ReviewCatalog {
     /// Rename one path in place; no sort or index change. C# `RenameEntry`.
@@ -9,7 +9,7 @@ impl ReviewCatalog {
         todo!()
     }
     /// Atomically rekey every listed path and capture-group member; C# `RenameEntries`.
-    pub fn rename_entries(&mut self, renames: &HashMap<String, String>) -> bool {
+    pub fn rename_entries(&mut self, renames: &PathKeyMap) -> bool {
         todo!()
     }
 }

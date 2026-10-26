@@ -13,7 +13,7 @@
 //!   `MoveOverride` (`pr_core::file_actions::undo`).
 //! - Pure module: no `unsafe`, no `windows` crate (AGENTS.md, WAVE-8-PLAN "Crates and layering").
 
-use std::collections::HashMap;
+use pr_core::file_actions::rename::PathKeyMap;
 use std::io;
 use std::path::Path;
 use std::sync::Arc;
@@ -156,7 +156,7 @@ pub trait IFileActionSink {
     /// names (`renames`: old path to new path, every member of a capture; empty after an attempt that changed nothing, where
     /// it only re-arms what `StopForAction` stopped). Returns true when the shown image was kept in place; false when the
     /// caller must present the current entry again. C# default body: `false`.
-    fn on_files_renamed(&mut self, renames: &HashMap<String, String>) -> bool {
+    fn on_files_renamed(&mut self, renames: &PathKeyMap) -> bool {
         let _ = renames;
         false
     }

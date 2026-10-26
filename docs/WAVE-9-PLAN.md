@@ -1,13 +1,13 @@
 # Wave 9 plan (combined view): external editors (lane E) and FEAT-RENAME (lane R)
 
-> **Status: active combined view; lane E is implemented (W9-E1..E9 on master), lane R is contract and stub only (W9-R1..R11).** Last verified 2026-10-26 against `origin/master` 8b93fbf.
+> **Status: active combined view; lane E is implemented (W9-E1..E9 on master), R1 policy/plan is implemented on the integration branch (integrated gates PASS; PR pending), and R2..R11 remain contract and stub only.** Last verified 2026-10-26 against immutable master `959df9a`.
 > Evidence is the status table in section 0, taken from `git log origin/master`; sections 4 and 6 are kept as the snapshot of 2026-10-23 and are superseded by section 0.
 
 Written by DOC-WAVE-PLANS (machine C, cloud) from `docs/WAVE-9-PLAN-edt.md`, `docs/WAVE-9-PLAN-ren.md`, `contracts/W9-E1..E9.md`, `contracts/W9-R1..R11.md`, `contracts/README.md` (sections "Wave 9 sync") and the `origin/master` history of 2026-10-23. Nothing here is new design.
 
 **The two lane plans stay the source of the unit tables.** `tools/autopilot/lib/codex-lib.py planfor` selects a plan by listing `docs/WAVE-9-PLAN-*.md` files that contain rows `| W9-<lane><n> |`, so those files must not be merged, renamed or deleted; this file is named without the dash suffix on purpose, so `planfor` never selects it (it is a view, not a pipeline plan). C# spec: `7eaee2a2` (feature commit `d9623945` for lane E; `55a37986`, `9800058e`, `170a2d19` for lane R).
 
-## 0. Current state (2026-10-26, `origin/master` 8b93fbf)
+## 0. Current state (2026-10-26, immutable master `959df9a`)
 
 Status is read from the subjects of `git log origin/master`. A merged PR is not a parity claim: native and attended evidence per unit is tracked in `docs/PARITY.md`.
 
@@ -22,7 +22,8 @@ Status is read from the subjects of `git log origin/master`. A merged PR is not 
 | W9-E7 | merged | #236 |
 | W9-E8 | merged | #254 |
 | W9-E9 | merged | #256 |
-| W9-R1..R11 | contract and stub only, not implemented | contracts, stubs and golden #176, reconciliation #216; `todo!()` remains in `pr_core::file_actions::{rename, case_only_rename, rename_service}`, `pr_core::catalog::rename`, `pr_app::coordinators::rename`; `docs/MULTI-MACHINE.md` assigns the lane to machine A (#241) |
+| W9-R1 | implemented on integration branch; integrated gates PASS; PR pending | 53 focused G/F functions, 44 oracle cases; PARITY and ADR-R-12 |
+| W9-R2..R11 | contract and stub only, not implemented | contracts, stubs and golden #176, reconciliation #216; `todo!()` remains in `pr_core::file_actions::{case_only_rename, rename_service}`, `pr_core::catalog::rename`, `pr_app::coordinators::rename`; `docs/MULTI-MACHINE.md` assigns the lane to machine A (#241) |
 
 - Wave 8 dependencies named in this file that were `open` on 2026-10-23 are merged: W8-18o #231, W8-18p #226, W8-18q #227, W8-19j..19m #230. No unit in the dependency column of section 1 depends on W8-17e, W8-20a, W8-20b or W8-12j.
 - Sections 2 (the `ok`/`open` labels), 4 and 6 are the snapshot of 2026-10-23 and are no longer current.
