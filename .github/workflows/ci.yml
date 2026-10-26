@@ -65,6 +65,17 @@ jobs:
         shell: powershell
         run: ./tools/sync-from-csharp.ps1 -Check
 
+  # Cheap (no toolchain, a few seconds): every unsafe block needs a SAFETY comment and unsafe stays in the FFI crates (AGENTS.md).
+  # It always runs, also for docs-only pull requests, and build-test below requires it.
+  unsafe-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Audit unsafe code
+        run: PY_BIN=python3 bash tools/dev/unsafe-audit.sh
+
   # Runner time is the budget, not the number of jobs: every Windows job pays about 30 s of setup (checkout, toolchain, cache) and
   # GitHub runs a limited number of Windows jobs at once, so two overlapping runs (a pull request and the master run of the previous
   # merge) used to queue. The work is grouped into five jobs of about two minutes each: lint plus release build, pr-core, the rest of
@@ -167,11 +178,13 @@ jobs:
   build-test:
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    needs: [changes, lint, test]
+    needs: [changes, lint, test, unsafe-audit]
     if: ${{ always() }}
     steps:
       - name: Require the checks that apply
         run: |
+          echo "unsafe-audit=${{ needs.unsafe-audit.result }}"
+          test "${{ needs.unsafe-audit.result }}" = "success" || exit 1
           echo "changes=${{ needs.changes.result }} rust=${{ needs.changes.outputs.rust }} lint=${{ needs.lint.result }} test=${{ needs.test.result }}"
           test "${{ needs.changes.result }}" = "success" || exit 1
           if [ "${{ needs.changes.outputs.rust }}" = "true" ]; then
