@@ -52,28 +52,42 @@ fn check_empty_or_only_extension_returns_empty() {
 // C#: RenameNamePolicyTests.Check_LoneSurrogate_ReturnsInvalidCharacter.
 #[test]
 fn check_lone_surrogate_returns_invalid_character() {
-    for typed in [vec![0xD800], vec![0xDC00], vec![b'a' as u16, 0xD800, b'b' as u16]] {
+    for (typed, bad) in [
+        (vec![0xD800], 0xD800),
+        (vec![0xDC00], 0xDC00),
+        (vec![0x61, 0xD800, 0x62], 0xD800),
+        (vec![0x61, 0xDC00, 0x62], 0xDC00),
+        (vec![0x61, 0xD800], 0xD800),
+        (vec![0xDE00, 0x61], 0xDE00),
+    ] {
         let check = Policy::check_utf16(Some(&typed), r"C:\photos\a.jpg", false);
         assert_eq!(check.problem, Problem::InvalidCharacter);
-        assert_eq!(
-            check.invalid_character,
-            Some(if typed[0] == b'a' as u16 { 0xD800 } else { typed[0] })
-        );
+        assert_eq!(check.invalid_character, Some(bad));
     }
 }
 
 // C#: RenameNamePolicyTests.Check_ValidSurrogatePair_IsAccepted.
 #[test]
 fn check_valid_surrogate_pair_is_accepted() {
-    let check = Policy::check_utf16(Some(&[0xD83D, 0xDE00]), r"C:\photos\a.JPG", false);
-    assert!(check.is_valid());
-    assert_eq!(check.new_file_name, "😀.JPG");
+    for (units, expected) in [
+        (vec![0xD83D, 0xDE00], "😀.JPG"),
+        (vec![0x61, 0xD83D, 0xDE00], "a😀.JPG"),
+    ] {
+        let check = Policy::check_utf16(Some(&units), r"C:\photos\a.JPG", false);
+        assert!(check.is_valid());
+        assert_eq!(check.new_file_name, expected);
+    }
 }
 
 // C#: RenameNamePolicyTests.Check_SeveralForbiddenCharacters_ReportsFirstOne.
 #[test]
 fn check_several_forbidden_characters_reports_first_one() {
-    for (typed, bad) in [("a?b:c", b'?' as u16), ("a:b?c", b':' as u16), ("a\u{1f}b?", 0x1f)] {
+    for (typed, bad) in [
+        ("ab?c*d", b'?' as u16),
+        ("a?b:c", b'?' as u16),
+        ("a:b?c", b':' as u16),
+        ("a\u{1f}b?", 0x1f),
+    ] {
         let check = Policy::check(Some(typed), r"C:\photos\a.jpg", false);
         assert_eq!(check.problem, Problem::InvalidCharacter);
         assert_eq!(check.invalid_character, Some(bad));

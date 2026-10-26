@@ -51,10 +51,11 @@ fn golden_capture_group_plan_matches_all_11_cases() {
 // C#: CaptureGroupRenamePlanTests.Build_XmpNotMatchingAnyMember_ReturnsSidecarNotMappable.
 #[test]
 fn build_xmp_not_matching_any_member_returns_sidecar_not_mappable() {
-    let group = CaptureGroup::new(r"C:\p\a.JPG", r"C:\p\a.NEF", Some(r"C:\p\other.xmp".into())).unwrap();
-    let plan = CaptureGroupRenamePlan::build(&group, Some("b"), false);
-    assert_eq!(plan.check.problem, Problem::SidecarNotMappable);
-    assert!(plan.file_names.is_none());
+    for xmp in ["other.xmp", "IMG.nef.xmp", "IMG_x.xmp"] {
+        let plan = CaptureGroupRenamePlan::build(&group("IMG.jpg", "IMG.cr2", Some(xmp)), Some("new"), false);
+        assert_eq!(plan.check.problem, Problem::SidecarNotMappable);
+        assert!(plan.file_names.is_none());
+    }
 }
 
 fn group(jpeg: &str, raw: &str, xmp: Option<&str>) -> CaptureGroup {
