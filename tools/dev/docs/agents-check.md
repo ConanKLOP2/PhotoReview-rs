@@ -17,3 +17,7 @@ file must exist (a `:line` suffix is ignored; placeholders with `<>` or `*` and 
 Env: `PY_BIN` (python; defaults to `python`, then `python3`).
 Output: `ok <agent> ...` / `FAIL <agent>: ...`, then `agents-check PASSED` or `agents-check N FAILED` (exit 1).
 Safety: read-only, writes nothing, never touches the C# repo; python runs with `-I`.
+
+## Codex skill copies
+
+Codex reads skills from `.agents/skills/<name>/SKILL.md`, not from `.claude/skills`. The repo keeps byte-identical copies (no symlinks: git on Windows only creates them with `core.symlinks` plus Developer Mode, and the Codex sandbox may not follow them). `agents-check.sh` fails when a copy differs or has no twin. After editing a skill: `cp .claude/skills/<name>/SKILL.md .agents/skills/<name>/SKILL.md`.

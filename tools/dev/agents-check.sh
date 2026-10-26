@@ -141,3 +141,18 @@ for fname in names:
 print("agents-check PASSED" if failures == 0 else "agents-check %d FAILED" % failures)
 sys.exit(0 if failures == 0 else 1)
 PYEOF
+pyrc=$?
+
+# Codex reads skills from .agents/skills (it does not see .claude/skills): the two copies must stay byte-identical.
+sync=0
+for f in .claude/skills/*/SKILL.md; do
+  n=$(basename "$(dirname "$f")")
+  if cmp -s "$f" ".agents/skills/$n/SKILL.md"; then echo "ok .agents/skills/$n in sync"
+  else echo "FAIL .agents/skills/$n differs from .claude/skills/$n (copy it over)"; sync=1; fi
+done
+for f in .agents/skills/*/SKILL.md; do
+  n=$(basename "$(dirname "$f")")
+  [ -f ".claude/skills/$n/SKILL.md" ] || { echo "FAIL .agents/skills/$n has no .claude/skills twin"; sync=1; }
+done
+[ "$pyrc" -eq 0 ] && exit $sync
+exit "$pyrc"

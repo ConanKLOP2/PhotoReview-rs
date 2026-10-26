@@ -12,3 +12,5 @@ Report to the owner in Vietnamese:
 - the suggested next action;
 - for test-failure, whether the failing tests include the known flaky ones (rerun them alone first);
 - if there is no note or log, say that nothing exists to triage.
+
+Run every command from the repository root.

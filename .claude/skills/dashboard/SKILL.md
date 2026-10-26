@@ -11,3 +11,5 @@ Report to the owner in Vietnamese, at most 10 lines:
 - warnings shown on the page: quota STOP, low disk, failed pipeline units, dirty worktrees.
 
 Never publish or upload the file anywhere (no Artifact tool) unless the owner asks for it explicitly.
+
+Run every command from the repository root.
