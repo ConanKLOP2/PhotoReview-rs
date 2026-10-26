@@ -31,7 +31,8 @@ pub const MAX_REMOVED_BEFORE_REBUILD: usize = 64;
 /// `remove`, `restore*`'s `index` parameter, which is clamped into `[0, count]` and may be negative); counts are `usize`.
 #[derive(Debug)]
 pub struct ReviewCatalog {
-    entries: Vec<CatalogEntry>,
+    // Shared with the sibling W9-R4 rename implementation; catalog mutation remains internal.
+    pub(super) entries: Vec<CatalogEntry>,
     raw_pair_mode: RawPairMode,
     /// `None` = unbound (no owner check). C# `_ownerThreadId == 0`.
     owner_thread: Option<ThreadId>,
@@ -82,7 +83,7 @@ impl ReviewCatalog {
 
     /// `AssertOwnerThread(member)` (`[Conditional("DEBUG")]`): in builds with `debug_assertions`, panics when the catalog
     /// is bound to another thread than the caller. Unbound or same thread: nothing. Reads never check.
-    fn assert_owner_thread(&self, member: &str) {
+    pub(super) fn assert_owner_thread(&self, member: &str) {
         if !cfg!(debug_assertions) {
             return;
         }
@@ -188,7 +189,7 @@ impl ReviewCatalog {
     }
 
     /// `InvalidateIndex()`: index dirty, paths cache dropped, `structural_version += 1` (wrapping).
-    fn invalidate_index(&mut self) {
+    pub(super) fn invalidate_index(&mut self) {
         self.index_dirty.set(true);
         *self.paths_cache.borrow_mut() = None;
         self.structural_version = self.structural_version.wrapping_add(1);
