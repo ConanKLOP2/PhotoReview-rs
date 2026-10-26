@@ -43,11 +43,8 @@ dependencies = [
  "pr-bench",
  "pr-core",
  "pr-imaging",
- "pr-imaging-raw",
  "pr-l10n",
- "pr-libraw",
  "pr-test-support",
- "pr-turbojpeg",
  "serde_json",
 ]
 

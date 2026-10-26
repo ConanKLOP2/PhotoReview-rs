@@ -732,8 +732,6 @@ impl fmt::Debug for MainViewModelDeps {
 }
 
 /// C# `MainViewModel`. Owned by the UI thread; not `Send`.
-// Several fields are consumed by the W8-08b..08e slices, which are still stubs in this wave.
-#[allow(dead_code)]
 pub struct MainViewModel {
     pub(super) catalog: ReviewCatalog,
     pub(super) clock: Arc<GenerationClock>,
@@ -1063,8 +1061,6 @@ impl MainViewModel {
 
     /// C# `SetSkippedEntries` (private): stores the list and reports `SkippedEntries`, `HasSkippedEntries`, `SkippedWarningText`,
     /// `IsStatusPanelVisible` (always, even for an equal list).
-    // W8-08e's files-skipped sink will call this once its stub is ported.
-    #[allow(dead_code)]
     pub(super) fn set_skipped_entries(&mut self, entries: Vec<SkippedEntry>) -> ChangeSet {
         self.skipped_entries = entries;
         let mut result = ChangeSet::default();
@@ -1314,8 +1310,6 @@ impl MainViewModel {
     /// The two C# viewer hooks (lines 117 to 129) for a change made by the view model: `zoom_mode_changed` ->
     /// `presenter.set_viewer_zoom(viewer.effective_zoom())` (lines 117/118); `DisplayZoomPercent` in the changes ->
     /// `InfoOverlay.Refresh()` (line 127). Returns the combined set.
-    // W8-08c's zoom commands will call this once their stubs are ported.
-    #[allow(dead_code)]
     pub(super) fn apply_viewer_update(&mut self, update: ViewerUpdate) -> ChangeSet {
         let mut result = ChangeSet {
             viewer: update.changes,
@@ -1446,8 +1440,6 @@ impl MainViewModel {
     /// C# `PresentedPathOfCurrentEntry()` (line 944, hoisted from the 08d range because 08b and 08d call it): the presenter's
     /// current path when the current entry has a capture group, a presented path exists and `catalog.index_of(presented) ==
     /// current_index`; else `None` (stale after a catalog change, or no pair).
-    // W8-08b and W8-08d will call this shared helper after their stubs are ported.
-    #[allow(dead_code)]
     pub(super) fn presented_path_of_current_entry(&self) -> Option<String> {
         self.catalog.current()?.capture_group.as_ref()?;
         let path = self.presenter.current_presented_path()?;

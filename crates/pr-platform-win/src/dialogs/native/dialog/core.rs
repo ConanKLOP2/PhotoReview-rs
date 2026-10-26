@@ -259,7 +259,6 @@ impl fmt::Debug for NativeDialog {
 }
 
 /// All state of one dialog. The `*State` structs are declared by the file that uses them.
-#[allow(dead_code)] // W8-18i..18k will read these shared state fields when their stubs are ported.
 pub(super) struct DialogInner {
     /// The abstract and virtual members.
     pub(super) content: Rc<dyn DialogContent>,
@@ -370,7 +369,6 @@ pub(super) fn make_cookie(inner: &Rc<DialogInner>) -> isize {
 ///
 /// # Safety
 /// `cookie` came from `make_cookie` and was not freed; the dialog procedure clones the `Rc` before it calls anything, so a handler may free its own cookie.
-#[allow(dead_code)] // W8-18k's cleanup calls free_cookie once the window is destroyed.
 pub(super) unsafe fn free_cookie(cookie: isize) {
     if cookie != 0 {
         // SAFETY: cookie came from make_cookie and is freed exactly once here.
