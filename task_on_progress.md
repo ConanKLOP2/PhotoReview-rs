@@ -2,6 +2,11 @@
 
 **Updated:** 2026-10-23 (older entries moved to `docs/archive/`; the sections below are the latest ones; where two sections disagree the later date wins, not the later position)
 
+## Wave 9 E8 final gates and PR, machine A, 2026-10-26 morning
+
+- Quota reset verified before resuming. Integrated tooling-only master9126ee9 into E8 at4fb32cc; owned source/goldens unchanged from combined E5 integration2f59af3. Final head gates rerun: fmt-all Windows206, all12package fmt PASS; workspace all-target Clippy locked -Dwarnings PASS; workspace test9850passed/0failed/1328ignored across564resultlines, exit0. Focused40functions PASS (7editor-port including3selected native fake-factory modal tests,10existing port,23service). No active gate process remains.
+- Opening one master-based E8 PR with immediate GitHub squashauto and attachment. ccd_pr/bind_pr/set_monitor/set_auto_merge tools unavailable; no app auto-fix claim. Native composition glue is excluded from full mutation per policy; no cargo-mutants/full mutation verdict. Previous additional14selected native regression functions and four pure were passed separately; the final40rerun includes the three new native tests.
+- Production W8-17c adapter still belongs to B and is not changed here; E8 verifies port/router/service/fake-factory seam only. RenamePrompt is R8. Local merged-worktree cleanup remains retained after prior automatic approval rejection; no deletion variant retried. Whole port is incomplete.
 ## Wave 9 E5 merged and E8 integration, machine A, 2026-10-26
 
 - E5 PR #239 merged a7efe09; fetched master75ceca6 owned command source/tests and PARITY match reviewed494313c (other differences are unrelated tooling/docs). Postmerge selected pure hand-breaks3/3runtime caught (effective default versus stale mirror,32cap boundary,ID equality); exact bytes restored SHA256 A318F592F80EEF7746CE59A68DED277630405DBD9D65016563D00644C1F9E6B9, restored114command baseline PASS. Total possible mutants not enumerated; no cargo-mutants/full mutation claim. PR body updated; W9-E5 claim released. Local cleanup remains deferred after prior approval rejection.
