@@ -278,8 +278,8 @@ output is a table in the contract: C# member, windows-rs item or `GAP`; a `GAP` 
 ### 20 Integration (new, no 1:1 C# source)
 | WU | Content | Rust | Col | Model | Test | Depends on | Batch |
 |---|---|---|---|---|---|---|---|
-| W8-20a | Rust `Program.cs` + `main.rs`: parse args, DPI bootstrap, run `shell_startup`, exit codes (startup failure = 1) | `crates/pr-app/src/main.rs` | 🟡 | Sonnet | N | 17e, 13i | B6 |
-| W8-20b | UI parity smoke: hidden-window harness driving open folder, next/prev, zoom, recycle with fakes, plus the C-*/K-*/W-* rows of `PARITY.md` mapped to tests; remove the `ui-spike` feature/bin when the real window reproduces its measurements | `crates/pr-app/tests/ui_smoke.rs`, `PARITY.md` | 🟡 | Sonnet | N | everything | B6 |
+| W8-20a | Rust `Program.cs` + `main.rs`: parse args, DPI bootstrap, run `shell_startup`, exit codes (startup failure = 1) | `crates/pr-shell/src/main.rs` (planned in `pr-app`; package moved to `pr-shell`, D-W8B1-1) | 🟡 | Sonnet | N | 17e, 13i | B6 |
+| W8-20b | UI parity smoke: hidden-window harness driving open folder, next/prev, zoom, recycle with fakes, plus the C-*/K-*/W-* rows of `PARITY.md` mapped to tests; remove the `ui-spike` feature/bin when the real window reproduces its measurements | `crates/pr-shell/tests/ui_smoke.rs` (planned in `pr-app`; moved with the package), `PARITY.md` | 🟡 | Sonnet | N | everything | B6 |
 
 ## Counts
 Sub-units: 01 4, 02 2, 03 2, 04 5, 05 8, 06 6, 07 11, 08 5, 09 2, 10 9, 11 8, 12 10, 13 11, 14 7, 15 10, 16 9, 17 5, 18 22, 19 13, 20 2 =
