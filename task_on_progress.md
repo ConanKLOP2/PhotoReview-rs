@@ -1,5 +1,11 @@
 # Task on progress
 
+## Native input fixture repair, machine A, 2026-10-26
+
+- Claimed FIX-native-input-fixture A after root PR255 merged aa119f4. Separate master-based codex/fix-native-input-fixture reuses idle root/target-w9-e3. No edits to machineB startup/composition. Baseline comparison confirmed all five prior failures on unchanged0fee72c, each exit101; the repaired borrow matrix on9b81ac3 was10pass/5fail.
+- Native input harness now encodes real PNG/JPEG under owned TempRoot with the existing WIC encoder, decodes through WicDirectDecoder/PixelBufferImageCodec, attaches a WARP surface, forwards image events through the fake hub and waits for first present/nonzero settled geometry. Optional MainEnv initial-view callback delegates to the existing PresentationBridge with live settings/viewport; other fixtures keep their prior default. Relevant wheel/keep/glide dimensions match the pinned C# cases. Drop checks canonical file identity rather than a path containing parent segments or an8.3alias.
+- Restored C# StopKinetic bool through the shell adapter; native glide test proves impulses start a glide and then asserts navigation already stopped it. Prior Rust test discarded this verdict. Final strengthened native input matrix15/15PASS serially in21.77s, after the initial repaired fixture15/15PASS in22.78s. All use owned files, no Recycle Bin. Package Clippy and final workspace gates pending; no production startup, hardware GPU/performance or corpus claim. Menu golden/mutation debts stay open.
+
 **Updated:** 2026-10-23 (older entries moved to `docs/archive/`; the sections below are the latest ones; where two sections disagree the later date wins, not the later position)
 
 ## Native menu zoom root repair, machine A, 2026-10-26 morning

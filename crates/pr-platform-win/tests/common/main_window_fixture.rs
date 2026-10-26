@@ -430,6 +430,11 @@ pub fn built() -> Rc<Built> {
 
 /// Makes a hidden shell window, a real `MainViewModel` and the main window over them. UI thread only. The window is NOT shown.
 pub fn build(build_options: BuildOptions) -> Rc<Built> {
+    build_with_env(build_options, MainEnv::new())
+}
+
+/// The same real window with a caller-owned decoder/sink fixture.
+pub fn build_with_env(build_options: BuildOptions, env: MainEnv) -> Rc<Built> {
     let BuildOptions {
         options,
         window: window_options,
@@ -437,7 +442,6 @@ pub fn build(build_options: BuildOptions) -> Rc<Built> {
     } = build_options;
     let shell = create_window(window_options);
     let frame_clock: Rc<dyn HostFrameClock> = clock();
-    let env = MainEnv::new();
     let MainEnv {
         vm,
         photos,

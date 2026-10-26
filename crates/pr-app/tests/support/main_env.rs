@@ -201,10 +201,14 @@ pub struct SinkSeen {
     pub presented: Vec<String>,
 }
 
+type InitialViewAction = Box<dyn FnMut(&PresentationBridge)>;
+pub type InitialViewCallback = Box<dyn FnMut(&PresentationBridge, &AppSettings)>;
+
 /// Production's `WpfPresentationSink` wiring in miniature: the image and status callbacks feed the [`PresentationBridge`].
 pub struct BridgeSink {
     bridge: PresentationBridge,
     seen: Arc<Mutex<SinkSeen>>,
+    initial_view: Option<InitialViewAction>,
 }
 
 impl IPresentationSink for BridgeSink {
@@ -224,7 +228,11 @@ impl IPresentationSink for BridgeSink {
         self.bridge.on_set_status_text();
     }
 
-    fn apply_initial_view_mode(&mut self) {}
+    fn apply_initial_view_mode(&mut self) {
+        if let Some(apply) = self.initial_view.as_mut() {
+            apply(&self.bridge);
+        }
+    }
 
     fn on_presented(&mut self, path: &str) {
         lock(&self.seen).presented.push(path.to_owned());
@@ -817,6 +825,8 @@ pub type CatalogBuilder = Box<dyn FnOnce(&Path) -> ReviewCatalog>;
 
 /// Optional parts of a [`MainEnv`].
 pub struct EnvOptions {
+    /// Optional native-host counterpart of MainViewModelCompositionRoot.ApplyInitialView.
+    pub initial_view: Option<InitialViewCallback>,
     pub decoder: Arc<dyn ImageDecoder>,
     pub explorer: Arc<FakeExplorer>,
     pub settings: Box<dyn FnOnce(&mut AppSettings)>,
@@ -840,6 +850,7 @@ pub struct EnvOptions {
 impl Default for EnvOptions {
     fn default() -> Self {
         Self {
+            initial_view: None,
             decoder: SizedDecoder::new(),
             explorer: Arc::new(FakeExplorer::default()),
             settings: Box::new(|_| {}),
@@ -1050,6 +1061,10 @@ impl MainEnv {
             Arc::clone(&metrics),
         );
         let thumbnails = build_thumbnail_cache(&root.join("thumbs"));
+        let initial_view = options.initial_view.map(|mut apply| {
+            let settings = settings.clone();
+            Box::new(move |bridge: &PresentationBridge| apply(bridge, &settings.current())) as InitialViewAction
+        });
         let presenter = ImagePresenter::new(
             ImagePresenterDeps {
                 clock: Arc::clone(&clock),
@@ -1063,6 +1078,7 @@ impl MainEnv {
                 sink: Box::new(BridgeSink {
                     bridge: bridge.clone(),
                     seen: Arc::clone(&sink_seen),
+                    initial_view,
                 }),
                 file_system: Some(Arc::clone(&fs)),
                 on_presented_hook: None,
