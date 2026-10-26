@@ -4,7 +4,7 @@
   "Feeds W8-18o (dialogs::secondary_window_port). Reflection over the internal Win32SecondaryWindowPort and SecondaryWindowRouter of the PhotoReview (Shell.Win32) assembly; no window is created, no dialog is shown.",
   "The port is built with an empty IServiceProvider (new ServiceCollection().BuildServiceProvider()) and settingsEnabled = () => true / () => false / null (default: SettingsPageCatalog.IsComplete). The router is built over that port with a null fallback.",
   "Output per kind: supports -> value (Win32SecondaryWindowPort.Supports(kind)); router_supports -> value (SecondaryWindowRouter.Supports(kind)); initial -> open_count (OpenCount), is_benchmark_open, settings_enabled_value (SettingsEnabled); kinds -> names (the SecondaryWindowKind names in declaration order) and values (their ints).",
-  "The baseline enum has 8 members (no ExternalEditors / RenamePrompt: those are post-baseline, D-W8B5-415); the Rust enum has 2 more variants that the golden does not list."
+  "Baseline7eaee2a2 has10 enum members. W9-E8 adds ExternalEditors support/router cases; RenamePrompt support cases remain owned by W9-R8."
  ],
  "cases": [
   {
@@ -265,6 +265,12 @@
   {
    "name": "kinds",
    "kind": "kinds"
-  }
+  },
+  {"name":"E8 supports ExternalEditors settings_enabled true","kind":"supports","window":"ExternalEditors","settings_enabled":"true"},
+  {"name":"E8 supports ExternalEditors settings_enabled false","kind":"supports","window":"ExternalEditors","settings_enabled":"false"},
+  {"name":"E8 supports ExternalEditors settings_enabled default","kind":"supports","window":"ExternalEditors","settings_enabled":"default"},
+  {"name":"E8 router_supports ExternalEditors settings_enabled true","kind":"router_supports","window":"ExternalEditors","settings_enabled":"true"},
+  {"name":"E8 router_supports ExternalEditors settings_enabled false","kind":"router_supports","window":"ExternalEditors","settings_enabled":"false"},
+  {"name":"E8 router_supports ExternalEditors settings_enabled default","kind":"router_supports","window":"ExternalEditors","settings_enabled":"default"}
  ]
 }

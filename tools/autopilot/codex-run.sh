@@ -5,7 +5,7 @@
 # With a session id the previous session is resumed (`codex exec resume`): the pack is not sent again.
 C="${CODEX_BIN:-$HOME/.codex/plugins/.plugin-appserver/codex.exe}"
 DIR="$1"; PF="$2"; OUT="${3:-$DIR/.codex-last-message.txt}"; SID="${4:-}"
-M="${CODEX_MODEL:-gpt-6-luna}"; E="${CODEX_EFFORT:-low}"
+M="${CODEX_MODEL:-gpt-6.1-sol}"; E="${CODEX_EFFORT:-medium}"
 if [ -n "$SID" ]; then
   cd "$DIR" || exit 1
   exec "$C" exec resume --json --skip-git-repo-check -m "$M" -c "model_reasoning_effort=\"$E\"" -c 'sandbox_mode="workspace-write"' -o "$OUT" "$SID" - < "$PF"
