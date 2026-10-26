@@ -22,7 +22,7 @@
 | [`WAVE-9-PLAN.md`](WAVE-9-PLAN.md), [`WAVE-10-PLAN.md`](WAVE-10-PLAN.md) | Combined Wave 9 and Wave 10 views: dependency graphs, suggested order, pipeline tags, machine split (the lane plans stay the unit tables) | Before picking Wave 9/10 work |
 | [`WAVE-9-PLAN-edt.md`](WAVE-9-PLAN-edt.md), [`WAVE-9-PLAN-ren.md`](WAVE-9-PLAN-ren.md) | Wave 9 plans: external editors UI (lane E), FEAT-RENAME (lane R) | Before Wave 9 units |
 | [`WAVE-10-PLAN-http.md`](WAVE-10-PLAN-http.md) | Wave 10 manual update HTTP lane (contracts only) | Before W10-H units |
-| [`drafts/`](drafts/) | Proposed CI/release files not yet in `.github/workflows` (`release.yml`, `ci-deny-job.yml`, `deny.toml`, `raw-corpus-workflow.yml.md`) | Release / CI work |
+| [`drafts/`](drafts/) | Proposed CI/release files not yet in `.github/workflows` (`release.yml`, `ci-deny-job.yml`, `deny.toml`, `raw-corpus-workflow.yml.md`), each with its purpose and the decision needed; old draft reports in [`archive/drafts/`](archive/drafts/) | Release / CI work |
 | [`../tests/golden-inputs/README.md`](../tests/golden-inputs/README.md) | Oracle/golden workflow (`tools/oracle.ps1`) | Writing tests against C# behaviour |
 
 C# spec docs (read from the C# repo, not copied): `docs/architecture.md`, `docs/APP-MECHANISMS-VI.md`, `docs/adr/0001-0009`.
