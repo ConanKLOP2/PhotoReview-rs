@@ -8,6 +8,7 @@ use pr_core::file_actions::service::FileActionService;
 use pr_core::file_actions::types::FileActionRequest;
 use pr_core::model::{FileOperationType, JournalState};
 use pr_core::sync::CancelToken;
+use pr_core::time::DateTimeUtc;
 use pr_test_support::{FakeClock, FakeFileSystem, FakeRecycleBin, TempRoot};
 
 struct Rig {
@@ -281,6 +282,93 @@ fn rename_failure_before_mutation_is_dismissed_with_original_metadata() {
     let mut entries = Vec::new();
     rig.journal.read_entries(&mut |e| entries.push(e)).unwrap();
     assert_eq!(entries.last().unwrap().state, JournalState::Dismissed);
+}
+
+#[test]
+fn rename_failure_with_changed_source_fingerprint_stays_failed() {
+    // C#: FileActionService.IsRenameUntouched requires the original source length and timestamp.
+    for (scenario, replacement, timestamp_changes) in [
+        ("length", b"changed".as_slice(), false),
+        ("timestamp", b"image".as_slice(), true),
+    ] {
+        let rig = setup(&["a.jpg"]);
+        let source = rig.file("a.jpg");
+        let before = rig.fs.get_file_stat(std::path::Path::new(&source)).unwrap();
+        let changed_time = DateTimeUtc::from_ticks(before.last_write_utc.ticks() + 10_000).unwrap();
+        let fs = rig.fs.clone();
+        let original_time = before.last_write_utc;
+        let replacement_time = if timestamp_changes { changed_time } else { original_time };
+        let replacement = replacement.to_vec();
+        let replacement_length = replacement.len() as u64;
+        let service = FileActionService::new(
+            rig.journal.clone(),
+            rig.fs.clone(),
+            rig.clock.clone(),
+            Arc::new(FakeRecycleBin::new(rig.fs.clone())),
+        )
+        .with_move_override(Arc::new(move |from, _| {
+            fs.add_file_at(from, &replacement, replacement_time);
+            Err(std::io::Error::other("move refused after source changed"))
+        }));
+
+        let result = service.rename(&rig.request(&source, "x.jpg"), &CancelToken::new());
+        assert!(!result.succeeded, "{scenario}");
+        assert!(!result.source_removed, "{scenario}");
+        assert!(rig.fs.file_exists(std::path::Path::new(&source)), "{scenario}");
+        let actual = rig.fs.get_file_stat(std::path::Path::new(&source)).unwrap();
+        assert_eq!(actual.length, replacement_length, "{scenario}");
+        assert_eq!(actual.last_write_utc, replacement_time, "{scenario}");
+        assert_ne!(actual, before, "{scenario}");
+        let mut entries = Vec::new();
+        rig.journal.read_entries(&mut |entry| entries.push(entry)).unwrap();
+        assert_eq!(entries.last().unwrap().state, JournalState::Failed, "{scenario}");
+    }
+}
+
+#[test]
+fn rename_target_identity_requires_both_original_length_and_timestamp() {
+    // C#: FileActionService.IsRenameUntouched checks target length and timestamp against the original.
+    for (scenario, timestamp_matches, expected_state) in [
+        ("same fingerprint", true, JournalState::Failed),
+        ("different timestamp", false, JournalState::Dismissed),
+    ] {
+        let rig = setup(&["a.jpg"]);
+        let source = rig.file("a.jpg");
+        let target = rig.file("x.jpg");
+        let before = rig.fs.get_file_stat(std::path::Path::new(&source)).unwrap();
+        let target_time = if timestamp_matches {
+            before.last_write_utc
+        } else {
+            DateTimeUtc::from_ticks(before.last_write_utc.ticks() + 10_000).unwrap()
+        };
+        let fs = rig.fs.clone();
+        let service = FileActionService::new(
+            rig.journal.clone(),
+            rig.fs.clone(),
+            rig.clock.clone(),
+            Arc::new(FakeRecycleBin::new(rig.fs.clone())),
+        )
+        .with_move_override(Arc::new(move |_, to| {
+            fs.add_file_at(to, b"image", target_time);
+            Err(std::io::Error::other("target appeared during failed move"))
+        }));
+
+        let result = service.rename(&rig.request(&source, "x.jpg"), &CancelToken::new());
+        assert!(!result.succeeded, "{scenario}");
+        assert!(!result.source_removed, "{scenario}");
+        assert!(rig.fs.file_exists(std::path::Path::new(&source)), "{scenario}");
+        assert_eq!(
+            rig.fs.get_file_stat(std::path::Path::new(&source)).unwrap(),
+            before,
+            "{scenario}"
+        );
+        let actual_target = rig.fs.get_file_stat(std::path::Path::new(&target)).unwrap();
+        assert_eq!(actual_target.length, before.length, "{scenario}");
+        assert_eq!(actual_target.last_write_utc, target_time, "{scenario}");
+        let mut entries = Vec::new();
+        rig.journal.read_entries(&mut |entry| entries.push(entry)).unwrap();
+        assert_eq!(entries.last().unwrap().state, expected_state, "{scenario}");
+    }
 }
 
 #[test]
