@@ -20,6 +20,7 @@ use std::path::Path;
 use std::sync::Arc;
 
 use crate::abstractions::FileSystem;
+use crate::file_actions::case_only_rename::CaseOnlyRename;
 use crate::file_actions::journal_line::{JournalEntry, JournalGroupMember};
 use crate::model::{FileOperationType, JournalState};
 use crate::text::dotnet_path::get_directory_name;
@@ -190,12 +191,42 @@ impl RecoveryFileCheck {
                 group_members: Some(checks),
             };
         }
-        let source = self.check_path(&entry.source, entry.size, entry.last_write_utc.value, true);
-        let destination = entry
+        let mut source = self.check_path(
+            &entry.source,
+            entry.size,
+            entry.last_write_utc.value,
+            true,
+            entry.destination.as_deref(),
+        );
+        let mut destination = entry
             .destination
             .as_deref()
             .filter(|destination| !is_null_or_white_space(destination))
-            .map(|destination| self.check_path(destination, entry.size, entry.last_write_utc.value, false));
+            .map(|destination| {
+                self.check_path(
+                    destination,
+                    entry.size,
+                    entry.last_write_utc.value,
+                    false,
+                    Some(&entry.source),
+                )
+            });
+        // Both present results for a case-only pair mean a third stored spelling or multiple case-sensitive entries.
+        // Neither side is proven to match the journal, so keep both ambiguous (Conflict for pending, Unknown for committed).
+        if CaseOnlyRename::is_case_only_pair(Some(&entry.source), entry.destination.as_deref())
+            && destination.as_ref().is_some_and(|destination| {
+                matches!(source.status, RecoveryPathStatus::Exists | RecoveryPathStatus::Changed)
+                    && matches!(
+                        destination.status,
+                        RecoveryPathStatus::Exists | RecoveryPathStatus::Changed
+                    )
+            })
+        {
+            source.status = RecoveryPathStatus::Changed;
+            if let Some(destination) = destination.as_mut() {
+                destination.status = RecoveryPathStatus::Changed;
+            }
+        }
         let verdict = Self::decide(entry, &source, destination.as_ref());
         RecoveryCheckResult {
             entry: entry.clone(),
@@ -335,6 +366,7 @@ impl RecoveryFileCheck {
         recorded_size: i64,
         recorded_last_write_utc: DateTimeUtc,
         compare_last_write: bool,
+        twin: Option<&str>,
     ) -> RecoveryPathCheck {
         let mut folder_exists = false;
         if let Some(folder) = get_directory_name(path).filter(|folder| !folder.is_empty()) {
@@ -346,7 +378,7 @@ impl RecoveryFileCheck {
         }
         // P-12 (option A): no blank/NUL pre-check on `path`; the seam reports such a path as `Err` after counting the
         // stat, like the C# proxies.
-        let stat = match self.file_system.try_get_file_stat(Path::new(path)) {
+        let stat = match CaseOnlyRename::stat_as(self.file_system.as_ref(), path, twin) {
             Err(_) => return RecoveryPathCheck::new(path, RecoveryPathStatus::Unreadable, None, None, folder_exists),
             Ok(None) => return RecoveryPathCheck::new(path, RecoveryPathStatus::Missing, None, None, folder_exists),
             Ok(Some(stat)) => stat,

@@ -29,6 +29,7 @@ use std::panic::{AssertUnwindSafe, catch_unwind};
 use std::path::Path;
 
 use crate::abstractions::{Clock, FileStat, FileSystem, LiveOperationRegistry, Log, panic_message};
+use crate::file_actions::case_only_rename::CaseOnlyRename;
 use crate::file_actions::errors::{PENDING_UNCONFIRMED, SOURCE_STILL_EXISTS_AFTER_RECOVERY};
 use crate::file_actions::journal_line::{JournalDateTime, JournalEntry, JournalGroupMember};
 use crate::file_actions::journal_rules::is_stale_reconcile_after_committed;
@@ -316,11 +317,18 @@ fn reconcile_one(
                 )
             }
             FileOperationType::Move | FileOperationType::Copy => {
-                let source_exists = fs.file_exists(Path::new(&pending.source));
-                let destination_stat = pending
-                    .destination
-                    .as_deref()
-                    .and_then(|destination| fs.get_file_stat(Path::new(destination)));
+                let source_exists = match CaseOnlyRename::exists_as(fs, &pending.source, pending.destination.as_deref())
+                {
+                    Ok(exists) => exists,
+                    Err(_) => return None,
+                };
+                let destination_stat = match pending.destination.as_deref() {
+                    Some(destination) => match CaseOnlyRename::stat_as(fs, destination, Some(&pending.source)) {
+                        Ok(stat) => stat,
+                        Err(_) => return None,
+                    },
+                    None => None,
+                };
                 let destination_matches =
                     is_recorded_destination(destination_stat, pending.size, pending.last_write_utc.value);
                 // Move must have removed the source to count as done; Copy is expected to leave it in place.
@@ -430,9 +438,13 @@ fn is_group_member_completed(
         .destination
         .as_deref()
         .filter(|destination| !destination.chars().all(char::is_whitespace))
-        .and_then(|destination| fs.get_file_stat(Path::new(destination)));
+        .and_then(|destination| {
+            CaseOnlyRename::stat_as(fs, destination, Some(&member.source))
+                .ok()
+                .flatten()
+        });
     let destination_matches = is_recorded_destination(destination, member.size, member.last_write_utc.value);
-    let source_exists = fs.file_exists(source);
+    let source_exists = CaseOnlyRename::exists_as(fs, &member.source, member.destination.as_deref()).unwrap_or(true);
     match group.op_type {
         FileOperationType::Move => !source_exists && destination_matches,
         FileOperationType::Copy => destination_matches,

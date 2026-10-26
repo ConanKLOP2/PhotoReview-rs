@@ -16,9 +16,9 @@
 use std::error::Error;
 use std::fmt;
 use std::io;
-use std::path::Path;
 
 use crate::abstractions::{Clock, FileStat, FileSystem, LiveMarker};
+use crate::file_actions::case_only_rename::CaseOnlyRename;
 use crate::file_actions::errors::{self, JournalCodedError};
 use crate::file_actions::journal::OperationJournal;
 use crate::file_actions::journal_line::{JournalDateTime, JournalEntry};
@@ -163,7 +163,7 @@ impl<'a> JournalTransaction<'a> {
     /// `self.verify_destination_stat(fs.try_get_file_stat(Path::new(destination))?, error_code)` (ONE stat; P-12: a stat
     /// that cannot be inspected is returned as the error, like the C# `GetFileStat` throw).
     pub fn verify_destination(&mut self, fs: &dyn FileSystem, destination: &str, error_code: &str) -> io::Result<()> {
-        let stat = fs.try_get_file_stat(Path::new(destination))?;
+        let stat = fs.try_get_file_stat(std::path::Path::new(destination))?;
         self.verify_destination_stat(stat, error_code)
     }
 
@@ -193,7 +193,7 @@ impl<'a> JournalTransaction<'a> {
         destination: &str,
         size_error_code: &str,
     ) -> io::Result<()> {
-        if fs.file_exists(Path::new(source)) {
+        if CaseOnlyRename::exists_as(fs, source, Some(destination))? {
             return Err(self.coded_error(errors::MOVE_SOURCE_NOT_REMOVED));
         }
         self.verify_destination(fs, destination, size_error_code)

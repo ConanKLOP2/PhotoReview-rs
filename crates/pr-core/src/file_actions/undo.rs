@@ -29,6 +29,7 @@ use std::path::Path;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, Mutex, PoisonError};
 
+use super::case_only_rename::CaseOnlyRename;
 use super::errors::{self, JournalCodedError};
 use super::journal::OperationJournal;
 use super::journal_line::{JournalDateTime, JournalEntry, JournalGroupMember};
@@ -546,9 +547,9 @@ impl UndoService {
         })
     }
 
-    /// C# `SafeFileExists`: the Rust `file_exists` cannot fail, so this is a plain call (kept for traceability).
-    fn safe_file_exists(&self, path: &str) -> bool {
-        self.file_system.file_exists(Path::new(path))
+    /// C# `SafeFileExistsAs`: inspection failures are non-critical and fail closed.
+    fn safe_file_exists_as(&self, path: &str, twin: &str) -> bool {
+        CaseOnlyRename::exists_as(self.file_system.as_ref(), path, Some(twin)).unwrap_or(false)
     }
 
     /// C# `GetFileStat(path)` (C# returns null for a missing file).
@@ -601,8 +602,8 @@ impl UndoService {
                 // Destination, so the entry can never be undone again. Report once and drop it.
                 if move_returned
                     && !permanently_broken
-                    && self.safe_file_exists(&source)
-                    && !self.safe_file_exists(&destination)
+                    && self.safe_file_exists_as(&source, &destination)
+                    && !self.safe_file_exists_as(&destination, &source)
                 {
                     permanently_broken = true;
                 }
@@ -641,14 +642,14 @@ impl UndoService {
         permanently_broken: &mut bool,
         move_returned: &mut bool,
     ) -> io::Result<()> {
-        if !self.file_system.file_exists(Path::new(destination)) {
+        if !CaseOnlyRename::exists_as(self.file_system.as_ref(), destination, Some(source))? {
             *permanently_broken = true;
             return Err(Self::plain_error(self.texts.core_undo_source_or_destination_changed()));
         }
-        if self.file_system.file_exists(Path::new(source)) {
+        if CaseOnlyRename::exists_as(self.file_system.as_ref(), source, Some(destination))? {
             return Err(Self::plain_error(self.texts.core_undo_source_or_destination_changed()));
         }
-        let destination_stat = self.stat(destination);
+        let destination_stat = CaseOnlyRename::stat_as(self.file_system.as_ref(), destination, Some(source))?;
         let key = ignore_case_key(destination);
         let fingerprint = match self.move_fingerprints.get(&key) {
             Some(fingerprint) => *fingerprint,
@@ -721,10 +722,11 @@ impl UndoService {
     ) -> io::Result<()> {
         tx.begin()?;
         // R18: prove again, right before the mutation, that the file at Destination is the one the preflight verified.
-        let unchanged = self.stat(destination).is_some_and(|before_move| {
-            before_move.length == destination_stat.length
-                && before_move.last_write_utc == destination_stat.last_write_utc
-        });
+        let unchanged =
+            CaseOnlyRename::stat_as(self.file_system.as_ref(), destination, Some(source))?.is_some_and(|before_move| {
+                before_move.length == destination_stat.length
+                    && before_move.last_write_utc == destination_stat.last_write_utc
+            });
         if !unchanged {
             return Err(Self::plain_error(self.texts.core_undo_destination_changed_after_move()));
         }
@@ -889,8 +891,9 @@ impl UndoService {
         let mut pending: Vec<JournalGroupMember> = Vec::new();
         for undo_member in &mut undo_members {
             let original = undo_member.destination.clone().unwrap_or_default();
-            let source_stat = self.stat(&undo_member.source);
-            let destination_stat = self.stat(&original);
+            let source_stat = CaseOnlyRename::stat_as(self.file_system.as_ref(), &undo_member.source, Some(&original))?;
+            let destination_stat =
+                CaseOnlyRename::stat_as(self.file_system.as_ref(), &original, Some(&undo_member.source))?;
             if source_stat.is_some() && destination_stat.is_some() {
                 return Err(Self::plain_error(self.texts.core_undo_source_or_destination_changed()));
             }
@@ -958,9 +961,8 @@ impl UndoService {
             self.reverse_move(&member.source, &original)?;
             // C# `FileExists(member.Source) || GetFileStat(original)?.Length != member.Size`: the existence probe runs
             // first and short-circuits, so a file still at its move destination costs no stat of the original path.
-            if self.file_system.file_exists(Path::new(&member.source))
-                || !self
-                    .stat(&original)
+            if CaseOnlyRename::exists_as(self.file_system.as_ref(), &member.source, Some(&original))?
+                || !CaseOnlyRename::stat_as(self.file_system.as_ref(), &original, Some(&member.source))?
                     .is_some_and(|stat| i64::try_from(stat.length) == Ok(member.size))
             {
                 return Err(self.coded_error(errors::VERIFY_SIZE_CHANGED));
@@ -978,9 +980,11 @@ impl UndoService {
 
     /// R18 helper of the group Move: the file to move back still has the journaled size and EXACT write time.
     fn require_journaled_identity(&self, member: &JournalGroupMember) -> io::Result<()> {
-        let unchanged = self.stat(&member.source).is_some_and(|now| {
-            i64::try_from(now.length) == Ok(member.size) && now.last_write_utc == member.last_write_utc.value
-        });
+        let unchanged =
+            CaseOnlyRename::stat_as(self.file_system.as_ref(), &member.source, member.destination.as_deref())?
+                .is_some_and(|now| {
+                    i64::try_from(now.length) == Ok(member.size) && now.last_write_utc == member.last_write_utc.value
+                });
         if unchanged {
             Ok(())
         } else {
