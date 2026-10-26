@@ -3,7 +3,8 @@
 //! `SendMessage`); the keys of the native menu are posted BEFORE it opens (the modal loop of `TrackPopupMenuEx` reads them). A group of tests uses a
 //! scripted host (an id picked without showing a menu) to run every command through the real window.
 //!
-//! Every test is `#[ignore = "native: needs desktop"]` and stays `Partial` in PARITY until a desktop run is recorded. Differences from the C# harness:
+//! Legacy cases and the W9-E9 popup paint are ignored native tests; `editor_command_wiring` has four pure fake-window cases.
+//! Native evidence is recorded separately from default CI. Differences from the C# harness:
 //! the window is the `main_window_fixture` window (WARP-free: no renderer is attached, the viewport has no image content, the decoder is a fake), the
 //! zoom prompt comes through `FeatureOptions`, and the settings are written through `SettingsSource` (`begin_edit`/`commit_edit`).
 #![cfg(windows)]
