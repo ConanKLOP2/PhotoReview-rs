@@ -44,6 +44,38 @@ use pr_platform_win::shell_input::native;
 use pr_platform_win::shell_input::surface::{ViewportControllerApi, ViewportImageSurface};
 use pr_test_support::LogLevel;
 
+// Regression from the real native zoom menu: live source/layout reads may read the shared viewer.
+#[test]
+fn click_zoom_releases_viewer_between_operations_before_live_viewport_callbacks() {
+    let mut env = support::main_env::MainEnv::new();
+    let (folder, _) = env.images("live-zoom-content", &["photo.jpg"]);
+    env.open(&folder);
+    let rig = FeatureRig::with_env(env);
+    let content = Rc::downgrade(&rig.content);
+    let viewer = rig.viewer.clone();
+    let reads = Rc::new(Cell::new(0));
+    let observed_reads = reads.clone();
+    *rig.content.before_read.borrow_mut() = Some(Rc::new(move || {
+        observed_reads.set(observed_reads.get() + 1);
+        content.upgrade().unwrap().refresh(&viewer);
+    }));
+    rig.input.input().set_click_zoom_level(250);
+    assert_eq!(rig.viewer.borrow().zoom(), 2.5);
+    assert_eq!(
+        rig.viewport.image_actual_width(),
+        7500.0,
+        "layout must see the new zoom in the same operation"
+    );
+    assert!(reads.get() > 0);
+    rig.input.input().set_click_zoom_level(100);
+    assert_eq!(rig.viewer.borrow().zoom(), 1.0);
+    assert_eq!(
+        rig.viewport.image_actual_width(),
+        3000.0,
+        "live layout must not use a cached viewer snapshot"
+    );
+}
+
 // ---- ViewportImageSurface ----------------------------------------------------------------------------------------------------------------------
 
 fn surface_over(controller: &Rc<FakeController>) -> (ViewportImageSurface, ViewerHandle) {
