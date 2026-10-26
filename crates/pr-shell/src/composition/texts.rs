@@ -79,6 +79,10 @@ impl JournalTexts for LocalizedTexts {
 }
 
 impl FileActionTexts for LocalizedTexts {
+    fn core_file_action_rename_invalid_name(&self, name: &str) -> String {
+        ambient_format(keys::CORE_FILE_ACTION_RENAME_INVALID_NAME, &[LocArg::new("name", name)])
+    }
+
     fn core_file_action_busy(&self) -> String {
         ambient_get(keys::CORE_FILE_ACTION_BUSY)
     }
