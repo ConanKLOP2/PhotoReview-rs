@@ -10,6 +10,8 @@ compiles with the rest of the workspace; a porter fills only the files under "Ow
 
 Generated from the headings of this file (levels 2 and 3). Roster and decision sections are listed per wave and batch; the text of every decision is unchanged.
 
+**How to read this file.** It is the append-only lead record, not a spec: each wave or batch has a roster (which units, in which order) followed by the lead decisions (`D-*` ids) that override the unit contracts `contracts/W*.md`. Find your unit in the roster of its wave, read the decisions of that same section, then the cross-wave decisions that your contract names. Headings and `D-*` ids are cited from many other files (list at the end of this table of contents), so they are never renamed or renumbered; later waves add sections at the end. "Status" lines below come from `git log`, `docs/PARITY.md` and `task_on_progress.md` only, they are not a gate result, `docs/PARITY.md` stays the source of truth per row.
+
 - [Wave 1 roster](#wave-1-roster)
 - [Lead decisions (Wave 1)](#lead-decisions-wave-1)
 - [Wave 2 roster (dependency order)](#wave-2-roster-dependency-order)
@@ -96,6 +98,32 @@ Generated from the headings of this file (levels 2 and 3). Roster and decision s
   - [Wave 10 release lane (W10-R1..R5)](#wave-10-release-lane-w10-r1r5)
   - [Wave 10 benchmark lane (W10-B1..B3)](#wave-10-benchmark-lane-w10-b1b3)
   - [Wave 10 RAW/native lane (W10-N1..N4)](#wave-10-rawnative-lane-w10-n1n4)
+
+**Status at a glance** (verified from `git log` PR numbers, `docs/PARITY.md` and `task_on_progress.md`; a wave without a line here has no verifiable status).
+
+- Wave 1: contracts #4, port #5, merged on master.
+- Wave 2: contracts #7, port #8, merged on master.
+- Wave 3: contracts #11, port #17, merged on master.
+- Wave 4: contracts #16, port #20, merged on master; `docs/PARITY.md` "Wave 4 final status" lists units as Done or Partial.
+- Wave 5: contracts #22, ports #24 and #26, merged on master; `docs/PARITY.md` "W5 final status" says Partial.
+- Wave 6: contracts #27, port #25, integration #28, merged on master.
+- Wave 7: contracts #29, port #30, repair #31, merged on master; `docs/PARITY.md` rows are Done or Partial.
+- Wave 8 batch B1 and B2: contracts #34 and #37, ports merged on master (B1 35 units, B2 26 units per `task_on_progress.md`).
+- Wave 8 batch B3: contracts #85-#90, 22 of 23 units on master per `task_on_progress.md` (2026-10-21); W8-12j (swap-chain latency experiment) not started there.
+- Wave 8 batch B4: contracts #108-#111, reconciliation #113; 23 of 24 units on master at 2026-10-22, W8-14f merged afterwards (#144).
+- Wave 8 batch B5: contracts #147, ports merged on master (#148, #150-#153, #226-#231); per-unit state in `docs/PARITY.md`.
+- Wave 8 batch B6: contracts #149, ports merged on master (#164, #175, #177, #223, #224); per-unit state in `docs/PARITY.md`.
+- Wave 9 EXTERNAL-EDITORS: contracts #165; W9-E1 to W9-E7 merged (#233-#239); no merged commit for W9-E8 and W9-E9 was found in `git log`.
+- Wave 9 FEAT-RENAME: contracts only on master (#176); the lane is assigned to machine A (#241).
+- Wave 10: contracts only on master (#168, #171, #172, #173).
+
+**Files that cite `D-*` decision ids defined here** (so nobody renames or renumbers them; grep `D-W` over `git ls-files`, 457 files):
+
+- `contracts/W*.md`: 165 unit contracts.
+- `crates/`: 266 files (Rust sources, tests and `Cargo.toml` comments in `pr-app`, `pr-platform-win`, `pr-shell`, `pr-bench`).
+- `docs/PARITY.md` (134 mentions), `docs/PARITY-CLOSEOUT.md`, `docs/PROPOSED-DECISIONS.md`, `docs/WAVE-8-PLAN.md`, `docs/WAVE-10-PLAN.md`.
+- `docs/adr/` (5 ADR files), `docs/reviews/` (11 files), `docs/drafts/` (3 files), `docs/archive/task_on_progress-wave8-b1-b2.md`.
+- `task_on_progress.md`, `tools/autopilot/workflows/wave8-port-b1.js`, `tools/oracle-cs/Commands/W8-17d.cs`.
 
 ## Wave 1 roster
 

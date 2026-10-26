@@ -49,7 +49,7 @@ One row per document (or per folder where a folder is one document set). Check t
 | [`../tools/autopilot/README.md`](../tools/autopilot/README.md) | Autopilot kit: pipeline scripts, state files, how the port is run end to end | Before running the pipeline scripts |
 | [`../tools/autopilot/CODEX-RULES.md`](../tools/autopilot/CODEX-RULES.md) | The rules every Codex call receives (owned files only, C# is the spec, no real Recycle Bin) | Before writing a Codex prompt or pack |
 | [`../tools/autopilot/loop-prompt.md`](../tools/autopilot/loop-prompt.md) | Prompt of the autopilot loop (Codex-first routing, tick steps) | Before changing the loop |
-| [`../tools/dev/README.md`](../tools/dev/README.md) | Developer scripts: `status.sh`, `janitor.sh`, and the other `tools/dev/` tools with their docs in `tools/dev/docs/` | Before cleaning worktrees or using a dev tool |
+| [`../tools/dev/README.md`](../tools/dev/README.md) | Developer tools table (`status.sh`, `janitor.sh`, `dashboard.sh`, `parity.sh`, ...) with docs in `tools/dev/docs/` and the matching skills; `tools/dev/doc-links.py` checks the links of every document | Before cleaning worktrees or using a dev tool |
 | [`../tools/dev/SCHED.md`](../tools/dev/SCHED.md) | Codex scheduler `codex-sched.sh`: lanes, quota limit, environment | Before running several Codex calls |
 | [`../tools/dev/hooks/README.md`](../tools/dev/hooks/README.md) | Claude Code hooks (`post-edit-rustfmt.sh`, `pre-bash-guard.sh`) and how to register them | Before enabling or changing hooks |
 | [`../tests/golden-inputs/README.md`](../tests/golden-inputs/README.md) | Oracle/golden workflow (`tools/oracle.ps1`) | Writing tests against C# behaviour |
@@ -60,8 +60,8 @@ One row per document (or per folder where a folder is one document set). Check t
 | File | Purpose | Read |
 |---|---|---|
 | [`adr/`](adr/) | R0001 UI framework (proposed; spike done, Win32 + Direct2D) · R0002 coexistence · R0003 concurrency + C#→Rust mapping (accepted) · D59/D60 and the unit and `Different`-row ADRs; list in [`adr/README.md`](adr/README.md) | Relevant area; R0003 before any port |
-| [`reviews/`](reviews/) | Read-only review reports per area (autopilot, dialogs, invariants, startup, tests, W9 contracts, PR reviews); [`reviews/BACKLOG.md`](reviews/BACKLOG.md) merges all findings into one backlog with Codex prompts | Before fixing a review finding or picking cleanup work |
-| [`drafts/`](drafts/) | Proposed CI/release files not yet in `.github/workflows` (`release.yml`, `ci-deny-job.yml`, `deny.toml`, `raw-corpus-workflow.yml.md`) and their reviews (`ci-draft-check.md`, `w10-review.md`) | Release / CI work |
-| [`archive/`](archive/) | Older `task_on_progress.md` entries moved verbatim (Wave 5, 6, 7, Wave 8 B1/B2) | History only |
+| [`reviews/`](reviews/) | Read-only review reports per area (autopilot, dialogs, invariants, startup, tests, W9 contracts, PR reviews); index with counts and status in [`reviews/README.md`](reviews/README.md); [`reviews/BACKLOG.md`](reviews/BACKLOG.md) merges all findings into one backlog with Codex prompts | Before fixing a review finding or picking cleanup work |
+| [`drafts/`](drafts/) | Proposed CI/release files not yet in `.github/workflows` (`release.yml`, `ci-deny-job.yml`, `deny.toml`, `raw-corpus-workflow.yml.md`), each with its purpose and the decision needed ([`drafts/README.md`](drafts/README.md)); old draft reports in [`archive/drafts/`](archive/drafts/) | Release / CI work |
+| [`archive/`](archive/) | Older `task_on_progress.md` entries moved verbatim (Wave 5 to Wave 9; table in `../task_on_progress.md`), superseded consistency notes and old draft reports | History only |
 
 C# spec docs (read from the C# repo, not copied): `docs/architecture.md`, `docs/APP-MECHANISMS-VI.md`, `docs/adr/0001-0009`.
