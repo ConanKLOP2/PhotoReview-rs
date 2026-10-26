@@ -1,5 +1,8 @@
 # Wave 4 plan: Imaging (decided 2026-10-15, baseline C# `d92d6aae`)
 
+> **Status: historical (done).** Last verified 2026-10-26 against `origin/master` 8b93fbf.
+> Wave 4 contracts merged in #16 and the Wave 4 port in #20 (b3bb2e7, 2026-10-16). The text below is the plan as decided on 2026-10-15: statements such as "crate exists, empty" and the Opus model rows are history (Opus rows became Sonnet by P-34). It supersedes only the Wave 4 table of `MULTI-AGENT-PLAN.md` section 3.
+
 Supersedes the Wave 4 table of `MULTI-AGENT-PLAN.md` section 3: the file map there predates the Win32/Direct2D move
 (C# ADR 0010). Sizes below are C# bytes at `d92d6aae`. Granularity rule: P-18. Starts when the Wave 3 PR is merged
 (contract writing may start earlier: it only reads C# and writes `contracts/`).

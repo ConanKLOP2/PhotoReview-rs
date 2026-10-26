@@ -1,5 +1,8 @@
 # Wave 10: manual update HTTP lane (contracts only)
 
+> **Status: active; contract and stub only, W10-H1..H3 are not implemented.** Last verified 2026-10-26 against `origin/master` 8b93fbf.
+> Evidence: `todo!()` remains in `crates/pr-platform-win/src/http/{policy,transport}.rs` and `crates/pr-shell/src/composition/update_http.rs`; no W10 commit other than contracts (#171) and their review (#193) is on master. The Wave 8 units H3 waits for (W8-09b S4 #224, W8-18o #231, W8-19j..19m #230) are merged. Combined view: [WAVE-10-PLAN.md](WAVE-10-PLAN.md).
+
 Baseline `d92d6aae`; `HttpTransport` and presenter logic are already merged. This plan reserves three implementation units; its stubs do not perform network I/O. `F` means fake/in-process socket tests, `N` means Windows desktop or network environment verification. No test contacts the public internet.
 
 | WU | C# files (lines) | Rust | Col | Model | Test | Depends on | Batch |
