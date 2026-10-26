@@ -233,7 +233,7 @@ impl RenameNamePolicy {
     }
 }
 
-/// C# `CaptureGroupRenamePlan.Plan`: path keys use OrdinalIgnoreCase semantics when implemented.
+/// C# `CaptureGroupRenamePlan.Plan`: path keys retain spelling and use OrdinalIgnoreCase lookups.
 #[derive(Debug, Clone)]
 pub struct CaptureGroupRenamePlan {
     pub check: RenameNameCheck,
