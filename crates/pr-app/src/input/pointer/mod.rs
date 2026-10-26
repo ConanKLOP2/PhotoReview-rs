@@ -7,9 +7,11 @@
 
 pub mod click_zoom;
 pub mod pan;
+pub mod viewer;
 pub mod wheel;
 pub mod zoom;
 
 pub use pan::PointerRelease;
+pub use viewer::PointerViewer;
 pub use wheel::{PointerCommands, PointerContext, PointerInputController};
 pub use zoom::{PointerContinuation, PointerStep, ZoomAction};

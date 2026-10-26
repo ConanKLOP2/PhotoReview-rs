@@ -659,6 +659,8 @@ impl InputSurface for RigSurface {
 pub struct RigContent {
     cache: Cell<ViewportContent>,
     pub bitmap: Cell<(f64, f64)>,
+    /// Optional live host read, used to detect viewer guards held across viewport callbacks.
+    pub before_read: RefCell<Option<Rc<dyn Fn()>>>,
 }
 
 impl RigContent {
@@ -667,6 +669,7 @@ impl RigContent {
         let content = Rc::new(RigContent {
             cache: Cell::new(ViewportContent::empty()),
             bitmap: Cell::new(bitmap),
+            before_read: RefCell::new(None),
         });
         content.refresh(viewer);
         content
@@ -674,6 +677,10 @@ impl RigContent {
 
     /// The cached content (what the viewport's content callback returns).
     pub fn current(&self) -> ViewportContent {
+        let before_read = self.before_read.borrow().clone();
+        if let Some(before_read) = before_read {
+            before_read();
+        }
         self.cache.get()
     }
 
@@ -778,6 +785,7 @@ impl Rig {
         let content = Rc::new(RigContent {
             cache: Cell::new(ViewportContent::empty()),
             bitmap: Cell::new((f64::from(options.image_width), f64::from(options.image_height))),
+            before_read: RefCell::new(None),
         });
         content.refresh(&viewer);
 
