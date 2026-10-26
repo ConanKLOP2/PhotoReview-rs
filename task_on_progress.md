@@ -1,5 +1,11 @@
 # Task on progress
 
+## Native input final gate and independent lifetime defect, machine A, 2026-10-26 13:16
+
+- Resumed after live quota reset0%5h/62%week. Runner72866 completed exit0 on21ff633: fmt12/Clippy and9862passed/0failed/1329ignored across564resultlines. Integrated tooling/docs master079a28d at74109b6; owned Rust source unchanged. Final5fmt12/workspace Clippy/workspace9862/0/1329 PASS, exit0.
+- Broader real-tree regression on74109b6: frame17pass/1fail, viewing14/14PASS, input15/15PASS with actual FirstImagePresented/60latency samples, menus22/22PASS with all four popup capture rows. The frame lifetime case also failed individually on unchanged master079a28d, exit101. No unchanged retry-to-green; the test remains asserted.
+- Independent FIX-shell-handler-lifetime A from079a28d in idle E9 root repairs window-handler-window Rc ownership after WM_NCDESTROY. Two new native regressions red before; root fix passes all50shell/frame functions afterward (icon resource branch still skipped without RT_GROUP_ICON). Root source36ad6de/docs96971f3, bounded final runner59109 active. Merge that root PR first, then integrate here and rerun final head gates before this fixture PR. All work committed/pushed; no full native startup/corpus/mutation claim.
+
 ## Native input final frame and latency parity, machine A, 2026-10-26 09:46
 
 - E9 PR256 merged82b8418; fetched tree matches9ba59ab and W9-E9 claim released. Integrated E9 master at891da96. Prior native fixture source3a32e04 completed all12fmt/workspace Clippy and9851passed/0failed/1328ignored across564resultlines, exit0; this is pre-E9/pre-frame-strengthening evidence.
