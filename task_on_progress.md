@@ -1,5 +1,11 @@
 # Task on progress
 
+## Wave 9 E9 final integrated gates, machine A, 2026-10-26 09:34
+
+- Root PR255 merged aa119f4; fetched master owned source/test/docs content matches648907c and FIX-zoom-menu-borrow claim released. E9 integrated that repair atfd5c505, preserving both task histories and PARITY rows. Final fmt-all attempted Windows206, all12package format checks PASS; workspace all-target Clippy locked-Dwarnings PASS; workspace9862passed/0failed/1329ignored across564result lines, runner exit0.
+- Focused final sourcefd5c505: controller53/53PASS; complete shell_menus_e2e22/22PASS serially (4pure real-VM wiring,18native functions), including all four en/vi x96/144 popup paint rows/eight GDI captures. C# suffix/default/error behavior and short-path-safe launch identity are covered. No actual external program launch, full production startup, hardware GPU/performance/corpus or full mutation claim. Native composition glue is excluded from full cargo-mutants by policy.
+- Open one master-based E9 PR now with immediate GitHub squashauto; ccd_pr/bind_pr/set_monitor/set_auto_merge unavailable, no app auto-fix claim. Local cleanup retained under earlier automatic approval rejection. R1 final pre-root gate9903/0/1328 passed separately; native input fixture repair claim is independent,15/15native PASS and final workspace gate pending.
+
 **Updated:** 2026-10-23 (older entries moved to `docs/archive/`; the sections below are the latest ones; where two sections disagree the later date wins, not the later position)
 
 ## Wave 9 E9 root repair handoff, machine A, 2026-10-26 morning
