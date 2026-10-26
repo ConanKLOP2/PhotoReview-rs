@@ -180,7 +180,7 @@ mod editor_command_wiring {
         let env = rig.env.borrow();
         assert_eq!(
             *env.dialog.settings_targets.lock().unwrap(),
-            vec![pr_core::abstractions::dialog::SettingsTarget::ExternalEditor]
+            vec![pr_core::abstractions::SettingsTarget::ExternalEditor]
         );
         assert!(env.dialog.errors.lock().unwrap().is_empty());
     }
