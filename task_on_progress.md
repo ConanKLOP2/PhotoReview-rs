@@ -1,5 +1,13 @@
 # Task on progress
 
+## Shell handler lifetime root repair, machine A, 2026-10-26 13:14
+
+- Claimed FIX-shell-handler-lifetime A; independent codex/fix-shell-handler-lifetime from master079a28d, reusing idle merged E9 root/target-w9-e7. Input fixture branch74109b6 is absent here. Its final standard gates passed9862/0/1329 and native viewing14/input15/menu22PASS; broader frame suite17pass/1fail exposed this independent lifecycle defect.
+- Unchanged closed_disposes_the_bars_once_and_unsubscribes failed on master079a28d (exit101). Registered ContextMenuMessageHandler holds its window/controller/services, forming a window-handler-window Rc cycle after Closed. C#7eaee2a2 ShellWindow.OnNativeDestroyed frees the GCHandle and GC can collect that cycle; Rust must release dead handler ownership explicitly.
+- Added two native ownership regressions proving handlers stay live during Closed and are released after WM_NCDESTROY, including a panicking Closed subscriber. Both red before fix (exit101). OnNativeDestroyed now frees the cookie then takes/drops the message handler vector outside its RefCell borrow; existing trampoline target clone keeps the callback alive. No new unsafe, dependency or behavior fallback.
+- Focused native/pure regression50/50functions PASS serially (18frame+32shell-window), exit0; includes the baseline failing frame lifetime case, both new guards, panic/reentry and50open/close USER/GDI test. The icon test's RT_GROUP_ICON branch is skipped by the resource-less test executable, so no exe-resource claim. Hidden window/WARP evidence only; visible show/deferred/minimised/fullB6 gaps remain. Native lifecycle glue is excluded from full mutation by policy.
+- Final fmt/Clippy/workspace gates follow before a separate root PR; merge root repair first, then integrate it into native input fixture and R1 before their PRs. Claim ownership and prior cleanup-rejection retention remain in force. No unchanged retry-to-green.
+
 ## Wave 9 E9 final integrated gates, machine A, 2026-10-26 09:34
 
 - Root PR255 merged aa119f4; fetched master owned source/test/docs content matches648907c and FIX-zoom-menu-borrow claim released. E9 integrated that repair atfd5c505, preserving both task histories and PARITY rows. Final fmt-all attempted Windows206, all12package format checks PASS; workspace all-target Clippy locked-Dwarnings PASS; workspace9862passed/0failed/1329ignored across564result lines, runner exit0.
