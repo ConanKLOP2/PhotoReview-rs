@@ -1,6 +1,6 @@
 # Wave 9 plan (combined view): external editors (lane E) and FEAT-RENAME (lane R)
 
-> **Status: active combined view; lane E is implemented (W9-E1..E9 on master), R1 policy/plan is implemented on the integration branch (integrated gates PASS; PR pending), and R2..R11 remain contract and stub only.** Last verified 2026-10-26 against immutable master `959df9a`.
+> **Status verified 2026-10-27: lane E and R1 are merged; R1 PR #275 squash `1c81af8`, selected postmerge mutation 12/97 tested and 12 caught (85 not run). R2..R11 remain contract/stub only.** See `PARITY.md` and [mutation evidence](reviews/W9-R1-MUTATION.md).
 > Evidence is the status table in section 0, taken from `git log origin/master`; sections 4 and 6 are kept as the snapshot of 2026-10-23 and are superseded by section 0.
 
 Written by DOC-WAVE-PLANS (machine C, cloud) from `docs/WAVE-9-PLAN-edt.md`, `docs/WAVE-9-PLAN-ren.md`, `contracts/W9-E1..E9.md`, `contracts/W9-R1..R11.md`, `contracts/README.md` (sections "Wave 9 sync") and the `origin/master` history of 2026-10-23. Nothing here is new design.
