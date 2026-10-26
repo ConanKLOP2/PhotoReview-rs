@@ -1,5 +1,12 @@
 # Task on progress
 
+## Native fixture event-driven Background barrier, machine A, 2026-10-26 13:53
+
+- Final6sourcee1f250c fmt12/workspace Clippy/workspace9862passed/0failed/1331ignored across564resultlines PASS, exit0. Combined regression100pass/1fail: clear_gpu_cache_after_dispose_is_a_no_op timed out at the Background sentinel; frame18/shell32/input15/menu22 allpassed, viewing13pass/1fail. No unchanged retry-to-green.
+- The old wait_until continuously posts Normal-priority probes while waiting for a Background job, which is eligible only without higher-priority work/messages. Replaced that test's poll/AtomicBool with a bounded channel sent by the same real Background callback. The callback ordering and final gpu_cache_clear_count==0 assertion are preserved; no sleep, manual dispatcher drain or ignored failure.
+- Updated combined regression101/101functions PASS: frame18, viewing14, shell32, input15, menus22, exit0. Includes actual FirstImagePresented, started/stopped glide, canonical dropped-file identity and all four popup paint rows. This run's60latency samples p95: handler0.10ms/layout0.11ms/frame1.04ms; C# handler/layout bounds PASS, WARP frame timing advisory. Resource-less executable icon branch stays unexercised.
+- Final7fmt/Clippy/workspace gates follow before opening the fixture PR. No full production startup/hardware GPU/corpus/full mutation claim. Native/composition glue excluded from full cargo-mutants by policy. R1 remains pending merged fixture and final-head gates.
+
 ## Native input integrates merged lifetime repair, machine A, 2026-10-26 13:31
 
 - Root PR260 merged8b93fbf; fetched full tree matches reviewed967c79f and FIX-shell-handler-lifetime claim released. Root source96971f3 fmt12/workspace Clippy/workspace9862passed/0failed/1331ignored (564resultlines) PASS, runner exit0; all50shell/frame functions PASS separately, executable icon resource branch unexercised.
