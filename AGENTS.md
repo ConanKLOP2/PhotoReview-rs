@@ -71,6 +71,16 @@ the C# code at the baseline in [`docs/SYNC-LEDGER.md`](docs/SYNC-LEDGER.md) deci
 - A unit that fails the pipeline gate gets one automatic Codex fixup round (`FIXUP=1` by default; see `tools/autopilot/README.md`) before human or Claude triage.
 - The Codex Windows sandbox writes only to its working directory: run Codex cargo builds with `CARGO_TARGET_DIR` inside the worktree and `cargo-mutants` with its target directory outside the worktree (the pipeline driver is the exception: it builds in `<worktree>/target` and mutates in `<worktree>/target-mut`, see `codex-pipeline.sh`).
 
+## Ready-made tools (`tools/dev`): use them before writing your own command
+
+The table is in [`tools/dev/README.md`](tools/dev/README.md); each tool has a docs file and a selftest. Run them from the repo root as `bash tools/dev/<tool>.sh`. Do not improvise these jobs with ad-hoc commands (the ad-hoc versions are what cost lanes and disk before):
+
+- Before every PR: `bash tools/dev/pre-pr.sh` (add `--test` for the changed crates); paste its "NOT RUN" list into the PR body.
+- State and numbers: `status.sh` (quota, disk, processes, claims), `parity.sh stats|unit|reconcile` (PARITY rows), `dashboard.sh`. Never count units from commit subjects.
+- Cleanup: `janitor.sh` (dry-run first; never delete worktrees or kill `cargo`/`rustc`/`codex` by hand).
+- Failed unit: `triage.sh <unit>`. Mutation: `mutants.sh`. Native tests: `native-tests.sh`. Oracle goldens: `oracle.sh`. `unsafe` hygiene: `unsafe-audit.sh` (CI runs it).
+- Claude Code finds the skills in `.claude/skills`, Codex in `.agents/skills` (kept identical, checked by `agents-check.sh`).
+
 ## Several machines
 
 When more than one machine works on the port, read [`docs/MULTI-MACHINE.md`](docs/MULTI-MACHINE.md) first: set `PR_MACHINE` (fallback: the local file `tools/autopilot/state/machine`, then the host name), claim every unit with 
