@@ -10,5 +10,4 @@ Env overrides: `PY_BIN`, `UNSAFE_AUDIT_ROOT`, `UNSAFE_AUDIT_BASELINE`, `UNSAFE_A
 
 Safety: reads files only (writes the baseline file only with `--update-baseline`). The baseline should only shrink.
 
-Proposed CI job (not added; `.github/workflows` is not edited here): a cheap ubuntu job, no Rust toolchain needed, timeout 5 min:
-`unsafe-audit: runs-on: ubuntu-latest; timeout-minutes: 5; steps: actions/checkout; run: bash tools/dev/unsafe-audit.sh`
+CI: the `unsafe-audit` job in `.github/workflows/ci.yml` (ubuntu, no toolchain) runs this script on every pull request and `build-test` requires it.
