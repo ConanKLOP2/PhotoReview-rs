@@ -3,7 +3,7 @@
 `post-edit-rustfmt.sh` formats in-repository Rust files after Edit/Write. Formatting failures are swallowed so incomplete edits remain usable.
 `pre-bash-guard.sh` blocks broad formatting, cross-lane process kills, protected force pushes, dangerous recursive removals, and unscoped `git clean`.
 
-The lead registers these after review; this change does **not** apply settings. Add the following to `.claude/settings.local.json`:
+Status (checked 2026-10-26): NOT registered; the hooks are only documented here. The owner registers them after review; no agent or PR applies settings. Add the following to `.claude/settings.local.json`:
 
 ```json
 {

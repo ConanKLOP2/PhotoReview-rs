@@ -1,5 +1,9 @@
 # Kế hoạch port PhotoReview sang Rust
 
+> **Trạng thái: đang dùng (lộ trình phase và gate).** Kiểm lại 2026-10-26 trên `origin/master` 8b93fbf.
+> Điều cần biết: Wave 1 đến 7 đã có PR port trên master (#5, #8, #17, #20, #24/#26, #25/#28, #30), Wave 8 đạt 147/151 đơn vị (`bash tools/dev/dashboard.sh`; chưa thấy trên master: W8-12j có điều kiện, W8-17e, W8-20a, W8-20b), Wave 9 lane E (W9-E1..E9) đã merge, lane R và Wave 10 mới có hợp đồng và stub. Phase 7 (parity 100%, benchmark, chạy thử 2 tuần) chưa bắt đầu: [TRIAL-PLAN.md](TRIAL-PLAN.md) ghi mọi mục mở là TBD.
+> UI đã chốt hướng Win32 + Direct2D (P-06), không phải egui/Slint; R0001 vẫn Proposed. Dòng UI trong bảng Stack đã sửa theo đó; dòng cũ nằm ở [archive/plans-banners-replaced-lines.md](archive/plans-banners-replaced-lines.md).
+
 Mục tiêu: hành vi **y chang** bản C# (baseline trong [SYNC-LEDGER.md](SYNC-LEDGER.md)), tốc độ **bằng hoặc hơn**,
 chạy song song với bản C# mà không bao giờ dùng chung dữ liệu ([R0002](adr/R0002-coexistence-with-csharp-app.md)).
 Quy mô nguồn: khoảng 52K dòng C# trong 10 project, khoảng 123K dòng test, 10 cửa sổ, INV-1…12, 9 ADR.
@@ -8,7 +12,7 @@ Quy mô nguồn: khoảng 52K dòng C# trong 10 project, khoảng 123K dòng tes
 
 | Mảng | C# | Rust |
 |---|---|---|
-| UI | WPF | eframe/egui + wgpu (đề xuất), Slint là phương án khác; chốt bằng spike ([R0001](adr/R0001-ui-framework.md)) |
+| UI | WPF | Win32 + Direct2D/DirectWrite qua `windows-rs` (P-06; R0001 vẫn Proposed vì còn một gate p95 chưa đạt, egui/Slint không được spike) ([R0001](adr/R0001-ui-framework.md)) |
 | Decode mặc định | WicDirect | WIC qua crate `windows` (ADR 0001) |
 | Decode nhanh | TurboJPEG | libjpeg-turbo (DLL đã pin hash hoặc link tĩnh) |
 | Fallback | WPF decoder | WIC tổng quát / crate `image`; cache key gồm cả backend (INV-12) |

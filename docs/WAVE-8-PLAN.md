@@ -1,5 +1,9 @@
 # Wave 8 plan: App/UI (proposed 2026-10-18, baseline C# `d92d6aae`)
 
+> **Status: active (roster of the remaining Wave 8 units; the plan is acted on as P-38, still listed PROPOSED there).** Last verified 2026-10-26 against `origin/master` 8b93fbf.
+> Wave 8 is 147/151 units on master (`bash tools/dev/dashboard.sh`, counted from commit subjects and bodies of `origin/master`); not found on master: W8-12j (conditional), W8-17e, W8-20a, W8-20b.
+> Per-batch counts from the same run: B1 35/35, B2 26/26, B3 22/23, B4 24/24, B5 35/35, B6 5/8. The count is a heuristic over commit subjects, not a parity claim; native, attended and GPU evidence stay in `docs/PARITY.md`. Dated per-unit table: [WAVE-8-REPORT.md](WAVE-8-REPORT.md) (snapshot of 2026-10-22).
+
 Supersedes the Wave 8 sketch in `MULTI-AGENT-PLAN.md` section 3 (nine coarse WUs written before R0001 and before the C# move to
 Win32 + Direct2D, C# ADR 0010). Exemplar: `WAVE-4-PLAN.md`. Granularity: P-18 (about 400 C# lines per sub-unit). Scheduling:
 P-28 dependency graph (the `Depends on` column), not tier barriers. Models: Haiku or Sonnet only (P-34). Line counts are C# lines
@@ -274,8 +278,8 @@ output is a table in the contract: C# member, windows-rs item or `GAP`; a `GAP` 
 ### 20 Integration (new, no 1:1 C# source)
 | WU | Content | Rust | Col | Model | Test | Depends on | Batch |
 |---|---|---|---|---|---|---|---|
-| W8-20a | Rust `Program.cs` + `main.rs`: parse args, DPI bootstrap, run `shell_startup`, exit codes (startup failure = 1) | `crates/pr-app/src/main.rs` | 🟡 | Sonnet | N | 17e, 13i | B6 |
-| W8-20b | UI parity smoke: hidden-window harness driving open folder, next/prev, zoom, recycle with fakes, plus the C-*/K-*/W-* rows of `PARITY.md` mapped to tests; remove the `ui-spike` feature/bin when the real window reproduces its measurements | `crates/pr-app/tests/ui_smoke.rs`, `PARITY.md` | 🟡 | Sonnet | N | everything | B6 |
+| W8-20a | Rust `Program.cs` + `main.rs`: parse args, DPI bootstrap, run `shell_startup`, exit codes (startup failure = 1) | `crates/pr-shell/src/main.rs` (planned in `pr-app`; package moved to `pr-shell`, D-W8B1-1) | 🟡 | Sonnet | N | 17e, 13i | B6 |
+| W8-20b | UI parity smoke: hidden-window harness driving open folder, next/prev, zoom, recycle with fakes, plus the C-*/K-*/W-* rows of `PARITY.md` mapped to tests; remove the `ui-spike` feature/bin when the real window reproduces its measurements | `crates/pr-shell/tests/ui_smoke.rs` (planned in `pr-app`; moved with the package), `PARITY.md` | 🟡 | Sonnet | N | everything | B6 |
 
 ## Counts
 Sub-units: 01 4, 02 2, 03 2, 04 5, 05 8, 06 6, 07 11, 08 5, 09 2, 10 9, 11 8, 12 10, 13 11, 14 7, 15 10, 16 9, 17 5, 18 22, 19 13, 20 2 =
