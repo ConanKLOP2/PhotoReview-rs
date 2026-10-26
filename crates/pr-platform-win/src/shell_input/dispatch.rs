@@ -26,7 +26,7 @@ use pr_app::input::key_id::KeyId;
 use pr_app::input::mouse_gestures::resolve_middle_click;
 use pr_app::input::operation_version::ViewportOperationVersion;
 use pr_app::input::pointer::PointerInputController;
-use pr_app::input::pointer::{PointerCommands, PointerContext, PointerContinuation, PointerStep};
+use pr_app::input::pointer::{PointerCommands, PointerContext, PointerContinuation, PointerStep, PointerViewer};
 use pr_app::input::primitives::{KeyModifiers, PointD, PointerButton, RectD};
 use pr_app::input::review_command::{ReviewCommand, ReviewCommandType};
 use pr_app::input::shortcut_router::{RouteState, ShortcutRouter};
@@ -35,12 +35,14 @@ use pr_app::input::touchpad_gestures::WheelInput;
 use pr_app::misc::viewport_convergence::is_stable_viewport;
 use pr_app::misc::window_helpers;
 use pr_app::viewmodels::main::ViewerHandle;
+use pr_app::viewmodels::viewer_state::ViewerUpdate;
 use pr_app::viewport::fit::{
     FitContinuation, FitStep, FitSurface, FitViewer, OperationVersion, apply_fit_resume, apply_fit_start,
 };
 use pr_app::viewport::types::ViewportSnapshot;
 use pr_core::abstractions::{Log, UiDispatcher, UiPriority};
 use pr_core::diagnostics::perf::PhotoReviewPerf;
+use pr_core::model::enums::InitialViewMode;
 use pr_core::settings::app_settings::AppSettings;
 
 use super::click_counter::ClickCounter;
@@ -285,14 +287,48 @@ impl FitSurface for SurfaceFitAdapter<'_> {
     }
 }
 
-/// `FitViewer` over the shared viewer: the guard is taken ONLY inside `reset_fit` (a held guard would collide with the surface's
-/// `update_fit_size`, which writes the viewer: trap T1).
-struct ViewerFitAdapter<'a>(&'a ViewerHandle);
+/// Each operation borrows the shared viewer only for that operation. Source-size and synchronous
+/// layout callbacks then observe the live updated viewer without colliding with a held guard.
+struct SharedViewerAdapter<'a>(&'a ViewerHandle);
 
-impl FitViewer for ViewerFitAdapter<'_> {
+impl FitViewer for SharedViewerAdapter<'_> {
     fn reset_fit(&mut self, viewport_width: f64, viewport_height: f64) {
         FitViewer::reset_fit(&mut *self.0.borrow_mut(), viewport_width, viewport_height);
     }
+}
+
+macro_rules! shared_viewer_update {
+    ($name:ident($($arg:ident: $kind:ty),* $(,)?) -> $result:ty) => {
+        fn $name(&mut self, $($arg: $kind),*) -> $result {
+            self.0.borrow_mut().$name($($arg),*)
+        }
+    };
+}
+
+impl PointerViewer for SharedViewerAdapter<'_> {
+    fn is_fit(&self) -> bool {
+        self.0.borrow().is_fit()
+    }
+    fn zoom(&self) -> f64 {
+        self.0.borrow().zoom()
+    }
+    shared_viewer_update!(set_zoom(value: f64) -> ViewerUpdate);
+    shared_viewer_update!(zoom_to_actual_size() -> ViewerUpdate);
+    shared_viewer_update!(zoom_to_fit_width() -> ViewerUpdate);
+    shared_viewer_update!(zoom_to_fit_height() -> ViewerUpdate);
+    shared_viewer_update!(zoom_in() -> ViewerUpdate);
+    shared_viewer_update!(zoom_out() -> ViewerUpdate);
+    shared_viewer_update!(wheel_zoom(delta: i32) -> ViewerUpdate);
+    shared_viewer_update!(update_viewport(width: f64, height: f64, force: bool) -> ViewerUpdate);
+    shared_viewer_update!(
+        apply_initial_view_mode(
+            mode: InitialViewMode,
+            width: f64,
+            height: f64,
+            click_zoom_percent: i32,
+            keep_zoom: bool,
+        ) -> Option<ViewerUpdate>
+    );
 }
 
 /// Maps `ViewportOperationVersion` (`i64`) to `viewport::fit::OperationVersion` (`u64`). The cast only reinterprets the bits: equality and
@@ -635,7 +671,7 @@ impl InputCore {
         }
     }
 
-    /// Runs one pure controller call with fresh borrows (D-W8B4I-1). In this order: settings read, borrows taken, `f`, ALL borrows released, a
+    /// Runs one controller call with scoped state/surface borrows and per-operation viewer access (D-W8B4I-1). In this order: settings read, `f`, state/surface borrows released, a
     /// `WM_CAPTURECHANGED` remembered during the call replayed, then the recorded effects (`next`, `previous`, `apply_fit`), then the viewer update
     /// (`zoom_mode_changed` stops the glide, C# `OnZoomModeChanged`). The caller posts the returned `PointerStep`, if any.
     fn run_pointer<R>(&self, f: impl FnOnce(&mut PointerInputController, &mut PointerContext<'_>) -> R) -> R {
@@ -644,7 +680,7 @@ impl InputCore {
             let _busy = BusyScope::enter(&self.in_pointer_call);
             let mut guard = self.state.borrow_mut();
             let state = &mut *guard;
-            let mut viewer = self.deps.viewer.borrow_mut();
+            let mut viewer = SharedViewerAdapter(&self.deps.viewer);
             let mut surface = self.deps.surface.borrow_mut();
             let mut commands = ShellPointerCommands {
                 host: &*self.deps.host,
@@ -727,7 +763,7 @@ impl InputCore {
             let InputState { pointer, versions, .. } = &mut *guard;
             let surface_cell: &RefCell<dyn InputSurface> = &self.deps.surface;
             let mut fit_surface = SurfaceFitAdapter(surface_cell);
-            let mut fit_viewer = ViewerFitAdapter(&self.deps.viewer);
+            let mut fit_viewer = SharedViewerAdapter(&self.deps.viewer);
             let mut version_adapter = VersionAdapter(versions);
             apply_fit_start(
                 &mut fit_surface,

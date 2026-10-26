@@ -814,7 +814,8 @@ fn first_shown_ids() -> Vec<String> {
     ids_of(&spy().shown.borrow()[0])
 }
 
-const DEFAULT_IMAGE_MENU: [&str; 14] = [
+// C#7eaee2a2 ShellContextMenuEndToEndTests includes RenameFile after Separator.5.
+const DEFAULT_IMAGE_MENU: [&str; 15] = [
     "Undo",
     "Separator.2",
     "Refresh",
@@ -825,6 +826,7 @@ const DEFAULT_IMAGE_MENU: [&str; 14] = [
     "Separator.4",
     "ExternalEditor",
     "Separator.5",
+    "RenameFile",
     "CopyFileName",
     "CopyFullPath",
     "Separator.6",

@@ -22,6 +22,7 @@ use std::fmt;
 use pr_core::abstractions::Log;
 use pr_core::settings::app_settings::AppSettings;
 
+use super::viewer::PointerViewer;
 use crate::input::kinetic_pan::{GlideFrameClock, KineticScroller, PanVelocityTracker};
 use crate::input::mouse_gestures::{WheelGestureInterpreter, WheelOutcomeKind};
 use crate::input::operation_version::ViewportOperationVersion;
@@ -32,7 +33,7 @@ use crate::input::touchpad_gestures::{
     self, TouchpadSwipeNavigator, TouchpadWheelAction, TouchpadWheelClassifier, WheelInput,
 };
 use crate::misc::window_helpers::calculate_pan_offsets;
-use crate::viewmodels::viewer_state::{ViewerState, ViewerUpdate};
+use crate::viewmodels::viewer_state::ViewerUpdate;
 
 /// C# `PointerCommands(HasImages, NextAsync, PreviousAsync, ZoomActualSize, ApplyFitAsync)`: what the gestures do outside the
 /// image view. Differences from C#:
@@ -41,7 +42,7 @@ use crate::viewmodels::viewer_state::{ViewerState, ViewerUpdate};
 ///   `cancel_pan` callback.
 /// - `ZoomActualSize` is NOT a member: in every production wiring it is `MainViewModel.ZoomActualSize`, which is
 ///   `if (!HasImages) return; _viewerState.ZoomToActualSize()`. The controller checks `has_images` itself and calls
-///   `ViewerState::zoom_to_actual_size` directly (a callback could not borrow the viewer the context already holds).
+///   the viewer operation directly and records its ViewerUpdate in the pointer controller.
 pub trait PointerCommands {
     /// C# `HasImages()`.
     fn has_images(&self) -> bool;
@@ -59,8 +60,8 @@ pub trait PointerCommands {
 pub struct PointerContext<'a> {
     /// C# `_surface`.
     pub surface: &'a mut dyn ImageSurface,
-    /// C# `_viewer`.
-    pub viewer: &'a mut ViewerState,
+    /// C# `_viewer`; shared adapters borrow only for an individual operation.
+    pub viewer: &'a mut dyn PointerViewer,
     /// C# `_settings()`.
     pub settings: &'a AppSettings,
     /// C# `_viewportVersion`: shared with the Fit driver.
@@ -301,7 +302,7 @@ impl PointerInputController {
 
     /// C# `CanPan()`: `!viewer.is_fit() && (extent_width > viewport_width + 0.5 || extent_height > viewport_height + 0.5)`.
     /// NaN extents give false. Shared by the wheel (here) and the press (`pan.rs`).
-    pub(super) fn can_pan(viewer: &ViewerState, surface: &dyn ImageSurface) -> bool {
+    pub(super) fn can_pan(viewer: &dyn PointerViewer, surface: &dyn ImageSurface) -> bool {
         !viewer.is_fit()
             && (surface.extent_width() > surface.viewport_width() + 0.5
                 || surface.extent_height() > surface.viewport_height() + 0.5)
