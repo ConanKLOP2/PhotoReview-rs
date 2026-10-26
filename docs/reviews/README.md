@@ -22,6 +22,7 @@ There are 18 files here: 17 reports and `BACKLOG.md`. There is no separate repor
 
 | File | Date | Findings | Reviewed code | Status of findings |
 |---|---|---|---|---|
+| [`csharp-defects.md`](csharp-defects.md) | 2026-10-26 | 8 lỗi của app C# (D1..D8), 2 lỗi mất dữ liệu | C# `7eaee2a2`: RecoveryRetryService, DuplicateCleanupController, MessageLoop, UndoService, OperationJournal | cần sửa bên repo C#; suy luận từ mã, chưa chạy |
 | [`autopilot.md`](autopilot.md) | 2026-10-23 (git) | 1 H / 7 M / 11 L | `tools/autopilot/{claim.sh,codex-gate.sh,codex-pipeline.sh,codex-pack.sh,codex-run.sh,codex-usage.sh,status.sh,unit-pr.sh,lib/codex-lib.py,lib/fmtcheck.sh,test/pipeline-selftest.sh}`; commit not stated | G16: open (script/tooling still open; re-read findings against the current version before fixing) |
 
 ## Platform dialogs and Win32 host

@@ -14,6 +14,8 @@ Every tool has a docs file and, where marked, a Claude Code skill in `.claude/sk
 | `mutants.sh` time-boxed cargo-mutants run | [docs/mutants.md](docs/mutants.md) | `/mutants` |
 | `native-tests.sh` list and run native (`#[ignore]`) tests | [docs/native-tests.md](docs/native-tests.md) | `/native-tests` |
 | `unsafe-audit.sh` (+ `.py`, `.baseline`) `unsafe` hygiene scan | [docs/unsafe-audit.md](docs/unsafe-audit.md) | `/unsafe-audit` |
+| `doc-links.py` markdown link and path checker | (header of the script) | `/doc-links` |
+| Checklist skills without a script: after a merge, Codex quota | `.claude/skills/*/SKILL.md` | `/post-merge`, `/codex-quota` |
 | `agents-check.sh` validate `.claude/agents/*.md` and the `.agents/skills` copies | [docs/agents-check.md](docs/agents-check.md) | none |
 | `pre-pr.sh` checks before a PR (markers, BOM, fmt/clippy per changed crate, audits, NOT-RUN list) | [docs/pre-pr.md](docs/pre-pr.md) | `/pre-pr` |
 | `hooks/` rustfmt and Bash-guard hooks (NOT registered; the owner registers them) | [hooks/README.md](hooks/README.md) | none |
