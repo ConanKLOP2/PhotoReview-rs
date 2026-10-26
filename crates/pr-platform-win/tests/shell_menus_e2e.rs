@@ -24,8 +24,14 @@ mod support {
 }
 #[path = "common/w9_e2_capture.rs"]
 mod editor_menu_capture;
+#[path = "common/shell_input_dispatch_fixture.rs"]
+mod fixture;
+#[path = "common/input_feature_fixture.rs"]
+mod input_feature_fixture;
 #[path = "common/ui_thread.rs"]
 mod ui_thread;
+#[path = "common/viewing_fakes.rs"]
+mod viewing_fakes;
 
 use std::cell::RefCell;
 use std::error::Error;
@@ -54,6 +60,168 @@ const VK_ESCAPE: usize = 0x1B;
 const VK_RETURN: usize = 0x0D;
 const VK_DOWN: usize = 0x28;
 const VK_RIGHT: usize = 0x27;
+
+/// W9-E9 wiring over a real view model and fake window/services. Never executes a process.
+mod editor_command_wiring {
+    use super::*;
+    use input_feature_fixture::{FakeServices, FeatureRig};
+    use pr_app::{
+        input::review_command::ReviewCommand,
+        viewmodels::main::{ChangeSet, ExternalEditorFailure, ExternalEditorLauncher, MainViewModel, SettingsSource},
+    };
+    use pr_core::{abstractions::Log, settings::external_editors::ExternalEditor};
+    use pr_platform_win::{
+        shell_input::main_window::MainWindowInputServices,
+        shell_menus::{
+            controller::ContextMenuActions,
+            main_window::{MainWindowMenuActions, MainWindowMenuServices},
+        },
+    };
+    use std::sync::{Arc, Mutex};
+    use support::main_env::MainEnv;
+
+    struct MenuServices(Rc<FakeServices>);
+    impl MainWindowMenuServices for MenuServices {
+        fn window(&self) -> Rc<dyn ShellWindowApi> {
+            self.0.window.clone()
+        }
+        fn owner_hwnd(&self) -> isize {
+            0
+        }
+        fn log(&self) -> Arc<dyn Log> {
+            self.0.log.clone()
+        }
+        fn settings(&self) -> SettingsSource {
+            self.0.env.borrow().settings.clone()
+        }
+        fn with_view_model(&self, f: &mut dyn FnMut(&mut MainViewModel) -> ChangeSet) {
+            MainWindowInputServices::with_view_model(self.0.as_ref(), f);
+        }
+        fn report_shell_error(&self, _: &str, _: &dyn Error) {}
+        fn show_menu_failed_status(&self, _: &dyn Error) {}
+        fn zoom_action_name(&self) -> String {
+            "Zoom".into()
+        }
+    }
+    fn actions(rig: &FeatureRig) -> MainWindowMenuActions {
+        MainWindowMenuActions::new(Rc::new(MenuServices(rig.services.clone())), rig.input.clone())
+    }
+    type Launches = Arc<Mutex<Vec<(String, String, String)>>>;
+    struct Launcher {
+        calls: Launches,
+        unexpected: bool,
+    }
+    impl ExternalEditorLauncher for Launcher {
+        fn launch(&mut self, exe: &str, path: &str, arguments: &str) -> Result<(), ExternalEditorFailure> {
+            self.calls
+                .lock()
+                .unwrap()
+                .push((exe.into(), path.into(), arguments.into()));
+            if self.unexpected {
+                Err(ExternalEditorFailure::Unexpected {
+                    message: "editor wiring bug".into(),
+                })
+            } else {
+                Ok(())
+            }
+        }
+    }
+    fn configured(unexpected: bool) -> (FeatureRig, Launches, String, String) {
+        let mut env = MainEnv::new();
+        let exe = env.root.join("declared-editor.exe").to_string_lossy().into_owned();
+        std::fs::write(&exe, b"placeholder; fake launcher only").unwrap();
+        env.update_settings(|settings| {
+            settings.external_editors = vec![ExternalEditor {
+                id: "chosen.id with spaces".into(),
+                name: "Chosen".into(),
+                path: exe.clone(),
+                arguments: "--chosen {file}".into(),
+            }];
+            settings.default_external_editor_id = "chosen.id with spaces".into();
+            settings.external_editor_path = "stale-mirror.exe".into();
+        });
+        let (folder, files) = env.images("editor-shell", &["photo.jpg"]);
+        env.open(&folder);
+        let calls = Arc::new(Mutex::new(Vec::new()));
+        env.vm.set_external_editor_launcher(Box::new(Launcher {
+            calls: calls.clone(),
+            unexpected,
+        }));
+        (FeatureRig::with_env(env), calls, exe, files[0].clone())
+    }
+
+    #[test]
+    fn input_default_editor_and_menu_by_id_reach_real_view_model_with_template() {
+        let (rig, calls, exe, photo) = configured(false);
+        rig.input
+            .input_host()
+            .execute(ReviewCommand::OPEN_IN_DEFAULT_EDITOR)
+            .unwrap();
+        actions(&rig)
+            .open_in_external_editor_by_id("chosen.id with spaces")
+            .unwrap();
+        assert_eq!(
+            *calls.lock().unwrap(),
+            vec![
+                (exe.clone(), photo.clone(), format!("--chosen \"{photo}\"")),
+                (exe, photo.clone(), format!("--chosen \"{photo}\""))
+            ]
+        );
+        assert_eq!(rig.vm_calls(), 2);
+    }
+
+    #[test]
+    fn input_default_editor_without_configuration_opens_editor_settings() {
+        let rig = FeatureRig::new();
+        rig.input
+            .input_host()
+            .execute(ReviewCommand::OPEN_IN_DEFAULT_EDITOR)
+            .unwrap();
+        let env = rig.env.borrow();
+        assert_eq!(
+            *env.dialog.settings_targets.lock().unwrap(),
+            vec![pr_core::abstractions::dialog::SettingsTarget::ExternalEditor]
+        );
+        assert!(env.dialog.errors.lock().unwrap().is_empty());
+    }
+
+    #[test]
+    fn menu_and_input_return_unexpected_editor_error_to_caller() {
+        let (rig, _, _, _) = configured(true);
+        let error = rig
+            .input
+            .input_host()
+            .execute(ReviewCommand::OPEN_IN_DEFAULT_EDITOR)
+            .unwrap_err();
+        assert_eq!(error.to_string(), "editor wiring bug");
+        let error = actions(&rig)
+            .open_in_external_editor_by_id("chosen.id with spaces")
+            .unwrap_err();
+        assert_eq!(error.to_string(), "editor wiring bug");
+        assert!(rig.env.borrow().dialog.errors.lock().unwrap().is_empty());
+    }
+
+    #[test]
+    fn menu_add_and_choose_default_reach_dialog_and_persist_selection() {
+        let rig = FeatureRig::new();
+        *rig.env.borrow().dialog.added_editor.lock().unwrap() = Some(ExternalEditor {
+            id: "dialog-id".into(),
+            name: "Added".into(),
+            path: r"C:\fake-editor.exe".into(),
+            arguments: ExternalEditor::DEFAULT_ARGUMENTS.into(),
+        });
+        let actions = actions(&rig);
+        actions.add_external_editor().unwrap();
+        let added = rig.env.borrow().settings.current().external_editors[0].clone();
+        assert_ne!(added.id, "dialog-id");
+        *rig.env.borrow().dialog.chosen_editor.lock().unwrap() = Some(added.id.clone());
+        actions.choose_default_external_editor().unwrap();
+        let env = rig.env.borrow();
+        assert_eq!(env.settings.current().default_external_editor_id, added.id);
+        assert_eq!(env.dialog.editor_initials.lock().unwrap().len(), 1);
+        assert_eq!(env.dialog.editor_choices.lock().unwrap().len(), 1);
+    }
+}
 
 /// W9-E9: event-driven twin of ExternalEditorsUiTests.Menu_EditorSubmenu_PaintsItsEntries.
 /// WM_ENTERIDLE marks a painted menu with an empty input queue; no fixed paint delays.
