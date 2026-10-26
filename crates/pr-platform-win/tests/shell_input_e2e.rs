@@ -139,7 +139,7 @@ fn start_with_sized_images(ui: &UiThread, names: &'static [&'static str], width:
     wait(ui, "the first image", |b| {
         b.window.view_model().borrow().has_images()
             && b.window.view_model().borrow().current_image().is_some()
-            && b.window.first_present_done()
+            && b.window.first_image_presented()
             && b.window.viewport().image_actual_width() > 0.0
             && !b.window.viewport().is_layout_posted()
     });
@@ -753,25 +753,70 @@ fn input_latency_arrow_pan_is_measured_at_the_handler_the_layout_and_the_frame()
         zoom_percent() == 100 && !b.window.viewport().is_layout_posted()
     });
 
+    use std::sync::{Arc, Mutex, mpsc};
+    let flags = Arc::new(Mutex::new((false, false)));
+    let (layout_tx, layout_rx) = mpsc::channel();
+    let (frame_tx, frame_rx) = mpsc::channel();
+    let observed = Arc::clone(&flags);
+    let subscriptions = run(&ui, move || {
+        let layout_flags = Arc::clone(&observed);
+        let layout = built()
+            .window
+            .viewport()
+            .subscribe_layout_updated(std::rc::Rc::new(move || {
+                let mut flags = layout_flags.lock().unwrap();
+                if !flags.0 {
+                    flags.0 = true;
+                    layout_tx.send(Instant::now()).expect("layout receiver");
+                }
+            }));
+        let frame = built().window.window().subscribe_render(Box::new(move |_| {
+            let mut flags = observed.lock().unwrap();
+            if flags.0 && !flags.1 {
+                flags.1 = true;
+                frame_tx.send(Instant::now()).expect("frame receiver");
+            }
+        }));
+        (layout, frame)
+    });
     let mut send_ms = Vec::new();
+    let mut layout_ms = Vec::new();
+    let mut frame_ms = Vec::new();
     let directions = [KeyId::RIGHT, KeyId::DOWN, KeyId::LEFT, KeyId::UP];
     for i in 0..60 {
         let pressed = directions[i % directions.len()];
+        *flags.lock().unwrap() = (false, false);
         let started = Instant::now();
         run(&ui, move || key(pressed, false));
         send_ms.push(started.elapsed().as_secs_f64() * 1000.0);
-        wait_until(&ui, "the layout settles", || {
-            settle_step();
-            !built().window.viewport().is_layout_posted()
-        });
+        let layout_at = layout_rx.recv_timeout(ui_thread::BOUND).expect("layout after key");
+        let frame_at = frame_rx.recv_timeout(ui_thread::BOUND).expect("frame after layout");
+        layout_ms.push(layout_at.duration_since(started).as_secs_f64() * 1000.0);
+        frame_ms.push(frame_at.duration_since(started).as_secs_f64() * 1000.0);
     }
-    send_ms.sort_by(f64::total_cmp);
-    println!(
-        "wp22 input latency: n={} handler(SendMessage) p50={:.2} p95={:.2} max={:.2}",
-        send_ms.len(),
-        send_ms[send_ms.len() / 2],
-        send_ms[(send_ms.len() * 95) / 100],
-        send_ms[send_ms.len() - 1]
+    run(&ui, move || {
+        built().window.viewport().unsubscribe_layout_updated(subscriptions.0);
+        built().window.window().unsubscribe(subscriptions.1);
+    });
+    for (name, samples) in [
+        ("handler", &mut send_ms),
+        ("layout", &mut layout_ms),
+        ("frame", &mut frame_ms),
+    ] {
+        samples.sort_by(f64::total_cmp);
+        println!(
+            "wp22 {name}: n={} p50={:.2} p95={:.2} max={:.2}",
+            samples.len(),
+            samples[samples.len() / 2],
+            samples[samples.len() * 95 / 100],
+            samples[samples.len() - 1]
+        );
+    }
+    // C# asserts these two bounds; key-to-frame is recorded only, since hidden WARP is not hardware-vblank evidence.
+    assert!(send_ms[send_ms.len() * 95 / 100] < 50.0, "handler p95 exceeds C# bound");
+    assert!(
+        layout_ms[layout_ms.len() * 95 / 100] < 100.0,
+        "layout p95 exceeds C# bound"
     );
     finish(ui);
 }

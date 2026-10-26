@@ -1,5 +1,12 @@
 # Task on progress
 
+## Native input final frame and latency parity, machine A, 2026-10-26 09:46
+
+- E9 PR256 merged82b8418; fetched tree matches9ba59ab and W9-E9 claim released. Integrated E9 master at891da96. Prior native fixture source3a32e04 completed all12fmt/workspace Clippy and9851passed/0failed/1328ignored across564resultlines, exit0; this is pre-E9/pre-frame-strengthening evidence.
+- Strengthened startup wait to the actual FirstImagePresented property. It exposed FakeHub.current_image always None: first test timed out, owned cargo18900/tree stopped after that failure (incomplete failed run). FakeHub now retains the image before broadcasting, allowing the real compositor to compare assigned/drawn pixel identity. No production fallback or relaxed draw criterion.
+- Final selected native matrix15/15PASS in17.29s, exit0. Latency now uses LayoutUpdated/Render callbacks plus bounded channels, all60samples: handler p95=2.50ms, layout p95=1.12ms, frame p95=5.93ms; C# handler<50ms/layout<100ms assertions PASS. Frame timing remains hidden WARP/offscreen advisory, no hardware GPU claim. Started-glide/after-navigation-stop and canonical dropped-file identity assertions remain.
+- Final integrated fmt/Clippy/workspace gates follow this source before PR. No full production startup/corpus/full mutation claim; fake hub/manual workers still bound the evidence. R1 runner17764 on8161e88 remains to collect, then integrate E9 master before its PR. Cleanup retained under earlier automatic approval rejection.
+
 ## Native input fixture repair, machine A, 2026-10-26
 
 - Claimed FIX-native-input-fixture A after root PR255 merged aa119f4. Separate master-based codex/fix-native-input-fixture reuses idle root/target-w9-e3. No edits to machineB startup/composition. Baseline comparison confirmed all five prior failures on unchanged0fee72c, each exit101; the repaired borrow matrix on9b81ac3 was10pass/5fail.

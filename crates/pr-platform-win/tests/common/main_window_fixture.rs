@@ -106,6 +106,7 @@ pub fn finish(ui: UiThread) {
 
 /// The hub port: keeps the subscribers (so the test can call them) and the `note_frame_presented` calls.
 pub struct FakeHub {
+    current: RefCell<Option<PlatformImage>>,
     handlers: RefCell<Vec<(u64, HubImageHandler)>>,
     next_id: Cell<u64>,
     /// `note_frame_presented(contained_image)` calls.
@@ -119,6 +120,7 @@ pub struct FakeHub {
 impl FakeHub {
     pub fn new(order: EventLog) -> Self {
         Self {
+            current: RefCell::new(None),
             handlers: RefCell::new(Vec::new()),
             next_id: Cell::new(1),
             presented: RefCell::new(Vec::new()),
@@ -134,6 +136,7 @@ impl FakeHub {
 
     /// Calls every subscriber like the real hub does.
     pub fn raise(&self, image: Option<&PlatformImage>, is_file_change: bool) {
+        *self.current.borrow_mut() = image.cloned();
         let handlers: Vec<HubImageHandler> = self.handlers.borrow().iter().map(|(_, h)| Rc::clone(h)).collect();
         for handler in handlers {
             handler(image, is_file_change);
@@ -149,7 +152,7 @@ impl std::fmt::Debug for FakeHub {
 
 impl PresentationHubPort for FakeHub {
     fn current_image(&self) -> Option<PlatformImage> {
-        None
+        self.current.borrow().clone()
     }
 
     fn subscribe_image_changed(&self, handler: HubImageHandler) -> u64 {
