@@ -8,6 +8,7 @@
 //! under test does in its error paths cannot change the disk any more; a restart is a new journal/service over
 //! [`disk`](FaultInjectionFileSystem::disk). A fail kind fails once and the process continues. The scenarios are
 //! sequential (not meant for concurrent mutations).
+//! W9-R3 also ports the same-folder atomic rename classification from this C# fake at 7eaee2a2.
 //!
 //! Rust signatures that cannot fail answer the "dead" question instead of throwing: after a crash `file_exists` and
 //! `directory_exists` are `false` and `get_file_stat` is `None` (the C# methods throw); `try_get_file_stat`, the reads
@@ -314,8 +315,16 @@ impl FileSystem for FaultInjectionFileSystem {
     }
 
     fn move_file(&self, source: &Path, destination: &Path) -> io::Result<()> {
+        // C# 7eaee2a2: a same-folder move is an atomic rename, so cross-volume partial/copy faults do not apply.
+        let source_folder = pr_core::text::dotnet_path::get_directory_name(&source.to_string_lossy());
+        let destination_folder = pr_core::text::dotnet_path::get_directory_name(&destination.to_string_lossy());
+        let rename = match (source_folder, destination_folder) {
+            (Some(source), Some(destination)) => pr_core::text::eq_ignore_case(&source, &destination),
+            (None, None) => true,
+            _ => false,
+        };
         self.mutate(
-            "move",
+            if rename { "rename" } else { "move" },
             &mut || self.disk.move_file(source, destination),
             Some(&mut || self.truncated(source, destination)),
             Some(&mut || self.disk.copy_file(source, destination)),

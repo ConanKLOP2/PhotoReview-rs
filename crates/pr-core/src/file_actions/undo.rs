@@ -1,3 +1,4 @@
+//! W9-R3 ports the FEAT-RENAME stored-spelling delta from the C# source named below at 7eaee2a2.
 //! Port of `PhotoReview.Core/FileActions/UndoService.cs` (C# baseline d92d6aae, 693 lines). `UndoResult.cs` (15 lines)
 //! is already ported as [`super::types::UndoResult`] (W1-09) and is only re-used here. Contract:
 //! `contracts/W3-05.md` (PARITY F-10, INV-4 for Undo, INV-6 for the undo's own journal lines).

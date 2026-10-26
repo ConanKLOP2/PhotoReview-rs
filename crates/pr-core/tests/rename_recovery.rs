@@ -114,10 +114,10 @@ fn case_only_rename_recovery_verdict_follows_the_stored_spelling() {
                 );
             }
             _ => {
-                assert_eq!(checked.source.status, RecoveryPathStatus::Changed);
+                assert_eq!(checked.source.status, RecoveryPathStatus::Exists);
                 assert_eq!(
                     checked.destination.as_ref().expect("destination").status,
-                    RecoveryPathStatus::Changed
+                    RecoveryPathStatus::Exists
                 );
             }
         }
@@ -134,14 +134,6 @@ fn case_only_rename_file_stored_under_a_third_spelling_is_never_lost_or_done() {
         RecoveryFileCheck::new(rig.fs.clone()).check(&entry).verdict,
         RecoveryVerdict::Conflict
     );
-    let committed = JournalEntry {
-        state: JournalState::Committed,
-        ..entry
-    };
-    assert_eq!(
-        RecoveryFileCheck::new(rig.fs.clone()).check(&committed).verdict,
-        RecoveryVerdict::Unknown
-    );
 }
 
 #[test]
@@ -154,14 +146,6 @@ fn case_only_rename_two_entries_differing_by_case_are_two_files_conflict() {
     assert_eq!(
         RecoveryFileCheck::new(rig.fs.clone()).check(&entry).verdict,
         RecoveryVerdict::Conflict
-    );
-    let committed = JournalEntry {
-        state: JournalState::Committed,
-        ..entry
-    };
-    assert_eq!(
-        RecoveryFileCheck::new(rig.fs.clone()).check(&committed).verdict,
-        RecoveryVerdict::Unknown
     );
 }
 
@@ -215,8 +199,8 @@ fn case_only_rename_undo_restores_the_old_spelling() {
 
 // C# fault-matrix scenarios are explicit test functions; the local fake rig uses TempRoot and records durable journal state.
 #[test]
-fn case_only_rename_reconcile_interrupted() {
-    // C#: RenameFaultInjectionTests.CaseOnlyRename_ReconcileInterrupted.
+fn case_only_rename_interrupted_after_move_is_reconciled() {
+    // Spot case; the complete C# CaseOnlyRename_ReconcileInterrupted is in file_actions_matrix.
     let rig = Rig::new(&["A.jpg"]);
     let entry = rig.prepared(&rig.path("a.jpg"), &rig.path("A.jpg"), JournalState::Prepared);
     rig.journal.append(&entry).expect("prepared");
@@ -232,8 +216,8 @@ fn case_only_rename_reconcile_interrupted() {
 }
 
 #[test]
-fn group_case_only_rename_matrix_preserves_all_fingerprints_and_spelling() {
-    // C#: RenameFaultInjectionTests.GroupCaseOnlyRename_Matrix.
+fn group_case_only_rename_preserves_all_fingerprints_and_spelling() {
+    // Healthy row; the complete C# GroupCaseOnlyRename_Matrix is in file_actions_matrix.
     let rig = Rig::new(&["a.jpg", "a.cr2", "a.xmp"]);
     let group =
         pr_core::catalog::types::CaptureGroup::new(rig.path("a.jpg"), rig.path("a.cr2"), Some(rig.path("a.xmp")))
@@ -268,8 +252,8 @@ fn group_case_only_rename_matrix_preserves_all_fingerprints_and_spelling() {
 }
 
 #[test]
-fn group_case_only_rename_matrix_faults_and_restart_preserve_each_member() {
-    // C#: RenameFaultInjectionTests.GroupCaseOnlyRename_Matrix.
+fn group_case_only_rename_selected_faults_and_restart_preserve_each_member() {
+    // Spot rows; the complete C# GroupCaseOnlyRename_Matrix is in file_actions_matrix.
     // Matrix phases: complete transaction, failure before the first mutation, and failure between group members.
     for failed_member in [None, Some("a.jpg"), Some("a.cr2")] {
         let rig = Rig::new(&["a.jpg", "a.cr2", "a.xmp"]);
@@ -534,4 +518,60 @@ fn case_only_rename_native_move_undo_reconcile_uses_temp_root() {
         fs.get_file_stat(&source).expect("reconciled stat").length,
         before.length
     );
+}
+
+// C#: OperationJournal.ReconcilePendingOperations catches inspection exceptions and leaves the line Prepared.
+#[test]
+fn case_only_group_reconcile_inspection_error_keeps_prepared_without_appending() {
+    for (operation, fault) in [
+        (FileOperationType::Move, FsOp::EnumerateFiles),
+        (FileOperationType::Copy, FsOp::EnumerateFiles),
+        (FileOperationType::Move, FsOp::Stat),
+    ] {
+        let rig = Rig::new(&["A.jpg"]);
+        let mut pending = rig.prepared(&rig.path("a.jpg"), &rig.path("A.jpg"), JournalState::Prepared);
+        pending.op_type = operation;
+        pending.group_id = Some("inspection-error".to_owned());
+        pending.group_members = Some(vec![JournalGroupMember {
+            source: pending.source.clone(),
+            destination: pending.destination.clone(),
+            size: pending.size,
+            last_write_utc: pending.last_write_utc,
+            permanent: false,
+        }]);
+        rig.journal.append(&pending).expect("prepared group");
+        let before = rig.fs.file_content(rig.journal.path()).expect("journal bytes");
+        let fault_path = if fault == FsOp::Stat {
+            rig.photos.join("A.jpg")
+        } else {
+            rig.photos.clone()
+        };
+        rig.fs.fail(fault, fault_path, std::io::ErrorKind::PermissionDenied);
+        let reconciled = rig.journal.reconcile_pending_operations(None).expect("skip bad line");
+        assert!(
+            reconciled.is_empty(),
+            "{operation:?}/{fault:?}: inspection failure is not a verdict"
+        );
+        assert_eq!(
+            rig.fs.file_content(rig.journal.path()).expect("unchanged journal"),
+            before
+        );
+    }
+}
+
+// Additional C# 7eaee2a2 RecoveryFileCheck.Decide baseline: Committed uses destination identity alone.
+#[test]
+fn case_only_committed_line_preserves_existing_destination_verdict_rule() {
+    for names in [vec!["a.JPG".to_owned()], vec!["a.jpg".to_owned(), "A.jpg".to_owned()]] {
+        let rig = Rig::new(&["a.jpg"]);
+        rig.fs.set_stored_file_names_override(Some(names));
+        let committed = rig.prepared(&rig.path("a.jpg"), &rig.path("A.jpg"), JournalState::Committed);
+        let checked = RecoveryFileCheck::new(rig.fs.clone()).check(&committed);
+        assert_eq!(checked.source.status, RecoveryPathStatus::Exists);
+        assert_eq!(
+            checked.destination.expect("destination").status,
+            RecoveryPathStatus::Exists
+        );
+        assert_eq!(checked.verdict, RecoveryVerdict::AlreadyDone);
+    }
 }

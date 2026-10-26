@@ -1,3 +1,4 @@
+//! W9-R3 ports the FEAT-RENAME stored-spelling delta from the C# source named below at 7eaee2a2.
 //! Port of `PhotoReview.Core/FileActions/RecoveryFileCheck.cs` (C# baseline d92d6aae; the verdict table of the C#
 //! `docs/architecture.md`, "Recovery check"; PARITY F-17, W-04).
 //!
@@ -191,14 +192,14 @@ impl RecoveryFileCheck {
                 group_members: Some(checks),
             };
         }
-        let mut source = self.check_path(
+        let source = self.check_path(
             &entry.source,
             entry.size,
             entry.last_write_utc.value,
             true,
             entry.destination.as_deref(),
         );
-        let mut destination = entry
+        let destination = entry
             .destination
             .as_deref()
             .filter(|destination| !is_null_or_white_space(destination))
@@ -211,22 +212,6 @@ impl RecoveryFileCheck {
                     Some(&entry.source),
                 )
             });
-        // Both present results for a case-only pair mean a third stored spelling or multiple case-sensitive entries.
-        // Neither side is proven to match the journal, so keep both ambiguous (Conflict for pending, Unknown for committed).
-        if CaseOnlyRename::is_case_only_pair(Some(&entry.source), entry.destination.as_deref())
-            && destination.as_ref().is_some_and(|destination| {
-                matches!(source.status, RecoveryPathStatus::Exists | RecoveryPathStatus::Changed)
-                    && matches!(
-                        destination.status,
-                        RecoveryPathStatus::Exists | RecoveryPathStatus::Changed
-                    )
-            })
-        {
-            source.status = RecoveryPathStatus::Changed;
-            if let Some(destination) = destination.as_mut() {
-                destination.status = RecoveryPathStatus::Changed;
-            }
-        }
         let verdict = Self::decide(entry, &source, destination.as_ref());
         RecoveryCheckResult {
             entry: entry.clone(),

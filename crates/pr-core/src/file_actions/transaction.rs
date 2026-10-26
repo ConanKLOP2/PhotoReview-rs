@@ -1,3 +1,4 @@
+//! W9-R3 ports the FEAT-RENAME stored-spelling delta from the C# source named below at 7eaee2a2.
 //! Port of `PhotoReview.Core/FileActions/JournalTransaction.cs` (C# baseline d92d6aae, 221 lines): the shared
 //! Prepared -> mutate -> verify -> Committed/Failed journal sequence (CORE-07) used by `FileActionService` (W3-04),
 //! `UndoService` (W3-05) and `RecoveryRetryService` (W3-06), so a fix applies to all of them. PARITY F-11, F-12, F-15,
@@ -16,6 +17,7 @@
 use std::error::Error;
 use std::fmt;
 use std::io;
+use std::path::Path;
 
 use crate::abstractions::{Clock, FileStat, FileSystem, LiveMarker};
 use crate::file_actions::case_only_rename::CaseOnlyRename;
@@ -163,7 +165,7 @@ impl<'a> JournalTransaction<'a> {
     /// `self.verify_destination_stat(fs.try_get_file_stat(Path::new(destination))?, error_code)` (ONE stat; P-12: a stat
     /// that cannot be inspected is returned as the error, like the C# `GetFileStat` throw).
     pub fn verify_destination(&mut self, fs: &dyn FileSystem, destination: &str, error_code: &str) -> io::Result<()> {
-        let stat = fs.try_get_file_stat(std::path::Path::new(destination))?;
+        let stat = fs.try_get_file_stat(Path::new(destination))?;
         self.verify_destination_stat(stat, error_code)
     }
 

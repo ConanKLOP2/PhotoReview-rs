@@ -1,3 +1,4 @@
+//! W9-R3 ports the FEAT-RENAME stored-spelling delta from the C# source named below at 7eaee2a2.
 //! Port of `PhotoReview.Core/FileActions/RecoveryRetryService.cs` (C# baseline d92d6aae; PARITY F-18, INV-4, INV-6).
 //! Contract: `contracts/W3-06.md`.
 //!
@@ -524,8 +525,8 @@ impl RecoveryRetryService {
                     return source_changed(); // unreachable: refused by the caller
                 };
                 let source = Path::new(&member.source);
-                let twin = member.destination.as_deref();
-                let unchanged = CaseOnlyRename::stat_as(fs, &member.source, twin)?
+                let unchanged = self
+                    .stat(&member.source)?
                     .is_some_and(|stat| same_fingerprint(&stat, member.size, &member.last_write_utc));
                 // Permanent but the drive has a bin now: never delete permanently. Not permanent but no bin: the
                 // shell would delete it permanently.
