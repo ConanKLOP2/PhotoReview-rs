@@ -30,6 +30,9 @@ the C# code at the baseline in [`docs/SYNC-LEDGER.md`](docs/SYNC-LEDGER.md) deci
 
 - `task_on_progress.md` at the root: read at start, update after substantial changes and before handoff (date, state,
   next steps, test results; never unverified claims). Update when a documented PR is merged/closed.
+- The file is long (about 79 KB, about 20k tokens): at the start read only its "How to resume" section and the newest
+  status section (find them with `Grep` on `^## `), not the whole file. This refines the "read at start" rule above and
+  the line in `CLAUDE.md`.
 
 ## Coding conventions
 
