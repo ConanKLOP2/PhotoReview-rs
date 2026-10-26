@@ -1,5 +1,11 @@
 # Task on progress
 
+## Wave 9 R1 verified root gate, machine A, 2026-10-26 13:02
+
+- Runner17764 completed exit0 on integrated source8161e88: fmt-all Windows206 with all12package checks PASS, workspace all-target locked Clippy-Dwarnings PASS, workspace9904passed/0failed/1328ignored across566resultlines. This is authoritative completion of that runner; earlier active-runner notes are historical.
+- E9 PR256 subsequently merged82b8418 and master079a28d adds tooling/docs only. Native-input fixture21ff633 completed9862/0/1329 separately, then integrated079a28d at74109b6 and is running final gates/native shared-fixture regression. Finish its PR first, then integrate merged master into R1 and run final head gates once before PR; no stacked PR. W9-R1 A remains claimed and no R2 edit/claim before R1 merges.
+- R1 has53focused G/F functions,44unchanged oracle cases, shared PathKeyMap and ADR-R-12. No native filesystem claim. After merge, time-box narrow pure-policy cargo-mutants with-j1 in a clean checkout and an outside unique target; untracked target-w9-e1 must not be copied into the mutation tree. No full mutation verdict yet.
+
 ## Wave 9 R1 integrated root repair, machine A, 2026-10-26 09:35
 
 - Final pre-root head4edc4dd completed fmt12/Clippy/workspace:9903passed/0failed/1328ignored across566result lines, exit0. Existing53pure policy/map/group functions include44unchanged oracle cases. No native filesystem or full mutation claim.
