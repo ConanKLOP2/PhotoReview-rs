@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Claude-free pipeline: port the units of one Wave 8 batch with Codex CLI (gpt-6-luna, effort low) under deterministic
+# Claude-free pipeline: port the units of one Wave 8 batch with Codex CLI (default gpt-6.1-sol, effort medium; CODEX_MODEL/CODEX_EFFORT override) under deterministic
 # bash orchestration. No Claude tokens are spent. See README.md ("Claude-free pipeline").
 # Usage: tools/autopilot/codex-pipeline.sh <wave-tag e.g. wave8-b2> [--dry-run] [--only W8-04a,W8-04b] [--redo W8-04e,W8-06c] [--jobs N (1..4, default 2)]
 #        tools/autopilot/codex-pipeline.sh --smoke        (env checks + one cheap real Codex call + one gate on a throwaway unit)
@@ -9,6 +9,7 @@
 #      MIN_DISK_GB (default 20), QUOTA_MAX (percent of the 5 h window never exceeded, default 95), QUOTA_MARGIN (default 1.2),
 #      CS_REPO (C# checkout), GATE_NEXTEST=0 (never use cargo-nextest), FIXUP=0 (disable one final repair round).
 set -u
+CODEX_MODEL_NAME="${CODEX_MODEL:-gpt-6.1-sol}"; CODEX_EFFORT_NAME="${CODEX_EFFORT:-medium}"
 export PATH="$HOME/.cargo/bin:$PATH"
 SELF="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 export PYTHONUTF8=1
@@ -475,7 +476,7 @@ run_unit() {
     fi
   fi
 
-  ( cd "$wt" && git add -A -- . ':!.codex-*' && git commit -q --allow-empty -m "feat($u): port $u via Codex pipeline" -m "Co-Authored-By: Codex gpt-6-luna <noreply@openai.com>" ) >>"$LOGDIR/$u.log" 2>&1 \
+  ( cd "$wt" && git add -A -- . ':!.codex-*' && git commit -q --allow-empty -m "feat($u): port $u via Codex pipeline" -m "Co-Authored-By: Codex $CODEX_MODEL_NAME <noreply@openai.com>" ) >>"$LOGDIR/$u.log" 2>&1 \
     || { fail_unit "$u" "$wt" "commit failed"; return 1; }
   merge_unit() { git -C "$INT" merge --no-ff -q "$br" -m "Merge $u (Codex pipeline)" >>"$LOGDIR/$u.log" 2>&1 || { git -C "$INT" merge --abort >/dev/null 2>&1; return 1; }; }
   if ! with_merge_lock merge_unit; then
@@ -577,7 +578,7 @@ if [ "${PIPELINE_NO_PR:-0}" = 1 ]; then say "PIPELINE_NO_PR=1: not pushing"; exi
 BODY="$LOGDIR/pr-body-$TAG.md"
 {
   wave="8"; [[ "$TAG" == wave9-* ]] && wave="9"
-  echo "Wave $wave batch $BATCH ported by the Claude-free Codex pipeline (Codex gpt-6-luna, effort low). Review the diff before merging."; echo
+  echo "Wave $wave batch $BATCH ported by the Claude-free Codex pipeline (Codex $CODEX_MODEL_NAME, effort $CODEX_EFFORT_NAME). Review the diff before merging."; echo
   echo "Workspace gate (fmt, clippy --workspace -D warnings, test --workspace): $([ $WGOK = 1 ] && echo PASSED || echo '**FAILED**, auto-merge not enabled')"
   if [ $WGOK = 0 ]; then echo '```'; tail -n 40 "$WG"; echo '```'; fi
   echo; echo "## Telemetry"; $LIB table "$STATE"
