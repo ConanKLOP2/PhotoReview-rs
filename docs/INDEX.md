@@ -4,7 +4,7 @@
 |---|---|---|
 | [`../AGENTS.md`](../AGENTS.md) | Rules, priorities, coexistence, tests, git | Every session |
 | [`../task_on_progress.md`](../task_on_progress.md) | Current state and next steps | Every session |
-| [`archive/`](archive/) | Older `task_on_progress.md` entries moved verbatim (Wave 5, 6, 7, Wave 8 B1/B2) | History only |
+| [`archive/`](archive/) | Older `task_on_progress.md` entries moved verbatim (Wave 5 to Wave 9; table in `../task_on_progress.md`) | History only |
 | [`PLAN.md`](PLAN.md) | Phases, gates, stack (Vietnamese) | Planning / picking next work |
 | [`MULTI-MACHINE.md`](MULTI-MACHINE.md) | Two or more machines porting in parallel: ownership table, claims (`tools/autopilot/claim.sh`), branches, shared files, messages | Before starting work on a second machine |
 | [`MULTI-AGENT-PLAN.md`](MULTI-AGENT-PLAN.md) | Waves, work units, model per unit (Haiku/Sonnet/Opus), prompts, gates | Before launching agents |
