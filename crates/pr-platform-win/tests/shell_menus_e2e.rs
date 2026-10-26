@@ -161,13 +161,19 @@ mod editor_command_wiring {
         actions(&rig)
             .open_in_external_editor_by_id("chosen.id with spaces")
             .unwrap();
-        assert_eq!(
-            *calls.lock().unwrap(),
-            vec![
-                (exe.clone(), photo.clone(), format!("--chosen \"{photo}\"")),
-                (exe, photo.clone(), format!("--chosen \"{photo}\""))
-            ]
-        );
+        let launched = calls.lock().unwrap();
+        assert_eq!(launched.len(), 2);
+        let expected_photo = std::fs::canonicalize(photo).unwrap();
+        for (program, path, arguments) in launched.iter() {
+            assert_eq!(program, &exe); // The configured string is forwarded verbatim.
+            // CI may expand a RUNNER~1 temp-root prefix. Check the stable tail and exact file identity.
+            assert!(pr_core::text::eq_ignore_case(
+                pr_core::text::dotnet_path::get_file_name(path),
+                "photo.jpg"
+            ));
+            assert_eq!(std::fs::canonicalize(path).unwrap(), expected_photo);
+            assert_eq!(arguments, &format!("--chosen \"{path}\""));
+        }
         assert_eq!(rig.vm_calls(), 2);
     }
 
