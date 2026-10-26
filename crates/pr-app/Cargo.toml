@@ -16,9 +16,6 @@ serde_json = { workspace = true, features = ["float_roundtrip"] }
 pr-core.workspace = true
 pr-l10n.workspace = true
 pr-imaging.workspace = true
-pr-imaging-raw.workspace = true
-pr-libraw.workspace = true
-pr-turbojpeg.workspace = true
 pr-bench.workspace = true
 
 [dev-dependencies]

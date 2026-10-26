@@ -38,7 +38,7 @@ These are the operator-controlled environment variables read by the pipeline or 
 | `CARGO_PROFILE_DEV_DEBUG`, `CARGO_INCREMENTAL` | Pipeline/gate set `line-tables-only`, `0`; mutant builds use debug `0`. |
 | `CARGO_TARGET_DIR` | Driver sets `<unit worktree>/target` for Codex and unit gates, `<unit worktree>/target-mut` for mutants, and a tag-specific target for the workspace gate. Do not redirect Codex builds outside its worktree. |
 
-`codex-usage.sh` takes an optional positional threshold, default `99`; the pipeline passes `QUOTA_MAX` instead. `status.sh` takes an optional integration branch, default `integration/wave-8`, and uses its hard-coded Rust checkout path. `unit-pr.sh` also reads `PLAN_REL`.
+`codex-usage.sh` takes an optional positional threshold, default `95`; the pipeline passes `QUOTA_MAX` instead. `unit-pr.sh` also reads `PLAN_REL`.
 
 ## 3. Pipeline phases, in order
 
@@ -125,7 +125,7 @@ bash tools/autopilot/codex-usage.sh 95
 bash tools/autopilot/claim.sh list
 bash tools/autopilot/claim.sh claim W8-04a "porting"
 bash tools/autopilot/claim.sh release W8-04a
-bash tools/autopilot/status.sh integration/wave-8
+bash tools/dev/status.sh
 bash tools/autopilot/unit-pr.sh W8-06f --ibr integration/wave8-b2 --dry-run
 ```
 
