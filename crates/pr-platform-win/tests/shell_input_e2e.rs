@@ -6,8 +6,8 @@
 //! 13j (viewing) and 13k (windowing) and `MainWindowInner::register_input` of this unit. They cannot run before those units are merged; until a desktop
 //! run is recorded the PARITY rows stay `Partial`. Nothing is shown or activated; every wait is bounded, no sleeps.
 //!
-//! The fixture's `FakeHub` is not connected to the presenter, so [`present_current`] hands the view model's current image to the window the way the
-//! production hub does (`ImageChanged`).
+//! Real PNG/JPEG files are decoded by WIC to pixel buffers and rendered on a WARP surface. The fixture's `FakeHub` is not connected to the presenter,
+//! so [`present_current`] forwards `ImageChanged`; the sink applies the real bridge's initial-view callback. Full startup composition is separate evidence.
 #![cfg(windows)]
 
 #[path = "../../pr-app/tests/file_action_fakes/mod.rs"]
@@ -33,7 +33,7 @@ use std::mem::ManuallyDrop;
 use std::path::PathBuf;
 use std::time::Instant;
 
-use main_window_fixture::{BuildOptions, Built, build, built, finish, run, start_ui, wait_until};
+use main_window_fixture::{BuildOptions, Built, WarpHook, build_with_env, built, finish, run, start_ui, wait_until};
 use pr_app::input::key_id::KeyId;
 use pr_app::input::key_mapping;
 use pr_app::input::primitives::PointD;
@@ -50,8 +50,24 @@ use windows::Win32::System::Ole::{DROPEFFECT_COPY, DROPEFFECT_NONE, IDropTarget}
 use windows::Win32::System::SystemServices::MODIFIERKEYS_FLAGS;
 use windows::core::{BOOL, ComObject, HRESULT, implement};
 
-/// A tiny file the fake decoder accepts (`MainEnv::add_image`).
-const TINY_IMAGE: [u8; 4] = [0xFF, 0xD8, 0xFF, 0xD9];
+/// C# TestPng/TestJpeg counterpart: real encoded pixels owned by this test's TempRoot.
+fn write_image(path: &std::path::Path, width: i32, height: i32) {
+    use pr_imaging::pixels::{PixelBuffer, PixelLayout};
+    use pr_platform_win::wic::cache_image::{encode_jpeg, encode_png};
+    let mut pixels = PixelBuffer::allocate(width, height, PixelLayout::Pbgra32).expect("allocate test pixels");
+    for pixel in pixels.try_get_span_mut().unwrap().unwrap().chunks_exact_mut(4) {
+        pixel.copy_from_slice(&[80, 120, 160, 255]);
+    }
+    let mut file = std::fs::File::create(path).expect("create image");
+    if path
+        .extension()
+        .is_some_and(|extension| extension.eq_ignore_ascii_case("png"))
+    {
+        encode_png(&pixels, &mut file).expect("encode PNG");
+    } else {
+        encode_jpeg(&pixels, &mut file, 90).expect("encode JPEG");
+    }
+}
 
 // ---- helpers (UI thread) -------------------------------------------------------------------------------------------------------------------------
 
@@ -83,18 +99,49 @@ fn wait(ui: &UiThread, what: &str, condition: fn(&Built) -> bool) {
 
 /// Builds the window and opens a folder with the given tiny images (the first one is shown).
 fn start_with_images(ui: &UiThread, names: &'static [&'static str]) -> PathBuf {
+    start_with_sized_images(ui, names, 2000, 3000)
+}
+
+fn start_with_sized_images(ui: &UiThread, names: &'static [&'static str], width: i32, height: i32) -> PathBuf {
     let folder = run(ui, move || {
-        let b = build(BuildOptions::default());
+        use pr_imaging::memory_headroom::MemoryInfo;
+        use pr_imaging::pixel_memory::PixelBufferImageCodec;
+        use pr_platform_win::wic::decoder::WicDirectDecoder;
+        use std::sync::Arc;
+        use support::main_env::{EnvOptions, MainEnv};
+        let env = MainEnv::with_options(EnvOptions {
+            decoder: Arc::new(WicDirectDecoder::new(
+                Arc::new(PixelBufferImageCodec::INSTANCE),
+                None,
+                Arc::new(|| MemoryInfo {
+                    total_available: 32 * 1024 * 1024 * 1024,
+                    load: 0,
+                }),
+            )),
+            initial_view: Some(Box::new(|bridge, settings| {
+                bridge.apply_initial_view(built().window.viewport().viewport_size(), settings);
+            })),
+            ..EnvOptions::default()
+        });
+        let b = build_with_env(BuildOptions::default(), env);
+        let (surface_width, surface_height) = b.shell.client_size_pixels();
+        b.window
+            .attach_renderer(Some(&WarpHook::new(surface_width, surface_height)))
+            .expect("attach WARP renderer");
         let folder = b.photos.join("shots");
         std::fs::create_dir_all(&folder).expect("create the folder");
         for name in names {
-            std::fs::write(folder.join(name), TINY_IMAGE).expect("write an image");
+            write_image(&folder.join(name), width, height);
         }
         b.window.open_path(&folder.join(names[0]).to_string_lossy());
         folder
     });
     wait(ui, "the first image", |b| {
-        b.window.view_model().borrow().has_images() && b.window.view_model().borrow().current_image().is_some()
+        b.window.view_model().borrow().has_images()
+            && b.window.view_model().borrow().current_image().is_some()
+            && b.window.first_image_presented()
+            && b.window.viewport().image_actual_width() > 0.0
+            && !b.window.viewport().is_layout_posted()
     });
     folder
 }
@@ -279,7 +326,7 @@ fn screen_pixels(x_dip: f64, y_dip: f64) -> (i32, i32) {
 #[ignore = "native: needs desktop"]
 fn wheel_zooms_at_the_cursor_through_real_messages_keeping_the_point_under_it() {
     let ui = start_ui();
-    start_with_images(&ui, &["big.jpg"]);
+    start_with_sized_images(&ui, &["big.png"], 3000, 2000);
     let (x, y, fraction_before, zoom_before) = run(&ui, || {
         let b = built();
         let size = b.window.window().client_size_dip();
@@ -461,7 +508,7 @@ fn keyboard_zoom_never_presents_a_frame_at_the_new_size_with_the_old_scroll_offs
 
 fn keep_zoom_across_images(keep: bool) {
     let ui = start_ui();
-    start_with_images(&ui, &["a.jpg", "b.jpg"]);
+    start_with_sized_images(&ui, &["a.png", "b.png"], 16, 16);
     run(&ui, move || {
         edit_settings(|s| s.keep_zoom_across_images = keep);
         let b = built();
@@ -583,11 +630,11 @@ impl IDataObject_Impl for DropList_Impl {
 fn drop_target_is_registered_with_ole_and_a_drop_opens_the_first_file() {
     let ui = start_ui();
     let folder = start_with_images(&ui, &["a.jpg"]);
-    let other = folder.join("..").join("other");
+    let other = folder.parent().expect("owned photos root").join("other");
     let target_file = run(&ui, move || {
         std::fs::create_dir_all(&other).expect("create the other folder");
         let file = other.join("z.jpg");
-        std::fs::write(&file, TINY_IMAGE).expect("write z.jpg");
+        write_image(&file, 16, 16);
         file.to_string_lossy().into_owned()
     });
     assert!(
@@ -627,7 +674,7 @@ fn drop_target_is_registered_with_ole_and_a_drop_opens_the_first_file() {
     });
     assert_eq!(DROPEFFECT_COPY, effect);
     assert_ne!(DROPEFFECT_NONE, effect);
-    let expected = target_file.clone();
+    let expected = std::fs::canonicalize(&target_file).expect("canonical owned target");
     wait_until(&ui, "the first dropped file opens", move || {
         settle_step();
         present_current();
@@ -636,7 +683,7 @@ fn drop_target_is_registered_with_ole_and_a_drop_opens_the_first_file() {
         let vm = vm.borrow();
         vm.catalog()
             .current()
-            .is_some_and(|entry| entry.path().eq_ignore_ascii_case(&expected))
+            .is_some_and(|entry| std::fs::canonicalize(entry.path()).ok().as_ref() == Some(&expected))
     });
     finish(ui);
 }
@@ -667,13 +714,19 @@ fn viewport_controller_uses_the_system_drag_threshold_at_the_window_dpi() {
 #[ignore = "native: needs desktop"]
 fn navigation_stops_a_kinetic_glide() {
     let ui = start_ui();
-    start_with_images(&ui, &["a.jpg", "b.jpg"]);
+    start_with_sized_images(&ui, &["a.png", "b.png"], 2400, 1600);
     run(&ui, || edit_settings(|s| s.kinetic_pan_enabled = true));
     run(&ui, || key(KeyId::D1, false));
     wait(&ui, "100 %", |b| {
         zoom_percent() == 100 && !b.window.viewport().is_layout_posted()
     });
     run(&ui, || {
+        // Prove the observation reports a running glide before checking navigation's cancellation.
+        for i in 0..12 {
+            key(KeyId::RIGHT, i > 0);
+        }
+        assert!(input().input().stop_kinetic(), "the impulses must start a glide");
+        assert!(!input().input().stop_kinetic(), "a stopped glide is no longer hooked");
         for i in 0..12 {
             key(KeyId::RIGHT, i > 0); // the impulses add up: a long glide
         }
@@ -682,11 +735,10 @@ fn navigation_stops_a_kinetic_glide() {
     wait(&ui, "the second image shows", |_| index() == 1);
     // The glide stops when the view is reset for the new image (a zoom-mode change): wait until then.
     wait(&ui, "the next image is back at Fit", |_| zoom_percent() != 100);
-    let hooks_left = run(&ui, || {
-        input().input().stop_kinetic();
-        built().window.viewport().is_layout_posted()
-    });
-    let _ = hooks_left;
+    assert!(
+        !run(&ui, || input().input().stop_kinetic()),
+        "navigation must already have stopped the glide (C# Pointer.StopKinetic returns false)"
+    );
     finish(ui);
 }
 
@@ -701,25 +753,70 @@ fn input_latency_arrow_pan_is_measured_at_the_handler_the_layout_and_the_frame()
         zoom_percent() == 100 && !b.window.viewport().is_layout_posted()
     });
 
+    use std::sync::{Arc, Mutex, mpsc};
+    let flags = Arc::new(Mutex::new((false, false)));
+    let (layout_tx, layout_rx) = mpsc::channel();
+    let (frame_tx, frame_rx) = mpsc::channel();
+    let observed = Arc::clone(&flags);
+    let subscriptions = run(&ui, move || {
+        let layout_flags = Arc::clone(&observed);
+        let layout = built()
+            .window
+            .viewport()
+            .subscribe_layout_updated(std::rc::Rc::new(move || {
+                let mut flags = layout_flags.lock().unwrap();
+                if !flags.0 {
+                    flags.0 = true;
+                    layout_tx.send(Instant::now()).expect("layout receiver");
+                }
+            }));
+        let frame = built().window.window().subscribe_render(Box::new(move |_| {
+            let mut flags = observed.lock().unwrap();
+            if flags.0 && !flags.1 {
+                flags.1 = true;
+                frame_tx.send(Instant::now()).expect("frame receiver");
+            }
+        }));
+        (layout, frame)
+    });
     let mut send_ms = Vec::new();
+    let mut layout_ms = Vec::new();
+    let mut frame_ms = Vec::new();
     let directions = [KeyId::RIGHT, KeyId::DOWN, KeyId::LEFT, KeyId::UP];
     for i in 0..60 {
         let pressed = directions[i % directions.len()];
+        *flags.lock().unwrap() = (false, false);
         let started = Instant::now();
         run(&ui, move || key(pressed, false));
         send_ms.push(started.elapsed().as_secs_f64() * 1000.0);
-        wait_until(&ui, "the layout settles", || {
-            settle_step();
-            !built().window.viewport().is_layout_posted()
-        });
+        let layout_at = layout_rx.recv_timeout(ui_thread::BOUND).expect("layout after key");
+        let frame_at = frame_rx.recv_timeout(ui_thread::BOUND).expect("frame after layout");
+        layout_ms.push(layout_at.duration_since(started).as_secs_f64() * 1000.0);
+        frame_ms.push(frame_at.duration_since(started).as_secs_f64() * 1000.0);
     }
-    send_ms.sort_by(f64::total_cmp);
-    println!(
-        "wp22 input latency: n={} handler(SendMessage) p50={:.2} p95={:.2} max={:.2}",
-        send_ms.len(),
-        send_ms[send_ms.len() / 2],
-        send_ms[(send_ms.len() * 95) / 100],
-        send_ms[send_ms.len() - 1]
+    run(&ui, move || {
+        built().window.viewport().unsubscribe_layout_updated(subscriptions.0);
+        built().window.window().unsubscribe(subscriptions.1);
+    });
+    for (name, samples) in [
+        ("handler", &mut send_ms),
+        ("layout", &mut layout_ms),
+        ("frame", &mut frame_ms),
+    ] {
+        samples.sort_by(f64::total_cmp);
+        println!(
+            "wp22 {name}: n={} p50={:.2} p95={:.2} max={:.2}",
+            samples.len(),
+            samples[samples.len() / 2],
+            samples[samples.len() * 95 / 100],
+            samples[samples.len() - 1]
+        );
+    }
+    // C# asserts these two bounds; key-to-frame is recorded only, since hidden WARP is not hardware-vblank evidence.
+    assert!(send_ms[send_ms.len() * 95 / 100] < 50.0, "handler p95 exceeds C# bound");
+    assert!(
+        layout_ms[layout_ms.len() * 95 / 100] < 100.0,
+        "layout p95 exceeds C# bound"
     );
     finish(ui);
 }

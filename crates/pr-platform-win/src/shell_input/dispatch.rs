@@ -554,8 +554,8 @@ impl ShellInput {
     }
 
     /// C# `Pointer.StopKinetic()` (Refresh and `Deactivated` use it).
-    pub fn stop_kinetic(&self) {
-        self.core.stop_kinetic_impl();
+    pub fn stop_kinetic(&self) -> bool {
+        self.core.stop_kinetic_impl()
     }
 
     /// C# `OverlayHitTest` setter (WP-23 hook): true when the DIP point is over an overlay element that takes the mouse.
@@ -745,10 +745,8 @@ impl InputCore {
         }
     }
 
-    fn stop_kinetic_impl(&self) {
-        self.with_pointer_surface(|pointer, surface| {
-            pointer.stop_kinetic(surface);
-        });
+    fn stop_kinetic_impl(&self) -> bool {
+        self.with_pointer_surface(|pointer, surface| pointer.stop_kinetic(surface))
     }
 
     fn pointer_press_tunnel_impl(&self) {

@@ -26,7 +26,7 @@ mod support {
 mod ui_thread;
 
 use std::sync::Arc;
-use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::mpsc::channel;
 use std::time::Duration;
 
 use main_window_fixture::{built, finish, run, start_ui, wait_until};
@@ -365,8 +365,7 @@ fn clearing_the_preview_cache_counts_clears_the_gpu_cache_and_cancels_the_fade()
 #[ignore = "native: needs desktop"]
 fn clear_gpu_cache_after_dispose_is_a_no_op() {
     let ui = start_ui();
-    let flag = Arc::new(AtomicBool::new(false));
-    let sentinel = Arc::clone(&flag);
+    let (sentinel, completed) = channel();
     run(&ui, move || {
         let b = built_with_renderer();
         let service = Arc::clone(b.window.view_model().borrow().preview_service());
@@ -374,12 +373,13 @@ fn clear_gpu_cache_after_dispose_is_a_no_op() {
         service.clear_cache();
         // A Background job runs after the Normal one that `clear_cache` posted (the listener was dropped by `dispose`, so none was).
         b.window.dispatcher().post_with_priority(
-            Box::new(move || sentinel.store(true, Ordering::SeqCst)),
+            Box::new(move || sentinel.send(()).expect("sentinel receiver")),
             UiPriority::Background,
         );
     });
-    let probe = Arc::clone(&flag);
-    wait_until(&ui, "the sentinel job", move || probe.load(Ordering::SeqCst));
+    // Normal-priority UI probes can starve the Background job they are waiting for.
+    // Wait for the real dispatcher callback without adding more UI work.
+    completed.recv_timeout(ui_thread::BOUND).expect("the sentinel job");
     run(&ui, || assert_eq!(built().window.gpu_cache_clear_count(), 0));
     finish(ui);
 }
