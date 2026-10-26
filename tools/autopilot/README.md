@@ -48,7 +48,7 @@ Use lane tags such as `wave9-e`; the integration branch is `integration/wave9-e`
 `PLAN_REL` takes precedence over automatic lookup. A W8 dependency is ready when its id appears in `origin/master` history or
 any `tools/autopilot/state/*.json` records it as `done` or `partial`.
 
-Ports the units of one Wave 8 batch with Codex CLI (gpt-6.1-sol, effort medium) driven by plain bash. Optimised for Codex quota and
+Ports the units of one Wave 8 batch (or Wave 9 lane, see below) with Codex CLI (gpt-6.1-sol, effort medium) driven by plain bash. Optimised for Codex quota and
 Claude tokens, not for wall-clock time. Files: `codex-pipeline.sh` (driver), `codex-pack.sh` (context pack), `codex-gate.sh` (machine
 checks), `codex-run.sh` (one Codex call, `--json`, `resume`), `CODEX-RULES.md`, `lib/codex-lib.py` (plan/contract/state/lint/telemetry
 helpers), `test/pipeline-selftest.sh` (fake-Codex control-flow test, also covers every gate and helper).
@@ -72,23 +72,22 @@ Pipeline hardening:
 - **Fixup**: after a red-test or fast/full gate failure exhausts its 3 repair rounds, one final Codex fixup is attempted per unit. It may correct owned tests only when they contradict the C# oracle (the final message must cite the C# test and name changed Rust test functions), or fix implementation/rustfmt issues. The relaxed guard still forbids reducing test-function/assert counts or adding `#[ignore]`; a passing test correction is committed separately and recorded in telemetry. Set `FIXUP=0` to preserve the old fail behavior.
 - **Rerun of a failed unit**: the unit is reset first (any worktree holding `wu/<id>`, the branch, triage note and state/telemetry removed; an unmerged old tip is kept under `refs/pipeline-old/<id>`), no more `worktree add failed`.
 - **Merged units**: at start, units with a merge commit on `integration/<tag>` (since `origin/master`) are marked done, no seeded state file.
-- **Target dirs**: one per slot (`-s<slot>`), mutants `-mut`; a dir whose `.cargo-build-lock` is held by a stray process (`Access is denied`) is skipped for an alternate `-x<n>` dir. At the end: workspace gate, telemetry table, push, PR,
+- **Target dirs**: every unit builds in `<unit worktree>/target` and its mutants in `<unit worktree>/target-mut` (Codex sandbox, see the last section); `pick_target_dir` only probes the `target-wave-pipe-<tag>` slot dirs for a stray `.cargo-build-lock` holder (`Access is denied`) and the workspace gate builds in `target-wave-pipe-<tag>`. At the end: workspace gate, telemetry table, push, PR,
 `gh pr merge --auto --squash` (only if the workspace gate passed). Never falls back to Claude.
 
 Savings built in:
 - **Codex session reuse**: repair and kill-mutant rounds `codex exec resume <session-id>` (id read from the `--json` log) and send only
   the error tail (<= 60 lines) plus one instruction line; a failed resume falls back to a fresh call with the pack. Pack is trimmed
   (C# license headers, `///` doc lines, blank runs, per-file cap `PACK_FILE_CAP`=24000 B, de-duplicated signatures); its size is in the state file.
-- **Build reuse**: one `CARGO_TARGET_DIR` per integration tag (`target-wave-pipe-<tag>`) shared by all units run sequentially, one per slot
-  (`-s1`..`-s4`) with `--jobs > 1`, plus a dedicated `-mut` dir for cargo-mutants (never the unit's own). Deleted only when the pipeline ends.
+- **Build reuse**: units do not share a target dir (the Codex sandbox writes only inside its worktree): `<unit worktree>/target` and `<unit worktree>/target-mut` per unit; `target-wave-pipe-<tag>` serves the final workspace gate and is deleted when the pipeline ends.
   Repair loops run `cargo fmt -p <crate> -- --check` (`lib/fmtcheck.sh`; never the whole workspace on one command line, that fails with Windows os error 206 in deep worktree paths; the workspace gate loops over the members, with a rustfmt batch fallback), `cargo check -p <crate> --all-targets` and only the unit's own test binaries (`--test <name>`, `--lib`
   if the src has `#[cfg(test)]`); clippy + the full crate test run once per unit before the merge. `cargo-nextest` is used when installed (`GATE_NEXTEST=0` disables).
 - **Mutation by risk tier** (plan row): green or golden-covered (Test column `G`) = skipped; yellow = 15 min budget; red = 30 min
   (`MUT_BUDGET_YELLOW`/`MUT_BUDGET_RED`/`MUTANTS_TIMEOUT`). `cargo mutants --in-diff` on the owned src files only, `--baseline skip`,
-  `-j` `MUT_JOBS` (default 3), only the unit's test binaries, Debug/Display/`fmt`/`Default` impls excluded, re-runs only the survivors
+  `-j` `MUT_JOBS` (default 4), only the unit's test binaries, Debug/Display/`fmt`/`Default` impls excluded, re-runs only the survivors
   (`-F`). Budget exhausted = status `partial` (not failure). Note: with `-j > 1` cargo-mutants builds share the dedicated target dir; set `MUT_JOBS=1` if you ever see odd mutant results.
 - **Quota**: tokens, seconds and 5 h-quota percent are recorded per unit; a unit is not started when `100 - used%` is below the average
-  cost per unit x `QUOTA_MARGIN` (1.2); the 95 % ceiling (`QUOTA_MAX`) is never crossed; waits sleep until the reset (+2 min), no busy loops.
+  cost per unit x `QUOTA_MARGIN` (1.2); the 95 % ceiling (`QUOTA_MAX`) is never crossed on the 5 h window (the week is not compared by `codex-usage.sh`; `tools/dev/codex-sched.sh` stops on it); waits sleep until the reset (+2 min), no busy loops.
 - **Parallelism**: `--jobs N` runs independent units (dependencies merged) concurrently in separate worktrees with separate target dirs.
 - **Deterministic review gates** (no LLM, in `codex-gate.sh`): files outside Owned files, `unwrap()`/`expect(` on file-system/user-data lines
   (`// allow-unwrap` opts out), `unsafe` outside `pr-platform-win`, `unsafe` blocks without `// SAFETY:`, `todo!()`/`unimplemented!()`
@@ -103,7 +102,7 @@ Resume: run the same command again. `tools/autopilot/state/<tag>.json` (gitignor
 merged units are skipped, failed and skipped ones are retried. `CODEX_BIN`, `CODEX_MODEL`, `CODEX_EFFORT`, `CODEX_TIMEOUT`, `SKIP_MUTANTS=1`,
 `PIPELINE_NO_PR=1` override defaults (see the header of `codex-pipeline.sh`); `CODEX_MODEL` defaults to `gpt-6.1-sol` and `CODEX_EFFORT` to `medium`.
 
-luna/low is cheaper but gave wrong reports and stopped early; sol/medium costs more quota per call, so run at most 1-2 Codex lanes at the same time (use `tools/dev/codex-sched.sh` when it exists on master).
+luna/low is cheaper but gave wrong reports and stopped early; sol/medium (the default) costs more quota per call, so run at most two Codex lanes at the same time, through `tools/dev/codex-sched.sh` (see `tools/dev/SCHED.md`; it exists on master).
 
 What Claude (or you) must still do: write the contracts, stubs and goldens (Codex low cannot design); fix units marked `failed` or `skipped`
 (read `state/needs-claude/<id>.md` first; the worktree is kept); read the final PR diff (Codex output is data, not authority); decide on
@@ -112,7 +111,7 @@ What Claude (or you) must still do: write the contracts, stubs and goldens (Code
 ### Windows notes
 - Exclude the repo, `.claude/worktrees` and the `target-wave-pipe-*` dirs (and `%USERPROFILE%\.cargo`, `%USERPROFILE%\.rustup`) from antivirus
   real-time scanning (Windows Security: Virus & threat protection > Exclusions); builds are several times faster.
-- Set `CARGO_BUILD_JOBS` (e.g. 4 on 8 GB RAM) so parallel units and cargo-mutants do not exhaust memory; `--jobs 2` x `MUT_JOBS 3` is already 6 builds.
+- Set `CARGO_BUILD_JOBS` (e.g. 4 on 8 GB RAM) so parallel units and cargo-mutants do not exhaust memory; `--jobs 2` x `MUT_JOBS 4` is already 8 builds.
 - Enable long paths: `git config --global core.longpaths true` and registry `LongPathsEnabled=1`; cargo-mutants copies the tree to `%TEMP%` (~2 GB each).
 - Run from Git Bash; `git config --global --add safe.directory <repo>` (and for the C# checkout) if git reports "dubious ownership".
 
