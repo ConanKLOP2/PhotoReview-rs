@@ -6,7 +6,7 @@ Use repository evidence over recollection; recheck script defaults when they cha
 ## A. Codex runs
 
 - Inspect `tools/autopilot/codex-run.sh` before choosing a model; set `CODEX_MODEL` and `CODEX_EFFORT` explicitly when needed.
-  Why: its explicit `-m` and effort override config defaults; the checked script still defaults to `gpt-6-luna` / `low`.
+  Why: its explicit `-m` and effort override config defaults; the checked script defaults to `gpt-6.1-sol` / `medium` (owner choice 2026-10-23; `gpt-6-luna` / `low` is no longer the default).
 - Inspect live arguments with PowerShell `Get-CimInstance Win32_Process | Select-Object ProcessId, ParentProcessId, CommandLine` before reporting a running model.
   Why: a script default or an agent's report does not establish the arguments of a live process.
 - Launch long rounds in the main session's background runner and wait for its completion notice and exit status.
@@ -18,7 +18,7 @@ Use repository evidence over recollection; recheck script defaults when they cha
 - Keep each resumed session ID with one lane and worktree.
   Why: `tools/autopilot/codex-pipeline.sh` resets `SID` per unit and resumes that unit's conversation.
 - Limit concurrent Codex lanes to two and stop at 95% of either quota window; check both machines' usage.
-  Why: `docs/MULTI-MACHINE.md` records a shared account and both limits; the pipeline defaults to two jobs.
+  Why: `docs/MULTI-MACHINE.md` records a shared account and both limits; the pipeline defaults to two jobs and enforces the 95% ceiling on the 5 h window only, `tools/dev/codex-sched.sh` (`MAX_LANES=2`, `QUOTA_MAX=95`) enforces both windows.
 - Inspect `git diff --stat`, encoding, line endings and remaining stubs, then rerun fmt, clippy and tests yourself.
   Why: `done` is a claim; `tools/autopilot/test/pipeline-selftest.sh` includes a gate check rejecting `todo!()`.
 

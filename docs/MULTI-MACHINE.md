@@ -5,7 +5,7 @@ Two or more machines (A, B, ...) can port units in parallel. The only shared sta
 
 ## 1. Names
 - Set once per machine, in the shell profile of the user that runs the pipeline: `PR_MACHINE=A` (main machine), `PR_MACHINE=B`, ...
-  Default is the host name; stick to one short name per machine because it appears in claims, branch names and commit trailers.
+  Fallback order (`claim.sh`): `PR_MACHINE`, then the local file `tools/autopilot/state/machine`, then the host name; stick to one short name per machine because it appears in claims, branch names and commit trailers.
 
 ## 2. Ownership (who works on what)
 A batch is owned by ONE machine at a time. The lead (the human, or the Claude session on machine A) writes the table below and changes it
@@ -63,6 +63,6 @@ There is no live channel; use git:
 ## 7. Resources
 - Send heavy CPU lanes (`cargo-mutants`, mutation killers, large builds) to the machine with the strongest CPU and enough disk. A small-disk machine runs one worktree at a time, uses one shared mutation target directory outside worktrees, and deletes `target` after each unit. Both machines follow the Codex-first rule in `AGENTS.md`.
 - One Codex account: quota is shared. `tools/autopilot/codex-usage.sh` shows it; the limit is 95 % (set by the owner): stop a machine's Codex work above 95 % of the 5 h window or of the week
-  (the pipeline enforces it with `QUOTA_MAX=95`), and run `--jobs 1` on the second machine unless the quota has room.
+  (`codex-pipeline.sh` enforces `QUOTA_MAX=95` on the 5 h window only, because `codex-usage.sh` compares only that window; `tools/dev/codex-sched.sh` enforces both windows and stops at once on the weekly limit), and run `--jobs 1` on the second machine unless the quota has room. At most two Codex lanes per machine (`MAX_LANES=2`, pipeline default `--jobs 2`).
 - Each machine has its own `CARGO_TARGET_DIR` inside the worktree; mutation targets go outside the worktree.
 - A machine that cannot build (disk, `STATUS_DLL_INIT_FAILED`) reports it in the claim note and releases its claims.
