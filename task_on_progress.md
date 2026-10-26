@@ -2,6 +2,10 @@
 
 **Updated:** 2026-10-23 (older entries moved to `docs/archive/`; the sections below are the latest ones; where two sections disagree the later date wins, not the later position)
 
+## Wave 9 E9 root repair handoff, machine A, 2026-10-26 morning
+
+- Independent root repair source9b81ac3 on codex/fix-zoom-menu-borrow (master0fee72c base, FIX-zoom-menu-borrow A) passes the deterministic live-viewer pure regression, all27surface+135pointer functions and all17legacy native menu functions, including the five previously panicking zoom routes. SharedViewerAdapter borrows only per viewer operation, preserves live source/layout ordering, no snapshot/empty fallback. Corrected menu expected RenameFile row matches C#7eaee2a2. Final fmt12/Clippy PASS; root workspace runner15277/PID20740 remains active. No root PR yet; merge repair first, then integrate into E9/R1.
+- E9 path assertion now uses a stable leaf plus canonical file identity and builds expected arguments from the actual launched path, per AGENTS RUNNER~1 warning; still proves exact configured program and same photo. Four pure wiring tests pass on21ac0e1. No E9 native failure was ignored; combined3728b3e workspace9861/0/1329 is pre-repair evidence and full native file was16/6. Native popup4/4rows remained green. Recheck final combined source after the root repair merges.
 ## Wave 9 E9 native regression findings, machine A, 2026-10-26 morning
 
 - Final combined source3728b3e fmt12/Clippy PASS; workspace9861passed/0failed/1329ignored across564resultlines, exit0. Serial focused run completed: controller53/53passed; native/e2e file16passed/6failed (22functions, includes4pure wiring +18native). New editor popup en/vi x96/144 and all four wiring cases PASS. No E9 PR or retry-to-green.
