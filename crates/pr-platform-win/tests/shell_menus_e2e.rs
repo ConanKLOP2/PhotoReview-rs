@@ -3,7 +3,8 @@
 //! `SendMessage`); the keys of the native menu are posted BEFORE it opens (the modal loop of `TrackPopupMenuEx` reads them). A group of tests uses a
 //! scripted host (an id picked without showing a menu) to run every command through the real window.
 //!
-//! Every test is `#[ignore = "native: needs desktop"]` and stays `Partial` in PARITY until a desktop run is recorded. Differences from the C# harness:
+//! Legacy cases and the W9-E9 popup paint are ignored native tests; `editor_command_wiring` has four pure fake-window cases.
+//! Native evidence is recorded separately from default CI. Differences from the C# harness:
 //! the window is the `main_window_fixture` window (WARP-free: no renderer is attached, the viewport has no image content, the decoder is a fake), the
 //! zoom prompt comes through `FeatureOptions`, and the settings are written through `SettingsSource` (`begin_edit`/`commit_edit`).
 #![cfg(windows)]
@@ -22,8 +23,16 @@ mod support {
     #[path = "../../../pr-app/tests/support/preview_fakes.rs"]
     pub mod preview_fakes;
 }
+#[path = "common/w9_e2_capture.rs"]
+mod editor_menu_capture;
+#[path = "common/shell_input_dispatch_fixture.rs"]
+mod fixture;
+#[path = "common/input_feature_fixture.rs"]
+mod input_feature_fixture;
 #[path = "common/ui_thread.rs"]
 mod ui_thread;
+#[path = "common/viewing_fakes.rs"]
+mod viewing_fakes;
 
 use std::cell::RefCell;
 use std::error::Error;
@@ -52,6 +61,471 @@ const VK_ESCAPE: usize = 0x1B;
 const VK_RETURN: usize = 0x0D;
 const VK_DOWN: usize = 0x28;
 const VK_RIGHT: usize = 0x27;
+
+/// W9-E9 wiring over a real view model and fake window/services. Never executes a process.
+mod editor_command_wiring {
+    use super::*;
+    use input_feature_fixture::{FakeServices, FeatureRig};
+    use pr_app::{
+        input::review_command::ReviewCommand,
+        viewmodels::main::{ChangeSet, ExternalEditorFailure, ExternalEditorLauncher, MainViewModel, SettingsSource},
+    };
+    use pr_core::{abstractions::Log, settings::external_editors::ExternalEditor};
+    use pr_platform_win::{
+        shell_input::main_window::MainWindowInputServices,
+        shell_menus::{
+            controller::ContextMenuActions,
+            main_window::{MainWindowMenuActions, MainWindowMenuServices},
+        },
+    };
+    use std::sync::{Arc, Mutex};
+    use support::main_env::MainEnv;
+
+    struct MenuServices(Rc<FakeServices>);
+    impl MainWindowMenuServices for MenuServices {
+        fn window(&self) -> Rc<dyn ShellWindowApi> {
+            self.0.window.clone()
+        }
+        fn owner_hwnd(&self) -> isize {
+            0
+        }
+        fn log(&self) -> Arc<dyn Log> {
+            self.0.log.clone()
+        }
+        fn settings(&self) -> SettingsSource {
+            self.0.env.borrow().settings.clone()
+        }
+        fn with_view_model(&self, f: &mut dyn FnMut(&mut MainViewModel) -> ChangeSet) {
+            MainWindowInputServices::with_view_model(self.0.as_ref(), f);
+        }
+        fn report_shell_error(&self, _: &str, _: &dyn Error) {}
+        fn show_menu_failed_status(&self, _: &dyn Error) {}
+        fn zoom_action_name(&self) -> String {
+            "Zoom".into()
+        }
+    }
+    fn actions(rig: &FeatureRig) -> MainWindowMenuActions {
+        MainWindowMenuActions::new(Rc::new(MenuServices(rig.services.clone())), rig.input.clone())
+    }
+    type Launches = Arc<Mutex<Vec<(String, String, String)>>>;
+    struct Launcher {
+        calls: Launches,
+        unexpected: bool,
+    }
+    impl ExternalEditorLauncher for Launcher {
+        fn launch(&mut self, exe: &str, path: &str, arguments: &str) -> Result<(), ExternalEditorFailure> {
+            self.calls
+                .lock()
+                .unwrap()
+                .push((exe.into(), path.into(), arguments.into()));
+            if self.unexpected {
+                Err(ExternalEditorFailure::Unexpected {
+                    message: "editor wiring bug".into(),
+                })
+            } else {
+                Ok(())
+            }
+        }
+    }
+    fn configured(unexpected: bool) -> (FeatureRig, Launches, String, String) {
+        let mut env = MainEnv::new();
+        let exe = env.root.join("declared-editor.exe").to_string_lossy().into_owned();
+        std::fs::write(&exe, b"placeholder; fake launcher only").unwrap();
+        env.update_settings(|settings| {
+            settings.external_editors = vec![ExternalEditor {
+                id: "chosen.id with spaces".into(),
+                name: "Chosen".into(),
+                path: exe.clone(),
+                arguments: "--chosen {file}".into(),
+            }];
+            settings.default_external_editor_id = "chosen.id with spaces".into();
+            settings.external_editor_path = "stale-mirror.exe".into();
+        });
+        let (folder, files) = env.images("editor-shell", &["photo.jpg"]);
+        env.open(&folder);
+        let calls = Arc::new(Mutex::new(Vec::new()));
+        env.vm.set_external_editor_launcher(Box::new(Launcher {
+            calls: calls.clone(),
+            unexpected,
+        }));
+        (FeatureRig::with_env(env), calls, exe, files[0].clone())
+    }
+
+    #[test]
+    fn input_default_editor_and_menu_by_id_reach_real_view_model_with_template() {
+        let (rig, calls, exe, photo) = configured(false);
+        rig.input
+            .input_host()
+            .execute(ReviewCommand::OPEN_IN_DEFAULT_EDITOR)
+            .unwrap();
+        actions(&rig)
+            .open_in_external_editor_by_id("chosen.id with spaces")
+            .unwrap();
+        let launched = calls.lock().unwrap();
+        assert_eq!(launched.len(), 2);
+        let expected_photo = std::fs::canonicalize(photo).unwrap();
+        for (program, path, arguments) in launched.iter() {
+            assert_eq!(program, &exe); // The configured string is forwarded verbatim.
+            // CI may expand a RUNNER~1 temp-root prefix. Check the stable tail and exact file identity.
+            assert!(pr_core::text::eq_ignore_case(
+                pr_core::text::dotnet_path::get_file_name(path),
+                "photo.jpg"
+            ));
+            assert_eq!(std::fs::canonicalize(path).unwrap(), expected_photo);
+            assert_eq!(arguments, &format!("--chosen \"{path}\""));
+        }
+        assert_eq!(rig.vm_calls(), 2);
+    }
+
+    #[test]
+    fn input_default_editor_without_configuration_opens_editor_settings() {
+        let rig = FeatureRig::new();
+        rig.input
+            .input_host()
+            .execute(ReviewCommand::OPEN_IN_DEFAULT_EDITOR)
+            .unwrap();
+        let env = rig.env.borrow();
+        assert_eq!(
+            *env.dialog.settings_targets.lock().unwrap(),
+            vec![pr_core::abstractions::SettingsTarget::ExternalEditor]
+        );
+        assert!(env.dialog.errors.lock().unwrap().is_empty());
+    }
+
+    #[test]
+    fn menu_and_input_return_unexpected_editor_error_to_caller() {
+        let (rig, _, _, _) = configured(true);
+        let error = rig
+            .input
+            .input_host()
+            .execute(ReviewCommand::OPEN_IN_DEFAULT_EDITOR)
+            .unwrap_err();
+        assert_eq!(error.to_string(), "editor wiring bug");
+        let error = actions(&rig)
+            .open_in_external_editor_by_id("chosen.id with spaces")
+            .unwrap_err();
+        assert_eq!(error.to_string(), "editor wiring bug");
+        assert!(rig.env.borrow().dialog.errors.lock().unwrap().is_empty());
+    }
+
+    #[test]
+    fn menu_add_and_choose_default_reach_dialog_and_persist_selection() {
+        let rig = FeatureRig::new();
+        *rig.env.borrow().dialog.added_editor.lock().unwrap() = Some(ExternalEditor {
+            id: "dialog-id".into(),
+            name: "Added".into(),
+            path: r"C:\fake-editor.exe".into(),
+            arguments: ExternalEditor::DEFAULT_ARGUMENTS.into(),
+        });
+        let actions = actions(&rig);
+        actions.add_external_editor().unwrap();
+        let added = rig.env.borrow().settings.current().external_editors[0].clone();
+        assert_ne!(added.id, "dialog-id");
+        *rig.env.borrow().dialog.chosen_editor.lock().unwrap() = Some(added.id.clone());
+        actions.choose_default_external_editor().unwrap();
+        let env = rig.env.borrow();
+        assert_eq!(env.settings.current().default_external_editor_id, added.id);
+        assert_eq!(env.dialog.editor_initials.lock().unwrap().len(), 1);
+        assert_eq!(env.dialog.editor_choices.lock().unwrap().len(), 1);
+    }
+}
+
+/// W9-E9: event-driven twin of ExternalEditorsUiTests.Menu_EditorSubmenu_PaintsItsEntries.
+/// WM_ENTERIDLE marks a painted menu with an empty input queue; no fixed paint delays.
+mod editor_popup_paint {
+    use super::*;
+    use pr_app::menus::{
+        builder,
+        model::{ContextMenuBuildContext, MenuItemKind},
+    };
+    use pr_core::settings::{
+        app_settings::EnglishSettingsTexts, context_menu::ContextMenuItemId, external_editors::ExternalEditor,
+    };
+    use pr_l10n::{catalog::LanguageCatalog, localizer::Localizer};
+    use pr_platform_win::{
+        shell_menus::{
+            mapping,
+            owner_draw::{OwnerDrawItem, OwnerDrawMenuSession},
+        },
+        win32::{api, messages, structs::Hmenu},
+    };
+    use std::any::Any;
+    use std::cell::Cell;
+    use std::panic::{AssertUnwindSafe, catch_unwind, resume_unwind};
+    use std::sync::{Arc, mpsc};
+    use windows::{
+        Win32::{
+            Graphics::Gdi::HBRUSH,
+            UI::WindowsAndMessaging::{AppendMenuW, HMENU, MENU_ITEM_FLAGS, MENUINFO, MENUINFO_MASK, SetMenuInfo},
+        },
+        core::PCWSTR,
+    };
+
+    struct Menu(Hmenu);
+    impl Drop for Menu {
+        fn drop(&mut self) {
+            let _ = api::user32::destroy_menu(self.0);
+        }
+    }
+    struct RestoreLocalizer(Arc<Localizer>);
+    impl Drop for RestoreLocalizer {
+        fn drop(&mut self) {
+            Localizer::set_current(self.0.clone());
+        }
+    }
+    fn post(owner: isize, message: u32, key: usize) {
+        // SAFETY: posts integer-only messages to the live test-owned owner; no borrowed pointer crosses threads.
+        unsafe {
+            PostMessageW(Some(HWND(owner as *mut _)), message, WPARAM(key), LPARAM(0)).unwrap();
+        }
+    }
+
+    struct IdleCapture {
+        dpi: u32,
+        editor_index: usize,
+        root: Cell<isize>,
+        completed: Cell<bool>,
+        failure: RefCell<Option<Box<dyn Any + Send>>>,
+    }
+    #[link(name = "dwmapi")]
+    unsafe extern "system" {
+        fn DwmFlush() -> i32;
+    }
+    fn flush_compositor(hwnd: isize) {
+        use windows::Win32::Graphics::Gdi::{RDW_ALLCHILDREN, RDW_INVALIDATE, RDW_UPDATENOW, RedrawWindow};
+        // SAFETY: both flush calls take no pointers; synchronize completed GDI draws and the compositor before reading the real window DC.
+        unsafe {
+            // SAFETY: the live popup belongs to this UI thread; synchronous paint completes before its real DC is captured.
+            assert!(
+                RedrawWindow(
+                    Some(HWND(hwnd as *mut _)),
+                    None,
+                    None,
+                    RDW_INVALIDATE | RDW_UPDATENOW | RDW_ALLCHILDREN
+                )
+                .as_bool()
+            );
+            assert!(windows::Win32::Graphics::Gdi::GdiFlush().as_bool());
+            assert!(DwmFlush() >= 0, "DWM flush failed");
+        }
+    }
+    impl IdleCapture {
+        fn idle(&self, message: &WindowMessage) {
+            if self.root.get() == 0 {
+                self.root.set(message.lparam);
+                flush_compositor(message.lparam);
+                let shot = editor_menu_capture::Shot::capture(message.lparam);
+                shot.assert_not_flat(message.lparam, "editor root menu");
+                for _ in 0..=self.editor_index {
+                    post(message.hwnd, WM_KEYDOWN, VK_DOWN);
+                }
+                post(message.hwnd, WM_KEYDOWN, VK_RIGHT);
+                post(message.hwnd, WM_KEYDOWN, VK_DOWN);
+            } else if message.lparam != self.root.get() && !self.completed.get() {
+                flush_compositor(message.lparam);
+                let shot = editor_menu_capture::Shot::capture(message.lparam);
+                shot.assert_not_flat(message.lparam, "editor submenu");
+                let rect = api::user32::get_window_rect(message.lparam).unwrap();
+                assert!(
+                    rect.bottom - rect.top > 4 * (16 * self.dpi / 96) as i32,
+                    "submenu height at DPI {}",
+                    self.dpi
+                );
+                self.completed.set(true);
+                post(message.hwnd, WM_KEYDOWN, VK_ESCAPE);
+                post(message.hwnd, WM_KEYDOWN, VK_ESCAPE);
+            }
+        }
+    }
+    impl WindowMessageHandler for IdleCapture {
+        fn try_handle(&self, message: &WindowMessage) -> Option<isize> {
+            if message.msg != messages::WM_ENTERIDLE || message.wparam != 2 || message.lparam == 0 {
+                return None;
+            }
+            if let Err(error) = catch_unwind(AssertUnwindSafe(|| self.idle(message))) {
+                *self.failure.borrow_mut() = Some(error);
+                post(message.hwnd, windows::Win32::UI::WindowsAndMessaging::WM_CANCELMODE, 0);
+            }
+            Some(0)
+        }
+    }
+
+    // Test-side C# Populate: real HMENUs and the production OwnerDrawMenuSession, at an explicit test DPI.
+    fn populate(menu: Hmenu, items: &[MenuItemModel], session: &OwnerDrawMenuSession, next_id: &mut usize) {
+        for item in items {
+            let separator = item.kind == MenuItemKind::Separator;
+            let submenu = item.kind == MenuItemKind::Submenu && !item.children.is_empty();
+            let mut child = if submenu {
+                Some(Menu(api::user32::create_popup_menu().unwrap()))
+            } else {
+                None
+            };
+            if let Some(child) = &child {
+                populate(child.0, &item.children, session, next_id);
+            }
+            let id = if let Some(child) = &child {
+                child.0 as usize
+            } else if separator {
+                0
+            } else {
+                *next_id += 1;
+                *next_id
+            };
+            let data = session.register(OwnerDrawItem {
+                text: item.text.clone(),
+                shortcut: item.shortcut_text.clone(),
+                is_separator: separator,
+                is_submenu: submenu,
+            });
+            let flags = mapping::item_flags(item)
+                | 0x100
+                | if separator {
+                    messages::MF_SEPARATOR
+                } else if submenu {
+                    messages::MF_POPUP
+                } else {
+                    0
+                };
+            // SAFETY: MF_OWNERDRAW treats data as an integer token; session owns its item until the menu is destroyed.
+            unsafe {
+                AppendMenuW(
+                    HMENU(menu as *mut _),
+                    MENU_ITEM_FLAGS(flags),
+                    id,
+                    PCWSTR(data as *const u16),
+                )
+                .unwrap();
+            }
+            if let Some(child) = child.take() {
+                std::mem::forget(child);
+            } // Root now owns the appended child.
+        }
+    }
+
+    fn paint(dpi: u32, language: &'static str) {
+        let rig = start(&[], None);
+        run(&rig.ui, move || {
+            let _restore = RestoreLocalizer(Localizer::current());
+            let mut warnings = Vec::new();
+            let english = LanguageCatalog::try_parse(
+                include_str!("../../../assets/languages/en.json"),
+                "en.json",
+                &mut warnings,
+            )
+            .unwrap();
+            let overlays = if language == "vi" {
+                vec![
+                    LanguageCatalog::try_parse(
+                        include_str!("../../../assets/languages/vi.json"),
+                        "vi.json",
+                        &mut warnings,
+                    )
+                    .unwrap(),
+                ]
+            } else {
+                Vec::new()
+            };
+            Localizer::set_current(Arc::new(Localizer::create(&english, &overlays, &warnings)));
+            let mut settings = AppSettings::new(&EnglishSettingsTexts);
+            settings.external_editors = ["First editor", "Second editor", "Third editor"]
+                .into_iter()
+                .enumerate()
+                .map(|(index, name)| ExternalEditor {
+                    id: format!("e{index}"),
+                    name: name.into(),
+                    path: format!(r"C:\test-editor{index}.exe"),
+                    arguments: ExternalEditor::DEFAULT_ARGUMENTS.into(),
+                })
+                .collect();
+            settings.default_external_editor_id = "e0".into();
+            apply_hidden(&mut settings, [ContextMenuItemId::RenameFile]);
+            let items = builder::build(&ContextMenuBuildContext {
+                settings: &settings,
+                has_image: true,
+                can_undo: true,
+                is_fit: true,
+                effective_zoom: None,
+                can_open_in_external_editor: true,
+                can_copy_path: true,
+                is_compare_visible: false,
+            })
+            .unwrap();
+            let top = items
+                .iter()
+                .filter(|item| item.kind != MenuItemKind::Separator)
+                .collect::<Vec<_>>();
+            let editor_index = top.iter().position(|item| item.id == "ExternalEditor").unwrap();
+            assert_eq!(top[editor_index].kind, MenuItemKind::Submenu);
+            assert_eq!(top[editor_index].children.len(), 6);
+            let owner = built().shell.hwnd();
+            let session = OwnerDrawMenuSession::new(owner, dpi, None);
+            assert!(session.attach());
+            let root = Menu(api::user32::create_popup_menu().unwrap());
+            populate(root.0, &items, &session, &mut 0);
+            let info = MENUINFO {
+                cbSize: std::mem::size_of::<MENUINFO>() as u32,
+                fMask: MENUINFO_MASK(0x8000_0002),
+                hbrBack: HBRUSH(session.background_brush() as *mut _),
+                ..Default::default()
+            };
+            // SAFETY: root and session's brush are live until after TrackPopupMenuEx and menu destruction.
+            unsafe {
+                SetMenuInfo(HMENU(root.0 as *mut _), &info).unwrap();
+            }
+            let capture = Rc::new(IdleCapture {
+                dpi,
+                editor_index,
+                root: Cell::new(0),
+                completed: Cell::new(false),
+                failure: RefCell::new(None),
+            });
+            built().shell.insert_message_handler_first(capture.clone());
+            let (done, receiver) = mpsc::channel();
+            let watchdog = std::thread::spawn(move || {
+                if receiver.recv_timeout(Duration::from_secs(15)).is_err() {
+                    post(owner, windows::Win32::UI::WindowsAndMessaging::WM_CANCELMODE, 0);
+                    post(owner, WM_KEYDOWN, VK_ESCAPE);
+                    true
+                } else {
+                    false
+                }
+            });
+            // Test-only: bypass popup animation so completed GDI/DWM paint is the visible frame.
+            api::user32::track_popup_menu_ex(
+                root.0,
+                messages::TPM_RETURNCMD | windows::Win32::UI::WindowsAndMessaging::TPM_NOANIMATION.0,
+                150,
+                150,
+                owner,
+            );
+            let _ = done.send(());
+            let timed_out = watchdog.join().unwrap();
+            drop(root);
+            session.dispose();
+            if let Some(error) = capture.failure.borrow_mut().take() {
+                resume_unwind(error);
+            }
+            assert!(!timed_out, "menu idle/capture timed out: {language} {dpi}");
+            assert!(
+                capture.completed.get(),
+                "root and submenu were not both captured: {language} {dpi}"
+            );
+            eprintln!("BitBlt root+submenu PASS: {language} {dpi}");
+        });
+        rig.finish();
+    }
+
+    // C#: ExternalEditorsUiTests.Menu_EditorSubmenu_PaintsItsEntries, all four theory rows.
+    #[test]
+    #[ignore = "native: needs interactive desktop for real popup BitBlt"]
+    fn menu_editor_submenu_paints_its_entries() {
+        for language in ["en", "vi"] {
+            for dpi in [96, 144] {
+                paint(dpi, language);
+            }
+        }
+    }
+}
 
 // ---- the observing host ---------------------------------------------------------------------------------------------------------------------------
 
