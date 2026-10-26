@@ -2,6 +2,10 @@
 
 **Updated:** 2026-10-23 (older entries moved to `docs/archive/`; the sections below are the latest ones; where two sections disagree the later date wins, not the later position)
 
+## Wave 9 E8 merged and E9 final wiring, machine A, 2026-10-26 morning
+
+- E8PR254 merged0fee72c; all owned source/tests/goldens/PARITY/SYNC content matches reviewed0f93b63 after fetch. Final source4fb32cc:9850workspace passed/0failed/1328ignored (564results), all12packagefmt/Clippy PASS,40focused functions PASS including3selected native fake-factory modal cases. ClaimW9-E8 released. No cargo-mutants for native composition glue; production W8-17c/B factory adapter remains pending. Local cleanup retained under earlier approval rejection.
+- E9 added four pure wiring tests over real MainViewModel/fake window: keyboard default and menu ID/template, no-editor SettingsTarget::ExternalEditor, unexpected error propagation, Add/Choose dialog forwarding and persistence. All four passed before the stronger SettingsTarget assertion; final535fa26 fixes its public import. Final Clippyworkspace PASS; workspace runner4609/PID2720 is active on535fa26, TEMP/w9-e9-final2-test-*. Wait for terminal verdict before merging E8 and rerunning final gates/native regression. No restart on an observation timeout.
 ## Wave 9 E9 popup native evidence, machine A, 2026-10-26
 
 - Added C# Menu_EditorSubmenu_PaintsItsEntries twin in shell_menus_e2e: production model and OwnerDrawMenuSession with explicit96/144DPI, three editors, RenameFile hidden, keyboard Down/Right into submenu, actual window-DC BitBlt capture of root+submenu, unchanged >=3colours/dominant<99% criterion and submenu height threshold. All four en/vi x96/144rows PASS in selected native run, exit0 (one Rust test, four rows/eight captures), TEMP/w9-e9-paint5-*. No actual editor process launched.
