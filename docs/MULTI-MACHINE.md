@@ -49,6 +49,7 @@ bash tools/autopilot/claim.sh gc                                    # drop claim
 ## 5. Shared files (conflicts are expected, keep them small)
 - `docs/PARITY.md`: edit only the rows of your own units. `task_on_progress.md`: add a NEW section per machine and per date
   (`## Wave 8 B5, machine A, 2026-10-22`), never rewrite another machine's section. `contracts/README.md`: only append to your batch section.
+- `task_on_progress.md` (this supersedes the "new section per machine and date" wording above): one line per unit (status, PR number); details belong in the PR body and `docs/PARITY.md`; new sections only for decisions or incidents; old sections go verbatim to `docs/archive/`.
 - `Cargo.lock` / `Cargo.toml`: ask the human before touching dependencies; if both machines need one, the machine that merges first wins and the
   other merges master.
 - On a merge conflict in a shared file merge `origin/master` in, keep BOTH sides, run the gate again.
