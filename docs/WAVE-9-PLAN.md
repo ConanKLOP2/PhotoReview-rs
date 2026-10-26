@@ -1,8 +1,32 @@
 # Wave 9 plan (combined view): external editors (lane E) and FEAT-RENAME (lane R)
 
+> **Status: active combined view; lane E is implemented (W9-E1..E9 on master), R1 policy/plan is implemented on the integration branch (final gates/PR pending), and R2..R11 remain contract and stub only.** Last verified 2026-10-26 against `origin/master` 8b93fbf.
+> Evidence is the status table in section 0, taken from `git log origin/master`; sections 4 and 6 are kept as the snapshot of 2026-10-23 and are superseded by section 0.
+
 Written by DOC-WAVE-PLANS (machine C, cloud) from `docs/WAVE-9-PLAN-edt.md`, `docs/WAVE-9-PLAN-ren.md`, `contracts/W9-E1..E9.md`, `contracts/W9-R1..R11.md`, `contracts/README.md` (sections "Wave 9 sync") and the `origin/master` history of 2026-10-23. Nothing here is new design.
 
-**The two lane plans stay the source of the unit tables.** `tools/autopilot/lib/codex-lib.py planfor` selects a plan by listing `docs/WAVE-9-PLAN-*.md` files that contain rows `| W9-<lane><n> |`, so those files must not be merged, renamed or deleted; this file is named without the dash suffix on purpose and carries no unit rows. C# spec: `7eaee2a2` (feature commit `d9623945` for lane E; `55a37986`, `9800058e`, `170a2d19` for lane R).
+**The two lane plans stay the source of the unit tables.** `tools/autopilot/lib/codex-lib.py planfor` selects a plan by listing `docs/WAVE-9-PLAN-*.md` files that contain rows `| W9-<lane><n> |`, so those files must not be merged, renamed or deleted; this file is named without the dash suffix on purpose, so `planfor` never selects it (it is a view, not a pipeline plan). C# spec: `7eaee2a2` (feature commit `d9623945` for lane E; `55a37986`, `9800058e`, `170a2d19` for lane R).
+
+## 0. Current state (2026-10-26, `origin/master` 8b93fbf)
+
+Status is read from the subjects of `git log origin/master`. A merged PR is not a parity claim: native and attended evidence per unit is tracked in `docs/PARITY.md`.
+
+| Unit | Status on master | Evidence |
+|---|---|---|
+| W9-E1 | merged | #233 |
+| W9-E2 | merged | #235 |
+| W9-E3 | merged | #234 |
+| W9-E4 | merged | #237 |
+| W9-E5 | merged | #239 |
+| W9-E6 | merged | #238 |
+| W9-E7 | merged | #236 |
+| W9-E8 | merged | #254 |
+| W9-E9 | merged | #256 |
+| W9-R1 | implemented on integration branch; final gates and PR pending | 53 focused G/F functions, 44 oracle cases; PARITY and ADR-R-12 |
+| W9-R2..R11 | contract and stub only, not implemented | contracts, stubs and golden #176, reconciliation #216; `todo!()` remains in `pr_core::file_actions::{case_only_rename, rename_service}`, `pr_core::catalog::rename`, `pr_app::coordinators::rename`; `docs/MULTI-MACHINE.md` assigns the lane to machine A (#241) |
+
+- Wave 8 dependencies named in this file that were `open` on 2026-10-23 are merged: W8-18o #231, W8-18p #226, W8-18q #227, W8-19j..19m #230. No unit in the dependency column of section 1 depends on W8-17e, W8-20a, W8-20b or W8-12j.
+- Sections 2 (the `ok`/`open` labels), 4 and 6 are the snapshot of 2026-10-23 and are no longer current.
 
 ## 1. Units at a glance
 
@@ -91,7 +115,7 @@ graph LR
 4. Native units wait for the open Wave 8 dialogs: **E2, E3** (W8-18p/18q), **E4** (W8-19j..19m), **E8** (W8-18o, E4), **R8** then **R11** (W8-18p, R7).
 5. Because both lanes edit the same files (list in the E lane plan, "Overlap"), the lane plans say lane E merges first; R7 appends `RenameFile` after `OpenInDefaultEditor` in `ShortcutMappings`. The second lane to merge merges `origin/master` into its branch and keeps both sides (docs/MULTI-MACHINE.md section 5).
 
-## 4. State of the Wave 8 dependencies (from `git log origin/master`, 2026-10-23)
+## 4. State of the Wave 8 dependencies (from `git log origin/master`, 2026-10-23; snapshot, superseded by section 0)
 
 - In history: W8-18h..18k (#184), W8-19f/19g/19i together with 19c, 19e..19i (#161, 19g also #162), W8-17c (#177, marked partial), W8-09b S1..S3 (#158, #159, #175), W8-18a..18g and 19a/19b (#150, #153).
 - Not found in any merged PR title: W8-18o, 18p, 18q, 18r..18v, 19j..19m, 17d, 17e, 20a, 20b.
@@ -107,7 +131,7 @@ graph LR
 
 `tools/autopilot/README.md` ("Wave 9"): the pipeline finds the unique plan with rows for the lane, or takes `--plan docs/WAVE-9-PLAN-edt.md`. Run `codex-pipeline.sh wave9-e --dry-run` first; it prints internal and external dependencies.
 
-## 6. Machine split (proposal for the lead; the ownership table in `docs/MULTI-MACHINE.md` is not changed here)
+## 6. Machine split (proposal of 2026-10-23, superseded: `docs/MULTI-MACHINE.md` now assigns both W9 lanes to machine A)
 
 Today A owns Wave 8 B5 remainder (18o-18v, 19d-19m) and B owns B6 (17a-17e, 20a, 20b). The Wave 9 native units wait for exactly those. Proposal:
 

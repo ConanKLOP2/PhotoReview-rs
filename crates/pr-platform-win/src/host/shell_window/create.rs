@@ -249,9 +249,13 @@ impl WindowTarget for ShellWindowInner {
         ShellWindowInner::process_message(self, hwnd, message, wparam, lparam)
     }
 
-    /// C# `OnNativeDestroyed` = `FreeSelf`.
+    /// C# `OnNativeDestroyed` = `FreeSelf`; also release the dead window's handler chain to break Rc cycles the C# GC collects.
     fn on_native_destroyed(&self) {
         self.free_self();
+        // WM_NCDESTROY follows Closed, including when a Closed subscriber panics. The trampoline's
+        // cloned target keeps this object alive; handler destructors run outside the list borrow.
+        let handlers = self.handlers.take();
+        drop(handlers);
     }
 }
 

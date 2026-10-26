@@ -14,11 +14,9 @@ pub(crate) mod explorer_native_view;
 pub(crate) mod explorer_window_selector;
 
 #[cfg(windows)]
-#[allow(dead_code)] // W6-03c consumes mutex-name generation and the default prefix.
 pub(crate) mod instance_keys;
 
 #[cfg(windows)]
-#[allow(dead_code)] // W6-03c/d consume the pipe identity and ACL construction API.
 pub(crate) mod forward_pipe;
 
 #[cfg(windows)]

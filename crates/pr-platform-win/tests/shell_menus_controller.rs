@@ -189,6 +189,15 @@ impl ContextMenuActions for FakeActions {
     fn open_in_external_editor(&self) -> ActionResult {
         self.record("ExternalEditor")
     }
+    fn open_in_external_editor_by_id(&self, editor_id: &str) -> ActionResult {
+        self.record(&format!("ExternalEditor:{editor_id}"))
+    }
+    fn add_external_editor(&self) -> ActionResult {
+        self.record("AddEditor")
+    }
+    fn choose_default_external_editor(&self) -> ActionResult {
+        self.record("SetDefaultEditor")
+    }
     fn copy_file_name(&self) -> ActionResult {
         self.record("CopyFileName")
     }
@@ -841,6 +850,143 @@ fn execute_returns_the_error_of_unguarded_commands_only() {
             "failed:Zoom-localized:boom Preset:100",
             "failed::boom CopyFileName",
         ])
+    );
+}
+
+// C#: ExternalEditorsControllerTests.Controller_DispatchesEditorEntries_AddAndSetDefault (7eaee2a2).
+#[test]
+fn controller_dispatches_editor_entries_add_and_set_default() {
+    let env = create(nothing_hidden());
+    for id in [
+        "ExternalEditor.Open.dxo",
+        "ExternalEditor.Add",
+        "ExternalEditor.SetDefault",
+        "ExternalEditor",
+    ] {
+        env.controller.execute(id).unwrap();
+    }
+    assert_eq!(
+        env.actions.log(),
+        strs(&["ExternalEditor:dxo", "AddEditor", "SetDefaultEditor", "ExternalEditor"])
+    );
+}
+
+#[test]
+fn editor_suffix_is_forwarded_verbatim_and_prefix_is_ordinal() {
+    let env = create(nothing_hidden());
+    for id in [
+        "ExternalEditor.Open.",
+        "ExternalEditor.Open.a.b c",
+        "externaleditor.Open.x",
+    ] {
+        env.controller.execute(id).unwrap();
+    }
+    assert_eq!(env.actions.log(), strs(&["ExternalEditor:", "ExternalEditor:a.b c"]));
+}
+
+#[test]
+fn external_editor_dispatch_constants_match_model_builder() {
+    use pr_app::menus::external_editors as model;
+    use pr_platform_win::shell_menus::controller as shell;
+    assert_eq!(shell::EXTERNAL_EDITOR_OPEN_PREFIX, model::EXTERNAL_EDITOR_OPEN_PREFIX);
+    assert_eq!(shell::EXTERNAL_EDITOR_ADD_ID, model::EXTERNAL_EDITOR_ADD_ID);
+    assert_eq!(
+        shell::EXTERNAL_EDITOR_SET_DEFAULT_ID,
+        model::EXTERNAL_EDITOR_SET_DEFAULT_ID
+    );
+}
+
+/// A pre-W9 implementer: deliberately leaves all three new interface members at defaults.
+struct LegacyActions(FakeActions);
+macro_rules! legacy_query {
+    ($name:ident, $result:ty) => {
+        fn $name(&self) -> $result {
+            self.0.$name()
+        }
+    };
+}
+macro_rules! legacy_action {
+    ($name:ident) => {
+        fn $name(&self) -> ActionResult {
+            self.0.$name()
+        }
+    };
+}
+impl ContextMenuActions for LegacyActions {
+    legacy_query!(settings, Arc<AppSettings>);
+    legacy_query!(has_image, bool);
+    legacy_query!(can_copy_path, bool);
+    legacy_query!(can_undo, bool);
+    legacy_query!(can_open_in_external_editor, bool);
+    legacy_query!(is_compare_visible, bool);
+    legacy_query!(effective_zoom, Option<f64>);
+    legacy_query!(zoom_action_name, String);
+    legacy_action!(fit);
+    legacy_action!(zoom_to_configured_level);
+    legacy_action!(custom_zoom);
+    legacy_action!(open_in_external_editor);
+    legacy_action!(copy_file_name);
+    legacy_action!(copy_full_pathname);
+    legacy_action!(show_settings);
+    fn execute(&self, command: ReviewCommand) -> ActionResult {
+        self.0.execute(command)
+    }
+    fn apply_zoom_preset(&self, percent: i32) -> ActionResult {
+        self.0.apply_zoom_preset(percent)
+    }
+    fn set_zoom_also_sets_click_level(&self, value: bool) {
+        self.0.set_zoom_also_sets_click_level(value);
+    }
+    fn set_click_zoom_percent(&self, percent: i32) {
+        self.0.set_click_zoom_percent(percent);
+    }
+    fn report_action_failed(&self, name: &str, error: &dyn Error) {
+        self.0.report_action_failed(name, error);
+    }
+}
+
+#[test]
+fn old_actions_by_id_default_calls_default_editor() {
+    let env = create(nothing_hidden());
+    let legacy = LegacyActions(FakeActions::new(env.actions.settings().as_ref().clone()));
+    legacy.open_in_external_editor_by_id("a.b c").unwrap();
+    assert_eq!(legacy.0.log(), strs(&["ExternalEditor"]));
+}
+
+#[test]
+fn old_actions_add_editor_default_is_noop() {
+    let env = create(nothing_hidden());
+    let legacy = LegacyActions(FakeActions::new(env.actions.settings().as_ref().clone()));
+    legacy.add_external_editor().unwrap();
+    assert!(legacy.0.log().is_empty());
+}
+
+#[test]
+fn old_actions_choose_default_editor_default_is_noop() {
+    let env = create(nothing_hidden());
+    let legacy = LegacyActions(FakeActions::new(env.actions.settings().as_ref().clone()));
+    legacy.choose_default_external_editor().unwrap();
+    assert!(legacy.0.log().is_empty());
+}
+
+#[test]
+fn editor_dispatch_failures_are_reported_through_guarded_run() {
+    let env = create(nothing_hidden());
+    env.actions.failing.set(true);
+    for id in [
+        "ExternalEditor.Open.dxo",
+        "ExternalEditor.Add",
+        "ExternalEditor.SetDefault",
+    ] {
+        assert!(env.controller.execute(id).is_ok());
+    }
+    assert_eq!(
+        env.actions
+            .log()
+            .iter()
+            .filter(|entry| entry.starts_with("failed:"))
+            .count(),
+        3
     );
 }
 

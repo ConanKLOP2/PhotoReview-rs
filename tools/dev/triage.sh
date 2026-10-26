@@ -5,11 +5,12 @@ PY_BIN=${PY_BIN:-python}
 STATE_DIR=${STATE_DIR:-$ROOT/tools/autopilot/state}
 CONTRACTS_DIR=${CONTRACTS_DIR:-$ROOT/contracts}
 unit=""; prompt=""; all=0
-usage() { echo 'usage: triage.sh <unit>|--all [--prompt FILE]' >&2; exit 2; }
+usage() { echo 'usage: triage.sh <unit>|--all [--prompt FILE]' >&2; exit "${1:-2}"; }
 while [ $# -gt 0 ]; do
   case "$1" in
     --prompt) [ $# -ge 2 ] || usage; prompt="$2"; shift 2;;
     --all) all=1; shift;;
+    -h|--help) usage 0;;
     -*) usage;;
     *) unit="$1"; shift;;
   esac

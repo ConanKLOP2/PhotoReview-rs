@@ -9,3 +9,5 @@ If there is no desktop, warn that the two NativeDialog tooltip tests (they move 
 Run the tests (`bash tools/dev/native-tests.sh [crate]`, slow, hidden windows only) ONLY if the user explicitly asks to run them.
 When running, never run other cargo builds at the same time, and report the final table: passed, failed, and which binaries failed.
 Never delete anything and never touch the real Recycle Bin.
+
+Run every command from the repository root.

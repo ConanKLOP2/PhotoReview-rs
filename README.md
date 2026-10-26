@@ -4,7 +4,7 @@ Rust rewrite of [PhotoReview](https://github.com/ConanKLOP2/PhotoReview), a Wind
 fast switching, Compare, recoverable Move/Copy/Delete with Undo, camera RAW). Goal: identical behaviour, at least
 equal speed. The C# app stays in use alongside this one; the two never share data (see `docs/adr/R0002`).
 
-**Status:** Phase 0 (skeleton, spikes). Not usable yet. Plan: [`docs/PLAN.md`](docs/PLAN.md).
+**Status:** under construction, not usable yet (Wave 8 UI port open, Wave 9 external editors and rename in progress; the two-week trial comes later, see [`docs/TRIAL-PLAN.md`](docs/TRIAL-PLAN.md)). Current state: [`task_on_progress.md`](task_on_progress.md). Plan: [`docs/PLAN.md`](docs/PLAN.md).
 
 ## Requirements
 

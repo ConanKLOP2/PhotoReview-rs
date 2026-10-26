@@ -1,25 +1,22 @@
-# Developer status and cleanup
+# Developer tools (`tools/dev`)
 
-`status.sh` shows quota, disk, processes, pipeline state, claims, PRs, and worktrees.
+Every tool has a docs file and, where marked, a Claude Code skill in `.claude/skills/<name>/SKILL.md`. Selftests: `tools/dev/test/<name>-selftest.sh`.
 
-```bash
-bash tools/dev/status.sh
-bash tools/dev/status.sh --json
-```
+| Tool | Docs | Skill |
+|---|---|---|
+| `status.sh` quota, disk, processes, pipeline, claims, PRs, worktrees | [docs/status-janitor.md](docs/status-janitor.md) | `/status` |
+| `janitor.sh` dry-run cleanup inventory (`--apply`, `--claims`) | [docs/status-janitor.md](docs/status-janitor.md) | `/janitor` |
+| `codex-sched.sh` Codex lane scheduler (`MAX_LANES=2`, `QUOTA_MAX=95`) | [SCHED.md](SCHED.md) | none |
+| `dashboard.sh` one self-contained HTML page of project state | [docs/dashboard.md](docs/dashboard.md) | `/dashboard` |
+| `parity.sh` (+ `parity.py`) PARITY.md statistics and row status | [docs/parity.md](docs/parity.md) | `/parity` |
+| `oracle.sh` golden reproducibility check around `tools/oracle.ps1` | [docs/oracle.md](docs/oracle.md) | `/oracle` |
+| `triage.sh` classify a failed autopilot unit | [docs/triage.md](docs/triage.md) | `/triage` |
+| `mutants.sh` time-boxed cargo-mutants run | [docs/mutants.md](docs/mutants.md) | `/mutants` |
+| `native-tests.sh` list and run native (`#[ignore]`) tests | [docs/native-tests.md](docs/native-tests.md) | `/native-tests` |
+| `unsafe-audit.sh` (+ `.py`, `.baseline`) `unsafe` hygiene scan | [docs/unsafe-audit.md](docs/unsafe-audit.md) | `/unsafe-audit` |
+| `agents-check.sh` validate `.claude/agents/*.md` and the `.agents/skills` copies | [docs/agents-check.md](docs/agents-check.md) | none |
+| `hooks/` rustfmt and Bash-guard hooks (NOT registered; the owner registers them) | [hooks/README.md](hooks/README.md) | none |
 
-`janitor.sh` inventories safe cleanup candidates; it is a dry-run by default.
+Decision note without a tool: [docs/union-merge.md](docs/union-merge.md) (no file uses `merge=union`).
 
-```bash
-bash tools/dev/janitor.sh
-bash tools/dev/janitor.sh --apply
-bash tools/dev/janitor.sh --apply --claims
-```
-
-`--claims` releases only this machine's claims for units already on master.
-Override dependencies with `GIT_BIN`, `GH_BIN`, `PY_BIN`, `PS_BIN`, `DU_BIN`, `CMD_BIN`, and `USAGE_BIN` (`DU_TIMEOUT` is adjustable for tests).
-Missing external facts are reported as `n/a`.
-
-Janitor never runs `git clean`; it protects dirty or locked worktrees, open PRs,
-unmerged branches, integration work during an active pipeline, and `codex-*`
-mutation evidence. Review the printed table before applying. Rebuildable target
-folders may be removed; branches are deleted only after verified merge.
+Run a tool as `bash tools/dev/<tool>.sh`; usage and options are in its docs file.

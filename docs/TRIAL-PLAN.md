@@ -1,5 +1,8 @@
 # Two-week real-user trial
 
+> **Status: proposed plan, trial not started (entry gate not met).** Last verified 2026-10-26 against `origin/master` 8b93fbf.
+> Evidence: every item under "Open items" is still TBD and `docs/trial/` does not exist; `bash tools/dev/parity.sh stats` reports 349 status rows with Done 163, Partial 89, Ported 41, Todo 18 (parity not closed); Wave 10 (benchmark parity, release, update HTTP) has contracts and stubs only.
+
 ## Purpose and entry gate
 
 Phase 7 requires parity at 100% or an ADR for each intentional difference, a benchmark equal to or better than C#, a two-week real-user trial, and a separate release. The user decides whether to stop the C# app. This plan defines the trial after those gates, without claiming that they have passed. See `docs/PLAN.md` (Phase 7), `docs/PARITY.md` and `docs/PARITY-CLOSEOUT.md`.

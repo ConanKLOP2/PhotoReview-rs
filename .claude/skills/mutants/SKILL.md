@@ -10,3 +10,5 @@ Run `bash tools/dev/mutants.sh <crate> <src-file>... --tests a,b --budget 1200` 
 
 Report to the owner in Vietnamese: tested / total, caught, missed, unviable, timeouts, whether the budget ran out
 (partial result, never a full verdict), and the survivors.txt path with the missed mutants.
+
+Run every command from the repository root.

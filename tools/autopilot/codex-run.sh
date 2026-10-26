@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Run one sub-agent task with Codex CLI (GPT-6 Luna, effort low) in a given worktree. Output is JSONL (--json): the
+# Run one sub-agent task with Codex CLI (default model gpt-6.1-sol, effort medium; override with CODEX_MODEL / CODEX_EFFORT) in a given worktree. Output is JSONL (--json): the
 # pipeline reads the session id (thread.started) and token usage (turn.completed) from it.
 # Usage: tools/autopilot/codex-run.sh <worktree-dir> <prompt-file> [last-message-out-file] [session-id]
 # With a session id the previous session is resumed (`codex exec resume`): the pack is not sent again.

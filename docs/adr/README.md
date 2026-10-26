@@ -1,6 +1,6 @@
 # ADR index
 
-Accepted records: `D59-decode-error-inner-hresult.md`, `D60-raw-orientation-test-helper.md`, `R0002-coexistence-with-csharp-app.md`, `R0003-concurrency.md`; `R0001-ui-framework.md` is proposed (see its header).
+Accepted records: `D59-decode-error-inner-hresult.md`, `D60-raw-orientation-test-helper.md`, `R0002-coexistence-with-csharp-app.md`, `R0003-concurrency.md`, `ADR-INV-journal-durability-recycle-ui-native-ci.md`, `ADR-I-07-preview-registration-recheck.md`, `ADR-S3-preload-factory-lifetime.md`; `R0001-ui-framework.md` is proposed (see its header); the ten `ADR-D-*`, `ADR-F-*`, `ADR-X-*` drafts below are Proposed. The status of every file, checked 2026-10-26, is in the table at the end of this index.
 
 ## Drafts for the "Different" rows of `docs/PARITY-CLOSEOUT.md` (DOC-ADR-DRAFTS, status Proposed, not yet reviewed)
 
@@ -17,3 +17,19 @@ Accepted records: `D59-decode-error-inner-hresult.md`, `D60-raw-orientation-test
 | D-presentation-sink-cross-thread | [`ADR-D-presentation-sink-cross-thread-presentation-sink-not-send.md`](ADR-D-presentation-sink-cross-thread-presentation-sink-not-send.md) |
 | X-exe-panic-exit | [`ADR-X-exe-panic-exit-escaped-panic-exits-101.md`](ADR-X-exe-panic-exit-escaped-panic-exits-101.md) |
 | D-config-paths, P-07, P-14, D-13, D-15 (all `Different (R0002)`) | No new draft: already decided by the accepted [`R0002-coexistence-with-csharp-app.md`](R0002-coexistence-with-csharp-app.md) (separate data root `PhotoReviewRs`, own mutex/pipe names, own language and export folders). |
+
+## Status of every record (checked 2026-10-26 against `origin/master` 8b93fbf)
+
+Each file states its status in its first lines. "PROPOSED-DECISIONS" is `docs/PROPOSED-DECISIONS.md`.
+
+| File | Status | Match with PROPOSED-DECISIONS |
+|---|---|---|
+| `R0001-ui-framework.md` | Proposed (direction chosen, windowed p95 gate open) | P-06 PROPOSED, spike done 2026-10-18 |
+| `R0002-coexistence-with-csharp-app.md` | Accepted (2026-10-14) | no P row |
+| `R0003-concurrency.md` | Accepted (2026-10-14) | no P row |
+| `D59-decode-error-inner-hresult.md` | Accepted (2026-10-17, owner: user) | P-32 CONFIRMED by user 2026-10-17 |
+| `D60-raw-orientation-test-helper.md` | Accepted (2026-10-17) | no P row; unrelated to the contract decision "D60 Wiring done by the lead" of Wave 7 in `contracts/README.md` and P-35 |
+| `ADR-INV-journal-durability-recycle-ui-native-ci.md` | Accepted by the project lead 2026-10-23 | P-52 (Q1, Q2, Q7 of Q1-Q8), accepted as proposed |
+| `ADR-I-07-preview-registration-recheck.md` | Accepted (2026-10-26, intentional concurrency difference) | no P row; PARITY row `D-preview-registration-cache-recheck` |
+| `ADR-S3-preload-factory-lifetime.md` | Accepted and implemented (#225, 2026-10-24) | no P row |
+| the ten `ADR-D-*`, `ADR-F-*`, `ADR-X-*` drafts listed above | Proposed (drafts by DOC-ADR-DRAFTS, not accepted by the lead) | no P row names them; they are tracked by `docs/PARITY-CLOSEOUT.md` ("Different" rows) |

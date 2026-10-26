@@ -1,3 +1,4 @@
+//! W9-E9 editor forwarding ports the corresponding C# source at baseline `7eaee2a2`.
 //! Port of `PhotoReview.Shell.Win32/Input/ShellMainWindow.Input.cs` (293 lines, baseline `d92d6aae`). Unit W8-14c. Contract: `contracts/W8-14c.md`.
 //!
 //! The input part of the main window (WP-22): `RegisterInput`, the `IShellInputHost` implementation (the `MainViewModel` calls behind the
@@ -263,7 +264,20 @@ impl ShellInputHost for MainWindowInputHost {
             }
             // W9-E9 (C# `ShellMainWindow.Input.cs`): `_viewModel.OpenInExternalEditor()` = the DEFAULT editor (opens Settings when none is declared); an
             // `Err(ExternalEditorBug)` is returned as the `Err` of `execute` like the menu path does.
-            ReviewCommandType::OpenInDefaultEditor => todo!(),
+            ReviewCommandType::OpenInDefaultEditor => {
+                let mut failure = None;
+                self.services
+                    .with_view_model(&mut |vm| match vm.open_in_external_editor() {
+                        Ok(changes) => changes,
+                        Err(bug) => {
+                            failure = Some(bug);
+                            ChangeSet::default()
+                        }
+                    });
+                if let Some(bug) = failure {
+                    return Err(Box::new(bug));
+                }
+            }
             ReviewCommandType::RenameFile => self.call(|vm| vm.prompt_rename_current()),
             // The viewport commands never arrive here: `ShellInput` handled them.
             ReviewCommandType::ToggleFit

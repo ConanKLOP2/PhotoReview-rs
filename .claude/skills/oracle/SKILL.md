@@ -11,3 +11,5 @@ The oracle builds the C# source and is slow; run it only when the owner asked fo
 3. Report every WARNING about missing turbojpeg.dll or libraw.dll and every FAILED run.
 4. Without `--keep` the committed goldens are restored; use `--keep` only when the owner wants to commit the regenerated files.
 Porters never edit tests/golden by hand.
+
+Run every command from the repository root.

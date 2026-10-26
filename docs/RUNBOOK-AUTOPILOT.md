@@ -4,9 +4,9 @@
 
 `tools/autopilot/codex-pipeline.sh` ports a batch from the plan into `integration/<tag>` with Codex CLI, contract-owned files, machine gates, optional mutation checks, and a PR to `master`. Use it only after the batch's contracts, stubs, and required oracle material are on `master`; check the batch and dependencies with `--dry-run` first. The C# checkout is the read-only specification. See [README](../tools/autopilot/README.md), [Codex rules](../tools/autopilot/CODEX-RULES.md), [multi-machine rules](MULTI-MACHINE.md), and [AGENTS.md](../AGENTS.md).
 
-Run from Git Bash in the main Rust checkout. The pipeline changes Git branches, worktrees, claims, and remote PR state; `--dry-run` only reports the planned order. Its `--jobs` range is `1..4`, default `2`. Do not run a second pipeline while `state/pipeline.lock` is held. On several machines, use the ownership table in [MULTI-MACHINE.md](MULTI-MACHINE.md), set `PR_MACHINE`, and claim units before manual edits. State is local to each machine; claims are refs on `origin`.
+Run from Git Bash in the main Rust checkout. The pipeline changes Git branches, worktrees, claims, and remote PR state; `--dry-run` only reports the planned order. Its `--jobs` range is `1..4`, default `2` (the operating limit is two Codex lanes, see [LESSONS.md](LESSONS.md#a-codex-runs)). Do not run a second pipeline while `state/pipeline.lock` is held. On several machines, use the ownership table in [MULTI-MACHINE.md](MULTI-MACHINE.md), set `PR_MACHINE`, and claim units before manual edits. State is local to each machine; claims are refs on `origin`.
 
-The driver is an older Wave 8 batch tool, not a general contract writer. [PROPOSED-DECISIONS.md](PROPOSED-DECISIONS.md) records the Codex routing proposals; [AGENTS.md](../AGENTS.md) sets the current mutation and PR rules. Review the generated diff and mutation gaps before treating a `done` or `partial` state as a port verdict.
+The driver was written for Wave 8 batches and also runs Wave 9 lanes (`wave9-<lane>` tags, `--plan`, W9 external dependencies); it is not a general contract writer. [PROPOSED-DECISIONS.md](PROPOSED-DECISIONS.md) records the Codex routing proposals; [AGENTS.md](../AGENTS.md) sets the current mutation and PR rules. Review the generated diff and mutation gaps before treating a `done` or `partial` state as a port verdict.
 
 ## 2. Prerequisites and environment
 
@@ -20,7 +20,7 @@ These are the operator-controlled environment variables read by the pipeline or 
 | `CODEX_MODEL`, `CODEX_EFFORT` | `gpt-6.1-sol`, `medium`; passed by `codex-run.sh` for fresh and resumed sessions |
 | `CODEX_USAGE_SH` | `tools/autopilot/codex-usage.sh` |
 | `CODEX_TIMEOUT` | `2400` seconds per Codex call |
-| `PLAN_REL` | `docs/WAVE-8-PLAN.md` |
+| `PLAN_REL` | unset: `--plan`, else looked up by tag with `lib/codex-lib.py planfor` (`docs/WAVE-8-PLAN.md` for Wave 8 tags, the unique `docs/WAVE-9-PLAN-*.md` holding the lane's rows for `wave9-<lane>`); a set `PLAN_REL` wins over the lookup |
 | `CS_REPO`, `CS_BASELINE` | `C:/MyProjects/PhotoReview`; contract baseline if present, otherwise `d92d6aae` |
 | `PACK_FILE_CAP` | `24000` bytes per C# file in the pack |
 | `SKIP_MUTANTS`, `PIPELINE_NO_PR` | `0` by behavior; `1` skips mutation or skips push/PR respectively |
@@ -38,7 +38,7 @@ These are the operator-controlled environment variables read by the pipeline or 
 | `CARGO_PROFILE_DEV_DEBUG`, `CARGO_INCREMENTAL` | Pipeline/gate set `line-tables-only`, `0`; mutant builds use debug `0`. |
 | `CARGO_TARGET_DIR` | Driver sets `<unit worktree>/target` for Codex and unit gates, `<unit worktree>/target-mut` for mutants, and a tag-specific target for the workspace gate. Do not redirect Codex builds outside its worktree. |
 
-`codex-usage.sh` takes an optional positional threshold, default `99`; the pipeline passes `QUOTA_MAX` instead. `status.sh` takes an optional integration branch, default `integration/wave-8`, and uses its hard-coded Rust checkout path. `unit-pr.sh` also reads `PLAN_REL`.
+`codex-usage.sh` takes an optional positional threshold, default `95`; the pipeline passes `QUOTA_MAX` instead. `unit-pr.sh` also reads `PLAN_REL`.
 
 ## 3. Pipeline phases, in order
 
@@ -47,7 +47,7 @@ These are the operator-controlled environment variables read by the pipeline or 
 3. **Red tests.** If an owned test file already exists, this Codex step is skipped. Otherwise Codex may create only owned `tests/*.rs` files. `red_check` runs `cargo test -p <crate> <unit test selectors> --no-run`, then `timeout "$RED_RUN_TIMEOUT" cargo test -p <crate> <selectors> --no-fail-fast`. Every failing test must reach a stub's `todo!()` or `unimplemented!()`; compilation, assertions, crashes, and timeouts do not qualify. Up to three `red-repair` calls may correct the tests. On success, the tests get their own commit and its HEAD becomes `GATE_TEST_BASE`; on failure, the unit is `failed`. The later red-test guard is deliberately absent during this phase.
 4. **Implement and fast gate.** Codex edits owned source. `codex-gate.sh <unit> <worktree> <crate> fast` checks owned changes, static rules, the red-test guard, package formatting through `lib/fmtcheck.sh`, `cargo check -p <crate> --all-targets`, and only the unit's test binaries (`--test <name>` and, where applicable, `--lib`). It uses nextest if available unless disabled. A failure gets at most three Codex repair calls with the gate's short error tail; the loop reruns the fast gate. Failure after those calls marks `failed`.
 5. **Full unit gate.** Before mutation, `codex-gate.sh ... full` repeats ownership, static, red-test, and formatting checks, then runs `cargo clippy -p <crate> --all-targets -- -D warnings` and the unit's selected tests. It has the same three-repair limit. The full gate is run again after kill-mutant rounds if they changed tests. This gate does not run the whole workspace.
-6. **FIXUP.** There is no distinct `FIXUP` phase or `--fixup` flag in this tree's `codex-pipeline.sh`; corrections occur in `red-repair`, gate `repair`, and `kill-mutants` rounds.
+6. **FIXUP.** After a red, fast-gate, full-gate or final-gate failure has used its three repair rounds, `fixup_once` makes one last Codex attempt per unit (`FIXUP=1` by default, `FIXUP=0` disables; there is no `--fixup` flag). It may correct owned tests only when they contradict the C# oracle, under the relaxed test guard (`GATE_TEST_RELAXED=1`); see [pipeline lessons](LESSONS.md#b-pipeline).
 7. **Mutation tiers and kill-mutant rounds.** `lib/codex-lib.py tier` maps green or golden-covered rows to `skip`, red rows to `red`, and other rows to `yellow`. Mutation runs only against the owned source diff, with `cargo mutants -p <crate> --in-diff <diff> --baseline skip --timeout "$MUT_TEST_TIMEOUT" -j "$MUT_JOBS" --no-shuffle`, the unit's test selectors, and exclusions for Debug/Display/Default and `fmt`. Yellow and red have the budgets above. It writes mutant output/logs and survivor lists under `state/logs`. Up to two Codex rounds add or strengthen owned tests for survivors; each must pass the fast gate, then mutation reruns with `-F` limited to survivors. An exhausted budget is `partial`, as are remaining survivors. Missing mutants or an empty diff are recorded as skips. The driver defaults to `MUT_JOBS=4`, but [AGENTS.md](../AGENTS.md) requires `-j 1` with a separate target for reliable mutation verdicts; set `MUT_JOBS=1` for a run whose mutation results will be used as evidence. Time-box and report untested mutants.
 8. **Merge and state.** A green unit is committed and merged with `--no-ff` into `integration/<tag>` under a merge lock. State becomes `done`, or `partial` for survivors or an exhausted mutation budget; merge conflict or commit failure becomes `failed` and keeps the worktree. A merged unit's worktree is removed. The script does not itself verify native GUI behavior or resolve equivalent survivors.
 9. **Workspace gate and PR.** If any unit merged, the integration worktree runs `lib/fmtcheck.sh --all`, `cargo clippy --workspace --all-targets --locked -- -D warnings`, and `cargo test --workspace --locked`; output goes to `state/logs/workspace-gate-<tag>.log`. `PIPELINE_NO_PR=1` stops before push and returns the gate verdict. Otherwise the driver writes a PR body, pushes the integration branch, creates or edits a PR against `master`, and calls `gh pr merge <branch> --auto --squash` only if the workspace gate passed. A failed workspace gate is reported in the PR body and does not enable auto-merge. Follow [AGENTS.md](../AGENTS.md) for PR monitoring, final merge verification, and cleanup; the pipeline ends before that lifecycle is complete.
@@ -56,7 +56,7 @@ These are the operator-controlled environment variables read by the pipeline or 
 
 `codex-run.sh <worktree> <prompt-file> [last-message-file] [session-id]` starts `codex exec --json` in workspace-write mode. With a session ID it uses `codex exec resume` from that worktree; the driver gets the ID and token totals from JSONL. A failed resume falls back to a new call with the pack. `CODEX_MODEL` and `CODEX_EFFORT` select the model and effort.
 
-luna/low is cheaper but gave wrong reports and stopped early; sol/medium costs more quota per call, so run at most 1-2 Codex lanes at the same time (use `tools/dev/codex-sched.sh` when it exists on master).
+The default is `gpt-6.1-sol` / `medium` (owner choice 2026-10-23); luna/low was cheaper but gave wrong reports and stopped early. sol/medium costs more quota per call, so run at most two Codex lanes at the same time, through `tools/dev/codex-sched.sh` (see [SCHED.md](../tools/dev/SCHED.md); it exists on master).
 
 `codex-usage.sh [threshold_percent]` asks the Codex app server for the five-hour and weekly usage percentages and reset times. It returns JSON and exit `0` only when ordinary use is allowed, no rate limit is reported, and five-hour use is below the passed threshold; otherwise exit `1`. `QUOTA_MAX=95` is the pipeline's five-hour ceiling. [MULTI-MACHINE.md](MULTI-MACHINE.md) also sets a 95 percent weekly operator limit: the helper reports weekly use, but its exit condition does **not** compare weekly percent with `QUOTA_MAX`. Watch that field across machines. The driver estimates the next unit's cost from completed units times `QUOTA_MARGIN`, waits when capacity is insufficient, and sleeps until a reset rather than busy polling.
 
@@ -91,7 +91,7 @@ Use `bash tools/autopilot/codex-pipeline.sh <tag> --only <unit> --redo <unit> --
 
 Read [Lessons from the parallel Codex port](LESSONS.md) before launching lanes or cleanup. The rows below retain the driver details; the linked lessons give the operating rules.
 
-**Corrections to the earlier phase/target descriptions above:** FIXUP now exists (default `FIXUP=1`); see [pipeline lessons](LESSONS.md#b-pipeline). The driver and README still set a mutation target inside the source worktree, while AGENTS.md requires it outside; run mutation from the lead with an external target as described in [Codex lessons](LESSONS.md#a-codex-runs). Do not point sandboxed Codex Cargo builds at that external target.
+**Note on targets:** the driver and README set the mutation target inside the source worktree (`<worktree>/target-mut`), while AGENTS.md requires it outside; run mutation from the lead with an external target as described in [Codex lessons](LESSONS.md#a-codex-runs). Do not point sandboxed Codex Cargo builds at that external target.
 
 | Symptom | Cause and evidence | Fix |
 |---|---|---|
@@ -125,7 +125,7 @@ bash tools/autopilot/codex-usage.sh 95
 bash tools/autopilot/claim.sh list
 bash tools/autopilot/claim.sh claim W8-04a "porting"
 bash tools/autopilot/claim.sh release W8-04a
-bash tools/autopilot/status.sh integration/wave-8
+bash tools/dev/status.sh
 bash tools/autopilot/unit-pr.sh W8-06f --ibr integration/wave8-b2 --dry-run
 ```
 

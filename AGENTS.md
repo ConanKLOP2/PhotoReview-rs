@@ -30,6 +30,9 @@ the C# code at the baseline in [`docs/SYNC-LEDGER.md`](docs/SYNC-LEDGER.md) deci
 
 - `task_on_progress.md` at the root: read at start, update after substantial changes and before handoff (date, state,
   next steps, test results; never unverified claims). Update when a documented PR is merged/closed.
+- The file is kept short (about 7 KB on 2026-10-26, target under 10 KB; history lives verbatim in `docs/archive/`): read it whole at the start.
+  If it ever grows long again, read only its "How to resume" section and the newest status section (find them with `Grep` on `^## `).
+  This refines the "read at start" rule above and the line in `CLAUDE.md`.
 
 ## Coding conventions
 
@@ -64,13 +67,13 @@ the C# code at the baseline in [`docs/SYNC-LEDGER.md`](docs/SYNC-LEDGER.md) deci
 - Give every task to Codex CLI first: implementation, tests, failure repair (including `needs-claude` notes), mutant-killer tests, contracts, infrastructure/scripts, and docs. Use `tools/autopilot/codex-run.sh` or the pipeline.
 - Claude only orchestrates: prepare the prompt, start Codex, inspect its diff, rerun fmt/clippy/tests before trusting its report, merge and open PRs, and handle work Codex cannot do (for example `git index.lock`, PR/CI/claim tools). Claude sub-agents are at most Sonnet.
 - Claude writes code only after Codex fails twice for quota or tool reasons; state this in the PR.
-- Keep Codex lanes busy within the 95% quota limit for the 5-hour window and week.
+- Keep Codex lanes busy within the 95% quota limit for the 5-hour window and week, with at most two concurrent Codex lanes per machine (`tools/dev/codex-sched.sh` `MAX_LANES=2`; `codex-pipeline.sh --jobs` defaults to 2; both enforce `QUOTA_MAX=95`, the scheduler also on the week).
 - A unit that fails the pipeline gate gets one automatic Codex fixup round (`FIXUP=1` by default; see `tools/autopilot/README.md`) before human or Claude triage.
-- The Codex Windows sandbox writes only to its working directory: run Codex cargo builds with `CARGO_TARGET_DIR` inside the worktree and `cargo-mutants` with its target directory outside the worktree.
+- The Codex Windows sandbox writes only to its working directory: run Codex cargo builds with `CARGO_TARGET_DIR` inside the worktree and `cargo-mutants` with its target directory outside the worktree (the pipeline driver is the exception: it builds in `<worktree>/target` and mutates in `<worktree>/target-mut`, see `codex-pipeline.sh`).
 
 ## Several machines
 
-When more than one machine works on the port, read [`docs/MULTI-MACHINE.md`](docs/MULTI-MACHINE.md) first: set `PR_MACHINE`, claim every unit with 
+When more than one machine works on the port, read [`docs/MULTI-MACHINE.md`](docs/MULTI-MACHINE.md) first: set `PR_MACHINE` (fallback: the local file `tools/autopilot/state/machine`, then the host name), claim every unit with 
 `bash tools/autopilot/claim.sh claim <unit>` before the first edit (the pipeline does it for you), work only on the units of your machine, and keep 
 the state of `tools/autopilot/state/` local.
 
@@ -94,9 +97,10 @@ the state of `tools/autopilot/state/` local.
   and the `target-*` dirs it used (check by diff, AGENTS.md "Git" above), update `task_on_progress.md`.
 - Before opening the PR: `cargo fmt --all --check`, `cargo clippy --workspace --all-targets --locked -- -D warnings`,
   `cargo test --workspace --locked` on the final head; say in the PR body which of these were NOT run.
+- CI (`.github/workflows/ci.yml`): jobs `changes`, `repo-checks`, `lint`, `test (core | crates-rest | win | app)` and the required gate `build-test`; a PR that touches only `docs/`, `tools/` or `*.md` skips `lint` and `test` (`changes` sets `rust=false`), `repo-checks` and `build-test` still run. Details: `docs/DEVELOPING.md`.
 - CI runs on `windows-latest`: temp paths can be 8.3 short names (`RUNNER~1`); never compare a path string built from
   `TempRoot` with one the code under test printed, compare a stable tail.
-- Toolchain: Rust is pinned in `rust-toolchain.toml`; `cargo` lives in `%USERPROFILE%\.cargoin` and may not be on
+- Toolchain: Rust is pinned in `rust-toolchain.toml`; `cargo` lives in `%USERPROFILE%\.cargo\bin` and may not be on
   PATH in the Bash tool. Run `tools/*.ps1` with `powershell -NoProfile -ExecutionPolicy Bypass -File`, from the
   PowerShell tool (the Bash `tar` breaks `oracle.ps1`).
 
@@ -113,8 +117,8 @@ Agents and subagents use Sonnet 5.5 at medium effort or lower (Haiku for mechani
 
 - **Cost:** every mutant rebuilds the crate (about 95% of its time: 50 s on an idle machine, 70-180 s with eight agents building). A 186-mutant file takes 4-9 hours. Plan for it.
 - **Where to run it:** only on pure logic with real branching (policies, counters, geometry, state machines, parsers), and only on the risky functions with `-F '<regex>'` or `--in-diff`, never a whole large file. Skip native/FFI/composition glue (window hosts, COM objects, menus, drop targets, sinks); test those with native tests run by hand instead.
-- **How:** `cargo mutants -p <crate> --baseline skip --timeout 90 -j 1 --file '**/<path>.rs' -F '<regex>' -- --test <file>`; always `-j 1` with its OWN `CARGO_TARGET_DIR` (a shared target dir with `-j 3` reports false MISSED results). Several independent processes on different files are fine, at most three at a time. Run mutation AFTER the port is done and merged, not while many agents are building.
-- **Time-box and honesty:** about 25 minutes of mutants per unit; the PR states `tested / total, caught, missed, unviable, timeouts` and which mutants were not run. A partial run is never described as a full mutation verdict. A survivor is killed by a test or explained as equivalent in the PR.
+- **How:** `cargo mutants -p <crate> --baseline skip --timeout 90 -j 1 --file '**/<path>.rs' -F '<regex>' -- --test <file>`; always `-j 1` with its OWN `CARGO_TARGET_DIR` (a shared target dir with `-j 3` reports false MISSED results). Several independent processes on different files are fine, at most three at a time. `codex-pipeline.sh` defaults to `MUT_JOBS=4`: set `MUT_JOBS=1` for any run whose verdict is used as evidence. Run mutation AFTER the port is done and merged, not while many agents are building.
+- **Time-box and honesty:** about 15 minutes of mutants per unit (yellow tier; red tier up to 30 minutes, as `MUT_BUDGET_YELLOW=900` s and `MUT_BUDGET_RED=1800` s in the pipeline); the PR states `tested / total, caught, missed, unviable, timeouts` and which mutants were not run. A partial run is never described as a full mutation verdict. A survivor is killed by a test or explained as equivalent in the PR.
 - **Never kill what is not yours:** no `Stop-Process` on `cargo`, `rustc` or `cargo-mutants`, and no `cargo clean` or deleting a target dir that another agent or a running process uses. Stop only the process ids you started.
 - **Tests:** no hard-coded repo-relative or build-directory paths (`../../target-*`, `CARGO_MANIFEST_DIR/..`, `C:\...`); use `pr_test_support::TempRoot`. Helper files under `tests/common/` get a name unique to the unit (`<unit>_fixture.rs`) so parallel agents do not collide on the same file.
 - **Before a PR:** after merging `master` into the branch run `cargo clippy -p <crate> --all-targets --locked -- -D warnings` (a new trait method on master can break a fake in your tests), `cargo fmt -p <crate> --check` (CI formats per package) and `git grep -n -I '^<<<<<<<'`; check that your PARITY rows are still there after resolving conflicts (merge row by row, never take one side of the file).

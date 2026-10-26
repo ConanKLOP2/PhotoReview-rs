@@ -7,6 +7,7 @@ PARITY_PY=${PARITY_PY:-$ROOT/tools/dev/parity.py}
 PLAN=${PLAN:-$ROOT/docs/WAVE-8-PLAN.md}
 CODEX_LIB=${CODEX_LIB:-$ROOT/tools/autopilot/lib/codex-lib.py}
 REF=${REF:-origin/master}
+STATE_DIR=${STATE_DIR:-$ROOT/tools/autopilot/state}
 out=$ROOT/tools/dev/out/dashboard.html
 while [ $# -gt 0 ]; do
   case "$1" in
@@ -23,18 +24,18 @@ if [ -n "${STATUS_JSON:-}" ]; then
 else
   PY_BIN="$PY_BIN" GIT_BIN="$GIT_BIN" bash "$STATUS_BIN" --json > "$work/status.json" 2>/dev/null || echo 'null' > "$work/status.json"
 fi
-# commit subjects of the reference branch (fall back to HEAD when the ref is missing)
-if ! "$GIT_BIN" -C "$ROOT" log "$REF" --format=%s > "$work/subjects.txt" 2>/dev/null; then
-  "$GIT_BIN" -C "$ROOT" log HEAD --format=%s > "$work/subjects.txt" 2>/dev/null || : > "$work/subjects.txt"
+# commits of the reference branch, subject then body, NUL-terminated records (fall back to HEAD when the ref is missing)
+if ! "$GIT_BIN" -C "$ROOT" log "$REF" --format='%s%n%b%x00' > "$work/subjects.txt" 2>/dev/null; then
+  "$GIT_BIN" -C "$ROOT" log HEAD --format='%s%n%b%x00' > "$work/subjects.txt" 2>/dev/null || : > "$work/subjects.txt"
   echo "REF $REF unavailable, using HEAD" >&2
 fi
 # optional parity statuses (interface: parity.py --json prints {"Done": n, "Todo": n, ...}); skipped silently when absent
 if [ -f "$PARITY_PY" ]; then
   "$PY_BIN" -I "$PARITY_PY" --json > "$work/parity.json" 2>/dev/null || rm -f "$work/parity.json"
 fi
-"$PY_BIN" -I - "$out" "$work" "$PLAN" "$CODEX_LIB" "$REF" <<'PY'
-import sys, os, re, json, html, runpy, datetime
-out, work, plan, lib, ref = sys.argv[1:6]
+"$PY_BIN" -I - "$out" "$work" "$PLAN" "$CODEX_LIB" "$REF" "$STATE_DIR" <<'PY'
+import sys, os, re, json, html, runpy, datetime, glob
+out, work, plan, lib, ref, state_dir = sys.argv[1:7]
 E = lambda x: html.escape(str(x), quote=True)
 def load(p, d=None):
     try:
@@ -43,8 +44,8 @@ def load(p, d=None):
 status = load(os.path.join(work, 'status.json'))
 if not isinstance(status, dict): status = {}
 try:
-    with open(os.path.join(work, 'subjects.txt'), encoding='utf-8', errors='replace') as f: subjects = f.read().splitlines()
-except Exception: subjects = []
+    with open(os.path.join(work, 'subjects.txt'), encoding='utf-8', errors='replace') as f: commits = [c.strip(chr(10)).split(chr(10)) for c in f.read().split(chr(0)) if c.strip()]
+except Exception: commits = []
 # wave progress: plan rows (W8 only) vs unit ids found in qualifying commit subjects
 rows, expand, perr = [], None, ''
 try:
@@ -53,13 +54,47 @@ except Exception as e: perr = 'plan/lib unreadable: %s' % e
 units = {}
 for r in rows:
     mb = re.match(r'B\d+', r['batch'].strip()); units[r['id']] = mb.group(0) if mb else '?'
-cnt = re.compile(r'^(?:(?:feat|port|fix|test|refactor|perf)(?:\([^)]*\))?!?:|Merge W8-)')
-merged = set()
+# A line counts when it is a code line: feat/port/fix/test/refactor/perf (optional scope), merge(...), "Merge W8-...",
+# also as a "* " bullet inside a squash body. docs/chore/ci/style commits are skipped entirely; "red tests" lines
+# (test-first commits of the pipeline) do not count because the unit is not ported by them.
+cnt = re.compile(r'^(?:[*-]\s+)?(?:(?:feat|port|fix|test|refactor|perf|merge)(?:\([^)]*\))?!?:?|Merge W8-)', re.I)
+skip = re.compile(r'^(?:docs|chore|ci|style)(?:\([^)]*\))?!?:', re.I)
+# ids of one line: explicit tokens, lists after a W8-<id> ("W8-11a, 11b, 11c", "W8-13g,13h", "W8-18l..18n", "15a/b/c" is left to expand)
+# and bare ids in parentheses after a batch token ("feat(W8-B5): ... (18e, 18f, 19b)").
+ITEM = r'(?:W8-)?\d\d[a-z](?:\.\.(?:\d\d)?[a-z])?'
+LIST = re.compile(r'W8-\d\d[a-z](?:\.\.(?:\d\d)?[a-z])?(?:\s*(?:,|/|&|and)\s*' + ITEM + ')*')
+BARE = re.compile(r'(?<![\w-])(\d\d)([a-z])(?:\.\.(?:(\d\d))?([a-z]))?(?![\w-])')
+def line_ids(line):
+    ids = []
+    def norm(m):
+        out, wave = [], 'W8'
+        for it in re.split(r'\s*(?:,|/|&|and)\s*', m.group(0)):
+            mm = re.fullmatch(r'(?:W8-)?(\d\d)([a-z])(?:\.\.(?:\d\d)?([a-z]))?', it)
+            if mm:
+                d = mm.group(1); out.append('W8-%s%s' % (d, mm.group(2)) + ('..' + mm.group(3) if mm.group(3) else ''))
+        return ' '.join(out)
+    text = LIST.sub(norm, line)
+    ids += expand(text)
+    if re.search(r'W8-B\d', line):
+        for grp in re.findall(r'\(([^()]*)\)', line):
+            for m in BARE.finditer(grp):
+                ids += expand('W8-%s%s%s' % (m.group(1), m.group(2), ('..' + m.group(4)) if m.group(4) else ''))
+    return ids
+merged, seen = set(), set()
 if expand:
-    for s in subjects:
-        if cnt.match(s):
-            for u in expand(s):
-                if u in units: merged.add(u)
+    for c in commits:
+        if skip.match(c[0]): continue
+        for ln in c:
+            for u in line_ids(ln):
+                if u in units: seen.add(u)
+            if cnt.match(ln.strip()) and 'red tests' not in ln:
+                for u in line_ids(ln):
+                    if u in units: merged.add(u)
+    # pipeline state files (machine-local, optional): done/partial counts only when the unit is also named by a non-docs commit
+    for sf in glob.glob(os.path.join(state_dir, '*.json')):
+        st = load(sf, {})
+        for u, v in ((st.get('units') or {}) if isinstance(st, dict) else {}).items():
+            if u in units and isinstance(v, dict) and v.get('status') in ('done', 'partial') and u in seen: merged.add(u)
 batches = sorted(set(units.values()))
 CSS = ''':root{--bg:#f6f7f9;--fg:#1b1f24;--card:#fff;--line:#d8dde3;--mut:#5b6570;--ok:#1a7f37;--bad:#c62828;--warn:#b26a00;--bar:#2f6fdb}
 @media (prefers-color-scheme:dark){:root{--bg:#14171b;--fg:#e6e9ed;--card:#1d2127;--line:#323943;--mut:#9aa5b1;--ok:#4cc16b;--bad:#ff6b6b;--warn:#f0b24a;--bar:#6aa0ff}}
