@@ -5,6 +5,7 @@
 //! `UndoService::undo_last` blocks (file moves), so it runs on `WorkerLane::FileAction`; the result handling and the three
 //! `await _sink.PresentAsync(..)` sites of the C# method run on the UI thread, the awaits become parked continuations
 //! ([`UndoTail`]) resumed by `on_present_finished`.
+//! W9-R5 adds C# `7eaee2a2` rename-Undo detection (878-897) and its same-folder re-key continuation (725-782).
 // The three variants all end in `Presented` because each names the present they wait for.
 #![allow(clippy::enum_variant_names)]
 
@@ -42,6 +43,7 @@ pub(super) struct InFlightUndo {
     pub folder_gen: i64,
     /// The `currentFolder` argument.
     pub current_folder: Option<String>,
+    pub rename_identity: Option<pr_core::file_actions::undo::UndoActionIdentity>,
 }
 
 /// The continuation after an undo's present, one per C# `await _sink.PresentAsync` site. Each first checks
@@ -68,6 +70,24 @@ impl FileActionController {
         let Some(undo) = self.deps.undo_service.clone() else {
             return FileActionStep::Done(FileActionDone::Undone(None));
         };
+        let rename_identity = {
+            let guard = undo.lock().unwrap_or_else(std::sync::PoisonError::into_inner);
+            let current = guard.last_undo_action_identity();
+            let is_rename = self
+                .last_rename_undo_action
+                .as_ref()
+                .zip(current.as_ref())
+                .is_some_and(|(a, b)| a == b);
+            if is_rename && !guard.is_busy() {
+                self.deps.clock.stop_for_action();
+                if let Some(preload) = &self.deps.preload_controller {
+                    preload.cancel();
+                }
+                current
+            } else {
+                None
+            }
+        };
         let folder_gen = self.deps.clock.current_folder();
         let ticket = self.next_ticket;
         self.next_ticket += 1;
@@ -75,6 +95,7 @@ impl FileActionController {
             ticket,
             folder_gen,
             current_folder: current_folder.map(str::to_string),
+            rename_identity,
         });
         let job = Box::new(move || {
             let run = catch_unwind(AssertUnwindSafe(|| {
@@ -114,6 +135,85 @@ impl FileActionController {
         };
         let folder_gen = flight.folder_gen;
         let current_folder = flight.current_folder.as_deref();
+
+        let rename_undo = flight.rename_identity.is_some();
+        if rename_undo && !self.deps.clock.is_folder_current(folder_gen) {
+            return undone(result);
+        }
+        let in_folder = !result.source.is_empty() && Self::is_in_folder(&result.source, current_folder);
+        // C# TryHandleRenameUndoAsync returns false for a successful restore outside this folder;
+        // continue through the generic path below so its move-position/session handling still runs.
+        if rename_undo && (in_folder || !result.succeeded) {
+            let mut renames = pr_core::file_actions::rename::PathKeyMap::new();
+            if result.succeeded && result.restored_paths.as_ref().is_none_or(Vec::is_empty) {
+                if let (Some(new_path), source) = (result.destination.as_deref(), result.source.as_str()) {
+                    if !new_path.is_empty() && !source.is_empty() {
+                        renames.insert(new_path.to_owned(), source.to_owned());
+                    }
+                }
+            } else if let Some(restored) = result.restored_paths.as_ref() {
+                for old_path in restored {
+                    if let Some(new_path) = self.renamed_to.get(old_path) {
+                        renames.insert(new_path.clone(), old_path.clone());
+                    }
+                }
+            }
+            let _ = self.apply_rename_undo(cx, &renames, in_folder);
+            if self.present == PresentState::Running {
+                self.parked = Some(ParkedTail::Rename(super::actions::RenameTail {
+                    folder_gen,
+                    late_result: None,
+                    done: Some(FileActionDone::Undone(Some(result.clone()))),
+                    result: crate::coordinators::rename::FileRenameResult {
+                        status: if result.succeeded {
+                            crate::coordinators::rename::FileRenameStatus::Renamed
+                        } else {
+                            crate::coordinators::rename::FileRenameStatus::Failed
+                        },
+                        new_path: Some(result.source.clone()),
+                        problem: pr_core::file_actions::rename::RenameNameProblem::None,
+                        invalid_character: None,
+                        error: result.error_message.clone(),
+                    },
+                    status_text: Some(if !result.succeeded {
+                        result
+                            .error_message
+                            .clone()
+                            .unwrap_or_else(|| self.deps.texts.get(keys::STATUS_NOTHING_TO_UNDO))
+                    } else if let Some(message) = result.error_message.clone().filter(|m| !m.is_empty()) {
+                        message
+                    } else {
+                        self.deps.texts.format(
+                            "status.renameUndone",
+                            &[pr_l10n::template::LocArg::new(
+                                "fileName",
+                                get_file_name(&result.source).to_owned(),
+                            )],
+                        )
+                    }),
+                }));
+                return FileActionStep::Pending;
+            }
+            let text = if !result.succeeded {
+                result
+                    .error_message
+                    .clone()
+                    .unwrap_or_else(|| self.deps.texts.get(keys::STATUS_NOTHING_TO_UNDO))
+            } else if let Some(message) = result.error_message.clone().filter(|m| !m.is_empty()) {
+                message
+            } else {
+                self.deps.texts.format(
+                    "status.renameUndone",
+                    &[pr_l10n::template::LocArg::new(
+                        "fileName",
+                        get_file_name(&result.source).to_owned(),
+                    )],
+                )
+            };
+            cx.sink.set_status_text(&text);
+            cx.sink.notify_navigation_state_changed();
+            return undone(result);
+        }
 
         if !result.succeeded {
             // A capture undo that failed half way still put some members back: show them now instead of at the next reload.

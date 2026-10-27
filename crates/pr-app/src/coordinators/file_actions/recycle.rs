@@ -70,6 +70,8 @@ pub enum FileActionDone {
     Finished { succeeded: bool },
     /// C# `Task<UndoResult?>` of `UndoLastAsync`: `None` when there is no undo service.
     Undone(Option<UndoResult>),
+    /// C# `Task<FileRenameResult>` completion, delivered by the file-action lane.
+    Renamed(crate::coordinators::rename::FileRenameResult),
     /// The executor/undo reported cancellation (C# `OperationCanceledException` escapes to the caller): nothing was restored.
     Canceled,
 }
@@ -91,6 +93,8 @@ pub enum FileActionEvent {
     Executed { ticket: u64, outcome: ExecOutcome },
     /// `UndoService::undo_last` finished.
     Undone { ticket: u64, outcome: UndoOutcome },
+    /// Same-folder rename completed on the file-action lane.
+    Renamed { ticket: u64, outcome: ExecOutcome },
 }
 
 /// The outcome of the executor call. `Panicked` is the Rust image of the C# "unexpected exception" (a service bug or a test
@@ -191,6 +195,9 @@ pub struct FileActionController {
     /// The continuation waiting for the present to finish (C# `await presentTask`).
     pub(super) parked: Option<ParkedTail>,
     pub(super) next_ticket: u64,
+    pub(super) rename_in_flight: Option<super::actions::InFlightRename>,
+    pub(super) renamed_to: pr_core::file_actions::rename::PathKeyMap,
+    pub(super) last_rename_undo_action: Option<pr_core::file_actions::undo::UndoActionIdentity>,
 }
 
 impl fmt::Debug for FileActionController {
@@ -226,6 +233,9 @@ impl FileActionController {
             undo_in_flight: None,
             parked: None,
             next_ticket: 1,
+            rename_in_flight: None,
+            renamed_to: pr_core::file_actions::rename::PathKeyMap::new(),
+            last_rename_undo_action: None,
         }
     }
 
@@ -237,7 +247,10 @@ impl FileActionController {
 
     /// True while an action or an undo is between its start and its `Done` (the caller's gate normally prevents a second one).
     pub fn is_in_flight(&self) -> bool {
-        self.in_flight.is_some() || self.undo_in_flight.is_some() || self.parked.is_some()
+        self.in_flight.is_some()
+            || self.undo_in_flight.is_some()
+            || self.rename_in_flight.is_some()
+            || self.parked.is_some()
     }
 
     /// C# `RecycleAsync(compareSelectedPath, currentPath)`. Order: `refuse_recycle_without_bin(source)` first; then, when the

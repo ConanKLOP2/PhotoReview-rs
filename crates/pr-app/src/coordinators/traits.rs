@@ -74,16 +74,34 @@ pub trait IFileActionExecutor {
     fn execute_group(&self, request: &CaptureGroupActionRequest, cancel: &CancelToken) -> CaptureGroupActionResult;
 
     /// FEAT-RENAME (C# default member `RenameAsync`, `FileActionService.RenameAsync`), blocking on the file-action lane (R0003).
-    /// W9-R5 stub: the C# default throws `NotSupportedException`; the porter returns a failed result instead of panicking.
+    /// W9-R5 default: C# throws `NotSupportedException`; the Rust port returns a failed result instead of panicking.
     fn rename(&self, request: &RenameRequest, cancel: &CancelToken) -> FileActionResult {
-        let _ = (request, cancel);
-        todo!()
+        let _ = cancel;
+        let mut result = FileActionResult::new(
+            false,
+            pr_core::model::FileOperationType::Move,
+            request.source.clone(),
+            None,
+            0,
+            pr_core::time::DateTimeUtc::MIN,
+            None,
+        );
+        result.rejected = true;
+        result
     }
 
     /// FEAT-RENAME (C# default member `RenameGroupAsync`, `FileActionService.RenameGroupAsync`), blocking (R0003).
     fn rename_group(&self, group: &CaptureGroup, typed_stem: &str, cancel: &CancelToken) -> CaptureGroupActionResult {
         let _ = (group, typed_stem, cancel);
-        todo!()
+        CaptureGroupActionResult::new(
+            false,
+            true,
+            pr_core::model::FileOperationType::Move,
+            "rename",
+            None,
+            Vec::new(),
+            None,
+        )
     }
 }
 
