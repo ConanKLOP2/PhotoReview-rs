@@ -6,10 +6,12 @@
 //! executor call (INV-3: the next photo is requested BEFORE the I/O), the worker runs the executor, `handle_event` runs the
 //! result handling, and the `await presentTask` points become a parked continuation ([`ParkedTail`]) that
 //! `on_present_finished` resumes (RV-A09, R08).
+//! W9-R5 adds the C# `7eaee2a2` rename slice, lines 529-782, using the same worker/event/present continuations.
 use std::any::Any;
 use std::panic::{AssertUnwindSafe, catch_unwind};
 
 use pr_core::catalog::types::CaptureGroup;
+use pr_core::file_actions::rename::{CaptureGroupRenamePlan, PathKeyMap, RenameNamePolicy, RenameRequest};
 use pr_core::file_actions::types::{
     CaptureGroupActionRequest, CaptureGroupActionResult, FileActionRequest, FileActionResult,
 };
@@ -27,6 +29,7 @@ use super::recycle::{
 };
 use super::undo::UndoTail;
 use crate::coordinators::folder_load::state::WorkerLane;
+use crate::coordinators::rename::{FileRenameResult, FileRenameStatus};
 
 /// What the core remembers between the executor call and its result (the C# locals that live across `await`).
 #[derive(Debug)]
@@ -102,6 +105,8 @@ pub(super) enum ParkedTail {
     Core(CoreTail),
     /// Undo awaits the present at three places (W8-07d `undo.rs`).
     Undo(UndoTail),
+    /// Rename waits for a present before completing its result.
+    Rename(RenameTail),
 }
 
 /// The text of a caught panic (the Rust image of `UserFacingError.Describe(ex)` for an unexpected exception).
@@ -140,7 +145,458 @@ impl IoResult {
     }
 }
 
+/// Values retained between rename submission and its worker completion (W9-R5).
+#[derive(Debug)]
+pub(super) struct InFlightRename {
+    pub ticket: u64,
+    pub folder_gen: i64,
+    pub source: String,
+}
+
+/// The rename result waiting for a requested present to finish.
+#[derive(Debug)]
+pub(super) struct RenameTail {
+    pub folder_gen: i64,
+    pub result: crate::coordinators::rename::FileRenameResult,
+    pub late_result: Option<crate::coordinators::rename::FileRenameResult>,
+    pub status_text: Option<String>,
+    pub done: Option<FileActionDone>,
+}
 impl FileActionController {
+    /// C# `RenameAsync`: validate without touching generations, then stop UI work before the file-action worker starts.
+    pub(in crate::coordinators) fn rename_action(
+        &mut self,
+        cx: &mut FileActionCx<'_>,
+        compare_selected_path: Option<&str>,
+        current_path: Option<&str>,
+        typed_name: &str,
+    ) -> FileActionStep {
+        let nothing = || FileRenameResult {
+            status: FileRenameStatus::NothingToRename,
+            new_path: None,
+            problem: pr_core::file_actions::rename::RenameNameProblem::None,
+            invalid_character: None,
+            error: None,
+        };
+        let Some(executor) = self.deps.file_actions.clone() else {
+            return FileActionStep::Done(FileActionDone::Renamed(nothing()));
+        };
+        let source = compare_selected_path.or(current_path).filter(|p| !p.is_empty());
+        let Some(source) = source else {
+            return FileActionStep::Done(FileActionDone::Renamed(nothing()));
+        };
+        let Some(entry) = cx.catalog.find(source).cloned() else {
+            return FileActionStep::Done(FileActionDone::Renamed(nothing()));
+        };
+        if executor.is_busy() {
+            return FileActionStep::Done(FileActionDone::Renamed(FileRenameResult {
+                status: FileRenameStatus::Busy,
+                new_path: None,
+                problem: pr_core::file_actions::rename::RenameNameProblem::None,
+                invalid_character: None,
+                error: None,
+            }));
+        }
+        let group = entry.capture_group.clone();
+        let check = if let Some(group) = &group {
+            CaptureGroupRenamePlan::build(group, Some(typed_name), false).check
+        } else {
+            RenameNamePolicy::check(Some(typed_name), source, false)
+        };
+        let file_name = get_file_name(source).to_owned();
+        if !check.is_valid() {
+            cx.sink.set_status_text(&self.status_of(
+                "core.fileAction.renameInvalidName",
+                &[LocArg::new("name", typed_name.to_owned())],
+            ));
+            return FileActionStep::Done(FileActionDone::Renamed(FileRenameResult {
+                status: FileRenameStatus::Invalid,
+                new_path: None,
+                problem: check.problem,
+                invalid_character: check.invalid_character,
+                error: None,
+            }));
+        }
+        if check.is_unchanged {
+            let unchanged = self.status_of("status.renameUnchanged", &[LocArg::new("fileName", file_name)]);
+            cx.sink.set_status_text(&unchanged);
+            return FileActionStep::Done(FileActionDone::Renamed(FileRenameResult {
+                status: FileRenameStatus::NoChange,
+                new_path: Some(source.to_owned()),
+                problem: check.problem,
+                invalid_character: None,
+                error: None,
+            }));
+        }
+
+        self.deps.clock.stop_for_action();
+        if let Some(preload) = &self.deps.preload_controller {
+            preload.cancel();
+        }
+        let ticket = self.next_ticket;
+        self.next_ticket = self.next_ticket.wrapping_add(1);
+        let folder_gen = self.deps.clock.current_folder();
+        self.rename_in_flight = Some(InFlightRename {
+            ticket,
+            folder_gen,
+            source: source.to_owned(),
+        });
+        let cancel = CancelToken::none();
+        let source_owned = source.to_owned();
+        let request = RenameRequest {
+            source: source_owned.clone(),
+            new_file_name: check.new_file_name,
+        };
+        let typed_stem = typed_name.to_owned();
+        let job = Box::new(move || {
+            let outcome = catch_unwind(AssertUnwindSafe(|| match &group {
+                Some(group) => ExecOutcome::Group(executor.rename_group(group, &typed_stem, &cancel)),
+                None => ExecOutcome::Single(executor.rename(&request, &cancel)),
+            }))
+            .unwrap_or_else(|payload| ExecOutcome::Panicked(describe_panic(payload.as_ref())));
+            FileActionEvent::Renamed { ticket, outcome }
+        });
+        self.deps.worker.submit(WorkerLane::FileAction, job);
+        FileActionStep::Pending
+    }
+
+    /// UI-thread half of C# `RenameAsync`, after the worker completed.
+    pub(super) fn on_renamed(
+        &mut self,
+        cx: &mut FileActionCx<'_>,
+        ticket: u64,
+        outcome: ExecOutcome,
+    ) -> FileActionStep {
+        if !self
+            .rename_in_flight
+            .as_ref()
+            .is_some_and(|flight| flight.ticket == ticket)
+        {
+            return FileActionStep::Pending;
+        }
+        let Some(flight) = self.rename_in_flight.take() else {
+            return FileActionStep::Pending;
+        };
+        let source_name = get_file_name(&flight.source).to_owned();
+        let (succeeded, error, mut renames, single, grouped) = match outcome {
+            ExecOutcome::Single(result) => {
+                let mut changed = PathKeyMap::new();
+                let on_disk = if result.succeeded {
+                    !result.no_change
+                } else {
+                    result.source_removed
+                };
+                if on_disk {
+                    if let Some(destination) = result.destination_path.as_ref().filter(|path| !path.is_empty()) {
+                        changed.insert(flight.source.clone(), destination.clone());
+                    }
+                }
+                (result.succeeded, result.error.clone(), changed, Some(result), None)
+            }
+            ExecOutcome::Group(result) => {
+                let mut changed = PathKeyMap::new();
+                for member in &result.members {
+                    if member.completed {
+                        if let Some(destination) = member.member.destination.as_ref().filter(|path| !path.is_empty()) {
+                            changed.insert(member.member.source.clone(), destination.clone());
+                        }
+                    }
+                }
+                (result.succeeded, result.error.clone(), changed, None, Some(result))
+            }
+            ExecOutcome::Canceled => {
+                self.deps.log.error("Rename canceled", None);
+                cx.sink.notify_navigation_state_changed();
+                return FileActionStep::Done(FileActionDone::Canceled);
+            }
+            ExecOutcome::Panicked(error) => {
+                self.deps.log.error(&format!("Rename threw: {}", flight.source), None);
+                let text = self.status_of(
+                    "status.renameFailed",
+                    &[
+                        LocArg::new("fileName", source_name),
+                        LocArg::new("message", error.clone()),
+                    ],
+                );
+                let mut kept = true;
+                if self.deps.clock.is_folder_current(flight.folder_gen) {
+                    kept = cx.sink.on_files_renamed(&PathKeyMap::new());
+                }
+                if self.deps.clock.is_folder_current(flight.folder_gen) && cx.catalog.count() > 0 {
+                    if !kept {
+                        cx.sink.present(cx.catalog.current_index().max(0));
+                        self.present = PresentState::Running;
+                        self.parked = Some(ParkedTail::Rename(RenameTail {
+                            folder_gen: flight.folder_gen,
+                            late_result: None,
+                            result: FileRenameResult {
+                                status: FileRenameStatus::Failed,
+                                new_path: None,
+                                problem: pr_core::file_actions::rename::RenameNameProblem::None,
+                                invalid_character: None,
+                                error: Some(error.clone()),
+                            },
+                            status_text: Some(text),
+                            done: None,
+                        }));
+                        return FileActionStep::Pending;
+                    }
+                    if let Some(preload) = &self.deps.preload_controller {
+                        drop(preload.preload_around(cx.catalog.current_index().max(0)));
+                    }
+                }
+                if self.deps.clock.is_folder_current(flight.folder_gen) {
+                    cx.sink.set_status_text(&text);
+                }
+                cx.sink.notify_navigation_state_changed();
+                return FileActionStep::Done(FileActionDone::Renamed(FileRenameResult {
+                    status: FileRenameStatus::Failed,
+                    new_path: None,
+                    problem: pr_core::file_actions::rename::RenameNameProblem::None,
+                    invalid_character: None,
+                    error: Some(error),
+                }));
+            }
+        };
+        if !self.deps.clock.is_folder_current(flight.folder_gen) {
+            if succeeded && !renames.is_empty() {
+                self.register_rename(single.as_ref(), grouped.as_ref(), &renames);
+                let new_path = Some(
+                    renames
+                        .get(&flight.source)
+                        .cloned()
+                        .unwrap_or_else(|| flight.source.clone()),
+                );
+                let text = self.status_of(
+                    "status.renamed",
+                    &[
+                        LocArg::new("oldName", source_name),
+                        LocArg::new("newName", new_path.as_deref().map(get_file_name).unwrap_or_default()),
+                    ],
+                );
+                cx.sink.show_late_action_status(&text);
+                cx.sink.notify_navigation_state_changed();
+                return FileActionStep::Done(FileActionDone::Renamed(FileRenameResult {
+                    status: FileRenameStatus::Renamed,
+                    new_path,
+                    problem: pr_core::file_actions::rename::RenameNameProblem::None,
+                    invalid_character: None,
+                    error,
+                }));
+            }
+            cx.sink.notify_navigation_state_changed();
+            return FileActionStep::Done(FileActionDone::Renamed(FileRenameResult {
+                status: if succeeded {
+                    FileRenameStatus::NoChange
+                } else {
+                    FileRenameStatus::Failed
+                },
+                new_path: None,
+                problem: pr_core::file_actions::rename::RenameNameProblem::None,
+                invalid_character: None,
+                error,
+            }));
+        }
+
+        let mut conflict = false;
+        let new_shown_path = renames
+            .get(&flight.source)
+            .cloned()
+            .unwrap_or_else(|| flight.source.clone());
+        if !renames.is_empty() && !cx.catalog.rename_entries(&renames) {
+            conflict = true;
+            cx.catalog.remove(&flight.source);
+            cx.sink.on_catalog_changed(Some(&flight.source));
+            renames = PathKeyMap::new();
+        }
+        if succeeded && !renames.is_empty() {
+            self.register_rename(single.as_ref(), grouped.as_ref(), &renames);
+        }
+        let no_change = single
+            .as_ref()
+            .is_some_and(|result| result.succeeded && result.no_change)
+            || (grouped.as_ref().is_some_and(|result| result.succeeded) && renames.is_empty() && !conflict);
+        let status = if no_change {
+            self.status_of(
+                "status.renameUnchanged",
+                &[LocArg::new("fileName", source_name.clone())],
+            )
+        } else if succeeded {
+            self.status_of(
+                "status.renamed",
+                &[
+                    LocArg::new("oldName", source_name.clone()),
+                    LocArg::new("newName", get_file_name(&new_shown_path)),
+                ],
+            )
+        } else {
+            self.status_of(
+                "status.renameFailed",
+                &[
+                    LocArg::new("fileName", source_name.clone()),
+                    LocArg::new("message", error.clone().unwrap_or_default()),
+                ],
+            )
+        };
+        let kept = cx.sink.on_files_renamed(&renames);
+        if conflict {
+            cx.sink
+                .update_session_path(cx.catalog.current().map_or(&flight.source, |e| e.path()));
+        }
+        if cx.catalog.count() > 0 {
+            if !kept || conflict {
+                cx.sink.present(cx.catalog.current_index().max(0));
+                self.present = PresentState::Running;
+                self.parked = Some(ParkedTail::Rename(RenameTail {
+                    folder_gen: flight.folder_gen,
+                    status_text: Some(status),
+                    done: None,
+                    late_result: Some(FileRenameResult {
+                        status: if succeeded {
+                            FileRenameStatus::Renamed
+                        } else {
+                            FileRenameStatus::Failed
+                        },
+                        new_path: Some(new_shown_path.clone()),
+                        problem: pr_core::file_actions::rename::RenameNameProblem::None,
+                        invalid_character: None,
+                        error: error.clone(),
+                    }),
+                    result: FileRenameResult {
+                        status: if no_change {
+                            FileRenameStatus::NoChange
+                        } else if succeeded {
+                            FileRenameStatus::Renamed
+                        } else {
+                            FileRenameStatus::Failed
+                        },
+                        new_path: succeeded.then(|| new_shown_path.clone()),
+                        problem: pr_core::file_actions::rename::RenameNameProblem::None,
+                        invalid_character: None,
+                        error: error.clone(),
+                    },
+                }));
+                return FileActionStep::Pending;
+            }
+            if let Some(preload) = &self.deps.preload_controller {
+                drop(preload.preload_around(cx.catalog.current_index().max(0)));
+            }
+        }
+        if self.deps.clock.is_folder_current(flight.folder_gen) {
+            cx.sink.set_status_text(&status);
+        }
+        cx.sink.notify_navigation_state_changed();
+        let new_path = if !succeeded {
+            None
+        } else {
+            Some(if no_change {
+                flight.source.clone()
+            } else {
+                new_shown_path
+            })
+        };
+        FileActionStep::Done(FileActionDone::Renamed(FileRenameResult {
+            status: if no_change {
+                FileRenameStatus::NoChange
+            } else if succeeded {
+                FileRenameStatus::Renamed
+            } else {
+                FileRenameStatus::Failed
+            },
+            new_path,
+            problem: pr_core::file_actions::rename::RenameNameProblem::None,
+            invalid_character: None,
+            error,
+        }))
+    }
+
+    fn register_rename(
+        &mut self,
+        single: Option<&FileActionResult>,
+        grouped: Option<&CaptureGroupActionResult>,
+        renames: &PathKeyMap,
+    ) {
+        if self.deps.undo_service.is_none() {
+            return;
+        }
+        if let Some(single) = single {
+            self.with_undo(|undo| undo.register(single));
+        } else if let Some(grouped) = grouped {
+            self.with_undo(|undo| undo.register_group(grouped));
+        }
+        self.last_rename_undo_action = self.with_undo(|undo| undo.last_undo_action_identity()).flatten();
+        if self.renamed_to.len().saturating_add(renames.len()) > 512 {
+            self.renamed_to = PathKeyMap::new();
+        }
+        for (old, new) in renames.iter() {
+            self.renamed_to.insert(old.clone(), new.clone());
+        }
+    }
+
+    /// Complete the status/navigation tail after a rename-triggered present.
+    pub(super) fn finish_rename_tail(&mut self, cx: &mut FileActionCx<'_>, tail: RenameTail) -> FileActionStep {
+        let current = self.deps.clock.is_folder_current(tail.folder_gen);
+        if current {
+            if let Some(status) = tail.status_text.as_deref() {
+                cx.sink.set_status_text(status);
+            }
+        }
+        // RenameAsync's finally always notifies. TryHandleRenameUndoAsync returns before
+        // notification when its awaited present became stale.
+        if current || tail.done.is_none() {
+            cx.sink.notify_navigation_state_changed();
+        }
+        let result = if current {
+            tail.result
+        } else {
+            tail.late_result.unwrap_or(tail.result)
+        };
+        FileActionStep::Done(tail.done.unwrap_or(FileActionDone::Renamed(result)))
+    }
+
+    /// Apply the catalog and sink half of a same-folder rename undo.
+    pub(in crate::coordinators) fn rename_undo(
+        &mut self,
+        cx: &mut FileActionCx<'_>,
+        renames: &PathKeyMap,
+    ) -> FileActionStep {
+        self.apply_rename_undo(cx, renames, true)
+    }
+
+    /// C# TryHandleRenameUndoAsync: forget remembered names only after this listing re-keyed.
+    /// Partial failed undo results can restore members too; overall success is not the criterion.
+    pub(super) fn apply_rename_undo(
+        &mut self,
+        cx: &mut FileActionCx<'_>,
+        renames: &PathKeyMap,
+        in_folder: bool,
+    ) -> FileActionStep {
+        let mut actual = renames.clone();
+        if !actual.is_empty() && in_folder {
+            if cx.catalog.rename_entries(&actual) {
+                let mut retained = PathKeyMap::new();
+                for (old, new) in self.renamed_to.iter() {
+                    if !actual.iter().any(|(_, restored)| eq_ignore_case(old, restored)) {
+                        retained.insert(old.clone(), new.clone());
+                    }
+                }
+                self.renamed_to = retained;
+            } else {
+                actual = PathKeyMap::new();
+            }
+        }
+        let kept = cx.sink.on_files_renamed(&actual);
+        if cx.catalog.count() > 0 {
+            if !kept {
+                cx.sink.present(cx.catalog.current_index().max(0));
+                self.present = PresentState::Running;
+            } else if let Some(preload) = &self.deps.preload_controller {
+                drop(preload.preload_around(cx.catalog.current_index().max(0)));
+            }
+        }
+        FileActionStep::Done(FileActionDone::Finished { succeeded: true })
+    }
+
     fn status_of(&self, key: &str, args: &[LocArg]) -> String {
         self.deps.texts.format(key, args)
     }
@@ -372,6 +828,7 @@ impl FileActionController {
         match event {
             FileActionEvent::Executed { ticket, outcome } => self.on_executed(cx, ticket, outcome),
             FileActionEvent::Undone { ticket, outcome } => self.on_undone(cx, ticket, outcome),
+            FileActionEvent::Renamed { ticket, outcome } => self.on_renamed(cx, ticket, outcome),
         }
     }
 
@@ -386,6 +843,7 @@ impl FileActionController {
         match self.parked.take() {
             Some(ParkedTail::Core(tail)) => self.run_core_tail(cx, tail),
             Some(ParkedTail::Undo(tail)) => self.run_undo_tail(cx, tail),
+            Some(ParkedTail::Rename(tail)) => self.finish_rename_tail(cx, tail),
             None => FileActionStep::Pending,
         }
     }

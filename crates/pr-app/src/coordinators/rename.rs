@@ -1,5 +1,4 @@
 //! Port of `PhotoReview.App.Shared/Coordinators/{FileActionController,FileRenameResult}.cs` rename slices at 7eaee2a2.
-#![allow(unused_variables, dead_code)] // Stub-only: remove after the Wave 9 implementation.
 use super::file_actions::recycle::{FileActionController, FileActionCx, FileActionStep};
 use pr_core::file_actions::rename::PathKeyMap;
 
@@ -34,10 +33,10 @@ impl FileActionController {
         current_path: Option<&str>,
         typed_name: &str,
     ) -> FileActionStep {
-        todo!()
+        self.rename_action(cx, compare_selected_path, current_path, typed_name)
     }
     /// Re-key a successful same-folder rename undo without reinserting the catalog entry.
     pub fn handle_rename_undo(&mut self, cx: &mut FileActionCx<'_>, renames: &PathKeyMap) -> FileActionStep {
-        todo!()
+        self.rename_undo(cx, renames)
     }
 }

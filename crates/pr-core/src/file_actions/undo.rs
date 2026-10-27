@@ -196,6 +196,18 @@ impl UndoActionRecord {
     }
 }
 
+/// Opaque identity of the current C# `LastUndoAction` object. Holding the token keeps its record alive,
+/// so equal-value registrations remain distinct and an address cannot be recycled while remembered by a controller.
+#[derive(Debug, Clone)]
+pub struct UndoActionIdentity(Arc<UndoActionRecord>);
+
+impl PartialEq for UndoActionIdentity {
+    fn eq(&self, other: &Self) -> bool {
+        Arc::ptr_eq(&self.0, &other.0)
+    }
+}
+
+impl Eq for UndoActionIdentity {}
 /// C# `private sealed record PartialGroupUndo(object Action, IReadOnlyList<JournalEntry> FailedEntries)`: a group
 /// undo that restored members by its own mutations and then failed. `failed_entries` keeps every Failed undo line it
 /// wrote, oldest first, so a later successful retry closes ALL of them.
@@ -331,6 +343,13 @@ impl UndoService {
     }
 
     /// C# `LastUndoAction is not null` (the C# property is an opaque `object?`, only ever tested for null).
+    /// Snapshot the current Undo slot by reference identity, like C# `ReferenceEquals(LastUndoAction, remembered)`.
+    /// This reads only in-memory state and never changes the journal or the slot.
+    pub fn last_undo_action_identity(&self) -> Option<UndoActionIdentity> {
+        self.last_undo_action
+            .as_ref()
+            .map(|action| UndoActionIdentity(Arc::clone(action)))
+    }
     pub fn has_last_undo_action(&self) -> bool {
         self.last_undo_action.is_some()
     }

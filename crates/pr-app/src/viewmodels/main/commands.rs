@@ -280,7 +280,9 @@ impl MainViewModel {
         let mut result = self.apply_sink_actions();
         match step {
             FileActionStep::Pending => {}
-            FileActionStep::Done(FileActionDone::Finished { .. } | FileActionDone::Canceled) => {
+            FileActionStep::Done(
+                FileActionDone::Finished { .. } | FileActionDone::Canceled | FileActionDone::Renamed(_),
+            ) => {
                 self.undo_context = None;
                 self.release_active_turn();
             }
