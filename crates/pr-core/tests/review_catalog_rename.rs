@@ -526,3 +526,38 @@ fn rename_entries_first_duplicate_match_changes_without_rejecting_untouched_dupl
     assert_eq!(p(&root, "DUP.JPG"), catalog.path_at(2));
     assert_eq!(2, catalog.index_of(&p(&root, "dup.jpg")));
 }
+
+// C#: RenameEntries validates the complete map before looking up even an unknown source key.
+#[test]
+fn rename_entries_invalid_member_rejects_otherwise_valid_map_atomically() {
+    let root = TempRoot::new("rename-mixed-invalid-map");
+    for (invalid_source, invalid_target) in [
+        (String::new(), p(&root, "unused.jpg")),
+        (" \t".to_owned(), p(&root, "unused.jpg")),
+        (p(&root, "missing.jpg"), String::new()),
+        (p(&root, "b.jpg"), " \t".to_owned()),
+    ] {
+        let mut catalog = build(&root, &["a.jpg", "b.jpg"]);
+        let before = snapshot(&catalog);
+        let renames: PathKeyMap = [
+            (p(&root, "a.jpg"), p(&root, "renamed.jpg")),
+            (invalid_source, invalid_target),
+        ]
+        .into_iter()
+        .collect();
+        assert!(!catalog.rename_entries(&renames));
+        assert_unchanged(&before, &catalog);
+    }
+}
+
+// C#: RenameEntries returns before IndexOf when the catalog is empty; no lazy index work is performed.
+#[test]
+fn rename_entries_empty_catalog_returns_without_rebuilding_index() {
+    let root = TempRoot::new("rename-empty-catalog");
+    let mut catalog = ReviewCatalog::new();
+    let before = snapshot(&catalog);
+    let index_builds = catalog.index_rebuild_count_for_tests();
+    assert!(!catalog.rename_entries(&map(&root, &[("a.jpg", "renamed.jpg")])));
+    assert_eq!(catalog.index_rebuild_count_for_tests(), index_builds);
+    assert_unchanged(&before, &catalog);
+}
