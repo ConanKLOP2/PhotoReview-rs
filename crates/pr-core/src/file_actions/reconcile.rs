@@ -1,3 +1,4 @@
+//! W9-R3 ports the FEAT-RENAME stored-spelling delta from the C# source named below at 7eaee2a2.
 //! Port of the startup-reconcile half of `PhotoReview.Core/FileActions/OperationJournal.cs` (C# baseline d92d6aae):
 //! `ReconcilePendingOperations` (lines 457-488), `ReconcileOne` (490-520), the ADR 0003 "older builds" downgrade guard
 //! `RepairGroupLinesSettledByOlderBuild` + `SettledByOlderBuildText` (522-578), `TryReconcileAppend` (583-594),
@@ -29,6 +30,7 @@ use std::panic::{AssertUnwindSafe, catch_unwind};
 use std::path::Path;
 
 use crate::abstractions::{Clock, FileStat, FileSystem, LiveOperationRegistry, Log, panic_message};
+use crate::file_actions::case_only_rename::CaseOnlyRename;
 use crate::file_actions::errors::{PENDING_UNCONFIRMED, SOURCE_STILL_EXISTS_AFTER_RECOVERY};
 use crate::file_actions::journal_line::{JournalDateTime, JournalEntry, JournalGroupMember};
 use crate::file_actions::journal_rules::is_stale_reconcile_after_committed;
@@ -257,11 +259,18 @@ fn repair_one(
         return None;
     }
     let mut outcome = restored.clone();
-    if restored.state == JournalState::Committed
-        && !members
-            .iter()
-            .all(|member| is_group_member_completed(journal, &restored, member))
-    {
+    let completed = if restored.state == JournalState::Committed {
+        match all_group_members_completed(journal, &restored, members) {
+            Ok(completed) => completed,
+            Err(error) => {
+                diagnostics.warn(&format!("Journal reconcile: skipped group repair of {id}: {error}"));
+                return None;
+            }
+        }
+    } else {
+        true
+    };
+    if !completed {
         outcome.state = JournalState::Failed;
         outcome.timestamp_utc = JournalDateTime::utc(journal.clock().utc_now());
         outcome.error = Some(SETTLED_BY_OLDER_BUILD_TEXT.to_owned());
@@ -295,9 +304,13 @@ fn reconcile_one(
     let fs = journal.file_system();
     let outcome = match pending.group_members.as_deref() {
         Some(members) if !members.is_empty() => {
-            let all_completed = members
-                .iter()
-                .all(|member| is_group_member_completed(journal, pending, member));
+            let all_completed = match all_group_members_completed(journal, pending, members) {
+                Ok(completed) => completed,
+                Err(error) => {
+                    diagnostics.warn(&format!("Journal reconcile: skipped {}: {error}", pending.id));
+                    return None;
+                }
+            };
             let code = if pending.op_type == FileOperationType::Recycle {
                 SOURCE_STILL_EXISTS_AFTER_RECOVERY
             } else {
@@ -316,11 +329,24 @@ fn reconcile_one(
                 )
             }
             FileOperationType::Move | FileOperationType::Copy => {
-                let source_exists = fs.file_exists(Path::new(&pending.source));
-                let destination_stat = pending
-                    .destination
-                    .as_deref()
-                    .and_then(|destination| fs.get_file_stat(Path::new(destination)));
+                let source_exists = match CaseOnlyRename::exists_as(fs, &pending.source, pending.destination.as_deref())
+                {
+                    Ok(exists) => exists,
+                    Err(error) => {
+                        diagnostics.warn(&format!("Journal reconcile: skipped {}: {error}", pending.id));
+                        return None;
+                    }
+                };
+                let destination_stat = match pending.destination.as_deref() {
+                    Some(destination) => match CaseOnlyRename::stat_as(fs, destination, Some(&pending.source)) {
+                        Ok(stat) => stat,
+                        Err(error) => {
+                            diagnostics.warn(&format!("Journal reconcile: skipped {}: {error}", pending.id));
+                            return None;
+                        }
+                    },
+                    None => None,
+                };
                 let destination_matches =
                     is_recorded_destination(destination_stat, pending.size, pending.last_write_utc.value);
                 // Move must have removed the source to count as done; Copy is expected to leave it in place.
@@ -408,36 +434,51 @@ fn is_recorded_destination(destination: Option<FileStat>, size: i64, last_write_
 /// `get_file_stat(member.source)` has EXACTLY `member.size` and `member.last_write_utc` ticks (no tolerance, R15).
 /// Move/Copy: destination stat only when `member.destination` is not null/empty/whitespace (C# `IsNullOrWhiteSpace`),
 /// THEN `file_exists(member.source)`; Move = `!source_exists && recorded`, Copy = `recorded`.
+fn all_group_members_completed(
+    journal: &dyn ReconcileJournal,
+    group: &JournalEntry,
+    members: &[JournalGroupMember],
+) -> io::Result<bool> {
+    for member in members {
+        if !is_group_member_completed(journal, group, member)? {
+            return Ok(false);
+        }
+    }
+    Ok(true)
+}
+
 fn is_group_member_completed(
     journal: &dyn ReconcileJournal,
     group: &JournalEntry,
     member: &JournalGroupMember,
-) -> bool {
+) -> io::Result<bool> {
     let fs = journal.file_system();
     let source = Path::new(&member.source);
     if group.op_type == FileOperationType::Recycle {
         if group.undo != Some(true) {
-            return !fs.file_exists(source);
+            return Ok(!fs.file_exists(source));
         }
         // R15: the recycled file ITSELF is back (exact size and write time), not merely some file at that path.
-        return fs.get_file_stat(source).is_some_and(|back| {
+        return Ok(fs.get_file_stat(source).is_some_and(|back| {
             matches!(i64::try_from(back.length), Ok(length) if length == member.size)
                 && back.last_write_utc == member.last_write_utc.value
-        });
+        }));
     }
     // An undo group is journaled already in undo direction: no swap here.
     let destination = member
         .destination
         .as_deref()
         .filter(|destination| !destination.chars().all(char::is_whitespace))
-        .and_then(|destination| fs.get_file_stat(Path::new(destination)));
+        .map(|destination| CaseOnlyRename::stat_as(fs, destination, Some(&member.source)))
+        .transpose()?
+        .flatten();
     let destination_matches = is_recorded_destination(destination, member.size, member.last_write_utc.value);
-    let source_exists = fs.file_exists(source);
-    match group.op_type {
+    let source_exists = CaseOnlyRename::exists_as(fs, &member.source, member.destination.as_deref())?;
+    Ok(match group.op_type {
         FileOperationType::Move => !source_exists && destination_matches,
         FileOperationType::Copy => destination_matches,
         FileOperationType::Recycle => false,
-    }
+    })
 }
 
 /// C# `WithOutcome`: a copy of `pending` with `state`, `timestamp_utc = JournalDateTime::utc(journal.clock().utc_now())`,

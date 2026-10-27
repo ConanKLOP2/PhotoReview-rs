@@ -3,6 +3,7 @@
 //! `CrashMatrixTests.cs`, `FileActionFaultInjectionTests.cs`, `FileActionFaultInjectionRecoveryTests.cs`,
 //! `FileActionFaultInjectionGapTests.cs` and their helpers `FaultInjectionRig.cs` (`StepClock`, `FaultBin`, `FaultRig`),
 //! `FaultInjectionMatrix.cs`, `FaultInjectionSecondOrder.cs`, `FaultInvariants.cs` and `Fakes/CrashPointFileSystem.cs`.
+//! W9-R3 ports the 7eaee2a2 rename deltas in `FaultInvariants.cs` / `FaultInjectionMatrix.cs` and the two R3 matrix scenarios.
 //!
 //! These are the only tests where the units of Wave 3 run together: `FileActionService` (W3-04) writes the journal
 //! (W3-01, through `JournalTransaction`), `UndoService` (W3-05) and `RecoveryRetryService` (W3-06) act on it, and a
@@ -31,6 +32,7 @@ use pr_core::catalog::types::CaptureGroup;
 use pr_core::file_actions::journal::{DismissOutcome, OperationJournal, OperationJournalOptions};
 use pr_core::file_actions::journal_line::{self, JournalDateTime, JournalEntry, JournalGroupMember};
 use pr_core::file_actions::recovery_retry::{EnglishRecoveryRetryTexts, RecoveryRetryService};
+use pr_core::file_actions::rename::RenameRequest;
 use pr_core::file_actions::service::FileActionService;
 use pr_core::file_actions::types::{
     CaptureGroupActionRequest, CaptureGroupActionResult, FileActionRequest, FileActionResult, UndoResult,
@@ -114,6 +116,9 @@ fn join(folder: &str, name: &str) -> String {
 }
 
 fn assert_no_violations(name: &str, violations: &[String], runs: usize, what: &str) {
+    if name.starts_with("Rename") {
+        eprintln!("{name}: {runs} {what}, {} invariant violations", violations.len());
+    }
     assert!(
         violations.is_empty(),
         "{name}: {} invariant violation(s) over {runs} {what}:\n{}",
@@ -771,6 +776,25 @@ fn is_permanently_deleted(rig: &Rig, path: &str) -> bool {
         .any(|gone| eq_ignore_case(gone, path))
 }
 
+/// C# 7eaee2a2 `FaultInvariants.SourceStillThere`.
+fn source_still_there(rig: &Rig, source: &str, destination: Option<&str>) -> bool {
+    // C# 7eaee2a2 FaultInvariants.SourceStillThere: inspect the disk, not the crashed process wrapper.
+    if !rig.exists(source) {
+        return false;
+    }
+    let Some(destination) = destination else {
+        return true;
+    };
+    if source == destination || !eq_ignore_case(source, destination) {
+        return true;
+    }
+    let stored = rig
+        .disk
+        .get_stored_file_names(Path::new(source))
+        .expect("fake stored spelling");
+    stored.len() != 1 || stored[0] != file_name(destination)
+}
+
 /// C# `CheckSucceededEffect`: the effect a SUCCESS report (whole action, or one completed group member) promised.
 fn check_succeeded_effect(
     rig: &Rig,
@@ -783,7 +807,7 @@ fn check_succeeded_effect(
     let dest_full = destination.is_some_and(|d| rig.has_full(d));
     match operation {
         Move => {
-            if rig.exists(source) {
+            if source_still_there(rig, source, destination) {
                 v.push(format!(
                     "{ctx}: Move reported done but the source {source} is still there"
                 ));
@@ -908,9 +932,31 @@ fn check_state(rig: &Rig, ctx: &str, v: &mut Vec<String>, after_recovery: bool) 
                     })
             });
         for m in &entry_members {
+            // C# 7eaee2a2 FaultInvariants: a later Move/rename may supersede this destination.
+            let moved_on = entry.op_type == Move
+                && m.destination.as_deref().is_some_and(|destination| {
+                    let entry_at = lines.iter().rposition(|line| line.id == entry.id).unwrap_or(0);
+                    latest.iter().any(|other| {
+                        other.id != entry.id
+                            && other.op_type == Move
+                            && matches!(
+                                other.state,
+                                JournalState::Committed | JournalState::Prepared | JournalState::Failed
+                            )
+                            && lines
+                                .iter()
+                                .rposition(|line| line.id == other.id)
+                                .is_some_and(|at| at > entry_at)
+                            && members_of(other).iter().any(|member| {
+                                eq_ignore_case(&member.source, destination)
+                                    && member.destination.as_deref() != Some(member.source.as_str())
+                            })
+                            && (other.state == JournalState::Committed || !rig.exists(destination))
+                    })
+                });
             match entry.op_type {
-                Move if entry.state == JournalState::Committed && !superseded_by_undo => {
-                    if rig.exists(&m.source) {
+                Move if entry.state == JournalState::Committed && !superseded_by_undo && !moved_on => {
+                    if source_still_there(rig, &m.source, m.destination.as_deref()) {
                         v.push(format!(
                             "{ctx}: Move {} is Committed but the source is still there",
                             m.source
@@ -1072,6 +1118,7 @@ fn is_alive_kind(kind: FaultKind) -> bool {
 fn check_outcomes(rig: &Rig, ctx: &str, v: &mut Vec<String>) {
     for outcome in &rig.outcomes {
         match outcome {
+            Outcome::Action(result) if result.no_change => {}
             Outcome::Action(result) if result.succeeded && !result.rejected => check_succeeded_effect(
                 rig,
                 result.operation,
@@ -1081,7 +1128,7 @@ fn check_outcomes(rig: &Rig, ctx: &str, v: &mut Vec<String>) {
                 v,
             ),
             Outcome::Action(failed) if !failed.succeeded && failed.operation == Move && !rig.fs.dead() => {
-                let present = rig.exists(&failed.source);
+                let present = source_still_there(rig, &failed.source, failed.destination_path.as_deref());
                 if failed.source_removed == present {
                     v.push(format!(
                         "{ctx}: failed Move reports source_removed={} but the source {} on disk",
@@ -2795,5 +2842,57 @@ fn retry_crashed_before_each_call_restart_is_consistent() {
         rig.fs.crash_before.store(before + crash, Ordering::SeqCst);
         let _ = retry.retry_move_or_copy(&failed, false, &CancelToken::none());
         assert_restart_invariants(&rig.disk, Move, &format!("retry crash #{crash}/{total}"));
+    }
+}
+
+// C#: RenameFaultInjectionTests.GroupCaseOnlyRename_Matrix. Reuses the full W3 safety and follow-up checker.
+#[test]
+fn group_case_only_rename_matrix() {
+    matrix("RenameGroupCase", &group_rig, &|rig| {
+        let result = rig.service.rename_group(&capture(true), "A", &rig.token());
+        rig.outcomes.push(Outcome::Group(result));
+        Ok(())
+    });
+}
+
+// C#: RenameFaultInjectionTests.CaseOnlyRename_ReconcileInterrupted, including every nested reconcile fault.
+#[test]
+fn case_only_rename_reconcile_interrupted() {
+    assert_reconcile_interrupted("RenameCase", &single_rig, &|rig| {
+        let result = rig.service.rename(
+            &RenameRequest {
+                source: A.to_owned(),
+                new_file_name: "A.jpg".to_owned(),
+            },
+            &rig.token(),
+        );
+        rig.outcomes.push(Outcome::Action(result));
+        Ok(())
+    });
+}
+
+// C#: FaultInjectionFileSystem.Move at 7eaee2a2 classifies same-folder moves as atomic rename.
+#[test]
+fn fault_injector_same_folder_rename_excludes_cross_volume_faults() {
+    let rig = single_rig();
+    rig.fs.arm(None);
+    rig.fs
+        .move_file(Path::new(A), Path::new(&join(PHOTOS, "A.jpg")))
+        .expect("case rename");
+    assert_eq!(rig.fs.kinds(), ["rename"]);
+    for kind in [
+        FaultKind::CrashPartial,
+        FaultKind::FailPartial,
+        FaultKind::CrashMoveCopiedNotDeleted,
+    ] {
+        assert!(!kind.applies("rename"), "{kind:?}");
+    }
+    for kind in [
+        FaultKind::CrashBefore,
+        FaultKind::CrashAfter,
+        FaultKind::FailOnce,
+        FaultKind::FailUnauthorized,
+    ] {
+        assert!(kind.applies("rename"), "{kind:?}");
     }
 }

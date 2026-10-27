@@ -1,3 +1,4 @@
+//! W9-R3 ports the FEAT-RENAME stored-spelling delta from the C# source named below at 7eaee2a2.
 //! Port of `PhotoReview.Core/FileActions/RecoveryFileCheck.cs` (C# baseline d92d6aae; the verdict table of the C#
 //! `docs/architecture.md`, "Recovery check"; PARITY F-17, W-04).
 //!
@@ -20,6 +21,7 @@ use std::path::Path;
 use std::sync::Arc;
 
 use crate::abstractions::FileSystem;
+use crate::file_actions::case_only_rename::CaseOnlyRename;
 use crate::file_actions::journal_line::{JournalEntry, JournalGroupMember};
 use crate::model::{FileOperationType, JournalState};
 use crate::text::dotnet_path::get_directory_name;
@@ -190,12 +192,26 @@ impl RecoveryFileCheck {
                 group_members: Some(checks),
             };
         }
-        let source = self.check_path(&entry.source, entry.size, entry.last_write_utc.value, true);
+        let source = self.check_path(
+            &entry.source,
+            entry.size,
+            entry.last_write_utc.value,
+            true,
+            entry.destination.as_deref(),
+        );
         let destination = entry
             .destination
             .as_deref()
             .filter(|destination| !is_null_or_white_space(destination))
-            .map(|destination| self.check_path(destination, entry.size, entry.last_write_utc.value, false));
+            .map(|destination| {
+                self.check_path(
+                    destination,
+                    entry.size,
+                    entry.last_write_utc.value,
+                    false,
+                    Some(&entry.source),
+                )
+            });
         let verdict = Self::decide(entry, &source, destination.as_ref());
         RecoveryCheckResult {
             entry: entry.clone(),
@@ -335,6 +351,7 @@ impl RecoveryFileCheck {
         recorded_size: i64,
         recorded_last_write_utc: DateTimeUtc,
         compare_last_write: bool,
+        twin: Option<&str>,
     ) -> RecoveryPathCheck {
         let mut folder_exists = false;
         if let Some(folder) = get_directory_name(path).filter(|folder| !folder.is_empty()) {
@@ -346,7 +363,7 @@ impl RecoveryFileCheck {
         }
         // P-12 (option A): no blank/NUL pre-check on `path`; the seam reports such a path as `Err` after counting the
         // stat, like the C# proxies.
-        let stat = match self.file_system.try_get_file_stat(Path::new(path)) {
+        let stat = match CaseOnlyRename::stat_as(self.file_system.as_ref(), path, twin) {
             Err(_) => return RecoveryPathCheck::new(path, RecoveryPathStatus::Unreadable, None, None, folder_exists),
             Ok(None) => return RecoveryPathCheck::new(path, RecoveryPathStatus::Missing, None, None, folder_exists),
             Ok(Some(stat)) => stat,

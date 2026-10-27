@@ -1,3 +1,4 @@
+//! W9-R3 ports the FEAT-RENAME stored-spelling delta from the C# source named below at 7eaee2a2.
 //! Port of `PhotoReview.Core/FileActions/RecoveryRetryService.cs` (C# baseline d92d6aae; PARITY F-18, INV-4, INV-6).
 //! Contract: `contracts/W3-06.md`.
 //!
@@ -30,6 +31,7 @@ use std::path::Path;
 use std::sync::Arc;
 
 use crate::abstractions::{Clock, FileStat, FileSystem, RecycleBin};
+use crate::file_actions::case_only_rename::CaseOnlyRename;
 use crate::file_actions::errors;
 use crate::file_actions::journal::OperationJournal;
 use crate::file_actions::journal_line::{JournalDateTime, JournalEntry, JournalGroupMember};
@@ -397,14 +399,14 @@ impl RecoveryRetryService {
     fn precheck_single(&self, failed: &JournalEntry, destination: &str) -> io::Result<Result<FileStat, String>> {
         let texts = &*self.texts;
         let fs = &*self.file_system;
-        if !fs.file_exists(Path::new(&failed.source)) {
+        if !CaseOnlyRename::exists_as(fs, &failed.source, Some(destination))? {
             return Ok(Err(texts.core_recovery_source_missing()));
         }
-        let stat = match self.stat(&failed.source)? {
+        let stat = match CaseOnlyRename::stat_as(fs, &failed.source, Some(destination))? {
             Some(stat) if same_fingerprint(&stat, failed.size, &failed.last_write_utc) => stat,
             _ => return Ok(Err(texts.core_recovery_source_changed())),
         };
-        if fs.file_exists(Path::new(destination)) {
+        if CaseOnlyRename::exists_as(fs, destination, Some(&failed.source))? {
             return Ok(Err(texts.core_recovery_destination_exists()));
         }
         Ok(Ok(stat))
@@ -535,16 +537,18 @@ impl RecoveryRetryService {
                     return source_changed();
                 }
             } else {
-                let unchanged = self
-                    .stat(&member.source)?
+                let unchanged = CaseOnlyRename::stat_as(fs, &member.source, member.destination.as_deref())?
                     .is_some_and(|stat| same_fingerprint(&stat, member.size, &member.last_write_utc));
                 if !unchanged {
                     return source_changed();
                 }
-                match member.destination.as_deref() {
-                    Some(destination)
-                        if !is_null_or_white_space(Some(destination)) && !fs.file_exists(Path::new(destination)) => {}
-                    _ => return source_changed(),
+                let Some(destination) = member.destination.as_deref() else {
+                    return source_changed();
+                };
+                if is_null_or_white_space(Some(destination))
+                    || CaseOnlyRename::exists_as(fs, destination, Some(&member.source))?
+                {
+                    return source_changed();
                 }
             }
         }
@@ -646,15 +650,15 @@ impl RecoveryRetryService {
                     return Err(Self::plain_error(texts.core_undo_recycle_restore_failed(name)));
                 }
             } else {
-                let unchanged = self
-                    .stat(&member.source)?
+                let unchanged = CaseOnlyRename::stat_as(fs, &member.source, member.destination.as_deref())?
                     .is_some_and(|stat| same_fingerprint(&stat, member.size, &member.last_write_utc));
                 if !unchanged {
                     return Err(Self::plain_error(texts.core_recovery_source_changed()));
                 }
                 let destination = match member.destination.as_deref() {
                     Some(destination)
-                        if !is_null_or_white_space(Some(destination)) && !fs.file_exists(Path::new(destination)) =>
+                        if !is_null_or_white_space(Some(destination))
+                            && !CaseOnlyRename::exists_as(fs, destination, Some(&member.source))? =>
                     {
                         destination
                     }
@@ -675,7 +679,7 @@ impl RecoveryRetryService {
                 } else {
                     fs.move_file(source, Path::new(destination))?;
                     // NOT `verify_moved`: the group path reports RetryVerifyFailed for both checks.
-                    if fs.file_exists(source)
+                    if CaseOnlyRename::exists_as(fs, &member.source, Some(destination))?
                         || self.stat(destination)?.as_ref().and_then(length_as_i64) != Some(member.size)
                     {
                         return Err(self.coded_error(errors::RETRY_VERIFY_FAILED));
@@ -736,8 +740,7 @@ impl RecoveryRetryService {
         // R17: a different file may have taken the source path since the pre-checks. `prepared` carries the stat the
         // pre-check read, so a replacement is never moved/copied under the old operation.
         let prepared = tx.prepared();
-        let unchanged = self
-            .stat(source)?
+        let unchanged = CaseOnlyRename::stat_as(fs, source, failed.destination.as_deref())?
             .is_some_and(|stat| same_fingerprint(&stat, prepared.size, &prepared.last_write_utc));
         if !unchanged {
             return Err(Self::plain_error(self.texts.core_recovery_source_changed()));
