@@ -445,6 +445,82 @@ fn case_only_rename_undo_moved_the_file_but_the_check_failed_drops_the_entry_by_
 }
 
 #[test]
+fn startup_reconcile_group_completion_requires_exact_undo_fingerprint_and_complete_move() {
+    // Mutation regression for C# OperationJournal.IsGroupMemberCompleted at 7eaee2a2:
+    // exact size AND ticks for Recycle undo, and a Move's source absent AND destination matching.
+    let stamp = DateTimeUtc::from_ticks(STAMP).expect("stamp");
+    let later = DateTimeUtc::from_ticks(STAMP + 1).expect("later stamp");
+    for (case, data, written, expected) in [
+        ("exact", b"photo".as_slice(), stamp, JournalState::Committed),
+        (
+            "time-matches-size-differs",
+            b"diff".as_slice(),
+            stamp,
+            JournalState::Failed,
+        ),
+        (
+            "size-matches-time-differs",
+            b"photo".as_slice(),
+            later,
+            JournalState::Failed,
+        ),
+    ] {
+        let rig = Rig::new(&[]);
+        let source = rig.path("restored.jpg");
+        rig.fs.add_file_at(&source, b"photo", stamp);
+        let mut entry = rig.prepared(&source, &source, JournalState::Prepared);
+        rig.fs.add_file_at(&source, data, written);
+        entry.op_type = FileOperationType::Recycle;
+        entry.undo = Some(true);
+        entry.group_id = Some(format!("recycle-{case}"));
+        entry.group_members = Some(vec![JournalGroupMember {
+            source: source.clone(),
+            destination: None,
+            size: 5,
+            last_write_utc: JournalDateTime::utc(stamp),
+            permanent: false,
+        }]);
+        rig.journal.append(&entry).expect("prepared recycle undo group");
+        let reconciled = rig
+            .journal
+            .reconcile_pending_operations(None)
+            .expect("reconcile recycle undo");
+        assert_eq!(reconciled.len(), 1, "case={case}");
+        assert_eq!(reconciled[0].state, expected, "case={case}");
+    }
+
+    for (case, keep_source, expected) in [
+        ("source-and-destination-present", true, JournalState::Failed),
+        ("source-absent", false, JournalState::Committed),
+    ] {
+        let rig = Rig::new(&[]);
+        let source = rig.path("before.jpg");
+        let destination = rig.path("after.jpg");
+        rig.fs.add_file_at(&source, b"photo", stamp);
+        let mut entry = rig.prepared(&source, &destination, JournalState::Prepared);
+        if !keep_source {
+            rig.fs.delete(Path::new(&source)).expect("remove moved source");
+        }
+        rig.fs.add_file_at(&destination, b"photo", stamp);
+        entry.group_id = Some(format!("move-{case}"));
+        entry.group_members = Some(vec![JournalGroupMember {
+            source,
+            destination: Some(destination),
+            size: 5,
+            last_write_utc: JournalDateTime::utc(stamp),
+            permanent: false,
+        }]);
+        rig.journal.append(&entry).expect("prepared move group");
+        let reconciled = rig
+            .journal
+            .reconcile_pending_operations(None)
+            .expect("reconcile move group");
+        assert_eq!(reconciled.len(), 1, "case={case}");
+        assert_eq!(reconciled[0].state, expected, "case={case}");
+    }
+}
+
+#[test]
 #[ignore = "native: case-preserving filesystem required"]
 fn case_only_rename_native_move_undo_reconcile_uses_temp_root() {
     // C#: RenameFileActionTests.CaseOnlyRename_Undo_RestoresTheOldSpelling; startup reconcile uses the same native pair probes.
