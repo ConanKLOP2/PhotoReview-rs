@@ -1273,6 +1273,34 @@ mod white_box_tests {
         assert_eq!(service.try_get_known_original_dimensions(&key_b), Some((3000, 2000)));
     }
 
+    // C#: PreviewImageServiceGapTests2.EvictCachedPath_DropsOnlyThatPathsOriginalDimensions
+    #[test]
+    fn evict_cached_path_drops_only_that_paths_original_dimensions() {
+        let root = TempRoot::new("preview-evict-original-dimensions");
+        let path_a = root.join("dim-a.jpg");
+        let path_b = root.join("dim-b.jpg");
+        std::fs::write(&path_a, [1u8, 2, 3]).expect("write image a");
+        std::fs::write(&path_b, [1u8, 2, 3, 4]).expect("write image b");
+        let path_a = path_a.to_string_lossy().into_owned();
+        let path_b = path_b.to_string_lossy().into_owned();
+        let service = service(&root);
+        let key_a = service.get_current_cache_key(&path_a).expect("key a");
+        let key_b = service.get_current_cache_key(&path_b).expect("key b");
+        service
+            .inner
+            .original_dimensions
+            .set(ImageCacheKey::create_original(&key_a), (6000, 4000));
+        service
+            .inner
+            .original_dimensions
+            .set(ImageCacheKey::create_original(&key_b), (3000, 2000));
+
+        service.evict_cached_path(&path_a, None).expect("evict a");
+
+        assert_eq!(None, service.try_get_known_original_dimensions(&key_a));
+        assert_eq!(Some((3000, 2000)), service.try_get_known_original_dimensions(&key_b));
+    }
+
     // C# `TryGetKnownOriginalDimensions`: looked up under `ImageCacheKey.CreateOriginal(currentKey)`; cleared by
     // `ClearCache`.
     #[test]

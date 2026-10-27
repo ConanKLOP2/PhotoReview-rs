@@ -1,6 +1,7 @@
 //! Port of `PhotoReview.Imaging/ImageCacheKey.cs` (C# baseline d92d6aae): [`ImageCacheKey`] (identity of a decoded
 //! bitmap: normalized full path, source length and write time, decode mode and box, orientation, backend, source kind)
 //! and [`ImageSourceKind`] (named values of `SourceKind`). PARITY: see contracts/drafts-w4/W4-01a.
+//! W9-R4 ports the `ImageCacheKey.WithPath` delta from the same C# source at baseline `7eaee2a2`.
 //!
 //! Target path: `crates/pr-imaging/src/cache_key.rs` (lead adds `pub mod cache_key;` to `lib.rs`).
 //!
@@ -114,8 +115,9 @@ pub struct ImageCacheKey {
 
 impl ImageCacheKey {
     /// FEAT-RENAME: copy this identity under a newly normalized path without statting the renamed file.
-    pub fn with_path(&self, _new_path: &str) -> Result<Self, PathError> {
-        todo!()
+    pub fn with_path(&self, new_path: &str) -> Result<Self, PathError> {
+        let path = normalize_key_path(new_path)?;
+        Ok(Self { path, ..self.clone() })
     }
     /// Full path, upper-cased with `ToUpperInvariant` (ordinal-comparable; NOT the on-disk spelling).
     pub fn path(&self) -> &str {
@@ -319,4 +321,87 @@ impl ImageCacheKey {
 /// [`PathError`] when the path is blank or contains NUL (C# `ArgumentException`).
 pub fn normalize_key_path(path: &str) -> Result<String, PathError> {
     get_full_path(path).map(|full| SessionStore::to_upper_invariant(&full))
+}
+
+#[cfg(test)]
+mod rename_tests {
+    use super::*;
+    use pr_core::model::DecoderBackend;
+    use pr_test_support::{FakeFileSystem, FsOp, TempRoot};
+
+    // C#: ImageCacheKeyTests.WithPath_NewNameOnNonexistentFile_KeepsIdentityAndNormalizesPath
+    #[test]
+    fn with_path_new_name_on_nonexistent_file_keeps_identity_and_normalizes_path() {
+        let root = TempRoot::new("cache-key-with-path");
+        let source = root.join("source.jpg");
+        let target = root.join("sub").join("..").join("renamed.jpg");
+        let source_text = source.to_string_lossy().into_owned();
+        let target_text = target.to_string_lossy().into_owned();
+        let fs = FakeFileSystem::new();
+        fs.add_file(&source, &[1, 2, 3]);
+        let key = ImageCacheKey::create(
+            &fs,
+            &source_text,
+            false,
+            DecodeBox::new(2304, 1280),
+            KeyOptions {
+                orientation_applied: false,
+                backend: DecoderBackend::WicDirect,
+                source_kind: ImageSourceKind::RAW_PREVIEW,
+            },
+        )
+        .expect("source key");
+
+        let renamed = key.with_path(&target_text).expect("renamed key");
+        assert_eq!(
+            normalize_key_path(&target_text).expect("normalized path"),
+            renamed.path()
+        );
+        assert_eq!(key.length(), renamed.length());
+        assert_eq!(key.last_write_utc_ticks(), renamed.last_write_utc_ticks());
+        assert_eq!(key.is_original(), renamed.is_original());
+        assert_eq!(key.target_box(), renamed.target_box());
+        assert_eq!(key.orientation_applied(), renamed.orientation_applied());
+        assert_eq!(key.backend(), renamed.backend());
+        assert_eq!(key.source_kind(), renamed.source_kind());
+        assert_ne!(key, renamed);
+        assert_eq!(fs.count(FsOp::Stat), 1);
+    }
+
+    // C#: ImageCacheKeyTests.WithPath_OriginalKey_CreateOriginalOfNewKeyHasNewPath
+    #[test]
+    fn with_path_original_key_create_original_of_new_key_has_new_path() {
+        let root = TempRoot::new("cache-key-original-with-path");
+        let source = root.join("source.jpg");
+        let target = root.join("renamed.jpg");
+        let source_text = source.to_string_lossy().into_owned();
+        let target_text = target.to_string_lossy().into_owned();
+        let fs = FakeFileSystem::new();
+        fs.add_file(&source, &[1]);
+        let preview =
+            ImageCacheKey::create_width_only(&fs, &source_text, false, 900, KeyOptions::default()).expect("source key");
+        let original = ImageCacheKey::create_original(&preview.with_path(&target_text).expect("renamed preview"));
+        let renamed_original = ImageCacheKey::create_original(&preview)
+            .with_path(&target_text)
+            .expect("renamed original");
+        assert_eq!(
+            normalize_key_path(&target_text).expect("normalized path"),
+            original.path()
+        );
+        assert!(original.is_original());
+        assert_eq!(original, renamed_original);
+    }
+
+    // C#: ImageCacheKeyTests.WithPath_BlankPath_Throws
+    #[test]
+    fn with_path_blank_path_throws() {
+        let root = TempRoot::new("cache-key-blank-with-path");
+        let source = root.join("source.jpg");
+        let source_text = source.to_string_lossy().into_owned();
+        let fs = FakeFileSystem::new();
+        fs.add_file(&source, &[1]);
+        let key =
+            ImageCacheKey::create_width_only(&fs, &source_text, false, 900, KeyOptions::default()).expect("source key");
+        assert_eq!(key.with_path(" "), Err(PathError::Argument));
+    }
 }
