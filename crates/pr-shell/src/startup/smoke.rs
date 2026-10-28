@@ -23,7 +23,10 @@ impl StartupState {
     /// The trigger is `smoke_trigger(launch.initial_path())`: `FirstPresented` -> `main.subscribe_first_presented(close_once(0))` and, when `main.first_present_done()` is already true, call it now;
     /// `FirstImagePresented` -> `main.subscribe_first_image_presented(close_once(0))`. The timeout is one thread (`PhotoReview.SmokeTimeout`) that waits on a `WindowCancel` for the limit and calls
     /// `close_once(EXIT_SMOKE_TIMEOUT)` unless cancelled; `window.subscribe(ShellWindowEvent::Closed, ..)` cancels it (C# `timeout.Dispose()`). No polling, no sleep.
-    #[allow(dead_code, reason = "called by create_main_window (window.rs, lane shell-a) once it lands")]
+    #[allow(
+        dead_code,
+        reason = "called by create_main_window (window.rs, lane shell-a) once it lands"
+    )]
     pub(super) fn arm_smoke_exit(self: &Rc<Self>, main: &Rc<MainWindow>) {
         let latch = Arc::new(SmokeLatch::new());
         let slot: Arc<Mutex<Option<UiHopSender<i32>>>> = Arc::new(Mutex::new(None));
@@ -83,6 +86,7 @@ impl StartupState {
                     timeout_close(EXIT_SMOKE_TIMEOUT);
                 }
             });
-        main.window().subscribe(ShellWindowEvent::Closed, Box::new(move || cancel.cancel()));
+        main.window()
+            .subscribe(ShellWindowEvent::Closed, Box::new(move || cancel.cancel()));
     }
 }

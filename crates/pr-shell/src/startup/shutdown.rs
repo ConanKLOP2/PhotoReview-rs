@@ -123,11 +123,8 @@ impl FailureSteps for StateSteps {
             Some(services) => services.dialog_service.show_error(&title, &text),
             None => {
                 let picker = FolderPicker::new(Rc::new(UnwiredShellFolderDialog), Box::new(|| 0));
-                let dialogs = Win32DialogService::new(
-                    Box::new(|| 0),
-                    picker,
-                    Rc::new(LazySecondaryPort::from_value(None)),
-                );
+                let dialogs =
+                    Win32DialogService::new(Box::new(|| 0), picker, Rc::new(LazySecondaryPort::from_value(None)));
                 dialogs.show_error(&title, &text);
             }
         }

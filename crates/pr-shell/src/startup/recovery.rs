@@ -53,13 +53,21 @@ impl StartupState {
                         window.view_model().borrow().show_recovery();
                     }
                 };
-                prompt_for_failed_entries(&failed, &Localizer::current(), &*services.dialog_service, &mut show_recovery);
+                prompt_for_failed_entries(
+                    &failed,
+                    &Localizer::current(),
+                    &*services.dialog_service,
+                    &mut show_recovery,
+                );
                 Ok::<(), HopLost>(())
             }));
             match outcome {
                 Ok(Ok(())) => {}
                 Ok(Err(lost)) => {
-                    AppLog::global().error("Startup journal recovery failed", Some(&UnhandledError(lost.to_string())));
+                    AppLog::global().error(
+                        "Startup journal recovery failed",
+                        Some(&UnhandledError(lost.to_string())),
+                    );
                 }
                 Err(payload) => {
                     AppLog::global().error(
