@@ -13,7 +13,7 @@ use std::error::Error;
 use std::fmt;
 use std::hash::{BuildHasher, Hasher};
 use std::io;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::sync::Arc;
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::time::{SystemTime, UNIX_EPOCH};
@@ -22,6 +22,7 @@ use pr_core::abstractions::RecycleBin;
 use pr_core::sync::CancelToken;
 use pr_imaging::decoder_traits::DecodeError;
 use pr_imaging::service::PreviewError;
+use pr_imaging::service::PreviewResult;
 use pr_imaging::service::handle::PreviewHandle;
 
 use crate::engine::{BenchmarkError, MeasureOutcome, PreparedMeasure, RunPreparedOptions};
@@ -313,10 +314,10 @@ pub fn file_action_op(profile_id: &str, iteration: i32) -> FileActionOp {
 /// The scratch files of one file-action iteration: `<temp dir>\PhotoReview-Benchmark-Action-<32 lowercase hex>.bin`,
 /// plus `<same>.moved` and `<same>.copy`.
 #[derive(Debug, Clone)]
-pub(crate) struct ActionScratch {
-    pub(crate) temp: PathBuf,
-    pub(crate) moved: PathBuf,
-    pub(crate) copied: PathBuf,
+pub struct ActionScratch {
+    pub temp: PathBuf,
+    pub moved: PathBuf,
+    pub copied: PathBuf,
 }
 
 static SCRATCH_COUNTER: AtomicU64 = AtomicU64::new(0);
@@ -360,12 +361,57 @@ impl ActionScratch {
     }
 }
 
-/// Removes the scratch files when the measure step finishes (any outcome) or is dropped without running.
-struct ScratchGuard(ActionScratch);
+/// File operations needed by a file-action sample. Kept generic so the native path has static dispatch and
+/// preserves the exact `std::fs` calls used by the benchmark.
+pub trait FileActionIo {
+    fn scratch(&self) -> ActionScratch;
+    fn read(&self, path: &Path) -> io::Result<Vec<u8>>;
+    fn write(&self, path: &Path, bytes: &[u8]) -> io::Result<()>;
+    fn rename(&self, from: &Path, to: &Path) -> io::Result<()>;
+    fn copy(&self, from: &Path, to: &Path) -> io::Result<()>;
+    fn remove(&self, path: &Path) -> io::Result<()>;
+    fn exists(&self, path: &Path) -> bool;
+    fn cleanup(&self, scratch: &ActionScratch);
+    fn decode_started(&self) {}
+    fn wait(&self, handle: PreviewHandle) -> PreviewResult {
+        handle.wait()
+    }
+}
 
-impl Drop for ScratchGuard {
+struct NativeFileActionIo;
+
+impl FileActionIo for NativeFileActionIo {
+    fn scratch(&self) -> ActionScratch {
+        ActionScratch::new()
+    }
+    fn read(&self, path: &Path) -> io::Result<Vec<u8>> {
+        std::fs::read(path)
+    }
+    fn write(&self, path: &Path, bytes: &[u8]) -> io::Result<()> {
+        std::fs::write(path, bytes)
+    }
+    fn rename(&self, from: &Path, to: &Path) -> io::Result<()> {
+        std::fs::rename(from, to)
+    }
+    fn copy(&self, from: &Path, to: &Path) -> io::Result<()> {
+        std::fs::copy(from, to).map(|_| ())
+    }
+    fn remove(&self, path: &Path) -> io::Result<()> {
+        std::fs::remove_file(path)
+    }
+    fn exists(&self, path: &Path) -> bool {
+        path.exists()
+    }
+    fn cleanup(&self, scratch: &ActionScratch) {
+        scratch.cleanup();
+    }
+}
+
+struct ActionScratchGuard<I: FileActionIo>(ActionScratch, Arc<I>);
+
+impl<I: FileActionIo> Drop for ActionScratchGuard<I> {
     fn drop(&mut self) {
-        self.0.cleanup();
+        self.1.cleanup(&self.0);
     }
 }
 
@@ -469,7 +515,15 @@ pub fn prepare_iteration(
     }
 
     match workload {
-        BenchmarkWorkload::FileAction => prepare_file_action(executor, files, profile, iteration, recycle_bin, ct),
+        BenchmarkWorkload::FileAction => prepare_file_action_with_io(
+            executor,
+            files,
+            profile,
+            iteration,
+            recycle_bin,
+            ct,
+            Arc::new(NativeFileActionIo),
+        ),
         BenchmarkWorkload::FirstFrame => {
             let index = usize::try_from(select_index(file_count_of(files), workload, iteration, random))
                 .map_err(|_| invalid_argument("The selected file index is negative."))?;
@@ -541,76 +595,72 @@ pub fn prepare_iteration(
     }
 }
 
-/// `files.len()` as the C# `int` the selection helpers take (saturating).
-fn file_count_of(files: &[String]) -> i32 {
-    i32::try_from(files.len()).unwrap_or(i32::MAX)
-}
-
-/// C# private `PrepareFileActionAsync`: creates the [`ActionScratch`], copies `files[iteration % files.len()]` to
-/// `scratch.temp` (full read + write, untimed; on any error `cleanup()` then the error), and returns the step.
-fn prepare_file_action(
+/// Hidden test entry point for deterministic file-action mapping and lifecycle tests.
+#[doc(hidden)]
+pub fn prepare_file_action_with_io_for_test<I: FileActionIo + 'static>(
     executor: &Arc<BenchmarkImageExecutor>,
     files: &Arc<[String]>,
     profile: &BenchmarkProfile,
     iteration: i32,
     recycle_bin: &Arc<dyn RecycleBin>,
     ct: &CancelToken,
+    io: Arc<I>,
+) -> Result<PreparedMeasure, BenchmarkError> {
+    prepare_file_action_with_io(executor, files, profile, iteration, recycle_bin, ct, io)
+}
+
+fn prepare_file_action_with_io<I: FileActionIo + 'static>(
+    executor: &Arc<BenchmarkImageExecutor>,
+    files: &Arc<[String]>,
+    profile: &BenchmarkProfile,
+    iteration: i32,
+    recycle_bin: &Arc<dyn RecycleBin>,
+    ct: &CancelToken,
+    io: Arc<I>,
 ) -> Result<PreparedMeasure, BenchmarkError> {
     if files.is_empty() {
         return Err(invalid_argument("The benchmark folder has no files to decode."));
     }
-    // `%` truncates: a negative iteration gives a negative index (C# `IndexOutOfRangeException`).
     let remainder = i64::from(iteration) % i64::try_from(files.len()).unwrap_or(i64::MAX);
     let Ok(index) = usize::try_from(remainder) else {
         return Err(invalid_argument(
             "The file-action iteration selects a negative file index.",
         ));
     };
-    // C# evaluates `files[iteration % files.Length]` before `ReadAllBytesAsync(.., ct)` sees the token, so the index error wins.
     if ct.is_canceled() {
         return Err(BenchmarkError::Canceled);
     }
-
-    // Dropping the guard (any error below, or the step finishing, or the step being dropped) removes the files.
-    let guard = ScratchGuard(ActionScratch::new());
-    // Untimed setup: a full read + write of the source photo (R2-F-14).
-    let bytes = std::fs::read(&files[index]).map_err(io_error)?;
-    std::fs::write(&guard.0.temp, bytes).map_err(io_error)?;
-
+    let guard = ActionScratchGuard(io.scratch(), Arc::clone(&io));
+    let bytes = io.read(Path::new(&files[index])).map_err(io_error)?;
+    io.write(&guard.0.temp, &bytes).map_err(io_error)?;
     let executor = Arc::clone(executor);
     let recycle_bin = Arc::clone(recycle_bin);
     let profile_id = profile.id.clone();
     let ct = ct.clone();
-    Ok(Box::new(move || {
+    let step: PreparedMeasure = Box::new(move || {
         let scratch = &guard.0;
-
-        // Start the decode BEFORE mutating the file: awaiting it first would hide the lifetime race these
-        // profiles exist to expose. A synchronous `decode_async` error is the decode OUTCOME, judged below.
         let started = match scratch.temp.to_str() {
-            Some(temp_text) => executor.decode_async(temp_text, &ct),
+            Some(text) => executor.decode_async(text, &ct),
             None => Err(PreviewError::Io(Arc::new(io::Error::new(
                 io::ErrorKind::InvalidData,
                 "scratch path is not valid UTF-8",
             )))),
         };
-
+        io.decode_started();
         let op = file_action_op(&profile_id, iteration);
         let mutation = match op {
-            FileActionOp::Move => {
-                std::fs::rename(&scratch.temp, &scratch.moved).and_then(|()| std::fs::remove_file(&scratch.moved))
-            }
+            FileActionOp::Move => io
+                .rename(&scratch.temp, &scratch.moved)
+                .and_then(|()| io.remove(&scratch.moved)),
             FileActionOp::Delete => recycle_bin.send_to_recycle_bin(&scratch.temp),
-            FileActionOp::Copy => std::fs::copy(&scratch.temp, &scratch.copied).map(|_| ()),
+            FileActionOp::Copy => io.copy(&scratch.temp, &scratch.copied),
         };
         if let Err(error) = mutation {
-            // Still observe the in-flight decode so it never runs against files the guard is about to delete.
             if let Ok(handle) = started {
-                let _ = handle.wait();
+                let _ = io.wait(handle);
             }
             return Err(io_error(error));
         }
-
-        // Losing the race against the mutation is the expected outcome; cancellation still propagates.
         if let Err(error) = started.and_then(PreviewHandle::wait) {
             if error.is_canceled() {
                 return Err(BenchmarkError::Canceled);
@@ -619,14 +669,18 @@ fn prepare_file_action(
                 return Err(WorkloadError::Decode(error).into());
             }
         }
-
-        // Move and delete must remove the source, copy must leave it in place.
-        let source_exists = scratch.temp.exists();
+        let source_exists = io.exists(&scratch.temp);
         Ok(MeasureOutcome {
             correct: source_exists == (op == FileActionOp::Copy),
             metrics: Some(executor.metrics()),
         })
-    }))
+    });
+    Ok(step)
+}
+
+/// `files.len()` as the C# `int` the selection helpers take (saturating).
+fn file_count_of(files: &[String]) -> i32 {
+    i32::try_from(files.len()).unwrap_or(i32::MAX)
 }
 
 /// Whether a decode failure that raced the mutation is the expected outcome. C# swallows `IOException`,
