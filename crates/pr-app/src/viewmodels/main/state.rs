@@ -800,6 +800,8 @@ pub struct MainViewModel {
     pub(super) deferred: VecDeque<Deferred>,
     /// File commands waiting for their gate turn, by ticket (`commands`).
     pub(super) queued_file_commands: HashMap<u64, QueuedFileCommand>,
+    /// W9-R7: the shell takes this plan after releasing its view-model borrow, before opening the modal.
+    pub(super) pending_rename_prompt: Option<super::rename_prompt::PreparedRenamePrompt>,
     pub(super) next_ticket: u64,
     /// The turn of the file command that is running (released when the controller reports `Done`).
     pub(super) active_gate_turn: Option<GateTurn>,
@@ -890,6 +892,7 @@ impl MainViewModel {
             pending_open: None,
             deferred: VecDeque::new(),
             queued_file_commands: HashMap::new(),
+            pending_rename_prompt: None,
             next_ticket: 0,
             active_gate_turn: None,
             controller_present_outstanding: false,
