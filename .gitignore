@@ -2,6 +2,9 @@
 **/*.rs.bk
 *.pdb
 /native/x64/*.dll
+# Pinned native staging also accepts arbitrary destination directories.
+libraw.dll
+turbojpeg.dll
 /work/
 .claude/worktrees/
 /target-wave-*/
