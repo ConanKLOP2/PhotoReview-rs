@@ -3,7 +3,6 @@
 //!
 //! `ForwardedOpenTarget` is `pr_app::startup::forwarded_open` (W8-17a), `MainWindow` is `pr_platform_win::host::main_window` (13g..13k): neither is local to `pr-shell`, so the impl is on this
 //! newtype (orphan rule, D-W8B6-28). It holds a `Weak` of the window SLOT, so the handler (which `ForwardedOpenRouter` keeps) never keeps the window alive.
-#![allow(unused_variables, dead_code)] // stub: the porter removes this line with the last `todo!()`
 
 use std::cell::RefCell;
 use std::error::Error;
@@ -31,33 +30,49 @@ impl MainWindowForwardTarget {
 
     /// A clone of the window `Rc` (a short borrow of the slot), `None` when the slot is gone or empty.
     fn window(&self) -> Option<Rc<MainWindow>> {
-        todo!()
+        self.slot.upgrade().and_then(|slot| slot.borrow().clone())
     }
 }
 
 impl ForwardedOpenTarget for MainWindowForwardTarget {
     /// No window (slot gone or empty) is `true` (a late request must not touch it); else `MainWindow::is_closing_or_closed()`.
     fn is_closing_or_closed(&self) -> bool {
-        todo!()
+        self.window().is_none_or(|window| window.is_closing_or_closed())
     }
 
     /// `Ok(window.is_minimized())`; no window: `Err(WindowGone { message: "The main window is already destroyed." })`.
     fn is_minimized(&self) -> Result<bool, WindowGone> {
-        todo!()
+        self.window()
+            .map(|window| window.is_minimized())
+            .ok_or_else(window_gone)
     }
 
     /// `window.restore()` (SC_RESTORE: back to the state before minimising, R7-5); no window: `Err(WindowGone)`.
     fn restore(&self) -> Result<(), WindowGone> {
-        todo!()
+        let window = self.window().ok_or_else(window_gone)?;
+        window.restore();
+        Ok(())
     }
 
     /// `window.activate()`; `Err(MainWindowError::WindowDestroyed)` or no window: `Err(WindowGone { message })` with the text of the `MainWindowError`.
     fn activate(&self) -> Result<(), WindowGone> {
-        todo!()
+        self.window()
+            .ok_or_else(window_gone)?
+            .activate()
+            .map_err(|error| WindowGone {
+                message: error.to_string(),
+            })
     }
 
     /// `window.open_path(path)` and `Ok(())` (the open is STARTED; the view model's step machine finishes it, failures are the window's to report). No window: `Err(WindowGone)` boxed.
     fn open_path(&self, path: &str) -> Result<(), Box<dyn Error>> {
-        todo!()
+        self.window().ok_or_else(window_gone)?.open_path(path);
+        Ok(())
+    }
+}
+
+fn window_gone() -> WindowGone {
+    WindowGone {
+        message: "The main window is already destroyed.".to_owned(),
     }
 }
