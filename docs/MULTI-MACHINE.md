@@ -14,11 +14,10 @@ in a small PR to `master` before a machine starts a new batch. A machine never w
 | Machine | Batch / units | Integration branch | Pipeline tag |
 |---|---|---|---|
 | A | Wave 8 B5 remainder (18h-18k, 18o-18v, 19d-19m, mutation debts) | `integration/wave8-b5` | `wave8-b5` |
-| B | Wave 8 B6 (17a-17e, 20a; 20b last, after B5) | `integration/wave8-b6` | `wave8-b6` |
+| B | (stopped 2026-10-29: machine B is down; its old B6 claims were superseded and all its units moved to A) | - | - |
 | A | Wave 9 external editors W9-E1..E9 after B5; follow contract dependency order (E1 rules before dialogs and Settings), claim each unit before editing | separate master-based `codex/w9-*` worktrees | manual (no shared pipeline tag) |
 | A | Wave 9 rename W9-R1..R11; follow contracts dependency order, claim every unit before editing, and start only from merged master dependencies | separate master-based `codex/w9-rename-*` worktrees | manual (no shared pipeline tag) |
-| A | Wave 8 B6 as of 2026-10-28: W8-20a (PR #290), W8-17e split: pr-app startup logic (`W8-17e-app`), pr-shell `window/forward_target/overlay_vm` (`W8-17e-shell-a`), W8-20b test harness; W9-R7 (#289), W9-R9 (#292). The 2026-10-22 B claims on W8-17e/W8-20a are stale and superseded | `claude/*` and `codex/w8-17e-*` PR branches | manual |
-| B | From 2026-10-28: W9-R8 (pr-platform-win rename dialog, shell input, menus), then W9-R10, W9-R11 in order; later W8-17e part B (pr-shell `run/shutdown/recovery/smoke`) once A's parts are on master. Never W8-17e, W8-20a, W8-20b or W9-R7/R9 | master-based `codex/w9-rename-*` or `claude/*` PR branches | manual |
+| A | As of 2026-10-29 machine A holds EVERYTHING: Wave 8 B6 (W8-17e, W8-20a/20b merged #290-#296, #306; native fixes `W8-17e-native-fixes`), Wave 9 rename R1-R11 (R7-R11 merged #289, #292, #301, #302, #304, #305), W10-N1 (#303). Machine B can return only through a new row here plus fresh claims | `claude/*`, `codex/*` PR branches | manual |
 
 Rules: one pipeline tag per machine; the tag name is the integration branch name (`integration/<tag>`); never run a pipeline with a tag that another
 machine owns. Hand-over of a unit = the owner releases the claim (section 3) and the table row is changed.
