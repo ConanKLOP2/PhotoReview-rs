@@ -23,3 +23,9 @@ Directory: `%TEMP%/goal-r5-identity-d2a81a32`. Hashes identify the files indepen
 | `crates/pr-core/src/file_actions/undo.rs:206:9: replace <impl PartialEq for UndoActionIdentity>::eq -> bool with true` | CaughtMutant |
 | `crates/pr-core/src/file_actions/undo.rs:206:9: replace <impl PartialEq for UndoActionIdentity>::eq -> bool with false` | CaughtMutant |
 | `crates/pr-core/src/file_actions/undo.rs:349:9: replace UndoService::last_undo_action_identity -> Option<UndoActionIdentity> with None` | CaughtMutant |
+
+## Follow-up source gates (2026-10-28)
+
+Integrated benchmark fixture repair #285 into source head 776f12ee (base cf325668). The earlier R5 follow-up workspace run failed two real-race benchmark mapping tests; that failure was preserved and fixed in its own PR before this gate. No production sharing-mode cause is claimed.
+
+Format passed through the 12-package Windows command-length fallback; locked workspace all-target Clippy passed; locked workspace tests: 10012 passed, 0 failed, 1336 ignored (570 result lines). Pre-pr passed; its downstream workspace Clippy skip is covered by the independent full workspace invocation. The selected core identity source and focused test file are unchanged from da42ca1e; artifact hashes and all three outcomes were reverified. The added catalog-conflict log follows the pinned C# diagnostic; it does not change catalog mutation or retries.
