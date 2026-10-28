@@ -32,3 +32,11 @@ Artifacts live under `%TEMP%`; these hashes identify the retained inventory, res
 | dimensions-recheck | result.txt | AFB98EE18B7A0E944E793EE730E4D520308F343ECC2F79998A37F43D0BBC2F5D |
 | dimensions-recheck | outcomes.json | AFDB315CA94E2A73E767F32A7BBA5325044D1CCE6A5E3C191F16DC0776473457 |
 | dimensions-recheck | goal-r6-dimensions-recheck-selected.json | C507F888C6380C747765335EA5B890B565A8F1CE1EA65A9F6A7E52C3F31DEDFA |
+
+## Combined source integration gate (2026-10-28)
+
+Source `9ad18357f8c80a266c7f824f2d085c6b510d4fca` includes the Dimensions regression and all R9 tests, integrated master `4af47345`. Workspace tests: **10074 passed,0 failed,1337 ignored**,573 result lines. Independent locked workspace all-target Clippy with warnings denied passed. Workspace fmt hit Windows command-length error206; all12 packages passed fmt individually. This is ordinary workspace evidence; ignored tests are not native passes. The earlier R9-only source `c3d5a1c` passed10073/0/1337 before the extra R6 regression. Pre-pr completion is recorded below.
+
+Pre-pr outcome: exit1, pr-app test invocation failed with stdout/stderr suppressed by the helper; core tests, fmt, Clippy, unsafe audit and doc-links passed. A separate PowerShell pr-app diagnostic at the same source passed; that does not establish the cause or erase the failed gate. Exact Bash environment diagnostic pending; no PR published yet.
+
+Diagnostic result: isolated PowerShell pr-app and exact Bash timeout/pr-app invocations both exited0 with retained full logs (`goal-r6-r9-app-diagnostic-*` and `goal-r6-r9-app-bash-*`). No Application error event was found in the checked failure window. This does not explain the initial helper failure; publication remains pending diagnosis. Do not rerun until green or claim a fix from these results.
