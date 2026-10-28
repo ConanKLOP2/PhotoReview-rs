@@ -5,7 +5,6 @@
 //! `show_recovery`, `show_diagnostics`, `show_benchmark`, `clear_cache` and `remove_duplicates` open. DECISION D-W8B6-27: THIS file. The merged 15j has the trait and the test fixture only; the
 //! view model already owns the dialogs (`MainViewModel` holds the `Arc<dyn DialogService>` of the shell and runs `show_*` itself), so each command is one `MainWindow::update_view_model` call, exactly the
 //! way the context menu (14f) and the input (14c) run theirs.
-#![allow(unused_variables, dead_code)] // stub: the porter removes this line with the last `todo!()`
 
 use std::cell::RefCell;
 use std::rc::{Rc, Weak};
@@ -36,77 +35,112 @@ impl std::fmt::Debug for MainWindowOverlayViewModel {
 }
 
 impl MainWindowOverlayViewModel {
+    fn window(&self) -> Option<Rc<MainWindow>> {
+        self.window.upgrade().and_then(|slot| slot.borrow().clone())
+    }
+
     /// The view model of `window` (a `Weak` of the slot) over the shared view model.
     pub fn new(view_model: SharedViewModel, window: &MainWindowSlot, log: Arc<dyn Log>) -> Self {
-        todo!()
+        Self {
+            view_model,
+            window: Rc::downgrade(window),
+            log,
+        }
     }
 }
 
 impl OverlayViewModel for MainWindowOverlayViewModel {
     /// `view_model.borrow().overlay_model()` (a short shared borrow).
     fn overlay_model(&self) -> OverlayModel {
-        todo!()
+        self.view_model.borrow().overlay_model()
     }
 
     /// `view_model.borrow().settings()`.
     fn settings(&self) -> Arc<AppSettings> {
-        todo!()
+        self.view_model.borrow().settings()
     }
 
     /// `window.update_view_model(|vm| vm.set_settings(settings))` (C# `_viewModel.Settings = settings`, the change set is applied by the window); no window: `view_model.borrow_mut().set_settings(..)` and
     /// the change set dropped (shutdown).
     fn set_settings(&self, settings: Arc<AppSettings>) {
-        todo!()
+        if let Some(window) = self.window() {
+            window.update_view_model(|vm| vm.set_settings(settings));
+        } else {
+            self.view_model.borrow_mut().set_settings(settings);
+        }
     }
 
     /// `window.update_view_model(|vm| vm.refresh_localized_text())`.
     fn refresh_localized_text(&self) {
-        todo!()
+        if let Some(window) = self.window() {
+            window.update_view_model(|vm| vm.refresh_localized_text());
+        }
     }
 
     /// C# `OnOverlayCommandFailed` (without the thread post: the overlay calls it on the UI thread): `log.error(&format!("{action_name} failed"), None)` and
     /// `window.update_view_model(|vm| vm.set_status_text(&pr_l10n::tr::status_action_failed(action_name, message.to_owned())))`.
     fn report_action_failed(&self, action_name: &str, message: &str) {
-        todo!()
+        if let Some(window) = self.window() {
+            self.log.error(&format!("{action_name} failed"), None);
+            window.update_view_model(|vm| {
+                vm.set_status_text(&pr_l10n::tr::status_action_failed(action_name, message.to_owned()))
+            });
+        }
     }
 
     /// `window.update_view_model(|vm| vm.pick_and_open_folder())`.
     fn pick_and_open_folder(&self) {
-        todo!()
+        if let Some(window) = self.window() {
+            window.update_view_model(|vm| vm.pick_and_open_folder());
+        }
     }
 
     /// `window.update_view_model(|vm| vm.show_settings())`: modal; the view model applies the new settings itself.
     fn show_settings(&self) {
-        todo!()
+        if let Some(window) = self.window() {
+            window.update_view_model(|vm| vm.show_settings());
+        }
     }
 
     /// `view_model.borrow().show_skipped_files()` (`&self` on the view model: a SHARED borrow, so the nested loop of the dialog can still paint).
     fn show_skipped_files(&self) {
-        todo!()
+        if let Some(_window) = self.window() {
+            self.view_model.borrow().show_skipped_files();
+        }
     }
 
     /// `view_model.borrow().show_recovery()` (shared borrow, as above).
     fn show_recovery(&self) {
-        todo!()
+        if let Some(_window) = self.window() {
+            self.view_model.borrow().show_recovery();
+        }
     }
 
     /// `view_model.borrow().show_diagnostics()` (shared borrow).
     fn show_diagnostics(&self) {
-        todo!()
+        if let Some(_window) = self.window() {
+            self.view_model.borrow().show_diagnostics();
+        }
     }
 
     /// `view_model.borrow().show_benchmark()` (shared borrow).
     fn show_benchmark(&self) {
-        todo!()
+        if let Some(_window) = self.window() {
+            self.view_model.borrow().show_benchmark();
+        }
     }
 
     /// `window.update_view_model(|vm| vm.clear_cache())`.
     fn clear_cache(&self) {
-        todo!()
+        if let Some(window) = self.window() {
+            window.update_view_model(|vm| vm.clear_cache());
+        }
     }
 
     /// `window.update_view_model(|vm| vm.remove_duplicates(numbered))`.
     fn remove_duplicates(&self, numbered: bool) {
-        todo!()
+        if let Some(window) = self.window() {
+            window.update_view_model(|vm| vm.remove_duplicates(numbered));
+        }
     }
 }

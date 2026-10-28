@@ -234,7 +234,7 @@ fn settings_enabled_option_and_supports_table_are_exact() {
             assert!(port.supports(kind), "{kind:?}");
         }
         assert!(port.supports(SecondaryWindowKind::ExternalEditors));
-        assert!(!port.supports(SecondaryWindowKind::RenamePrompt));
+        assert!(port.supports(SecondaryWindowKind::RenamePrompt)); // W9-R8: flipped, C# Supports lists RenamePrompt
         assert_eq!(port.open_count(), 0);
         assert!(!port.is_benchmark_open());
     }

@@ -81,3 +81,4 @@ e43f7355547905b741b3262be7a7dc19290e83d367b9ac533c8bd64c1be1272f  tests/fixtures
 ff8561fe1ded8b7e2d6501b608f9ec897c0bcfcce0d4fbb9246b43d5551b88a8  tests/fixtures/journal-older-build/c-nothing-moved-failed-then-dismissed.jsonl
 9dd63fdce3e1f7a42571a454159e313c7a1b783ec40404625c237c0a2c3c95bc  tests/fixtures/journal-older-build/d-nothing-moved-failed.jsonl
 740a32e533411979acbecc67481d5c7cca3f339f6b6d29b57de07c8262b0d9c5  tests/fixtures/journal-older-build/prepared-group-new-build.jsonl
+22dce3412c4967e6b2c6b28666cf6c19621aa4b4af2e98cad7e6cd62b145143f  assets/PhotoReviewRs.ico
