@@ -4,10 +4,12 @@
 //! Why it exists: the UI thread registers the drop target (`RegisterDragDrop`, `shell_input::drop_target`) and shows the Shell file/folder dialogs, which need an STA. A .NET `Main` marked
 //! `[STAThread]` gets one from the CLR; a Rust `main` gets none, and the first library call that wants COM would put the thread in the MTA (`wic::interop::ensure_com_initialized`), after
 //! which `OleInitialize` fails with `RPC_E_CHANGED_MODE` and the drop target never registers. So `pr_shell::entry::main_entry` enters this apartment FIRST.
-#![allow(unused_variables, dead_code)] // stub: the porter removes this line with the last `todo!()`
 
 use std::fmt;
 use std::marker::PhantomData;
+
+use windows::Win32::Foundation::RPC_E_CHANGED_MODE;
+use windows::Win32::System::Com::{COINIT_APARTMENTTHREADED, CoInitializeEx, CoUninitialize};
 
 /// Why the apartment could not be entered.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -21,7 +23,10 @@ pub enum ApartmentError {
 impl fmt::Display for ApartmentError {
     /// `ChangedMode`: "the thread is already in the multithreaded COM apartment"; `Failed(hr)`: "CoInitializeEx failed (HRESULT 0x{hr:08X})".
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        todo!()
+        match self {
+            ApartmentError::ChangedMode => f.write_str("the thread is already in the multithreaded COM apartment"),
+            ApartmentError::Failed(hr) => write!(f, "CoInitializeEx failed (HRESULT 0x{:08X})", *hr as u32),
+        }
     }
 }
 
@@ -39,13 +44,22 @@ impl StaApartment {
     /// `Err(ApartmentError::ChangedMode)`; any other failure is `Err(Failed(hr))`. The only `unsafe` is the call itself (`// SAFETY:` says: no pointer is passed, the call only changes this
     /// thread's apartment state, and the guard balances it on the same thread).
     pub fn enter() -> Result<StaApartment, ApartmentError> {
-        todo!()
+        // SAFETY: no pointer is passed (reserved = NULL); the call only changes this thread's apartment state, and the guard balances it with `CoUninitialize` on the same thread.
+        let hr = unsafe { CoInitializeEx(None, COINIT_APARTMENTTHREADED) };
+        if hr.0 >= 0 {
+            Ok(StaApartment { not_send: PhantomData })
+        } else if hr == RPC_E_CHANGED_MODE {
+            Err(ApartmentError::ChangedMode)
+        } else {
+            Err(ApartmentError::Failed(hr.0))
+        }
     }
 }
 
 impl Drop for StaApartment {
     /// `CoUninitialize()` once, on the thread that entered (the guard is `!Send`).
     fn drop(&mut self) {
-        todo!()
+        // SAFETY: balances the successful (S_OK/S_FALSE) `CoInitializeEx` of `enter` on this thread; the guard is `!Send`, so this runs on the thread that entered.
+        unsafe { CoUninitialize() };
     }
 }
