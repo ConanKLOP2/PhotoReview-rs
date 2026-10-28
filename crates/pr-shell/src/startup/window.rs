@@ -15,14 +15,12 @@ use pr_l10n::localizer::Localizer;
 use pr_platform_win::host::contracts::{ShellWindowApi, ShellWindowEvent};
 use pr_platform_win::host::frame_clock::TimerFrameClock;
 use pr_platform_win::host::main_window::core::{
-    DEFAULT_HEIGHT_DIP, DEFAULT_WIDTH_DIP, FeatureOptions, MainWindowDeps, MainWindowOptions, UiLocalPoster,
+    DEFAULT_HEIGHT_DIP, DEFAULT_WIDTH_DIP, MainWindowDeps, MainWindowOptions, UiLocalPoster,
 };
 use pr_platform_win::host::message_loop::MessageLoop;
 use pr_platform_win::host::shell_window::{ShellWindow, ShellWindowOptions};
 use pr_platform_win::render::text::renderer::DWriteTextRenderer;
-use pr_platform_win::shell_input::main_window::{
-    MainWindowInputFeature, ZoomPromptOption, create_viewport_input_hooks,
-};
+use pr_platform_win::shell_input::main_window::{MainWindowInputFeature, create_viewport_input_hooks};
 use pr_platform_win::shell_menus::popup_host::NativePopupMenuHost;
 use pr_platform_win::shell_overlay::main_window::{MainWindowOverlay, OverlayDeps, WindowUiWake};
 use pr_platform_win::shell_overlay::native::Win32OverlayOs;
@@ -213,8 +211,7 @@ impl StartupState {
         if let Some(label) = super::graph::diag_options().instance_label.clone() {
             view_model.borrow_mut().set_instance_label(Some(label));
         }
-        let mut extensions = FeatureOptions::default();
-        extensions.insert(ZoomPromptOption(services.zoom_prompt.clone()));
+        let mut extensions = services.window_service_extensions();
         let options = {
             let mut options = self.options.borrow_mut();
             extensions.insert(KeepWarmRegistration {

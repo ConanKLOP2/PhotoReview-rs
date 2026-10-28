@@ -89,6 +89,20 @@ fn shell_services_are_the_win32_ones() {
     assert!(format!("{:?}", s.sink_factory).contains("Win32PresentationSinkFactory"));
 }
 
+// W9-R8-wire: the window options carry the dialog service (rename box of F2 / "Rename...") and the zoom prompt, both the shared production services.
+#[test]
+fn window_service_extensions_carry_the_dialog_service_and_the_zoom_prompt() {
+    use pr_platform_win::shell_input::main_window::{DialogServiceOption, ZoomPromptOption};
+    let s = build(Rc::new(|| 0), Arc::new(NullLog), Default::default());
+    let extensions = s.window_service_extensions();
+    let dialogs = extensions
+        .get::<DialogServiceOption>()
+        .expect("DialogServiceOption is present");
+    assert!(format!("{:?}", dialogs).contains("DialogServiceOption"));
+    assert!(std::ptr::addr_eq(Rc::as_ptr(&dialogs.0), Rc::as_ptr(&s.dialog_service)));
+    assert!(extensions.get::<ZoomPromptOption>().is_some());
+}
+
 // C#: ShellCompositionRootTests.LaterFeatureRegistrations_OverrideTheDefaults
 #[test]
 fn later_registrations_override_the_defaults() {
