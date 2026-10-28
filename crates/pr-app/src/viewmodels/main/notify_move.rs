@@ -82,6 +82,8 @@ pub(super) enum SinkAction {
         index: i32,
     },
     UpdateSessionPath(String),
+    /// W9-R6: preserve entry order and spelling without adding equality semantics to PathKeyMap.
+    FilesRenamed(Vec<(String, String)>),
     NavigationStateChanged,
     OpenFolder {
         folder: String,
@@ -97,12 +99,18 @@ pub(super) enum SinkAction {
 #[derive(Debug, Default)]
 pub struct SinkLog {
     actions: Vec<SinkAction>,
+    rename_keep: bool,
 }
 
 impl SinkLog {
     /// An empty recorder.
     pub fn new() -> Self {
         Self::default()
+    }
+
+    /// Snapshot the synchronous C# keep decision before borrowing the catalog for a controller step.
+    pub(super) fn prepare_rename_keep(&mut self, kept: bool) {
+        self.rename_keep = kept;
     }
 
     /// Takes the recorded calls in call order.
@@ -187,6 +195,12 @@ impl IFolderLoadSink for SinkLog {
 }
 
 impl IFileActionSink for SinkLog {
+    fn on_files_renamed(&mut self, renames: &pr_core::file_actions::rename::PathKeyMap) -> bool {
+        self.record(SinkAction::FilesRenamed(
+            renames.iter().map(|(old, new)| (old.clone(), new.clone())).collect(),
+        ));
+        self.rename_keep
+    }
     fn set_status_text(&mut self, status: &str) {
         self.record(SinkAction::SetStatus(status.to_owned()));
     }
@@ -483,6 +497,14 @@ impl MainViewModel {
             SinkAction::ActionPresent { index } => {
                 self.controller_present_outstanding = true;
                 result.merge(self.present_request(PresentRequest::new(index)));
+            }
+            SinkAction::FilesRenamed(entries) => {
+                let mut renames = pr_core::file_actions::rename::PathKeyMap::new();
+                for (old, new) in entries {
+                    renames.insert(old, new);
+                }
+                let (_, changes) = self.apply_files_renamed(&renames);
+                result.merge(changes);
             }
             SinkAction::UpdateSessionPath(path) => {
                 if let Some(session) = self.current_session.as_mut() {

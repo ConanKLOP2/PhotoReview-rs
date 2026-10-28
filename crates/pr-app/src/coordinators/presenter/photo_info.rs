@@ -108,21 +108,49 @@ pub fn stat_error_means_missing(error: &io::Error) -> bool {
 impl ImagePresenter {
     /// C# `StatOffUiThreadAsync(path, cancellationToken)` (lines 886 to 893): `stat_now(file_system, path)` on `self.stat_worker` (the dedicated FIFO stat thread of
     /// `pr_core::io::navigation_stat`), NEVER on the calling (UI) thread. The job sends `PresenterEvent::Stat { token, purpose, result }` into the presenter inbox. A
-    /// `cancel` that fires before the job starts drops it without touching the disk and without any event (the navigation was superseded while it waited), which
-    /// is the C# "cancelled task, caller returns because the token is no longer current". `purpose` tells `pump` which continuation resumes.
+    /// `cancel` that fires before the job starts drops it without touching the disk; the closure-owned guard sends a narrow abandonment completion so the canceled
+    /// await can retire without treating the path as missing. `purpose` tells `pump` which continuation resumes.
     pub(super) fn submit_stat(&self, token: i64, path: &str, purpose: StatPurpose, cancel: &CancelToken) {
         let file_system = Arc::clone(&self.file_system);
         let inbox = self.inbox.clone();
         let path = path.to_owned();
-        // The worker runs the job itself and sends the event from its own thread; the task handle is not waited on (a cancelled
-        // or panicked job produces no event, so the presenter stays at its phase until a newer navigation replaces it).
+        // The worker runs the job itself and sends the event from its own thread; the task handle is not waited on.
+        let completion = StatDropCompletion {
+            inbox: inbox.clone(),
+            token,
+            purpose,
+            armed: true,
+        };
         drop(self.stat_worker.run(
             move || {
                 let result = stat_now(file_system.as_ref(), &path);
+                let mut completion = completion;
+                completion.armed = false;
                 inbox.send(PresenterEvent::Stat { token, purpose, result });
             },
             cancel,
         ));
+    }
+}
+
+/// Reports completion when NavigationStatWorker drops queued work after cancellation. Capturing this guard by the entire job
+/// closure is essential: `run` drops that closure both for an already-canceled token and when a queued token is canceled.
+struct StatDropCompletion {
+    inbox: crate::coordinators::zoom_detail::CompletionInbox<super::state::PresenterEvent>,
+    token: i64,
+    purpose: StatPurpose,
+    armed: bool,
+}
+
+impl Drop for StatDropCompletion {
+    fn drop(&mut self) {
+        if self.armed {
+            self.inbox.send(super::state::PresenterEvent::StatAbandoned {
+                token: self.token,
+                purpose: self.purpose,
+                panicked: std::thread::panicking(),
+            });
+        }
     }
 }
 

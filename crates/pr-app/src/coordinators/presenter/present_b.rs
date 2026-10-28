@@ -953,6 +953,8 @@ impl ImagePresenter {
                         &format!("ShowImage stale-file re-present failed token={token} path={}", nav.path),
                         Some(&error),
                     );
+                } else if let Some(child) = self.navigation.as_ref().map(|child| child.token) {
+                    self.track_child_present(token, child);
                 }
             }
             return;
@@ -960,6 +962,6 @@ impl ImagePresenter {
         if log.enabled() {
             log.info(&format!("ShowImage stale-file token={token} path={}", nav.path));
         }
-        self.begin_missing_run(env, &nav.path, token);
+        self.begin_missing_run(env, &nav.path, token, true);
     }
 }

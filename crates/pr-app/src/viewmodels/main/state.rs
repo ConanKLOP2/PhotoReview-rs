@@ -460,6 +460,18 @@ impl PresentationBridge {
         self.inner.borrow().viewer.clone()
     }
 
+    /// C# OnFilesRenamed updates identity without reporting a new image or resetting viewer state.
+    pub(super) fn rekey_last_notified_path(&self, renames: &pr_core::file_actions::rename::PathKeyMap) {
+        let mut state = self.inner.borrow_mut();
+        if let Some(path) = state
+            .last_notified_image_path
+            .as_deref()
+            .and_then(|path| renames.get(path))
+        {
+            state.last_notified_image_path = Some(path.clone());
+        }
+    }
+
     /// Installs the C# `SourceSizeSwapping` subscriber (called with the viewer state BEFORE the size is swapped).
     // The public callback type is fixed by the W8-08a contract.
     #[allow(clippy::type_complexity)]

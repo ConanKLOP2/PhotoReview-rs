@@ -119,6 +119,7 @@ impl ImagePresenter {
                 return Err(PresentError::PathNotInEntry);
             }
         }
+        self.track_superseded_navigation();
         self.last_present_started_from_ram = false;
 
         let perf_log = PhotoReviewPerf::log();
@@ -249,7 +250,7 @@ impl ImagePresenter {
                 if nav.perf {
                     PhotoReviewPerf::log().stat(token, perf::ms(nav.perf_stat_start));
                 }
-                self.begin_missing_run(env, &nav.path, token);
+                self.begin_missing_run(env, &nav.path, token, true);
             }
         }
     }
