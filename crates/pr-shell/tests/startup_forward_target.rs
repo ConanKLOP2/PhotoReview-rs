@@ -90,7 +90,9 @@ fn activate_destroyed_window_returns_window_destroyed_message() {
         startup_part_a_fixture::with_window(|main, slot, _dialog| {
             let target = MainWindowForwardTarget::new(Rc::downgrade(slot));
             main.dispose();
-            assert!(target.is_closing_or_closed());
+            // C# `ShellMainWindow.Dispose()` (7eaee2a2, lines 421-445) does not set `IsClosingOrClosed` (only `OnClosing`/`OnClosed` do, and Dispose
+            // unsubscribes `Closed`): a window disposed without closing is still "not closing", and `Activate` then fails (WindowGone).
+            assert!(!target.is_closing_or_closed());
             assert_eq!(
                 target.activate().unwrap_err().message,
                 "The main window is already destroyed."

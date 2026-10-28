@@ -327,6 +327,10 @@ impl MainWindowInner {
             f(&mut view_model)
         };
         self.apply_changes(&changes);
+        // A wake that arrived inside a modal command (nested loop, borrow held) was deferred: drain it now that the borrow is gone.
+        if self.pump_deferred.take() {
+            self.pump_view_model();
+        }
     }
 
     /// The body of [`MainWindow::pump_view_model`] and the wake action. A call while a pump runs (a nested message loop inside a handler) returns at once but
@@ -343,7 +347,11 @@ impl MainWindowInner {
         loop {
             self.pump_again.set(false);
             let changes = {
-                let mut view_model = self.view_model.borrow_mut();
+                // A modal command (`show_settings`) holds the mutable borrow for its nested loop: defer to `update_view_model`, never panic.
+                let Ok(mut view_model) = self.view_model.try_borrow_mut() else {
+                    self.pump_deferred.set(true);
+                    break;
+                };
                 view_model.pump()
             };
             self.apply_changes(&changes);
