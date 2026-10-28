@@ -15,7 +15,10 @@ use std::cell::RefCell;
 use std::rc::Rc;
 use std::sync::Arc;
 
-use fixture::{child_rect, client_rect, command, drain, height, item, key, needed_text_height, on_sta, set_text, show_on_owner, text_of, width};
+use fixture::{
+    child_rect, client_rect, command, drain, height, item, key, needed_text_height, on_sta, set_text, show_on_owner,
+    text_of, width,
+};
 use pr_app::presenters::rename_prompt::{NameTaken, RenameCheck, RenamePromptPresenter};
 use pr_core::abstractions::RenamePromptRequest;
 use pr_core::file_actions::rename::RenameNamePolicy;
@@ -39,7 +42,10 @@ fn request(taken: Option<NameTaken>) -> RenamePromptRequest {
 }
 
 /// C# `Show(request, body)`: runs `body` inside the modal box and returns the dialog result and the value.
-fn show(request: RenamePromptRequest, body: impl Fn(&RenamePromptDialog, &pr_platform_win::dialogs::native::dialog::NativeDialog)) -> (i32, Option<String>) {
+fn show(
+    request: RenamePromptRequest,
+    body: impl Fn(&RenamePromptDialog, &pr_platform_win::dialogs::native::dialog::NativeDialog),
+) -> (i32, Option<String>) {
     let prompt = RenamePromptDialog::new(request, None);
     let result = show_on_owner(prompt.native(), |dialog, _| body(&prompt, dialog)).expect("the dialog ran");
     (result, prompt.value())

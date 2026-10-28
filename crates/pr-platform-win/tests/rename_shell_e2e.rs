@@ -37,9 +37,7 @@ use std::time::Instant;
 use main_window_fixture::{BuildOptions, Built, WarpHook, build_with_env, built, finish, run, start_ui, wait_until};
 use pr_app::input::key_id::KeyId;
 use pr_app::input::key_mapping;
-use pr_core::abstractions::{
-    BatchReviewItem, DialogService, NullLog, SettingsTarget, SkippedEntry,
-};
+use pr_core::abstractions::{BatchReviewItem, DialogService, NullLog, SettingsTarget, SkippedEntry};
 use pr_platform_win::dialogs::dialog_service::{LazySecondaryPort, Win32DialogService};
 use pr_platform_win::dialogs::folder_dialog::{FolderPicker, ShellFolderDialog};
 use pr_platform_win::dialogs::native::dialog::{ID_CANCEL, ID_OK, NativeDialog};
@@ -333,13 +331,25 @@ fn f2_and_the_menu_item_rename_the_real_file_the_view_follows_undo_restores_inva
         let seen = SEEN.with(|all| std::mem::take(&mut *all.borrow_mut()));
         assert_eq!(seen.len(), 1, "exactly one box opened: {seen:?}");
         let seen = &seen[0];
-        assert_eq!(seen.owner_enabled, Some(false), "the box is modal: the shell window is disabled");
+        assert_eq!(
+            seen.owner_enabled,
+            Some(false),
+            "the box is modal: the shell window is disabled"
+        );
         assert_eq!(seen.edit_text.as_deref(), Some("a"), "the name without the extension");
         assert_eq!(seen.selection, Some((0, 1)), "the whole name part is selected");
-        assert_eq!(seen.ok_enabled_for_invalid, Some(false), "OK must be disabled for an invalid name");
+        assert_eq!(
+            seen.ok_enabled_for_invalid,
+            Some(false),
+            "OK must be disabled for an invalid name"
+        );
         assert_eq!(
             seen.error_text_for_invalid.as_deref(),
-            Some(pr_l10n::localizer::Localizer::current().get("dialog.rename.error.invalidCharacter").as_str())
+            Some(
+                pr_l10n::localizer::Localizer::current()
+                    .get("dialog.rename.error.invalidCharacter")
+                    .as_str()
+            )
         );
         assert_eq!(seen.file_untouched_for_invalid, Some(true));
         assert_eq!(seen.ok_enabled_for_valid, Some(true));
@@ -354,7 +364,8 @@ fn f2_and_the_menu_item_rename_the_real_file_the_view_follows_undo_restores_inva
             b.window
                 .view_model()
                 .borrow()
-                .presenter().current_photo_info()
+                .presenter()
+                .current_photo_info()
                 .map(|info| info.file_name.clone())
                 .as_deref(),
             Some("holiday 01.jpg")
@@ -393,7 +404,10 @@ fn f2_and_the_menu_item_rename_the_real_file_the_view_follows_undo_restores_inva
             .window
             .with_feature::<MainWindowMenuFeature, _>(|feature| Rc::clone(feature.menus().context_menu()))
             .expect("the context-menu feature is registered");
-        assert!(controller.execute("RenameFile").is_ok(), "the menu command did not finish after Cancel");
+        assert!(
+            controller.execute("RenameFile").is_ok(),
+            "the menu command did not finish after Cancel"
+        );
         let seen = SEEN.with(|all| std::mem::take(&mut *all.borrow_mut()));
         assert_eq!(seen.len(), 1, "exactly one box opened via the menu: {seen:?}");
         assert_eq!(seen[0].edit_text.as_deref(), Some("a"));
@@ -536,7 +550,8 @@ mod menu_paint {
     }
     impl WindowMessageHandler for Probe {
         fn try_handle(&self, message: &WindowMessage) -> Option<isize> {
-            if !self.active.get() || message.msg != messages::WM_ENTERIDLE || message.wparam != 2 || message.lparam == 0 {
+            if !self.active.get() || message.msg != messages::WM_ENTERIDLE || message.wparam != 2 || message.lparam == 0
+            {
                 return None;
             }
             if let Err(error) = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| self.idle(message))) {
@@ -581,7 +596,13 @@ mod menu_paint {
                 };
             // SAFETY: MF_OWNERDRAW treats data as an integer token; the session owns its item until the menu is destroyed.
             unsafe {
-                AppendMenuW(HMENU(menu as *mut _), MENU_ITEM_FLAGS(flags), id, PCWSTR(data as *const u16)).expect("append");
+                AppendMenuW(
+                    HMENU(menu as *mut _),
+                    MENU_ITEM_FLAGS(flags),
+                    id,
+                    PCWSTR(data as *const u16),
+                )
+                .expect("append");
             }
             if let Some(child) = child {
                 std::mem::forget(child); // the root now owns the appended child
@@ -694,7 +715,10 @@ mod menu_paint {
 
             let (with_items, _with_settings) = model(false);
             let (without_items, _without_settings) = model(true);
-            let top: Vec<&MenuItemModel> = with_items.iter().filter(|item| item.kind != MenuItemKind::Separator).collect();
+            let top: Vec<&MenuItemModel> = with_items
+                .iter()
+                .filter(|item| item.kind != MenuItemKind::Separator)
+                .collect();
             let index = top
                 .iter()
                 .position(|item| item.id == "RenameFile")
@@ -707,8 +731,14 @@ mod menu_paint {
             );
 
             // The user presses Down until Rename is highlighted: the popup with the entry, then the popup without it.
-            let with_size = show_and_capture(&with_items, dpi, index + 1, &format!("menu with Rename {language} {dpi}"));
-            let without_size = show_and_capture(&without_items, dpi, 1, &format!("menu without Rename {language} {dpi}"));
+            let with_size = show_and_capture(
+                &with_items,
+                dpi,
+                index + 1,
+                &format!("menu with Rename {language} {dpi}"),
+            );
+            let without_size =
+                show_and_capture(&without_items, dpi, 1, &format!("menu without Rename {language} {dpi}"));
             // One more row: the entry really takes room in the painted menu (not just in the model).
             let row_min = (14 * dpi / 96) as i32;
             assert!(
