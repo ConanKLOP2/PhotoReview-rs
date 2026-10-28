@@ -15,7 +15,7 @@ use std::path::Path;
 use std::rc::{Rc, Weak};
 use std::sync::Arc;
 
-use pr_core::abstractions::{BatchReviewItem, Log, SettingsTarget, SkippedEntry};
+use pr_core::abstractions::{BatchReviewItem, Log, RenamePromptRequest, SettingsTarget, SkippedEntry};
 use pr_core::settings::external_editors::ExternalEditor;
 use pr_core::settings::shortcuts::ReviewAction;
 
@@ -135,6 +135,19 @@ pub trait SecondaryWindowDialogs {
     /// other id `None`. Default `None`.
     fn choice_list(&self, _content: ListDialogContent) -> Option<PreparedDialog<Option<usize>>> {
         None
+    }
+
+    /// W9-R8, C# `new RenamePromptDialog(request, chrome)`; `finish(ID_OK)` is `Some(trimmed name part)`, any other id `None`. The default shows the real dialog with
+    /// the default chrome (production has no other chrome to give); tests override it to see the request without a window.
+    fn rename_prompt(&self, request: &RenamePromptRequest) -> Option<PreparedDialog<Option<String>>> {
+        Some(super::rename_prompt::RenamePromptDialog::prepare(
+            RenamePromptRequest {
+                initial_name: request.initial_name.clone(),
+                extension: request.extension.clone(),
+                validate: Arc::clone(&request.validate),
+            },
+            None,
+        ))
     }
 }
 
@@ -270,7 +283,7 @@ impl std::fmt::Debug for Win32SecondaryWindowPort {
 
 impl SecondaryWindowPort for Win32SecondaryWindowPort {
     /// C# `Supports(kind)` (baseline): `true` for Diagnostics, SkippedFiles, BatchReview, ZoomPrompt, Benchmark, ActionProfiles, Recovery; `settings_enabled()`
-    /// for Settings; ExternalEditors is supported at7eaee2a2. RenamePrompt awaits its W9-R8 port.
+    /// for Settings; ExternalEditors and RenamePrompt (W9-R8) are supported at 7eaee2a2.
     fn supports(&self, kind: SecondaryWindowKind) -> bool {
         match kind {
             SecondaryWindowKind::Settings => self.settings_enabled(),
@@ -281,8 +294,8 @@ impl SecondaryWindowPort for Win32SecondaryWindowPort {
             | SecondaryWindowKind::BatchReview
             | SecondaryWindowKind::ZoomPrompt
             | SecondaryWindowKind::ActionProfiles
-            | SecondaryWindowKind::ExternalEditors => true,
-            SecondaryWindowKind::RenamePrompt => false,
+            | SecondaryWindowKind::ExternalEditors
+            | SecondaryWindowKind::RenamePrompt => true,
         }
     }
 
@@ -492,6 +505,16 @@ impl SecondaryWindowPort for Win32SecondaryWindowPort {
         editors.get(index).map(|editor| editor.id.clone())
     }
 
+    /// C# `PromptRename` (lines 323-329): disposed -> `None` (C# `Run` answers cancel); else the dialog runs modally over `owner` and the accepted name part is returned.
+    fn prompt_rename(&self, owner: Hwnd, request: &RenamePromptRequest) -> Option<String> {
+        if self.state.disposed.get() {
+            return None;
+        }
+        self.dialogs
+            .rename_prompt(request)
+            .and_then(|prepared| self.run_prepared(prepared, owner))
+    }
+
     /// C# `Dispose` (lines 301-314): idempotent. `disposed = true`; snapshot of `open`; `close()` each from the LAST to the first (innermost first; a modeless
     /// dialog removes itself from `open` when it closes, hence the snapshot). After it every command answers as "cancelled".
     fn dispose(&self) {
@@ -621,6 +644,12 @@ impl SecondaryWindowPort for SecondaryWindowRouter {
     ) -> Option<String> {
         self.pick(SecondaryWindowKind::ExternalEditors)
             .and_then(|port| port.prompt_default_external_editor(owner, editors, current))
+    }
+
+    /// C# `PromptRename`: `pick(RenamePrompt)` -> `native.prompt_rename`, else `None`.
+    fn prompt_rename(&self, owner: Hwnd, request: &RenamePromptRequest) -> Option<String> {
+        self.pick(SecondaryWindowKind::RenamePrompt)
+            .and_then(|port| port.prompt_rename(owner, request))
     }
 
     /// C# `Dispose() => (_native as IDisposable)?.Dispose()`.
