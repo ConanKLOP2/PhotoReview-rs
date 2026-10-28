@@ -10,17 +10,17 @@ Keep this file under about 10 KB. When it grows, move old sections verbatim to `
 4. Some workflow agents are refused `gh pr merge`, branch deletion or publish commands by the permission classifier; the main session then pushes and opens the PR (rules: `tools/autopilot/README.md`).
 5. Before planning a unit run `git fetch` and `git log origin/master`: a unit already there is done. Older history is in the archives below, never current state.
 
-## Current state (checked 2026-10-27 against immutable master `da42ca1e`; re-check with `git log origin/master` before relying on it)
+## Current state (checked 2026-10-28 against immutable master `4af47345`; re-check with `git log origin/master` before relying on it)
 - **Merged:** Wave 8 B6 (#164), B5 dialogs and startup (#223-#231: startup policies, lazy graph, zoom/diagnostics, Action Profiles, benchmark, Recovery, Settings window, secondary window routing). Wave 9 external editors E1-E9: E1 #233, E3 #234, E2 #235, E7 #236, E4 #237, E6 #238, E5 #239, E8 #254, E9 #256. Root repairs: #240 preview registration, #255 viewer borrow in zoom/menu, #260 shell handler lifetime. Dev tooling #242-#258 (status, janitor, hooks, agents, dashboard, triage, mutants, parity, oracle, native-tests, unsafe-audit).
-- **PARITY.md** (`parity.sh stats`, 350 status rows): Done 167, Partial 90, Ported 41, Todo 13, Superseded 17, Different 14, Doing 3, Implementation 3, Contract 2.
-- **Open PRs (this work):** R5 follow-up #286 merged `2da34aa9`, claim released; R6 #287 final integrated gates PASS and resolution ready for push. R9 gate remains on `cf325668`. App auto-fix tools unavailable.
+- **PARITY.md** (`parity.sh stats`, 351 status rows): Done 168, Partial 91, Ported 41, Todo 12, Superseded 17, Different 14, Doing 3, Implementation 3, Contract 2.
+- **Open PRs (this work):** none; R6 #287 merged `520d7291`. R9 branch `claude/rename-matrices` re-gated on master `4af47345`: pre-pr (incl. pr-app) PASS; the earlier pr-app failure with suppressed output did not reproduce (cause unknown; pre-pr.sh discards test output). R7 stopped at quota 95%, final test edit has syntax errors, unverified.
 - **Merged, native input fixture:** PR #269 squash `90826a2`; A claim `FIX-native-input-fixture` released; source `bc62104` fmt12/Clippy/workspace9862pass/0fail/1331ignored, regression101/101PASS (resource-less icon branch unexercised). Full startup/corpus/mutation limits and inherited13doc-link issues stay explicit in PARITY/PR; [history](docs/archive/task_on_progress-native-input-fixture.md).
 - **Merged, rename R1:** #275/#277, selected12/97caught,85notrun; claim released, cleanup policy-blocked. [Evidence](docs/reviews/W9-R1-MUTATION.md).
 - **Merged, W9-R2:** #278/#279;26F/N explicit PASS; selected9/277caught after regressions,268notrun; claim released. [Evidence](docs/reviews/W9-R2-MUTATION.md).
 - **Merged, W9-R4:** #280/#281; selected8/22caught after regressions,14notrun; claim released. [Evidence](docs/reviews/W9-R4-MUTATION.md).
 - **Merged, W9-R3:** #282/#283 `3f0870bc`; workspace9994/0/1335ignored, fmt12/Clippy/pre-pr PASS; selected10/80caught,70notrun. Claim released; cleanup policy-blocked, no deletions. [Evidence](docs/reviews/W9-R3-MUTATION.md).
 - **Merged, W9-R5:** #284 `da42ca1e`,15F and workspace10009/0/1335ignored/fmt12/Clippy/pre-pr PASS. Follow-up adds the omitted catalog-conflict log; selected identity3/199caught,196notrun. [Evidence](docs/reviews/W9-R5-MUTATION.md). Follow-up #286 merged `2da34aa9`; fmt12/workspaceClippy/pre-pr PASS, workspace10012/0/1336ignored; claim released.
-- **In progress, W9-R9 (2026-10-27):** A claim, master614ce831, `codex/w9-rename-matrices`; Codex gpt-6-luna low ports remaining dedicated inventory and full fault matrices in the two contract-owned test files. Existing R2/R3 twins are excluded; gates pending.
+- **In progress, W9-R9:** A claim, master `4af47345`, branch `claude/rename-matrices`; owner 32F+1N explicit PASS, 42-method inventory mapped; 286 normal/70 nested-reconcile/132 outer+834 nested-retry fault runs. [Evidence](docs/reviews/W9-R9-VALIDATION.md). Gates on `4af47345`: fmt, workspace clippy, `cargo test -p pr-core -p pr-app` (4801 pass/0 fail/165 ignored) and pre-pr PASS. Tests only; no new mutation claim.
 - **Not done (PARITY rows):** `X-exe-entry` (W8-20a, `Contract`) and `X-ui-smoke` (W8-20b, `Contract`): no `PhotoReviewRs.exe` window yet, the wave stays open; `X-startup-composition-root` is `Partial` (W8-17c production factory adapter, W8-18w); W8-12j swap-chain experiment is conditional and not started; `X-attended-remeasure` is `Todo` (needs an attended session on a real screen); `X-benchmark-compare` and `X-benchmark-parity-harness` are `Todo` (W10-B1).
 - **Blocked:** nothing known to be blocked on another machine. Needs the human: attended measurements (W8-12j / W10-B2), dependency changes (`Cargo.toml`), unconfirmed `P-nn` rows.
 - **Open debts (index):**
@@ -30,13 +30,12 @@ Keep this file under about 10 KB. When it grows, move old sections verbatim to `
   - Wave 8: B2 items D-W8B2-4/5/6 (`docs/archive/task_on_progress-wave8-b1-b2.md`); B3/B4 `Partial` rows 13b-13e, no hardware (non-WARP) GPU run, native evidence is hidden-window/WARP only (`docs/archive/task_on_progress-wave8-status-contracts-reviews.md`).
   - Native composition glue is excluded from full cargo-mutants by policy; Wave 8 B4-B6 and Wave 9 mutation evidence is partial per PR body.
   - Local merged-worktree cleanup was retained by machine A after an approval rejection (2026-10-26 sections); current worktree state unverified (use `/janitor`).
-- Last verified full gate: R5 source on master3f0870bc, workspace10009passed/0failed/1335ignored; fmt12, locked workspace all-target Clippy and pre-pr PASS. Native evidence is recorded separately per unit; postmerge mutation pending.
+- Last verified gate: R9 on master `4af47345`: fmt (per package), workspace all-target Clippy, pr-core+pr-app tests (4801/0/165 ignored) and pre-pr PASS. Earlier combined run: workspace 10074 passed/0 failed/1337 ignored. Native evidence and mutation are recorded per unit.
 
-## Documentation link audit (2026-10-26)
-- Default-scope doc-links originally had 13 inherited missing references at baseline `4006635`. R1 pre-pr found two in touched files: corrected ICC path to its existing crate asset and marked the historical rename ref as a Git branch. Then master PR #274 repaired all13 inherited references; integrated `eba7ec3e` and default-scope doc-links now PASS. New task/archive targets exist; [exact evidence](docs/archive/task_on_progress-native-input-fixture.md). Native Rust gates are recorded separately.
-
-- **In progress, W9-R6 (2026-10-28):** A claim, `codex/w9-rename-retarget`; retarget/session/command integration and suspended-present/stat-abandonment parity. Focused146PASS then suffix5/rename20PASS; integrated base2da34aa9 fmt12/workspaceClippy/pre-pr PASS, workspace10041/0/1336ignored; PR #287 updated, selected postmerge mutation pending. [Evidence](docs/reviews/W9-R6-RETARGET.md).
+- **In progress, W9-R6 (2026-10-28):** A claim, `codex/w9-rename-retarget`; retarget/session/command integration and suspended-present/stat-abandonment parity. Focused146PASS then suffix5/rename20PASS; integrated base2da34aa9 fmt12/workspaceClippy/pre-pr PASS, workspace10041/0/1336ignored; PR #287 merged `520d7291`; selected22/140 caught after one new Dimensions regression (118notrun); combined source fmt12/workspaceClippy/workspace10074/0/1337ignored PASS. [Evidence](docs/reviews/W9-R6-MUTATION.md).
 - **Merged, benchmark fixture repair:** #285 `cf325668`; workspace10012/0/1336ignored, fmt12/workspaceClippy/pre-pr PASS; native Move/Delete/Copy10successes each/0sharing in this run. Claim released; cleanup retained. [Evidence](docs/reviews/BENCH-FILE-ACTION-DETERMINISM.md).
+
+- **W9-R7 (2026-10-28):** claim retained; branch `codex/w9-rename-prompts` WIP. Final tests have stray module-scope `let` syntax errors; fix, then rerun tests. Stopped at quota 95%.
 
 ## Archives (`docs/archive/`, verbatim, history only)
 Find any section title with `grep -n '^## ' <file>`. Original section order is kept inside each file.
@@ -55,3 +54,5 @@ Find any section title with `grep -n '^## ' <file>`. Original section order is k
 | [`task_on_progress-w9-r1-rename-policy.md`](docs/archive/task_on_progress-w9-r1-rename-policy.md) | 2026-10-26 | R1 policy/plan implementation, oracle and focused evidence, intermediate integration gates |
 
 | [`task_on_progress-w9-r1-r4-merged.md`](docs/archive/task_on_progress-w9-r1-r4-merged.md) | 2026-10-27 | Verbatim merged R1-R4 implementation, selected mutation, native/source gate, claim and cleanup status before compaction |
+
+| [`task_on_progress-doc-link-audit.md`](docs/archive/task_on_progress-doc-link-audit.md) | 2026-10-26 | Verbatim documentation link audit before compaction |
