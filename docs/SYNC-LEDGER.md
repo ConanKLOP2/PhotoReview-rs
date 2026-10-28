@@ -16,6 +16,7 @@ Assets synced from that commit: see `assets/SYNC-MANIFEST.txt`. Goldens regenera
 | C# PR / commit | Summary | Behaviour? | Rust status | Rust PR |
 |---|---|---|---|---|
 | `e441d67a` (#327) | Baseline: whole-project review docs | No | Baseline | — |
+| `7eaee2a2` (icon only) | `src/PhotoReview.App/Assets/PhotoReview.ico` synced to `assets/PhotoReviewRs.ico` for the exe icon (W8-20a); no other asset re-synced | No (asset) | Done | — |
 | `e441d67a..d92d6aae` (193 commits, #328-#523) | NO-WPF: Win32 shell + Direct2D (ADR 0010, two exes, `PhotoReview.App.Shared`), Native AOT, pixel goldens, CI split | UI only (not ported yet) | N/A until Wave 8; informs R0001 (UI framework) | — |
 | same range | `FitWidthAnchor.BottomThird`, new `MiddleClickAction`, shortcuts `FitWidth2` (D4) / `Refresh` (R), WebP/HEIC listing (`WicImageFormat`, `IsSupported(path, raw, webpHeic)`) | Yes | Ported (W1-01/02/04/07), goldens extended | sync PR |
 | same range | `JournalLineParser` moved to source-generated JSON (AOT) | No (golden `journal-lines` identical) | Nothing to port | sync PR |

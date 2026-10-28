@@ -37,6 +37,8 @@ $map = [ordered]@{
     'tests/PhotoReview.Core.Tests/Fixtures/config-v2.json'          = 'tests/fixtures/config-v2.json'
     'tests/PhotoReview.Core.Tests/Fixtures/operations-legacy.jsonl' = 'tests/fixtures/operations-legacy.jsonl'
     'tests/PhotoReview.Core.Tests/Fixtures/journal-older-build/'    = 'tests/fixtures/journal-older-build/'
+    # Exe icon (W8-20a): linked into PhotoReviewRs.exe by crates/pr-shell/build.rs as icon group 32512.
+    'src/PhotoReview.App/Assets/PhotoReview.ico'                      = 'assets/PhotoReviewRs.ico'
 }
 
 function Get-Sha256([string]$path) { (Get-FileHash -Algorithm SHA256 -LiteralPath $path).Hash.ToLowerInvariant() }
