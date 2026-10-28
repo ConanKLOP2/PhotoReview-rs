@@ -1028,6 +1028,38 @@ mod retired_wait_tests {
     }
 
     #[test]
+    fn retired_dimensions_wait_observes_only_matching_success_or_error_completion() {
+        let unrelated = [
+            abandoned(StatPurpose::Initial),
+            PresenterEvent::FrameYielded {
+                token: 1,
+                purpose: YieldPurpose::PostFrame,
+            },
+            PresenterEvent::Preview {
+                token: 1,
+                result: Err(PreviewError::Canceled),
+            },
+        ];
+        let mut successful_wait = RetiredWait::Dimensions;
+        for event in &unrelated {
+            assert!(!successful_wait.observes(event));
+        }
+        assert!(successful_wait.observes(&PresenterEvent::Dimensions {
+            token: 1,
+            result: Ok(Some((400, 300))),
+        }));
+
+        let mut failed_wait = RetiredWait::Dimensions;
+        for event in &unrelated {
+            assert!(!failed_wait.observes(event));
+        }
+        assert!(failed_wait.observes(&PresenterEvent::Dimensions {
+            token: 1,
+            result: Err(PreviewError::Canceled),
+        }));
+    }
+
+    #[test]
     fn retired_child_parent_chain_cleanup_is_iterative() {
         let mut waits = std::collections::HashMap::new();
         let mut parents = std::collections::HashMap::new();
