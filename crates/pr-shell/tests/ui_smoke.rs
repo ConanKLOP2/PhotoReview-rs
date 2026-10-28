@@ -136,7 +136,8 @@ fn smoke_delete_sends_the_image_to_the_bin_and_shows_the_next_one() {
         run.key(vk::DELETE).unwrap();
         run.wait_until("recycle", |s| s.total_files == 3 && has_name(s, "s02.jpg"))
             .unwrap();
-        let sent = run.bin().sent();
+        // The view changes first; the file moves on a worker: wait for the bin instead of reading it at once.
+        let sent = run.bin().wait_for_sent(1).unwrap();
         assert_eq!(sent.len(), 1);
         assert_eq!(sent[0].file_name().unwrap(), "s01.jpg");
         assert!(!run.photos()[1].exists());

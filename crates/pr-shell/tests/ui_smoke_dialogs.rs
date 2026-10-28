@@ -56,11 +56,47 @@ fn native_dialogs_open_owned_and_modal_and_the_shell_closes_cleanly_with_one_ope
     );
 }
 
-/// C# `ShellNativeDialogsIntegrationTests.Benchmark_OpensModeless_RunsRealProfiles_AndTheShellClosesCleanlyWhileItRuns` (line 96).
+/// C# `ShellNativeDialogsIntegrationTests.Benchmark_OpensModeless_RunsRealProfiles_AndTheShellClosesCleanlyWhileItRuns` (line 96): modeless (the main window stays enabled), a second open raises the
+/// same window, Run over the photos folder with every profile selected starts a real run ("Cancel run" enabled), then the shell closes while it runs: exit code 0, the window is gone.
 #[test]
-#[ignore = "native: pending observable benchmark run lifecycle (W8-20b S5)"]
+#[ignore = "native: needs desktop"]
 fn benchmark_opens_modeless_runs_real_profiles_and_the_shell_closes_cleanly_while_it_runs() {
-    todo!("W8-20b S5: contracts/W8-20b.md")
+    let _serial = SERIAL.lock().unwrap_or_else(std::sync::PoisonError::into_inner);
+    isolated_test(
+        "benchmark_opens_modeless_runs_real_profiles_and_the_shell_closes_cleanly_while_it_runs",
+        || {
+            let run = started();
+            let photos = run.photos()[0].parent().unwrap().to_string_lossy().into_owned();
+            let owner = run.on_ui(|p| p.hwnd).unwrap();
+            let show = |run: &UiSmokeRun| {
+                run.on_ui(|p| p.view_model.borrow().show_benchmark()).unwrap();
+            };
+            show(&run); // modeless: returns at once
+            let benchmark = run.wait_for_owned_window("Benchmark").unwrap();
+            assert!(
+                ui_driver::is_window_enabled(owner),
+                "modeless: the main window stays enabled"
+            );
+            show(&run); // second open: raises the same window, creates no new one
+            run.on_ui(|_| ()).unwrap();
+            assert_eq!(ui_driver::count_windows_owned_by(owner), 1);
+            run.on_ui(move |_| {
+                assert!(ui_driver::set_dialog_item_text(benchmark, 102, &photos));
+                assert!(ui_driver::set_dialog_item_text(benchmark, 105, "1"));
+                // 107 = Select all, 110 = Run (posted: the dialog handles them in order on the UI thread).
+                assert!(ui_driver::post_command(benchmark, 107));
+                assert!(ui_driver::post_command(benchmark, 110));
+            })
+            .unwrap();
+            // The run started when "Cancel run" (112) is enabled; every wait is bounded by BOUND.
+            run.wait_ui_condition("the benchmark run did not start", move |_| {
+                ui_driver::is_dialog_item_enabled(benchmark, 112)
+            })
+            .unwrap();
+            assert_eq!(run.close_and_wait(), Ok(0));
+            run.wait_no_owned_window().unwrap();
+        },
+    );
 }
 
 /// C# `ShellNativeDialogsIntegrationTests.Recovery_OpensOwnedAndModal_ChecksInTheBackground_ChangesNoData_AndTheShellClosesCleanlyWithItOpen` (line 143).
@@ -123,7 +159,10 @@ fn secondary_windows_open_through_the_real_shell_and_the_shell_closes_cleanly_wi
     );
 }
 
-/// C# `ShellSecondaryWindowBridgeTests.Closing_ClosesTheSecondaryWindows_OnlyWhenTheCloseIsNotCancelled` (line 176).
+/// C# `ShellSecondaryWindowBridgeTests.Closing_ClosesTheSecondaryWindows_OnlyWhenTheCloseIsNotCancelled` (line 176). The C# test calls the pure helper (`CloseSecondaryWindowsUnlessCancelled`, ported
+/// in `pr-app` as `close_secondary_windows_unless_cancelled`); here the same rule runs inside the whole shell, with the cancel coming from where production gets it: a file action in flight
+/// (`defer_close_for_file_action`). A Delete blocks in the bin, Diagnostics is open, the shell is asked to close: it stays and Diagnostics stays; the file action ends, the deferred close
+/// goes through and Diagnostics closes with the shell.
 #[test]
 #[ignore = "native: needs desktop"]
 fn closing_closes_the_secondary_windows_only_when_the_close_is_not_cancelled() {
@@ -132,25 +171,31 @@ fn closing_closes_the_secondary_windows_only_when_the_close_is_not_cancelled() {
         "closing_closes_the_secondary_windows_only_when_the_close_is_not_cancelled",
         || {
             let run = started();
-            run.on_ui(|p| {
+            run.bin().hold();
+            run.key(ui_smoke_fixture::vk::DELETE).unwrap();
+            run.bin().wait_entered(1).unwrap(); // the file action is in flight
+            let done = diagnostics(&run);
+            let dialog = run.wait_for_owned_window("Diagnostics").unwrap();
+            let owner = run.on_ui(|p| p.hwnd).unwrap();
+            // The probe's Closing handler is registered after the production ones: when it runs they have decided.
+            let (tx, rx) = mpsc::channel();
+            run.on_ui(move |p| {
                 use pr_platform_win::host::contracts::ShellWindowApi;
-                let cancel = std::cell::Cell::new(true);
                 p.main_window.window().subscribe_closing(Box::new(move |args| {
-                    if cancel.replace(false) {
-                        args.cancel = true;
-                    }
+                    let _ = tx.send(args.cancel);
                 }));
             })
             .unwrap();
-            let done = diagnostics(&run);
-            let dialog = run.wait_for_owned_window("Diagnostics").unwrap();
             run.request_close().unwrap();
-            run.on_ui(|_| ()).unwrap();
-            assert_eq!(
-                ui_driver::first_window_owned_by(run.on_ui(|p| p.hwnd).unwrap()),
-                Some(dialog)
+            assert!(
+                rx.recv_timeout(BOUND).unwrap(),
+                "the close was not deferred by the file action"
             );
-            assert_eq!(run.close_and_wait(), Ok(0));
+            run.on_ui(|_| ()).unwrap();
+            run.on_ui(|_| ()).unwrap();
+            assert_eq!(ui_driver::first_window_owned_by(owner), Some(dialog));
+            run.bin().release(); // the file action ends: the deferred close runs without a cancel
+            assert_eq!(run.wait_exit(), Ok(0));
             done.recv_timeout(BOUND).unwrap().unwrap();
             run.wait_no_owned_window().unwrap();
         },
@@ -234,6 +279,10 @@ fn listing(root: &Path) -> Vec<(PathBuf, u64, std::time::SystemTime)> {
             let entry = entry.unwrap();
             let path = entry.path();
             let metadata = entry.metadata().unwrap();
+            // The review session file is written in the background by the open folder itself (not by Recovery); the C# test compared the journal and its work folder only.
+            if path.strip_prefix(root).is_ok_and(|p| p.starts_with("Sessions")) {
+                continue;
+            }
             if metadata.is_dir() {
                 collect(root, &path, items);
             } else {
