@@ -405,6 +405,14 @@ impl FileActionController {
             .unwrap_or_else(|| flight.source.clone());
         if !renames.is_empty() && !cx.catalog.rename_entries(&renames) {
             conflict = true;
+            let error = std::io::Error::other(new_shown_path.clone());
+            self.deps.log.error(
+                &format!(
+                    "Rename: the catalog already lists the new name of {}; dropping the old entry",
+                    flight.source
+                ),
+                Some(&error),
+            );
             cx.catalog.remove(&flight.source);
             cx.sink.on_catalog_changed(Some(&flight.source));
             renames = PathKeyMap::new();
