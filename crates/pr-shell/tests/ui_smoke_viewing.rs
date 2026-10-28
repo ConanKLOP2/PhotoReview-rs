@@ -466,6 +466,12 @@ fn thumb_drag_latency_is_measured_at_the_handler_which_applies_the_offset_synchr
             println!("thumb_drag_p50_ms={:.3}", samples[samples.len() / 2]);
             println!("thumb_drag_p95_ms={:.3}", samples[samples.len() * 95 / 100]);
             println!("thumb_drag_max_ms={:.3}", samples[samples.len() - 1]);
+            // C#: Assert.True(p95 < 50, ...) in ThumbDragLatency_IsMeasuredAtTheHandler_WhichAppliesTheOffsetSynchronously.
+            assert!(
+                samples[samples.len() * 95 / 100] < 50.0,
+                "p95 {:.2} ms",
+                samples[samples.len() * 95 / 100]
+            );
             assert_eq!(run.close_and_wait(), Ok(0));
         },
     );
