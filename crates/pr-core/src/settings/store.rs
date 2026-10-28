@@ -250,6 +250,11 @@ impl SettingsStore {
         id
     }
 
+    /// How many `Changed` handlers are subscribed right now (C# `Changed.GetInvocationList().Length`): lets a whole-shell test prove that closing the window unsubscribes the overlay.
+    pub fn changed_handler_count(&self) -> usize {
+        lock(&self.handlers).len()
+    }
+
     /// `Changed -= handler`; false when the id is unknown.
     pub fn unsubscribe_changed(&self, id: usize) -> bool {
         let mut handlers = lock(&self.handlers);

@@ -480,12 +480,13 @@ fn startup_shutdown_is_clean_no_window_dispatcher_or_gui_object_leak() {
             };
             cycle();
             let before = resources();
-            for _ in 0..3 {
+            for _ in 0..4 {
                 cycle();
             }
             let after = resources();
+            // C#: four cycles after a warm-up, at most 2 more GDI and at most 2 more USER objects (a lazily created system object may appear once; a leak per cycle would add 4 or more).
             assert!(
-                after.0 <= before.0 && after.1 <= before.1,
+                after.0 <= before.0 + 2 && after.1 <= before.1 + 2,
                 "GUI objects {before:?} -> {after:?}"
             );
         },

@@ -298,6 +298,12 @@ impl Drop for CurrentChangedSubscription {
     }
 }
 
+/// How many [`on_current_changed`] handlers are registered right now (C# `CurrentChanged.GetInvocationList().Length`, which the C# integration test reads by reflection): lets a whole-shell
+/// test prove that closing the window unsubscribes it (W8-20b `Close_UnsubscribesTheOverlayFromTheStaticLocalizerEvent`).
+pub fn current_changed_handler_count() -> usize {
+    HANDLERS.lock().unwrap_or_else(PoisonError::into_inner).len()
+}
+
 /// C# `Localizer.CurrentChanged += handler`: called on whichever thread calls `set_current`, once per call.
 pub fn on_current_changed(handler: impl Fn() + Send + Sync + 'static) -> CurrentChangedSubscription {
     let id = NEXT_HANDLER_ID.fetch_add(1, Ordering::Relaxed);

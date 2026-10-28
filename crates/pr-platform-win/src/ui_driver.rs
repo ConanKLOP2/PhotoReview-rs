@@ -195,3 +195,43 @@ pub fn set_dialog_item_text(dialog: Hwnd, item_id: i32, text: &str) -> bool {
     // SAFETY: wide is NUL-terminated and lives through the synchronous copy into the dialog control.
     unsafe { SetDlgItemTextW(native(dialog), item_id, PCWSTR(wide.as_ptr())).is_ok() }
 }
+
+/// `IsWindowEnabled(GetDlgItem(dialog, item_id))`; `false` when the control does not exist (the Benchmark "Cancel run" button is enabled while a run is in flight). Unit W8-20b S5.
+pub fn is_dialog_item_enabled(dialog: Hwnd, item_id: i32) -> bool {
+    // SAFETY: Query only; Windows validates both handles.
+    unsafe {
+        GetDlgItem(Some(native(dialog)), item_id)
+            .map(|item| IsWindowEnabled(item).as_bool())
+            .unwrap_or(false)
+    }
+}
+
+struct CountOwned {
+    owner: Hwnd,
+    count: usize,
+}
+unsafe extern "system" fn count_owned(hwnd: HWND, param: LPARAM) -> BOOL {
+    // SAFETY: EnumThreadWindows invokes this synchronously with our live CountOwned pointer.
+    let search = unsafe { &mut *(param.0 as *mut CountOwned) };
+    // SAFETY: The enumerated HWND is inspected only.
+    unsafe {
+        let owner = GetWindow(hwnd, GW_OWNER).unwrap_or_default();
+        if IsWindowVisible(hwnd).as_bool() && owner.0 as isize == search.owner {
+            search.count += 1;
+        }
+    }
+    BOOL(1)
+}
+
+/// How many visible windows of the thread of `owner` have `owner` as their `GW_OWNER` (the C# `OwnedWindows(uiThread, main).Count`). Unit W8-20b S5.
+pub fn count_windows_owned_by(owner: Hwnd) -> usize {
+    // SAFETY: Only queries the owner thread.
+    let thread = unsafe { GetWindowThreadProcessId(native(owner), None) };
+    if thread == 0 {
+        return 0;
+    }
+    let mut search = CountOwned { owner, count: 0 };
+    // SAFETY: search outlives the synchronous enumeration and callback.
+    let _ = unsafe { EnumThreadWindows(thread, Some(count_owned), LPARAM(&mut search as *mut _ as isize)) };
+    search.count
+}

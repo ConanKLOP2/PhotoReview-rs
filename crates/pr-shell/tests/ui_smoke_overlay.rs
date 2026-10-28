@@ -6,7 +6,7 @@
 #![cfg(windows)]
 use pr_app::overlay::element::ElementNode;
 use pr_l10n::localizer::{Localizer, create_pseudo};
-use pr_platform_win::host::contracts::{ShellWindowApi, ShellWindowEvent};
+use pr_platform_win::host::contracts::ShellWindowApi;
 use pr_platform_win::shell_overlay::main_window::MainWindowOverlay;
 use std::sync::{Arc, Mutex, mpsc};
 static SERIAL: Mutex<()> = Mutex::new(());
@@ -26,28 +26,25 @@ fn toolbar_is_drawn_from_the_first_frame_at_the_top_left_and_gone_after_close() 
         || {
             let run = started();
             let (tx, rx) = mpsc::channel();
-            let bounds = run
+            let (opacity, bounds) = run
                 .on_ui(move |p| {
                     let overlay = overlay(p);
                     let bounds = overlay.with_toolbar(|t| t.base().bounds());
-                    let closing = overlay.clone();
-                    p.main_window.window().subscribe(
-                        ShellWindowEvent::Closed,
-                        Box::new(move || {
-                            let _ = tx.send((closing.toolbar_opacity(), closing.toolbar_hit_test_visible()));
-                        }),
-                    );
-                    assert!(overlay.toolbar_opacity() > 0.0);
-                    bounds
+                    // C# `Stop(run); Assert.Null(run.Main!.Overlay)`: the overlay is disposed by `MainWindow::dispose` at shutdown, so it is read once `ShellStartup::run` returned.
+                    ui_smoke_fixture::after_exit(move || {
+                        let _ = tx.send((overlay.toolbar_opacity(), overlay.toolbar_hit_test_visible()));
+                    });
+                    (overlay_opacity(p), bounds)
                 })
                 .unwrap();
+            assert_eq!(opacity, 1.0);
+            // C#: X = Y = 8 (3 decimals), height in 38..42 (32 + padding 4 + 4; golden 40), width > 100.
             assert!(
-                bounds.x >= 0.0
-                    && bounds.y >= 0.0
-                    && bounds.x <= 16.0
-                    && bounds.y <= 16.0
-                    && bounds.width > 0.0
-                    && bounds.height > 0.0,
+                (bounds.x - 8.0).abs() < 0.001 && (bounds.y - 8.0).abs() < 0.001,
+                "{bounds:?}"
+            );
+            assert!(
+                (38.0..=42.0).contains(&bounds.height) && bounds.width > 100.0,
                 "{bounds:?}"
             );
             assert_eq!(run.close_and_wait(), Ok(0));
@@ -125,21 +122,45 @@ fn language_switch_updates_toolbar_text_on_the_ui_thread() {
     });
 }
 
-/// C# `Close_UnsubscribesTheOverlayFromTheStaticLocalizerEvent` (line 159).
+/// C# `Close_UnsubscribesTheOverlayFromTheStaticLocalizerEvent` (line 159): the C# test counts `Localizer.CurrentChanged` by reflection; the twin reads `current_changed_handler_count()`.
 #[test]
-#[ignore = "native: blocked on public Localizer listener counter (W8-20b S4)"]
+#[ignore = "native: needs desktop"]
 fn close_unsubscribes_the_overlay_from_the_static_localizer_event() {
-    todo!("W8-20b S4: contracts/W8-20b.md")
+    let _serial = SERIAL.lock().unwrap_or_else(std::sync::PoisonError::into_inner);
+    isolated_test("close_unsubscribes_the_overlay_from_the_static_localizer_event", || {
+        let before = pr_l10n::localizer::current_changed_handler_count();
+        let run = started();
+        assert!(
+            pr_l10n::localizer::current_changed_handler_count() > before,
+            "the overlay does not listen to Localizer.CurrentChanged"
+        );
+        assert_eq!(run.close_and_wait(), Ok(0));
+        assert_eq!(pr_l10n::localizer::current_changed_handler_count(), before);
+    });
 }
 
-/// C# `Close_UnsubscribesFromTheSettingsStoreAndTheViewModel` (line 188).
+/// C# `Close_UnsubscribesFromTheSettingsStoreAndTheViewModel` (line 188). The settings half is ported with `SettingsStore::changed_handler_count()`: the production graph subscribes the log
+/// switch for the whole process (`phase_one`), the overlay one more handler, so closing leaves exactly one. The view-model half has no Rust twin: the Rust view model has no listener list (the
+/// window passes every `ChangeSet` to its features, nothing subscribes to it), so there is nothing to leak.
 #[test]
-#[ignore = "native: blocked on public settings/view-model listener counters (W8-20b S4)"]
+#[ignore = "native: needs desktop"]
 fn close_unsubscribes_from_the_settings_store_and_the_view_model() {
-    todo!("W8-20b S4: contracts/W8-20b.md")
+    let _serial = SERIAL.lock().unwrap_or_else(std::sync::PoisonError::into_inner);
+    isolated_test("close_unsubscribes_from_the_settings_store_and_the_view_model", || {
+        let run = started();
+        let store = run.on_ui(|p| p.settings_store.clone()).unwrap();
+        let before = store.changed_handler_count();
+        assert!(
+            before >= 2,
+            "the overlay does not listen to SettingsStore.Changed ({before} handlers)"
+        );
+        assert_eq!(run.close_and_wait(), Ok(0));
+        assert_eq!(store.changed_handler_count(), before - 1);
+    });
 }
 
-/// C# `LanguageSwitch_RefreshesTheViewModelTextTheOverlayShows` (line 202).
+/// C# `LanguageSwitch_RefreshesTheViewModelTextTheOverlayShows` (line 202): the text the view model builds in code (`FolderText`, "N photos") changes only when `refresh_localized_text` runs.
+/// (`status_text` is event text that keeps its language until the next update, so it cannot show a language switch.)
 #[test]
 #[ignore = "native: needs desktop"]
 fn language_switch_refreshes_the_view_model_text_the_overlay_shows() {
@@ -148,17 +169,22 @@ fn language_switch_refreshes_the_view_model_text_the_overlay_shows() {
         "language_switch_refreshes_the_view_model_text_the_overlay_shows",
         || {
             let run = started();
-            let before = run.on_ui(|p| p.view_model.borrow().status_text()).unwrap();
+            let fit_before = run
+                .on_ui(|p| overlay(p).with_toolbar(|t| t.fit().content().to_owned()))
+                .unwrap();
+            let english = run.on_ui(|p| p.view_model.borrow().folder_text().to_owned()).unwrap();
             let restore = LanguageRestore::new(&run);
             run.on_ui(|_| Localizer::set_current(Arc::new(create_pseudo(&Localizer::current()))))
                 .unwrap();
             run.on_ui(|p| p.main_window.window().invalidate()).unwrap();
-            run.wait_until("localized status", |s| s.status_text != before).unwrap();
-            let (vm, shown) = run
-                .on_ui(|p| (p.view_model.borrow().status_text(), overlay(p).model().status_text))
-                .unwrap();
-            assert_eq!(vm, shown);
-            assert_ne!(vm, before);
+            // C#: wait for the toolbar to show the new language, then read the view model text.
+            run.wait_ui_condition("toolbar in the new language", move |p| {
+                overlay(p).with_toolbar(|t| t.fit().content() != fit_before)
+            })
+            .unwrap();
+            let switched = run.on_ui(|p| p.view_model.borrow().folder_text().to_owned()).unwrap();
+            assert_ne!(english, String::new());
+            assert_ne!(english, switched); // built in code: changes only when refresh_localized_text ran
             drop(restore);
             assert_eq!(run.close_and_wait(), Ok(0));
         },
@@ -169,6 +195,9 @@ fn started() -> UiSmokeRun {
     let run = UiSmokeRun::start(SmokeConfig::default()).unwrap();
     run.wait_first_image().unwrap();
     run
+}
+fn overlay_opacity(p: &UiProbe) -> f32 {
+    overlay(p).toolbar_opacity()
 }
 fn overlay(p: &UiProbe) -> std::rc::Rc<pr_platform_win::shell_overlay::overlay::state::ShellOverlay> {
     p.main_window

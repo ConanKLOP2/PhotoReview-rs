@@ -28,6 +28,7 @@ thread_local! {
     static SERVICES: RefCell<Option<Rc<pr_shell::startup::composition_root::ShellServices>>> = const { RefCell::new(None) };
     static SETTINGS: RefCell<Option<Arc<pr_core::settings::store::SettingsStore>>> = const { RefCell::new(None) };
 }
+thread_local! { static AFTER_EXIT: RefCell<Vec<Box<dyn FnOnce()>>> = const { RefCell::new(Vec::new()) }; }
 static ABANDONED: Mutex<Option<String>> = Mutex::new(None);
 
 /// Re-executes precisely one test with process-local environment overrides, avoiding unsafe global environment mutation.
@@ -384,6 +385,11 @@ impl UiSmokeRun {
                     }));
                     Ok::<_, String>(ShellStartup::run(&args, options))
                 }));
+                // Hooks registered by the test with `after_exit` run on this thread once `ShellStartup::run` returned, so the shell is shut down and disposed.
+                let hooks = AFTER_EXIT.with(|hooks| std::mem::take(&mut *hooks.borrow_mut()));
+                for hook in hooks {
+                    let _ = catch_unwind(AssertUnwindSafe(hook));
+                }
                 PROBE.with(|slot| *slot.borrow_mut() = None);
                 SETTINGS.with(|slot| *slot.borrow_mut() = None);
                 SERVICES.with(|slot| *slot.borrow_mut() = None);
@@ -593,6 +599,12 @@ impl Drop for UiSmokeRun {
 pub struct TempFolderRecycleBin {
     bin_dir: PathBuf,
     items: Mutex<Vec<(PathBuf, PathBuf)>>,
+    /// Notified after every send (paired with `items`).
+    changed: Condvar,
+    /// Notified after every change of `gate` (paired with `gate`).
+    gate_changed: Condvar,
+    /// `(held, entered)`: while `held`, `send_to_recycle_bin` blocks (bounded by [`BOUND`]) after counting itself in `entered`: a file action that stays in flight until the test releases it.
+    gate: Mutex<(bool, usize)>,
 }
 
 impl TempFolderRecycleBin {
@@ -601,7 +613,48 @@ impl TempFolderRecycleBin {
         Self {
             bin_dir,
             items: Mutex::new(Vec::new()),
+            changed: Condvar::new(),
+            gate_changed: Condvar::new(),
+            gate: Mutex::new((false, 0)),
         }
+    }
+
+    /// Makes every later send block until [`TempFolderRecycleBin::release`].
+    pub fn hold(&self) {
+        self.gate.lock().unwrap_or_else(PoisonError::into_inner).0 = true;
+    }
+
+    /// Lets the blocked sends (and every later one) go on.
+    pub fn release(&self) {
+        self.gate.lock().unwrap_or_else(PoisonError::into_inner).0 = false;
+        self.gate_changed.notify_all();
+    }
+
+    /// Waits (a `Condvar`, [`BOUND`]) until `count` sends reached the bin (blocked or not). `Err` on expiry.
+    pub fn wait_entered(&self, count: usize) -> Result<(), String> {
+        let gate = self.gate.lock().unwrap_or_else(PoisonError::into_inner);
+        let (gate, _) = self
+            .gate_changed
+            .wait_timeout_while(gate, BOUND, |gate| gate.1 < count)
+            .unwrap_or_else(PoisonError::into_inner);
+        if gate.1 < count {
+            return Err(format!("only {} sends reached the bin", gate.1));
+        }
+        Ok(())
+    }
+
+    /// Waits (a `Condvar`, [`BOUND`]) until at least `count` items were sent and gives the original paths. The shell removes the photo from the view first and moves the file on a worker, so a
+    /// test must not read [`TempFolderRecycleBin::sent`] right after the view changed. `Err` on expiry.
+    pub fn wait_for_sent(&self, count: usize) -> Result<Vec<PathBuf>, String> {
+        let items = self.items.lock().unwrap_or_else(PoisonError::into_inner);
+        let (items, _) = self
+            .changed
+            .wait_timeout_while(items, BOUND, |items| items.len() < count)
+            .unwrap_or_else(PoisonError::into_inner);
+        if items.len() < count {
+            return Err(format!("only {} of {count} items reached the bin", items.len()));
+        }
+        Ok(items.iter().map(|(original, _)| original.clone()).collect())
     }
 
     /// The original paths sent so far, in order.
@@ -618,6 +671,15 @@ impl TempFolderRecycleBin {
 impl RecycleBin for TempFolderRecycleBin {
     /// `std::fs::rename` of `path` to `<bin_dir>/<n>-<file name>` (n = number of items sent so far), recording `(original, stored)`; creates `bin_dir` first.
     fn send_to_recycle_bin(&self, path: &std::path::Path) -> std::io::Result<()> {
+        {
+            let mut gate = self.gate.lock().unwrap_or_else(PoisonError::into_inner);
+            gate.1 += 1;
+            self.gate_changed.notify_all();
+            let _released = self
+                .gate_changed
+                .wait_timeout_while(gate, BOUND, |gate| gate.0)
+                .unwrap_or_else(PoisonError::into_inner);
+        }
         let mut items = self.items.lock().unwrap_or_else(PoisonError::into_inner);
         std::fs::create_dir_all(&self.bin_dir)?;
         let name = path
@@ -626,6 +688,7 @@ impl RecycleBin for TempFolderRecycleBin {
         let stored = self.bin_dir.join(format!("{}-{}", items.len(), name.to_string_lossy()));
         std::fs::rename(path, &stored)?;
         items.push((path.to_path_buf(), stored));
+        self.changed.notify_all();
         Ok(())
     }
 
@@ -729,6 +792,11 @@ fn take_snapshot(window: &pr_platform_win::host::main_window::core::MainWindow) 
     }
 }
 
+/// Registers `f` to run on the shell UI thread right after `ShellStartup::run` returned (the main window is disposed by then). Call it from a callback already running on that thread.
+pub fn after_exit(f: impl FnOnce() + 'static) {
+    AFTER_EXIT.with(|hooks| hooks.borrow_mut().push(Box::new(f)));
+}
+
 /// Accesses the thread-local probe from callbacks already running on the shell UI thread.
 pub fn with_probe<R>(f: impl FnOnce(&UiProbe) -> R) -> R {
     PROBE.with(|slot| f(slot.borrow().as_ref().expect("UI probe ready")))
@@ -762,6 +830,36 @@ impl UiSmokeRun {
     }
     pub fn wait_no_owned_window(&self) -> Result<(), String> {
         self.wait_owned("owned windows closed", false).map(|_| ())
+    }
+    /// Bounded wait until `condition` (evaluated on the UI thread) holds; same 50 ms condvar tick as [`UiSmokeRun::wait_for_owned_window`] (a state with no event, such as a dialog control becoming
+    /// enabled; the C# helper was `SpinWait.SpinUntil(() => run.OnUi(..), Bound)`).
+    pub fn wait_ui_condition(
+        &self,
+        what: &str,
+        condition: impl Fn(&UiProbe) -> bool + Clone + Send + 'static,
+    ) -> Result<(), String> {
+        let deadline = Instant::now() + BOUND;
+        loop {
+            if self.on_ui(condition.clone())? {
+                return Ok(());
+            }
+            if Instant::now() >= deadline {
+                return Err(format!("{what}: {}", self.diagnostics()));
+            }
+            self.wait_tick(deadline);
+        }
+    }
+    /// One tick of the rig (a `Condvar` timeout of at most 50 ms that a frame, a mark or the exit cuts short), never past `deadline`.
+    pub fn wait_tick(&self, deadline: Instant) {
+        let run = self.shared.0.lock().unwrap_or_else(PoisonError::into_inner);
+        let _wait = self
+            .shared
+            .1
+            .wait_timeout(
+                run,
+                Duration::from_millis(50).min(deadline.saturating_duration_since(Instant::now())),
+            )
+            .unwrap_or_else(PoisonError::into_inner);
     }
     fn wait_owned(&self, what: &str, present: bool) -> Result<Option<Hwnd>, String> {
         let deadline = Instant::now() + BOUND;
