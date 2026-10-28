@@ -74,7 +74,20 @@ if [ -n "$CRATES" ]; then
   else skip "clippy ($CRATES): --no-clippy"; fi
   if [ "$TEST" = 1 ]; then
     for c in $CRATES; do
-      if timeout "${TEST_TIMEOUT:-1500}" cargo test -p "$c" --locked >/dev/null 2>&1; then pass "test -p $c"; else fail "test -p $c (rerun it: cargo test -p $c --locked)"; fi
+      if ! mkdir -p "$CARGO_TARGET_DIR/pre-pr-logs" || ! test_log=$(mktemp "$CARGO_TARGET_DIR/pre-pr-logs/test-$c.XXXXXX.log"); then
+        fail "test -p $c (could not create test log)"
+        continue
+      fi
+      if timeout "${TEST_TIMEOUT:-1500}" cargo test -p "$c" --locked >"$test_log" 2>&1; then
+        pass "test -p $c"
+        rm -f "$test_log"
+      else
+        test_rc=$?
+        fail "test -p $c (rerun it: cargo test -p $c --locked)"
+        echo "  exit code: $test_rc"
+        echo "  log: $test_log"
+        tail -n 80 "$test_log"
+      fi
     done
   else skip "cargo test ($CRATES): pass --test (CI runs them)"; fi
 fi
