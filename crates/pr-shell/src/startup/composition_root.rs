@@ -23,8 +23,10 @@ use pr_platform_win::dialogs::secondary_window_port::SecondaryWindowDialogs;
 use pr_platform_win::dialogs::secondary_window_port::SecondaryWindowRouter;
 use pr_platform_win::dialogs::secondary_window_port::{PortOptions, Win32SecondaryWindowPort};
 use pr_platform_win::dialogs::zoom_prompt_service::Win32ZoomPromptService;
+use pr_platform_win::host::main_window::core::FeatureOptions;
 use pr_platform_win::host::message_loop::MessageLoop;
 use pr_platform_win::host::ui_dispatcher::Win32UiDispatcher;
+use pr_platform_win::shell_input::main_window::{DialogServiceOption, ZoomPromptOption};
 use pr_platform_win::shell_viewing::presentation_sink::{ShellPresentationHub, Win32PresentationSinkFactory};
 use pr_platform_win::win32::structs::Hwnd;
 
@@ -249,6 +251,15 @@ impl ShellServices {
             graph_slot,
             log,
         }
+    }
+
+    /// The service entries of `MainWindowOptions::extensions` (C# `ShellMainWindowOptions.ZoomPrompt` and the dialog service): the zoom prompt and, for W9-R8, the
+    /// dialog service that shows the rename box (F2 / "Rename..."; without `DialogServiceOption` both do nothing).
+    pub fn window_service_extensions(&self) -> FeatureOptions {
+        let mut extensions = FeatureOptions::default();
+        extensions.insert(ZoomPromptOption(self.zoom_prompt.clone()));
+        extensions.insert(DialogServiceOption(self.dialog_service.clone()));
+        extensions
     }
 
     /// A new `IFolderPicker` over the shared `FolderPicker` (`IFolderPicker::pick_folder` takes `&mut self`, so each consumer owns an adapter).
