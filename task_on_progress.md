@@ -13,7 +13,7 @@ Keep this file under about 10 KB. When it grows, move old sections verbatim to `
 ## Current state (checked 2026-10-27 against immutable master `da42ca1e`; re-check with `git log origin/master` before relying on it)
 - **Merged:** Wave 8 B6 (#164), B5 dialogs and startup (#223-#231: startup policies, lazy graph, zoom/diagnostics, Action Profiles, benchmark, Recovery, Settings window, secondary window routing). Wave 9 external editors E1-E9: E1 #233, E3 #234, E2 #235, E7 #236, E4 #237, E6 #238, E5 #239, E8 #254, E9 #256. Root repairs: #240 preview registration, #255 viewer borrow in zoom/menu, #260 shell handler lifetime. Dev tooling #242-#258 (status, janitor, hooks, agents, dashboard, triage, mutants, parity, oracle, native-tests, unsafe-audit).
 - **PARITY.md** (`parity.sh stats`, 350 status rows): Done 167, Partial 90, Ported 41, Todo 13, Superseded 17, Different 14, Doing 3, Implementation 3, Contract 2.
-- **Open PRs (this work):** none currently; R5 #284 merged `da42ca1e`. R5 diagnostic/mutation follow-up and R9 final gates in progress; app auto-fix tools unavailable.
+- **Open PRs (this work):** none after #285 merged; R5 follow-up, R6 implementation and R9 matrices are integrating `cf325668` and require final gates/PRs. App auto-fix tools unavailable.
 - **Merged, native input fixture:** PR #269 squash `90826a2`; A claim `FIX-native-input-fixture` released; source `bc62104` fmt12/Clippy/workspace9862pass/0fail/1331ignored, regression101/101PASS (resource-less icon branch unexercised). Full startup/corpus/mutation limits and inherited13doc-link issues stay explicit in PARITY/PR; [history](docs/archive/task_on_progress-native-input-fixture.md).
 - **Merged, rename R1:** #275/#277, selected12/97caught,85notrun; claim released, cleanup policy-blocked. [Evidence](docs/reviews/W9-R1-MUTATION.md).
 - **Merged, W9-R2:** #278/#279;26F/N explicit PASS; selected9/277caught after regressions,268notrun; claim released. [Evidence](docs/reviews/W9-R2-MUTATION.md).
@@ -34,6 +34,8 @@ Keep this file under about 10 KB. When it grows, move old sections verbatim to `
 
 ## Documentation link audit (2026-10-26)
 - Default-scope doc-links originally had 13 inherited missing references at baseline `4006635`. R1 pre-pr found two in touched files: corrected ICC path to its existing crate asset and marked the historical rename ref as a Git branch. Then master PR #274 repaired all13 inherited references; integrated `eba7ec3e` and default-scope doc-links now PASS. New task/archive targets exist; [exact evidence](docs/archive/task_on_progress-native-input-fixture.md). Native Rust gates are recorded separately.
+
+- **Merged, benchmark fixture repair:** #285 `cf325668`; workspace10012/0/1336ignored, fmt12/workspaceClippy/pre-pr PASS; native Move/Delete/Copy10successes each/0sharing in this run. Claim released; cleanup retained. [Evidence](docs/reviews/BENCH-FILE-ACTION-DETERMINISM.md).
 
 ## Archives (`docs/archive/`, verbatim, history only)
 Find any section title with `grep -n '^## ' <file>`. Original section order is kept inside each file.
