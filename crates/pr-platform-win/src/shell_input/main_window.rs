@@ -19,8 +19,10 @@ use pr_app::input::review_command::{ReviewCommand, ReviewCommandType};
 use pr_app::services::contracts::ZoomPromptService;
 use pr_app::viewmodels::main::{ChangeSet, MainViewModel, SettingsSource, ViewerHandle};
 use pr_app::viewmodels::viewer_state::ViewerProperty;
-use pr_core::abstractions::{Log, UiDispatcher};
+use pr_core::abstractions::{DialogService, FileSystem, Log, UiDispatcher};
+use pr_core::io::physical::PhysicalFileSystem;
 use pr_core::settings::app_settings::AppSettings;
+use pr_core::text::eq_ignore_case;
 
 use super::dispatch::{InputSurface, ShellInput, ShellInputDeps, ShellInputHost};
 use super::drop_target::{DropCallbacks, ShellDropTarget};
@@ -44,6 +46,14 @@ pub trait MainWindowInputServices {
     fn zoom_prompt(&self) -> Option<Rc<dyn ZoomPromptService>>;
     /// C# `_log`.
     fn log(&self) -> Arc<dyn Log>;
+    /// W9-R8: the dialog service that shows the rename box (C# `MainViewModel._dialogService`); `None` = no dialog, so F2 / "Rename..." does nothing (C# returns null).
+    fn dialog_service(&self) -> Option<Rc<dyn DialogService>> {
+        None
+    }
+    /// W9-R8: the file system the confirming call of the rename box asks (C# `MainViewModel._fileSystem`, one `FileExists`). Default: the physical one.
+    fn file_system(&self) -> Arc<dyn FileSystem> {
+        Arc::new(PhysicalFileSystem)
+    }
     /// The UI dispatcher (`MainWindow::dispatcher()`), see `ShellInputDeps::dispatcher`.
     fn dispatcher(&self) -> Arc<dyn UiDispatcher>;
     /// C# `_options.InputEnvironment` (default: the real Win32 reads); the composition root puts it into `MainWindowOptions::extensions`.
@@ -139,6 +149,35 @@ impl MainWindowInputHost {
     /// Runs one view-model call whose `ChangeSet` the window applies.
     fn call(&self, run: impl Fn(&mut MainViewModel) -> ChangeSet) {
         self.services.with_view_model(&mut |vm| run(vm));
+    }
+
+    /// C# `PromptRenameCurrentAsync` (F2 and the "Rename..." menu item share this branch): the view model prepares the prompt and releases its borrow; the modal box
+    /// runs with NO borrow held (its validate closure owns a snapshot of the listing); the answer goes back to the view model, which renames only when the same
+    /// photo is still selected. Without a dialog service, or when cancelled, nothing is renamed.
+    fn rename_file(&self) {
+        let mut prepared = None;
+        let mut listing = None;
+        self.services.with_view_model(&mut |vm| {
+            let changes = vm.prompt_rename_current();
+            prepared = vm.take_rename_prompt();
+            listing = Some(vm.catalog().paths());
+            changes
+        });
+        let (Some(prepared), Some(listing)) = (prepared, listing) else {
+            return;
+        };
+        let Some(dialogs) = self.services.dialog_service() else {
+            self.call(|vm| vm.finish_rename_prompt(prepared.source(), None));
+            return;
+        };
+        // Typing asks the listing only (no I/O); the confirming call also asks the disk, which covers files the listing does not know.
+        let listed: Arc<dyn Fn(&str) -> bool> =
+            Arc::new(move |full_path| listing.iter().any(|path| eq_ignore_case(path, full_path)));
+        let typed = match prepared.request(listed, self.services.file_system()) {
+            Ok(request) => dialogs.prompt_rename(&request),
+            Err(_) => None,
+        };
+        self.call(|vm| vm.finish_rename_prompt(prepared.source(), typed.as_deref()));
     }
 
     /// C# `RunGuardedAsync`: an `Err` is reported once and swallowed.
@@ -278,7 +317,7 @@ impl ShellInputHost for MainWindowInputHost {
                     return Err(Box::new(bug));
                 }
             }
-            ReviewCommandType::RenameFile => self.call(|vm| vm.prompt_rename_current()),
+            ReviewCommandType::RenameFile => self.rename_file(),
             // The viewport commands never arrive here: `ShellInput` handled them.
             ReviewCommandType::ToggleFit
             | ReviewCommandType::ZoomIn
@@ -532,6 +571,16 @@ impl fmt::Debug for ZoomPromptOption {
     }
 }
 
+/// W9-R8: the `DialogService` of the window options (the rename box of F2 / "Rename..."), as a typed `FeatureOptions` entry like [`ZoomPromptOption`].
+#[derive(Clone)]
+pub struct DialogServiceOption(pub Rc<dyn DialogService>);
+
+impl fmt::Debug for DialogServiceOption {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.debug_struct("DialogServiceOption").finish_non_exhaustive()
+    }
+}
+
 /// The production [`MainWindowInputServices`]: everything the window hands out is held directly; the view model and the change fan-out are reached
 /// through the window registry by id (so the adapter never keeps the window alive and never forms a cycle with it).
 struct MainWindowInputAdapter {
@@ -541,6 +590,7 @@ struct MainWindowInputAdapter {
     viewer: ViewerHandle,
     settings: SettingsSource,
     zoom_prompt: Option<Rc<dyn ZoomPromptService>>,
+    dialogs: Option<Rc<dyn DialogService>>,
     log: Arc<dyn Log>,
     dispatcher: Arc<dyn UiDispatcher>,
     environment: Rc<ShellInputEnvironment>,
@@ -557,6 +607,9 @@ impl MainWindowInputAdapter {
             viewer: inner.viewer(),
             settings,
             zoom_prompt: extensions.get::<ZoomPromptOption>().map(|option| Rc::clone(&option.0)),
+            dialogs: extensions
+                .get::<DialogServiceOption>()
+                .map(|option| Rc::clone(&option.0)),
             log: Arc::clone(inner.log()),
             dispatcher: Arc::new(inner.dispatcher().clone()),
             environment: extensions
@@ -584,6 +637,9 @@ impl MainWindowInputServices for MainWindowInputAdapter {
     }
     fn log(&self) -> Arc<dyn Log> {
         Arc::clone(&self.log)
+    }
+    fn dialog_service(&self) -> Option<Rc<dyn DialogService>> {
+        self.dialogs.clone()
     }
     fn dispatcher(&self) -> Arc<dyn UiDispatcher> {
         Arc::clone(&self.dispatcher)

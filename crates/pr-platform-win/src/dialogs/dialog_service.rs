@@ -85,7 +85,7 @@ pub trait SecondaryWindowPort {
     ) -> Option<String> {
         None
     }
-    /// FEAT-RENAME (C# `PromptRename(nint, RenamePromptRequest)`, W9-R8 stub): the modal one-line rename box over `owner`.
+    /// FEAT-RENAME (C# `PromptRename(nint, RenamePromptRequest)`, W9-R8): the modal one-line rename box over `owner`.
     /// The typed name part when accepted, `None` when cancelled or when the port does not have it (C# default `null`).
     fn prompt_rename(&self, _owner: Hwnd, _request: &RenamePromptRequest) -> Option<String> {
         None
@@ -303,6 +303,11 @@ impl DialogService for Win32DialogService {
         self.secondary
             .get()?
             .prompt_default_external_editor((self.owner)(), editors, current_id)
+    }
+
+    /// C# `PromptRename(request) => Port()?.PromptRename(_ownerProvider(), request)`.
+    fn prompt_rename(&self, request: &RenamePromptRequest) -> Option<String> {
+        self.secondary.get()?.prompt_rename((self.owner)(), request)
     }
 }
 
