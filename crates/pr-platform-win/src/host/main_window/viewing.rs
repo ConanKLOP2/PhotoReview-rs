@@ -196,7 +196,12 @@ pub struct ViewingState {
     pub(super) stats: RefCell<FrameStats>,
     /// C# `GpuCacheClearCount`.
     pub(super) gpu_cache_clear_count: Cell<i32>,
+    /// The compare state of the last paint that could borrow the view model; the paint inside a modal command (mutable borrow held) reuses it.
+    pub(super) compare_paint_cache: RefCell<ComparePaintSnapshot>,
 }
+
+/// `(visible, left, right, left selected, right selected)` as `draw_presentation` reads them from the view model.
+pub(super) type ComparePaintSnapshot = (bool, Option<Arc<DecodedImage>>, Option<Arc<DecodedImage>>, bool, bool);
 
 impl std::fmt::Debug for ViewingState {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -217,6 +222,7 @@ impl Default for ViewingState {
             pacer: RefCell::new(FramePacer::new()),
             stats: RefCell::new(FrameStats::new(STOPWATCH_FREQUENCY)),
             gpu_cache_clear_count: Cell::new(0),
+            compare_paint_cache: RefCell::new((false, None, None, false, false)),
         }
     }
 }
@@ -482,8 +488,11 @@ impl MainWindowInner {
         if let Some(prefetcher) = self.current_prefetcher() {
             ids.extend(prefetcher.planned_ids());
         }
+        // A modal command holds the mutable borrow while its nested loop runs: retaining is housekeeping, the next change retains again.
         let compare_ids = {
-            let view_model = self.view_model.borrow();
+            let Ok(view_model) = self.view_model.try_borrow() else {
+                return;
+            };
             let compare = view_model.compare();
             if compare.is_visible() {
                 let pixels = |image: Option<&Arc<DecodedImage>>| {
@@ -541,17 +550,23 @@ impl MainWindowInner {
             width: self.viewport.image_actual_width(),
             height: self.viewport.image_actual_height(),
         };
-        // D-W8B4X-12: the view model is not lent to the composer; the borrow ends with the clones.
-        let (compare_visible, left, right, left_selected, right_selected) = {
-            let view_model = self.view_model.borrow();
-            let compare = view_model.compare();
-            (
-                compare.is_visible(),
-                compare.left_image().cloned(),
-                compare.right_image().cloned(),
-                compare.is_left_selected(),
-                compare.is_right_selected(),
-            )
+        // D-W8B4X-12: the view model is not lent to the composer; the borrow ends with the clones. A modal command (`show_settings`) holds the mutable
+        // borrow for its whole nested message loop and that loop paints (C# has no lock: the paint reads the object as it is): `try_borrow` then
+        // falls back to the compare state of the last frame that could read it, instead of panicking on the UI thread.
+        let (compare_visible, left, right, left_selected, right_selected) = match self.view_model.try_borrow() {
+            Ok(view_model) => {
+                let compare = view_model.compare();
+                let snapshot = (
+                    compare.is_visible(),
+                    compare.left_image().cloned(),
+                    compare.right_image().cloned(),
+                    compare.is_left_selected(),
+                    compare.is_right_selected(),
+                );
+                *self.viewing.compare_paint_cache.borrow_mut() = snapshot.clone();
+                snapshot
+            }
+            Err(_) => self.viewing.compare_paint_cache.borrow().clone(),
         };
         let client = self.window.client_size_dip();
         let inputs = PresentationInputs {
