@@ -288,8 +288,32 @@ impl ZoomDetailLoader {
     /// pixels), keeps a held original and the shown state, moves a latched failure to the new token, and restarts the
     /// decode when zoomed without an original. No target is a no-op; a blank path is a caller bug (debug assertion).
     pub fn retarget_path(&mut self, new_token: i64, new_path: &str) -> ZoomDetailEffects {
-        let _ = (new_token, new_path);
-        todo!()
+        let Some(previous) = self.target.clone() else {
+            return ZoomDetailEffects::new();
+        };
+        if new_path.trim().is_empty() {
+            return ZoomDetailEffects::new();
+        }
+        let Ok(key) = previous.key.with_path(new_path) else {
+            return ZoomDetailEffects::new();
+        };
+
+        let mut effects = ZoomDetailEffects::new();
+        self.cancel_pending();
+        self.stop_raw_decode_indicator(&mut effects);
+        let id = self.next_id();
+        self.target = Some(Target {
+            id,
+            token: new_token,
+            path: new_path.to_owned(),
+            key,
+            ..previous.clone()
+        });
+        if self.failed_token == previous.token {
+            self.failed_token = new_token;
+        }
+        self.update(&mut effects);
+        effects
     }
 }
 

@@ -46,7 +46,7 @@ use crate::viewmodels::format::context::FormatContext;
 use super::compare_pair::{BusyRetryDelay, ComparePairCache, default_busy_retry_delay};
 use super::missing::MissingRun;
 use super::photo_info::{PhotoInfo, StatResult};
-use super::present_b::{CompareProgress, PresentFailure};
+use super::present_b::{CompareProgress, CompareStage, PresentFailure};
 
 /// A callback receiving a path (C# `Action<string>`): the presented hook and the `OriginalShown` measure hook.
 pub type PathHook = Box<dyn FnMut(&str)>;
@@ -246,6 +246,69 @@ pub(super) enum Phase {
     AwaitRecheckStat,
 }
 
+/// The suspended awaits of a superseded `PresentAsync`. Only event identities are retained; payloads (notably decoded pixels) are dropped.
+#[derive(Debug)]
+pub(super) enum RetiredWait {
+    Stat(StatPurpose),
+    ThumbnailOrPreview,
+    Preview,
+    FrameYield,
+    Dimensions,
+    ComparePreviews { left: bool, right: bool },
+    CompareSizes,
+    CompareHashes { left: bool, right: bool },
+}
+
+impl RetiredWait {
+    /// Returns true when this completion resumes the awaited continuation to its next await or return.
+    fn observes(&mut self, event: &PresenterEvent) -> bool {
+        match (self, event) {
+            (
+                Self::Stat(expected),
+                PresenterEvent::Stat { purpose, .. } | PresenterEvent::StatAbandoned { purpose, .. },
+            ) => expected == purpose,
+            (Self::ThumbnailOrPreview, PresenterEvent::Thumbnail { .. } | PresenterEvent::Preview { .. }) => true,
+            (Self::Preview, PresenterEvent::Preview { .. }) => true,
+            (
+                Self::FrameYield,
+                PresenterEvent::FrameYielded {
+                    purpose: YieldPurpose::PostFrame,
+                    ..
+                },
+            ) => true,
+            (Self::Dimensions, PresenterEvent::Dimensions { .. }) => true,
+            (Self::ComparePreviews { left, right }, PresenterEvent::ComparePreview { side, .. }) => {
+                match side {
+                    CompareSide::Left => *left = false,
+                    CompareSide::Right => *right = false,
+                }
+                !*left && !*right
+            }
+            (Self::CompareSizes, PresenterEvent::CompareSizes { .. }) => true,
+            (Self::CompareHashes { left, right }, PresenterEvent::CompareHash { side, .. }) => {
+                match side {
+                    CompareSide::Left => *left = false,
+                    CompareSide::Right => *right = false,
+                }
+                !*left && !*right
+            }
+            _ => false,
+        }
+    }
+}
+
+fn retire_wait_chain(
+    waits: &mut std::collections::HashMap<i64, RetiredWait>,
+    parents_by_child: &mut std::collections::HashMap<i64, i64>,
+    child: i64,
+) {
+    let mut completed = child;
+    while let Some(parent) = parents_by_child.remove(&completed) {
+        waits.remove(&parent);
+        completed = parent;
+    }
+}
+
 /// The locals of one `PresentCoreAsync` call that live across an `await`. No `Debug`: `PreviewImage` is a trait object.
 pub(super) struct Navigation {
     /// `_clock.NextNavigation()` of this present.
@@ -327,6 +390,12 @@ pub(super) enum PresenterEvent {
         purpose: StatPurpose,
         result: StatResult,
     },
+    /// The stat worker dropped a canceled queued closure (or caught its panic); never implies a missing file.
+    StatAbandoned {
+        token: i64,
+        purpose: StatPurpose,
+        panicked: bool,
+    },
     Thumbnail {
         token: i64,
         result: ThumbnailResult,
@@ -361,6 +430,22 @@ pub(super) enum PresenterEvent {
     },
 }
 
+impl PresenterEvent {
+    fn token(&self) -> i64 {
+        match self {
+            Self::Stat { token, .. }
+            | Self::StatAbandoned { token, .. }
+            | Self::Thumbnail { token, .. }
+            | Self::Preview { token, .. }
+            | Self::FrameYielded { token, .. }
+            | Self::Dimensions { token, .. }
+            | Self::ComparePreview { token, .. }
+            | Self::CompareSizes { token, .. }
+            | Self::CompareHash { token, .. } => *token,
+        }
+    }
+}
+
 // ---- The presenter -------------------------------------------------------------------------------------------------------
 
 /// C# `ImagePresenter`: coordinates the whole presentation of an image (`PresentAsync`, `RemoveMissingCatalogItemAsync`), the placeholder
@@ -391,6 +476,10 @@ pub struct ImagePresenter {
     pub(super) viewer_decode_cancel: Option<CancelToken>,
     /// The present in progress (its locals), `None` when idle or while a handler owns it.
     pub(super) navigation: Option<Navigation>,
+    /// Suspended PresentAsync continuations whose Navigation was superseded. C# counts them until their awaited continuation observes completion.
+    pub(super) retired_waits: std::collections::HashMap<i64, RetiredWait>,
+    /// Reverse links for nested `PresentCoreAsync` retries and missing-next child presents.
+    pub(super) retired_parent_by_child: std::collections::HashMap<i64, i64>,
     /// The `RemoveMissingCatalogItemAsync` run in progress.
     pub(super) missing: Option<MissingRun>,
     /// C# `_presentedFilePath`: the file anchoring the displayed bitmap (crossfade decision).
@@ -479,6 +568,8 @@ impl ImagePresenter {
             compare_cache: ComparePairCache::new(),
             viewer_decode_cancel: None,
             navigation: None,
+            retired_waits: std::collections::HashMap::new(),
+            retired_parent_by_child: std::collections::HashMap::new(),
             missing: None,
             presented_file_path: None,
             current_navigation_path: None,
@@ -675,6 +766,8 @@ impl ImagePresenter {
 
     /// Routes one event to its continuation (the table of the contract).
     pub(super) fn dispatch(&mut self, env: &mut PresenterEnv<'_>, event: PresenterEvent) {
+        let token = event.token();
+        self.observe_retired_event(&event);
         match event {
             PresenterEvent::Stat { token, purpose, result } => match purpose {
                 StatPurpose::Initial => self.on_initial_stat(env, token, result),
@@ -682,6 +775,38 @@ impl ImagePresenter {
                 StatPurpose::Recheck => self.on_recheck_stat(env, token, result),
                 StatPurpose::NextForMissing => self.on_missing_next_stat(env, token, result),
             },
+            PresenterEvent::StatAbandoned {
+                token,
+                purpose,
+                panicked,
+            } => {
+                if panicked {
+                    crate::misc::app_log::AppLog::global().error(
+                        &format!("ShowImage stat worker panicked token={token} purpose={purpose:?}"),
+                        None,
+                    );
+                }
+                match purpose {
+                    StatPurpose::Initial => {
+                        self.take_navigation(token, |phase| matches!(phase, Phase::AwaitInitialStat));
+                    }
+                    StatPurpose::Refresh => {
+                        self.take_navigation(token, |phase| matches!(phase, Phase::AwaitRefreshStat));
+                    }
+                    StatPurpose::Recheck => {
+                        self.take_navigation(token, |phase| matches!(phase, Phase::AwaitRecheckStat));
+                    }
+                    StatPurpose::NextForMissing => {
+                        if self
+                            .missing
+                            .as_ref()
+                            .is_some_and(|run| run.token == token && run.pending_next.is_some())
+                        {
+                            self.missing = None;
+                        }
+                    }
+                }
+            }
             PresenterEvent::Thumbnail { token, result } => self.on_thumbnail(env, token, result),
             PresenterEvent::Preview { token, result } => self.on_preview(env, token, result),
             PresenterEvent::FrameYielded { token, purpose } => match purpose {
@@ -692,6 +817,70 @@ impl ImagePresenter {
             PresenterEvent::ComparePreview { token, side, result } => self.on_compare_preview(env, token, side, result),
             PresenterEvent::CompareSizes { token, left, right } => self.on_compare_sizes(env, token, left, right),
             PresenterEvent::CompareHash { token, side, result } => self.on_compare_hash(env, token, side, result),
+        }
+        if !self.has_wait_for(token) {
+            self.retire_child_waiters(token);
+        }
+    }
+
+    pub(super) fn has_wait_for(&self, token: i64) -> bool {
+        self.navigation.as_ref().is_some_and(|nav| nav.token == token)
+            || self
+                .missing
+                .as_ref()
+                .is_some_and(|run| run.token == token && run.pending_next.is_some())
+            || self.retired_waits.contains_key(&token)
+    }
+
+    pub(super) fn retire_child_waiters(&mut self, child: i64) {
+        retire_wait_chain(&mut self.retired_waits, &mut self.retired_parent_by_child, child);
+    }
+
+    pub(super) fn track_child_present(&mut self, parent: i64, child: i64) {
+        self.retired_parent_by_child.insert(child, parent);
+    }
+
+    fn observe_retired_event(&mut self, event: &PresenterEvent) {
+        let token = event.token();
+        let Some(wait) = self.retired_waits.get_mut(&token) else {
+            return;
+        };
+        let complete = wait.observes(event);
+        if complete {
+            self.retired_waits.remove(&token);
+        }
+    }
+
+    pub(super) fn track_superseded_navigation(&mut self) {
+        let Some(nav) = self.navigation.take() else {
+            return;
+        };
+        let wait = match nav.phase {
+            Phase::AwaitInitialStat => Some(RetiredWait::Stat(StatPurpose::Initial)),
+            Phase::AwaitPreview {
+                race: ThumbnailRace::Pending,
+            } => Some(RetiredWait::ThumbnailOrPreview),
+            Phase::AwaitPreview {
+                race: ThumbnailRace::Shown | ThumbnailRace::Abandoned | ThumbnailRace::NotStarted,
+            } => Some(RetiredWait::Preview),
+            Phase::AwaitFrameYield => Some(RetiredWait::FrameYield),
+            Phase::AwaitDimensions => Some(RetiredWait::Dimensions),
+            Phase::AwaitRefreshStat => Some(RetiredWait::Stat(StatPurpose::Refresh)),
+            Phase::AwaitRecheckStat => Some(RetiredWait::Stat(StatPurpose::Recheck)),
+            Phase::AwaitCompare(progress) => Some(match progress.stage {
+                CompareStage::Previews { left, right } => RetiredWait::ComparePreviews {
+                    left: left.is_none(),
+                    right: right.is_none(),
+                },
+                CompareStage::Sizes => RetiredWait::CompareSizes,
+                CompareStage::Hashes { left, right } => RetiredWait::CompareHashes {
+                    left: left.is_none(),
+                    right: right.is_none(),
+                },
+            }),
+        };
+        if let Some(wait) = wait {
+            self.retired_waits.insert(nav.token, wait);
         }
     }
 
@@ -744,5 +933,110 @@ impl ImagePresenter {
         self.status_needs_attention = needs_attention;
         self.changes |= PresenterChanges::STATUS;
         self.sink.set_status_text(&self.status_text);
+    }
+}
+
+#[cfg(test)]
+mod retired_wait_tests {
+    use super::*;
+
+    fn abandoned(purpose: StatPurpose) -> PresenterEvent {
+        PresenterEvent::StatAbandoned {
+            token: 1,
+            purpose,
+            panicked: false,
+        }
+    }
+
+    #[test]
+    fn retired_preview_any_and_shown_waits_observe_the_correct_race_completion() {
+        let mut pending = RetiredWait::ThumbnailOrPreview;
+        assert!(!pending.observes(&abandoned(StatPurpose::Refresh)));
+        assert!(!pending.observes(&PresenterEvent::FrameYielded {
+            token: 1,
+            purpose: YieldPurpose::DeferredKick { index: 2 }
+        }));
+        assert!(pending.observes(&PresenterEvent::Thumbnail {
+            token: 1,
+            result: Ok(None)
+        }));
+
+        let mut shown = RetiredWait::Preview;
+        assert!(!shown.observes(&PresenterEvent::Thumbnail {
+            token: 1,
+            result: Ok(None)
+        }));
+        assert!(shown.observes(&PresenterEvent::Preview {
+            token: 1,
+            result: Err(PreviewError::Canceled)
+        }));
+    }
+
+    #[test]
+    fn retired_compare_waits_for_both_preview_and_hash_results() {
+        let mut previews = RetiredWait::ComparePreviews {
+            left: true,
+            right: true,
+        };
+        assert!(!previews.observes(&PresenterEvent::ComparePreview {
+            token: 1,
+            side: CompareSide::Left,
+            result: Err(PreviewError::Canceled)
+        }));
+        assert!(previews.observes(&PresenterEvent::ComparePreview {
+            token: 1,
+            side: CompareSide::Right,
+            result: Err(PreviewError::Canceled)
+        }));
+
+        let mut hashes = RetiredWait::CompareHashes {
+            left: true,
+            right: true,
+        };
+        assert!(!hashes.observes(&PresenterEvent::CompareHash {
+            token: 1,
+            side: CompareSide::Right,
+            result: Err(FileHashError::Canceled)
+        }));
+        assert!(hashes.observes(&PresenterEvent::CompareHash {
+            token: 1,
+            side: CompareSide::Left,
+            result: Err(FileHashError::Canceled)
+        }));
+        let mut sizes = RetiredWait::CompareSizes;
+        assert!(sizes.observes(&PresenterEvent::CompareSizes {
+            token: 1,
+            left: None,
+            right: None
+        }));
+    }
+
+    #[test]
+    fn retired_stat_and_frame_waits_require_the_exact_purpose() {
+        let mut stat_wait = RetiredWait::Stat(StatPurpose::Initial);
+        assert!(!stat_wait.observes(&abandoned(StatPurpose::NextForMissing)));
+        assert!(stat_wait.observes(&abandoned(StatPurpose::Initial)));
+        let mut frame = RetiredWait::FrameYield;
+        assert!(!frame.observes(&PresenterEvent::FrameYielded {
+            token: 1,
+            purpose: YieldPurpose::DeferredKick { index: 0 }
+        }));
+        assert!(frame.observes(&PresenterEvent::FrameYielded {
+            token: 1,
+            purpose: YieldPurpose::PostFrame
+        }));
+    }
+
+    #[test]
+    fn retired_child_parent_chain_cleanup_is_iterative() {
+        let mut waits = std::collections::HashMap::new();
+        let mut parents = std::collections::HashMap::new();
+        for parent in 1..20_001_i64 {
+            parents.insert(parent + 1, parent);
+            waits.insert(parent, RetiredWait::Preview);
+        }
+        retire_wait_chain(&mut waits, &mut parents, 20_001);
+        assert!(waits.is_empty());
+        assert!(parents.is_empty());
     }
 }
