@@ -98,6 +98,8 @@ impl std::error::Error for ExternalEditorBug {}
 /// Which controller entry point a queued command calls.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(super) enum QueuedKind {
+    /// W9-R6: same gate/Explorer-order wait as the other file commands.
+    Rename { new_name: String },
     /// `FileActionController::run_action(index, compare_selected, current)`.
     RunAction { index: i32 },
     /// `FileActionController::recycle(compare_selected, current)`.
@@ -232,7 +234,19 @@ impl MainViewModel {
         };
         // INV-4: the gate stays held until the controller reports `Done`, i.e. until the catalog update after the file operation.
         self.active_gate_turn = Some(turn);
+        self.sink
+            .prepare_rename_keep(!self.presenter.is_compare_visible() && !self.presenter.is_present_in_flight());
         let step = match record.kind {
+            QueuedKind::Rename { new_name } => {
+                let compare_selected = self.presenter.compare().selected_path().map(str::to_owned);
+                let current = self.catalog.current().map(|entry| entry.path().to_owned());
+                let mut cx = FileActionCx {
+                    catalog: &mut self.catalog,
+                    sink: &mut self.sink,
+                };
+                self.file_action_controller
+                    .rename(&mut cx, compare_selected.as_deref(), current.as_deref(), &new_name)
+            }
             QueuedKind::MoveCopy {
                 operation,
                 force_picker,
@@ -262,6 +276,8 @@ impl MainViewModel {
 
     /// Delivers an executor / undo result: `file_action_controller.handle_event(cx, event)` then `handle_step`.
     pub(super) fn handle_file_action_event(&mut self, event: FileActionEvent) -> ChangeSet {
+        self.sink
+            .prepare_rename_keep(!self.presenter.is_compare_visible() && !self.presenter.is_present_in_flight());
         let step = {
             let mut cx = FileActionCx {
                 catalog: &mut self.catalog,
@@ -327,6 +343,8 @@ impl MainViewModel {
         let gate = self.file_action_gate.clone();
         let mut result = ChangeSet::default();
         gate.run_exclusive(|turn| {
+            self.sink
+                .prepare_rename_keep(!self.presenter.is_compare_visible() && !self.presenter.is_present_in_flight());
             let current_folder = self.current_session.as_ref().map(|session| session.folder.clone());
             self.undo_context = Some(UndoContext {
                 undo_epoch: self.folder_load_epoch,

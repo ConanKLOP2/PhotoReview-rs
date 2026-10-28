@@ -26,6 +26,8 @@ pub(super) struct MissingRun {
     pub(super) path: String,
     /// The photo whose stat is pending: C# `(nextPath, nextIndex)`; `None` between rounds.
     pub(super) pending_next: Option<(String, i32)>,
+    /// The run is nested under `PresentCoreAsync` and contributes to C# `_presentsInFlight` until its continuation ends.
+    pub(super) awaited_present: bool,
 }
 
 /// C# `RemoveOrDegrade(path)`: removes a missing file from the catalog. A missing member of a JPEG+RAW capture group must not
@@ -66,19 +68,26 @@ impl ImagePresenter {
         path: &str,
         token: i64,
     ) -> PresenterChanges {
-        self.begin_missing_run(env, path, token);
+        self.begin_missing_run(env, path, token, false);
         self.take_changes()
     }
 
     /// The start of [`remove_missing_catalog_item`](Self::remove_missing_catalog_item) for callers that are already inside a `pump` / `present` call
     /// (the changes stay accumulated in `self.changes` for that call to return, instead of being taken here).
-    pub(super) fn begin_missing_run(&mut self, env: &mut PresenterEnv<'_>, path: &str, token: i64) {
+    pub(super) fn begin_missing_run(
+        &mut self,
+        env: &mut PresenterEnv<'_>,
+        path: &str,
+        token: i64,
+        awaited_present: bool,
+    ) {
         self.missing_step(
             env,
             MissingRun {
                 token,
                 path: path.to_owned(),
                 pending_next: None,
+                awaited_present,
             },
         );
     }
@@ -151,11 +160,14 @@ impl ImagePresenter {
         };
         if result.outcome != StatOutcome::Missing {
             // A found OR unreadable next photo ends the run with one normal present of the index computed in this round (it is not re-read).
+            let parent = token;
             if let Err(error) = self.begin_present(env, PresentRequest::new(next_index), 0, None) {
                 crate::misc::app_log::AppLog::global().error(
                     &format!("ShowImage next present failed token={token} path={next_path}"),
                     Some(&error),
                 );
+            } else if let Some(child) = self.navigation.as_ref().map(|nav| nav.token) {
+                self.track_child_present(parent, child);
             }
             return;
         }

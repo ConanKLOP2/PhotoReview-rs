@@ -19,7 +19,7 @@ Keep this file under about 10 KB. When it grows, move old sections verbatim to `
 - **Merged, W9-R2:** #278/#279;26F/N explicit PASS; selected9/277caught after regressions,268notrun; claim released. [Evidence](docs/reviews/W9-R2-MUTATION.md).
 - **Merged, W9-R4:** #280/#281; selected8/22caught after regressions,14notrun; claim released. [Evidence](docs/reviews/W9-R4-MUTATION.md).
 - **Merged, W9-R3:** #282/#283 `3f0870bc`; workspace9994/0/1335ignored, fmt12/Clippy/pre-pr PASS; selected10/80caught,70notrun. Claim released; cleanup policy-blocked, no deletions. [Evidence](docs/reviews/W9-R3-MUTATION.md).
-- **In progress, W9-R5 (2026-10-27):** A claim, `codex/w9-rename-controller`, integrated master3f0870bc; controller/Undo implementation+lead worker/result/identity wiring. Contract12+3regression fake tests15/15PASS; exact order/metadata/journal checks strengthened. Prior-base fmt12/Clippy/workspace10008pass/0fail/1335ignored/pre-pr PASS; final merged-head fmt12/Clippy/workspace10009pass/0fail/1335ignored/pre-pr PASS; PR prepared, selected mutation after merge. No viewmodel/native UI claim.
+- **Merged, W9-R5:** #284 `da42ca1e`; controller/Undo 15 focused tests and final workspace10009/0/1335ignored, fmt12/Clippy/pre-pr PASS. Postmerge diagnostic/mutation report follow-up remains in `codex/w9-r5-postmerge`; no viewmodel/native UI claim.
 - **In progress, W9-R9 (2026-10-27):** A claim, master614ce831, `codex/w9-rename-matrices`; Codex gpt-6-luna low ports remaining dedicated inventory and full fault matrices in the two contract-owned test files. Existing R2/R3 twins are excluded; gates pending.
 - **Not done (PARITY rows):** `X-exe-entry` (W8-20a, `Contract`) and `X-ui-smoke` (W8-20b, `Contract`): no `PhotoReviewRs.exe` window yet, the wave stays open; `X-startup-composition-root` is `Partial` (W8-17c production factory adapter, W8-18w); W8-12j swap-chain experiment is conditional and not started; `X-attended-remeasure` is `Todo` (needs an attended session on a real screen); `X-benchmark-compare` and `X-benchmark-parity-harness` are `Todo` (W10-B1).
 - **Blocked:** nothing known to be blocked on another machine. Needs the human: attended measurements (W8-12j / W10-B2), dependency changes (`Cargo.toml`), unconfirmed `P-nn` rows.
@@ -34,6 +34,8 @@ Keep this file under about 10 KB. When it grows, move old sections verbatim to `
 
 ## Documentation link audit (2026-10-26)
 - Default-scope doc-links originally had 13 inherited missing references at baseline `4006635`. R1 pre-pr found two in touched files: corrected ICC path to its existing crate asset and marked the historical rename ref as a Git branch. Then master PR #274 repaired all13 inherited references; integrated `eba7ec3e` and default-scope doc-links now PASS. New task/archive targets exist; [exact evidence](docs/archive/task_on_progress-native-input-fixture.md). Native Rust gates are recorded separately.
+
+- **In progress, W9-R6 (2026-10-28):** A claim, `codex/w9-rename-retarget`; retarget/session/command integration and suspended-present/stat-abandonment parity. Focused146PASS then suffix5/rename20PASS, fmt/packageClippy PASS; final workspace gates and PR pending. [Evidence](docs/reviews/W9-R6-RETARGET.md).
 
 ## Archives (`docs/archive/`, verbatim, history only)
 Find any section title with `grep -n '^## ' <file>`. Original section order is kept inside each file.
