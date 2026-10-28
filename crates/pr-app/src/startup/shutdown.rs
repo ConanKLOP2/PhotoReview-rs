@@ -4,9 +4,9 @@
 //! Disposal order is behaviour (C# `Shutdown_ReleasesTheMainWindowBeforeTheServiceContainerIsDisposed`): the steps are a trait so the order is tested with a recording fake and the
 //! real objects are touched only by `pr_shell::startup::shutdown`. Every step is idempotent: `Cleanup` runs from `Dispose` AND at the end of `RunLoop`, and the start-up failure path
 //! calls part of it first.
-#![allow(unused_variables, dead_code)] // stub: the porter removes this line with the last `todo!()`
 
 use std::error::Error;
+use std::panic::{AssertUnwindSafe, catch_unwind};
 
 /// The disposal steps of C# `Cleanup()`, in call order. Each is a no-op when its object is already gone.
 pub trait ShutdownSteps {
@@ -34,7 +34,16 @@ pub trait ShutdownSteps {
 
 /// C# `Cleanup()`: calls the ten steps in the order of the trait above.
 pub fn run_shutdown(steps: &mut dyn ShutdownSteps) {
-    todo!()
+    steps.stop_listening();
+    steps.dispose_coalescer();
+    steps.close_secondary_windows();
+    steps.dispose_main_window();
+    steps.dispose_cloak();
+    steps.dispose_frame_clock();
+    steps.dispose_services();
+    steps.shutdown_log();
+    steps.dispose_instance_scope();
+    steps.dispose_perf_listener();
 }
 
 /// What `FailStartup(ex)` does besides the shutdown (C# lines 218-251), in call order.
@@ -57,10 +66,20 @@ pub trait FailureSteps {
 /// written, a dialog that cannot be shown must not block the exit": the last-resort handler is an R0003 exception to "the UI thread does not catch panics"); then
 /// `force_exit_code(EXIT_STARTUP_FAILED)`, `close_secondary_windows`, `dispose_main_window`, `quit(EXIT_STARTUP_FAILED)`. `message` is `error.to_string()`.
 pub fn run_fail_startup(steps: &mut dyn FailureSteps, error: &dyn Error) {
-    todo!()
+    use crate::startup::options::EXIT_STARTUP_FAILED;
+    // Last-resort handlers (R0003 exception, D-W8B6-25): a log or a box that cannot be written must not block the exit.
+    let _ = catch_unwind(AssertUnwindSafe(|| steps.log_failure(error)));
+    let message = error.to_string();
+    let _ = catch_unwind(AssertUnwindSafe(|| steps.show_failure_box(&message)));
+    steps.force_exit_code(EXIT_STARTUP_FAILED);
+    steps.close_secondary_windows();
+    steps.dispose_main_window();
+    steps.quit(EXIT_STARTUP_FAILED);
 }
 
 /// C# `CloseSecondaryWindowsUnlessCancelled(e, close)`: `close()` only when the closing was NOT cancelled (a running file action keeps the window, and with it the secondary windows).
 pub fn close_secondary_windows_unless_cancelled(cancelled: bool, close: &mut dyn FnMut()) {
-    todo!()
+    if !cancelled {
+        close();
+    }
 }

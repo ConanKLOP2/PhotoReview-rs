@@ -4,11 +4,11 @@
 //! INV-6 / ADR 0003: pending journal operations are reconciled AFTER the instance lock and AFTER the window is shown, on a worker, so the first image is not slowed.
 //! Entries that reconcile had to mark Failed are reported ONCE, with an offer to open the Recovery window (W-04). Nothing is replayed or deleted here. The reconcile itself is
 //! `pr_core::file_actions::startup_recovery::spawn` (W3-03, merged); the thread hop and the window are `pr_shell::startup::recovery`.
-#![allow(unused_variables, dead_code)] // stub: the porter removes this line with the last `todo!()`
 
 use pr_core::abstractions::DialogService;
 use pr_core::file_actions::journal_line::JournalEntry;
 use pr_l10n::localizer::Localizer;
+use pr_l10n::template::LocArg;
 
 /// What the prompt did.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -24,7 +24,14 @@ pub enum RecoveryPromptOutcome {
 /// `(title, message)` of the confirmation: `Tr.DialogStartupRecoveryFailedTitle` = `localizer.get("dialog.startupRecoveryFailed.title")` and
 /// `Tr.DialogStartupRecoveryFailedMessage(count)` = `localizer.format_plural("dialog.startupRecoveryFailed.message", count as i64, &[LocArg::new("count", count)])` (keys `.one` / `.other`).
 pub fn recovery_prompt_texts(localizer: &Localizer, failed_count: usize) -> (String, String) {
-    todo!()
+    (
+        localizer.get("dialog.startupRecoveryFailed.title"),
+        localizer.format_plural(
+            "dialog.startupRecoveryFailed.message",
+            i64::try_from(failed_count).unwrap_or(i64::MAX),
+            &[LocArg::new("count", i64::try_from(failed_count).unwrap_or(i64::MAX))],
+        ),
+    )
 }
 
 /// C# lines 579-588 after the reconcile finished: `failed` empty -> `NothingFailed` (return); else `dialogs.show_confirmation(title, message)` ONCE; `true` -> `show_recovery()` then
@@ -36,5 +43,14 @@ pub fn prompt_for_failed_entries(
     dialogs: &dyn DialogService,
     show_recovery: &mut dyn FnMut(),
 ) -> RecoveryPromptOutcome {
-    todo!()
+    if failed.is_empty() {
+        return RecoveryPromptOutcome::NothingFailed;
+    }
+    let (title, message) = recovery_prompt_texts(localizer, failed.len());
+    if dialogs.show_confirmation(&title, &message) {
+        show_recovery();
+        RecoveryPromptOutcome::OpenedRecovery
+    } else {
+        RecoveryPromptOutcome::Declined
+    }
 }
