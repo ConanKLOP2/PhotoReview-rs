@@ -62,3 +62,7 @@ existing `is_idle` semantics are unchanged.
 Lead final source gates at 35859e1c, containing master cf325668: format passed through the 12-package Windows command-length fallback; locked workspace all-target Clippy passed; locked workspace tests passed with 10041 passed, 0 failed, 1336 ignored (571 result lines). Pre-pr passed; its downstream workspace Clippy skip is covered by the independent full workspace invocation. Only evidence/status documentation changed after these source gates. Selected postmerge pure-logic mutation remains pending. No native window, GPU, NAS,
 RAW-corpus, attended measurement, performance or full mutation verdict is
 claimed. Temporary files belong to each fixture and the bin is fake.
+
+## Final integration after R5 follow-up
+
+On 2026-10-28, master advanced through #286 to 2da34aa9. Adjacent R5/R6 PARITY and task rows were resolved individually, preserving both units. Final integrated source3f2f54a0 passed fmt through the12-package fallback, locked workspace all-target Clippy, locked workspace tests (10041 passed,0 failed,1336 ignored;571result lines), and pre-pr exit0. Pre-pr downstream workspace Clippy skip is covered by the independent full command. Evidence/status-only edits follow this gate.
