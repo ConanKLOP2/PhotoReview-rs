@@ -156,6 +156,12 @@ pub fn post_command(dialog: Hwnd, command_id: u16) -> bool {
     post(dialog, WM_COMMAND, usize::from(command_id), LPARAM(0))
 }
 
+/// `TDM_CLICK_BUTTON` (`WM_USER + 102`) with `wParam = button_id` posted to a `TaskDialogIndirect` window: the documented way to press one of its common buttons (`IDYES` 6, `IDNO` 7, `IDOK` 1...).
+/// A plain `WM_COMMAND` closes only the default button of such a dialog. Unit W8-17e (native fixes).
+pub fn post_task_dialog_button(dialog: Hwnd, button_id: u16) -> bool {
+    post(dialog, WM_USER + 102, usize::from(button_id), LPARAM(0))
+}
+
 /// The first VISIBLE window of the thread that owns `owner` whose `GetWindow(GW_OWNER)` is `owner` (`EnumThreadWindows` of the thread from `GetWindowThreadProcessId(owner)`); `None` when there is none.
 /// Slice S5 of W8-20b.
 pub fn first_window_owned_by(owner: Hwnd) -> Option<Hwnd> {

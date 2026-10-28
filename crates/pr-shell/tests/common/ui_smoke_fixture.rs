@@ -145,6 +145,8 @@ pub struct SmokeConfig {
     /// `prefer_warp = true`, `activate = false`, `warm_graphics = false`, `install_process_hooks = false`, `start_perf_listener = false`, and wrapped `mark` and `on_main_window_ready`
     /// (the rig's wrappers call the closure's, so the edit may add its own).
     pub configure: Option<ConfigureFn>,
+    /// `true` activates the comctl32 v6 manifest on the shell thread (the real exe embeds it, a test exe does not), so `TaskDialogIndirect` exists and the dialogs of the shell (failure box, recovery question) really show.
+    pub task_dialogs: bool,
 }
 
 impl Default for SmokeConfig {
@@ -158,6 +160,7 @@ impl Default for SmokeConfig {
             config_json: None,
             graph: GraphChoice::Production,
             configure: None,
+            task_dialogs: false,
         }
     }
 }
@@ -278,6 +281,7 @@ impl UiSmokeRun {
             OpenTarget::Nothing => Vec::new(),
             OpenTarget::Arguments(args) => args,
         };
+        let task_dialogs = config.task_dialogs;
         let shared = Arc::new((Mutex::new(RunState::default()), Condvar::new()));
         let state = shared.clone();
         let rig_paths = AppPathsForRig {
@@ -289,6 +293,16 @@ impl UiSmokeRun {
             .spawn(move || {
                 let result = catch_unwind(AssertUnwindSafe(|| {
                     let _sta = StaApartment::enter().map_err(|e| e.to_string())?;
+                    // The real exe carries the comctl32 v6 manifest; the test exe does not, so a test that shows a task dialog (`SmokeConfig::task_dialogs`) activates it here.
+                    let _visual_styles = if task_dialogs {
+                        Some(
+                            pr_platform_win::win32::activation_context::ActivationScope::from_manifest_text(
+                                pr_platform_win::win32::comctl::SHELL_MANIFEST,
+                            )?,
+                        )
+                    } else {
+                        None
+                    };
                     let mut options = ShellStartupOptions {
                         instance_name_prefix: prefix,
                         prefer_warp: true,
