@@ -59,6 +59,6 @@ existing `is_idle` semantics are unchanged.
   + 4 lifecycle tests passed (146). After the narrow suffix correction, 5 suffix
   and 20 rename tests passed; package fmt and locked all-target Clippy passed.
 
-Lead final source/workspace gates are pending. No native window, GPU, NAS,
+Lead final source gates at 35859e1c, containing master cf325668: format passed through the 12-package Windows command-length fallback; locked workspace all-target Clippy passed; locked workspace tests passed with 10041 passed, 0 failed, 1336 ignored (571 result lines). Pre-pr passed; its downstream workspace Clippy skip is covered by the independent full workspace invocation. Only evidence/status documentation changed after these source gates. Selected postmerge pure-logic mutation remains pending. No native window, GPU, NAS,
 RAW-corpus, attended measurement, performance or full mutation verdict is
 claimed. Temporary files belong to each fixture and the bin is fake.
