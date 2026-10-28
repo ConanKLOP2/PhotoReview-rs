@@ -13,6 +13,7 @@ Every tool has a docs file and, where marked, a Claude Code skill in `.claude/sk
 | `triage.sh` classify a failed autopilot unit | [docs/triage.md](docs/triage.md) | `/triage` |
 | `mutants.sh` time-boxed cargo-mutants run | [docs/mutants.md](docs/mutants.md) | `/mutants` |
 | `native-tests.sh` list and run native (`#[ignore]`) tests | [docs/native-tests.md](docs/native-tests.md) | `/native-tests` |
+| [`stage-native.ps1`](stage-native.ps1) verify C# baseline `7eaee2a2` x64 DLL hashes, then stage to `-Destination` (default: this worktree's `target\debug`); `-Check` verifies sources without copying | Run `powershell -NoProfile -ExecutionPolicy Bypass -File tools/dev/stage-native.ps1`; for test executables pass `-Destination target\debug\deps`. Selftest: [test/stage-native-selftest.ps1](test/stage-native-selftest.ps1) | none |
 | `unsafe-audit.sh` (+ `.py`, `.baseline`) `unsafe` hygiene scan | [docs/unsafe-audit.md](docs/unsafe-audit.md) | `/unsafe-audit` |
 | `doc-links.py` markdown link and path checker | (header of the script) | `/doc-links` |
 | Checklist skills without a script: after a merge, Codex quota | `.claude/skills/*/SKILL.md` | `/post-merge`, `/codex-quota` |
