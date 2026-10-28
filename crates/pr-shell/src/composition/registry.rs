@@ -500,7 +500,9 @@ impl SharedServices {
                     options.wpf_fallback_decoder.clone(),
                     Some(is_libraw_needed),
                 );
-                let shared = self.clone();
+                // The store, not `self.clone()`: a clone of the registry inside a closure that the registry itself stores (`decoder_factory`) is an `Arc` cycle that keeps the whole graph
+                // (Explorer pump thread, preview persist workers) alive after the shutdown.
+                let raw_setting_store_for_decorator = self.settings_store();
                 let decoder_decorator: pr_imaging::factory::DecoderDecorator = Arc::new(move |_backend, standard| {
                     let texts: Arc<dyn pr_imaging::webp_heic::WebpHeicTexts> = Arc::new(super::texts::LocalizedTexts);
                     let standard: Arc<dyn pr_imaging::decoder_traits::ImageDecoder> =
@@ -512,7 +514,7 @@ impl SharedServices {
                             Arc::clone(&texts),
                             None,
                         ));
-                    let raw_enabled_store = shared.settings_store();
+                    let raw_enabled_store = Arc::clone(&raw_setting_store_for_decorator);
                     let raw_enabled: Arc<dyn Fn() -> bool + Send + Sync> =
                         Arc::new(move || raw_enabled_store.current().raw_support_enabled);
                     let raw =

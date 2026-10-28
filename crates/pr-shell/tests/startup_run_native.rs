@@ -155,13 +155,13 @@ fn startup_core_exit_event_disposes_the_app() {
 #[ignore = "native: process-wide panic hook is tested in its own isolated child"]
 fn startup_core_app_domain_exception_is_logged_as_crash_report() {
     isolated_test("startup_core_app_domain_exception_is_logged_as_crash_report", || {
-        let log = Arc::new(pr_test_support::RecordingLog::new());
-        pr_shell::startup::run::install_process_hooks(log.clone());
+        // C# reads the application log file (AppLog is a static): the hook writes a forced crash report to `AppLog::global()`.
+        pr_shell::startup::run::install_process_hooks(Arc::new(pr_test_support::RecordingLog::new()));
         assert!(std::panic::catch_unwind(|| panic!("test unhandled domain fault")).is_err());
+        let log = std::fs::read_to_string(pr_app::misc::app_log::AppLog::global().file_path()).unwrap();
         assert!(
-            log.entries()
-                .iter()
-                .any(|(_, text)| text.contains("test unhandled domain fault"))
+            log.contains("Unhandled panic") && log.contains("test unhandled domain fault"),
+            "{log}"
         );
     });
 }
@@ -194,7 +194,7 @@ fn startup_core_dispatcher_exception_is_logged_as_crash_report_and_marked_handle
             run.key(0x27).unwrap();
             run.on_ui(|_| ()).unwrap(); // The loop must recover and process subsequent jobs.
             assert_eq!(run.close_and_wait(), Ok(0));
-            let crash = std::fs::read_to_string(run.root().join("data/logs/app.log")).unwrap();
+            let crash = std::fs::read_to_string(pr_app::misc::app_log::AppLog::global().file_path()).unwrap();
             assert!(
                 crash.contains("UI loop exception") && crash.contains("test dispatcher fault"),
                 "{crash}"
@@ -395,6 +395,7 @@ fn startup_failure_after_the_window_exists_reports_once_and_exits_with_the_failu
                 configure: Some(Box::new(|o| {
                     o.on_main_window_ready = Some(Box::new(|_| panic!("test startup fault after window")));
                 })),
+                task_dialogs: true,
                 ..Default::default()
             })
             .unwrap();
@@ -440,11 +441,12 @@ fn startup_failed_journal_entries_ask_once_to_open_recovery() {
                     }]
                 }));
             })),
+            task_dialogs: true,
             ..Default::default()
         })
         .unwrap();
         let prompt = run.wait_for_owned_window("failed-journal confirmation").unwrap();
-        assert!(pr_platform_win::ui_driver::post_command(prompt, 7)); // IDNO: no Recovery window should open.
+        assert!(pr_platform_win::ui_driver::post_task_dialog_button(prompt, 7)); // IDNO: no Recovery window should open.
         run.wait_no_owned_window().unwrap();
         run.wait_first_image().unwrap();
         run.on_ui(|_| ()).unwrap();
