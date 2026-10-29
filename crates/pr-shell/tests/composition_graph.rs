@@ -26,7 +26,8 @@ fn dialog_services_fills_the_fourteen_fields_as_documented() {
         dialog.localization.as_ref().unwrap(),
         &services.localization()
     ));
-    assert!(dialog.update_checker.is_none());
+    // W10-H3: the production graph now injects the manual update checker (it was None while the HTTP transport was unwired).
+    assert!(dialog.update_checker.is_some());
     assert!(dialog.decoder_factory.is_some());
     assert!(Arc::ptr_eq(dialog.journal.as_ref().unwrap(), &services.journal()));
     assert!(Arc::ptr_eq(
