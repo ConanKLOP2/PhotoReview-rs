@@ -1,0 +1,170 @@
+name: Release PhotoReviewRs
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing Rust release tag, vX.Y.Z
+        required: true
+        type: string
+      run_smoke:
+        description: Run the Direct2D window smoke on this runner
+        required: true
+        type: boolean
+        default: true
+      smoke_result:
+        description: Maintainer smoke result for release notes when run_smoke is false
+        required: false
+        type: string
+
+permissions:
+  contents: write
+  checks: read
+
+concurrency:
+  group: release-${{ inputs.tag }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: windows-latest
+    timeout-minutes: 40
+    steps:
+      - name: Validate tag, CI, and absence of release
+        id: validate
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ inputs.tag }}
+          RUN_SMOKE: ${{ inputs.run_smoke }}
+          SMOKE_RESULT: ${{ inputs.smoke_result }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          if ($env:TAG -cnotmatch '\Av(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\z') { throw 'Invalid release tag' }
+          foreach ($part in $env:TAG.Substring(1).Split('.')) {
+            $number = 0
+            if (-not [int]::TryParse($part, [ref]$number) -or $number -gt 65535) { throw 'Tag component exceeds Win32 version range' }
+          }
+          if ($env:RUN_SMOKE -eq 'false' -and [string]::IsNullOrWhiteSpace($env:SMOKE_RESULT)) { throw 'A maintainer smoke result is required when runner smoke is disabled' }
+          $repo = $env:GITHUB_REPOSITORY
+          $tagRef = gh api "repos/$repo/git/ref/tags/$($env:TAG)" --jq .ref
+          if ($LASTEXITCODE -ne 0 -or $tagRef -cne "refs/tags/$($env:TAG)") { throw 'Tag does not exist' }
+          $sha = gh api "repos/$repo/commits/$($env:TAG)" --jq .sha
+          if ($LASTEXITCODE -ne 0 -or $sha -notmatch '^[0-9a-f]{40}$') { throw 'Cannot peel tag to commit' }
+          $lines = gh api --paginate "repos/$repo/commits/$sha/check-runs?per_page=100&filter=all" --jq '.check_runs[] | [.id,.name,.status,.conclusion] | @tsv'
+          if ($LASTEXITCODE -ne 0) { throw 'Cannot query CI checks' }
+          $runs = @($lines | Where-Object { $_ } | ForEach-Object {
+            $f = $_ -split "`t"
+            if ($f.Count -eq 4 -and $f[1] -ceq 'build-test') {
+              [pscustomobject]@{ Id = [int64]$f[0]; Status = $f[2]; Conclusion = $f[3] }
+            }
+          })
+          $latest = $runs | Sort-Object Id -Descending | Select-Object -First 1
+          if (-not $latest -or $latest.Status -ne 'completed' -or $latest.Conclusion -ne 'success') { throw "build-test is not green on $sha" }
+          $releaseTags = gh api --paginate "repos/$repo/releases?per_page=100" --jq '.[].tag_name'
+          if ($LASTEXITCODE -ne 0) { throw 'Cannot list existing releases' }
+          if (@($releaseTags) -ccontains $env:TAG) { throw 'Release already exists' }
+          "sha=$sha" >> $env:GITHUB_OUTPUT
+
+      - name: Checkout tagged commit
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # copied from this repo ci.yml
+        with:
+          ref: refs/tags/${{ inputs.tag }}
+          fetch-depth: 0
+
+      - name: Check release workflow
+        shell: powershell
+        run: ./tools/check-release-workflow.ps1
+
+      - name: Build native exe with tag version
+        shell: pwsh
+        env:
+          TAG: ${{ inputs.tag }}
+          EXPECTED_SHA: ${{ steps.validate.outputs.sha }}
+        run: |
+          $actualSha = git rev-parse HEAD
+          if ($LASTEXITCODE -ne 0 -or $actualSha -cne $env:EXPECTED_SHA) { throw 'Tagged checkout differs from checked CI commit' }
+          $env:PHOTOREVIEW_RS_VERSION = $env:TAG.Substring(1)
+          $env:PHOTOREVIEW_RS_RELEASE = '1'
+          $env:CARGO_TARGET_DIR = Join-Path (Get-Location) 'target'
+          $env:CARGO_PROFILE_DEV_DEBUG = 'line-tables-only'
+          $env:CARGO_INCREMENTAL = '0'
+          cargo build --release --locked -p pr-shell
+          if ($LASTEXITCODE -ne 0) { throw 'Release build failed' }
+          cargo test -p pr-shell --locked --test exe_resources --test build_version_info --test build_res_writer
+          if ($LASTEXITCODE -ne 0) { throw 'Exe resource checks failed' }
+          $exe = 'target/release/PhotoReviewRs.exe'
+          if (-not (Test-Path -LiteralPath $exe -PathType Leaf)) { throw 'Missing PhotoReviewRs.exe' }
+          $v = (Get-Item -LiteralPath $exe).VersionInfo.ProductVersion
+          if ($v -cne $env:PHOTOREVIEW_RS_VERSION) { throw "Exe version $v differs from tag" }
+
+      - name: Fetch and verify pinned native inputs
+        shell: pwsh
+        run: |
+          ./tools/fetch-release-native.ps1
+          if ($LASTEXITCODE -ne 0) { throw 'Native fetch failed' }
+          ./tools/fetch-release-native.ps1 -Verify
+          if ($LASTEXITCODE -ne 0) { throw 'Native input verification failed' }
+
+      - name: Stage and verify release folder
+        shell: pwsh
+        env:
+          TAG: ${{ inputs.tag }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          ./tools/stage-release.ps1 -Version $env:TAG.Substring(1)
+          ./tools/verify-release-native.ps1 -ReleaseDirectory release-stage -Version $env:TAG.Substring(1)
+
+      # windows-latest has a non-interactive session; a Direct2D window smoke may fail here.
+      # D-W10release-8: disable only with a maintainer-machine result supplied in smoke_result.
+      - name: Smoke native exe
+        if: ${{ inputs.run_smoke }}
+        continue-on-error: false
+        shell: pwsh
+        run: |
+          $env:PHOTOREVIEW_RS_DATA_ROOT = Join-Path $env:RUNNER_TEMP 'photoreview-rs-release-smoke'
+          $env:PHOTOREVIEW_RS_ISOLATE_CONFIG = '1'
+          New-Item -ItemType Directory -Path $env:PHOTOREVIEW_RS_DATA_ROOT | Out-Null
+          . ./tools/release-common.ps1
+          $p = Start-Process -FilePath (Join-Path (Resolve-Path 'release-stage') 'PhotoReviewRs.exe') -ArgumentList '--smoke' -PassThru -WindowStyle Hidden
+          $processHandle = $p.Handle
+          if (-not $p.WaitForExit(60000)) { $p.Kill(); $p.WaitForExit(); throw 'Smoke timed out' }
+          $p.WaitForExit()
+          if ($p.ExitCode -ne 0) { throw "Smoke exited $($p.ExitCode)" }
+
+      - name: Zip and hash release folder
+        shell: pwsh
+        env:
+          TAG: ${{ inputs.tag }}
+        run: |
+          ./tools/pack-release.ps1 -Tag $env:TAG
+
+      - name: Create GitHub release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ inputs.tag }}
+          RUN_SMOKE: ${{ inputs.run_smoke }}
+          SMOKE_RESULT: ${{ inputs.smoke_result }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $repo = $env:GITHUB_REPOSITORY
+          $thisVersion = [version]$env:TAG.Substring(1)
+          $tags = gh api --paginate "repos/$repo/releases?per_page=100" --jq '.[] | select(.draft | not) | .tag_name'
+          if ($LASTEXITCODE -ne 0) { throw 'Cannot list prior releases' }
+          $previous = $tags | Where-Object { $_ -cmatch '^v[0-9]+\.[0-9]+\.[0-9]+\z' -and [version]$_.Substring(1) -lt $thisVersion } |
+            Sort-Object { [version]$_.Substring(1) } -Descending | Select-Object -First 1
+          $changes = gh api "repos/$repo/releases/generate-notes" -f tag_name=$env:TAG --jq .body
+          if ($LASTEXITCODE -ne 0) { throw 'Cannot generate first-release notes' }
+          if ($previous) {
+            $changes = gh api "repos/$repo/releases/generate-notes" -f tag_name=$env:TAG -f previous_tag_name=$previous --jq .body
+            if ($LASTEXITCODE -ne 0) { throw 'Cannot generate release notes' }
+          }
+          $sourceHash = (Get-Content -LiteralPath 'native/libraw.package.sha256' -Raw).Trim()
+          $notice = 'Unsigned Windows x64 release. Installer-less zip; no file association changes. Automatic/manual update discovery is disabled pending the Rust feed decision. PhotoReviewRs is a separate app. Finish pending undo/recovery in the app that started it. LibRaw is dynamically linked; its licence, notice and corresponding-source archive are in the zip.'
+          $notice += " LibRaw-SOURCE.zip is the unmodified LibRaw-0.22.2-Win64.zip, SHA-256 $sourceHash, included in this release zip as a durable corresponding-source asset."
+          $smoke = if ($env:RUN_SMOKE -eq 'true') { 'Runner smoke: PhotoReviewRs.exe --smoke exited 0.' } else { "Maintainer smoke: $($env:SMOKE_RESULT)" }
+          [IO.File]::WriteAllText((Join-Path (Get-Location) 'release-notes.md'), "$notice`n`n$smoke`n`n$changes", [Text.UTF8Encoding]::new($false))
+          $zip = "PhotoReviewRs-$env:TAG-win-x64.zip"
+          gh release create $env:TAG $zip SHA256SUMS --repo $repo --verify-tag --title "PhotoReviewRs $($env:TAG.Substring(1))" --notes-file release-notes.md
+          if ($LASTEXITCODE -ne 0) { throw 'Release creation failed' }

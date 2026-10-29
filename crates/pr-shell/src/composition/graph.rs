@@ -182,6 +182,8 @@ pub fn dialog_services_of(services: &SharedServices) -> Rc<DialogServices> {
     Rc::new(DialogServices {
         settings_store: Some(services.settings_store()),
         localization: Some(services.localization()),
+        // D-W10release-5: explicitly disabled until the Rust feed is verified. None produces
+        // a failed check without transport or download URL; never register the C# feed here.
         update_checker: None,
         decoder_factory: Some(Arc::new(LazyDecoderFactory::new(services.clone()))),
         journal: Some(services.journal()),

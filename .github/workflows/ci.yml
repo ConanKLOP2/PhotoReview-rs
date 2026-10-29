@@ -6,6 +6,8 @@ on:
   push:
     branches: [master]
   workflow_dispatch:
+  schedule:
+    - cron: '0 3 * * *'
 
 permissions:
   contents: read
@@ -25,6 +27,7 @@ jobs:
   # skips lint and tests (about 8 minutes of Windows runners for nothing); pushes to master, manual runs and any change of the workflow,
   # Cargo files, crates, test fixtures or the toolchain always run everything.
   changes:
+    if: github.event_name != 'schedule'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     outputs:
@@ -55,6 +58,7 @@ jobs:
 
   # Required by the master-ci ruleset together with build-test: it must always run and succeed.
   repo-checks:
+    if: github.event_name != 'schedule'
     runs-on: windows-latest
     timeout-minutes: 10
     steps:
@@ -64,10 +68,17 @@ jobs:
       - name: Check synced assets
         shell: powershell
         run: ./tools/sync-from-csharp.ps1 -Check
+      - name: Release tooling selftests (no publication)
+        timeout-minutes: 3
+        shell: powershell
+        run: |
+          ./tools/dev/test/release-selftest.ps1
+          ./tools/dev/test/release-workflow-selftest.ps1
 
   # Cheap (no toolchain, a few seconds): every unsafe block needs a SAFETY comment and unsafe stays in the FFI crates (AGENTS.md).
   # It always runs, also for docs-only pull requests, and build-test below requires it.
   unsafe-audit:
+    if: github.event_name != 'schedule'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -178,11 +189,12 @@ jobs:
   build-test:
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    needs: [changes, lint, test, unsafe-audit]
-    if: ${{ always() }}
+    needs: [changes, lint, test, unsafe-audit, deny]
+    if: ${{ always() && github.event_name != 'schedule' }}
     steps:
       - name: Require the checks that apply
         run: |
+          test "${{ needs.deny.result }}" = "success" || exit 1
           echo "unsafe-audit=${{ needs.unsafe-audit.result }}"
           test "${{ needs.unsafe-audit.result }}" = "success" || exit 1
           echo "changes=${{ needs.changes.result }} rust=${{ needs.changes.outputs.rust }} lint=${{ needs.lint.result }} test=${{ needs.test.result }}"
@@ -192,3 +204,42 @@ jobs:
           else
             test "${{ needs.lint.result }}" = "skipped" && test "${{ needs.test.result }}" = "skipped"
           fi
+
+  # W10-R3: Cargo-scope PR audit and nightly advisory refresh.
+  deny:
+    runs-on: windows-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # from this repo ci.yml
+        with:
+          fetch-depth: 0
+      - name: Toolchain
+        run: rustup show
+      - name: Detect Cargo changes
+        id: scope
+        shell: pwsh
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          $runAudit = $env:GITHUB_EVENT_NAME -ne 'pull_request'
+          if (-not $runAudit) {
+            git fetch --no-tags origin $env:BASE_REF
+            if ($LASTEXITCODE -ne 0) { throw 'Cannot fetch PR base' }
+            $changed = git diff --name-only "origin/$($env:BASE_REF)...HEAD"
+            if ($LASTEXITCODE -ne 0) { throw 'Cannot inspect changed files' }
+            $runAudit = @($changed | Where-Object { $_ -match '(^|/)(Cargo\.toml|Cargo\.lock)$|^deny\.toml$|^\.github/workflows/ci\.yml$' }).Count -gt 0
+          }
+          "audit=$($runAudit.ToString().ToLowerInvariant())" >> $env:GITHUB_OUTPUT
+      - name: Install pinned cargo-deny
+        if: steps.scope.outputs.audit == 'true'
+        shell: pwsh
+        run: |
+          cargo install --locked cargo-deny --version 0.19.9
+          if ($LASTEXITCODE -ne 0) { throw 'cargo-deny installation failed' }
+      - name: Audit dependency graph
+        if: steps.scope.outputs.audit == 'true'
+        shell: pwsh
+        run: |
+          cargo deny --locked check --config deny.toml advisories licenses bans sources --deny unmaintained --deny unsound
+          if ($LASTEXITCODE -ne 0) { throw 'Dependency audit failed' }
