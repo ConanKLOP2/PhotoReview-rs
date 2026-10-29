@@ -72,6 +72,18 @@ impl Pe {
     }
 }
 #[test]
+fn embedded_manifest_matches_the_source_manifest_byte_for_byte() {
+    // C#: ShellAssemblyTests.EmbeddedManifest_DeclaresPerMonitorV2DpiAwareness /
+    // EmbeddedManifest_DependsOnCommonControlsV6. Read RT_MANIFEST (24), id 1
+    // from the linked executable, independently of the icon/version resources.
+    let pe = Pe::open();
+    assert_eq!(
+        pe.resource(24, 1).expect("linked exe must contain RT_MANIFEST id 1"),
+        include_bytes!("../../pr-platform-win/src/win32/shell.manifest")
+    );
+}
+
+#[test]
 fn shell_assembly_is_named_photoreview_rs_and_embeds_manifest_and_icon() {
     // C#: ShellAssembly_IsNamedPhotoReview, EmbeddedManifest_DeclaresPerMonitorV2DpiAwareness,
     // EmbeddedManifest_DependsOnCommonControlsV6; R0002 changes only the product name.
