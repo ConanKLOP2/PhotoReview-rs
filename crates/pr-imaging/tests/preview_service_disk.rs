@@ -1537,11 +1537,6 @@ mod decode_path {
                 bytes[len - 2] = 0xFF;
                 bytes[len - 1] = 0xD9;
             }
-            "jpeg-header-mangled-eoi" => {
-                for byte in bytes.iter_mut().take(len - 2).skip(40) {
-                    *byte = 0;
-                }
-            }
             other => panic!("unknown broken entry kind {other}"),
         }
         bytes
@@ -1569,8 +1564,9 @@ mod decode_path {
     }
 
     // C#: PreviewImageServiceFaultTests.BrokenEntry_IsAMiss (theory over the 14 BrokenEntries shapes; the payload rows
-    // end in InvalidData through FakePayloadCodec, except `jpeg-header-mangled-eoi`: the fake payload is 13 bytes, so
-    // zeroing from offset 40 changes nothing; it needs the real JPEG codec)
+    // end in InvalidData through FakePayloadCodec). The 14th row, `jpeg-header-mangled-eoi`, is NOT here: the fake payload
+    // is 13 bytes, so zeroing from offset 40 changes nothing and no fake can reproduce WIC's verdict on a real JPEG. Its
+    // twin runs against the real WIC payload codec in crates/pr-platform-win/tests/wic_preview_service_broken_entry.rs.
     #[test]
     fn broken_entry_is_a_miss() {
         for kind in [
@@ -1590,13 +1586,6 @@ mod decode_path {
         ] {
             check_broken_entry(kind);
         }
-    }
-
-    // C#: PreviewImageServiceFaultTests.BrokenEntry_IsAMiss (row `jpeg-header-mangled-eoi`)
-    #[test]
-    #[ignore = "native: needs the WIC JPEG payload codec"]
-    fn broken_entry_is_a_miss_jpeg_header_mangled_eoi() {
-        check_broken_entry("jpeg-header-mangled-eoi");
     }
 
     /// C# `ExifDecoder` value.

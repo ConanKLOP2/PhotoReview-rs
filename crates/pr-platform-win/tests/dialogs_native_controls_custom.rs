@@ -73,6 +73,8 @@ fn progress_fraction_reads_back() {
         pr_platform_win::dialogs::native::template::DialogControlClass::Progress,
         ProgressControl::DEFAULT_STYLE,
     );
+    // C# configures the bar first (range 0..=1000); the control's default range is 0..=100, which would clamp the position.
+    ProgressControl::configure(progress);
     ProgressControl::set_fraction(progress, 0.4);
     assert!((ProgressControl::fraction(progress) - 0.4).abs() < f64::EPSILON);
 }
