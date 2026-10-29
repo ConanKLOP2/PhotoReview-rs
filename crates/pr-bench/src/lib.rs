@@ -9,6 +9,7 @@ pub mod image_executor;
 pub mod metrics;
 pub mod models;
 pub mod profiles;
+pub mod report;
 pub mod slow_link_fs;
 pub mod slow_link_reader;
 pub mod workload_runner;
