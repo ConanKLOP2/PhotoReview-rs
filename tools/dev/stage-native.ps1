@@ -2,7 +2,7 @@
 .SYNOPSIS
 Stage the C# baseline's pinned x64 LibRaw and TurboJPEG DLLs (no downloads).
 .EXAMPLE
-powershell -NoProfile -ExecutionPolicy Bypass -File tools/dev/stage-native.ps1 -Destination target/debug/deps
+powershell -NoProfile -ExecutionPolicy Bypass -File tools/dev/stage-native.ps1   # default: target\debug, target\debug\deps and native\x64
 .EXAMPLE
 powershell -NoProfile -ExecutionPolicy Bypass -File tools/dev/stage-native.ps1 -Check
 #>
@@ -15,7 +15,9 @@ param(
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version 2.0
 # $PSScriptRoot is not reliable inside a param() default on Windows PowerShell 5.1, so the default is computed here.
-if (-not $Destination) { $Destination = Join-Path $PSScriptRoot '..\..\target\debug' }
+# Without -Destination the DLLs go where the Rust tests look for them: the exe folder (target\debug), the test exe folder (target\debug\deps, decision P-50)
+# and natived (the pr-turbojpeg native tests load it by absolute path; without it they print 'skipping' and still report green).
+$destinations = if ($Destination) { @($Destination) } else { @((Join-Path $PSScriptRoot '..\..\target\debug'), (Join-Path $PSScriptRoot '..\..\target\debug\deps'), (Join-Path $PSScriptRoot '..\..\native\x64')) }
 try {
     # Like sync-from-csharp.ps1: resolve relative to the MAIN checkout, not this worktree.
     $commonOutput = @(& git -C $PSScriptRoot rev-parse --path-format=absolute --git-common-dir)
@@ -48,16 +50,18 @@ try {
         Write-Output 'PASS: both source DLLs match C# baseline 7eaee2a2; -Check copied nothing.'
         exit 0
     }
-    $destinationPath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($Destination)
-    [System.IO.Directory]::CreateDirectory($destinationPath) | Out-Null
-    foreach ($dll in $verified) {
-        $target = Join-Path $destinationPath $dll.Name
-        Copy-Item -LiteralPath $dll.Source -Destination $target -Force
-        if ((Get-FileHash -LiteralPath $target -Algorithm SHA256).Hash -ne $dll.Hash) {
-            throw "SHA-256 mismatch after copying $target. Staging incomplete; do not use this destination."
+    foreach ($destination in $destinations) {
+        $destinationPath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($destination)
+        [System.IO.Directory]::CreateDirectory($destinationPath) | Out-Null
+        foreach ($dll in $verified) {
+            $target = Join-Path $destinationPath $dll.Name
+            Copy-Item -LiteralPath $dll.Source -Destination $target -Force
+            if ((Get-FileHash -LiteralPath $target -Algorithm SHA256).Hash -ne $dll.Hash) {
+                throw "SHA-256 mismatch after copying $target. Staging incomplete; do not use this destination."
+            }
         }
+        Write-Output "PASS: staged and verified libraw.dll and turbojpeg.dll in $destinationPath"
     }
-    Write-Output "PASS: staged and verified libraw.dll and turbojpeg.dll in $destinationPath"
     exit 0
 } catch {
     [Console]::Error.WriteLine("stage-native: {0}", $_.Exception.Message)

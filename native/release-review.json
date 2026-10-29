@@ -1,0 +1,7 @@
+{
+  "native_notices_reviewed": false,
+  "libraw_source_offer_reviewed": false,
+  "application_license_reviewed": false,
+  "languages_runtime_validated": false,
+  "note": "P-54/P-55: maintainer review is required; false values intentionally block publication."
+}

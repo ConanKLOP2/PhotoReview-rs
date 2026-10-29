@@ -16,6 +16,7 @@ Every tool has a docs file and, where marked, a Claude Code skill in `.claude/sk
 | [`stage-native.ps1`](stage-native.ps1) verify C# baseline `7eaee2a2` x64 DLL hashes, then stage to `-Destination` (default: this worktree's `target\debug`); `-Check` verifies sources without copying | Run `powershell -NoProfile -ExecutionPolicy Bypass -File tools/dev/stage-native.ps1`; for test executables pass `-Destination target\debug\deps`. Selftest: [test/stage-native-selftest.ps1](test/stage-native-selftest.ps1) | none |
 | `unsafe-audit.sh` (+ `.py`, `.baseline`) `unsafe` hygiene scan | [docs/unsafe-audit.md](docs/unsafe-audit.md) | `/unsafe-audit` |
 | `doc-links.py` markdown link and path checker | (header of the script) | `/doc-links` |
+| Release helpers: `fetch-release-native.ps1`, `verify-release-native.ps1`, `stage-release.ps1`, `pack-release.ps1`, `check-release-workflow.ps1` under `tools/` | [release runbook](../../docs/RELEASING.md); selftests [release-selftest.ps1](test/release-selftest.ps1), [release-workflow-selftest.ps1](test/release-workflow-selftest.ps1) | none |
 | Checklist skills without a script: after a merge, Codex quota | `.claude/skills/*/SKILL.md` | `/post-merge`, `/codex-quota` |
 | `agents-check.sh` validate `.claude/agents/*.md` and the `.agents/skills` copies | [docs/agents-check.md](docs/agents-check.md) | none |
 | `pre-pr.sh` checks before a PR (markers, BOM, fmt/clippy per changed crate, audits, NOT-RUN list) | [docs/pre-pr.md](docs/pre-pr.md) | `/pre-pr` |

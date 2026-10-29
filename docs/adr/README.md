@@ -33,3 +33,4 @@ Each file states its status in its first lines. "PROPOSED-DECISIONS" is `docs/PR
 | `ADR-I-07-preview-registration-recheck.md` | Accepted (2026-10-26, intentional concurrency difference) | no P row; PARITY row `D-preview-registration-cache-recheck` |
 | `ADR-S3-preload-factory-lifetime.md` | Accepted and implemented (#225, 2026-10-24) | no P row |
 | the ten `ADR-D-*`, `ADR-F-*`, `ADR-X-*` drafts listed above | Proposed (drafts by DOC-ADR-DRAFTS, not accepted by the lead) | no P row names them; they are tracked by `docs/PARITY-CLOSEOUT.md` ("Different" rows) |
+| [`ADR-W10-release.md`](ADR-W10-release.md) | Proposed, recommendations implemented with publication blocked pending input reviews | P-54..P-56, D-W10release-1..8; release-only supersession of P-47 |

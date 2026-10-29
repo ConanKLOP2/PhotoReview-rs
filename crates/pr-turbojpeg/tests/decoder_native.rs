@@ -13,7 +13,9 @@ mod support;
 use std::sync::Arc;
 use std::sync::atomic::Ordering;
 
-use pr_imaging::decode_types::{DecodeBox, DecodeRequest, DecodedImageView};
+use pr_core::abstractions::NullLog;
+use pr_core::model::enums::DecoderBackend;
+use pr_imaging::decode_types::{DecodeBox, DecodeRequest, DecodedImageView, SourceBytes};
 use pr_imaging::decoder_traits::{DecodeError, ImageDecoder};
 use pr_imaging::fallback::FallbackImageDecoder;
 use pr_imaging::pixel_memory::NativePixelMemory;
@@ -131,6 +133,12 @@ fn flavour_decodes_consistently() {
     let Some((library, decoder)) = synthetic_test_parts() else {
         return;
     };
+    let turbo: Arc<dyn ImageDecoder> = Arc::new(decoder);
+    let wic: Arc<dyn ImageDecoder> = Arc::new(pr_platform_win::wic::decoder::WicDirectDecoder::new(
+        pr_imaging::pixel_memory::PixelBufferImageCodec::shared(),
+        None,
+        memory(1 << 36, 0) as Arc<dyn pr_imaging::memory_headroom::MemoryInfoSource>,
+    ));
     let flavours = [
         ("444", 33, 21, 0, false, false, 0, false, None),
         ("422", 33, 21, 1, false, false, 0, false, None),
@@ -165,14 +173,121 @@ fn flavour_decodes_consistently() {
                 colorspace,
             },
         );
-        let result = decoder.decode(&DecodeRequest::new("synthetic.jpg", 0).with_bytes(jpeg.into()));
-        let image = result.unwrap_or_else(|error| panic!("{name}: synthetic decode failed: {error}"));
-        assert_eq!(
-            (image.pixel_width(), image.pixel_height()),
-            (width, height),
-            "{name}: decoded size"
-        );
+        let bytes: SourceBytes = jpeg.into();
+        let request = || DecodeRequest::new("synthetic.jpg", 0).with_bytes(bytes.clone());
+        // C#: both production chains (Turbo -> Wpf, WicDirect -> Wpf) decode every flavour at the right size, CMYK and YCCK included.
+        // DIVERGENCE: the Rust host has no WPF; its "Wpf" slot is the WIC decoder (`WicDirectDecoder`), which is also what C# WPF decodes with.
+        let chains: [(&str, Arc<dyn ImageDecoder>); 2] = [
+            (
+                "Turbo->Wic",
+                Arc::new(FallbackImageDecoder::new(
+                    Arc::clone(&turbo),
+                    DecoderBackend::TurboJpeg,
+                    Arc::clone(&wic),
+                    Arc::new(NullLog),
+                    None,
+                )),
+            ),
+            ("WicDirect", Arc::clone(&wic)),
+        ];
+        for (chain_name, chain) in chains {
+            let image = chain
+                .decode(&request())
+                .unwrap_or_else(|error| panic!("{name}: {chain_name} decode failed: {error}"));
+            assert_eq!(
+                (image.pixel_width(), image.pixel_height()),
+                (width, height),
+                "{name}: {chain_name} decoded size"
+            );
+        }
+
+        // C#: TurboJpeg alone may decline (InvalidDataException / NotSupportedException, e.g. CMYK/YCCK with 'Unsupported color conversion request'); WPF alone may decline.
+        let via_turbo = match turbo.decode(&request()) {
+            Ok(image) => Some(image),
+            Err(error) if declines(&error) => {
+                eprintln!("{name}: TurboJpeg declines ({error})");
+                None
+            }
+            Err(error) => panic!("{name}: TurboJpeg failed with a non-declining error: {error}"),
+        };
+        let via_wic = match wic.decode(&request()) {
+            Ok(image) => Some(image),
+            Err(error) if declines(&error) => {
+                eprintln!("{name}: WIC declines ({error})");
+                None
+            }
+            Err(error) => panic!("{name}: WIC failed with a non-declining error: {error}"),
+        };
+        // C#: where both decode, the colours agree (mean CIE76 dE < 3.0, ImageCompare.Compare / PixelMetrics.MeanDeltaE).
+        if let (Some(turbo_image), Some(wic_image)) = (via_turbo, via_wic) {
+            let delta = mean_delta_e(&*turbo_image, &*wic_image);
+            eprintln!("{name}: TurboJpeg vs WIC mean dE={delta:.2}");
+            assert!(
+                delta < 3.0,
+                "{name}: TurboJpeg and WIC disagree on colours (mean dE {delta:.2})"
+            );
+        }
     }
+}
+
+/// C# `catch (Exception ex) when (ex is InvalidDataException or NotSupportedException)`: the decoder declines the file.
+fn declines(error: &DecodeError) -> bool {
+    match error {
+        DecodeError::WithSourceBytes { error, .. } | DecodeError::Localized { error, .. } => declines(error),
+        DecodeError::InvalidData { .. } | DecodeError::NotSupported { .. } => true,
+        _ => false,
+    }
+}
+
+/// Port of C# `PixelMetrics.MeanDeltaE` (sRGB -> XYZ D65 -> CIE Lab, mean Euclidean distance) over two decoded images of equal size.
+fn mean_delta_e(a: &dyn DecodedImageView, b: &dyn DecodedImageView) -> f64 {
+    fn bgr_bytes(image: &dyn DecodedImageView) -> Vec<u8> {
+        let pixels = image
+            .platform_image()
+            .as_pixels()
+            .expect("decoder hands over a pixel buffer");
+        pixels.bytes().expect("live pixel buffer").to_vec()
+    }
+    fn lab(r: u8, g: u8, b: u8) -> (f64, f64, f64) {
+        fn inverse_gamma(c: f64) -> f64 {
+            if c <= 0.04045 {
+                c / 12.92
+            } else {
+                ((c + 0.055) / 1.055).powf(2.4)
+            }
+        }
+        fn f(t: f64) -> f64 {
+            if t > 0.008_856_451_679_035_631 {
+                t.cbrt()
+            } else {
+                7.787_037_037_037_037 * t + 16.0 / 116.0
+            }
+        }
+        let (r, g, b) = (
+            inverse_gamma(f64::from(r) / 255.0),
+            inverse_gamma(f64::from(g) / 255.0),
+            inverse_gamma(f64::from(b) / 255.0),
+        );
+        let x = 0.412_456_4 * r + 0.357_576_1 * g + 0.180_437_5 * b;
+        let y = 0.212_672_9 * r + 0.715_152_2 * g + 0.072_175_0 * b;
+        let z = 0.019_333_9 * r + 0.119_192_0 * g + 0.950_304_1 * b;
+        let (fx, fy, fz) = (f(x / 0.950_47), f(y / 1.0), f(z / 1.088_83));
+        (116.0 * fy - 16.0, 500.0 * (fx - fy), 200.0 * (fy - fz))
+    }
+    assert_eq!(
+        (a.pixel_width(), a.pixel_height()),
+        (b.pixel_width(), b.pixel_height()),
+        "image dimensions must match"
+    );
+    let (bytes_a, bytes_b) = (bgr_bytes(a), bgr_bytes(b));
+    assert_eq!(bytes_a.len(), bytes_b.len());
+    let mut total = 0.0;
+    for (p, q) in bytes_a.chunks_exact(4).zip(bytes_b.chunks_exact(4)) {
+        let (l1, a1, b1) = lab(p[2], p[1], p[0]);
+        let (l2, a2, b2) = lab(q[2], q[1], q[0]);
+        total += ((l1 - l2).powi(2) + (a1 - a2).powi(2) + (b1 - b2).powi(2)).sqrt();
+    }
+    total / (bytes_a.len() / 4) as f64
 }
 
 #[test]

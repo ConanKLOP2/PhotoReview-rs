@@ -1,6 +1,6 @@
 # Drafts: proposed files not yet applied
 
-These files are proposals. None of them is in `.github/workflows` or the repo root, and none may be copied there without the decision named below. Check reports on them live in [`../archive/drafts/`](../archive/drafts/) (`ci-draft-check.md`: syntax and action check, 2026-10-23).
+These files preserve the original proposals. W10-R1/R3 now have adapted implementations in `.github/workflows` and root `deny.toml`; the drafts are historical inputs, not runnable release instructions. P-54..P-56 and the [release runbook](../RELEASING.md) record the implemented recommendations and publication blockers. The other drafts still require their named decisions. Earlier check reports live in [`../archive/drafts/`](../archive/drafts/) (`ci-draft-check.md`: syntax and action check, 2026-10-23).
 
 | File | Purpose | Proposed by | Decision needed to apply it |
 |---|---|---|---|

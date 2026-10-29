@@ -4,7 +4,8 @@
 //!
 //! What the exe needs (C# `PhotoReview.Shell.Win32.csproj`: `ApplicationManifest` + `ApplicationIcon`): the process manifest (`RT_MANIFEST` id 1, the `shell.manifest` of `pr-platform-win`, which
 //! declares PerMonitorV2 and Common-Controls v6) and the application icon as an `RT_GROUP_ICON` with the id `32512` (`IDI_APPLICATION`, which `ShellIcons::load` reads, D-W8B3H-16) plus its
-//! `RT_ICON` images. No `VERSIONINFO` (open question 3 of the contract).
+//! `RT_ICON` images. W10-R2 can append release-only `VERSIONINFO` with `append_version`;
+//! the existing `build_res` API retains the W8 no-version default.
 //!
 //! Pure: no file system, no environment, no `unsafe`. This file must compile in a build script, so it uses `std` only.
 #![allow(dead_code)] // included by build.rs and by tests with #[path]: each includer uses a different subset of the items
@@ -86,6 +87,11 @@ pub fn build_res(manifest_xml: &str, ico: Option<&[u8]>) -> Result<Vec<u8>, ResE
 
 /// `MOVEABLE | PURE | DISCARDABLE`.
 const MEMORY_FLAGS: u16 = 0x1030;
+
+/// Append release-only RT_VERSION id 1 without changing the existing manifest/icon API.
+pub fn append_version(out: &mut Vec<u8>, version: &[u8]) {
+    push_resource(out, 16, 1, MEMORY_FLAGS, 0x0409, version);
+}
 
 /// Appends one resource (32-byte header for numeric type and name, data, zero padding to a multiple of 4).
 fn push_resource(out: &mut Vec<u8>, kind: u16, id: u16, memory_flags: u16, language: u16, data: &[u8]) {
