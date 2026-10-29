@@ -52,6 +52,7 @@ use super::handlers::{
 };
 use super::native::dpi_of;
 use crate::host::contracts::{EventHandlerId, PointD as HostPointD, ShellWindowApi, ShellWindowEvent};
+use crate::shell_viewing::compare::{CompareSide, layout as compare_layout};
 
 /// A hit test over a DIP point (C# `Func<PointD, bool>`).
 pub type PointTest = Rc<dyn Fn(PointD) -> bool>;
@@ -105,6 +106,10 @@ pub trait ShellInputHost {
     /// borrow of the pointer state, the surface and the viewer was released, so the host can lend the view model (and defer when it is busy). The zoom
     /// detail loader starts the full-resolution decode from it. Default: nothing (hosts that have no presenter).
     fn on_viewer_zoom_mode_changed(&self) {}
+    /// C# `ShellMainWindow.TrySelectCompareAt` -> `Compare.SelectLeft()` / `SelectRight()` (the WPF `CompareLeft_Click` / `CompareRight_Click`): a left press on a compare cell
+    /// selects it (`left` = the left cell). The Win32 baseline never wired the press to it (WP-22 left it open), so the status line "click to select" did nothing (exe walkthrough 3).
+    /// Default: nothing (hosts without a compare view).
+    fn select_compare_side(&self, _left: bool) {}
 }
 
 /// Everything `ShellInput::new` needs (the C# constructor arguments plus the services the Rust controllers take per call).
@@ -986,7 +991,18 @@ impl InputCore {
         self.pointer_press_tunnel_impl();
 
         let point = self.client_dip(pixel_x, pixel_y);
-        if self.is_over_overlay(point) || self.deps.host.is_compare_visible() {
+        if self.is_over_overlay(point) {
+            return false;
+        }
+        if self.deps.host.is_compare_visible() {
+            // The press still does not reach the image (it is not consumed here, like before); a left press on a cell selects that cell for the file actions.
+            if button == PointerButton::Left {
+                match compare_layout::hit_test(self.deps.window.client_size_dip(), point) {
+                    Some(CompareSide::Left) => self.deps.host.select_compare_side(true),
+                    Some(CompareSide::Right) => self.deps.host.select_compare_side(false),
+                    None => {}
+                }
+            }
             return false;
         }
         match button {

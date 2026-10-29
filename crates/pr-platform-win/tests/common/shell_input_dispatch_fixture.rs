@@ -270,6 +270,8 @@ pub struct RecordingHost {
     pub calls: RefCell<Vec<String>>,
     /// How often `on_viewer_zoom_mode_changed` was called (zoom-detail-wire).
     pub zoom_mode_changes: Cell<u32>,
+    /// Every `select_compare_side(left)` call in order (exe walkthrough 3).
+    pub compare_selections: RefCell<Vec<bool>>,
 }
 
 impl RecordingHost {
@@ -288,6 +290,7 @@ impl RecordingHost {
             execute_failure: RefCell::new(None),
             calls: RefCell::new(Vec::new()),
             zoom_mode_changes: Cell::new(0),
+            compare_selections: RefCell::new(Vec::new()),
         })
     }
 
@@ -327,6 +330,9 @@ impl ShellInputHost for RecordingHost {
     fn on_viewer_zoom_mode_changed(&self) {
         self.zoom_mode_changes.set(self.zoom_mode_changes.get() + 1);
         self.calls.borrow_mut().push("zoom_mode_changed".to_owned());
+    }
+    fn select_compare_side(&self, left: bool) {
+        self.compare_selections.borrow_mut().push(left);
     }
     fn cancel_duplicate_check(&self) -> bool {
         if !self.duplicate_check_running.get() {
