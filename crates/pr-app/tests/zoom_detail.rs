@@ -565,6 +565,34 @@ fn raw_on_zoom_superseded_load_finishing_late_does_not_clear_the_newer_loads_ind
     assert_eq!(fixture.indicator_changes(), vec![true, false]);
 }
 
+// W8-07g mutation survivor (`zoom_detail.rs` `on_indicator_elapsed`, `&&` -> `||`): a stale "delay elapsed" event of a
+// superseded indicator must not show the indicator of the newer, still running slot. Rust-only guard; the C# loader
+// compares `ReferenceEquals(_indicatorCts, cts)` in `ShowIfCurrent`.
+#[test]
+fn raw_on_zoom_stale_indicator_elapsed_event_of_a_superseded_slot_does_not_show_the_newer_indicator() {
+    let raw_decoder = SizedDecoder::new();
+    let _gate_a = raw_decoder.gate("a.cr2");
+    let _gate_b = raw_decoder.gate("b.cr2");
+    let delays = IndicatorGates::new();
+    let options = raw_options(&raw_decoder, true, false);
+    let mut fixture = Fixture::build_over(raw_decoder.clone(), SizedDecoder::new(), options, Some(delays.delay()));
+    fixture.set_zoom(Some(1.0));
+    fixture.present("a.cr2");
+    assert!(delays.wait_calls(1), "A's indicator delay must have started");
+    delays.open(0); // A's delay elapses and queues its event; nothing is pumped yet
+    assert!(
+        fixture.loader.wait_for_event(TIMEOUT),
+        "A's elapsed event must be queued"
+    );
+
+    fixture.present("b.cr2"); // B's slot replaces A's before A's event is applied
+    assert!(delays.wait_calls(2));
+    fixture.pump(); // applies only A's stale event (both decodes are gated)
+
+    assert!(!fixture.loader.is_raw_decode_indicator_visible());
+    assert!(fixture.indicator_changes().is_empty());
+}
+
 // ---- navigation -----------------------------------------------------------------------------------------------------
 
 // C#: ZoomDetailTests.NavigatingAway_IgnoresTheInFlightOriginal_AndFetchesTheNextImagesOriginal
