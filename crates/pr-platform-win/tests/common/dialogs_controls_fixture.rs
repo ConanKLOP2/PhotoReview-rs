@@ -1,7 +1,8 @@
 //! Hidden native controls used by W8-18f tests.
 #![allow(dead_code)]
 
-use pr_platform_win::dialogs::native::template::{DialogControlClass, class_name};
+use pr_platform_win::dialogs::native::controls::basic::CommonControlsInit;
+use pr_platform_win::dialogs::native::template::{DialogControlClass, window_class_name};
 use pr_platform_win::win32::structs::Hwnd;
 use windows::Win32::Foundation::HWND;
 use windows::Win32::System::LibraryLoader::GetModuleHandleW;
@@ -10,10 +11,21 @@ use windows::Win32::UI::WindowsAndMessaging::{CreateWindowExW, DestroyWindow, WI
 pub struct ControlHost {
     pub owner: Hwnd,
     controls: Vec<Hwnd>,
+    /// The comctl32 v6 manifest the real exe embeds (`pr-shell/build.rs`); a test exe has none. Declared last so it is deactivated after the windows go.
+    _visual_styles: pr_platform_win::win32::activation_context::ActivationScope,
 }
 
 impl ControlHost {
     pub fn new() -> Self {
+        // The real exe carries the comctl32 v6 manifest; without it a list view has no header until its first column (LVM_GETHEADER is 0),
+        // a v5 behaviour. Activate it before any control class is registered or created.
+        let visual_styles = pr_platform_win::win32::activation_context::ActivationScope::from_manifest_text(
+            pr_platform_win::win32::comctl::SHELL_MANIFEST,
+        )
+        .expect("comctl32 v6 activation context");
+        // The real dialog calls this before creating any control (C# NativeDialog.Show/Create), so a test host must too: the
+        // classes are registered once per process.
+        CommonControlsInit::ensure();
         // SAFETY: creates a hidden system STATIC window on the current test thread.
         let owner = unsafe {
             CreateWindowExW(
@@ -35,11 +47,12 @@ impl ControlHost {
         Self {
             owner: owner.0 as isize,
             controls: Vec::new(),
+            _visual_styles: visual_styles,
         }
     }
 
     pub fn create(&mut self, class: DialogControlClass, style: u32) -> Hwnd {
-        let name = class_name(class).expect("standard control class");
+        let name = window_class_name(class);
         let wide: Vec<u16> = name.encode_utf16().chain(std::iter::once(0)).collect();
         // SAFETY: creates a child standard control owned by this fixture's hidden window.
         let child = unsafe {

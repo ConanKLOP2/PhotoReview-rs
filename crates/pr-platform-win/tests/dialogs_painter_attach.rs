@@ -12,6 +12,8 @@ use std::sync::Mutex;
 use std::sync::mpsc;
 
 use common::dialogs_painter_fixture::{OwnerWindow, child, on_sta};
+use pr_platform_win::dialogs::native::chrome::DialogChromeControl;
+use pr_platform_win::dialogs::native::dialog::default_chrome;
 use pr_platform_win::dialogs::native::painter::geometry::{ChromePaintKind as K, kind_for_style};
 use pr_platform_win::dialogs::native::painter::{
     CONTROL_PROP, DIALOG_PROP, NativeDialogChromePainter as Painter, is_list_view, live_state_count, production_painter,
@@ -187,6 +189,29 @@ fn attach_dialog_is_idempotent_and_marks_the_dialog() {
         );
         assert_eq!(get_prop(owner.hwnd, DIALOG_PROP), 1);
         assert!(production_painter().attach_dialog(owner.hwnd));
+    });
+}
+
+#[test]
+#[ignore = "native: needs desktop"]
+fn default_chrome_paints_with_the_real_painter() {
+    // C#: DarkDialogChrome.Instance uses the real NativeDialogChromePainter (the base class default). Rust had a NoPainter until PR claude/dialog-painter-wire.
+    on_sta(|| {
+        let _serial = serial();
+        let owner = OwnerWindow::hidden();
+        let button = child(&owner, C::Button, 0, "OK", 60, 24);
+        let controls = [DialogChromeControl {
+            hwnd: button,
+            class: C::Button,
+        }];
+        assert!(!Painter::is_attached(button));
+        default_chrome().apply(owner.hwnd, &controls);
+        assert_eq!(
+            get_prop(owner.hwnd, DIALOG_PROP),
+            1,
+            "default chrome subclasses the dialog"
+        );
+        assert!(Painter::is_attached(button), "default chrome hand-paints a push button");
     });
 }
 

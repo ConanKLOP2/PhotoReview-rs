@@ -443,3 +443,100 @@ fn validate_no_escape_resolved_path_with_trailing_separator_is_trimmed() {
         Ok(A::Ok)
     );
 }
+
+// RV-S06 (native): the two C# PhysicalFileSystemReparseTests, through the real PhysicalFileSystem and real NTFS junctions
+// (`mklink /J` needs no privilege). The pure ReparseFs tests above pin the policy; these pin that the physical resolver's
+// loop error really reaches the policy and fails closed.
+#[cfg(windows)]
+mod native_reparse {
+    use std::fs;
+    use std::path::{Path, PathBuf};
+    use std::process::Command;
+
+    use pr_core::file_actions::destination_policy::{ActionDestinationCheck, validate_no_escape_via_reparse_point};
+    use pr_core::io::physical::PhysicalFileSystem;
+    use pr_test_support::TempRoot;
+
+    /// Junction links made by a test, removed with `remove_dir` (the link only, never the target) when dropped.
+    /// Declare it AFTER the `TempRoot` so it drops first.
+    #[derive(Default)]
+    struct Links(Vec<PathBuf>);
+
+    impl Links {
+        fn junction(&mut self, link: &Path, target: &Path) {
+            let output = Command::new("cmd")
+                .args(["/c", "mklink", "/J"])
+                .arg(link)
+                .arg(target)
+                .output()
+                .unwrap_or_else(|e| panic!("mklink: {e}"));
+            assert!(
+                output.status.success(),
+                "could not create a junction: {}{}",
+                String::from_utf8_lossy(&output.stdout),
+                String::from_utf8_lossy(&output.stderr)
+            );
+            self.0.push(link.to_path_buf());
+        }
+    }
+
+    impl Drop for Links {
+        fn drop(&mut self) {
+            for link in self.0.iter().rev() {
+                let _ = fs::remove_dir(link);
+            }
+        }
+    }
+
+    /// Photo folder `photos` with the loop `a -> b -> a` (a junction needs an existing target, so `b` is a real folder
+    /// first, then replaced by a junction to `a`). Returns the photo folder.
+    fn photos_with_loop(root: &TempRoot, links: &mut Links) -> PathBuf {
+        let canonical = fs::canonicalize(root.path()).unwrap();
+        let text = canonical.to_string_lossy().into_owned();
+        let base = PathBuf::from(text.strip_prefix(r"\\?\").unwrap_or(&text));
+        let photos = base.join("photos");
+        let b = photos.join("b");
+        fs::create_dir_all(&b).unwrap();
+        let a = photos.join("a");
+        links.junction(&a, &b);
+        fs::remove_dir(&b).unwrap();
+        links.junction(&b, &a);
+        photos
+    }
+
+    // C#: PhysicalFileSystemReparseTests.ValidateNoEscapeViaReparsePoint_ReparseLoop_FailsClosed
+    #[test]
+    #[ignore = "native"]
+    fn validate_no_escape_via_reparse_point_reparse_loop_fails_closed() {
+        let root = TempRoot::new("rvs06-policy");
+        let mut links = Links::default();
+        let photos = photos_with_loop(&root, &mut links);
+        let destination = photos.join("a").join("processed").join("photo.jpg");
+
+        let check = validate_no_escape_via_reparse_point(
+            &photos.to_string_lossy(),
+            &destination.to_string_lossy(),
+            &PhysicalFileSystem,
+        );
+
+        assert_eq!(check, Ok(ActionDestinationCheck::EscapesSourceFolder));
+    }
+
+    // C#: PhysicalFileSystemReparseTests.ValidateNoEscapeViaReparsePoint_OrdinaryDestinationBesideLoop_StaysOk
+    #[test]
+    #[ignore = "native"]
+    fn validate_no_escape_via_reparse_point_ordinary_destination_beside_loop_stays_ok() {
+        let root = TempRoot::new("rvs06-policy-beside");
+        let mut links = Links::default();
+        let photos = photos_with_loop(&root, &mut links);
+        let destination = photos.join("sel").join("photo.jpg");
+
+        let check = validate_no_escape_via_reparse_point(
+            &photos.to_string_lossy(),
+            &destination.to_string_lossy(),
+            &PhysicalFileSystem,
+        );
+
+        assert_eq!(check, Ok(ActionDestinationCheck::Ok));
+    }
+}
