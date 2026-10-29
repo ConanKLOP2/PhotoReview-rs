@@ -86,3 +86,46 @@ No mutant exposed a production bug; no production code was changed.
 
 The PARITY rows stay `Partial`: the verdict is clean only for `compaction.rs`, `reconcile.rs`, `startup_recovery.rs` and
 `transaction.rs`; the rest is a sample.
+
+## Second pass: `journal.rs` completed (claim `PARTIAL-mut-journal-a`, machine A, 2026-10-29)
+
+Claude lane (both Codex slots were busy with the release and HTTP lanes). The 85 mutants of `journal.rs` that the first
+pass never ran were run now. The first-pass output was not kept per mutant, so the second pass re-ran every `journal.rs`
+mutant outside the compaction functions (those were already covered cleanly by passes 2 to 4 above): lines 56-263
+(constants, text catalog, options), 303-715 (gate, accessors, `append`, `dismiss`, the readers, `read_latest_entry`,
+`append_if*`, `append_lines`, `open_append_with_retry`, `tail_lacks_newline`) and 831-1013 (the `ReconcileJournal` impl,
+`LatestEntries`, the reverse tail reader, `parse_committed_moves`, `read_to_end`, `decode_stream_reader_lines`,
+`is_sharing_or_lock_violation`). Together with the first pass every one of the 179 mutants has now received a verdict.
+
+Command shape: `cargo mutants -p pr-core --baseline skip --timeout 90 -j 1 --file '**/file_actions/journal.rs' -F
+'journal\.rs:(<line numbers>):' --cargo-arg=--test=file_actions_journal --cargo-arg=--test=journal_mutation_killers
+[--cargo-arg=--test=journal_reconcile --cargo-arg=--test=journal_startup_recovery | --cargo-arg=--test=file_actions_journal_compaction
+--cargo-arg=--test=file_actions_compaction]`, one own target dir and output dir per process, at most two processes. Recycle
+Bin check: none of these binaries touches the real bin (fake file system only); the `#[ignore]`d native real-disk tests
+were not run.
+
+| Group | Mutants | Caught | Missed | Timeout | Unviable |
+|---|---|---|---|---|---|
+| readers, `dismiss`, `append_if*`, `read_latest_entry`, `ReconcileJournal` impl, `LatestEntries` (lines 360-660, 831-887) | 68 | 49 | 1 | 0 | 18 |
+| gate, `append_lines`, `open_append_with_retry`, `tail_lacks_newline`, reverse reader, `decode_stream_reader_lines` (303-329, 654-715, 894-1013) | 67 | 47 | 1 | 14 | 5 |
+| constants, text catalog, options (56-263) | 19 | 16 | 1 | 1 | 1 |
+| Unique mutants of this pass (the groups overlap on a few lines) | 144 | 102 | 3 | 15 | 24 |
+
+Timeouts are hangs (an endless retry, gate or read loop) and count as detected: `:312` (2), `:327`, `:329`, `:667`,
+`:693` (2), `:695`, `:924`, `:938`, `:940`, `:999` and `:58:50` `/` (window 0). Three mutants survived:
+
+| Mutant | Verdict |
+|---|---|
+| `journal.rs:360` `impl Debug for OperationJournal::fmt` -> `Ok(Default)` | Killed by `operation_journal_debug_names_the_type_the_path_and_the_compaction_flag` (`journal_mutation_killers_3.rs`) |
+| `journal.rs:58:50` `REVERSE_READ_INITIAL_WINDOW` `256 * 1024` `*` -> `+` | Killed by `reverse_read_initial_window_is_256_kib` (the window only sizes the first read, the result is identical for any window, so the constant is pinned) |
+| `journal.rs:914:48` `first_newline + 1` -> `first_newline * 1` in `read_committed_moves_reverse` | Equivalent: the chunk then starts at the line feed itself, which only adds an empty first line, and the next boundary ends before that line feed where the last piece of a chunk is parsed without a terminator anyway. The `-` variant of the same line is caught by `file_actions_journal` (a move straddling a window edge). `read_committed_moves_big_journal_with_moves_only_at_the_head_widens_until_it_finds_them` stays as a regression test of the widening loop |
+
+Proof: cargo-mutants against the new binary ALONE (`--cargo-arg=--test=journal_mutation_killers_3`, `-F 'journal\.rs:(360|58):'`):
+`:360` caught, `:58:50` `+` caught, `:58:50` `/` timeout (hang); the `-F` also matched four `dismiss` field-deletion mutants
+(`:470`-`:473`) that this binary does not cover and that `file_actions_journal` and `journal_mutation_killers` already catch.
+
+No mutant exposed a production bug; no production code was changed, so no cross-check against the C# journal was needed.
+
+Verdict: the `journal.rs` mutation verdict is complete and clean (179 of 179 covered, every survivor killed or explained).
+Still NOT run, unchanged: `journal_line.rs` 15 of 141, `journal_rules.rs` 2 of 22, `recovery_retry.rs` 30 of 160, and
+the native `#[ignore]`d twins.
