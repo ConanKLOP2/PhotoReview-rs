@@ -17,7 +17,7 @@ use std::sync::Arc;
 use pr_app::input::primitives::PointD;
 use pr_app::input::review_command::{ReviewCommand, ReviewCommandType};
 use pr_app::services::contracts::ZoomPromptService;
-use pr_app::viewmodels::main::{ChangeSet, MainViewModel, SettingsSource, ViewerHandle};
+use pr_app::viewmodels::main::{ChangeSet, MainViewModel, PresentationBridge, SettingsSource, ViewerHandle};
 use pr_app::viewmodels::viewer_state::ViewerProperty;
 use pr_core::abstractions::{DialogService, FileSystem, Log, UiDispatcher};
 use pr_core::io::physical::PhysicalFileSystem;
@@ -40,6 +40,11 @@ pub trait MainWindowInputServices {
     fn viewport(&self) -> Rc<dyn ViewportControllerApi>;
     /// C# `_viewModel.Viewer`.
     fn viewer(&self) -> ViewerHandle;
+    /// The view model's presentation bridge, whose `SourceSizeSwapping` hook `register` points at `ShellInput::on_source_size_swapping` (C# `PointerInputController`
+    /// constructor: `_viewer.SourceSizeSwapping += OnSourceSizeSwapping`). `None` (the default) installs nothing.
+    fn presentation_bridge(&self) -> Option<PresentationBridge> {
+        None
+    }
     /// C# `_options.SettingsStore` + `_viewModel.Settings`: `current()` for reads, `begin_edit`/`commit_edit` for the saves (R2-F-27).
     fn settings(&self) -> SettingsSource;
     /// C# `_options.ZoomPrompt` (null when the window has no prompt).
@@ -393,6 +398,7 @@ impl MainWindowInput {
             }
         });
         this.register_drop_target();
+        this.install_source_size_swapping();
         let weak = Rc::downgrade(&this);
         let subscription = this.services.window().subscribe(
             ShellWindowEvent::Closed,
@@ -404,6 +410,23 @@ impl MainWindowInput {
         );
         this.closed_subscription.set(Some(subscription));
         this
+    }
+
+    /// C# `PointerInputController` constructor `ViewerState.SourceSizeSwapping += OnSourceSizeSwapping` (ADR 0008 amendment R4): after a RAW preview is replaced by the
+    /// full decode of another size the image point at the viewport centre is re-anchored. The hook runs inside `PresentationBridge::on_set_current_image` while the
+    /// viewer is borrowed mutably (the `before` argument is the viewer state) and possibly while the view model is borrowed, so it touches neither: it only needs the
+    /// input's own state, and a busy input (`try_borrow_mut` inside) skips the re-anchor instead of panicking (PRs #318, #332, #333). The hook holds a `Weak`, so it
+    /// neither keeps the input alive nor outlives it.
+    fn install_source_size_swapping(self: &Rc<Self>) {
+        let Some(bridge) = self.services.presentation_bridge() else {
+            return;
+        };
+        let weak = Rc::downgrade(self);
+        bridge.set_source_size_swapping_hook(Some(Box::new(move |before| {
+            if let Some(input) = weak.upgrade() {
+                input.input.on_source_size_swapping(before);
+            }
+        })));
     }
 
     /// Rule 6: the drop target opens the first dropped file inline; a refused registration is a warning, not an error.
@@ -476,6 +499,9 @@ impl MainWindowInput {
     pub fn on_window_closed(&self) {
         if let Some(subscription) = self.closed_subscription.take() {
             self.services.window().unsubscribe(subscription);
+        }
+        if let Some(bridge) = self.services.presentation_bridge() {
+            bridge.set_source_size_swapping_hook(None);
         }
         // Taken out first: the revoke talks to the OS and must not run under the borrow (T2, T3).
         let target = self.drop_target.borrow_mut().take();
@@ -588,6 +614,7 @@ struct MainWindowInputAdapter {
     window: Rc<dyn ShellWindowApi>,
     viewport: Rc<dyn ViewportControllerApi>,
     viewer: ViewerHandle,
+    bridge: PresentationBridge,
     settings: SettingsSource,
     zoom_prompt: Option<Rc<dyn ZoomPromptService>>,
     dialogs: Option<Rc<dyn DialogService>>,
@@ -599,12 +626,16 @@ struct MainWindowInputAdapter {
 impl MainWindowInputAdapter {
     fn new(inner: &MainWindowInner) -> Self {
         let extensions = &inner.options().extensions;
-        let settings = inner.view_model().borrow().settings_source();
+        let (settings, bridge) = {
+            let view_model = inner.view_model().borrow();
+            (view_model.settings_source(), view_model.bridge().clone())
+        };
         Self {
             id: inner.id(),
             window: Rc::clone(inner.window()) as Rc<dyn ShellWindowApi>,
             viewport: Rc::clone(inner.viewport()) as Rc<dyn ViewportControllerApi>,
             viewer: inner.viewer(),
+            bridge,
             settings,
             zoom_prompt: extensions.get::<ZoomPromptOption>().map(|option| Rc::clone(&option.0)),
             dialogs: extensions
@@ -625,6 +656,9 @@ impl MainWindowInputServices for MainWindowInputAdapter {
     }
     fn viewport(&self) -> Rc<dyn ViewportControllerApi> {
         Rc::clone(&self.viewport)
+    }
+    fn presentation_bridge(&self) -> Option<PresentationBridge> {
+        Some(self.bridge.clone())
     }
     fn viewer(&self) -> ViewerHandle {
         self.viewer.clone()
