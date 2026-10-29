@@ -31,6 +31,15 @@ pub struct MainWindowOverlayViewModel {
     last_model: RefCell<Option<OverlayModel>>,
     /// Same for `settings()` (the overlay reads it on hover and paint).
     last_settings: RefCell<Option<Arc<AppSettings>>>,
+    /// Writes that arrived while a modal command held the view model (Apply in Settings changes the language and the settings of the main window behind it).
+    deferred: RefCell<Deferred>,
+}
+
+/// What the overlay asked for while the view model was borrowed by a modal command; applied by [`MainWindowOverlayViewModel::apply_deferred`].
+#[derive(Default)]
+struct Deferred {
+    settings: Option<Arc<AppSettings>>,
+    refresh_localized_text: bool,
 }
 
 impl std::fmt::Debug for MainWindowOverlayViewModel {
@@ -52,6 +61,28 @@ impl MainWindowOverlayViewModel {
             log,
             last_model: RefCell::new(None),
             last_settings: RefCell::new(None),
+            deferred: RefCell::new(Deferred::default()),
+        }
+    }
+
+    /// True while a modal command (`show_settings`, a folder picker) holds the view model mutably inside its nested message loop.
+    fn view_model_busy(&self) -> bool {
+        self.view_model.try_borrow_mut().is_err()
+    }
+
+    /// Applies the settings and the language refresh that were asked for while the view model was busy (the last settings win). Called after every modal
+    /// command and before the next write; a no-op when nothing is pending or the view model is still busy. Found by the exe walkthrough 2 2026-10-29: Apply in
+    /// Settings panicked here with "already borrowed" and the main window kept its old language until the next change.
+    pub fn apply_deferred(&self) {
+        if self.view_model_busy() {
+            return;
+        }
+        let pending = std::mem::take(&mut *self.deferred.borrow_mut());
+        if let Some(settings) = pending.settings {
+            self.set_settings(settings);
+        }
+        if pending.refresh_localized_text {
+            self.refresh_localized_text();
         }
     }
 }
@@ -82,15 +113,26 @@ impl OverlayViewModel for MainWindowOverlayViewModel {
     /// `window.update_view_model(|vm| vm.set_settings(settings))` (C# `_viewModel.Settings = settings`, the change set is applied by the window); no window: `view_model.borrow_mut().set_settings(..)` and
     /// the change set dropped (shutdown).
     fn set_settings(&self, settings: Arc<AppSettings>) {
+        if self.view_model_busy() {
+            self.deferred.borrow_mut().settings = Some(settings);
+            return;
+        }
         if let Some(window) = self.window() {
             window.update_view_model(|vm| vm.set_settings(settings));
         } else {
-            self.view_model.borrow_mut().set_settings(settings);
+            // Not busy (checked above) and on the UI thread: this borrow cannot fail.
+            if let Ok(mut view_model) = self.view_model.try_borrow_mut() {
+                view_model.set_settings(settings);
+            }
         }
     }
 
     /// `window.update_view_model(|vm| vm.refresh_localized_text())`.
     fn refresh_localized_text(&self) {
+        if self.view_model_busy() {
+            self.deferred.borrow_mut().refresh_localized_text = true;
+            return;
+        }
         if let Some(window) = self.window() {
             window.update_view_model(|vm| vm.refresh_localized_text());
         }
@@ -111,6 +153,7 @@ impl OverlayViewModel for MainWindowOverlayViewModel {
     fn pick_and_open_folder(&self) {
         if let Some(window) = self.window() {
             window.update_view_model(|vm| vm.pick_and_open_folder());
+            self.apply_deferred();
         }
     }
 
@@ -118,6 +161,7 @@ impl OverlayViewModel for MainWindowOverlayViewModel {
     fn show_settings(&self) {
         if let Some(window) = self.window() {
             window.update_view_model(|vm| vm.show_settings());
+            self.apply_deferred();
         }
     }
 
@@ -153,6 +197,7 @@ impl OverlayViewModel for MainWindowOverlayViewModel {
     fn clear_cache(&self) {
         if let Some(window) = self.window() {
             window.update_view_model(|vm| vm.clear_cache());
+            self.apply_deferred();
         }
     }
 
@@ -160,6 +205,7 @@ impl OverlayViewModel for MainWindowOverlayViewModel {
     fn remove_duplicates(&self, numbered: bool) {
         if let Some(window) = self.window() {
             window.update_view_model(|vm| vm.remove_duplicates(numbered));
+            self.apply_deferred();
         }
     }
 }
