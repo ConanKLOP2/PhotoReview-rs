@@ -754,6 +754,48 @@ fn num_i64(v: Option<&Value>, what: &str) -> Result<i64, CompareError> {
     }
 }
 
+/// Parse the CLI threshold object without adding a JSON dependency. Missing keys keep defaults.
+pub(crate) fn parse_thresholds(text: &str) -> Result<Thresholds, CompareError> {
+    let text = text.trim_start_matches('\u{feff}');
+    let mut reader = Reader {
+        bytes: text.as_bytes(),
+        pos: 0,
+    };
+    let root = reader.value(0)?;
+    reader.ws();
+    let Value::Obj(props) = root else {
+        return Err(CompareError::new("thresholds must be an object"));
+    };
+    if reader.pos != text.len() {
+        return Err(CompareError::new("trailing threshold data"));
+    }
+    let mut result = Thresholds::default();
+    let mut seen = std::collections::HashSet::new();
+    for (key, value) in props {
+        if !seen.insert(key.clone()) {
+            return Err(CompareError::new("duplicate threshold key"));
+        }
+        match key.as_str() {
+            "ratioTolerance" => result.ratio_tolerance = num_f64(Some(&value)),
+            "absoluteFloorMs" => result.absolute_floor_ms = num_f64(Some(&value)),
+            "minimumRepeats" => {
+                result.minimum_repeats = usize::try_from(num_i64(Some(&value), &key)?)
+                    .map_err(|_| CompareError::new("invalid minimumRepeats"))?
+            }
+            _ => return Err(CompareError::new(format!("unknown threshold: {key}"))),
+        }
+    }
+    if !result.ratio_tolerance.is_finite()
+        || result.ratio_tolerance < 0.0
+        || !result.absolute_floor_ms.is_finite()
+        || result.absolute_floor_ms < 0.0
+        || result.minimum_repeats == 0
+    {
+        return Err(CompareError::new("invalid thresholds"));
+    }
+    Ok(result)
+}
+
 /// Parse a `BenchmarkBatchSummary` JSON text (UTF-8 BOM and CRLF tolerated) into a [`Summary`].
 ///
 /// `correctness_only` comes from the profile registry; `metrics` come from `Reports[i].Metrics` when `Reports` and

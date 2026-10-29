@@ -13,7 +13,7 @@ use std::sync::Arc;
 use pr_app::input::primitives::{PointD, SizeD};
 use pr_app::input::surface::{RenderFrameHandler, RenderHookId};
 use pr_app::services::contracts::ZoomPromptService;
-use pr_app::viewmodels::main::{ChangeSet, MainViewModel, SettingsSource, ViewerHandle};
+use pr_app::viewmodels::main::{ChangeSet, MainViewModel, PresentationBridge, SettingsSource, ViewerHandle};
 use pr_app::viewport::types::ViewportLayout;
 use pr_core::abstractions::{DisplayTiming, Log, UiDispatcher};
 use pr_platform_win::host::contracts::ShellWindowApi;
@@ -266,6 +266,10 @@ impl MainWindowInputServices for FakeServices {
     }
     fn viewer(&self) -> ViewerHandle {
         self.viewer.clone()
+    }
+    fn presentation_bridge(&self) -> Option<PresentationBridge> {
+        // The real adapter hands out the view model's bridge; `try_borrow` because the window-closed path may run while the env is borrowed.
+        self.env.try_borrow().ok().map(|env| env.vm.bridge().clone())
     }
     fn settings(&self) -> SettingsSource {
         self.env.borrow().settings.clone()

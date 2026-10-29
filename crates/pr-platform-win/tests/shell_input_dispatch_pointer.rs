@@ -324,6 +324,37 @@ fn compare_visible_takes_press_and_wheel_away_from_the_image() {
     assert!(rig.viewer.borrow().is_fit());
 }
 
+// C#: ShellViewingTests.Compare_TogglesShowsBothImages_AndClicksSelectTheCellUnderThePoint (the click half) / WPF MainWindow.CompareLeft_Click + CompareRight_Click.
+// The Win32 baseline never wired the press to TrySelectCompareAt, so "click to select" did nothing in the exe (walkthrough 3).
+#[test]
+fn compare_visible_left_press_on_a_cell_selects_that_cell() {
+    let rig = Rig::configured(|s| s.click_to_zoom_enabled = true);
+    rig.fit();
+    rig.host.is_compare_visible.set(true);
+
+    rig.mouse(WM_LBUTTONDOWN, 250, 300, 0);
+    rig.mouse(WM_LBUTTONDOWN, 750, 300, 0);
+
+    assert_eq!(vec![true, false], *rig.host.compare_selections.borrow());
+    assert!(rig.viewer.borrow().is_fit(), "the press never reaches the image");
+}
+
+// C#: same test, the miss half: the margin outside the panel selects nothing; so do the other buttons and a press with the compare view hidden.
+#[test]
+fn compare_visible_press_outside_a_cell_or_with_another_button_selects_nothing() {
+    let rig = Rig::configured(|s| s.click_to_zoom_enabled = true);
+    rig.fit();
+    rig.host.is_compare_visible.set(true);
+
+    rig.mouse(WM_LBUTTONDOWN, 2, 2, 0);
+    rig.mouse(WM_MBUTTONDOWN, 250, 300, 0);
+    assert!(rig.host.compare_selections.borrow().is_empty());
+
+    rig.host.is_compare_visible.set(false);
+    rig.mouse(WM_LBUTTONDOWN, 250, 300, 0);
+    assert!(rig.host.compare_selections.borrow().is_empty());
+}
+
 // ---- middle button ----
 
 // C#: PointerInputTests.MiddleClick_RunsTheConfiguredAction

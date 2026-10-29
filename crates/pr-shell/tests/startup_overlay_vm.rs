@@ -71,6 +71,34 @@ fn overlay_vm_reads_while_a_modal_command_holds_the_view_model_return_the_last_v
 }
 
 #[test]
+fn overlay_vm_writes_while_a_modal_command_holds_the_view_model_are_applied_afterwards() {
+    // new: exe walkthrough 2 2026-10-29 (no C# twin). Apply in Settings changes the language and the settings of the main window behind the modal dialog:
+    // the overlay's posted refresh used to panic with "already borrowed" (app.log `Unhandled panic`) and the main window kept the old text.
+    let env = MainEnv::new();
+    let view_model = Rc::new(RefCell::new(env.vm));
+    let slot = Rc::new(RefCell::new(None));
+    let vm = MainWindowOverlayViewModel::new(view_model.clone(), &slot, Arc::new(NullLog));
+    let original = vm.settings();
+    let changed = Arc::new(pr_core::settings::app_settings::AppSettings {
+        ui_language: "zz".to_owned(),
+        ..pr_core::settings::app_settings::AppSettings::default()
+    });
+    assert_ne!(original.ui_language, changed.ui_language);
+    let modal = view_model.borrow_mut();
+    vm.set_settings(changed.clone());
+    vm.refresh_localized_text();
+    vm.apply_deferred(); // still busy: nothing happens, nothing panics
+    drop(modal);
+    assert_eq!(
+        view_model.borrow().settings().ui_language,
+        original.ui_language,
+        "not applied before the modal command ends"
+    );
+    vm.apply_deferred();
+    assert_eq!(view_model.borrow().settings().ui_language, "zz");
+}
+
+#[test]
 #[ignore = "native: needs desktop; hidden MainWindow"]
 fn overlay_vm_read_only_dialogs_allow_a_shared_view_model_borrow() {
     // C# ViewModelOverlayCommands: four read-only dialogs; D-W8B6-27 shared-borrow guard.

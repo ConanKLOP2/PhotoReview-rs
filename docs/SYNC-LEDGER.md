@@ -33,6 +33,10 @@ Assets synced from that commit: see `assets/SYNC-MANIFEST.txt`. Goldens regenera
 | `02aaee0a` (#532) | Language convention documentation | No | Reference only | — |
 | `7eaee2a2` (#533) | Unknown `Operation` in typed/imported action list is a JSON error; config loader remains lenient | Yes | Rust action-list parser checked against the regenerated golden; config loader parity tracked separately (`D-actions-unknown-operation`). Qualification: C# `LenientEnumConverter.TryReadStrict` also accepts a defined number encoded as a string, while the Rust action-list reader accepts defined JSON numbers but not numeric strings; matching that input is still open | baseline lane (#182) |
 
+## G-INPUT input-scripts (note, 2026-10-29)
+
+`input-scripts` is not an `oracle-cs` golden: it is the C# recording `tests/Fixtures/golden/input-scripts.v1.json` (WP-10, WPF `MainWindow`), synced by `tools/sync-from-csharp.ps1` to `tests/fixtures/golden/input-scripts.v1.json` (listed in `assets/SYNC-MANIFEST.txt`) and replayed by `crates/pr-platform-win/tests/shell_input_dispatch/g_input.rs` (91 scripts, 767 checkpoints, all match). There is nothing to regenerate with `tools/oracle.ps1`; a re-recording happens in the C# repo and arrives through a sync.
+
 ## Oracle diff, d92d6aae to 7eaee2a2
 
 The driver ran every oracle command twice at `7eaee2a2`, with `turbojpeg.dll` and `libraw.dll` present. Consecutive outputs were byte-identical, including `turbojpeg-native-decode`, `ordinal-casing-table`, and `libraw-decoder-native`. The final goldens are preserved as generated. The 288 goldens outside this table differ from master only in `csharp_commit`, which is part of the oracle format; their cases are unchanged.
