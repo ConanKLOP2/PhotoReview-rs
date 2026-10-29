@@ -560,10 +560,12 @@ impl ShellInput {
     pub fn on_source_size_swapping(&self, before: &ViewerState) {
         let core = &self.core;
         let continuation = {
+            // The production hook fires from the presenter, possibly inside another input call: a busy input skips the re-anchor (no RefCell panic, #318/#332/#333).
+            let (Ok(mut guard), Ok(surface)) = (core.state.try_borrow_mut(), core.deps.surface.try_borrow()) else {
+                return;
+            };
             let _busy = BusyScope::enter(&core.in_pointer_call);
-            let mut guard = core.state.borrow_mut();
             let InputState { pointer, versions, .. } = &mut *guard;
-            let surface = core.deps.surface.borrow();
             pointer.on_source_size_swapping(before, &*surface, versions);
             pointer.take_pending_continuation()
         };

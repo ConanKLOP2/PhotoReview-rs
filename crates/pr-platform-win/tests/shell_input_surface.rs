@@ -871,3 +871,107 @@ fn the_real_controller_forwards_capture_and_release_to_the_window() {
         rig.window.cursor.get()
     );
 }
+
+// ---- SourceSizeSwapping wiring (ADR 0008 amendment R4) -----------------------------------------------------------------------------------------
+
+/// The recorder's first image (G-INPUT `run`): initial view, then Fit, each followed by `OnViewerChanged`.
+fn show_first_image(rig: &FeatureRig) {
+    let changed = || {
+        rig.drain();
+        rig.viewport.invalidate_layout();
+        rig.drain();
+    };
+    rig.input.input().apply_initial_view();
+    changed();
+    rig.input.input().apply_fit();
+    changed();
+}
+
+/// Runs a viewport command and settles like the replay.
+fn run_command(rig: &FeatureRig, command: ReviewCommand) {
+    rig.input.input().execute(command);
+    rig.drain();
+    rig.viewport.invalidate_layout();
+    rig.drain();
+}
+
+/// Publishes a same-source size swap the way the presenter does (`PresentationBridge::on_set_current_image` with `is_same_source_swap`), then settles the
+/// viewport like `ShellMainWindow.OnViewerChanged` (content refresh, layout, Render-priority jobs).
+fn publish_swap(rig: &FeatureRig, width: i32, height: i32) {
+    use pr_app::coordinators::presenter::state::ImageChange;
+    rig.content.bitmap.set((f64::from(width), f64::from(height)));
+    // The hook runs while the viewer is borrowed mutably: the content cache must not be re-read meanwhile (as in the G-INPUT replay).
+    rig.content.suspended.set(true);
+    let bridge = rig.env.borrow().vm.bridge().clone();
+    bridge.on_set_current_image(
+        &ImageChange {
+            presented_path: None,
+            original_width: width,
+            original_height: height,
+            is_same_source_swap: true,
+        },
+        false,
+    );
+    rig.content.suspended.set(false);
+    rig.drain();
+    rig.viewport.invalidate_layout();
+    rig.drain();
+}
+
+// new (C# PointerInputController ctor `_viewer.SourceSizeSwapping += OnSourceSizeSwapping`; golden checkpoint swap-raw-size-at-100pct): the real window
+// registration points the bridge's swap hook at `ShellInput::on_source_size_swapping`, so a RAW-size swap at 100% keeps the image point at the viewport
+// centre. Without the hook the offsets would stay where they were (the zoomed view jumps by half the size change). Mutation: do not install the hook.
+#[test]
+fn source_size_swap_at_100_percent_re_anchors_the_centre_point_through_the_bridge() {
+    let (rig, _) = images_rig(&["a.jpg"]);
+    show_first_image(&rig);
+    run_command(&rig, ReviewCommand::ZOOM_ACTUAL_SIZE);
+    let (h0, v0) = (rig.viewport.horizontal_offset(), rig.viewport.vertical_offset());
+    let (vw, vh) = (rig.viewport.viewport_width(), rig.viewport.viewport_height());
+    // The image point at the viewport centre, in normalized image coordinates.
+    let (nx, ny) = ((h0 + vw / 2.0) / 3000.0, (v0 + vh / 2.0) / 2000.0);
+    assert!(
+        h0 > 0.0 && v0 > 0.0,
+        "centred zoomed view: {h0},{v0} vp {vw}x{vh} zoom {:?} fit {} warn {:?}",
+        rig.viewer.borrow().effective_zoom(),
+        rig.viewer.borrow().is_fit(),
+        rig.warnings()
+    );
+
+    publish_swap(&rig, 3016, 2016);
+
+    let (h1, v1) = (rig.viewport.horizontal_offset(), rig.viewport.vertical_offset());
+    let (want_h, want_v) = (nx * 3016.0 - vw / 2.0, ny * 2016.0 - vh / 2.0);
+    assert!(
+        (h1 - want_h).abs() < 0.5,
+        "horizontal {h1} != {want_h} (not re-anchored: {h0})"
+    );
+    assert!(
+        (v1 - want_v).abs() < 0.5,
+        "vertical {v1} != {want_v} (not re-anchored: {v0})"
+    );
+    assert!(
+        (h1 - h0).abs() > 1.0 || (v1 - v0).abs() > 1.0,
+        "the offsets must have moved"
+    );
+}
+
+// new (golden checkpoint swap-raw-size-keeps-fitwidth): FitWidth survives a swap through the bridge and the hook's re-anchor does not break it.
+#[test]
+fn source_size_swap_keeps_fit_width_through_the_bridge() {
+    let (rig, _) = images_rig(&["a.jpg"]);
+    show_first_image(&rig);
+    run_command(&rig, ReviewCommand::FIT_WIDTH);
+    publish_swap(&rig, 3240, 2160);
+    let vw = rig.viewport.viewport_width();
+    let zoom = rig.viewer.borrow().effective_zoom().expect("zoom");
+    assert!((zoom - vw / 3240.0).abs() < 0.001, "fit width zoom {zoom} for {vw}");
+    assert!(!rig.viewer.borrow().is_fit());
+    assert!(
+        (rig.viewport.horizontal_offset(), rig.viewport.vertical_offset())
+            .0
+            .abs()
+            < 0.5,
+        "no horizontal scroll at fit width"
+    );
+}
