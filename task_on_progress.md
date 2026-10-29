@@ -44,6 +44,8 @@ Keep this file under about 10 KB. When it grows, move old sections verbatim to `
 
 - **cx-core2 (2026-10-30):** JSON 97/312 tested: 92 caught, 4 equivalent MISSED, 1 unviable, 0 timeout; 215 not run. New `w2_json_killers` 3 pass; covering core 36/App 128/native 7 pass; per-crate fmt/Clippy and doc-links pass. F-21 Done retained, other lane rows Partial; handoff unstaged (Git index.lock permission denied); [evidence](docs/reviews/CX-CORE2-2026-10-30.md).
 
+- **cx-json2 (2026-10-30):** X-stj-reader Partial; added 123/215 JSON identities: 112 caught, 3 equivalent MISSED, 5 compile-unviable, 3 timeouts; combined 220/312, 92 not run. Killers2 4 pass, fmt/Clippy pass; unstaged for orchestrator. [Evidence](docs/reviews/CX-JSON2-2026-10-30.md).
+
 ## Archives (`docs/archive/`, verbatim, history only)
 Find any section title with `grep -n '^## ' <file>`. Original section order is kept inside each file.
 
