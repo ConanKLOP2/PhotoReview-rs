@@ -1451,6 +1451,8 @@ struct SwapDecoder {
     sizes: std::collections::HashMap<String, SwapSizes>,
     original_gate: Arc<support::preview_fakes::Gate>,
     next_gate: Arc<support::preview_fakes::Gate>,
+    /// Unbounded (full-resolution) decodes started, counted before the gate wait.
+    unbounded_decodes: std::sync::atomic::AtomicUsize,
 }
 
 impl SwapDecoder {
@@ -1459,6 +1461,7 @@ impl SwapDecoder {
             sizes: sizes.iter().map(|(name, size)| ((*name).to_owned(), *size)).collect(),
             original_gate: support::preview_fakes::Gate::new(),
             next_gate: support::preview_fakes::Gate::new(),
+            unbounded_decodes: std::sync::atomic::AtomicUsize::new(0),
         })
     }
 
@@ -1479,6 +1482,7 @@ impl pr_imaging::decoder_traits::ImageDecoder for SwapDecoder {
         let path = request.path.to_string_lossy();
         let (original_width, original_height, decoded_width, decoded_height) = self.size_of(&path);
         if request.decode_box().is_unbounded() {
+            self.unbounded_decodes.fetch_add(1, std::sync::atomic::Ordering::SeqCst);
             let gate = if path.ends_with("a.jpg") {
                 &self.original_gate
             } else {
@@ -1666,4 +1670,84 @@ fn select_compare_left_when_already_selected_reports_no_change() {
     let again = env.vm.select_compare_left();
 
     assert!(again.is_empty());
+}
+
+// ---- zoom changed by the shell input (zoom-detail-wire) -----------------------------------------------------------------------------
+
+/// What the shell input does for D1 / wheel / keys / click zoom: it changes the shared viewer directly (no view-model command), then tells the view model
+/// once that the zoom mode changed (C# `ViewerState.ZoomModeChanged -> presenter.SetViewerZoom`, MainViewModel line 117).
+fn zoom_like_the_input(env: &mut MainEnv) {
+    env.viewer.borrow_mut().zoom_to_actual_size();
+    env.vm.on_viewer_zoom_mode_changed();
+}
+
+#[test]
+fn input_zoom_past_the_preview_size_starts_exactly_one_load_and_swaps_the_original_in() {
+    // New test: no C# twin (the C# viewer raises ZoomModeChanged itself; the Rust shell input forwards it through on_viewer_zoom_mode_changed).
+    let decoder = SwapDecoder::new(&[("a.jpg", (6720, 4480, 6720, 4480)), ("b.jpg", (6000, 4000, 6000, 4000))]);
+    let mut env = zoom_swap_env(Arc::clone(&decoder), 100);
+    assert!(!env.vm.presenter().zoom_detail().pending_load());
+
+    zoom_like_the_input(&mut env);
+    assert!(env.vm.presenter().zoom_detail().pending_load());
+    // a second notification of the same zoom (a repeated key) must not start a second load
+    env.vm.on_viewer_zoom_mode_changed();
+    decoder.original_gate.open();
+    env.settle();
+
+    assert_eq!(decoder.unbounded_decodes.load(std::sync::atomic::Ordering::SeqCst), 1);
+    assert!(env.vm.presenter().zoom_detail().is_showing_original());
+    assert!(!env.vm.presenter().zoom_detail().pending_load());
+    assert_eq!(env.viewer.borrow().zoom(), 1.0);
+}
+
+#[test]
+fn input_zoom_that_the_preview_already_covers_starts_no_load() {
+    // New test: the preview is 600 px wide; the smallest zoom (10 %) of a 5000 px original is 500 px, so nothing more is needed.
+    let decoder = SwapDecoder::new(&[("a.jpg", (5000, 3333, 5000, 3333)), ("b.jpg", (6000, 4000, 6000, 4000))]);
+    let mut env = zoom_swap_env(Arc::clone(&decoder), 100);
+    env.viewer.borrow_mut().set_zoom(0.1);
+    assert!(!env.viewer.borrow().is_fit());
+    env.vm.on_viewer_zoom_mode_changed();
+    env.pump();
+    assert!(!env.vm.presenter().zoom_detail().pending_load());
+    assert_eq!(decoder.unbounded_decodes.load(std::sync::atomic::Ordering::SeqCst), 0);
+}
+
+#[test]
+fn navigating_while_an_input_zoom_load_runs_drops_the_original() {
+    // New test (C# ZoomDetailTests.NavigatingAway_*: INV-1 / I-16 dropped on navigation).
+    let decoder = SwapDecoder::new(&[("a.jpg", (6720, 4480, 6720, 4480)), ("b.jpg", (6000, 4000, 6000, 4000))]);
+    let mut env = zoom_swap_env(Arc::clone(&decoder), 100);
+    zoom_like_the_input(&mut env);
+    assert!(env.vm.presenter().zoom_detail().pending_load());
+
+    env.vm.next();
+    decoder.original_gate.open();
+    decoder.next_gate.open();
+    env.settle();
+
+    // The viewer stays zoomed, so b.jpg may load ITS OWN original; the stale original of a.jpg (6720 px) must never be shown.
+    assert_eq!(
+        (
+            env.viewer.borrow().source_pixel_width(),
+            env.viewer.borrow().source_pixel_height()
+        ),
+        (6000, 4000),
+        "the late original of a.jpg must not replace b.jpg"
+    );
+}
+
+#[test]
+fn input_zoom_back_to_fit_before_the_original_lands_does_not_swap_it_in() {
+    // New test (C# ZoomDetailLoader.Update: Fit and no refresh hold keeps the preview).
+    let decoder = SwapDecoder::new(&[("a.jpg", (6720, 4480, 6720, 4480)), ("b.jpg", (6000, 4000, 6000, 4000))]);
+    let mut env = zoom_swap_env(Arc::clone(&decoder), 100);
+    zoom_like_the_input(&mut env);
+    env.viewer.borrow_mut().reset_fit(0.0, 0.0);
+    env.vm.on_viewer_zoom_mode_changed();
+    decoder.original_gate.open();
+    env.settle();
+    assert!(!env.vm.presenter().zoom_detail().is_showing_original());
+    assert_eq!(env.viewer.borrow().source_pixel_width(), 6720);
 }

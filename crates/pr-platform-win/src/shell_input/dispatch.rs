@@ -100,6 +100,11 @@ pub trait ShellInputHost {
     fn report_action_failed(&self, action_name: &str, error: &dyn Error);
     /// C# `Tr.MainMenuZoom` (the localized "Zoom"), read at call time because the language can change at run time.
     fn zoom_action_name(&self) -> String;
+    /// C# `ViewerState.ZoomModeChanged -> MainViewModel` (`presenter.SetViewerZoom(viewer.EffectiveZoom)`, MainViewModel.cs line 117): the viewer's
+    /// zoom mode was changed by the input (D1, wheel, keys, click zoom, Fit). The Rust viewer has no event, so `ShellInput` calls this once, after every
+    /// borrow of the pointer state, the surface and the viewer was released, so the host can lend the view model (and defer when it is busy). The zoom
+    /// detail loader starts the full-resolution decode from it. Default: nothing (hosts that have no presenter).
+    fn on_viewer_zoom_mode_changed(&self) {}
 }
 
 /// Everything `ShellInput::new` needs (the C# constructor arguments plus the services the Rust controllers take per call).
@@ -741,6 +746,7 @@ impl InputCore {
         let update = self.state.borrow_mut().pointer.take_viewer_update();
         if update.zoom_mode_changed {
             self.stop_kinetic_impl();
+            self.deps.host.on_viewer_zoom_mode_changed();
         }
         if !update.changes.is_empty() {
             self.deps.window.invalidate();
@@ -824,6 +830,7 @@ impl InputCore {
         let zoom_mode_changed = self.deps.viewer.borrow_mut().take_pending_zoom_mode_changed();
         if zoom_mode_changed {
             self.stop_kinetic_impl();
+            self.deps.host.on_viewer_zoom_mode_changed();
         }
         self.deps.window.invalidate();
         self.post_fit_step(step);
