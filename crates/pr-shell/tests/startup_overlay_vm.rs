@@ -56,6 +56,21 @@ fn overlay_vm_commands_without_a_window_do_not_panic() {
 }
 
 #[test]
+fn overlay_vm_reads_while_a_modal_command_holds_the_view_model_return_the_last_values() {
+    // new: exe walkthrough 2026-10-29 (no C# twin). A modal command runs inside `update_view_model` with the view model borrowed mutably; its nested
+    // message loop runs the overlay's posted refresh, which reads the model and the settings. Before the fix both reads panicked with "already mutably borrowed".
+    let env = MainEnv::new();
+    let view_model = Rc::new(RefCell::new(env.vm));
+    let slot = Rc::new(RefCell::new(None));
+    let vm = MainWindowOverlayViewModel::new(view_model.clone(), &slot, Arc::new(NullLog));
+    let model = vm.overlay_model();
+    let settings = vm.settings();
+    let _modal = view_model.borrow_mut();
+    assert_eq!(vm.overlay_model().status_text, model.status_text);
+    assert!(Arc::ptr_eq(&vm.settings(), &settings));
+}
+
+#[test]
 #[ignore = "native: needs desktop; hidden MainWindow"]
 fn overlay_vm_read_only_dialogs_allow_a_shared_view_model_borrow() {
     // C# ViewModelOverlayCommands: four read-only dialogs; D-W8B6-27 shared-borrow guard.

@@ -1,7 +1,8 @@
 use std::sync::atomic::AtomicBool;
 
 use pr_platform_win::dialogs::native::controls::basic::{
-    COMMON_CONTROL_CLASSES, ComboBoxControl, CommonControlsInit, ListBoxControl, row_layout,
+    BADGE_TEXT_FLAGS, COMMON_CONTROL_CLASSES, ComboBoxControl, CommonControlsInit, ListBoxControl, ROW_TEXT_FLAGS,
+    row_layout,
 };
 use pr_platform_win::win32::structs::{Point, Rect};
 
@@ -34,6 +35,20 @@ fn ensure_once_does_not_retry_after_a_failed_init() {
 #[test]
 fn combo_default_style_value() {
     assert_eq!(ComboBoxControl::DEFAULT_STYLE, 3 | 0x200 | 0x0001_0000 | 0x0020_0000);
+}
+
+#[test]
+fn draw_item_text_flags_keep_an_ampersand_literal() {
+    // C# NativeControls.cs ListBoxControl.DrawItem: DtSingleLine | DtVCenter | DtNoPrefix | DtEndEllipsis (badge: DtCenter instead of DtEndEllipsis).
+    // Exe walkthrough 2026-10-29: the port passed 0x80 (DT_NOCLIP) instead of DT_NOPREFIX (0x800), so "Mouse & zoom" drew as "Mouse _zoom".
+    const DT_NOPREFIX: u32 = 0x0800;
+    assert_eq!(ROW_TEXT_FLAGS, 0x20 | 0x04 | DT_NOPREFIX | 0x8000);
+    assert_eq!(BADGE_TEXT_FLAGS, 0x20 | 0x04 | 0x01 | DT_NOPREFIX);
+    assert_eq!(
+        (ROW_TEXT_FLAGS | BADGE_TEXT_FLAGS) & 0x80,
+        0,
+        "DT_NOCLIP must not stand in for DT_NOPREFIX"
+    );
 }
 
 #[test]
