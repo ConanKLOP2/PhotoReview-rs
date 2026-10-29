@@ -51,8 +51,8 @@ use super::handlers::{
     KeyInputPort, KeyboardMessageHandler, PointerInputPort, PointerMessageHandler, WheelInputPort, WheelMessageHandler,
 };
 use super::native::dpi_of;
-use crate::shell_viewing::compare::{CompareSide, layout as compare_layout};
 use crate::host::contracts::{EventHandlerId, PointD as HostPointD, ShellWindowApi, ShellWindowEvent};
+use crate::shell_viewing::compare::{CompareSide, layout as compare_layout};
 
 /// A hit test over a DIP point (C# `Func<PointD, bool>`).
 pub type PointTest = Rc<dyn Fn(PointD) -> bool>;
