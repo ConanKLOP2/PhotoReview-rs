@@ -7,9 +7,9 @@ mod support {
 
 mod file_action_fakes;
 
-use std::sync::Arc;
 use std::sync::atomic::{AtomicUsize, Ordering};
-use std::time::{Duration, SystemTime};
+use std::sync::{Arc, Condvar, Mutex, PoisonError};
+use std::time::{Duration, Instant, SystemTime};
 
 use pr_app::coordinators::presenter::state::{ImagePresenter, ImagePresenterDeps};
 use pr_app::coordinators::zoom_detail::{ThreadRunner, ZoomDetailEffect, ZoomDetailLoader, same_platform_image};
@@ -36,6 +36,9 @@ struct LoaderFixture {
     loader: ZoomDetailLoader,
     shown: Vec<pr_imaging::decode_types::PlatformImage>,
     wakes: Arc<AtomicUsize>,
+    /// Signalled after every wake so `finish` can wait on the wake counter itself: a worker queues its completion first and calls the wake callback
+    /// afterwards, so draining the queue between the two left `wakes < expected` with nothing queued and `wait_for_event` waited for an event that never came.
+    wake_signal: Arc<(Mutex<()>, Condvar)>,
 }
 
 impl LoaderFixture {
@@ -46,6 +49,8 @@ impl LoaderFixture {
         let clock = Arc::new(GenerationClock::default());
         let wakes = Arc::new(AtomicUsize::new(0));
         let wake_count = Arc::clone(&wakes);
+        let wake_signal = Arc::new((Mutex::new(()), Condvar::new()));
+        let signal = Arc::clone(&wake_signal);
         Self {
             root,
             clock: Arc::clone(&clock),
@@ -57,10 +62,14 @@ impl LoaderFixture {
                 Arc::new(ThreadRunner),
                 Arc::new(move || {
                     wake_count.fetch_add(1, Ordering::SeqCst);
+                    // Taking the lock before notifying means a waiter that checked the counter cannot miss this wake.
+                    let _guard = signal.0.lock().unwrap_or_else(PoisonError::into_inner);
+                    signal.1.notify_all();
                 }),
             ),
             shown: Vec::new(),
             wakes,
+            wake_signal,
         }
     }
 
@@ -99,13 +108,28 @@ impl LoaderFixture {
     }
 
     fn finish(&mut self, expected_completions: usize) {
+        let deadline = Instant::now() + support::preview_fakes::TIMEOUT;
         while self.wakes.load(Ordering::SeqCst) < expected_completions
             || self.loader.pending_load()
             || self.loader.queued_events() != 0
         {
+            assert!(
+                Instant::now() < deadline,
+                "zoom completions did not settle: expected {expected_completions}, current load: {}",
+                self.loader.pending_load()
+            );
             if self.loader.queued_events() == 0 {
+                // Hang guard (AGENTS.md: no fixed delays): wait until a completion was announced or is queued.
+                let guard = self.wake_signal.0.lock().unwrap_or_else(PoisonError::into_inner);
+                let (_guard, timeout) = self
+                    .wake_signal
+                    .1
+                    .wait_timeout_while(guard, support::preview_fakes::TIMEOUT, |_| {
+                        self.wakes.load(Ordering::SeqCst) < expected_completions && self.loader.queued_events() == 0
+                    })
+                    .unwrap_or_else(PoisonError::into_inner);
                 assert!(
-                    self.loader.wait_for_event(support::preview_fakes::TIMEOUT),
+                    !timeout.timed_out(),
                     "expected {expected_completions} zoom completions; current load: {}",
                     self.loader.pending_load()
                 );

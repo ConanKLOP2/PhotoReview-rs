@@ -441,13 +441,7 @@ fn write_then_read_round_trips_original_dimensions() {
     assert_eq!(result.original_height(), 3200);
 }
 
-#[test]
-#[ignore = "native: needs WIC"]
-fn encoded_entry_is_smaller_than_equivalent_png() {
-    // C#: PreviewCacheFileTests.EncodedEntryIsSmallerThanEquivalentPng (PNG half dropped: assert the JPEG entry is
-    // under 12.8 MB / 4 for a 2190x1460 gradient). Native twin lands with W4-11e.
-    todo!("W4-11e: native twin in crates/pr-platform-win/tests/preview_cache_wic.rs")
-}
+// Native twin: pr-platform-win/tests/wic_imaging_twins_preview.rs::encoded_entry_is_smaller_than_equivalent_png
 
 #[test]
 fn mismatched_version_is_rejected() {
@@ -1363,27 +1357,11 @@ fn read_as_decoded_image_platform_image_follows_codec() {
     );
 }
 
-#[test]
-#[ignore = "native: needs WIC"]
-fn committed_old_fixture_pixels_match_old_reader() {
-    // C#: PreviewCacheCrossVersionTests.CommittedOldFixture_ReadsWithNewCode_IdenticalToOldReader (pixel half; needs the
-    // WIC JPEG decoder of W4-11e to compare against the committed WPF pixels)
-    todo!("W4-11e: native twin in crates/pr-platform-win/tests/preview_cache_wic.rs")
-}
+// Open gap: C# PreviewCacheCrossVersionTests.CommittedOldFixture_ReadsWithNewCode_IdenticalToOldReader pixel half needs legacy WPF reference pixels (PARITY W4-11e).
 
-#[test]
-#[ignore = "native: needs WIC"]
-fn new_writer_reproduces_committed_old_fixture_jpeg_tail() {
-    // C#: PreviewCacheCrossVersionTests.NewWriter_ReproducesCommittedOldFixtureBytes (JPEG tail; needs WIC encode)
-    todo!("W4-11e: native twin in crates/pr-platform-win/tests/preview_cache_wic.rs")
-}
+// Native twin: pr-platform-win/tests/wic_imaging_twins_preview.rs::new_writer_reproduces_committed_old_fixture_jpeg_tail
 
-#[test]
-#[ignore = "native: needs WIC"]
-fn write_atomically_opaque_pbgra32_round_trips_colours() {
-    // C#: PreviewCacheFileTests.WriteAtomically_OpaquePbgra32_RoundTripsColours (per-channel error <= 3; needs WIC)
-    todo!("W4-11e: native twin in crates/pr-platform-win/tests/preview_cache_wic.rs")
-}
+// Native twin: pr-platform-win/tests/wic_imaging_twins_preview.rs::write_atomically_opaque_pbgra32_round_trips_colours
 
 // ---- PreviewCacheFileConcurrencyTests ------------------------------------------------------------------------------
 
