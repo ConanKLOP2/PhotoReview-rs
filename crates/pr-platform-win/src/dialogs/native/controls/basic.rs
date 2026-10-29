@@ -10,7 +10,9 @@ use crate::win32::control_constants::{
     CBS_DROPDOWNLIST, CBS_HASSTRINGS, ICC_BAR_CLASSES, ICC_LISTVIEW_CLASSES, ICC_PROGRESS_CLASS, ICC_STANDARD_CLASSES,
     ICC_WIN95_CLASSES,
 };
-use crate::win32::dialog_native::{WS_TABSTOP, WS_VSCROLL};
+use crate::win32::dialog_native::{
+    DT_CENTER, DT_END_ELLIPSIS, DT_NOPREFIX, DT_SINGLELINE, DT_VCENTER, WS_TABSTOP, WS_VSCROLL,
+};
 use crate::win32::structs::{Hgdi, Hwnd, Lparam, Lresult, Point, Rect, Wparam};
 
 /// The class set `CommonControlsInit::ensure` asks for: `ICC_LISTVIEW_CLASSES | ICC_BAR_CLASSES | ICC_PROGRESS_CLASS | ICC_WIN95_CLASSES |
@@ -138,6 +140,12 @@ impl ComboBoxControl {
         String::from_utf16_lossy(&buffer[..length as usize])
     }
 }
+
+/// `DrawText` flags of a list row's badge (C# `NativeControls.cs` `DtSingleLine | DtVCenter | DtCenter | DtNoPrefix`). `DT_NOPREFIX` keeps a `&` literal: without it
+/// the settings navigation showed "Mouse & zoom" as "Mouse _zoom" (the `&` is a mnemonic prefix that underlines the next character).
+pub const BADGE_TEXT_FLAGS: u32 = DT_SINGLELINE | DT_VCENTER | DT_CENTER | DT_NOPREFIX;
+/// `DrawText` flags of a list row's title and subtitle (C# `DtSingleLine | DtVCenter | DtNoPrefix | DtEndEllipsis`).
+pub const ROW_TEXT_FLAGS: u32 = DT_SINGLELINE | DT_VCENTER | DT_NOPREFIX | DT_END_ELLIPSIS;
 
 /// Where a list row puts its parts (the pure geometry of C# `ListBoxControl.DrawItem`, see `row_layout`).
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -403,7 +411,7 @@ impl ListBoxControl {
                 draw.hDC.0 as isize,
                 value,
                 &mut badge_rect,
-                0x20 | 0x04 | 0x01 | 0x80,
+                BADGE_TEXT_FLAGS,
             );
         }
         if let Some(value) = subtitle.filter(|s| !s.is_empty()) {
@@ -417,18 +425,14 @@ impl ListBoxControl {
                     draw.hDC.0 as isize,
                     value,
                     &mut sub_rect,
-                    0x20 | 0x04 | 0x80 | 0x8000,
+                    ROW_TEXT_FLAGS,
                 );
             }
         }
         let _ = gdi32::set_text_color(draw.hDC.0 as isize, DialogColors::text_strong());
         let mut text_rect = layout.text;
-        let _ = crate::win32::dialog_native::user32::draw_text(
-            draw.hDC.0 as isize,
-            text,
-            &mut text_rect,
-            0x20 | 0x04 | 0x80 | 0x8000,
-        );
+        let _ =
+            crate::win32::dialog_native::user32::draw_text(draw.hDC.0 as isize, text, &mut text_rect, ROW_TEXT_FLAGS);
         if let Some(old) = old_font {
             let _ = gdi32::select_object(draw.hDC.0 as isize, old);
         }

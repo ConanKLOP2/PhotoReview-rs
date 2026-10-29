@@ -26,6 +26,11 @@ pub struct MainWindowOverlayViewModel {
     view_model: SharedViewModel,
     window: Weak<RefCell<Option<Rc<MainWindow>>>>,
     log: Arc<dyn Log>,
+    /// The last model read while the view model was free. A modal command (Settings, the folder pickers) runs inside `update_view_model` with the view model
+    /// borrowed mutably, and its nested message loop runs the overlay's posted refresh: that refresh reads the model and must not panic on `RefCell`.
+    last_model: RefCell<Option<OverlayModel>>,
+    /// Same for `settings()` (the overlay reads it on hover and paint).
+    last_settings: RefCell<Option<Arc<AppSettings>>>,
 }
 
 impl std::fmt::Debug for MainWindowOverlayViewModel {
@@ -45,19 +50,33 @@ impl MainWindowOverlayViewModel {
             view_model,
             window: Rc::downgrade(window),
             log,
+            last_model: RefCell::new(None),
+            last_settings: RefCell::new(None),
         }
     }
 }
 
 impl OverlayViewModel for MainWindowOverlayViewModel {
-    /// `view_model.borrow().overlay_model()` (a short shared borrow).
+    /// `view_model.borrow().overlay_model()` (a short shared borrow). While a modal command holds the view model mutably (nested message loop inside
+    /// `update_view_model`), the last model read is returned instead: nothing can change in the view model meanwhile, and the changes of the command are
+    /// applied (and the overlay refreshed) when it returns. Found by the exe walkthrough 2026-10-29: the gear click panicked here and never opened Settings.
     fn overlay_model(&self) -> OverlayModel {
-        self.view_model.borrow().overlay_model()
+        if let Ok(view_model) = self.view_model.try_borrow() {
+            let model = view_model.overlay_model();
+            *self.last_model.borrow_mut() = Some(model.clone());
+            return model;
+        }
+        self.last_model.borrow().clone().unwrap_or_default()
     }
 
-    /// `view_model.borrow().settings()`.
+    /// `view_model.borrow().settings()`; the last settings read while the view model is borrowed mutably (see [`Self::overlay_model`]).
     fn settings(&self) -> Arc<AppSettings> {
-        self.view_model.borrow().settings()
+        if let Ok(view_model) = self.view_model.try_borrow() {
+            let settings = view_model.settings();
+            *self.last_settings.borrow_mut() = Some(Arc::clone(&settings));
+            return settings;
+        }
+        self.last_settings.borrow().clone().unwrap_or_default()
     }
 
     /// `window.update_view_model(|vm| vm.set_settings(settings))` (C# `_viewModel.Settings = settings`, the change set is applied by the window); no window: `view_model.borrow_mut().set_settings(..)` and
