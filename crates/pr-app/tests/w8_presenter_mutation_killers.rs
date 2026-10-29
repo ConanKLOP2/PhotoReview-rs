@@ -489,12 +489,7 @@ fn benchmark_step_jobs_have_named_debug_output() {
     assert_eq!(runs.load(Ordering::SeqCst), 2);
 }
 
-// FLAKY (about 40 % of runs): the loop below exits or hangs depending on the order in which the old path's stale completion and the new path's decode
-// complete. Waiting for the new original to be held makes it hang for the whole 20 s deadline in about a third of the runs, i.e. in those runs the new
-// path's original is never held: a possible stale-completion race in `ZoomDetailLoader::retarget_path` (INV-1). Ignored until that investigation lane
-// (`zoom-race`) decides whether production or this test is wrong; do not un-ignore it before then.
 #[test]
-#[ignore = "flaky ~40%: possible INV-1 race in ZoomDetailLoader::retarget_path, under investigation (zoom-race)"]
 fn retarget_path_with_a_decode_in_flight_shows_only_the_new_paths_pixels() {
     // Regression pin for zoom_detail.rs:306:13 (delete field id from struct Target expression in retarget_path). It does NOT kill that
     // mutant: `cancel_pending()` already cancels the running old-path decode and the fake decoder honours the cancel, so the
@@ -535,6 +530,17 @@ fn retarget_path_with_a_decode_in_flight_shows_only_the_new_paths_pixels() {
     collect(loader.on_preview_presented(token, &old_path, &key, &sized_image(600, 400, 6000, 4000, true)));
     assert!(decoder.wait_started("a.jpg"));
     let new_path = file("b.jpg");
+    // A rename keeps the file's size and modification time, and the retargeted cache key still carries the OLD file's stamp
+    // (`ImageCacheKey::with_path`): give b.jpg a.jpg's stamp, else `decode_original` reports `SourceChanged` whenever the two
+    // fixture writes land on different clock ticks (the flake this test used to have: held_original() stayed None).
+    let old_modified = std::fs::metadata(&old_path)
+        .and_then(|meta| meta.modified())
+        .expect("a.jpg modification time");
+    std::fs::OpenOptions::new()
+        .write(true)
+        .open(&new_path)
+        .and_then(|handle| handle.set_modified(old_modified))
+        .expect("give b.jpg the modification time of a.jpg");
     clock.stop_for_action();
     collect(loader.retarget_path(clock.current_navigation(), &new_path));
     old_gate.open();
