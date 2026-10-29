@@ -527,10 +527,23 @@ mod native {
             .expect("create server with current-user-only security");
         server.start().expect("start listener");
         let full_name = HSTRING::from(format!(r"\\.\pipe\{name}"));
-        // SAFETY: the test owns this unique server pipe name; the OS wait is explicitly bounded to five seconds.
-        let pipe_ready = unsafe { WaitNamedPipeW(&full_name, 5_000) }.as_bool();
+        // `start` returns before the listener thread has created the pipe, and WaitNamedPipe fails at once while the
+        // name does not exist yet, so readiness is awaited with a bounded loop (5 s deadline, no fixed sleep).
+        let deadline = std::time::Instant::now() + std::time::Duration::from_secs(5);
+        let mut pipe_ready = false;
+        while !pipe_ready && std::time::Instant::now() < deadline {
+            // SAFETY: the test owns this unique server pipe name; each OS wait is bounded to 100 ms.
+            pipe_ready = unsafe { WaitNamedPipeW(&full_name, 100) }.as_bool();
+            if !pipe_ready {
+                std::thread::yield_now();
+            }
+        }
         assert!(pipe_ready, "server pipe was not created");
         server.dispose();
+        // C# Dispose_StopsListening: after dispose no instance of the pipe remains.
+        // SAFETY: same unique name; the wait is bounded to 100 ms.
+        let still_there = unsafe { WaitNamedPipeW(&full_name, 100) }.as_bool();
+        assert!(!still_there, "pipe name must be freed by dispose");
         assert!(server.start().is_err(), "disposed listener must reject restart");
     }
 }
