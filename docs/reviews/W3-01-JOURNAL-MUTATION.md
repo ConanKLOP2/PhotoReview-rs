@@ -86,3 +86,32 @@ No mutant exposed a production bug; no production code was changed.
 
 The PARITY rows stay `Partial`: the verdict is clean only for `compaction.rs`, `reconcile.rs`, `startup_recovery.rs` and
 `transaction.rs`; the rest is a sample.
+
+## Second pass (`journal_b`): the files the first pass left unrun
+
+Machine A, claim `PARTIAL-mut-journal-b`, 2026-10-29. Claude lane (both Codex slots were busy). Here the three files
+were run COMPLETELY (all mutants, not only the 47 left over, because the first pass kept no list of the unrun ones):
+`-j 1`, `--shuffle`, `--baseline skip`, `--timeout 90`, own target and output dir per pass, about 4 to 29 minutes each.
+Test binaries (`--cargo-arg=--test=...`; the fakes-only check was repeated, no binary touches the real Recycle Bin):
+
+* `journal_rules.rs`: `file_actions_journal_rules`, `journal_mutation_killers`, `journal_mutation_killers_2`.
+* `journal_line.rs`: `journal_line`, `journal_mutation_killers`, `journal_mutation_killers_2`.
+* `recovery_retry.rs`: `recovery_retry` AND `recovery_retry_golden`, `journal_mutation_killers`, `journal_mutation_killers_2`.
+
+| File | Found | Tested | Caught | Missed | Timeout | Unviable | Not run |
+|---|---|---|---|---|---|---|---|
+| `journal_rules.rs` | 22 | 22 | 21 | 0 | 0 | 1 | 0 |
+| `journal_line.rs` | 141 | 141 | 119 | 5 | 0 | 17 | 0 |
+| `recovery_retry.rs` | 160 | 160 | 142 | 2 | 0 | 16 | 0 |
+
+The 5 `journal_line.rs` misses are the equivalent ones already explained above (`:596`, `:619`, `:647` `expecting`,
+`:623` `visit_unit`, `:380:31` guard); nothing new. The `recovery_retry.rs` misses:
+
+* `:258` `RecoveryRetryService` Debug `fmt` -> `Ok(Default)`: killed by `recovery_retry_service_debug_names_the_type_and_reports_which_collaborators_are_set`
+  in the new `journal_mutation_killers_4.rs` (re-run against that binary alone: caught).
+* `:385:13` delete field `size` of the Prepared line in `retry_core`: equivalent. `precheck_single` only returns the stat
+  when `same_fingerprint` holds (`stat.length == failed.size`), so `..failed.clone()` carries the same size.
+
+Combined with the first pass, `journal_line.rs`, `journal_rules.rs` and `recovery_retry.rs` now have a complete verdict
+(every mutant tested, every miss killed or explained). No mutant exposed a production bug; no production code changed.
+Still NOT run: `journal.rs` (85 of 179) and the `#[ignore]`d native twins, so the PARITY rows stay `Partial`.
