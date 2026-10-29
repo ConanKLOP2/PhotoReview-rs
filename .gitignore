@@ -22,3 +22,5 @@ tools/oracle-cs/obj/
 # Claude-free Codex pipeline: per-run state, logs and scratch files
 tools/autopilot/state/
 .codex-*
+/target-mut/
+/mut-out-*/

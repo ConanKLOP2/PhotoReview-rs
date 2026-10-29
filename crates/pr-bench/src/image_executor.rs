@@ -729,7 +729,7 @@ impl BenchmarkImageExecutor {
 /// C# `DeleteScratchDirectoryAfterPruneAsync`, the body of the teardown thread.
 ///
 /// `settled = service.wait_for_prune(timeout)`. `false` => `log.error("Benchmark disk cache prune did not finish in
-/// time; leaving scratch directory: {dir}", None)` and return WITHOUT deleting. `true` => when `dir.exists()`
+/// time; leaving scratch directory: {dir}", None)` and return WITHOUT deleting. `true` => when `dir.is_dir()`
 /// `std::fs::remove_dir_all(dir)`; an `Err` (or a panic) is logged `log.error("Benchmark scratch directory could not be
 /// removed: {dir}", Some(&err))` and swallowed (this task is never awaited by production code). `{dir}` is
 /// `dir.display()`.
@@ -750,7 +750,7 @@ pub(crate) fn delete_scratch_directory_after_prune(
             );
             return Ok(());
         }
-        if dir.exists() {
+        if dir.is_dir() {
             std::fs::remove_dir_all(dir)?;
         }
         Ok(())

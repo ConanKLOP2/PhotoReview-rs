@@ -122,7 +122,10 @@ mod native {
         LocalAllocation(descriptor.0)
     }
 
-    fn assert_single_current_user_allow(descriptor: *mut c_void) {
+    const GENERIC_ALL_MASK: u32 = 0x1000_0000;
+    const FILE_ALL_ACCESS_MASK: u32 = 0x001F_01FF;
+
+    fn assert_single_current_user_allow(descriptor: *mut c_void, expected_mask: u32) {
         let descriptor = windows::Win32::Security::PSECURITY_DESCRIPTOR(descriptor);
         let mut control = 0u16;
         let mut revision = 0u32;
@@ -171,7 +174,7 @@ mod native {
             )
         };
         assert_eq!(flags, 0, "ACE unexpectedly propagates to children");
-        assert_eq!(mask, 0x1000_0000, "ACE does not grant exactly generic full control");
+        assert_eq!(mask, expected_mask, "ACE does not grant exactly full control");
 
         let mut sid_string = PWSTR::null();
         // SAFETY: sid_pointer is the SID immediately following the verified ACCESS_ALLOWED_ACE mask.
@@ -195,7 +198,7 @@ mod native {
     fn pipe_security_allows_only_current_user() {
         // C# twin: InstanceForwardPipeTests.PipeSecurity_AllowsOnlyCurrentUser.
         let security = PipeSecurityDescriptor::for_sid(current_user_sid()).expect("construct current-user DACL");
-        assert_single_current_user_allow(security.as_ptr().0);
+        assert_single_current_user_allow(security.as_ptr().0, GENERIC_ALL_MASK);
     }
 
     #[test]
@@ -206,6 +209,7 @@ mod native {
         let pipe = create_test_pipe(&security);
         // SAFETY: the returned descriptor is allocated by GetSecurityInfo for this owned, live pipe handle.
         let descriptor = unsafe { security_descriptor(pipe.0) };
-        assert_single_current_user_allow(descriptor.0);
+        // The kernel maps GENERIC_ALL to the pipe's specific rights (FILE_ALL_ACCESS) when it creates the object.
+        assert_single_current_user_allow(descriptor.0, FILE_ALL_ACCESS_MASK);
     }
 }
