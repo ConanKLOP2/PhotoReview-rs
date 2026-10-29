@@ -530,6 +530,17 @@ fn retarget_path_with_a_decode_in_flight_shows_only_the_new_paths_pixels() {
     collect(loader.on_preview_presented(token, &old_path, &key, &sized_image(600, 400, 6000, 4000, true)));
     assert!(decoder.wait_started("a.jpg"));
     let new_path = file("b.jpg");
+    // A rename keeps the file's size and modification time, and the retargeted cache key still carries the OLD file's stamp
+    // (`ImageCacheKey::with_path`): give b.jpg a.jpg's stamp, else `decode_original` reports `SourceChanged` whenever the two
+    // fixture writes land on different clock ticks (the flake this test used to have: held_original() stayed None).
+    let old_modified = std::fs::metadata(&old_path)
+        .and_then(|meta| meta.modified())
+        .expect("a.jpg modification time");
+    std::fs::OpenOptions::new()
+        .write(true)
+        .open(&new_path)
+        .and_then(|handle| handle.set_modified(old_modified))
+        .expect("give b.jpg the modification time of a.jpg");
     clock.stop_for_action();
     collect(loader.retarget_path(clock.current_navigation(), &new_path));
     old_gate.open();
