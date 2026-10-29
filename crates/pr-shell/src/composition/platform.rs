@@ -54,8 +54,7 @@ pub struct PlatformServices {
     pub payload_codec: Arc<dyn PreviewPayloadCodec>,
     /// C# `WicCacheImageReader` for the PNG thumbnail entries. Production: `pr_platform_win::wic::cache_adapters::WicCacheImageReader`.
     pub cache_image_reader: Arc<dyn CacheImageReader>,
-    /// C# `EmbeddedThumbnailReader`'s WIC container (`WicDirectDecoder.CreateFactory`...). Production TODAY: [`UnavailableEmbeddedThumbnails`] (open question O1 of the contract: no merged
-    /// unit implements `EmbeddedThumbnailBackend` over WIC; a `Different` row until one does).
+    /// C# `EmbeddedThumbnailReader`'s WIC container. Production: `WicEmbeddedThumbnailBackend`.
     pub embedded_thumbnails: Arc<dyn EmbeddedThumbnailBackend>,
     /// C# `WicPixelScaler.Resize` for the TurboJPEG fine-scale step. Production: [`WicFineScaler`].
     pub fine_scaler: Arc<dyn FineScaler>,
@@ -160,7 +159,7 @@ impl PlatformServices {
             shell_integration: Arc::new(WindowsShellIntegration::new()),
             payload_codec: Arc::new(WicPreviewPayloadCodec),
             cache_image_reader: Arc::new(WicCacheImageReader),
-            embedded_thumbnails: Arc::new(UnavailableEmbeddedThumbnails),
+            embedded_thumbnails: Arc::new(pr_platform_win::wic::embedded_thumbnail::WicEmbeddedThumbnailBackend),
             fine_scaler: Arc::new(WicFineScaler),
             libraw_api: Arc::new(pr_libraw::decoder::NativeLibRaw),
             cultures: Arc::new(WindowsCultureLookup),
@@ -170,9 +169,8 @@ impl PlatformServices {
     }
 }
 
-/// Stand-in for the missing WIC `EmbeddedThumbnailBackend` (open question O1): `open` answers `Ok(None)` ("the container has no frame"), which `embedded_thumbnail::try_read` maps to
-/// "no embedded thumbnail", so the thumbnail cache falls back to decoding the file (slower first paint of the filmstrip, never wrong pixels). Logged nowhere. Replace by the real
-/// backend the day it exists; the registry code does not change.
+/// Explicit no-thumbnail backend retained for callers that intentionally disable the embedded path.
+/// Production registers `WicEmbeddedThumbnailBackend`; this fallback answers `Ok(None)`.
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
 pub struct UnavailableEmbeddedThumbnails;
 

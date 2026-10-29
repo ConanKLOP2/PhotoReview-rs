@@ -36,7 +36,7 @@ pub fn registrations_golden() -> Golden {
     pr_test_support::golden::load("shell-composition-registrations")
 }
 
-struct FixtureExplorer;
+pub struct FixtureExplorer;
 impl ExplorerOrderProvider for FixtureExplorer {
     fn try_get_snapshot_progressive(
         &self,

@@ -693,3 +693,38 @@ fn preload_scheduler_factory_after_graph_drop_returns_registry_error() {
     assert_eq!(error.service, "preload_scheduler_factory");
     assert_eq!(error.message, "shared service graph has been dropped");
 }
+
+#[test]
+#[ignore = "native: needs WIC"]
+fn production_embedded_thumbnail_registration_reads_real_thumbnail() {
+    // C# EmbeddedThumbnailReader.TryRead: production graph must register the WIC adapter.
+    use pr_imaging::decode_types::DecodedImageView;
+    use pr_shell::composition::platform::PlatformServices;
+    let platform = PlatformServices::production(
+        Arc::new(pr_test_support::RecordingLog::new()),
+        pr_shell::composition::platform::PlatformOverrides {
+            recycle_bin: Some(Arc::new(pr_test_support::FakeRecycleBin::new(Arc::new(
+                pr_test_support::FakeFileSystem::new(),
+            )))),
+            explorer_order: Some(Arc::new(composition_fixture::FixtureExplorer)),
+        },
+    )
+    .unwrap();
+    let root = composition_fixture::temp_root();
+    let path = root.path().join("embedded.jpg");
+    std::fs::copy(
+        pr_test_support::golden::repo_root().join("tests/fixtures/embedded-thumbnail/quad-orientation-6.jpg"),
+        &path,
+    )
+    .unwrap();
+    let image = pr_imaging::embedded_thumbnail::try_read(
+        &path,
+        &pr_core::io::physical::PhysicalFileSystem,
+        &*platform.embedded_thumbnails,
+        &*platform.codec,
+    )
+    .unwrap()
+    .expect("production embedded adapter must read the thumbnail");
+    assert_eq!(image.orientation(), 6);
+    assert!(image.platform_image().as_pixels().is_some());
+}
