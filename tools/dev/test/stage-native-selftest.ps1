@@ -72,7 +72,7 @@ exit $LASTEXITCODE
     $result = Run-Stage ($destArgs + @('-Check'))
     Assert ($result.Code -eq 0 -and [System.IO.File]::ReadAllText((Join-Path $dest 'libraw.dll')) -eq 'keep existing destination') '-Check leaves existing destination untouched'
     $result = Run-Stage @()
-    Assert ($result.Code -eq 0 -and (Test-Path (Join-Path $worktree 'target\debug\libraw.dll')) -and (Test-Path (Join-Path $worktree 'target\debug\turbojpeg.dll'))) 'default destination belongs to current worktree'
+    Assert ($result.Code -eq 0 -and (Test-Path (Join-Path $worktree 'target\debug\libraw.dll')) -and (Test-Path (Join-Path $worktree 'target\debug\turbojpeg.dll')) -and (Test-Path (Join-Path $worktree 'target\debug\deps\libraw.dll')) -and (Test-Path (Join-Path $worktree 'native\x64\turbojpeg.dll'))) 'default destinations are target\debug, target\debug\deps and native\x64 of the current worktree'
     Write-Output 'stage-native selftest PASSED (7 checks)'
 } finally {
     # Only this invocation owns this unique temporary directory.
