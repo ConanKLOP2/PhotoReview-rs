@@ -161,8 +161,8 @@ pub fn build_shared_view_model(
 }
 
 /// The 14 fields of W8-17c's `DialogServices` from the registry (D-W8B6-10, filled HERE and not by 17e: 17d's `StartupGraph::dialog_services` is the seam that exists):
-/// `settings_store: Some(settings_store())`, `localization: Some(localization())`, `update_checker: None` (the C# graph registers no `IUpdateChecker`; the Settings presenter
-/// builds its own `UpdateChecker`), `decoder_factory: Some(Arc::new(LazyDecoderFactory::new(services.clone())))`, `journal: Some(journal())`, `recovery_retry: Some(recovery_retry())`,
+/// `settings_store: Some(settings_store())`, `localization: Some(localization())`, `update_checker: Some(update_http::update_checker())` (inert factory replacing the C# presenter's
+/// default checker fallback), `decoder_factory: Some(Arc::new(LazyDecoderFactory::new(services.clone())))`, `journal: Some(journal())`, `recovery_retry: Some(recovery_retry())`,
 /// `file_system: file_system()`, `metrics: Some(metrics())`, `explorer_snapshot: Some(explorer_snapshot())`, `settings_texts: Arc::new(LocalizedTexts)`, `shell_integration:
 /// platform().shell_integration`, `physical_memory_bytes: physical_memory_bytes()`, `runner: Arc::new(ThreadRunner)`, `benchmark_sessions: production_session_factory(
 /// BenchmarkSessionDeps { platform_codec: PixelBufferImageCodec::shared(), payload_codec: platform().payload_codec, decoder_factory: Arc::new(|| WicDirectDecoder::new(codec, None,
@@ -182,7 +182,7 @@ pub fn dialog_services_of(services: &SharedServices) -> Rc<DialogServices> {
     Rc::new(DialogServices {
         settings_store: Some(services.settings_store()),
         localization: Some(services.localization()),
-        update_checker: None,
+        update_checker: Some(super::update_http::update_checker()),
         decoder_factory: Some(Arc::new(LazyDecoderFactory::new(services.clone()))),
         journal: Some(services.journal()),
         recovery_retry: Some(services.recovery_retry()),
