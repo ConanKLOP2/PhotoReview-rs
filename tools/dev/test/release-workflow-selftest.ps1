@@ -21,3 +21,5 @@ try {
     & (Join-Path $repo 'tools/check-release-workflow.ps1')
     Write-Output 'release workflow selftest PASSED (4 rejection cases + real workflow)'
 } finally { Remove-ReleaseScratch $scratch ([IO.Path]::GetTempPath()) }
+# Explicit success code: child processes started by the rejection cases leave a non-zero $LASTEXITCODE behind, which the CI step would otherwise report as a failure.
+exit 0

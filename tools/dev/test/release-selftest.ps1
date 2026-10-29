@@ -150,3 +150,5 @@ try {
     Assert $true 'manual smoke evidence path accepted'
     Write-Output "release selftest PASSED ($checks checks; fixture packaging substitutes only PE metadata)"
 } finally { Remove-ReleaseScratch $scratch ([IO.Path]::GetTempPath()) }
+# Explicit success code: child processes started by the rejection cases leave a non-zero $LASTEXITCODE behind, which the CI step would otherwise report as a failure.
+exit 0
