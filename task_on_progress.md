@@ -40,6 +40,8 @@ Keep this file under about 10 KB. When it grows, move old sections verbatim to `
 
 - **cx-imaging (2026-10-30):** imaging 1240 pass; mutation files: compare.rs 221/246 caught (1 equivalent, 5 hang-detected, 19 unviable), report.rs 52/53 (1 equivalent), imaging files closed with killers; new killers `w4_mutation_killers`, `w7_followup_killers`; production adapter for embedded thumbnails not wired; rows stay Partial; [evidence](docs/reviews/CX-IMAGING-2026-10-30.md).
 
+- **cx-core2 (2026-10-30):** JSON 97/312 tested: 92 caught, 4 equivalent MISSED, 1 unviable, 0 timeout; 215 not run. New `w2_json_killers` 3 pass; covering core 36/App 128/native 7 pass; per-crate fmt/Clippy and doc-links pass. F-21 Done retained, other lane rows Partial; handoff unstaged (Git index.lock permission denied); [evidence](docs/reviews/CX-CORE2-2026-10-30.md).
+
 ## Archives (`docs/archive/`, verbatim, history only)
 Find any section title with `grep -n '^## ' <file>`. Original section order is kept inside each file.
 
