@@ -489,12 +489,7 @@ fn benchmark_step_jobs_have_named_debug_output() {
     assert_eq!(runs.load(Ordering::SeqCst), 2);
 }
 
-// FLAKY (about 40 % of runs): the loop below exits or hangs depending on the order in which the old path's stale completion and the new path's decode
-// complete. Waiting for the new original to be held makes it hang for the whole 20 s deadline in about a third of the runs, i.e. in those runs the new
-// path's original is never held: a possible stale-completion race in `ZoomDetailLoader::retarget_path` (INV-1). Ignored until that investigation lane
-// (`zoom-race`) decides whether production or this test is wrong; do not un-ignore it before then.
 #[test]
-#[ignore = "flaky ~40%: possible INV-1 race in ZoomDetailLoader::retarget_path, under investigation (zoom-race)"]
 fn retarget_path_with_a_decode_in_flight_shows_only_the_new_paths_pixels() {
     // Regression pin for zoom_detail.rs:306:13 (delete field id from struct Target expression in retarget_path). It does NOT kill that
     // mutant: `cancel_pending()` already cancels the running old-path decode and the fake decoder honours the cancel, so the
