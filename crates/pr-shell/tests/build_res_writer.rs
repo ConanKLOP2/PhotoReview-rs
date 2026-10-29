@@ -124,3 +124,15 @@ fn an_entry_pointing_outside_the_file_is_truncated() {
     b[4] = 3;
     assert_eq!(parse_ico(&b[..6 + 16]), Err(ResError::Truncated));
 }
+
+#[test]
+fn release_version_is_type_16_id_1_en_us_without_changing_manifest() {
+    let mut res = build_res("manifest", None).unwrap();
+    append_version(&mut res, &[1, 2, 3, 4, 5]);
+    assert_eq!(
+        resources(&res),
+        vec![(24, 1, b"manifest".to_vec()), (16, 1, vec![1, 2, 3, 4, 5])]
+    );
+    let header = 32 + 32 + 8;
+    assert_eq!(u16_at(&res, header + 22), 0x0409);
+}

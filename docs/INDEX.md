@@ -45,6 +45,7 @@ One row per document (or per folder where a folder is one document set). Check t
 |---|---|---|
 | [`ARCHITECTURE.md`](ARCHITECTURE.md) | Crates, dependency direction, how the pieces fit | Before touching crate boundaries |
 | [`DEVELOPING.md`](DEVELOPING.md) | Prerequisites, build, test and gate commands | Setting up a machine |
+| [`RELEASING.md`](RELEASING.md) | W10 manual release gates, pinned native inputs, selftests and outstanding maintainer reviews | Before a release |
 | [`RUNBOOK-AUTOPILOT.md`](RUNBOOK-AUTOPILOT.md) | Operator runbook for the Codex pipeline (`tools/autopilot/`) | Before running or debugging the pipeline |
 | [`../tools/autopilot/README.md`](../tools/autopilot/README.md) | Autopilot kit: pipeline scripts, state files, how the port is run end to end | Before running the pipeline scripts |
 | [`../tools/autopilot/CODEX-RULES.md`](../tools/autopilot/CODEX-RULES.md) | The rules every Codex call receives (owned files only, C# is the spec, no real Recycle Bin) | Before writing a Codex prompt or pack |

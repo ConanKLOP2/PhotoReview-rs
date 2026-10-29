@@ -2006,7 +2006,7 @@ The request is explicitly a `new HttpRequestMessage(...)`, whose default version
 
 ### Wave 10 release lane (W10-R1..R5)
 
-Contracts only; the decisions below are open for the lead. The release workflow draft is `docs/drafts/release.yml` (not in `.github/workflows`).
+Contract baseline snapshot; the decisions below remain proposals. Implementation update (2026-10-29): W10-R4/R2/R3/R1 are Partial in `docs/PARITY.md`; `.github/workflows/release.yml` is manual-only, with native/review gates blocking publication. P-54..P-56 record recommendations acted on without new application dependencies or secrets; see [release runbook](../docs/RELEASING.md) and [policy ADR](../docs/adr/ADR-W10-release.md). Historical "at HEAD" observations below describe the contract-writing snapshot, not the current implementation.
 
 | Unit | Contract | Size | Model for later porter | Depends on |
 |---|---|---:|---|---|

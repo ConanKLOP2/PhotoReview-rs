@@ -182,6 +182,8 @@ pub fn dialog_services_of(services: &SharedServices) -> Rc<DialogServices> {
     Rc::new(DialogServices {
         settings_store: Some(services.settings_store()),
         localization: Some(services.localization()),
+        // D-W10release-5 (option B until the Rust feed URL is verified): the checker is built without a feed URL (`None`), so a manual check
+        // fails without any network access or download URL; never register the C# feed here (W10-H3 supplies the transport).
         update_checker: Some(super::update_http::update_checker()),
         decoder_factory: Some(Arc::new(LazyDecoderFactory::new(services.clone()))),
         journal: Some(services.journal()),

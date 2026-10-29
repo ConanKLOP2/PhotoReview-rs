@@ -1,0 +1,10 @@
+{
+    "min_bytes":  6032640,
+    "max_bytes":  12065280,
+    "measured_commit":  "0acd0d31cbea6b0515c66d9823ba6619d849e6b4",
+    "measured_bytes":  8043520,
+    "measured_sha256":  "29BD8076187AF788583DC20CA11A311CCC4EE5157966996836A5E60A514002ED",
+    "version":  "0.1.0",
+    "source_state":  "Uncommitted W10 lane on feat/codex-release, 2026-10-29; remeasure the actual tag before publication",
+    "rationale":  "75% to 150% of the first measured x64 Rust release build; coarse plausibility only, not binary identity"
+}

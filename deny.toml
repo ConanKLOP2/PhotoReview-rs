@@ -1,0 +1,32 @@
+# W10-R3, cargo-deny 0.19.9. Validate with: cargo deny --locked check --config deny.toml advisories licenses bans sources
+# Allow list derived from cargo metadata --locked --offline on this worktree.
+[graph]
+all-features = true
+targets = ["x86_64-pc-windows-msvc"]
+
+[advisories]
+unmaintained = "all"
+unsound = "all"
+yanked = "deny"
+ignore = []
+
+[licenses]
+confidence-threshold = 0.93
+allow = ["MIT", "Apache-2.0", "Unlicense", "Unicode-3.0"]
+exceptions = []
+
+[bans]
+# Cargo.lock currently contains syn 2.0.119 and 3.0.9; denying duplicates fails this graph before review.
+multiple-versions = "warn"
+wildcards = "deny"
+# Workspace-only path dependencies are unpublished (publish=false); external wildcard requirements still fail.
+allow-wildcard-paths = true
+highlight = "all"
+deny = []
+skip = []
+
+[sources]
+unknown-registry = "deny"
+unknown-git = "deny"
+allow-registry = ["https://github.com/rust-lang/crates.io-index"]
+allow-git = []
