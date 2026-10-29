@@ -38,6 +38,8 @@ Keep this file under about 10 KB. When it grows, move old sections verbatim to `
 - **zoom-detail-wire (2026-10-29, A):** D1 / wheel / keys never loaded the full-resolution image in the exe: `ShellInput` changed the viewer without telling the presenter. Added `ShellInputHost::on_viewer_zoom_mode_changed` -> `MainViewModel::on_viewer_zoom_mode_changed`; real exe before/after, tests in [evidence](docs/reviews/ZOOM-DETAIL-WIRING-2026-10-29.md). PARITY row X-zoom-detail-loader stays Partial.
 - **W9-R7 (2026-10-28):** claim retained; branch `codex/w9-rename-prompts` WIP. Final tests have stray module-scope `let` syntax errors; fix, then rerun tests. Stopped at quota 95%.
 
+- **cx-imaging (2026-10-30):** imaging 1240 pass; mutation files: compare.rs 221/246 caught (1 equivalent, 5 hang-detected, 19 unviable), report.rs 52/53 (1 equivalent), imaging files closed with killers; new killers `w4_mutation_killers`, `w7_followup_killers`; production adapter for embedded thumbnails not wired; rows stay Partial; [evidence](docs/reviews/CX-IMAGING-2026-10-30.md).
+
 ## Archives (`docs/archive/`, verbatim, history only)
 Find any section title with `grep -n '^## ' <file>`. Original section order is kept inside each file.
 
