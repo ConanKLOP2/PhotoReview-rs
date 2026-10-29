@@ -256,6 +256,17 @@ impl ShellInputHost for MainWindowInputHost {
         self.call(|vm| vm.on_viewer_zoom_mode_changed());
     }
 
+    /// C# `Compare.SelectLeft()` / `SelectRight()`; the view model only changes the compare selection (the window repaints the borders from the returned `ChangeSet`).
+    fn select_compare_side(&self, left: bool) {
+        self.call(|vm| {
+            if left {
+                vm.select_compare_left()
+            } else {
+                vm.select_compare_right()
+            }
+        });
+    }
+
     fn execute(&self, command: ReviewCommand) -> Result<(), Box<dyn Error>> {
         let names = self.services.action_names();
         let owner = self.owner.upgrade();
