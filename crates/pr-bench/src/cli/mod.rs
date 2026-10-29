@@ -7,6 +7,7 @@
 pub mod arguments;
 pub mod backend;
 pub mod batch;
+mod bench_compare;
 pub mod tool_path_guard;
 
 use std::io::Write;
@@ -169,6 +170,9 @@ pub fn run(
     env: &dyn ToolEnvironment,
     fs: &dyn FileSystem,
 ) -> i32 {
+    if args.first().is_some_and(|arg| arg == "--bench-compare") {
+        return bench_compare::run(args, out, err, env);
+    }
     let mode = classify(args);
     match mode {
         CliMode::ListProfiles => {
