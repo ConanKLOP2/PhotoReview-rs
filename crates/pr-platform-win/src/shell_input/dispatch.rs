@@ -35,7 +35,7 @@ use pr_app::input::touchpad_gestures::WheelInput;
 use pr_app::misc::viewport_convergence::is_stable_viewport;
 use pr_app::misc::window_helpers;
 use pr_app::viewmodels::main::ViewerHandle;
-use pr_app::viewmodels::viewer_state::ViewerUpdate;
+use pr_app::viewmodels::viewer_state::{ViewerState, ViewerUpdate};
 use pr_app::viewport::fit::{
     FitContinuation, FitStep, FitSurface, FitViewer, OperationVersion, apply_fit_resume, apply_fit_start,
 };
@@ -52,6 +52,7 @@ use super::handlers::{
 };
 use super::native::dpi_of;
 use crate::host::contracts::{EventHandlerId, PointD as HostPointD, ShellWindowApi, ShellWindowEvent};
+use crate::shell_viewing::compare::{CompareSide, layout as compare_layout};
 
 /// A hit test over a DIP point (C# `Func<PointD, bool>`).
 pub type PointTest = Rc<dyn Fn(PointD) -> bool>;
@@ -100,6 +101,15 @@ pub trait ShellInputHost {
     fn report_action_failed(&self, action_name: &str, error: &dyn Error);
     /// C# `Tr.MainMenuZoom` (the localized "Zoom"), read at call time because the language can change at run time.
     fn zoom_action_name(&self) -> String;
+    /// C# `ViewerState.ZoomModeChanged -> MainViewModel` (`presenter.SetViewerZoom(viewer.EffectiveZoom)`, MainViewModel.cs line 117): the viewer's
+    /// zoom mode was changed by the input (D1, wheel, keys, click zoom, Fit). The Rust viewer has no event, so `ShellInput` calls this once, after every
+    /// borrow of the pointer state, the surface and the viewer was released, so the host can lend the view model (and defer when it is busy). The zoom
+    /// detail loader starts the full-resolution decode from it. Default: nothing (hosts that have no presenter).
+    fn on_viewer_zoom_mode_changed(&self) {}
+    /// C# `ShellMainWindow.TrySelectCompareAt` -> `Compare.SelectLeft()` / `SelectRight()` (the WPF `CompareLeft_Click` / `CompareRight_Click`): a left press on a compare cell
+    /// selects it (`left` = the left cell). The Win32 baseline never wired the press to it (WP-22 left it open), so the status line "click to select" did nothing (exe walkthrough 3).
+    /// Default: nothing (hosts without a compare view).
+    fn select_compare_side(&self, _left: bool) {}
 }
 
 /// Everything `ShellInput::new` needs (the C# constructor arguments plus the services the Rust controllers take per call).
@@ -553,6 +563,37 @@ impl ShellInput {
         core.post_pointer_step(step);
     }
 
+    /// C# `OnSourceSizeSwapping` (`PointerInputController` subscribes to `ViewerState.SourceSizeSwapping` in its constructor; ADR 0008 amendment R4): the shell
+    /// calls this from the closure it passes to `ViewerState::swap_source_size`, with the viewer state BEFORE the size changes. The re-anchor of the image
+    /// point at the viewport centre is posted at Render priority (it runs after the layout of the new size). Nothing here reads the viewer through its
+    /// handle (the caller holds it mutably): the state is the `before` argument.
+    pub fn on_source_size_swapping(&self, before: &ViewerState) {
+        let core = &self.core;
+        let continuation = {
+            // The production hook fires from the presenter, possibly inside another input call: a busy input skips the re-anchor (no RefCell panic, #318/#332/#333).
+            let (Ok(mut guard), Ok(surface)) = (core.state.try_borrow_mut(), core.deps.surface.try_borrow()) else {
+                return;
+            };
+            let _busy = BusyScope::enter(&core.in_pointer_call);
+            let InputState { pointer, versions, .. } = &mut *guard;
+            pointer.on_source_size_swapping(before, &*surface, versions);
+            pointer.take_pending_continuation()
+        };
+        if let Some(continuation) = continuation {
+            core.post_pointer_step(PointerStep::AwaitRender(continuation));
+        }
+    }
+
+    /// C# `Input.Clicks.Reset()` (`internal`, used by the G-INPUT replay): forget the current click chain.
+    pub fn reset_clicks(&self) {
+        self.core.state.borrow_mut().clicks.reset();
+    }
+
+    /// C# `Input.Clicks.Seed(...)` (`internal`, used by the G-INPUT replay): as if `count` consecutive clicks had happened, the last at `time`.
+    pub fn seed_clicks(&self, button: PointerButton, x: i32, y: i32, time: i32, count: i32) {
+        self.core.state.borrow_mut().clicks.seed(button, x, y, time, count);
+    }
+
     /// C# `Pointer.StopKinetic()` (Refresh and `Deactivated` use it).
     pub fn stop_kinetic(&self) -> bool {
         self.core.stop_kinetic_impl()
@@ -710,6 +751,7 @@ impl InputCore {
         let update = self.state.borrow_mut().pointer.take_viewer_update();
         if update.zoom_mode_changed {
             self.stop_kinetic_impl();
+            self.deps.host.on_viewer_zoom_mode_changed();
         }
         if !update.changes.is_empty() {
             self.deps.window.invalidate();
@@ -793,6 +835,7 @@ impl InputCore {
         let zoom_mode_changed = self.deps.viewer.borrow_mut().take_pending_zoom_mode_changed();
         if zoom_mode_changed {
             self.stop_kinetic_impl();
+            self.deps.host.on_viewer_zoom_mode_changed();
         }
         self.deps.window.invalidate();
         self.post_fit_step(step);
@@ -948,7 +991,18 @@ impl InputCore {
         self.pointer_press_tunnel_impl();
 
         let point = self.client_dip(pixel_x, pixel_y);
-        if self.is_over_overlay(point) || self.deps.host.is_compare_visible() {
+        if self.is_over_overlay(point) {
+            return false;
+        }
+        if self.deps.host.is_compare_visible() {
+            // The press still does not reach the image (it is not consumed here, like before); a left press on a cell selects that cell for the file actions.
+            if button == PointerButton::Left {
+                match compare_layout::hit_test(self.deps.window.client_size_dip(), point) {
+                    Some(CompareSide::Left) => self.deps.host.select_compare_side(true),
+                    Some(CompareSide::Right) => self.deps.host.select_compare_side(false),
+                    None => {}
+                }
+            }
             return false;
         }
         match button {

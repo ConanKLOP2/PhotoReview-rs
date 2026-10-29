@@ -1,4 +1,4 @@
-//! Native (ignored) tests: a real `ShellWindow` with hidden state only (never shown, never activated), and the G-INPUT replay.
+//! Native (ignored) tests: a real `ShellWindow` with hidden state only (never shown, never activated), (the G-INPUT replay is `g_input.rs`).
 use std::cell::RefCell;
 use std::rc::Rc;
 use std::sync::Arc;
@@ -17,7 +17,7 @@ use pr_platform_win::shell_input::dispatch::{InputSurface, ShellInput, ShellInpu
 use pr_platform_win::shell_input::environment::ShellInputEnvironment;
 use pr_platform_win::shell_viewing::viewport_controller::{ViewportController, ViewportControllerOptions};
 use pr_platform_win::win32::messages::WM_KEYDOWN;
-use pr_test_support::{RecordingLog, golden};
+use pr_test_support::RecordingLog;
 
 use crate::fixture::{QueueDispatcher, RecordingHost, RigContent, RigPoster, RigSurface};
 use crate::shell_window_fixture::{clock, create_window, dispose_window, send, window};
@@ -67,24 +67,4 @@ fn shell_input_registers_three_handlers_in_order_on_a_real_window() {
     assert_eq!(vec![ReviewCommand::NEXT], commands.0);
     assert_eq!(0, commands.1, "a handled key answers 0");
     ui.invoke(dispose_window);
-}
-
-// G-INPUT: replays every recorded script through real messages. The golden `input-scripts` is not synced into `tests/golden` yet (lead action:
-// `tools/sync-from-csharp.ps1`), and the C# replay engine (`InputGoldenReplay`) has no Rust twin before it: the test skips with a message.
-#[test]
-#[ignore = "native: needs desktop"]
-fn g_input_every_recorded_script_replays_through_real_messages() {
-    let path = golden::repo_root()
-        .join("tests")
-        .join("golden")
-        .join("input-scripts.json");
-    if !path.is_file() {
-        eprintln!(
-            "SKIPPED: tests/golden/input-scripts.json is not synced yet (tools/sync-from-csharp.ps1); G-INPUT replay not run"
-        );
-        return;
-    }
-    panic!(
-        "tests/golden/input-scripts.json exists now: port InputGoldenReplay (C# tests/PhotoReview.Shell.Tests) and replace this panic"
-    );
 }

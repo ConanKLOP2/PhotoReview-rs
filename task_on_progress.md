@@ -35,6 +35,7 @@ Keep this file under about 10 KB. When it grows, move old sections verbatim to `
 - **In progress, W9-R6 (2026-10-28):** A claim, `codex/w9-rename-retarget`; retarget/session/command integration and suspended-present/stat-abandonment parity. Focused146PASS then suffix5/rename20PASS; integrated base2da34aa9 fmt12/workspaceClippy/pre-pr PASS, workspace10041/0/1336ignored; PR #287 merged `520d7291`; selected22/140 caught after one new Dimensions regression (118notrun); combined source fmt12/workspaceClippy/workspace10074/0/1337ignored PASS. [Evidence](docs/reviews/W9-R6-MUTATION.md).
 - **Merged, benchmark fixture repair:** #285 `cf325668`; workspace10012/0/1336ignored, fmt12/workspaceClippy/pre-pr PASS; native Move/Delete/Copy10successes each/0sharing in this run. Claim released; cleanup retained. [Evidence](docs/reviews/BENCH-FILE-ACTION-DETERMINISM.md).
 
+- **zoom-detail-wire (2026-10-29, A):** D1 / wheel / keys never loaded the full-resolution image in the exe: `ShellInput` changed the viewer without telling the presenter. Added `ShellInputHost::on_viewer_zoom_mode_changed` -> `MainViewModel::on_viewer_zoom_mode_changed`; real exe before/after, tests in [evidence](docs/reviews/ZOOM-DETAIL-WIRING-2026-10-29.md). PARITY row X-zoom-detail-loader stays Partial.
 - **W9-R7 (2026-10-28):** claim retained; branch `codex/w9-rename-prompts` WIP. Final tests have stray module-scope `let` syntax errors; fix, then rerun tests. Stopped at quota 95%.
 
 ## Archives (`docs/archive/`, verbatim, history only)
