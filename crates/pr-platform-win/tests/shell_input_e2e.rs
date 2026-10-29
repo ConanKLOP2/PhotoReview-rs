@@ -742,6 +742,44 @@ fn navigation_stops_a_kinetic_glide() {
     finish(ui);
 }
 
+// New test (zoom-detail-wire; no C# twin: the C# viewer raises `ZoomModeChanged` itself): D1 through a real key message must reach the presenter, which starts
+// the full-resolution decode of the downscaled preview and swaps the original in. Before the wiring `ShellInput` only stopped the glide.
+#[test]
+#[ignore = "native: needs desktop"]
+fn zoom_to_100_percent_through_a_real_key_loads_the_original_and_shows_it() {
+    let ui = start_ui();
+    start_with_sized_images(&ui, &["a.jpg", "b.jpg"], 4000, 3000);
+    assert!(!run(&ui, || built()
+        .window
+        .view_model()
+        .borrow()
+        .presenter()
+        .zoom_detail()
+        .is_showing_original()));
+    run(&ui, || key(KeyId::D1, false));
+    wait(&ui, "the original of the zoomed image shows", |b| {
+        b.window
+            .view_model()
+            .borrow()
+            .presenter()
+            .zoom_detail()
+            .is_showing_original()
+    });
+    // Navigation drops the held original (I-16).
+    run(&ui, || built().window.update_view_model(|vm| vm.next()));
+    wait(&ui, "the second image shows without the first one's original", |b| {
+        index() == 1
+            && !b
+                .window
+                .view_model()
+                .borrow()
+                .presenter()
+                .zoom_detail()
+                .is_showing_original()
+    });
+    finish(ui);
+}
+
 // C#: ShellInputEndToEndTests.InputLatency_ArrowPan_IsMeasuredAtTheHandler_TheLayout_AndTheFrame (a measurement: nothing is asserted on time)
 #[test]
 #[ignore = "native: needs desktop"]

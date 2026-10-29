@@ -14,6 +14,8 @@ mod ui_thread;
 #[path = "common/viewing_fakes.rs"]
 mod viewing_fakes;
 
+#[path = "shell_input_dispatch/g_input.rs"]
+mod g_input;
 #[path = "shell_input_dispatch/lifecycle.rs"]
 mod lifecycle;
 #[path = "shell_input_dispatch/native.rs"]

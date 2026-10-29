@@ -12,6 +12,8 @@ use windows::Win32::Globalization::*;
 use windows::Win32::System::Time::{FileTimeToSystemTime, SystemTimeToTzSpecificLocalTime};
 use windows::core::PCWSTR;
 
+/// .NET ticks between 0001-01-01 and 1601-01-01 (the FILETIME epoch).
+const FILETIME_EPOCH_TICKS: i64 = 504_911_232_000_000_000;
 const LOCALE_CAPACITY: usize = 85;
 fn locale_name() -> [u16; LOCALE_CAPACITY] {
     let mut locale = [0u16; LOCALE_CAPACITY];
@@ -124,9 +126,11 @@ pub struct WindowsRecoveryTimeFormatter;
 
 impl RecoveryTimeFormatter for WindowsRecoveryTimeFormatter {
     fn format_local_general(&self, utc: DateTimeUtc) -> String {
-        let Some(filetime) = u64::try_from(utc.ticks())
-            .ok()
-            .and_then(|ticks| ticks.checked_div(1).filter(|_| ticks > 0))
+        // `DateTimeUtc` counts .NET ticks since 0001-01-01; a FILETIME counts 100 ns since 1601-01-01 (exe walkthrough 3: the Recovery window showed year 3626).
+        let Some(filetime) = utc
+            .ticks()
+            .checked_sub(FILETIME_EPOCH_TICKS)
+            .and_then(|ticks| u64::try_from(ticks).ok())
         else {
             return String::new();
         };

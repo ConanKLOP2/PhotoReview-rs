@@ -109,3 +109,20 @@ fn machine_zone_is_utc() -> bool {
 fn machine_zone_is_utc() -> bool {
     false
 }
+
+// New (exe walkthrough 3): .NET ticks (since 0001) were passed to FileTimeToSystemTime as a FILETIME (since 1601), so every Recovery time showed year +1600
+// ("10/29/3626"). 2020-07-01 12:00:00 UTC is the same calendar year in every time zone; the culture's short date has a four-digit year.
+#[test]
+fn locale_recovery_time_formatter_uses_the_dotnet_tick_epoch_not_the_filetime_epoch() {
+    let instant = DateTimeUtc::from_ticks(637_292_016_000_000_000_i64).expect("known valid UTC ticks");
+    let formatted = WindowsRecoveryTimeFormatter.format_local_general(instant);
+    assert!(formatted.contains("2020"), "expected year 2020: {formatted:?}");
+    assert!(!formatted.contains("3620"), "FILETIME epoch confusion: {formatted:?}");
+}
+
+// New (exe walkthrough 3): an instant before 1601 cannot be a FILETIME; the formatter returns an empty text instead of a wrapped date.
+#[test]
+fn locale_recovery_time_formatter_returns_empty_before_the_filetime_epoch() {
+    let instant = DateTimeUtc::from_ticks(1_000_000_000_i64).expect("valid ticks in year 1");
+    assert_eq!(WindowsRecoveryTimeFormatter.format_local_general(instant), "");
+}

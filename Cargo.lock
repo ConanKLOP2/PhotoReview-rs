@@ -83,6 +83,7 @@ version = "0.1.0"
 dependencies = [
  "pr-core",
  "pr-imaging",
+ "pr-libraw",
  "pr-platform-win",
  "pr-test-support",
  "serde_json",
