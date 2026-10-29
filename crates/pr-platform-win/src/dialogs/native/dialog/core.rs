@@ -17,7 +17,7 @@ use std::panic::{AssertUnwindSafe, catch_unwind};
 use std::rc::Rc;
 
 use super::{dpi, draw, events, layout, modal, tooltip};
-use crate::dialogs::native::chrome::{ChromePainter, DarkDialogChrome, DialogColors, NativeDialogChrome};
+use crate::dialogs::native::chrome::{DarkDialogChrome, DialogColors, NativeDialogChrome};
 use crate::dialogs::native::template::{DialogItem, TemplateError};
 use crate::host::error::HostError;
 use crate::host::pending_panic;
@@ -221,24 +221,11 @@ pub trait DialogContent {
     }
 }
 
-/// C# `DarkDialogChrome.Instance` for the base class: the chrome used when `NativeDialog::new` is given none. Built once per thread
-/// (`DarkDialogChrome::new(Rc::new(painter))`); until the painter group (W8-18l..18n) lands this uses the `NoPainter` of this file (D-W8B5-305).
+/// C# `DarkDialogChrome.Instance` for the base class: the chrome used when `NativeDialog::new` is given none. Built once per thread with the real
+/// `NativeDialogChromePainter` (a unit struct: no fonts, DPI or handles at construction, all state lives in the windows, so the lazy per-thread build is safe).
 pub fn default_chrome() -> Rc<dyn NativeDialogChrome> {
-    thread_local! { static CHROME: Rc<DarkDialogChrome> = Rc::new(DarkDialogChrome::new(Rc::new(NoPainter))); }
+    thread_local! { static CHROME: Rc<DarkDialogChrome> = Rc::new(DarkDialogChrome::new(crate::dialogs::native::painter::production_painter())); }
     CHROME.with(|chrome| Rc::clone(chrome) as Rc<dyn NativeDialogChrome>)
-}
-
-struct NoPainter;
-impl ChromePainter for NoPainter {
-    fn attach_dialog(&self, _: Hwnd) -> bool {
-        false
-    }
-    fn attach_control(&self, _: Hwnd, _: crate::dialogs::native::template::DialogControlClass) -> bool {
-        false
-    }
-    fn attach_header_filler(&self, _: Hwnd) -> bool {
-        false
-    }
 }
 
 /// A native Win32 dialog (C# `NativeDialog`). The handle is cheap to clone; every clone is the same dialog. Not `Send` (UI thread only). Each object shows
