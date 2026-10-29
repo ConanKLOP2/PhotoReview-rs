@@ -35,7 +35,7 @@ use pr_app::input::touchpad_gestures::WheelInput;
 use pr_app::misc::viewport_convergence::is_stable_viewport;
 use pr_app::misc::window_helpers;
 use pr_app::viewmodels::main::ViewerHandle;
-use pr_app::viewmodels::viewer_state::ViewerUpdate;
+use pr_app::viewmodels::viewer_state::{ViewerState, ViewerUpdate};
 use pr_app::viewport::fit::{
     FitContinuation, FitStep, FitSurface, FitViewer, OperationVersion, apply_fit_resume, apply_fit_start,
 };
@@ -551,6 +551,35 @@ impl ShellInput {
         let core = &self.core;
         let step = core.run_pointer(|pointer, ctx| pointer.set_click_zoom_level(ctx, percent));
         core.post_pointer_step(step);
+    }
+
+    /// C# `OnSourceSizeSwapping` (`PointerInputController` subscribes to `ViewerState.SourceSizeSwapping` in its constructor; ADR 0008 amendment R4): the shell
+    /// calls this from the closure it passes to `ViewerState::swap_source_size`, with the viewer state BEFORE the size changes. The re-anchor of the image
+    /// point at the viewport centre is posted at Render priority (it runs after the layout of the new size). Nothing here reads the viewer through its
+    /// handle (the caller holds it mutably): the state is the `before` argument.
+    pub fn on_source_size_swapping(&self, before: &ViewerState) {
+        let core = &self.core;
+        let continuation = {
+            let _busy = BusyScope::enter(&core.in_pointer_call);
+            let mut guard = core.state.borrow_mut();
+            let InputState { pointer, versions, .. } = &mut *guard;
+            let surface = core.deps.surface.borrow();
+            pointer.on_source_size_swapping(before, &*surface, versions);
+            pointer.take_pending_continuation()
+        };
+        if let Some(continuation) = continuation {
+            core.post_pointer_step(PointerStep::AwaitRender(continuation));
+        }
+    }
+
+    /// C# `Input.Clicks.Reset()` (`internal`, used by the G-INPUT replay): forget the current click chain.
+    pub fn reset_clicks(&self) {
+        self.core.state.borrow_mut().clicks.reset();
+    }
+
+    /// C# `Input.Clicks.Seed(...)` (`internal`, used by the G-INPUT replay): as if `count` consecutive clicks had happened, the last at `time`.
+    pub fn seed_clicks(&self, button: PointerButton, x: i32, y: i32, time: i32, count: i32) {
+        self.core.state.borrow_mut().clicks.seed(button, x, y, time, count);
     }
 
     /// C# `Pointer.StopKinetic()` (Refresh and `Deactivated` use it).

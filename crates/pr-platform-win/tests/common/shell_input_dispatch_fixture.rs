@@ -661,6 +661,8 @@ pub struct RigContent {
     pub bitmap: Cell<(f64, f64)>,
     /// Optional live host read, used to detect viewer guards held across viewport callbacks.
     pub before_read: RefCell<Option<Rc<dyn Fn()>>>,
+    /// While set, [`RigContent::refresh`] does nothing (a pure call holds the viewer mutably and posts jobs; the cache stays as it was).
+    pub suspended: Cell<bool>,
 }
 
 impl RigContent {
@@ -670,6 +672,7 @@ impl RigContent {
             cache: Cell::new(ViewportContent::empty()),
             bitmap: Cell::new(bitmap),
             before_read: RefCell::new(None),
+            suspended: Cell::new(false),
         });
         content.refresh(viewer);
         content
@@ -686,6 +689,9 @@ impl RigContent {
 
     /// C# `ContentFromViewer`: re-reads the viewer (never call this while a pure call holds it).
     pub fn refresh(&self, viewer: &ViewerHandle) {
+        if self.suspended.get() {
+            return;
+        }
         let (bitmap_width, bitmap_height) = self.bitmap.get();
         let viewer = viewer.borrow();
         self.cache.set(ViewportContent {
@@ -715,6 +721,8 @@ pub struct RigOptions {
     pub image_width: i32,
     pub image_height: i32,
     pub dpi_scale: f64,
+    /// The DPI scale the WINDOW reports when it differs from the viewer's (C# `SizedShellWindow.DpiScale` is always 1.0 in the G-INPUT replay).
+    pub window_dpi_scale: Option<f64>,
     pub configure: Option<ConfigureFn>,
 }
 
@@ -726,6 +734,7 @@ impl Default for RigOptions {
             image_width: 3000,
             image_height: 2000,
             dpi_scale: 1.0,
+            window_dpi_scale: None,
             configure: None,
         }
     }
@@ -747,6 +756,8 @@ pub struct Rig {
     pub tick_count: Rc<Cell<i32>>,
     pub wheel_device: Rc<Cell<WheelDeviceHint>>,
     pub timestamp: Rc<Cell<i64>>,
+    /// The cursor position in screen pixels the viewport reads (`GetCursorPos`); `None` = unreadable.
+    pub mouse: Rc<Cell<Option<PointD>>>,
     pub content: Rc<RigContent>,
     /// The surface handed to `ShellInput` (shared, so a test can read it too).
     pub surface: Rc<RefCell<RigSurface>>,
@@ -770,7 +781,11 @@ impl Rig {
             configure(&mut settings);
         }
         let settings = Rc::new(RefCell::new(Arc::new(settings)));
-        let window = InputWindow::new(options.client_width, options.client_height, options.dpi_scale);
+        let window = InputWindow::new(
+            options.client_width,
+            options.client_height,
+            options.window_dpi_scale.unwrap_or(options.dpi_scale),
+        );
         let dispatcher = QueueDispatcher::new();
         let clock = FakeHostClock::new();
         let host = RecordingHost::new();
@@ -786,10 +801,13 @@ impl Rig {
             cache: Cell::new(ViewportContent::empty()),
             bitmap: Cell::new((f64::from(options.image_width), f64::from(options.image_height))),
             before_read: RefCell::new(None),
+            suspended: Cell::new(false),
         });
         content.refresh(&viewer);
 
         let timestamp = Rc::new(Cell::new(0_i64));
+        let mouse: Rc<Cell<Option<PointD>>> = Rc::new(Cell::new(None));
+        let mouse_for_viewport = Rc::clone(&mouse);
         let content_for_viewport = Rc::clone(&content);
         let window_for_fit = Rc::clone(&window);
         let viewer_for_fit = viewer.clone();
@@ -798,7 +816,7 @@ impl Rig {
             Rc::clone(&window) as Rc<dyn ShellWindowApi>,
             Rc::new(RigPoster(Arc::clone(&dispatcher))),
             Rc::clone(&clock) as Rc<dyn pr_platform_win::host::frame_clock::base::HostFrameClock>,
-            Rc::new(move || content_for_viewport.cache.get()),
+            Rc::new(move || content_for_viewport.current()),
             Rc::new(move || {
                 // C# `UpdateFitSize`: `Viewer.UpdateViewport(ViewportSize)`.
                 let size = window_for_fit.client_size.get();
@@ -810,6 +828,7 @@ impl Rig {
             ViewportControllerOptions {
                 drag_metrics_pixels: Box::new(|| (4, 4)),
                 timestamp: Box::new(move || timestamp_for_viewport.get()),
+                cursor_screen_pixel: Box::new(move || mouse_for_viewport.get()),
                 ..ViewportControllerOptions::default()
             },
         );
@@ -885,6 +904,7 @@ impl Rig {
             tick_count,
             wheel_device,
             timestamp,
+            mouse,
             content,
             surface,
         };
