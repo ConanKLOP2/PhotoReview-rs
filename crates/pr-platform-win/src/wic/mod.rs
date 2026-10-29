@@ -4,6 +4,7 @@ pub mod availability;
 pub mod cache_adapters;
 pub mod cache_image;
 pub mod decoder;
+pub mod embedded_thumbnail;
 pub mod exif_reader;
 pub mod interop;
 pub mod scaler;

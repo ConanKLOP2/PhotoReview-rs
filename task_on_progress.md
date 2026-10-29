@@ -65,3 +65,4 @@ Find any section title with `grep -n '^## ' <file>`. Original section order is k
 | [`task_on_progress-w9-r1-r4-merged.md`](docs/archive/task_on_progress-w9-r1-r4-merged.md) | 2026-10-27 | Verbatim merged R1-R4 implementation, selected mutation, native/source gate, claim and cleanup status before compaction |
 
 | [`task_on_progress-doc-link-audit.md`](docs/archive/task_on_progress-doc-link-audit.md) | 2026-10-26 | Verbatim documentation link audit before compaction |
+| [`CX-IMAGING3`](docs/reviews/CX-IMAGING3-2026-10-30.md) | 2026-10-30 | W4-02b production embedded thumbnail adapter wired; W4-10b/11c/11e rows stay Partial, no mutation run |
