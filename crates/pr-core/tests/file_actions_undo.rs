@@ -14,8 +14,6 @@
 //! * `DIVERGENCE (R0003)`: `UndoLastAsync_DoesNotResumeOnCapturedContext` keeps only its functional part (no SynchronizationContext
 //!   in Rust): a Move undo then a Recycle undo both succeed. `// R0003: blocking API, nothing to resume`.
 //! * `DIVERGENCE`: any `io::Error` is swallowed by the settle path; there is no "unexpected exception" class in Rust.
-//! * `TODO(lead)`: the last three lines of `UndoLastAsync_FailedGroupDeleteWhereTheRecycledMemberWasRestoredAndEdited_*`
-//!   (`RecoveryRetryService`, W3-06) are not ported yet: W3-06 is not merged. Marked `TODO(lead)` in that test.
 //! * `DIVERGENCE (Q1, P-13)`: the bin's shell error is an `io::Error` (`RecycleBin::try_restore` returns `io::Result<bool>`), so
 //!   the C# throwing-bin tests port as they are.
 
@@ -31,6 +29,7 @@ use std::sync::{Arc, Mutex};
 use pr_core::abstractions::{FileSystem, InProcessLiveOperationRegistry, LiveMarker, LiveOperationRegistry};
 use pr_core::file_actions::errors::{MOVE_SOURCE_NOT_REMOVED, PENDING_UNCONFIRMED};
 use pr_core::file_actions::journal_line::{self, JournalEntry, JournalGroupMember};
+use pr_core::file_actions::recovery_retry::{EnglishRecoveryRetryTexts, RecoveryRetryService};
 use pr_core::file_actions::types::{CaptureGroupActionResult, CaptureGroupMemberResult, FileActionResult, UndoResult};
 use pr_core::file_actions::undo::{EnglishUndoTexts, FileActionGate, MoveOverride, UndoService, UndoTexts};
 use pr_core::file_actions::{
@@ -38,7 +37,7 @@ use pr_core::file_actions::{
     recovery_check::{RecoveryFileCheck, RecoveryVerdict},
 };
 use pr_core::model::{FileOperationType, JournalState};
-use pr_core::sync::Canceled;
+use pr_core::sync::{CancelToken, Canceled};
 use pr_core::time::DateTimeUtc;
 use pr_test_support::{FakeClock, FakeFileSystem};
 use undo_support::*;
@@ -1527,9 +1526,19 @@ fn undo_last_async_failed_group_delete_where_the_recycled_member_was_restored_an
     // Recovery must not offer a retry that would recycle the edited JPEG.
     let check = RecoveryFileCheck::new(f.fs.clone()).check(&line);
     assert_ne!(check.verdict, RecoveryVerdict::CanRetry);
-    // TODO(lead): add the RecoveryRetryService retry + `Assert.False(retry.Succeeded)` + `Assert.True(FileExists(Jpeg))`
-    // (C# l.459-461, `new RecoveryRetryService(_journal, _fs, new FixedClock(), _bin).RetryMoveOrCopyAsync(entry)`) after
-    // W3-06 merges. W3-06 is not merged yet: `RecoveryRetryService` is still `todo!()`.
+    // C# l.459-461: `new RecoveryRetryService(_journal, _fs, new FixedClock(), _bin).RetryMoveOrCopyAsync(entry)`.
+    let retry = RecoveryRetryService::new(
+        f.journal.clone(),
+        f.fs.clone(),
+        f.clock.clone(),
+        Arc::new(EnglishRecoveryRetryTexts),
+    )
+    .with_recycle_bin(f.bin.clone())
+    .retry_move_or_copy(&line, false, &CancelToken::none())
+    .expect("not canceled");
+    assert!(!retry.succeeded, "{}", retry.message);
+    // The edited file is still there (the scripted bin would have failed on `send_to_recycle_bin`).
+    assert!(f.exists(JPEG));
 }
 
 // C#: UndoServiceGroupTests.RegisterGroup_FailedWithNothingCompletedOrNotRecycle_RegistersNothing
