@@ -85,6 +85,25 @@ fn viewport_commands_run_on_the_controller_not_the_host() {
     assert!(rig.host.commands_snapshot().is_empty());
 }
 
+// New test (zoom-detail-wire): C# `ViewerState.ZoomModeChanged -> presenter.SetViewerZoom` reached the zoom detail loader for every zoom the user made; the
+// Rust viewer has no event, so ShellInput must tell the host, once per zoom command, after its own borrows are gone.
+#[test]
+fn zoom_commands_tell_the_host_that_the_zoom_mode_changed_so_the_presenter_can_load_the_original() {
+    let rig = Rig::new();
+    rig.fit();
+    let before = rig.host.zoom_mode_changes.get();
+
+    rig.key_down(KeyId::D1, false, false); // ZoomActualSize
+    assert_eq!(before + 1, rig.host.zoom_mode_changes.get(), "D1");
+
+    rig.key_down(KeyId::F, false, false); // ToggleFit
+    rig.drain();
+    assert!(
+        rig.host.zoom_mode_changes.get() >= before + 2,
+        "Fit is a zoom mode change too (the loader drops the original at Fit)"
+    );
+}
+
 // C#: KeyboardInputTests.CustomShortcutFromSettings_IsHonoured_AndRebuildSwapsTheTable
 #[test]
 fn custom_shortcut_from_settings_is_honoured_and_rebuild_swaps_the_table() {

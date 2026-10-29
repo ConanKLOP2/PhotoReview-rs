@@ -250,6 +250,12 @@ impl ShellInputHost for MainWindowInputHost {
         self.query(|vm| vm.cancel_duplicate_check()).unwrap_or(false)
     }
 
+    /// The viewer's `ZoomModeChanged` for a change made by the input: forwards the effective zoom to the presenter (zoom detail loader). `with_view_model`
+    /// uses `try_borrow_mut`, so a call that arrives while the view model is busy is skipped and logged, never a RefCell panic.
+    fn on_viewer_zoom_mode_changed(&self) {
+        self.call(|vm| vm.on_viewer_zoom_mode_changed());
+    }
+
     fn execute(&self, command: ReviewCommand) -> Result<(), Box<dyn Error>> {
         let names = self.services.action_names();
         let owner = self.owner.upgrade();

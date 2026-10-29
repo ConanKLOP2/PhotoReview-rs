@@ -268,6 +268,8 @@ pub struct RecordingHost {
     pub execute_failure: RefCell<Option<String>>,
     /// Every host call in order (`"next"`, `"previous"`, `"execute:{kind:?}"`), to pin the order of effects.
     pub calls: RefCell<Vec<String>>,
+    /// How often `on_viewer_zoom_mode_changed` was called (zoom-detail-wire).
+    pub zoom_mode_changes: Cell<u32>,
 }
 
 impl RecordingHost {
@@ -285,6 +287,7 @@ impl RecordingHost {
             previouses: Cell::new(0),
             execute_failure: RefCell::new(None),
             calls: RefCell::new(Vec::new()),
+            zoom_mode_changes: Cell::new(0),
         })
     }
 
@@ -320,6 +323,10 @@ impl ShellInputHost for RecordingHost {
     fn previous(&self) {
         self.previouses.set(self.previouses.get() + 1);
         self.calls.borrow_mut().push("previous".to_owned());
+    }
+    fn on_viewer_zoom_mode_changed(&self) {
+        self.zoom_mode_changes.set(self.zoom_mode_changes.get() + 1);
+        self.calls.borrow_mut().push("zoom_mode_changed".to_owned());
     }
     fn cancel_duplicate_check(&self) -> bool {
         if !self.duplicate_check_running.get() {
