@@ -21,6 +21,7 @@ Keep this file under about 10 KB. When it grows, move old sections verbatim to `
   - Wave 7: `cli-process` golden and `cargo-mutants` on the merged tree not run (`docs/archive/task_on_progress-wave7.md`).
   - Wave 8: B2 items D-W8B2-4/5/6 (`docs/archive/task_on_progress-wave8-b1-b2.md`); B3/B4 `Partial` rows 13b-13e, no hardware (non-WARP) GPU run, native evidence is hidden-window/WARP only (`docs/archive/task_on_progress-wave8-status-contracts-reviews.md`).
   - Native composition glue is excluded from full cargo-mutants by policy; Wave 8 B4-B6 and Wave 9 mutation evidence is partial per PR body.
+  - Settings dialog (D-10/C-28, cl-dlg 2026-10-30): window logic mutation clean (0 missed in 680), pr-app presenters only partly re-run; builder groups/rows/inputs, context, host, frame, surface and the `phase_two` repair-notice glue not mutated (`docs/reviews/CL-DLG-2026-10-30.md`).
   - Local merged-worktree cleanup was retained by machine A after an approval rejection (2026-10-26 sections); current worktree state unverified (use `/janitor`).
 
 ## Archives (`docs/archive/`, verbatim, history only)
