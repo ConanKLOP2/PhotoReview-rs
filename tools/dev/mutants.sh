@@ -104,7 +104,7 @@ run_once() { # outdir, extra args...
   local fargs=() cma=(); for f in "${files[@]}"; do fargs+=(--file "$f"); done
   for f in "${cargoargs[@]}"; do cma+=("--cargo-arg=$f"); done
   for f in "${testargs[@]}"; do cma+=("--cargo-test-arg=$f"); done
-  ( cd "$ROOT" && "$TIMEOUT_BIN" "$budget" "$CARGO_BIN" mutants -p "$crate" --baseline skip --timeout 90 -j "$jobs" \
+  ( cd "$ROOT" && "$TIMEOUT_BIN" "$budget" "$CARGO_BIN" mutants -p "$crate" --baseline skip --timeout "${MUT_TIMEOUT:-90}" -j "$jobs" \
       --output "$od" "${fargs[@]}" "${cma[@]}" "$@" )
   rc=$?
   if [ $rc -eq 124 ]; then echo "BUDGET EXHAUSTED after ${budget}s: the result below is PARTIAL, not a full mutation verdict"; fi
