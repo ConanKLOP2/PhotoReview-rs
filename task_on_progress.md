@@ -46,3 +46,4 @@ Find any section title with `grep -n '^## ' <file>`. Original section order is k
 | [`task_on_progress-status-2026-10-28-30.md`](docs/archive/task_on_progress-status-2026-10-28-30.md) | 2026-10-30 | Section "Moved 2026-10-30 (lane status lines, verbatim)": CX-MUTW4, CX-IMAGING3, CL-UNDO, CL-ENTRY, CL-APPMUT, CL-FSFLUSH, CL-PIXELS, CX-JSON3, CX-UNDOSTAT lane status lines |
 | [`task_on_progress-doc-link-audit.md`](docs/archive/task_on_progress-doc-link-audit.md) | 2026-10-26 | Verbatim documentation link audit before compaction |
 - CX-W4C 2026-10-30: bounded timeout + disk-read guard caught (9 unique, killers5); COM survivors and other W4 parity gaps remain; docs/reviews/CX-W4C-2026-10-30.md.
+- CL-SETTINGSUI 2026-10-30: builder groups first 21 mutants 19 caught, 2 unviable, 10 earlier survivors killed by w8_settingsui_killers.rs; rest of builder/context/host/frame/surface not run; 3 settings-ui rows stay Partial; docs/reviews/CL-SETTINGSUI-2026-10-30.md.
