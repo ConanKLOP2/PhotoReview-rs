@@ -114,7 +114,7 @@ Moved verbatim from `task_on_progress.md` (branch docs/tp-compact3, 2026-10-30).
 - CL-PHYSRERUN 2026-10-30: physical.rs native re-run with correct flags, 35 mutants (link walk, strip_nt_prefix, atomic write, try_copy_new): 30 caught, 5 missed (known fail-closed guard x2, 3 equivalents), pass-1 survivors caught; ~400 other mutants not re-run; X-physical-fs/SEC-01 stay Partial, D-05/RV-C05 rerun OK; docs/reviews/CL-PHYSRERUN-2026-10-30.md.
 - CL-W2RERUN 2026-10-30: native re-run of W2-FS mutants whose killers are ignored tests (perf_csv env/flush 13, writer dispose 11); real run confirmed, 0 new survivors; other files have no ignored test. See docs/reviews/CL-W2RERUN-2026-10-30.md.
 
-## Moved 2026-10-31 (cx-texts status compaction, verbatim)
+## Moved 2026-10-31 (CX-PHYS2 status compaction, verbatim)
 
 - CL-INPUTDONE 2026-10-30: X-input-drop-target Done (47/47 mutants, 6 survivors killed, 1 equivalent); X-input-native, -message-handlers, -viewport-surface lowered to Partial (native 58/92 evaluated, 0 missed except 1 equivalent + the touchpad branch; handlers 27/42, surface 34/126 evaluated, 0 missed); beware cargo-mutants `-- --include-ignored` makes every mutant "caught", use `--cargo-test-arg=`; docs/reviews/CL-INPUTDONE-2026-10-30.md.
 - CL-REST1 2026-10-30: pr-platform-win popup_host 63 (31 caught, 31 missed = native show path, no GUI run), windowing tail 85 (77 caught, 3 survivors killed), shell_startup locale/warmup/monitor_probe 95 (71 caught, 13 environment equivalents); 15 killers in w8_rest1_killers.rs; rows stay Partial; docs/reviews/CL-REST1-2026-10-30.md.
@@ -124,3 +124,7 @@ Moved verbatim from `task_on_progress.md` (branch docs/tp-compact3, 2026-10-30).
 - CL-FLAGAUDIT 2026-10-30: cargo rejects a lone `--cargo-test-arg=--include-ignored` (and a bare `-- --include-ignored`), and `--baseline skip` then reports every mutant caught; W2-FS physical.rs passes 2-7 void, CL-P01/STARTUP/MAINWIN2/HOST2/REST2 and W6 native rows suspect, pipeline unaffected; mutants.sh lints the form and preflights the test command (`--native`); no row demoted, re-run lanes listed; docs/reviews/AUDIT-MUTATION-FLAG-2026-10-30.md.
 - CL-STARTRERUN 2026-10-31: correct-flag rerun of pr-shell startup: group a 62 (57 caught, 5 unviable, 45 MISSED unless the native run binaries and w8_startup_killers2 are in the list), group b 63 (56 caught, 7 unviable, 0 missed); the 7 CX-DLGS secondary_dialogs survivors are real (CL-REST2 was void); MAINWIN2/HOST2 not rerun; docs/reviews/CL-STARTRERUN-2026-10-30.md.
 - CL-FSRERUN 2026-10-31: D-05/INV-8 flush mutation rerun for real (17 mutants: 8 caught, 3 unviable, 6 missed = 5 equivalent + 1 real share-mode `|`->`&` now killed by w2_fsrerun_killers.rs; 7 hand mutants all caught); both rows stay Done; docs/reviews/CL-FSRERUN-2026-10-30.md.
+
+## Moved 2026-10-31 (cx-texts status compaction, verbatim)
+
+- CL-W6RERUN 2026-10-30: W6 + CL-P01 platform native mutation re-run with the corrected flag form: 82 tested 58 caught 16 missed 8 unviable, and 68 tested 54 caught 11 missed 3 unviable; 7 real gaps (registry reader, `absolute_normalized`, forward_client transfer guards, vblank `try_open`) killed by w6_rerun_killers.rs, 7 equivalent, 13 inactive cfg; P-01/P-03/P-05/P-11 stay Partial; docs/reviews/CL-W6RERUN-2026-10-30.md.
