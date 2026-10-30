@@ -374,6 +374,9 @@ pub struct PreviewServiceConfig {
     pub clock: Option<Arc<dyn Clock>>,
     /// Thread starter; `None` = [`StdThreadSpawner`].
     pub spawner: Option<Arc<dyn DecodeThreadSpawner>>,
+    /// Observes an attempted disk-entry read before opening the file. Unset in normal composition.
+    #[doc(hidden)]
+    pub before_disk_read_for_tests: Option<TestHook>,
 }
 
 impl fmt::Debug for PreviewServiceConfig {
@@ -421,6 +424,7 @@ impl PreviewServiceConfig {
             diag: None,
             clock: None,
             spawner: None,
+            before_disk_read_for_tests: None,
         }
     }
 
@@ -451,6 +455,7 @@ pub(crate) struct ServiceInner {
     pub(crate) diag: Arc<DiagOptions>,
     pub(crate) clock: Arc<dyn Clock>,
     pub(crate) spawner: Arc<dyn DecodeThreadSpawner>,
+    pub(crate) before_disk_read_for_tests: Option<TestHook>,
     /// Effective (post-clamp) RAM budget, C# `CapacityBytes`.
     pub(crate) capacity_bytes: i64,
     // ---- decoders (W4-14a builds, W4-14b uses) ----
@@ -564,6 +569,7 @@ impl PreviewImageService {
             diag,
             clock,
             spawner,
+            before_disk_read_for_tests,
         } = config;
 
         // C# order: codec, reader, raw decoder, metrics, sources (required ones are non-`Option` fields).
@@ -622,6 +628,7 @@ impl PreviewImageService {
             diag,
             clock,
             spawner: spawner.unwrap_or_else(|| Arc::new(StdThreadSpawner)),
+            before_disk_read_for_tests,
             capacity_bytes: capacity,
             decoder,
             decoder_factory,

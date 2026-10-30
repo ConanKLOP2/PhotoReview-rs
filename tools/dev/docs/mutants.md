@@ -15,3 +15,5 @@ A budget stop (`timeout`) prints "BUDGET EXHAUSTED": the result is partial, neve
 Env overrides: `CARGO_BIN`, `PY_BIN`, `TIMEOUT_BIN`, `TEMP`, `MUT_OUT`.
 Safety: never kills processes by name, never deletes anything, never touches other target dirs.
 Run it after the port is merged and while few agents build. Selftest uses a fake cargo: `bash tools/dev/test/mutants-selftest.sh`.
+
+Native tests: `--native` adds `--cargo-test-arg=-- --cargo-test-arg=--include-ignored --cargo-test-arg=--test-threads=1`; `--cargo-arg A` and `--cargo-test-arg A` pass extra arguments. A libtest flag without the separator is refused (exit 2). Before any mutant the unmutated `cargo test` runs once with the same arguments and must exit 0 with `running N tests`, N > 0 (else exit 5), because `--baseline skip` reports every mutant caught when cargo rejects the arguments. `--lint-args <raw args>` only checks a command line. See `docs/reviews/AUDIT-MUTATION-FLAG-2026-10-30.md`.

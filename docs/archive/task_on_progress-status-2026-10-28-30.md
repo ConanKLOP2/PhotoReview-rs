@@ -71,6 +71,11 @@ Moved verbatim from `task_on_progress.md` (branch docs/tp-compact3, 2026-10-30).
 - CL-MAINWIN 2026-10-30: lifecycle InnerSteps + core registry killers (10 tests); no row changes, 10 mutants still open; docs/reviews/CL-MAINWIN-2026-10-30.md.
 - CX-SURV 2026-10-30: disk reproof 6/6 caught (3 killers-only completion guards, 3 lib assertions); JSON 8 fixed-point loops and disk bounded-wait gap remain Partial; docs/reviews/CX-SURV-2026-10-30.md.
 
+## Moved 2026-10-30 by CX-DLGS (verbatim historical status)
+
+- **Merged:** Wave 8 B6 (#164), B5 dialogs and startup (#223-#231: startup policies, lazy graph, zoom/diagnostics, Action Profiles, benchmark, Recovery, Settings window, secondary window routing). Wave 9 external editors E1-E9: E1 #233, E3 #234, E2 #235, E7 #236, E4 #237, E6 #238, E5 #239, E8 #254, E9 #256. Root repairs: #240 preview registration, #255 viewer borrow in zoom/menu, #260 shell handler lifetime. Dev tooling #242-#258 (status, janitor, hooks, agents, dashboard, triage, mutants, parity, oracle, native-tests, unsafe-audit).
+- **PARITY.md** (`parity.sh stats`, 351 status rows): Done 168, Partial 91, Ported 41, Todo 12, Superseded 17, Different 14, Doing 3, Implementation 3, Contract 2.
+
 ## Moved 2026-10-30 by CX-REL (verbatim status lines)
 
 - CL-OVERLAY 2026-10-30: X-overlay-button Done (71/71 mutation + native overlay/pointer wiring re-run); X-pointer-click-pan, recovery/benchmark/settings presenters, composition-factories stay Partial; benchmark Debug mutants killed, 2 `dispose` mutants MISSED (no seam); docs/reviews/CL-OVERLAY-2026-10-30.md.
@@ -100,3 +105,12 @@ Moved verbatim from `task_on_progress.md` (branch docs/tp-compact3, 2026-10-30).
 - CL-AUDIT2 2026-10-30: PARITY audit of all 84 Partial rows: 13 stale-note rows reworded (no status change), 36 machine-runnable gaps with proposed lanes, 34 human-only; short human list in docs/reviews/PARITY-GAP-MAP-2026-10-30.md.
 - CL-P01 2026-10-30: P-03/P-05/P-11 glue survivors killed (settings adapters, QPC wrappers, worker priority/retire/reap, descriptor Drop leak): 82 tested, 74 caught, 8 unviable, 0 missed; seams `drive_type_from_win32`, pub `read_registry_value`, test-only `worker_slots`; P-01 COM file mutation only 10/253; rows stay Partial; docs/reviews/CL-P01-2026-10-30.md.
 - CL-SETTINGSUI 2026-10-30: builder groups first 21 mutants 19 caught, 2 unviable, 10 earlier survivors killed by w8_settingsui_killers.rs; rest of builder/context/host/frame/surface not run; 3 settings-ui rows stay Partial; docs/reviews/CL-SETTINGSUI-2026-10-30.md.
+
+## Moved by CX-PAINTER merge 2026-10-30 (verbatim status lines)
+
+- CL-CINATIVE 2026-10-30: non-required nightly workflow native-nightly.yml (23 DLL-free native binaries with --include-ignored; DLL and desktop binaries skipped); docs/reviews/CL-CINATIVE-2026-10-30.md.
+- CL-REST2 2026-10-30: seam `scratch_parent` closes 2 benchmark `dispose` mutants; secondary_dialogs 72 (22 caught, 50 unviable), initial_viewport 41/41, composition adapters 34 (29/5) all 0 missed; texts.rs 5/161 only; 7 rows stay Partial; docs/reviews/CL-REST2-2026-10-30.md.
+- CL-RAW 2026-10-30: fresh full-file mutation jpeg_probe 101 / bmff 99 / header_source 80 / raw_exif 25 (293 caught, 3 equivalent, 7 unviable, 2 hang-timeouts, 0 missed); pinned-DLL native tests green; corpus-gated cases unproven; all 6 X-raw/I-15 rows stay Partial; docs/reviews/CL-RAW-2026-10-30.md.
+- CL-MISC 2026-10-30: composer native twins (Orientation, LargeImage tiles, DeviceLost crossfade) and drag-release kinetic glide native tests added; slow_link_fs limiter/stream 38 mutants all caught or equivalent (unviable 2); P-03/P-11 left to cl-p01, cargo-deny skipped; rows stay Partial; docs/reviews/CL-MISC-2026-10-30.md.
+- CL-SETTINGSUI 2026-10-30: builder groups first 21 mutants 19 caught, 2 unviable, 10 earlier survivors killed by w8_settingsui_killers.rs; rest of builder/context/host/frame/surface not run; 3 settings-ui rows stay Partial; docs/reviews/CL-SETTINGSUI-2026-10-30.md.
+- CL-SEC01 2026-10-30: re-ran the SEC-01/F-05 link walk (21 mutants: cap `hops += 1` now killed by a seam test, `is_path_unreachable` guard `true` + 2 equivalents survive) and P-04 `instance_keys` (34: 22 caught, 11 survivors, 1 timeout); W2-FS native mutation passes invalid (`--cargo-test-arg=--include-ignored` is rejected by cargo); SEC-01/F-05, X-physical-fs, F-23 Done -> Partial; docs/reviews/CL-SEC01-2026-10-30.md.
