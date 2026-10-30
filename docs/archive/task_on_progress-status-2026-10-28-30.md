@@ -50,3 +50,9 @@ Moved verbatim from `task_on_progress.md` (branch docs/tp-compact2, 2026-10-30).
 
 ## Moved 2026-10-30 (cl-input), verbatim
   - Settings dialog (D-10/C-28, cl-dlg 2026-10-30): window logic mutation clean (0 missed in 680), pr-app presenters now complete (cl-prapp: 133 run, 0 real survivors, `docs/reviews/CL-PRAPP-2026-10-30.md`); builder groups/rows/inputs, context, host, frame, surface and the `phase_two` repair-notice glue not mutated (`docs/reviews/CL-DLG-2026-10-30.md`).
+
+
+## Moved 2026-10-30 (CX-SURV lane status lines, verbatim)
+
+- CX-JSON4 (2026-10-30): X-stj-reader Partial, 312/312 tested: 289 caught, 7 equivalent, 8 unviable, 8 timeouts; killers4 4 pass; evidence `docs/reviews/CX-JSON4-2026-10-30.md`; unstaged for orchestrator.
+- CX-W4REST 2026-10-30: six rows Partial; 236 new mutants measured; disk reproof budget-exhausted; final gates/20x killers pass; docs/reviews/CX-W4REST-2026-10-30.md.

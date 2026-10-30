@@ -26,7 +26,6 @@ Keep this file under about 10 KB. When it grows, move old sections verbatim to `
   - Local merged-worktree cleanup was retained by machine A after an approval rejection (2026-10-26 sections); current worktree state unverified (use `/janitor`).
 
 ## Archives (`docs/archive/`, verbatim, history only)
-- CX-JSON4 (2026-10-30): X-stj-reader Partial, 312/312 tested: 289 caught, 7 equivalent, 8 unviable, 8 timeouts; killers4 4 pass; evidence `docs/reviews/CX-JSON4-2026-10-30.md`; unstaged for orchestrator.
 Find any section title with `grep -n '^## ' <file>`. Original section order is kept inside each file.
 
 | File | Period | Holds |
@@ -47,4 +46,4 @@ Find any section title with `grep -n '^## ' <file>`. Original section order is k
 | [`task_on_progress-status-2026-10-28-30.md`](docs/archive/task_on_progress-status-2026-10-28-30.md) | 2026-10-28..30 | cx-* lane status lines (CX-IMAGING2, cx-imaging, cx-host2, cx-core2, cx-json2, cx-release), W9-R1..R9 merged/in-progress lines, native input fixture and benchmark repair status, exe runs 2026-10-29, zoom-detail-wire |
 | [`task_on_progress-status-2026-10-28-30.md`](docs/archive/task_on_progress-status-2026-10-28-30.md) | 2026-10-30 | Section "Moved 2026-10-30 (lane status lines, verbatim)": CX-MUTW4, CX-IMAGING3, CL-UNDO, CL-ENTRY, CL-APPMUT, CL-FSFLUSH, CL-PIXELS, CX-JSON3, CX-UNDOSTAT lane status lines |
 | [`task_on_progress-doc-link-audit.md`](docs/archive/task_on_progress-doc-link-audit.md) | 2026-10-26 | Verbatim documentation link audit before compaction |
-- CX-W4REST 2026-10-30: six rows Partial; 236 new mutants measured; disk reproof budget-exhausted; final gates/20x killers pass; docs/reviews/CX-W4REST-2026-10-30.md.
+- CX-SURV 2026-10-30: disk reproof 6/6 caught (3 killers-only completion guards, 3 lib assertions); JSON 8 fixed-point loops and disk bounded-wait gap remain Partial; docs/reviews/CX-SURV-2026-10-30.md.
