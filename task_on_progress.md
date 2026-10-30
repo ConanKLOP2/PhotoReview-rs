@@ -26,6 +26,7 @@ Keep this file under about 10 KB. When it grows, move old sections verbatim to `
   - Local merged-worktree cleanup was retained by machine A after an approval rejection (2026-10-26 sections); current worktree state unverified (use `/janitor`).
 
 ## Archives (`docs/archive/`, verbatim, history only)
+- CX-JSON4 (2026-10-30): X-stj-reader Partial, 312/312 tested: 289 caught, 7 equivalent, 8 unviable, 8 timeouts; killers4 4 pass; evidence `docs/reviews/CX-JSON4-2026-10-30.md`; unstaged for orchestrator.
 Find any section title with `grep -n '^## ' <file>`. Original section order is kept inside each file.
 
 | File | Period | Holds |
