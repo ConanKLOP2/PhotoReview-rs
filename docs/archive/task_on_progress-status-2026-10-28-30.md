@@ -48,5 +48,9 @@ Moved verbatim from `task_on_progress.md` (branch docs/tp-compact2, 2026-10-30).
 - **CX-JSON3 2026-10-30 / X-stj-reader:** Partial; 73/92 new identities: 65 caught, 2 unviable, 6 timeouts, 19 skip_ws without verdict; combined 293/312, 9 unresolved timeouts. Killers3 4/4, fmt/Clippy passed; unstaged for orchestrator, no PR. [Evidence](docs/reviews/CX-JSON3-2026-10-30.md).
 - **CX-UNDOSTAT 2026-10-30 / F-10 / INV-4 (undo) / INV-6 (undo):** Partial; three Recycle stat sites use the fallible seam after test-first regression; 131 tests + fmt/Clippy/doc-links pass, selected mutation 42/199 = 39 caught/3 unviable, no missed/timeouts; single-Recycle exception/API parity and full-file mutation re-verification remain open. Uncommitted for orchestrator. [Evidence](docs/reviews/CX-UNDOSTAT-2026-10-30.md).
 
+## Moved 2026-10-30 by lane cl-overlay (status lines, verbatim)
+- **cl-undo2 (2026-10-30):** `undo.rs` 199/199 mutants, 180 caught, 19 unviable, 0 missed; stat divergence accepted; F-10/INV-4/INV-6 Done ([evidence](docs/reviews/CL-UNDO2-2026-10-30.md)).
+- CX-JSON4 (2026-10-30): X-stj-reader Partial, 312/312 tested: 289 caught, 7 equivalent, 8 unviable, 8 timeouts; killers4 4 pass; evidence `docs/reviews/CX-JSON4-2026-10-30.md`; unstaged for orchestrator.
+- CX-W4REST 2026-10-30: six rows Partial; 236 new mutants measured; disk reproof budget-exhausted; final gates/20x killers pass; docs/reviews/CX-W4REST-2026-10-30.md.
 ## Moved 2026-10-30 (cl-input), verbatim
   - Settings dialog (D-10/C-28, cl-dlg 2026-10-30): window logic mutation clean (0 missed in 680), pr-app presenters now complete (cl-prapp: 133 run, 0 real survivors, `docs/reviews/CL-PRAPP-2026-10-30.md`); builder groups/rows/inputs, context, host, frame, surface and the `phase_two` repair-notice glue not mutated (`docs/reviews/CL-DLG-2026-10-30.md`).
