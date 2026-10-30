@@ -60,3 +60,5 @@ Moved verbatim from `task_on_progress.md` (branch docs/tp-compact2, 2026-10-30).
 
 - CX-JSON4 (2026-10-30): X-stj-reader Partial, 312/312 tested: 289 caught, 7 equivalent, 8 unviable, 8 timeouts; killers4 4 pass; evidence `docs/reviews/CX-JSON4-2026-10-30.md`; unstaged for orchestrator.
 - CX-W4REST 2026-10-30: six rows Partial; 236 new mutants measured; disk reproof budget-exhausted; final gates/20x killers pass; docs/reviews/CX-W4REST-2026-10-30.md.
+- CX-BENCH 2026-10-30: Partial; 67/362 new mutants: 59 caught, 4 survivors, 4 unviable; 6 killers 20x pass; evidence `docs/reviews/CX-BENCH-2026-10-30.md`; unstaged for orchestrator.
+- CX-W4REST 2026-10-30: six rows Partial; 236 new mutants measured; disk reproof budget-exhausted; final gates/20x killers pass; docs/reviews/CX-W4REST-2026-10-30.md.
