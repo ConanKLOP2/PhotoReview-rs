@@ -254,6 +254,8 @@ run_mutants() {
   if [ "$left" -lt 30 ]; then BUDGET_HIT=1; MUT_NOTE="mutants budget (${budget}s) exhausted"; return; fi
   ta="$($LIB testargs "$wt" "$wt/contracts/$u.md" | tr -d '\r')"
   [ -n "$ta" ] || { MUT_NOTE="mutants skipped (unit has no own test binaries)"; return; }
+  # Only cargo selectors (--test X, --lib) go here and ignored tests stay skipped. A libtest flag (--include-ignored, --test-threads) needs
+  # "--cargo-test-arg=--" in front of it, else cargo rejects it and --baseline skip reports every mutant caught (AUDIT-MUTATION-FLAG-2026-10-30).
   for w in $ta; do CTA+=("--cargo-test-arg=$w"); done
   for w in "${OWN[@]}"; do case "$w" in */src/*.rs) SRCS+=("$w");; esac; done
   ( cd "$wt" && git add -A -- . ':!.codex-*' && git diff --cached HEAD -- "${SRCS[@]}" > "$LOGDIR/$u.diff" )

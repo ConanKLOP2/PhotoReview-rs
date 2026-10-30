@@ -71,6 +71,11 @@ Moved verbatim from `task_on_progress.md` (branch docs/tp-compact3, 2026-10-30).
 - CL-MAINWIN 2026-10-30: lifecycle InnerSteps + core registry killers (10 tests); no row changes, 10 mutants still open; docs/reviews/CL-MAINWIN-2026-10-30.md.
 - CX-SURV 2026-10-30: disk reproof 6/6 caught (3 killers-only completion guards, 3 lib assertions); JSON 8 fixed-point loops and disk bounded-wait gap remain Partial; docs/reviews/CX-SURV-2026-10-30.md.
 
+## Moved 2026-10-30 by CX-DLGS (verbatim historical status)
+
+- **Merged:** Wave 8 B6 (#164), B5 dialogs and startup (#223-#231: startup policies, lazy graph, zoom/diagnostics, Action Profiles, benchmark, Recovery, Settings window, secondary window routing). Wave 9 external editors E1-E9: E1 #233, E3 #234, E2 #235, E7 #236, E4 #237, E6 #238, E5 #239, E8 #254, E9 #256. Root repairs: #240 preview registration, #255 viewer borrow in zoom/menu, #260 shell handler lifetime. Dev tooling #242-#258 (status, janitor, hooks, agents, dashboard, triage, mutants, parity, oracle, native-tests, unsafe-audit).
+- **PARITY.md** (`parity.sh stats`, 351 status rows): Done 168, Partial 91, Ported 41, Todo 12, Superseded 17, Different 14, Doing 3, Implementation 3, Contract 2.
+
 ## Moved 2026-10-30 by CX-REL (verbatim status lines)
 
 - CL-OVERLAY 2026-10-30: X-overlay-button Done (71/71 mutation + native overlay/pointer wiring re-run); X-pointer-click-pan, recovery/benchmark/settings presenters, composition-factories stay Partial; benchmark Debug mutants killed, 2 `dispose` mutants MISSED (no seam); docs/reviews/CL-OVERLAY-2026-10-30.md.
