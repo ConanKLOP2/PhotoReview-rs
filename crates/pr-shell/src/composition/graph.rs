@@ -208,6 +208,7 @@ pub fn dialog_services_of(services: &SharedServices) -> Rc<DialogServices> {
             real_recycle_bin: Arc::new(move || bin.clone()),
             physical_memory_bytes,
             memory_probe: Some(platform.memory_probe.clone()),
+            scratch_parent: None,
         }),
     })
 }
