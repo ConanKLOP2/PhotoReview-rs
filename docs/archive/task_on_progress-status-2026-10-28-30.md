@@ -28,3 +28,7 @@ States, paths and next steps are those of the date in each heading. Current stat
 - **Merged, benchmark fixture repair:** #285 `cf325668`; workspace10012/0/1336ignored, fmt12/workspaceClippy/pre-pr PASS; native Move/Delete/Copy10successes each/0sharing in this run. Claim released; cleanup retained. [Evidence](docs/reviews/BENCH-FILE-ACTION-DETERMINISM.md).
 - **zoom-detail-wire (2026-10-29, A):** D1 / wheel / keys never loaded the full-resolution image in the exe: `ShellInput` changed the viewer without telling the presenter. Added `ShellInputHost::on_viewer_zoom_mode_changed` -> `MainViewModel::on_viewer_zoom_mode_changed`; real exe before/after, tests in [evidence](docs/reviews/ZOOM-DETAIL-WIRING-2026-10-29.md). PARITY row X-zoom-detail-loader stays Partial.
 - **W9-R7 (2026-10-28):** claim retained; branch `codex/w9-rename-prompts` WIP. Final tests have stray module-scope `let` syntax errors; fix, then rerun tests. Stopped at quota 95%.
+
+## Moved 2026-10-30 (lane cl-pixels, verbatim)
+
+- **CX-JSON3 2026-10-30 / X-stj-reader:** Partial; 73/92 new identities: 65 caught, 2 unviable, 6 timeouts, 19 skip_ws without verdict; combined 293/312, 9 unresolved timeouts. Killers3 4/4, fmt/Clippy passed; unstaged for orchestrator, no PR. [Evidence](docs/reviews/CX-JSON3-2026-10-30.md).
