@@ -63,6 +63,14 @@ To add a command, add its input file under `tests/golden-inputs/`, add a command
 
 The `pr-app` integration files are sorted by name and assigned round-robin to four shards. On a pull request changing only `docs/`, `tools/`, or Markdown files, `changes` sets `rust=false`, so `lint` and `test` are skipped. `repo-checks` still runs, and required `build-test` still runs and succeeds only if `changes` succeeded and both Rust jobs were skipped. Pushes to `master`, manual runs, workflow changes, Cargo files, crate files, fixtures or toolchain changes set `rust=true` and run Rust checks.
 
+`.github/workflows/native-nightly.yml` is a separate, **non-required** workflow (`schedule` 18:30 UTC daily plus `workflow_dispatch`, `windows-latest`, `contents: read`, one run at a time, 60 min limit). It is not in `needs` of `build-test`, so a red night never blocks a pull request. It runs the `#[ignore = "native"]` tests that need only the file system with `-- --include-ignored --test-threads=1`, `PHOTOREVIEW_RS_ISOLATE_CONFIG=1` and `PHOTOREVIEW_RS_DATA_ROOT` in `$RUNNER_TEMP` (never `%LOCALAPPDATA%\PhotoReview`, never the real Recycle Bin):
+
+- `pr-core`: all 17 native binaries (`io_physical`, `io_physical_seams`, `file_actions_destination_policy`, `file_actions_journal`, `file_actions_journal_compaction`, `io_journal_compaction_files`, `journal_*`, `rename_*`, `session_store`, `w2_fs_mutation_killers` and the rest listed in the workflow).
+- `pr-platform-win`: `w2_fs_flush_killers`, `w4_mutation_killers2`, `w6_platform_native`, `physical_memory`.
+- `pr-app`: `folder_load_load`, `windowing_placement_store` (real files and `icacls` on their own temp items).
+- Skipped because the runner has no pinned DLLs (`tools/dev/stage-native.ps1` copies them from the local C# checkout; the workflow downloads nothing, decision P-55): `pr-libraw` and `pr-turbojpeg` native binaries, `pr-imaging-raw/raf_reader`, the `pr-imaging` cache and preview binaries, `wic_imaging_twins_preview`, `wic_preview_service_broken_entry`.
+- Skipped because they need a real desktop, DWM/GPU or cursor: the window families of `pr-platform-win` (`dialogs_*`, `host_*`, `shell_*`, `gfx_*`, `render_*`, `win32_*`, `wic_*`, `w8_*`) and `pr-shell` (`ui_smoke*`, `startup_*`). Run those by hand with `tools/dev/native-tests.sh`.
+
 ## Mutation checks
 
 Use this scoped command pattern (replace the placeholders for the owned crate/file/function/test):
