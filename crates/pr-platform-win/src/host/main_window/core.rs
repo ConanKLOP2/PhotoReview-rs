@@ -1342,3 +1342,7 @@ mod tests {
         assert_eq!(order, [(10, 1), (10, 2), (20, 0)]);
     }
 }
+
+#[cfg(test)]
+#[path = "core_registry_tests.rs"]
+mod registry_tests;
