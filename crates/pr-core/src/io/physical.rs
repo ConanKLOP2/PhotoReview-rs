@@ -1091,6 +1091,99 @@ const ERROR_NETWORK_ACCESS_DENIED: i32 = 65;
 // FileSystem
 // ---------------------------------------------------------------------------------------------------------------
 
+/// The points of [`PhysicalFileSystem::write_all_text_atomic_observed`] at which the temp-file handle is handed out.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum AtomicWriteStep {
+    /// The text was written to the still open temp file (always reported, durable or not).
+    Written,
+    /// Durable writes only (C# `Flush(flushToDisk: true)`): the observer performs the flush to disk.
+    Flush,
+}
+
+thread_local! {
+    static TEMP_FLUSHES: std::cell::Cell<u64> = const { std::cell::Cell::new(0) };
+}
+
+/// How many times [`write_all_text_atomic`](FileSystem::write_all_text_atomic) on THIS thread flushed a temp file to disk
+/// through `flush_temp_file` (the OS flush itself leaves no trace a test can read; this counts the call that makes it).
+#[doc(hidden)]
+pub fn temp_file_flushes_on_this_thread() -> u64 {
+    TEMP_FLUSHES.with(std::cell::Cell::get)
+}
+
+/// C# `Flush(flushToDisk: true)` on the temp file: `FlushFileBuffers`.
+fn flush_temp_file(file: &File) -> io::Result<()> {
+    TEMP_FLUSHES.with(|count| count.set(count.get() + 1));
+    file.sync_all()
+}
+
+impl PhysicalFileSystem {
+    /// Test seam of `FileSystem::open_read_shared`: the raw file it wraps (`FileShare.ReadWrite | Delete`,
+    /// `FileOptions.SequentialScan`), so a test can query the mode of the real handle.
+    #[doc(hidden)]
+    pub fn open_read_shared_file(&self, path: &Path) -> io::Result<File> {
+        if is_blank(path) {
+            return Err(blank_path_error());
+        }
+        let mut shared = options(
+            FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
+            FILE_FLAG_SEQUENTIAL_SCAN,
+        );
+        shared.read(true);
+        open_like_file_stream(&shared, path)
+    }
+
+    /// `FileSystem::write_all_text_atomic` with an observer (the P-11 `FlushToDisk` pattern): `observe` receives the
+    /// open temp-file handle after the write ([`AtomicWriteStep::Written`]) and, for `durable`, once more to flush
+    /// it ([`AtomicWriteStep::Flush`]); the trait method passes `File::sync_all` for the latter. An observer error
+    /// fails the write like a failed flush.
+    #[doc(hidden)]
+    pub fn write_all_text_atomic_observed(
+        &self,
+        path: &Path,
+        text: &str,
+        durable: bool,
+        observe: &mut dyn FnMut(AtomicWriteStep, &File) -> io::Result<()>,
+    ) -> io::Result<()> {
+        if is_blank(path) {
+            return Err(blank_path_error());
+        }
+        let target = path_str(path)?;
+        let dir = dotnet_path::get_directory_name_raw(target);
+        if !dir.is_empty() {
+            // Directory.CreateDirectory(dir), not create_dir_all: a dangling junction counts as an existing folder.
+            create_directory_impl(Path::new(dir))?;
+        }
+
+        let temp = format!("{target}.{}.tmp", new_guid_n());
+        let temp_path = Path::new(&temp);
+        let result = (|| {
+            // new FileStream(tempPath, ...) opens Path.GetFullPath(tempPath).
+            let mut file = options(FILE_SHARE_NONE, if durable { FILE_FLAG_WRITE_THROUGH } else { 0 })
+                .write(true)
+                .create_new(true)
+                .open(full_path(temp_path)?)?;
+            file.write_all(text.as_bytes())?;
+            observe(AtomicWriteStep::Written, &file)?;
+            if durable {
+                observe(AtomicWriteStep::Flush, &file)?;
+            }
+            drop(file);
+            // File.Move(temp, path, overwrite: true), retried on transient contention.
+            replace_with_retry(
+                || move_impl(temp_path, path, true),
+                |ms| std::thread::sleep(Duration::from_millis(u64::from(ms))),
+            )
+        })();
+
+        // finally: best-effort temp cleanup; the original failure is reported.
+        if self.file_exists(temp_path) {
+            let _ = self.delete(temp_path);
+        }
+        result
+    }
+}
+
 impl FileSystem for PhysicalFileSystem {
     // DIVERGENCE: C# throws ArgumentException for a blank path; the bool/Option methods return false/None instead.
     fn file_exists(&self, path: &Path) -> bool {
@@ -1215,15 +1308,7 @@ impl FileSystem for PhysicalFileSystem {
     }
 
     fn open_read_shared(&self, path: &Path, buffer_size: usize) -> io::Result<Box<dyn ReadSeek>> {
-        if is_blank(path) {
-            return Err(blank_path_error());
-        }
-        let mut shared = options(
-            FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
-            FILE_FLAG_SEQUENTIAL_SCAN,
-        );
-        shared.read(true);
-        let file = open_like_file_stream(&shared, path)?;
+        let file = self.open_read_shared_file(path)?;
         if buffer_size > 1 {
             Ok(Box::new(BufReader::with_capacity(buffer_size, file)))
         } else {
@@ -1247,41 +1332,10 @@ impl FileSystem for PhysicalFileSystem {
     }
 
     fn write_all_text_atomic(&self, path: &Path, text: &str, durable: bool) -> io::Result<()> {
-        if is_blank(path) {
-            return Err(blank_path_error());
-        }
-        let target = path_str(path)?;
-        let dir = dotnet_path::get_directory_name_raw(target);
-        if !dir.is_empty() {
-            // Directory.CreateDirectory(dir), not create_dir_all: a dangling junction counts as an existing folder.
-            create_directory_impl(Path::new(dir))?;
-        }
-
-        let temp = format!("{target}.{}.tmp", new_guid_n());
-        let temp_path = Path::new(&temp);
-        let result = (|| {
-            // new FileStream(tempPath, ...) opens Path.GetFullPath(tempPath).
-            let mut file = options(FILE_SHARE_NONE, if durable { FILE_FLAG_WRITE_THROUGH } else { 0 })
-                .write(true)
-                .create_new(true)
-                .open(full_path(temp_path)?)?;
-            file.write_all(text.as_bytes())?;
-            if durable {
-                file.sync_all()?;
-            }
-            drop(file);
-            // File.Move(temp, path, overwrite: true), retried on transient contention.
-            replace_with_retry(
-                || move_impl(temp_path, path, true),
-                |ms| std::thread::sleep(Duration::from_millis(u64::from(ms))),
-            )
-        })();
-
-        // finally: best-effort temp cleanup; the original failure is reported.
-        if self.file_exists(temp_path) {
-            let _ = self.delete(temp_path);
-        }
-        result
+        self.write_all_text_atomic_observed(path, text, durable, &mut |step, file| match step {
+            AtomicWriteStep::Flush => flush_temp_file(file),
+            AtomicWriteStep::Written => Ok(()),
+        })
     }
 
     fn read_all_text(&self, path: &Path) -> io::Result<String> {
