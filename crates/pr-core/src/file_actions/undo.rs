@@ -573,8 +573,8 @@ impl UndoService {
     }
 
     /// C# `GetFileStat(path)` (C# returns null for a missing file).
-    fn stat(&self, path: &str) -> Option<FileStat> {
-        self.file_system.get_file_stat(Path::new(path))
+    fn stat(&self, path: &str) -> io::Result<Option<FileStat>> {
+        self.file_system.try_get_file_stat(Path::new(path))
     }
 
     /// C# `new JournalCodedException(code)` raised by this unit (only `errors::VERIFY_SIZE_CHANGED`):
@@ -807,7 +807,20 @@ impl UndoService {
             )
             .err();
         // R18: the bin's verdict is not the proof; the recycled file itself (size AND write time) must be back.
-        let restored = self.stat(&action.source).is_some_and(|back| {
+        let back = match self.stat(&action.source) {
+            Ok(back) => back,
+            Err(fault) => {
+                // C# propagates this stat exception through finally; our UndoResult API reports the fault.
+                return UndoResult::new(
+                    false,
+                    Some(FileOperationType::Recycle),
+                    action.source.clone(),
+                    None,
+                    Some(self.texts.core_undo_failed(&fault.to_string())),
+                );
+            }
+        };
+        let restored = back.is_some_and(|back| {
             i64::try_from(back.length) == Ok(action.size) && back.last_write_utc == action.last_write_utc
         });
         if !restored {
@@ -1109,7 +1122,7 @@ impl UndoService {
                 unrecoverable.push(member.clone());
                 continue;
             }
-            let Some(existing) = self.stat(&member.source) else {
+            let Some(existing) = self.stat(&member.source)? else {
                 pending.push(member);
                 continue;
             };
@@ -1174,7 +1187,7 @@ impl UndoService {
                 return Err(restore_failed());
             }
             // R18: the recycled file itself must be back (size and write time), not merely some file at the path.
-            let back = self.stat(&member.source).is_some_and(|back| {
+            let back = self.stat(&member.source)?.is_some_and(|back| {
                 i64::try_from(back.length) == Ok(member.size) && back.last_write_utc == member.last_write_utc.value
             });
             if !back {
