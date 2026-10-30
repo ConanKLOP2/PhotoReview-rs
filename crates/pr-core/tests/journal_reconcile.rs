@@ -2113,7 +2113,21 @@ fn reconcile_while_other_process_commits_latest_state_stays_committed() {
                     state: JournalState::Committed,
                     ..prepared.clone()
                 };
-                owner.append(&committed).expect("Committed is journaled");
+                // Like the C# test and the production caller: the journal's bounded append retries can run out while the
+                // reconciler holds the file (a scheduling effect, not a defect), so retry a sharing violation, bounded.
+                let deadline = std::time::Instant::now() + std::time::Duration::from_secs(120);
+                loop {
+                    match owner.append(&committed) {
+                        Ok(()) => break,
+                        Err(err)
+                            if pr_core::file_actions::journal::is_sharing_or_lock_violation(&err)
+                                && std::time::Instant::now() < deadline =>
+                        {
+                            std::thread::yield_now();
+                        }
+                        Err(err) => panic!("Committed is journaled: {err}"),
+                    }
+                }
             }
             done.store(true, Ordering::SeqCst);
         });
@@ -2132,16 +2146,23 @@ fn reconcile_while_other_process_commits_latest_state_stays_committed() {
     let final_journal =
         OperationJournal::with_options(&paths, Arc::new(PhysicalFileSystem), Arc::new(SystemClock), quiet());
     let text = String::from_utf8(std::fs::read(&paths.journal_file).expect("journal exists")).expect("utf-8");
-    let mut latest_state = std::collections::HashMap::new();
     for line in lines_of(&text) {
-        let parsed = try_parse(line).expect("every line parses (no glued or torn line)");
-        latest_state.insert(parsed.id, parsed.state);
+        try_parse(line).expect("every line parses (no glued or torn line)");
+    }
+    // FA-01: the two instances do not share a gate (they stand for two processes), so a reconcile verdict computed
+    // from a stale snapshot can land AFTER the owner's Committed line. Such a raw last line is a documented residue
+    // that every reader ignores; the guarded property is the EFFECTIVE latest state (C# asserts it through
+    // ReadFailedOperations/ReadPendingOperations, never through the raw last line).
+    let mut latest_state = std::collections::HashMap::new();
+    for prepared in &entries {
+        let latest = final_journal.read_latest_entry(&prepared.id).expect("read latest");
+        latest_state.insert(prepared.id.clone(), latest.map(|e| e.state));
     }
     let failed_or_pending = final_journal.read_pending_and_failed_operations().expect("read");
     for prepared in &entries {
         assert_eq!(
             latest_state.get(&prepared.id),
-            Some(&JournalState::Committed),
+            Some(&Some(JournalState::Committed)),
             "{}",
             prepared.id
         );
