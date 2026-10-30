@@ -32,3 +32,18 @@ States, paths and next steps are those of the date in each heading. Current stat
 ## Moved 2026-10-30 (lane cl-pixels, verbatim)
 
 - **CX-JSON3 2026-10-30 / X-stj-reader:** Partial; 73/92 new identities: 65 caught, 2 unviable, 6 timeouts, 19 skip_ws without verdict; combined 293/312, 9 unresolved timeouts. Killers3 4/4, fmt/Clippy passed; unstaged for orchestrator, no PR. [Evidence](docs/reviews/CX-JSON3-2026-10-30.md).
+
+## Moved 2026-10-30 (lane status lines, verbatim)
+
+Moved verbatim from `task_on_progress.md` (branch docs/tp-compact2, 2026-10-30). Current state: `../../task_on_progress.md`.
+
+- **CX-MUTW4 (2026-10-30, feat/cx-mutw4):** W4-02b/10b/11c/11e remain Partial; 223 current mutation identities tested (202 caught, 7 explained MISSED, 14 unviable, no unresolved timeouts), killers imaging 10/10 and platform 5/5; OQ1 and WPF/UI gaps retained. Unstaged handoff for orchestrator, no commit/push. [Evidence](docs/reviews/CX-MUTW4-2026-10-30.md).
+| [`CX-IMAGING3`](docs/reviews/CX-IMAGING3-2026-10-30.md) | 2026-10-30 | W4-02b production embedded thumbnail adapter wired; W4-10b/11c/11e rows stay Partial, no mutation run |
+| [`CL-UNDO`](docs/reviews/CL-UNDO-2026-10-30.md) | 2026-10-30 | `undo.rs` mutants re-checked (3 old survivors caught by killers alone; full re-run not finished); row F-10/INV-4/INV-6 (undo) stays Partial: 3 stat sites still skip the P-12 seam |
+| [`CL-ENTRY`](docs/reviews/CL-ENTRY-2026-10-30.md) | 2026-10-30 | `pr_shell::entry` mutation 9 mutants, 6 caught, 3 `production_run` missed (needs real window); X-exe-entry stays Partial |
+| [`CL-APPMUT`](docs/reviews/CL-APPMUT-2026-10-30.md) | 2026-10-30 | I-11 order/pace/backoff/policy full mutation 235/235 (221 caught, 14 unviable, 0 missed); I-05 App half verified; both rows Done |
+- **CX-JSON3 2026-10-30 / X-stj-reader:** Partial; 73/92 new identities: 65 caught, 2 unviable, 6 timeouts, 19 skip_ws without verdict; combined 293/312, 9 unresolved timeouts. Killers3 4/4, fmt/Clippy passed; unstaged for orchestrator, no PR. [Evidence](docs/reviews/CX-JSON3-2026-10-30.md).
+- **CL-FSFLUSH 2026-10-30 / D-05, INV-8 (fs part):** both Done; write-through and SequentialScan observed via handle mode, flush call counted; 17 mutants 15 caught 2 unviable 0 missed. Small seam in `physical.rs`. [Evidence](docs/reviews/CL-FSFLUSH-2026-10-30.md).
+| [`CL-PIXELS`](docs/reviews/CL-PIXELS-2026-10-30.md) | 2026-10-30 | W4-16a `pixels.rs` 200/200 accounted: 184 caught (6 never-run + 4 hang-only `copy_transposed` mutants now caught by assertion), 1 equivalent, 15 unviable; row Done |
+- **CX-JSON3 2026-10-30 / X-stj-reader:** Partial; 73/92 new identities: 65 caught, 2 unviable, 6 timeouts, 19 skip_ws without verdict; combined 293/312, 9 unresolved timeouts. Killers3 4/4, fmt/Clippy passed; unstaged for orchestrator, no PR. [Evidence](docs/reviews/CX-JSON3-2026-10-30.md).
+- **CX-UNDOSTAT 2026-10-30 / F-10 / INV-4 (undo) / INV-6 (undo):** Partial; three Recycle stat sites use the fallible seam after test-first regression; 131 tests + fmt/Clippy/doc-links pass, selected mutation 42/199 = 39 caught/3 unviable, no missed/timeouts; single-Recycle exception/API parity and full-file mutation re-verification remain open. Uncommitted for orchestrator. [Evidence](docs/reviews/CX-UNDOSTAT-2026-10-30.md).
