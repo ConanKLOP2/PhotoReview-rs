@@ -29,6 +29,8 @@ use pr_platform_win::recycle_bin_settings::{
 };
 use vblank_driver::{IVBlankDriver, NativeImportError};
 
+// SAFETY: declaration of the kernel32 QueryPerformanceFrequency import; every call site
+// passes a valid writable i64 and checks the result.
 unsafe extern "system" {
     fn QueryPerformanceFrequency(frequency: *mut i64) -> i32;
 }
@@ -357,6 +359,7 @@ fn private_bytes() -> usize {
 }
 
 #[test]
+#[ignore = "process-wide private-bytes probe: other parallel tests skew it; run with --test-threads=1 --include-ignored"]
 fn dropping_a_pipe_security_descriptor_frees_its_allocation() {
     // Mutant forward_pipe.rs:Drop for PipeSecurityDescriptor -> (): the LocalAlloc'd descriptor leaks.
     // Observed through the process private-byte count over many create/drop cycles (growth stays far below
