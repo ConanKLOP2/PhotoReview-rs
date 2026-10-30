@@ -128,6 +128,7 @@ Moved verbatim from `task_on_progress.md` (branch docs/tp-compact3, 2026-10-30).
 ## Moved 2026-10-31 (cx-texts status compaction, verbatim)
 - CL-W6RERUN 2026-10-30: W6 + CL-P01 platform native mutation re-run with the corrected flag form: 82 tested 58 caught 16 missed 8 unviable, and 68 tested 54 caught 11 missed 3 unviable; 7 real gaps (registry reader, `absolute_normalized`, forward_client transfer guards, vblank `try_open`) killed by w6_rerun_killers.rs, 7 equivalent, 13 inactive cfg; P-01/P-03/P-05/P-11 stay Partial; docs/reviews/CL-W6RERUN-2026-10-30.md.
 
+## Moved 2026-10-31 (cl-hostrerun2 status compaction, verbatim)
 ## Moved 2026-10-31 (tp-compact5, verbatim)
 ## Current state (checked 2026-10-28 against immutable master `4af47345`; re-check with `git log origin/master` before relying on it)
 - **Not done (PARITY rows):** `X-exe-entry` and `X-ui-smoke` stay open: icon (#298), `exe_process`/`startup_run_native`/`startup_native`/`settings_dialog_frame_e2e` proof files (guard `every_named_proof_file_exists` fails until they exist), icon-less `X-exe-*` rows; `X-startup-composition-root` is `Partial`; W8-12j swap-chain experiment not started; `X-attended-remeasure` is `Todo` (attended session needed); `X-benchmark-compare` and `X-benchmark-parity-harness` are `Todo` (W10-B1). `claim.sh gc` removes claims by unit name found in master history, so do not run it until fixed.
