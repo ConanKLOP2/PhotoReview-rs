@@ -893,6 +893,9 @@ pub struct BenchmarkSessionDeps {
     /// `BenchmarkExecutorOptions::memory_probe`: the host passes `pr_platform_win::memory_probe::WindowsMemoryProbe` (this crate cannot name
     /// it, D-W8B1-1); `None` = fail closed.
     pub memory_probe: Option<Arc<dyn MemoryProbe>>,
+    /// `BenchmarkExecutorOptions::scratch_parent`: where the per-session scratch directory is created; `None` = `<temp>/PhotoReviewBench`
+    /// (production). A test passes a `TempRoot` so `dispose` is observable.
+    pub scratch_parent: Option<std::path::PathBuf>,
 }
 
 impl fmt::Debug for BenchmarkSessionDeps {
@@ -945,6 +948,7 @@ impl ProductionBenchmarkSession {
             decoder: Some((deps.decoder_factory)()),
             physical_memory_bytes: deps.physical_memory_bytes,
             memory_probe: deps.memory_probe.clone(),
+            scratch_parent: deps.scratch_parent.clone(),
             ..BenchmarkExecutorOptions::default()
         };
         let executor = BenchmarkImageExecutor::new(
@@ -963,6 +967,13 @@ impl ProductionBenchmarkSession {
             recycle_bin: bench_recycle_bin::create(|| (deps.real_recycle_bin)()),
             disposed: false,
         })
+    }
+}
+
+/// The session's scratch (disk cache) directory; `dispose` deletes it on a background thread.
+impl ProductionBenchmarkSession {
+    pub fn scratch_directory(&self) -> &std::path::Path {
+        self.executor.disk_cache_directory()
     }
 }
 
