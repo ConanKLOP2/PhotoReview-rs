@@ -251,6 +251,16 @@ def run(root, scope_all=False):
     keep = [e for e in res["errors"] if not e[0].startswith("docs/archive/")]
     res["archive"] = [e for e in res["errors"] if e[0].startswith("docs/archive/")]
     res["errors"][:] = keep
+    # A NUL byte makes git treat the .md as binary (diff, merge and grep break). Checked on every
+    # docs/ markdown file, archive included, and never excused.
+    for rel in sorted(files):
+        if rel.startswith("docs/") and rel.lower().endswith(".md"):
+            with open(os.path.join(root, rel), "rb") as fh:
+                data = fh.read()
+            idx = data.find(b"\x00")
+            if idx >= 0:
+                res["errors"].append((rel, data.count(b"\n", 0, idx) + 1, "nul-byte", "",
+                                      "file contains a NUL byte; write it as the text backslash-0"))
     return mds, res
 
 
