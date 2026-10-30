@@ -141,6 +141,14 @@ impl WindowsDisplayClock {
         self.shared.stopping.store(true, Ordering::Release);
     }
 
+    /// Observes private worker bookkeeping: whether an active worker handle is held and how many retired handles remain.
+    #[cfg(test)]
+    #[allow(dead_code)] // Consumed by the integration-test source module only.
+    pub(crate) fn worker_slots(&self) -> (bool, usize) {
+        let state = lock(&self.shared.state);
+        (state.worker.is_some(), state.retired_workers.len())
+    }
+
     /// Waits for the failure state transition without timing-based polling in fake-driven tests.
     #[cfg(test)]
     #[allow(dead_code)] // The integration-test source module consumes this synchronization seam.
