@@ -3,10 +3,51 @@
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 CARGO_BIN=${CARGO_BIN:-cargo}; PY_BIN=${PY_BIN:-python}; TIMEOUT_BIN=${TIMEOUT_BIN:-timeout}
 TMPBASE=${TEMP:-${TMPDIR:-/tmp}}
-usage() { echo 'usage: mutants.sh <crate> <src-file>... [--tests a,b] [--budget SECONDS] [--jobs N] [--rerun-survivors]' >&2; exit 2; }
-crate=""; files=(); tests=""; budget=1200; jobs=1; rerun=0
+usage() { echo 'usage: mutants.sh <crate> <src-file>... [--tests a,b] [--native] [--cargo-arg A]... [--cargo-test-arg A]... [--budget SECONDS] [--jobs N] [--rerun-survivors]
+       mutants.sh --lint-args <raw cargo-mutants args...>   (only checks the libtest flag form, runs nothing)' >&2; exit 2; }
+
+# lint_libtest <arg>...: the args are what cargo-mutants hands to `cargo test` (before the libtest separator). A libtest-only flag
+# (--include-ignored, --test-threads, --nocapture, ...) in front of the first `--` makes cargo fail with "unexpected argument"; with
+# `--baseline skip` cargo-mutants then counts every mutant as caught although no test ran (AUDIT-MUTATION-FLAG-2026-10-30).
+# Returns 1 and prints the fix when it finds one.
+lint_libtest() {
+  local seen=0 a bad=0
+  for a in "$@"; do
+    if [ "$a" = -- ]; then seen=1; continue; fi
+    [ "$seen" = 1 ] && continue
+    case "$a" in
+      --include-ignored|--ignored|--test-threads|--test-threads=*|--nocapture|--show-output|--exact|--skip|--skip=*|--list|--format|--format=*|--report-time|--shuffle)
+        echo "BAD FLAG FORM: '$a' is a libtest flag but no '--cargo-test-arg=--' comes before it; cargo rejects it and every mutant is falsely reported caught." >&2
+        bad=1;;
+    esac
+  done
+  if [ "$bad" = 1 ]; then
+    echo "Correct form: --cargo-test-arg=<filter> --cargo-test-arg=-- --cargo-test-arg=--include-ignored --cargo-test-arg=--test-threads=1  (or mutants.sh --native)" >&2
+    return 1
+  fi
+  return 0
+}
+lint_raw_args() { # raw cargo-mutants command line tokens
+  local l=() a after=0 want=0
+  for a in "$@"; do
+    if [ "$want" = 1 ]; then l+=("$a"); want=0; continue; fi
+    if [ "$after" = 1 ]; then l+=("$a"); continue; fi
+    case "$a" in
+      --cargo-test-arg=*) l+=("${a#--cargo-test-arg=}");;
+      --cargo-test-arg) want=1;;
+      --) after=1;;
+    esac
+  done
+  lint_libtest "${l[@]}"
+}
+if [ "${1:-}" = --lint-args ]; then shift; lint_raw_args "$@"; rc=$?; [ $rc -eq 0 ] && echo "flag form ok"; exit $rc; fi
+
+crate=""; files=(); tests=""; budget=1200; jobs=1; rerun=0; native=0; cargoargs=(); usertc=()
 while [ $# -gt 0 ]; do
   case "$1" in
+    --native) native=1; shift;;
+    --cargo-arg) [ $# -ge 2 ] || usage; cargoargs+=("$2"); shift 2;;
+    --cargo-test-arg) [ $# -ge 2 ] || usage; usertc+=("$2"); shift 2;;
     --tests) [ $# -ge 2 ] || usage; tests="$2"; shift 2;;
     --budget) [ $# -ge 2 ] || usage; budget="$2"; shift 2;;
     --jobs) [ $# -ge 2 ] || usage; jobs="$2"; shift 2;;
@@ -29,18 +70,42 @@ mkdir -p "$out" || exit 1
 echo "crate: $crate  files: ${files[*]}  budget: ${budget}s  jobs: $jobs"
 echo "target dir: $CARGO_TARGET_DIR"; echo "output dir: $out"
 
+# What `cargo test` receives (besides -p and the cargo-args): test binaries, the user's extra args, then the libtest part after `--`.
 testargs=()
 if [ -n "$tests" ]; then
   IFS=',' read -r -a tl <<< "$tests"
   for t in "${tl[@]}"; do [ -n "$t" ] && testargs+=(--test "$t"); done
 fi
+testargs+=("${usertc[@]}")
+if [ "$native" = 1 ]; then testargs+=(-- --include-ignored --test-threads=1); fi
+lint_libtest "${testargs[@]}" || exit 2
+
+# Preflight (the fix for AUDIT-MUTATION-FLAG-2026-10-30): with --baseline skip cargo-mutants never checks that the test command works, and a
+# command cargo rejects makes EVERY mutant "caught". Run the unmutated test command once, with exactly these arguments; it must exit 0 and
+# execute at least one test. MUT_PREFLIGHT=0 skips it (selftests with a fake cargo only).
+preflight() {
+  local log="$out/preflight.log" rc n
+  echo "preflight: $CARGO_BIN test -p $crate ${cargoargs[*]} ${testargs[*]}"
+  ( cd "$ROOT" && "$TIMEOUT_BIN" "$budget" "$CARGO_BIN" test -p "$crate" "${cargoargs[@]}" "${testargs[@]}" ) > "$log" 2>&1
+  rc=$?
+  n=$(grep -E '^running [0-9]+ tests?' "$log" | awk '{s+=$2} END{print s+0}')
+  if [ $rc -ne 0 ] || [ "$n" -le 0 ]; then
+    echo "PREFLIGHT FAILED (exit $rc, $n tests executed): the unmutated test command does not run tests, so every mutant would be reported caught. Log: $log" >&2
+    tail -n 15 "$log" >&2
+    exit 5
+  fi
+  echo "preflight ok: $n tests executed"
+}
+[ "${MUT_PREFLIGHT:-1}" = 0 ] || preflight
 
 run_once() { # outdir, extra args...
   local od="$1"; shift
   mkdir -p "$od"
-  local fargs=(); for f in "${files[@]}"; do fargs+=(--file "$f"); done
+  local fargs=() cma=(); for f in "${files[@]}"; do fargs+=(--file "$f"); done
+  for f in "${cargoargs[@]}"; do cma+=("--cargo-arg=$f"); done
+  for f in "${testargs[@]}"; do cma+=("--cargo-test-arg=$f"); done
   ( cd "$ROOT" && "$TIMEOUT_BIN" "$budget" "$CARGO_BIN" mutants -p "$crate" --baseline skip --timeout 90 -j "$jobs" \
-      --output "$od" "${fargs[@]}" "$@" -- "${testargs[@]}" )
+      --output "$od" "${fargs[@]}" "${cma[@]}" "$@" )
   rc=$?
   if [ $rc -eq 124 ]; then echo "BUDGET EXHAUSTED after ${budget}s: the result below is PARTIAL, not a full mutation verdict"; fi
   return $rc

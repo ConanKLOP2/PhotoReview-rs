@@ -7,6 +7,9 @@ mkdir -p "$tmp/temp"
 cat > "$tmp/fakecargo" <<'EOF'
 #!/usr/bin/env bash
 echo "ARGS: $*" >> "$FAKE_LOG"; echo "TARGET: $CARGO_TARGET_DIR" >> "$FAKE_LOG"
+if [ "$1" = test ]; then
+  case "${FAKE_TEST:-ok}" in zero) echo "running 0 tests"; exit 0;; fail) echo "error: unexpected argument '--include-ignored' found"; exit 1;; *) echo "running 3 tests"; exit 0;; esac
+fi
 od=""; prev=""; for a in "$@"; do [ "$prev" = --output ] && od="$a"; prev="$a"; done
 [ "${FAKE_MODE:-}" = slow ] && sleep 4
 [ "${FAKE_MODE:-}" = none ] && exit 4
@@ -31,12 +34,12 @@ J
 exit 2
 EOF
 chmod +x "$tmp/fakecargo"
-export CARGO_BIN="$tmp/fakecargo" TEMP="$tmp/temp" FAKE_LOG="$tmp/log"
+export CARGO_BIN="$tmp/fakecargo" TEMP="$tmp/temp" FAKE_LOG="$tmp/log" MUT_PREFLIGHT=0
 M="bash $ROOT/tools/dev/mutants.sh"
 : > "$tmp/log"
 out=$($M pr-x Cargo.toml --tests a,b --budget 60 2>&1); rc=$?
 [ $rc -eq 0 ] && ok exit-ok || { bad exit-ok; echo "$out"; }
-grep -q 'ARGS: mutants -p pr-x --baseline skip --timeout 90 -j 1 --output .* --file Cargo.toml -- --test a --test b' "$tmp/log" && ok cargo-args || { bad cargo-args; cat "$tmp/log"; }
+grep -q 'ARGS: mutants -p pr-x --baseline skip --timeout 90 -j 1 --output .* --file Cargo.toml --cargo-test-arg=--test --cargo-test-arg=a --cargo-test-arg=--test --cargo-test-arg=b' "$tmp/log" && ok cargo-args || { bad cargo-args; cat "$tmp/log"; }
 grep -q "TARGET: $tmp/temp/mut-target-pr-x" "$tmp/log" && ok target-outside-worktree || { bad target-outside-worktree; cat "$tmp/log"; }
 case "$tmp/temp" in "$ROOT"*) bad temp-not-in-root;; *) ok temp-not-in-root;; esac
 echo "$out" | grep -E -q 'caught +2' && echo "$out" | grep -E -q 'missed +2' && echo "$out" | grep -E -q 'unviable +1' && echo "$out" | grep -E -q 'timeout +1' && ok table || { bad table; echo "$out"; }
@@ -66,5 +69,19 @@ $M >/dev/null 2>&1; [ $? -eq 2 ] && ok usage-exit2 || bad usage-exit2
 $M pr-x nofile.rs >/dev/null 2>&1; [ $? -eq 2 ] && ok missing-source-file || bad missing-source-file
 $M pr-x Cargo.toml --budget abc >/dev/null 2>&1; [ $? -eq 2 ] && ok bad-budget || bad bad-budget
 $M 'pr x' Cargo.toml >/dev/null 2>&1; [ $? -eq 2 ] && ok bad-crate || bad bad-crate
+# libtest flag form lint
+$M --lint-args --cargo-test-arg=--include-ignored >/dev/null 2>&1; [ $? -eq 1 ] && ok lint-rejects-lone-include-ignored || bad lint-rejects-lone-include-ignored
+$M --lint-args -- --include-ignored --test-threads=1 >/dev/null 2>&1; [ $? -eq 1 ] && ok lint-rejects-bare-dashdash || bad lint-rejects-bare-dashdash
+$M --lint-args --cargo-test-arg=f --cargo-test-arg=-- --cargo-test-arg=--include-ignored --cargo-test-arg=--test-threads=1 >/dev/null 2>&1 && ok lint-accepts-separated || bad lint-accepts-separated
+$M --lint-args -- -- --include-ignored >/dev/null 2>&1 && ok lint-accepts-double-dashdash || bad lint-accepts-double-dashdash
+$M pr-x Cargo.toml --cargo-test-arg --include-ignored >/dev/null 2>&1; [ $? -eq 2 ] && ok run-refuses-bad-form || bad run-refuses-bad-form
+# --native: separator before the libtest flags, preflight runs the same arguments
+: > "$tmp/log"; MUT_PREFLIGHT=1 $M pr-x Cargo.toml --tests a --native --budget 60 >/dev/null 2>&1
+grep -q -- '--cargo-test-arg=--test --cargo-test-arg=a --cargo-test-arg=-- --cargo-test-arg=--include-ignored --cargo-test-arg=--test-threads=1' "$tmp/log" && ok native-args || { bad native-args; cat "$tmp/log"; }
+grep -q -- 'ARGS: test -p pr-x --test a -- --include-ignored --test-threads=1' "$tmp/log" && ok preflight-same-args || { bad preflight-same-args; cat "$tmp/log"; }
+# preflight must fail when no test ran or the command failed, and must not start the mutants
+: > "$tmp/log"; out=$(FAKE_TEST=zero MUT_PREFLIGHT=1 $M pr-x Cargo.toml --budget 60 2>&1); rc=$?
+[ $rc -eq 5 ] && echo "$out" | grep -q 'PREFLIGHT FAILED' && ! grep -q 'ARGS: mutants' "$tmp/log" && ok preflight-zero-tests || { bad "preflight-zero-tests ($rc)"; echo "$out"; }
+: > "$tmp/log"; FAKE_TEST=fail MUT_PREFLIGHT=1 $M pr-x Cargo.toml --budget 60 >/dev/null 2>&1; [ $? -eq 5 ] && ok preflight-nonzero-exit || bad preflight-nonzero-exit
 rm -rf "$tmp"
 if [ $fails -eq 0 ]; then echo "selftest PASSED"; else echo "selftest $fails FAILED"; exit 1; fi
