@@ -14,7 +14,6 @@ Keep this file under about 10 KB. When it grows, move old sections verbatim to `
 - **Merged:** Wave 8 B6 (#164), B5 dialogs and startup (#223-#231: startup policies, lazy graph, zoom/diagnostics, Action Profiles, benchmark, Recovery, Settings window, secondary window routing). Wave 9 external editors E1-E9: E1 #233, E3 #234, E2 #235, E7 #236, E4 #237, E6 #238, E5 #239, E8 #254, E9 #256. Root repairs: #240 preview registration, #255 viewer borrow in zoom/menu, #260 shell handler lifetime. Dev tooling #242-#258 (status, janitor, hooks, agents, dashboard, triage, mutants, parity, oracle, native-tests, unsafe-audit).
 - **PARITY.md** (`parity.sh stats`, 351 status rows): Done 168, Partial 91, Ported 41, Todo 12, Superseded 17, Different 14, Doing 3, Implementation 3, Contract 2.
 - **Not done (PARITY rows):** `X-exe-entry` and `X-ui-smoke` stay open: icon (#298), `exe_process`/`startup_run_native`/`startup_native`/`settings_dialog_frame_e2e` proof files (guard `every_named_proof_file_exists` fails until they exist), icon-less `X-exe-*` rows; `X-startup-composition-root` is `Partial`; W8-12j swap-chain experiment not started; `X-attended-remeasure` is `Todo` (attended session needed); `X-benchmark-compare` and `X-benchmark-parity-harness` are `Todo` (W10-B1). `claim.sh gc` removes claims by unit name found in master history, so do not run it until fixed.
-- **cl-undo2 (2026-10-30):** `undo.rs` 199/199 mutants, 180 caught, 19 unviable, 0 missed; stat divergence accepted; F-10/INV-4/INV-6 Done ([evidence](docs/reviews/CL-UNDO2-2026-10-30.md)).
 - **Blocked:** nothing known to be blocked on another machine. Needs the human: attended measurements (W8-12j / W10-B2), dependency changes (`Cargo.toml`), unconfirmed `P-nn` rows.
 - **Open debts (index):**
   - Wave 5: native LibRaw/TurboJPEG DLL tests, RAW corpus tests and the historical mutation survivor set are unverified (contracts W10-N1..N4, PARITY rows `X-raw-*`; `docs/archive/task_on_progress-wave5.md`).
@@ -26,7 +25,6 @@ Keep this file under about 10 KB. When it grows, move old sections verbatim to `
   - Local merged-worktree cleanup was retained by machine A after an approval rejection (2026-10-26 sections); current worktree state unverified (use `/janitor`).
 
 ## Archives (`docs/archive/`, verbatim, history only)
-- CX-JSON4 (2026-10-30): X-stj-reader Partial, 312/312 tested: 289 caught, 7 equivalent, 8 unviable, 8 timeouts; killers4 4 pass; evidence `docs/reviews/CX-JSON4-2026-10-30.md`; unstaged for orchestrator.
 Find any section title with `grep -n '^## ' <file>`. Original section order is kept inside each file.
 
 | File | Period | Holds |
@@ -47,4 +45,4 @@ Find any section title with `grep -n '^## ' <file>`. Original section order is k
 | [`task_on_progress-status-2026-10-28-30.md`](docs/archive/task_on_progress-status-2026-10-28-30.md) | 2026-10-28..30 | cx-* lane status lines (CX-IMAGING2, cx-imaging, cx-host2, cx-core2, cx-json2, cx-release), W9-R1..R9 merged/in-progress lines, native input fixture and benchmark repair status, exe runs 2026-10-29, zoom-detail-wire |
 | [`task_on_progress-status-2026-10-28-30.md`](docs/archive/task_on_progress-status-2026-10-28-30.md) | 2026-10-30 | Section "Moved 2026-10-30 (lane status lines, verbatim)": CX-MUTW4, CX-IMAGING3, CL-UNDO, CL-ENTRY, CL-APPMUT, CL-FSFLUSH, CL-PIXELS, CX-JSON3, CX-UNDOSTAT lane status lines |
 | [`task_on_progress-doc-link-audit.md`](docs/archive/task_on_progress-doc-link-audit.md) | 2026-10-26 | Verbatim documentation link audit before compaction |
-- CX-W4REST 2026-10-30: six rows Partial; 236 new mutants measured; disk reproof budget-exhausted; final gates/20x killers pass; docs/reviews/CX-W4REST-2026-10-30.md.
+- CL-OVERLAY 2026-10-30: X-overlay-button Done (71/71 mutation + native overlay/pointer wiring re-run); X-pointer-click-pan, recovery/benchmark/settings presenters, composition-factories stay Partial; benchmark Debug mutants killed, 2 `dispose` mutants MISSED (no seam); docs/reviews/CL-OVERLAY-2026-10-30.md.
