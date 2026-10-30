@@ -988,8 +988,15 @@ fn final_link_target(link: &str) -> io::Result<String> {
 
 /// `GetFinalLinkTargetSlow`: follow immediate targets until one is not a link, at most [`MAX_FOLLOWED_LINKS`] hops.
 fn final_link_target_slow(link: &str) -> io::Result<String> {
+    follow_link_chain(link, &mut immediate_link_target)
+}
+
+/// The walk of [`final_link_target_slow`] with the one-link step injected, so the [`MAX_FOLLOWED_LINKS`] cap can be tested
+/// without a real chain: the OS refuses a chain of more than 63 reparse points (1921) before this walk is reached, which
+/// makes the cap unreachable with junctions.
+fn follow_link_chain(link: &str, step: &mut dyn FnMut(&str) -> Option<String>) -> io::Result<String> {
     let mut previous = None;
-    let mut current = immediate_link_target(link);
+    let mut current = step(link);
     let mut hops = 0usize;
     while let Some(target) = current {
         hops += 1;
@@ -997,10 +1004,17 @@ fn final_link_target_slow(link: &str) -> io::Result<String> {
             // .NET throws an IOException with ERROR_CANT_RESOLVE_FILENAME (1921) here.
             return Err(io::Error::from_raw_os_error(ERROR_CANT_RESOLVE_FILENAME));
         }
-        current = immediate_link_target(&target);
+        current = step(&target);
         previous = Some(target);
     }
     previous.ok_or_else(|| io::Error::new(io::ErrorKind::NotFound, format!("Cannot resolve the link '{link}'.")))
+}
+
+/// Test seam of the `GetFinalLinkTargetSlow` walk: follows `step` (the immediate target of a path, `None` when it is not
+/// a link) from `link` with the real [`MAX_FOLLOWED_LINKS`] cap.
+#[doc(hidden)]
+pub fn follow_link_chain_for_tests(link: &str, step: &mut dyn FnMut(&str) -> Option<String>) -> io::Result<String> {
+    follow_link_chain(link, step)
 }
 
 /// `GetImmediateLinkTarget(path, returnFullPath: true, throwOnError: false)`: the target of one link as a full path

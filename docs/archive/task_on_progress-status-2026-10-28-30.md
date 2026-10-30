@@ -42,10 +42,8 @@ Moved verbatim from `task_on_progress.md` (branch docs/tp-compact2, 2026-10-30).
 | [`CL-UNDO`](docs/reviews/CL-UNDO-2026-10-30.md) | 2026-10-30 | `undo.rs` mutants re-checked (3 old survivors caught by killers alone; full re-run not finished); row F-10/INV-4/INV-6 (undo) stays Partial: 3 stat sites still skip the P-12 seam |
 | [`CL-ENTRY`](docs/reviews/CL-ENTRY-2026-10-30.md) | 2026-10-30 | `pr_shell::entry` mutation 9 mutants, 6 caught, 3 `production_run` missed (needs real window); X-exe-entry stays Partial |
 | [`CL-APPMUT`](docs/reviews/CL-APPMUT-2026-10-30.md) | 2026-10-30 | I-11 order/pace/backoff/policy full mutation 235/235 (221 caught, 14 unviable, 0 missed); I-05 App half verified; both rows Done |
-- **CX-JSON3 2026-10-30 / X-stj-reader:** Partial; 73/92 new identities: 65 caught, 2 unviable, 6 timeouts, 19 skip_ws without verdict; combined 293/312, 9 unresolved timeouts. Killers3 4/4, fmt/Clippy passed; unstaged for orchestrator, no PR. [Evidence](docs/reviews/CX-JSON3-2026-10-30.md).
 - **CL-FSFLUSH 2026-10-30 / D-05, INV-8 (fs part):** both Done; write-through and SequentialScan observed via handle mode, flush call counted; 17 mutants 15 caught 2 unviable 0 missed. Small seam in `physical.rs`. [Evidence](docs/reviews/CL-FSFLUSH-2026-10-30.md).
 | [`CL-PIXELS`](docs/reviews/CL-PIXELS-2026-10-30.md) | 2026-10-30 | W4-16a `pixels.rs` 200/200 accounted: 184 caught (6 never-run + 4 hang-only `copy_transposed` mutants now caught by assertion), 1 equivalent, 15 unviable; row Done |
-- **CX-JSON3 2026-10-30 / X-stj-reader:** Partial; 73/92 new identities: 65 caught, 2 unviable, 6 timeouts, 19 skip_ws without verdict; combined 293/312, 9 unresolved timeouts. Killers3 4/4, fmt/Clippy passed; unstaged for orchestrator, no PR. [Evidence](docs/reviews/CX-JSON3-2026-10-30.md).
 - **CX-UNDOSTAT 2026-10-30 / F-10 / INV-4 (undo) / INV-6 (undo):** Partial; three Recycle stat sites use the fallible seam after test-first regression; 131 tests + fmt/Clippy/doc-links pass, selected mutation 42/199 = 39 caught/3 unviable, no missed/timeouts; single-Recycle exception/API parity and full-file mutation re-verification remain open. Uncommitted for orchestrator. [Evidence](docs/reviews/CX-UNDOSTAT-2026-10-30.md).
 
 ## Moved 2026-10-30 by lane cl-overlay (status lines, verbatim)
@@ -58,18 +56,20 @@ Moved verbatim from `task_on_progress.md` (branch docs/tp-compact2, 2026-10-30).
 ## Moved 2026-10-30 (CX-BENCH size maintenance, verbatim)
 ## Moved 2026-10-30 (CX-SURV lane status lines, verbatim)
 
-- CX-JSON4 (2026-10-30): X-stj-reader Partial, 312/312 tested: 289 caught, 7 equivalent, 8 unviable, 8 timeouts; killers4 4 pass; evidence `docs/reviews/CX-JSON4-2026-10-30.md`; unstaged for orchestrator.
-- CX-W4REST 2026-10-30: six rows Partial; 236 new mutants measured; disk reproof budget-exhausted; final gates/20x killers pass; docs/reviews/CX-W4REST-2026-10-30.md.
 
 ## Moved 2026-10-30 (compact3 lane status lines, verbatim)
 
 Moved verbatim from `task_on_progress.md` (branch docs/tp-compact3, 2026-10-30). Current state: `../../task_on_progress.md`.
 
 - CX-BENCH 2026-10-30: Partial; 67/362 new mutants: 59 caught, 4 survivors, 4 unviable; 6 killers 20x pass; evidence `docs/reviews/CX-BENCH-2026-10-30.md`; unstaged for orchestrator.
-- CX-W4REST 2026-10-30: six rows Partial; 236 new mutants measured; disk reproof budget-exhausted; final gates/20x killers pass; docs/reviews/CX-W4REST-2026-10-30.md.
 - CL-HOSTX 2026-10-30: swap_chain_clock 36 (0 missed), message_loop 84 (18 missed killed); rows stay Partial; docs/reviews/CL-HOSTX-2026-10-30.md.
 - CL-MAINWIN 2026-10-30: lifecycle InnerSteps + core registry killers (10 tests); no row changes, 10 mutants still open; docs/reviews/CL-MAINWIN-2026-10-30.md.
 - CX-SURV 2026-10-30: disk reproof 6/6 caught (3 killers-only completion guards, 3 lib assertions); JSON 8 fixed-point loops and disk bounded-wait gap remain Partial; docs/reviews/CX-SURV-2026-10-30.md.
+
+## Moved 2026-10-30 by CX-DLGS (verbatim historical status)
+
+- **Merged:** Wave 8 B6 (#164), B5 dialogs and startup (#223-#231: startup policies, lazy graph, zoom/diagnostics, Action Profiles, benchmark, Recovery, Settings window, secondary window routing). Wave 9 external editors E1-E9: E1 #233, E3 #234, E2 #235, E7 #236, E4 #237, E6 #238, E5 #239, E8 #254, E9 #256. Root repairs: #240 preview registration, #255 viewer borrow in zoom/menu, #260 shell handler lifetime. Dev tooling #242-#258 (status, janitor, hooks, agents, dashboard, triage, mutants, parity, oracle, native-tests, unsafe-audit).
+- **PARITY.md** (`parity.sh stats`, 351 status rows): Done 168, Partial 91, Ported 41, Todo 12, Superseded 17, Different 14, Doing 3, Implementation 3, Contract 2.
 
 ## Moved 2026-10-30 by CX-REL (verbatim status lines)
 
@@ -79,3 +79,34 @@ Moved verbatim from `task_on_progress.md` (branch docs/tp-compact3, 2026-10-30).
 - CX-REL 2026-10-30: offline release PE verified; bounded scanner/proxy mutation and escape killers; all six lane rows Partial; evidence docs/reviews/CX-REL-2026-10-30.md; unstaged for orchestrator.
 - CL-MAINWIN2 2026-10-30: main_window frame+scrollbars 56/57 caught (1 unviable), viewing 69/76 (7 unviable), windowing 76/90 evaluated of 175 (14 unviable), 0 missed anywhere, no production change; rows stay Partial (native gaps); docs/reviews/CL-MAINWIN2-2026-10-30.md.
 - CL-STARTUP 2026-10-30: pr-shell startup (9+4 files) and pr-platform-win shell_startup placement/dpi/local_time/cloak mutated: 185 tested, 169 caught, 0 missed, 16 unviable; locale/warmup/monitor_probe/secondary_dialogs not run; X-startup-* rows stay Partial/Ported (non-mutation gaps); docs/reviews/CL-STARTUP-2026-10-30.md.
+- CL-INPUT2 2026-10-30: mutation 0 missed over composer rest 60, dispatch 173, input main_window 98, menus main_window 58 (1 composer Debug survivor killed); rows stay Partial (native/human gaps); popup_host 31 not run; docs/reviews/CL-INPUT2-2026-10-30.md.
+- CL-AUDIT1 2026-10-30: audit of 26 Done rows ([report](docs/reviews/AUDIT-DONE-2026-10-30.md)): 11 pass, 15 doubt, 0 wrong; strongest doubts INV-6/F-16 (journal.rs 179/179 vs 94/179 in evidence) and SEC-01 (cap mutant); no PARITY change.
+- CL-AUDIT2 2026-10-30: PARITY audit of all 84 Partial rows: 13 stale-note rows reworded (no status change), 36 machine-runnable gaps with proposed lanes, 34 human-only; short human list in docs/reviews/PARITY-GAP-MAP-2026-10-30.md.
+- CL-JOURNAL 2026-10-30: journal.rs 179 of 179 claim NOT reproduced (only 94 of 179 documented, loaded machine made the re-run unusable); INV-6 (journal) and F-16/D-14 demoted to Partial; docs/reviews/CL-JOURNAL-2026-10-30.md.
+
+## Moved 2026-10-30 by CL-RENAME merge (verbatim status lines)
+
+- CL-RENAME 2026-10-30: mutation re-verification, 0 missed: pr-core `case_only_rename.rs`+`rename_service.rs`+`catalog/rename.rs` 59 tested (55 caught, 4 unviable), `rename.rs` partial 21 of 97 (stopped for time; whole file was done in W9-RENAME-MUTATION-2), pr-imaging `cache_key` `with_path` 6 (5 caught, 1 unviable), pr-app `coordinators/rename.rs` 2 unviable; no production or test change; w9r6/8/9/10/11 stay Partial (native/human gaps); docs/reviews/CL-RENAME-2026-10-30.md.
+- CL-CINATIVE 2026-10-30: non-required nightly workflow native-nightly.yml (23 DLL-free native binaries with --include-ignored; DLL and desktop binaries skipped); docs/reviews/CL-CINATIVE-2026-10-30.md.
+- CL-REST2 2026-10-30: seam `scratch_parent` closes 2 benchmark `dispose` mutants; secondary_dialogs 72 (22 caught, 50 unviable), initial_viewport 41/41, composition adapters 34 (29/5) all 0 missed; texts.rs 5/161 only; 7 rows stay Partial; docs/reviews/CL-REST2-2026-10-30.md.
+- CL-RAW 2026-10-30: fresh full-file mutation jpeg_probe 101 / bmff 99 / header_source 80 / raw_exif 25 (293 caught, 3 equivalent, 7 unviable, 2 hang-timeouts, 0 missed); pinned-DLL native tests green; corpus-gated cases unproven; all 6 X-raw/I-15 rows stay Partial; docs/reviews/CL-RAW-2026-10-30.md.
+- CL-MISC 2026-10-30: composer native twins (Orientation, LargeImage tiles, DeviceLost crossfade) and drag-release kinetic glide native tests added; slow_link_fs limiter/stream 38 mutants all caught or equivalent (unviable 2); P-03/P-11 left to cl-p01, cargo-deny skipped; rows stay Partial; docs/reviews/CL-MISC-2026-10-30.md.
+- CL-P01 2026-10-30: P-03/P-05/P-11 glue survivors killed (settings adapters, QPC wrappers, worker priority/retire/reap, descriptor Drop leak): 82 tested, 74 caught, 8 unviable, 0 missed; seams `drive_type_from_win32`, pub `read_registry_value`, test-only `worker_slots`; P-01 COM file mutation only 10/253; rows stay Partial; docs/reviews/CL-P01-2026-10-30.md.
+- CL-SETTINGSUI 2026-10-30: builder groups first 21 mutants 19 caught, 2 unviable, 10 earlier survivors killed by w8_settingsui_killers.rs; rest of builder/context/host/frame/surface not run; 3 settings-ui rows stay Partial; docs/reviews/CL-SETTINGSUI-2026-10-30.md.
+
+## Moved by CX-PAINTER merge 2026-10-30 (verbatim status lines)
+
+- CL-SEC01 2026-10-30: re-ran the SEC-01/F-05 link walk (21 mutants: cap `hops += 1` now killed by a seam test, `is_path_unreachable` guard `true` + 2 equivalents survive) and P-04 `instance_keys` (34: 22 caught, 11 survivors, 1 timeout); W2-FS native mutation passes invalid (`--cargo-test-arg=--include-ignored` is rejected by cargo); SEC-01/F-05, X-physical-fs, F-23 Done -> Partial; docs/reviews/CL-SEC01-2026-10-30.md.
+
+## Moved 2026-10-30 by CL-REST1 merge (verbatim status lines)
+
+- CL-INPUT2 2026-10-30: mutation 0 missed over composer rest 60, dispatch 173, input main_window 98, menus main_window 58 (1 composer Debug survivor killed); rows stay Partial (native/human gaps); popup_host 31 not run; docs/reviews/CL-INPUT2-2026-10-30.md.
+- CL-REST1 2026-10-30: pr-platform-win popup_host 63 (31 caught, 31 missed = native show path, no GUI run), windowing tail 85 (77 caught, 3 survivors killed), shell_startup locale/warmup/monitor_probe 95 (71 caught, 13 environment equivalents); 15 killers in w8_rest1_killers.rs; rows stay Partial; docs/reviews/CL-REST1-2026-10-30.md.
+- CX-ZOOM 2026-10-30: mutation 40/40 (final 36 caught, 4 unviable), retarget killers-alone 4/4; native zoom 8 + WIC EXIF 1 pass; RAW/GUI/log-clock gaps stay Partial; docs/reviews/CX-ZOOM-2026-10-30.md.
+- CL-SETTINGSUI 2026-10-30: builder groups first 21 mutants 19 caught, 2 unviable, 10 earlier survivors killed by w8_settingsui_killers.rs; rest of builder/context/host/frame/surface not run; 3 settings-ui rows stay Partial; docs/reviews/CL-SETTINGSUI-2026-10-30.md.
+- CL-SEC01 2026-10-30: re-ran the SEC-01/F-05 link walk (21 mutants: cap `hops += 1` now killed by a seam test, `is_path_unreachable` guard `true` + 2 equivalents survive) and P-04 `instance_keys` (34: 22 caught, 11 survivors, 1 timeout); W2-FS native mutation passes invalid (`--cargo-test-arg=--include-ignored` is rejected by cargo); SEC-01/F-05, X-physical-fs, F-23 Done -> Partial; docs/reviews/CL-SEC01-2026-10-30.md.
+- CX-W4C 2026-10-30: bounded timeout + disk-read guard caught (9 unique, killers5); COM survivors and other W4 parity gaps remain; docs/reviews/CX-W4C-2026-10-30.md.
+- CL-P01 2026-10-30: P-03/P-05/P-11 glue survivors killed (settings adapters, QPC wrappers, worker priority/retire/reap, descriptor Drop leak): 82 tested, 74 caught, 8 unviable, 0 missed; seams `drive_type_from_win32`, pub `read_registry_value`, test-only `worker_slots`; P-01 COM file mutation only 10/253; rows stay Partial; docs/reviews/CL-P01-2026-10-30.md.
+- CX-PAINTER 2026-10-30: Partial; 352 valid mutation outcomes, killers 11 pass, fmt/clippy/doc-links pass; gaps in docs/reviews/CX-PAINTER-2026-10-30.md.
+- CX-DLGS 2026-10-30: four dialog rows remain Partial; 112 selected mutants: 50 caught, 54 unviable, 1 equivalent, 7 UI gaps; killers 9/9; native modal/human gaps retained; docs/reviews/CX-DLGS-2026-10-30.md.
+- CL-FLAGAUDIT 2026-10-30: cargo rejects a lone `--cargo-test-arg=--include-ignored` (and a bare `-- --include-ignored`), and `--baseline skip` then reports every mutant caught; W2-FS physical.rs passes 2-7 void, CL-P01/STARTUP/MAINWIN2/HOST2/REST2 and W6 native rows suspect, pipeline unaffected; mutants.sh lints the form and preflights the test command (`--native`); no row demoted, re-run lanes listed; docs/reviews/AUDIT-MUTATION-FLAG-2026-10-30.md.

@@ -278,12 +278,28 @@ impl PreviewImageService {
 
     /// [`Self::shutdown_persist_workers`] with a hang guard: `false` when the workers had not exited after `timeout`.
     pub fn shutdown_persist_workers_timeout(&self, timeout: Duration) -> bool {
+        self.shutdown_persist_workers_timeout_observed_for_tests(timeout, |_, _| {})
+    }
+
+    /// Observes the actual bounded-shutdown predicate before the condition variable can wait.
+    /// The ordinary entry point uses a no-op observer; queue completion, locking and waiting are shared.
+    /// The observer runs under the queue lock and must not reenter the service.
+    #[doc(hidden)]
+    pub fn shutdown_persist_workers_timeout_observed_for_tests(
+        &self,
+        timeout: Duration,
+        mut observe: impl FnMut(usize, bool),
+    ) -> bool {
         let persist = &self.inner.persist;
         persist.complete();
         let queue = lock(&persist.queue);
         let (queue, _) = persist
             .changed
-            .wait_timeout_while(queue, timeout, |queue| queue.live_workers > 0)
+            .wait_timeout_while(queue, timeout, |queue| {
+                let pending = queue.live_workers > 0;
+                observe(queue.live_workers, pending);
+                pending
+            })
             .unwrap_or_else(PoisonError::into_inner);
         queue.live_workers == 0
     }
@@ -411,6 +427,9 @@ impl ServiceInner {
     /// (W4-14b) handles `Err`: a cache-entry failure deletes the entry (`try_delete` WITH the log) and decodes the source;
     /// any other error (`OutOfMemory`, `Canceled`) propagates as `PreviewError::DiskEntry`.
     pub(crate) fn try_read_disk_entry(&self, cache_path: &Path) -> Result<PreviewImage, PreviewCacheError> {
+        if let Some(observe) = &self.before_disk_read_for_tests {
+            observe();
+        }
         let perf_log = PhotoReviewPerf::log();
         let perf_on = perf_log.is_enabled();
         let started = if perf_on { perf::timestamp() } else { 0 };
