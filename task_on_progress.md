@@ -45,3 +45,5 @@ Find any section title with `grep -n '^## ' <file>`. Original section order is k
 | [`task_on_progress-doc-link-audit.md`](docs/archive/task_on_progress-doc-link-audit.md) | 2026-10-26 | Verbatim documentation link audit before compaction |
 | [`CX-IMAGING3`](docs/reviews/CX-IMAGING3-2026-10-30.md) | 2026-10-30 | W4-02b production embedded thumbnail adapter wired; W4-10b/11c/11e rows stay Partial, no mutation run |
 | [`CL-UNDO`](docs/reviews/CL-UNDO-2026-10-30.md) | 2026-10-30 | `undo.rs` mutants re-checked (3 old survivors caught by killers alone; full re-run not finished); row F-10/INV-4/INV-6 (undo) stays Partial: 3 stat sites still skip the P-12 seam |
+
+| [`CL-ENTRY`](docs/reviews/CL-ENTRY-2026-10-30.md) | 2026-10-30 | `pr_shell::entry` mutation 9 mutants, 6 caught, 3 `production_run` missed (needs real window); X-exe-entry stays Partial |
