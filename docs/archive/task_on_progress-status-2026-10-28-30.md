@@ -70,3 +70,9 @@ Moved verbatim from `task_on_progress.md` (branch docs/tp-compact3, 2026-10-30).
 - CL-HOSTX 2026-10-30: swap_chain_clock 36 (0 missed), message_loop 84 (18 missed killed); rows stay Partial; docs/reviews/CL-HOSTX-2026-10-30.md.
 - CL-MAINWIN 2026-10-30: lifecycle InnerSteps + core registry killers (10 tests); no row changes, 10 mutants still open; docs/reviews/CL-MAINWIN-2026-10-30.md.
 - CX-SURV 2026-10-30: disk reproof 6/6 caught (3 killers-only completion guards, 3 lib assertions); JSON 8 fixed-point loops and disk bounded-wait gap remain Partial; docs/reviews/CX-SURV-2026-10-30.md.
+
+## Moved 2026-10-30 by CX-REL (verbatim status lines)
+
+- CL-OVERLAY 2026-10-30: X-overlay-button Done (71/71 mutation + native overlay/pointer wiring re-run); X-pointer-click-pan, recovery/benchmark/settings presenters, composition-factories stay Partial; benchmark Debug mutants killed, 2 `dispose` mutants MISSED (no seam); docs/reviews/CL-OVERLAY-2026-10-30.md.
+- CL-VIEWING 2026-10-30: X-viewing-pure Done (88/88 platform mutants run); compare 139/139 and crossfade rest 39/39 mutated (all non-equivalent killed); composer 31/89 only; compare/crossfade/composer stay Partial (pixel golden vs WPF, WARP, native twins); docs/reviews/CL-VIEWING-2026-10-30.md.
+- CL-HOST2 2026-10-30: X-host-ui-dispatcher Done (90 mutants: 79 caught, 0 missed, 11 unviable); wndproc.rs 11/11 and dpi.rs 27/27 viable caught; X-host-wndproc-shell-window stays Partial (create.rs WNDCLASSEXW glue, exe icon W8-20b); docs/reviews/CL-HOST2-2026-10-30.md.
