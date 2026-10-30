@@ -1,0 +1,78 @@
+name: Native nightly
+
+# Nightly gate for the native tests (`#[ignore = "native..."]`) that need nothing but the file system. ci.yml never passes
+# `--include-ignored`, so PARITY rows that rely on native mutation killers (X-physical-fs, AR16, SEC-01, D-05, INV-8, F-16) had no
+# regression gate (docs/reviews/AUDIT-DONE-2026-10-30.md, "Native tests are not gated"). NOT a required check: it is not part of the
+# master-ci ruleset and nothing in ci.yml lists it in `needs`, so a red night never blocks a pull request.
+#
+# Deliberately NOT run here (they need something the runner does not have; this workflow downloads nothing):
+#  - pr-libraw and pr-turbojpeg native binaries, pr-imaging-raw/raf_reader, pr-imaging cache_key/cache_preview_file/memory_headroom/
+#    preview_service_disk and the pr-platform-win binaries wic_imaging_twins_preview and wic_preview_service_broken_entry: they load
+#    the pinned libraw.dll / turbojpeg.dll, which tools/dev/stage-native.ps1 copies from the local C# checkout (the C# repo is not
+#    cloned in CI and fetching real DLLs is blocked by decision P-55).
+#  - the window, DWM, GPU and input-desktop families of pr-platform-win (dialogs_*, host_*, shell_*, gfx_*, render_*, win32_*, wic_*,
+#    w8_*) and pr-shell (ui_smoke*, startup_*): they need a real desktop and the NativeDialog tooltip tests move the real cursor.
+#  - pr-bench (runs the benchmark tool) and anything that touches the real Recycle Bin: nothing here may.
+on:
+  schedule:
+    - cron: '30 18 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: native-nightly
+  cancel-in-progress: false
+
+env:
+  CARGO_TERM_COLOR: always
+  RUSTFLAGS: -D warnings
+  CARGO_INCREMENTAL: 0
+  CARGO_PROFILE_DEV_DEBUG: 0
+
+jobs:
+  native:
+    name: native tests (file system, journal)
+    runs-on: windows-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Toolchain
+        run: rustup show
+      - name: Cache
+        uses: Swatinem/rust-cache@f13886b937689c021905a6b90929199931d60db1 # v2.8.1
+        with:
+          shared-key: native-nightly
+          save-if: ${{ github.ref == 'refs/heads/master' }}
+      - name: Native tests
+        timeout-minutes: 50
+        shell: pwsh
+        run: |
+          # Config and user data go to a throw-away folder, never to %LOCALAPPDATA%\PhotoReview. The tests make their own temp
+          # folders and use fakes for the Recycle Bin.
+          $root = Join-Path $env:RUNNER_TEMP 'photoreview-native'
+          New-Item -ItemType Directory -Force $root | Out-Null
+          $env:PHOTOREVIEW_RS_ISOLATE_CONFIG = '1'
+          $env:PHOTOREVIEW_RS_DATA_ROOT = $root
+          # crate = test binaries. pr-core: every binary with native tests (none of them loads a pinned DLL).
+          $plan = [ordered]@{
+            'pr-core' = @(
+              'catalog_sorting', 'file_actions_destination_policy', 'file_actions_journal', 'file_actions_journal_compaction',
+              'file_actions_partial_cleanup', 'file_actions_recovery_check', 'file_actions_service_native', 'io_journal_compaction_files',
+              'io_physical', 'io_physical_seams', 'journal_reconcile', 'journal_startup_recovery', 'rename_file_action_matrix',
+              'rename_recovery', 'rename_service', 'session_store', 'w2_fs_mutation_killers')
+            'pr-platform-win' = @('w2_fs_flush_killers', 'w4_mutation_killers2', 'w6_platform_native', 'physical_memory')
+            'pr-app' = @('folder_load_load', 'windowing_placement_store')
+          }
+          $failed = @()
+          foreach ($crate in $plan.Keys) {
+            foreach ($bin in $plan[$crate]) {
+              Write-Host "::group::$crate $bin"
+              cargo test -p $crate --locked --test $bin -- --include-ignored --test-threads=1
+              if ($LASTEXITCODE -ne 0) { $failed += "$crate/$bin" }
+              Write-Host '::endgroup::'
+            }
+          }
+          if ($failed.Count -gt 0) { Write-Host "FAILED: $($failed -join ', ')"; exit 1 }
