@@ -47,3 +47,4 @@ Find any section title with `grep -n '^## ' <file>`. Original section order is k
 | [`task_on_progress-doc-link-audit.md`](docs/archive/task_on_progress-doc-link-audit.md) | 2026-10-26 | Verbatim documentation link audit before compaction |
 - CL-INPUT2 2026-10-30: mutation 0 missed over composer rest 60, dispatch 173, input main_window 98, menus main_window 58 (1 composer Debug survivor killed); rows stay Partial (native/human gaps); popup_host 31 not run; docs/reviews/CL-INPUT2-2026-10-30.md.
 - CL-AUDIT2 2026-10-30: PARITY audit of all 84 Partial rows: 13 stale-note rows reworded (no status change), 36 machine-runnable gaps with proposed lanes, 34 human-only; short human list in docs/reviews/PARITY-GAP-MAP-2026-10-30.md.
+- CL-JOURNAL 2026-10-30: journal.rs 179 of 179 claim NOT reproduced (only 94 of 179 documented, loaded machine made the re-run unusable); INV-6 (journal) and F-16/D-14 demoted to Partial; docs/reviews/CL-JOURNAL-2026-10-30.md.
