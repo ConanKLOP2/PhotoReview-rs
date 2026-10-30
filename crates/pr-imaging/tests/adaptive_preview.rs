@@ -176,17 +176,13 @@ fn calculate_target_decode_box_throws_on_invalid() {
 }
 
 // C#: AdaptivePreviewPolicyTests.BoxDecode_24MpInFullHdWindow_PixelCounts (theory, row 1: landscape 6000x4000)
-// Needs `DecodeBox::fit` from W4-01b. Un-ignore in the W4-01b merge commit.
 #[test]
-#[ignore = "needs W4-01b DecodeBox::fit"]
 fn box_decode_24mp_in_full_hd_window_pixel_counts_landscape() {
     assert_box_decode_pixel_counts(6000, 4000, 2208 * 1472, 1920 * 1280);
 }
 
 // C#: AdaptivePreviewPolicyTests.BoxDecode_24MpInFullHdWindow_PixelCounts (theory, row 2: portrait 4000x6000)
-// Needs `DecodeBox::fit` from W4-01b. Un-ignore in the W4-01b merge commit.
 #[test]
-#[ignore = "needs W4-01b DecodeBox::fit"]
 fn box_decode_24mp_in_full_hd_window_pixel_counts_portrait() {
     assert_box_decode_pixel_counts(4000, 6000, 2208 * 3312, 853 * 1280);
 }
