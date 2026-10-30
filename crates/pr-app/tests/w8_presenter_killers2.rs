@@ -42,6 +42,7 @@ fn deps(created: &Arc<AtomicUsize>, memory: i64) -> BenchmarkSessionDeps {
         }),
         physical_memory_bytes: memory,
         memory_probe: None,
+        scratch_parent: None,
     }
 }
 
