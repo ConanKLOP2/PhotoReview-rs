@@ -44,3 +44,5 @@ Find any section title with `grep -n '^## ' <file>`. Original section order is k
 | [`task_on_progress-status-2026-10-28-30.md`](docs/archive/task_on_progress-status-2026-10-28-30.md) | 2026-10-28..30 | cx-* lane status lines (CX-IMAGING2, cx-imaging, cx-host2, cx-core2, cx-json2, cx-release), W9-R1..R9 merged/in-progress lines, native input fixture and benchmark repair status, exe runs 2026-10-29, zoom-detail-wire |
 | [`task_on_progress-doc-link-audit.md`](docs/archive/task_on_progress-doc-link-audit.md) | 2026-10-26 | Verbatim documentation link audit before compaction |
 | [`CX-IMAGING3`](docs/reviews/CX-IMAGING3-2026-10-30.md) | 2026-10-30 | W4-02b production embedded thumbnail adapter wired; W4-10b/11c/11e rows stay Partial, no mutation run |
+
+| [`CL-ENTRY`](docs/reviews/CL-ENTRY-2026-10-30.md) | 2026-10-30 | `pr_shell::entry` mutation 9 mutants, 6 caught, 3 `production_run` missed (needs real window); X-exe-entry stays Partial |
