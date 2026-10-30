@@ -10,17 +10,9 @@ Keep this file under about 10 KB. When it grows, move old sections verbatim to `
 4. Some workflow agents are refused `gh pr merge`, branch deletion or publish commands by the permission classifier; the main session then pushes and opens the PR (rules: `tools/autopilot/README.md`).
 5. Before planning a unit run `git fetch` and `git log origin/master`: a unit already there is done. Older history is in the archives below, never current state.
 
-## Current state (checked 2026-10-28 against immutable master `4af47345`; re-check with `git log origin/master` before relying on it)
-- **Not done (PARITY rows):** `X-exe-entry` and `X-ui-smoke` stay open: icon (#298), `exe_process`/`startup_run_native`/`startup_native`/`settings_dialog_frame_e2e` proof files (guard `every_named_proof_file_exists` fails until they exist), icon-less `X-exe-*` rows; `X-startup-composition-root` is `Partial`; W8-12j swap-chain experiment not started; `X-attended-remeasure` is `Todo` (attended session needed); `X-benchmark-compare` and `X-benchmark-parity-harness` are `Todo` (W10-B1). `claim.sh gc` removes claims by unit name found in master history, so do not run it until fixed.
-- **Blocked:** nothing known to be blocked on another machine. Needs the human: attended measurements (W8-12j / W10-B2), dependency changes (`Cargo.toml`), unconfirmed `P-nn` rows.
-- **Open debts (index):**
-  - Wave 5: native LibRaw/TurboJPEG DLL tests, RAW corpus tests and the historical mutation survivor set are unverified (contracts W10-N1..N4, PARITY rows `X-raw-*`; `docs/archive/task_on_progress-wave5.md`).
-  - Wave 6: mutation verdicts and native evidence for the platform units were not recorded (`docs/archive/task_on_progress-wave6.md`).
-  - Wave 7: `cli-process` golden and `cargo-mutants` on the merged tree not run (`docs/archive/task_on_progress-wave7.md`).
-  - Wave 8: B2 items D-W8B2-4/5/6 (`docs/archive/task_on_progress-wave8-b1-b2.md`); B3/B4 `Partial` rows 13b-13e, no hardware (non-WARP) GPU run, native evidence is hidden-window/WARP only (`docs/archive/task_on_progress-wave8-status-contracts-reviews.md`).
-  - Native composition glue is excluded from full cargo-mutants by policy; Wave 8 B4-B6 and Wave 9 mutation evidence is partial per PR body.
-  - cl-input 2026-10-30: `click_counter.rs` 20/20 caught; `dispatch.rs` 22 of 83 subset caught, 0 missed; input/menu rows stay Partial (`docs/reviews/CL-INPUT-2026-10-30.md`). Settings dialog line moved verbatim to the archive.
-  - Local merged-worktree cleanup was retained by machine A after an approval rejection (2026-10-26 sections); current worktree state unverified (use `/janitor`).
+## Current state (2026-10-31)
+
+- Snapshot 2026-10-28 (Not done, Blocked, open debts): verbatim in the archive, section "Moved 2026-10-31 (tp-compact5, verbatim)". Re-check `git log origin/master` first.
 
 ## Archives (`docs/archive/`, verbatim, history only)
 Find any section title with `grep -n '^## ' <file>`. Original section order is kept inside each file.
@@ -45,5 +37,9 @@ Find any section title with `grep -n '^## ' <file>`. Original section order is k
 | [`task_on_progress-doc-link-audit.md`](docs/archive/task_on_progress-doc-link-audit.md) | 2026-10-26 | Verbatim documentation link audit before compaction |
 - CL-HOSTRERUN 2026-10-31: ui_dispatcher.rs mutation rerun with the correct flag form (40 of 90 in the time-box: 26 caught, 3 missed + 2 timeout, killed by w8_hostrerun_killers.rs; the CL-HOST2 "90, 0 missed" was wrong); X-host-ui-dispatcher and X-host-shell-window-messages Done -> Partial; wndproc/dpi/mainwin numbers marked unverified, not rerun; docs/reviews/CL-HOSTRERUN-2026-10-30.md.
 - CL-HOSTRERUN2 2026-10-31: host rerun part 2 (correct flag form): wndproc.rs 11/11 (10 caught + 1 by w8_host2_killers), dpi.rs 28/28 (25 caught, 1 unviable, `| -> &` killed by w8_hostrerun2_killers.rs, `| -> ^` equivalent); ui_dispatcher.rs lines 241+ only 4 of 53 evaluated (3 timeouts + 1 missed, killed; 49 NOT run); all 3 host rows stay Partial; docs/reviews/CL-HOSTRERUN2-2026-10-31.md.
+| [`task_on_progress-status-2026-10-28-30.md`](docs/archive/task_on_progress-status-2026-10-28-30.md) | 2026-10-28..31 | Section "Moved 2026-10-31 (tp-compact5)": 2026-10-28 state snapshot, CL-INPUTDONE..CL-FSRERUN status lines |
+- CL-W6RERUN 2026-10-30: W6 + CL-P01 platform native mutation re-run with the corrected flag form: 82 tested 58 caught 16 missed 8 unviable, and 68 tested 54 caught 11 missed 3 unviable; 7 real gaps (registry reader, `absolute_normalized`, forward_client transfer guards, vblank `try_open`) killed by w6_rerun_killers.rs, 7 equivalent, 13 inactive cfg; P-01/P-03/P-05/P-11 stay Partial; docs/reviews/CL-W6RERUN-2026-10-30.md.
+- CX-JRNL 2026-10-31: tests only; 22/179 current mutants caught, remaining verdict incomplete; journal rows Partial; docs/reviews/CX-JRNL-2026-10-31.md.
 - CX-PHYS2 2026-10-31: physical.rs selected 30/438 evaluated (29 caught, 1 unviable, 0 missed/timeouts); 97 native-included tests pass, fmt/clippy/doc-links pass; X-physical-fs/AR16 Partial, RV-C05 Done; docs/reviews/CX-PHYS2-2026-10-31.md.
 - CX-TEXTS 2026-10-31: Partial; texts 38/161 valid (37 caught, 1 unviable; 123 unverified), adapters 34/34 (29 caught, 5 unviable), killers-alone 9/9 caught, factories 7/7 (1 caught, 6 unviable); 7 killers pass 20x; docs/reviews/CX-TEXTS-2026-10-31.md.
+- CL-REST2RERUN 2026-10-31: correct-flag rerun: initial_viewport 41/41 caught, benchmark `dispose` killers confirmed by hand (2 mutants kill both tests), adapters.rs really 22 caught + 7 MISSED + 5 unviable (CL-REST2's 0 missed was void; killed by CX-TEXTS w8_texts_killers); no row raised; docs/reviews/CL-REST2RERUN-2026-10-31.md.
