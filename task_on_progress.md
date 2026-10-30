@@ -48,3 +48,4 @@ Find any section title with `grep -n '^## ' <file>`. Original section order is k
 | [`task_on_progress-status-2026-10-28-30.md`](docs/archive/task_on_progress-status-2026-10-28-30.md) | 2026-10-30 | Section "Moved 2026-10-30 (lane status lines, verbatim)": CX-MUTW4, CX-IMAGING3, CL-UNDO, CL-ENTRY, CL-APPMUT, CL-FSFLUSH, CL-PIXELS, CX-JSON3, CX-UNDOSTAT lane status lines |
 | [`task_on_progress-doc-link-audit.md`](docs/archive/task_on_progress-doc-link-audit.md) | 2026-10-26 | Verbatim documentation link audit before compaction |
 - CX-W4REST 2026-10-30: six rows Partial; 236 new mutants measured; disk reproof budget-exhausted; final gates/20x killers pass; docs/reviews/CX-W4REST-2026-10-30.md.
+- CL-HOSTX 2026-10-30: swap_chain_clock 36 (0 missed), message_loop 84 (18 missed killed); rows stay Partial; docs/reviews/CL-HOSTX-2026-10-30.md.
