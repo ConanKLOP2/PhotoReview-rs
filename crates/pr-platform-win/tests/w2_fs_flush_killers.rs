@@ -1,6 +1,6 @@
 //! cl-fsflush: makes the durable half of `PhysicalFileSystem::write_all_text_atomic` (D-05) and the SequentialScan hint of
 //! `open_read_shared` (INV-8) observable. The kernel keeps both as file-object mode bits that
-//! `NtQueryInformationFile(FileModeInformation)` reports for a handle: `FILE_WRITE_THROUGH` (0x2) for
+//! `NtQueryInformationFile(FileModeInformation)` (via `pr_platform_win::file_mode`) reports for a handle: `FILE_WRITE_THROUGH` (0x2) for
 //! `FILE_FLAG_WRITE_THROUGH` and `FILE_SEQUENTIAL_ONLY` (0x4) for `FILE_FLAG_SEQUENTIAL_SCAN`. The temp file of the
 //! atomic write is closed before the call returns, so the handle is read through the
 //! `write_all_text_atomic_observed` seam (the P-11 `FlushToDisk` pattern); the flush itself is observed as the
@@ -8,59 +8,17 @@
 #![cfg(windows)]
 
 use std::cell::RefCell;
-use std::ffi::c_void;
 use std::fs::File;
 use std::io::Write;
-use std::os::windows::io::AsRawHandle;
 
 use pr_core::abstractions::FileSystem;
 use pr_core::io::physical::{AtomicWriteStep, PhysicalFileSystem, temp_file_flushes_on_this_thread};
+use pr_platform_win::file_mode::{FILE_SEQUENTIAL_ONLY, FILE_WRITE_THROUGH, file_mode_bits};
 use pr_test_support::TempRoot;
 
-const FILE_WRITE_THROUGH: u32 = 0x2;
-const FILE_SEQUENTIAL_ONLY: u32 = 0x4;
-const FILE_MODE_INFORMATION: u32 = 16;
-
-#[repr(C)]
-struct IoStatusBlock {
-    status: usize,
-    information: usize,
-}
-
-#[link(name = "ntdll")]
-unsafe extern "system" {
-    fn NtQueryInformationFile(
-        handle: *mut c_void,
-        io_status: *mut IoStatusBlock,
-        info: *mut c_void,
-        length: u32,
-        class: u32,
-    ) -> i32;
-}
-
-/// The `FILE_MODE_INFORMATION.Mode` bits of an open handle.
+/// The `FILE_MODE_INFORMATION.Mode` bits of an open handle (the `unsafe` query lives in `pr-platform-win`).
 fn mode_of(file: &File) -> u32 {
-    let mut io = IoStatusBlock {
-        status: 0,
-        information: 0,
-    };
-    let mut mode = 0u32;
-    // SAFETY: the handle is open for the whole call (borrowed from `file`); `io` and `mode` are live locals of exactly
-    // the sizes the class FileModeInformation (a single ULONG) needs.
-    let status = unsafe {
-        NtQueryInformationFile(
-            file.as_raw_handle(),
-            &mut io,
-            (&mut mode as *mut u32).cast(),
-            std::mem::size_of::<u32>() as u32,
-            FILE_MODE_INFORMATION,
-        )
-    };
-    assert_eq!(
-        status, 0,
-        "NtQueryInformationFile(FileModeInformation) failed: {status:#x}"
-    );
-    mode
+    file_mode_bits(file).unwrap()
 }
 
 /// Runs `write_all_text_atomic_observed` and returns every `(step, mode of the temp handle)` the observer saw.

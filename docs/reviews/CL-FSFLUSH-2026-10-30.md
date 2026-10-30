@@ -12,7 +12,9 @@ Production change (behaviour preserving, same pattern as the P-11 `FlushToDisk` 
 - `PhysicalFileSystem::write_all_text_atomic_observed(path, text, durable, observe)`: the old body of `write_all_text_atomic` with `observe(Written, &file)` after the write and `observe(Flush, &file)` only when durable. The trait method calls it with an observer that runs `flush_temp_file` (`File::sync_all`) on `Flush`. `flush_temp_file` increments a thread-local counter (`temp_file_flushes_on_this_thread`) so a test can see the production flush happen.
 - Atomicity is untouched: same temp name, `FILE_SHARE_NONE`, `create_new`, rename retry, cleanup of the temp file on every failure. A new test shows a failing flush still leaves no temp file and no target.
 
-## Tests (new file `crates/pr-core/tests/w2_fs_flush_killers.rs`, 9 native tests; plus 1 unit test in `abstractions/source_reader.rs`)
+## Tests (new file `crates/pr-platform-win/tests/w2_fs_flush_killers.rs`, 9 native tests)
+
+The handle query is `unsafe`, and `unsafe` is allowed only in the FFI crates (CI `unsafe-audit`), so it lives in `pr_platform_win::file_mode::file_mode_bits` (`#[doc(hidden)]`, SAFETY commented) and the tests sit in `pr-platform-win`, which calls the `pr-core` seams. The first version put the `NtQueryInformationFile` block in `pr-core` and failed `unsafe-audit`.
 
 | Test | Pins |
 |---|---|
@@ -24,13 +26,12 @@ Production change (behaviour preserving, same pattern as the P-11 `FlushToDisk` 
 | `open_read_shared_sets_the_sequential_scan_mode` | handle mode bit 0x4 (INV-8), control: plain open reads 0 |
 | `open_read_shared_reads_content_with_and_without_buffer` | the wrapper still reads the file |
 | `open_append_durable_is_write_through_and_fast_is_not` | bonus: `open_append` durable flag, via `as_file_mut()` |
-| `source_reader::tests::open_shared_sequential_sets_the_sequential_scan_mode` | the second INV-8 open site |
 
-Runs: `stage-native.ps1` done first; `w2_fs_flush_killers -- --include-ignored --test-threads=1` 9/9, repeated 20 times 20/20; regressions `io_physical` 64, `io_physical_seams` 3, `session_store` 45, `session_writer` 48 all green; `cargo fmt -p pr-core --check` and `cargo clippy -p pr-core --all-targets --locked -- -D warnings` clean.
+Runs: `stage-native.ps1` done first; `pr-platform-win` `w2_fs_flush_killers -- --include-ignored --test-threads=1` 9/9, repeated 20 times 20/20; regressions `io_physical` 64, `io_physical_seams` 3, `session_store` 45, `session_writer` 48 all green; `cargo fmt -p pr-core --check` and `cargo clippy -p pr-core --all-targets --locked -- -D warnings` clean.
 
 ## Mutation
 
-`cargo mutants -p pr-core --file "**/io/physical.rs" -F "write_all_text_atomic|open_read_shared|flush_temp_file|temp_file_flushes"` with `--cargo-arg=--test=w2_fs_flush_killers` alone: **17 found, 17 tested, 15 caught, 2 unviable (`Ok(Default::default())` for `File` and `Box<dyn ReadSeek>`), 0 missed, 0 timeouts** (the earlier 427/427 run covered the pre-split functions).
+`cargo mutants -p pr-core --file "**/io/physical.rs" -F "write_all_text_atomic|open_read_shared|flush_temp_file|temp_file_flushes"` with the killers test binary alone (run while the file was still in `pr-core/tests`; the tests moved to `pr-platform-win/tests` unchanged apart from the `mode_of` helper, and were not re-mutated): **17 found, 17 tested, 15 caught, 2 unviable (`Ok(Default::default())` for `File` and `Box<dyn ReadSeek>`), 0 missed, 0 timeouts** (the earlier 427/427 run covered the pre-split functions).
 
 cargo-mutants does not mutate `if durable` guards or flag constants, so these were applied by hand, one at a time, each run against the killers binary and then reverted; all 7 were caught:
 
@@ -54,3 +55,7 @@ The `source_reader.rs` flag was checked by one hand mutant (`custom_flags(0)`): 
 ## Not run
 
 Full-file cargo-mutants of `physical.rs` was not repeated (only the functions touched by the seam); `pr-bench` and `pr-app` were not rebuilt (trait signatures unchanged). Same-lane gap candidate: `journal_compaction_files.rs` and `atomic_file.rs` also use `FILE_FLAG_SEQUENTIAL_SCAN`; not examined here.
+
+## Known limit
+
+The second INV-8 open site, `PhysicalSourceReader::open_source` (`open_shared_sequential` in `abstractions/source_reader.rs`), has no spy for `FILE_FLAG_SEQUENTIAL_SCAN`: it returns a boxed `BufReader`, so the handle is unreachable from the public API, and the old unit test needed `unsafe` in `pr-core`. The existing test `open_source_lets_others_rename_and_delete_while_open` still pins its share modes. The INV-8 row is Done for the file-system part (`PhysicalFileSystem::open_read_shared`) and says so; the sequential hint of the source reader is unobserved.

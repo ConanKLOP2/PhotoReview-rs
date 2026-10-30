@@ -69,6 +69,9 @@ pub mod live_operation_registry;
 #[cfg(windows)]
 pub mod memory_probe;
 
+#[cfg(windows)]
+pub mod file_mode;
+
 /// W8-09b slice S2 (`contracts/W8-09b.md`, D-W8B6-151): production adapters the shared service graph needs and no merged unit implements.
 #[cfg(windows)]
 pub mod culture;
