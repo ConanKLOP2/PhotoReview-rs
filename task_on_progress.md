@@ -23,6 +23,8 @@ Keep this file under about 10 KB. When it grows, move old sections verbatim to `
   - Native composition glue is excluded from full cargo-mutants by policy; Wave 8 B4-B6 and Wave 9 mutation evidence is partial per PR body.
   - Local merged-worktree cleanup was retained by machine A after an approval rejection (2026-10-26 sections); current worktree state unverified (use `/janitor`).
 
+- **CX-MUTW4 (2026-10-30, feat/cx-mutw4):** W4-02b/10b/11c/11e remain Partial; 223 current mutation identities tested (202 caught, 7 explained MISSED, 14 unviable, no unresolved timeouts), killers imaging 10/10 and platform 5/5; OQ1 and WPF/UI gaps retained. Unstaged handoff for orchestrator, no commit/push. [Evidence](docs/reviews/CX-MUTW4-2026-10-30.md).
+
 ## Archives (`docs/archive/`, verbatim, history only)
 Find any section title with `grep -n '^## ' <file>`. Original section order is kept inside each file.
 
