@@ -554,6 +554,13 @@ impl HttpTransport for WinHttpTransport {
 mod tests {
     use super::*;
     #[test]
+    fn no_proxy_leading_dot_entry_requires_a_longer_host() {
+        // C#: default HttpClient proxy grammar seam; no direct C# unit-test twin.
+        // Mutant http/transport.rs:231:28: replace > with >= in bypass_environment_proxy.
+        assert!(!bypass_environment_proxy(".example.com", ".example.com"));
+    }
+
+    #[test]
     fn no_proxy_names_subdomains_and_wildcards_follow_documented_dotnet_grammar() {
         // New: HttpClient.DefaultProxy documented environment grammar; runtime probe pending.
         for (host, list, expected) in [
