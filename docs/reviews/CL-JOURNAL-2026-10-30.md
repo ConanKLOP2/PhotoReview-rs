@@ -51,7 +51,7 @@ above, which pass on a clean build). `file_actions_journal_compaction`: 15 run +
 No `w3_journal_killers2.rs` was written: no mutant was reliably MISSED in this run, and the 85 unrun mutants (append,
 torn-tail, sharing retry, reader, reverse tail reader, `read_latest_entry`, `append_if*`) were not reached.
 
-## What is needed to close this
+## Để đóng (to close)
 
 1. Run the three groups on a quiet machine (or with `--timeout 300`), about 3 hours at the observed pace with 6 binaries;
    consider excluding `random_history_*` for the survey pass and running them only on survivors.
@@ -60,5 +60,24 @@ torn-tail, sharing retry, reader, reverse tail reader, `read_latest_entry`, `app
 4. The `#[ignore]`d native twins were not run under mutation.
 
 Rows changed in `docs/PARITY.md`: INV-6 (journal part) and F-16 / D-14 Done to Partial; D-03 / F-11 / F-19 / F-20 / S-21,
-F-12 / F-15 and F-13 keep their status but their "179 of 179" wording now reads "94 of 179 documented" (F-13 is the append
-path whose 85 unrun mutants are exactly the unproven part; the lead should decide whether to demote it too).
+F-12 / F-15 and F-13 are also demoted to Partial (lead decision), with the reason written in each row.
+
+### Exact commands for a later lane
+
+Run only on an idle machine, `CARGO_TARGET_DIR=<worktree>/target-mut`, one cargo-mutants at a time, keep the raw
+`mut-out-*` summaries. Set `T` to `--cargo-arg=--test=file_actions_journal --cargo-arg=--test=file_actions_journal_compaction
+--cargo-arg=--test=journal_mutation_killers --cargo-arg=--test=journal_mutation_killers_2 --cargo-arg=--test=journal_mutation_killers_3
+--cargo-arg=--test=journal_mutation_killers_4`.
+
+```
+cargo mutants -p pr-core --baseline skip --timeout 300 -j 1 --output mut-out-j1 --file "**/file_actions/journal.rs" -F "journal.rs:([0-9]{1,2}|[1-4][0-9]{2}):" $T
+cargo mutants -p pr-core --baseline skip --timeout 300 -j 1 --output mut-out-j2 --file "**/file_actions/journal.rs" -F "journal.rs:[5-7][0-9]{2}:" $T
+cargo mutants -p pr-core --baseline skip --timeout 300 -j 1 --output mut-out-j3 --file "**/file_actions/journal.rs" -F "journal.rs:([89][0-9]{2}|1[0-9]{3}):" $T
+```
+
+Compare "Found N mutants" with `--list` per group (the ranges overlap a little: 44 + 82 + 61 = 187 vs 179). Split the
+`random_history_*` tests of `file_actions_journal` into their own pass: survey the mutants without them (use
+a `--skip random_history` after `--` in the test arguments),
+then re-run only the survivors with the full binary. Resolve every W3-01 timeout and missed mutant individually (killer
+test in a new `w3_journal_killers2.rs`, or an equivalence reason). Only then may INV-6 (journal), F-16 / D-14, F-12 / F-15,
+F-13 and the journal file row return to Done.
