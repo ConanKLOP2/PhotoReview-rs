@@ -297,21 +297,25 @@ pub fn query_drive_type(root: &str) -> Option<DriveType> {
         use windows::core::PCWSTR;
         let wide = to_wide(&root)?;
         // SAFETY: wide is a live NUL-terminated root path; GetDriveTypeW does not retain it.
-        Some(match unsafe { GetDriveTypeW(PCWSTR(wide.as_ptr())) } {
-            0 => DriveType::Unknown,
-            1 => DriveType::NoRootDirectory,
-            2 => DriveType::Removable,
-            3 => DriveType::Fixed,
-            4 => DriveType::Network,
-            5 => DriveType::CdRom,
-            6 => DriveType::Ram,
-            _ => DriveType::Unknown,
-        })
+        Some(drive_type_from_win32(unsafe { GetDriveTypeW(PCWSTR(wide.as_ptr())) }))
     }
     #[cfg(not(windows))]
     {
         let _ = root;
         None
+    }
+}
+
+/// Maps a `GetDriveTypeW` return code (`DRIVE_*`) to [`DriveType`]; unknown codes map to `Unknown`.
+pub fn drive_type_from_win32(code: u32) -> DriveType {
+    match code {
+        1 => DriveType::NoRootDirectory,
+        2 => DriveType::Removable,
+        3 => DriveType::Fixed,
+        4 => DriveType::Network,
+        5 => DriveType::CdRom,
+        6 => DriveType::Ram,
+        _ => DriveType::Unknown,
     }
 }
 
@@ -340,8 +344,9 @@ fn to_wide(value: &str) -> Option<Vec<u16>> {
     Some(value.encode_utf16().chain(std::iter::once(0)).collect())
 }
 
+/// Reads one registry value read-only; a missing key or value is `Ok(None)`, a non-DWORD is `RegistryValue::Other`.
 #[cfg(windows)]
-fn read_registry_value(hive: RegistryHive, key: &str, name: &str) -> io::Result<Option<RegistryValue>> {
+pub fn read_registry_value(hive: RegistryHive, key: &str, name: &str) -> io::Result<Option<RegistryValue>> {
     use windows::Win32::Foundation::{ERROR_FILE_NOT_FOUND, ERROR_PATH_NOT_FOUND, ERROR_SUCCESS};
     use windows::Win32::System::Registry::{
         HKEY_CURRENT_USER, HKEY_LOCAL_MACHINE, KEY_QUERY_VALUE, REG_DWORD, RegOpenKeyExW, RegQueryValueExW,
@@ -413,8 +418,9 @@ fn read_registry_value(hive: RegistryHive, key: &str, name: &str) -> io::Result<
     Ok(Some(RegistryValue::Dword(value)))
 }
 
+/// Reads one registry value read-only; unsupported off Windows.
 #[cfg(not(windows))]
-fn read_registry_value(_hive: RegistryHive, _key: &str, _name: &str) -> io::Result<Option<RegistryValue>> {
+pub fn read_registry_value(_hive: RegistryHive, _key: &str, _name: &str) -> io::Result<Option<RegistryValue>> {
     Err(io::Error::new(
         io::ErrorKind::Unsupported,
         "Windows registry is unavailable",
