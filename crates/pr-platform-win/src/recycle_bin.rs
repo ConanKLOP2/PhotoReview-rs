@@ -17,8 +17,49 @@ use crate::recycle_eligibility::{can_recycle_with, is_permanent_delete_allowed_w
 type Exists = dyn Fn(&Path) -> bool + Send + Sync;
 type FileLength = dyn Fn(&Path) -> io::Result<u64> + Send + Sync;
 type PathAction = dyn Fn(&Path) -> io::Result<()> + Send + Sync;
+type ShellRecycleAction = dyn Fn(&Path) -> io::Result<ShellRecycleOutcome> + Send + Sync;
 type DriveTypeQuery = dyn Fn(&str) -> Option<DriveType> + Send + Sync;
 type MountPointQuery = dyn Fn(&str) -> Option<String> + Send + Sync;
+
+/// Longest path (UTF-16 units, without the terminating NUL) the Shell delete is trusted with: `MAX_PATH` is 260 and
+/// includes the NUL. Longer paths are refused before the Shell call because `IFileOperation` may then delete for good
+/// instead of recycling (ST-COM-RECYCLE C2; the Recycle Bin cannot hold a path that long).
+pub const MAX_SHELL_RECYCLE_PATH_UNITS: usize = 259;
+
+/// What the Shell reported for the one item of a recycle request (ST-COM-RECYCLE C2). Before this the facade only
+/// knew "the file is gone", which is also true after a permanent delete.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ShellRecycleOutcome {
+    /// `PostDeleteItem` succeeded and returned a new item (the one now in the Recycle Bin).
+    MovedToRecycleBin,
+    /// `PostDeleteItem` succeeded but returned no new item: the Shell deleted the file permanently. Data is gone.
+    DeletedPermanently,
+    /// `PostDeleteItem` reported a failed HRESULT (raw value).
+    Failed(i32),
+    /// The Shell gave no per-item report at all (the sink was never called): nothing proves the file was recycled.
+    Unknown,
+}
+
+/// Pure decision of the progress sink: a failed HRESULT is `Failed`, a success with a new item is a recycle, a
+/// success without one is a permanent delete.
+pub fn classify_post_delete(hr_delete: i32, newly_created_present: bool) -> ShellRecycleOutcome {
+    if hr_delete < 0 {
+        ShellRecycleOutcome::Failed(hr_delete)
+    } else if newly_created_present {
+        ShellRecycleOutcome::MovedToRecycleBin
+    } else {
+        ShellRecycleOutcome::DeletedPermanently
+    }
+}
+
+/// Keeps the worst report when the Shell calls the sink more than once for the same item (per-item sink and the
+/// operation-wide sink both see the delete).
+pub fn merge_outcome(existing: Option<ShellRecycleOutcome>, new: ShellRecycleOutcome) -> ShellRecycleOutcome {
+    match existing {
+        None | Some(ShellRecycleOutcome::MovedToRecycleBin) => new,
+        Some(worse) => worse,
+    }
+}
 
 /// Backend seam for restoring one matching Recycle Bin item; W6-02e supplies the Shell implementation.
 pub trait RecycleBinRestoreBackend: Send + Sync {
@@ -38,7 +79,7 @@ pub struct WindowsRecycleBin {
     mount_point_of: Arc<MountPointQuery>,
     file_exists: Arc<Exists>,
     file_length: Arc<FileLength>,
-    shell_recycle: Arc<PathAction>,
+    shell_recycle: Arc<ShellRecycleAction>,
     file_delete: Arc<PathAction>,
     restore_backend: Arc<dyn RecycleBinRestoreBackend>,
 }
@@ -81,7 +122,7 @@ impl WindowsRecycleBin {
         mount_point_of: impl Fn(&str) -> Option<String> + Send + Sync + 'static,
         file_exists: impl Fn(&Path) -> bool + Send + Sync + 'static,
         file_length: impl Fn(&Path) -> io::Result<u64> + Send + Sync + 'static,
-        shell_recycle: impl Fn(&Path) -> io::Result<()> + Send + Sync + 'static,
+        shell_recycle: impl Fn(&Path) -> io::Result<ShellRecycleOutcome> + Send + Sync + 'static,
         file_delete: impl Fn(&Path) -> io::Result<()> + Send + Sync + 'static,
         restore_backend: Arc<dyn RecycleBinRestoreBackend>,
     ) -> Self {
@@ -114,6 +155,23 @@ impl WindowsRecycleBin {
         io::Error::other(format!("Recycle Bin cannot hold {} ({reason})", display_name(path)))
     }
 
+    fn path_too_long(path: &Path) -> io::Error {
+        io::Error::new(
+            io::ErrorKind::InvalidInput,
+            format!(
+                "Recycle Bin cannot hold {} (path is longer than {MAX_SHELL_RECYCLE_PATH_UNITS} characters)",
+                display_name(path)
+            ),
+        )
+    }
+
+    fn permanently_deleted(path: &Path) -> io::Error {
+        io::Error::other(format!(
+            "Recycle failed: the Shell deleted {} permanently instead of moving it to the Recycle Bin",
+            display_name(path)
+        ))
+    }
+
     fn not_removed(path: &Path) -> io::Error {
         io::Error::other(format!(
             "Recycle operation left the source in place: {}",
@@ -133,6 +191,13 @@ impl RecycleBin for WindowsRecycleBin {
             |full| (self.mount_point_of)(full),
         ) {
             return Err(Self::unsupported_drive(path));
+        }
+
+        // Over MAX_PATH the Shell may delete for good instead of recycling and nothing would tell us (C2).
+        if path_text.encode_utf16().count() > MAX_SHELL_RECYCLE_PATH_UNITS {
+            self.log
+                .warn(&format!("Recycle refused (path too long): {}", display_name(path)));
+            return Err(Self::path_too_long(path));
         }
 
         // Re-read immediately before invoking the Shell; caller preflight can be stale if the file grew.
@@ -157,11 +222,46 @@ impl RecycleBin for WindowsRecycleBin {
             return Err(Self::cannot_hold(path, &format!("{verdict:?}")));
         }
 
-        (self.shell_recycle)(path)?;
-        if (self.file_exists)(path) {
-            return Err(Self::not_removed(path));
+        // Fail closed (C2): only a positive "moved to the Recycle Bin" report plus a vanished source counts as success,
+        // so the journal never says Recycle for a file the Shell deleted for good or could not confirm.
+        match (self.shell_recycle)(path)? {
+            ShellRecycleOutcome::MovedToRecycleBin => {
+                if (self.file_exists)(path) {
+                    return Err(Self::not_removed(path));
+                }
+                Ok(())
+            }
+            ShellRecycleOutcome::DeletedPermanently => {
+                self.log.warn(&format!(
+                    "Recycle failed: Shell deleted permanently (no Recycle Bin item): {}",
+                    display_name(path)
+                ));
+                Err(Self::permanently_deleted(path))
+            }
+            ShellRecycleOutcome::Failed(hr) => {
+                if (self.file_exists)(path) {
+                    return Err(Self::not_removed(path));
+                }
+                Err(io::Error::other(format!(
+                    "Recycle failed: IFileOperation reported {:#010x} for {}",
+                    hr as u32,
+                    display_name(path)
+                )))
+            }
+            ShellRecycleOutcome::Unknown => {
+                if (self.file_exists)(path) {
+                    return Err(Self::not_removed(path));
+                }
+                self.log.warn(&format!(
+                    "Recycle unconfirmed: the Shell gave no per-item report: {}",
+                    display_name(path)
+                ));
+                Err(io::Error::other(format!(
+                    "Recycle unconfirmed: the Shell did not report that {} reached the Recycle Bin",
+                    display_name(path)
+                )))
+            }
         }
-        Ok(())
     }
 
     fn can_recycle(&self, path: &Path) -> bool {
@@ -255,7 +355,7 @@ pub fn native_file_delete(path: &Path) -> io::Result<()> {
     pr_core::abstractions::FileSystem::delete(&pr_core::io::physical::PhysicalFileSystem, path)
 }
 
-fn native_shell_recycle(path: &Path) -> io::Result<()> {
+fn native_shell_recycle(path: &Path) -> io::Result<ShellRecycleOutcome> {
     #[cfg(windows)]
     {
         shell::recycle(path)
@@ -267,6 +367,149 @@ fn native_shell_recycle(path: &Path) -> io::Result<()> {
             io::ErrorKind::Unsupported,
             "Windows Shell recycle is available only on Windows",
         ))
+    }
+}
+
+#[cfg(windows)]
+pub mod delete_sink {
+    //! The `IFileOperationProgressSink` that tells a recycle from a permanent delete (ST-COM-RECYCLE C2). Only
+    //! `PostDeleteItem` matters; the other eleven callbacks return `S_OK`. The object lives on the one STA thread
+    //! that created it, so a `Cell` behind an `Rc` is enough.
+
+    use std::cell::Cell;
+    use std::rc::Rc;
+
+    use windows::Win32::UI::Shell::{IFileOperationProgressSink, IFileOperationProgressSink_Impl, IShellItem};
+    use windows_core::{HRESULT, PCWSTR, Ref, implement};
+
+    use super::{ShellRecycleOutcome, classify_post_delete, merge_outcome};
+
+    /// Shared slot the sink writes and the recycle code reads after `PerformOperations`.
+    pub type OutcomeSlot = Rc<Cell<Option<ShellRecycleOutcome>>>;
+
+    #[implement(IFileOperationProgressSink)]
+    struct DeleteSink {
+        slot: OutcomeSlot,
+    }
+
+    /// Creates the sink interface and the slot it reports into.
+    pub fn new_sink() -> (IFileOperationProgressSink, OutcomeSlot) {
+        let slot: OutcomeSlot = Rc::new(Cell::new(None));
+        let sink: IFileOperationProgressSink = DeleteSink { slot: Rc::clone(&slot) }.into();
+        (sink, slot)
+    }
+
+    impl IFileOperationProgressSink_Impl for DeleteSink_Impl {
+        fn StartOperations(&self) -> windows_core::Result<()> {
+            Ok(())
+        }
+        fn FinishOperations(&self, _hrresult: HRESULT) -> windows_core::Result<()> {
+            Ok(())
+        }
+        fn PreRenameItem(
+            &self,
+            _dwflags: u32,
+            _psiitem: Ref<IShellItem>,
+            _psznewname: &PCWSTR,
+        ) -> windows_core::Result<()> {
+            Ok(())
+        }
+        fn PostRenameItem(
+            &self,
+            _dwflags: u32,
+            _psiitem: Ref<IShellItem>,
+            _psznewname: &PCWSTR,
+            _hrrename: HRESULT,
+            _psinewlycreated: Ref<IShellItem>,
+        ) -> windows_core::Result<()> {
+            Ok(())
+        }
+        fn PreMoveItem(
+            &self,
+            _dwflags: u32,
+            _psiitem: Ref<IShellItem>,
+            _psidestinationfolder: Ref<IShellItem>,
+            _psznewname: &PCWSTR,
+        ) -> windows_core::Result<()> {
+            Ok(())
+        }
+        fn PostMoveItem(
+            &self,
+            _dwflags: u32,
+            _psiitem: Ref<IShellItem>,
+            _psidestinationfolder: Ref<IShellItem>,
+            _psznewname: &PCWSTR,
+            _hrmove: HRESULT,
+            _psinewlycreated: Ref<IShellItem>,
+        ) -> windows_core::Result<()> {
+            Ok(())
+        }
+        fn PreCopyItem(
+            &self,
+            _dwflags: u32,
+            _psiitem: Ref<IShellItem>,
+            _psidestinationfolder: Ref<IShellItem>,
+            _psznewname: &PCWSTR,
+        ) -> windows_core::Result<()> {
+            Ok(())
+        }
+        fn PostCopyItem(
+            &self,
+            _dwflags: u32,
+            _psiitem: Ref<IShellItem>,
+            _psidestinationfolder: Ref<IShellItem>,
+            _psznewname: &PCWSTR,
+            _hrcopy: HRESULT,
+            _psinewlycreated: Ref<IShellItem>,
+        ) -> windows_core::Result<()> {
+            Ok(())
+        }
+        fn PreDeleteItem(&self, _dwflags: u32, _psiitem: Ref<IShellItem>) -> windows_core::Result<()> {
+            Ok(())
+        }
+        fn PostDeleteItem(
+            &self,
+            _dwflags: u32,
+            _psiitem: Ref<IShellItem>,
+            hrdelete: HRESULT,
+            psinewlycreated: Ref<IShellItem>,
+        ) -> windows_core::Result<()> {
+            let new = classify_post_delete(hrdelete.0, psinewlycreated.is_some());
+            self.slot.set(Some(merge_outcome(self.slot.get(), new)));
+            Ok(())
+        }
+        fn PreNewItem(
+            &self,
+            _dwflags: u32,
+            _psidestinationfolder: Ref<IShellItem>,
+            _psznewname: &PCWSTR,
+        ) -> windows_core::Result<()> {
+            Ok(())
+        }
+        fn PostNewItem(
+            &self,
+            _dwflags: u32,
+            _psidestinationfolder: Ref<IShellItem>,
+            _psznewname: &PCWSTR,
+            _psztemplatename: &PCWSTR,
+            _dwfileattributes: u32,
+            _hrnew: HRESULT,
+            _psinewitem: Ref<IShellItem>,
+        ) -> windows_core::Result<()> {
+            Ok(())
+        }
+        fn UpdateProgress(&self, _iworktotal: u32, _iworksofar: u32) -> windows_core::Result<()> {
+            Ok(())
+        }
+        fn ResetTimer(&self) -> windows_core::Result<()> {
+            Ok(())
+        }
+        fn PauseTimer(&self) -> windows_core::Result<()> {
+            Ok(())
+        }
+        fn ResumeTimer(&self) -> windows_core::Result<()> {
+            Ok(())
+        }
     }
 }
 
@@ -294,7 +537,7 @@ mod shell {
         }
     }
 
-    pub(super) fn recycle(path: &Path) -> io::Result<()> {
+    pub(super) fn recycle(path: &Path) -> io::Result<ShellRecycleOutcome> {
         let path = std::path::absolute(path)?;
         std::thread::Builder::new()
             .name("PhotoReviewRs-RecycleShell".to_owned())
@@ -303,7 +546,7 @@ mod shell {
             .map_err(|_| io::Error::other("Recycle Shell STA thread panicked"))?
     }
 
-    fn recycle_on_sta(path: &Path) -> io::Result<()> {
+    fn recycle_on_sta(path: &Path) -> io::Result<ShellRecycleOutcome> {
         // SAFETY: this worker thread is dedicated to one Shell operation and has no prior COM apartment.
         let status = unsafe { CoInitializeEx(None, COINIT_APARTMENTTHREADED) };
         if !status.is_ok() {
@@ -333,11 +576,19 @@ mod shell {
         let flags = FOF_ALLOWUNDO | FOF_NOCONFIRMATION | FOF_NOCONFIRMMKDIR | FOF_SILENT | FOFX_RECYCLEONDELETE;
         // SAFETY: the operation and shell item are live COM interfaces used only on their creating STA thread.
         check_shell_call(unsafe { operation.SetOperationFlags(flags) }, path)?;
-        // SAFETY: the operation and item are live COM interfaces; None requests no progress callback.
-        check_shell_call(unsafe { operation.DeleteItem(&item, None) }, path)?;
+        let (sink, slot) = super::delete_sink::new_sink();
+        // SAFETY: the operation and sink are live COM interfaces on this STA thread; the cookie is released below.
+        let cookie = unsafe { operation.Advise(&sink) }.ok();
+        // SAFETY: the operation, item and sink are live COM interfaces; the item sink also reports PostDeleteItem.
+        let queued = check_shell_call(unsafe { operation.DeleteItem(&item, &sink) }, path);
         // SAFETY: queued work contains only the one caller-supplied item.
-        check_shell_call(unsafe { operation.PerformOperations() }, path)?;
-        Ok(())
+        let performed = queued.and_then(|()| check_shell_call(unsafe { operation.PerformOperations() }, path));
+        if let Some(cookie) = cookie {
+            // SAFETY: cookie came from the Advise call above on the same operation.
+            let _ = unsafe { operation.Unadvise(cookie) };
+        }
+        performed?;
+        Ok(slot.get().unwrap_or(ShellRecycleOutcome::Unknown))
     }
 
     fn check_shell_call(result: windows::core::Result<()>, path: &Path) -> io::Result<()> {
