@@ -1094,6 +1094,22 @@ impl MainWindow {
         window
     }
 
+    /// Id of this window in the UI-thread registry (read-only; lets a native test name the window it looks up).
+    pub fn id(&self) -> MainWindowId {
+        self.inner.id
+    }
+
+    /// Read-only probe of the UI-thread registry (cl-mut-zoomcore seam, no behaviour of its own): the id of the live, not disposed window registered under
+    /// `id` on THIS thread, via [`with_window`]; `None` when it is gone or belongs to another thread.
+    pub fn registered_id(id: MainWindowId) -> Option<MainWindowId> {
+        with_window(id, |window| window.id())
+    }
+
+    /// Read-only probe of the UI-thread registry (cl-mut-zoomcore seam): the id [`with_current_window`] resolves to on THIS thread (the newest live window).
+    pub fn current_registered_id() -> Option<MainWindowId> {
+        with_current_window(|window| window.id())
+    }
+
     /// C# `Window`.
     pub fn window(&self) -> &Rc<ShellWindow> {
         &self.inner.window
