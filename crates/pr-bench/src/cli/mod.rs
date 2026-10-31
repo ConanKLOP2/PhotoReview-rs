@@ -8,6 +8,7 @@ pub mod arguments;
 pub mod backend;
 pub mod batch;
 mod bench_compare;
+pub mod engine_backend;
 pub mod tool_path_guard;
 
 use std::io::Write;
@@ -18,6 +19,7 @@ pub use backend::{
     BenchmarkBackend, DatasetManifest, PhaseStatus, PhaseSummary, ProfileCatalog, ProfileInfo, ProfileRun,
     ProgressLine, ToolError, UnwiredBackend,
 };
+pub use engine_backend::{EngineBackend, EngineHost, ExecutorParts, UnwiredEngineHost};
 
 /// Prefix of every error line: `PhotoReview.Benchmark.Cli: <message>`.
 pub const TOOL_NAME: &str = "PhotoReview.Benchmark.Cli";

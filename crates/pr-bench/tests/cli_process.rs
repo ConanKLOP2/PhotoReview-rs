@@ -51,7 +51,6 @@ fn no_arguments_prints_usage_and_exits_2() {
 
 // C#: Program.cs `--benchmark-list-profiles` (needs the real catalog, so it runs with the engine wired: lead step).
 #[test]
-#[ignore = "wiring: needs EngineBackend (W7-03d lead step); the stub main.rs uses UnwiredBackend"]
 fn list_profiles_prints_eight_tab_separated_fields_per_line() {
     let output = run_pr_bench(&["--benchmark-list-profiles"]);
     assert_eq!(output.status.code(), Some(0));
