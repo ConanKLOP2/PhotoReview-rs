@@ -624,7 +624,10 @@ impl MainViewModel {
         self.runner.run(
             "sibling-folder-search",
             Box::new(move || {
-                let result = navigator.find_next_image_folder(&search);
+                let result = crate::coordinators::zoom_detail::catch_job(
+                    || navigator.find_next_image_folder(&search),
+                    |text| Err(SiblingNavError::Panicked(text)),
+                );
                 inbox.send(MainEvent::SiblingFound { search, result });
             }),
         );

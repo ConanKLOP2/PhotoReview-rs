@@ -958,6 +958,63 @@ fn zoom_and_overlay_refresh_return_the_exact_changed_properties() {
     assert!(toggled.main.contains(MainProperty::IsStatusPanelVisible));
 }
 
+/// A sibling-search environment whose RAW getter panics: three folders a < b < c with one image each, `b` is current.
+fn panicking_sibling_env() -> (MainEnv, String) {
+    let env = MainEnv::with_options(EnvOptions {
+        sibling_raw_getter: Some(Arc::new(|| panic!("raw getter blew up"))),
+        ..EnvOptions::default()
+    });
+    let parent = env.folder("sibling_panic");
+    let mut current = String::new();
+    for name in ["2024-05-01", "2024-05-02", "2024-05-03"] {
+        let folder = Path::new(&parent).join(name);
+        std::fs::create_dir_all(&folder).unwrap_or_else(|error| panic!("create sibling: {error}"));
+        env.add_image(&folder.to_string_lossy(), "a.jpg");
+        if name == "2024-05-02" {
+            current = folder.to_string_lossy().into_owned();
+        }
+    }
+    (env, current)
+}
+
+// New test (FIX-PANIC-REST M3): a panic in the overlay sibling-search job must still deliver `OverlaySiblings` (as `Failed`), so
+// `pending_worker_jobs` drops and the view model becomes idle again.
+#[test]
+fn overlay_sibling_search_job_panic_still_releases_the_pending_count() {
+    let (mut env, current) = panicking_sibling_env();
+    env.update_settings(|settings| settings.show_folder_info = true);
+    env.vm.open_folder(&current, None).expect("open current");
+    env.settle_holding("overlay sibling search queued", &["overlay-siblings"], |_| false);
+    assert_eq!(env.runner.count_of("overlay-siblings"), 1);
+    assert!(!env.vm.is_idle());
+
+    assert!(env.runner.run_tagged("overlay-siblings"));
+    env.pump();
+
+    assert!(
+        env.vm.is_idle(),
+        "the panicked job must have released its pending count"
+    );
+}
+
+// New test (FIX-PANIC-REST M3): a panic in the sibling-folder-search job must still deliver `SiblingFound` (an error), so
+// `pending_worker_jobs` drops and the view model becomes idle again.
+#[test]
+fn sibling_folder_search_job_panic_still_releases_the_pending_count() {
+    let (mut env, current) = panicking_sibling_env();
+    env.open(&current);
+    env.vm.navigate_sibling_folder(1).expect("navigate");
+    assert!(!env.vm.is_idle());
+
+    assert!(env.runner.run_tagged("sibling-folder-search"));
+    env.pump();
+
+    assert!(
+        env.vm.is_idle(),
+        "the panicked job must have released its pending count"
+    );
+}
+
 #[test]
 fn sibling_search_completion_returns_the_folder_line_change() {
     // New test: kills apply_overlay_refresh += -> *= and on_overlay_siblings default return.

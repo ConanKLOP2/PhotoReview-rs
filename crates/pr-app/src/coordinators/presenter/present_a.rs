@@ -34,6 +34,7 @@ use pr_imaging::decoder_traits::DecodeError;
 use pr_imaging::service::{PreviewImage, PreviewResult};
 use pr_l10n::template::describe;
 
+use crate::coordinators::zoom_detail::catch_job;
 use crate::misc::app_log::AppLog;
 use crate::viewmodels::format::status;
 
@@ -405,7 +406,10 @@ impl ImagePresenter {
         self.runner.run(
             PREVIEW_WAIT_THREAD,
             Box::new(move || {
-                let result: PreviewResult = preview.wait();
+                let result: PreviewResult = catch_job(
+                    || preview.wait(),
+                    |text| Err(pr_imaging::service::PreviewError::Panicked(text)),
+                );
                 inbox.send(PresenterEvent::Preview { token, result });
             }),
         );
@@ -426,7 +430,10 @@ impl ImagePresenter {
                     self.runner.run(
                         THUMBNAIL_WAIT_THREAD,
                         Box::new(move || {
-                            let result: ThumbnailResult = request.wait();
+                            let result: ThumbnailResult = catch_job(
+                                || request.wait(),
+                                |text| Err(pr_imaging::cache::thumbnails::ThumbnailError::Panicked(text)),
+                            );
                             inbox.send(PresenterEvent::Thumbnail { token, result });
                         }),
                     );

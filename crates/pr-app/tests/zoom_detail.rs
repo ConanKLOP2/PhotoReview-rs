@@ -1295,3 +1295,15 @@ fn default_indicator_delay_reports_cancel_and_elapsed() {
     );
     assert!(delay(Duration::ZERO, &CancelToken::new()), "a zero delay has elapsed");
 }
+
+// New test (FIX-PANIC-REST M3): `catch_job` hands a worker's panic to the job's own failure result and leaves the normal path alone.
+#[test]
+fn catch_job_turns_a_panic_into_the_failure_result_and_keeps_the_normal_result() {
+    use pr_app::coordinators::zoom_detail::catch_job;
+
+    assert_eq!(catch_job(|| 7, |_| -1), 7);
+    let failed: Result<i32, String> = catch_job(|| panic!("job blew up"), Err);
+    assert_eq!(failed, Err("job blew up".to_owned()));
+    let formatted: Result<i32, String> = catch_job(|| panic!("code {}", 5), Err);
+    assert_eq!(formatted, Err("code 5".to_owned()));
+}

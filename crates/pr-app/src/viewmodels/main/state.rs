@@ -1364,9 +1364,12 @@ impl MainViewModel {
             self.runner.run(
                 "overlay-siblings",
                 Box::new(move || {
-                    let outcome = match navigator
-                        .find_sibling_image_folders(&search.folder, &pr_core::sync::CancelToken::none())
-                    {
+                    // A panic is a failed search (`Failed`), so `on_overlay_siblings` still runs and `pending_worker_jobs` drops.
+                    let found = crate::coordinators::zoom_detail::catch_job(
+                        || navigator.find_sibling_image_folders(&search.folder, &pr_core::sync::CancelToken::none()),
+                        |text| Err(SiblingNavError::Panicked(text)),
+                    );
+                    let outcome = match found {
                         Ok(found) => SearchOutcome::Found(found),
                         Err(SiblingNavError::Cancelled) => SearchOutcome::Cancelled,
                         Err(_) => SearchOutcome::Failed,

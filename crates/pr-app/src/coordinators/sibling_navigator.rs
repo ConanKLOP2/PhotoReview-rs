@@ -41,7 +41,7 @@ use crate::viewmodels::info_overlay::SiblingImageFolders;
 pub type SettingGetter = Arc<dyn Fn() -> bool + Send + Sync>;
 
 /// Why a navigation or a sibling search did not produce a result. Replaces the C# exceptions that escape the task.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum SiblingNavError {
     /// C# `ArgumentOutOfRangeException(nameof(direction))`: the direction is not -1 or +1 (RV-A08).
     InvalidDirection(i32),
@@ -51,6 +51,8 @@ pub enum SiblingNavError {
     InvalidPath(PathError),
     /// C# `OperationCanceledException` from the token of `find_sibling_image_folders`.
     Cancelled,
+    /// The search job panicked (R0003: a worker reports a panic as an error; C# a faulted task). The panic text.
+    Panicked(String),
 }
 
 impl fmt::Display for SiblingNavError {
@@ -60,6 +62,7 @@ impl fmt::Display for SiblingNavError {
             Self::BlankFolder => f.write_str("the folder must not be empty or blank"),
             Self::InvalidPath(e) => write!(f, "invalid folder path: {e:?}"),
             Self::Cancelled => f.write_str("the sibling folder search was cancelled"),
+            Self::Panicked(text) => write!(f, "the sibling folder search panicked: {text}"),
         }
     }
 }

@@ -1094,6 +1094,43 @@ fn present_dimension_lookup_throws_unexpected_bug_is_not_hidden_as_ready_status(
     assert!(f.presenter.status_needs_attention());
 }
 
+// New test (FIX-PANIC-REST M3): a panic in the compare-hash worker job must still deliver a completion, so the present takes the failure path
+// ("hash unknown") instead of waiting for ever in `AwaitCompare`.
+#[test]
+fn present_compare_hash_job_panic_is_a_failure_not_a_stuck_present() {
+    let hasher = ScriptHasher::new(|_| panic!("hasher blew up"));
+    let mut f = PresenterFixture::with_options(
+        SizedDecoder::new(),
+        &["photo.jpg", "photo (1).jpg"],
+        FixtureOptions {
+            hasher: Some(Arc::clone(&hasher) as _),
+            ..FixtureOptions::default()
+        },
+    );
+    f.settings.compare_hash_enabled = true;
+
+    present(&mut f, 0);
+
+    // A hash error other than a cancellation is "unknown" (like any failed hash), and the present finishes.
+    let ctx = f.format.ctx();
+    assert_eq!(f.presenter.compare().hash_text(), status::compare_hash_unknown(&ctx));
+    assert!(f.presenter.compare().is_visible());
+}
+
+// New test (FIX-PANIC-REST M3): a panic in the original-dimensions worker job must still deliver `Dimensions`, so the present fails instead of
+// staying in `AwaitDimensions`.
+#[test]
+fn present_dimension_job_panic_is_a_failure_not_a_stuck_present() {
+    let decoder = ThrowingInfoDecoder::new(image(100, 100), || panic!("read_info blew up"));
+    let (mut f, path) = dimension_rig(decoder, "panic-size.png");
+
+    present(&mut f, 0);
+
+    let ready = status::ready(0, 1, file_len(&path), "panic-size.png", &f.format.ctx());
+    assert_ne!(f.presenter.status_text(), ready);
+    assert!(f.presenter.status_needs_attention());
+}
+
 // C#: MutationGaps.PresentAsync_DimensionLookupFailsWithAnExpectedHeaderReadFailure_KeepsTheImageWithoutDimensions(string)
 fn expected_dimension_failure(make: impl Fn() -> DecodeError + Send + Sync + 'static, label: &str) {
     let decoder = ThrowingInfoDecoder::new(image(100, 100), make);

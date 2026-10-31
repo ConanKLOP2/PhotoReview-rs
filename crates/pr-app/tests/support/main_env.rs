@@ -845,6 +845,8 @@ pub struct EnvOptions {
     pub vietnamese: bool,
     /// The RAW full decoder of the preview service (its use follows the live `raw_full_decode` setting).
     pub raw_full_decoder: Option<Arc<dyn ImageDecoder>>,
+    /// Replaces the sibling navigator's "RAW support enabled" getter (a getter that panics makes the sibling search jobs panic).
+    pub sibling_raw_getter: Option<pr_app::coordinators::sibling_navigator::SettingGetter>,
 }
 
 impl Default for EnvOptions {
@@ -863,6 +865,7 @@ impl Default for EnvOptions {
             session_debounce: None,
             vietnamese: false,
             raw_full_decoder: None,
+            sibling_raw_getter: None,
         }
     }
 }
@@ -1184,10 +1187,13 @@ impl MainEnv {
 
         let raw_settings = settings.clone();
         let webp_settings = settings.clone();
+        let sibling_raw_getter = options
+            .sibling_raw_getter
+            .unwrap_or_else(|| Arc::new(move || raw_settings.current().raw_support_enabled));
         let sibling_navigator = Arc::new(SiblingFolderNavigator::new(
             Arc::clone(&clock),
             Arc::clone(&fs),
-            Some(Arc::new(move || raw_settings.current().raw_support_enabled)),
+            Some(sibling_raw_getter),
             Some(Arc::new(move || webp_settings.current().webp_heic_support_enabled)),
         ));
 
