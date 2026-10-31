@@ -35,6 +35,11 @@ fn wait_on_a_completed_completion_returns_at_once() {
 fn wait_blocks_until_complete_and_then_returns() {
     let completion = Completion::new();
     let rx = wait_returns(&completion);
+    // Not complete yet: the waiter must still be blocked (a `wait -> ()` mutant would already have answered `false`).
+    assert!(
+        rx.recv_timeout(Duration::from_millis(300)).is_err(),
+        "wait() returned before complete() ran"
+    );
     completion.complete();
     // wait() may only return once the flag is set, so the waiter always observes a completed state.
     assert_eq!(
