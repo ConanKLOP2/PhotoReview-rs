@@ -19,3 +19,5 @@ or a bare `-- --include-ignored` is rejected by cargo (`unexpected argument`), a
 caught although no test ran. `mutants.sh` refuses that form and runs the unmutated test command once first (it must exit 0 and execute
 at least one test). Check a raw command line with `bash tools/dev/mutants.sh --lint-args <args>`. Self-check: one deliberately broken
 mutant (or a test that must fail) has to be reported MISSED/caught correctly, and the log must contain `running N tests`.
+
+Golden trap: if a log says `no tests/golden above`, the mutants caught only by golden tests are NOT really caught (fixed in `pr_test_support::golden::repo_root`, which reads `PHOTOREVIEW_GOLDEN_ROOT`; `mutants.sh` sets it and warns). Mutation results made before CL-MUT-GOLDEN-INFRA with a reused target dir must be re-checked.

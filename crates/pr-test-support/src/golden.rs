@@ -16,13 +16,37 @@ pub struct Golden {
 }
 
 /// Repository root (the workspace directory holding `tests/golden`).
+///
+/// Lookup order: `PHOTOREVIEW_GOLDEN_ROOT` (a directory holding `tests/golden`), then the RUNTIME
+/// `CARGO_MANIFEST_DIR` (cargo sets it to the package under test), then the compile-time one.
+/// Never rely on the compile-time value alone: `cargo mutants` copies the tree to a new temp directory per run, a
+/// shared `CARGO_TARGET_DIR` keeps this crate "Fresh" from the previous copy, and `env!` then points at a deleted
+/// directory ("no tests/golden above ...", every golden test fails and its mutants count as caught by mistake).
 pub fn repo_root() -> PathBuf {
-    let manifest = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-    manifest
-        .ancestors()
-        .find(|dir| dir.join("tests").join("golden").is_dir())
-        .map(PathBuf::from)
-        .unwrap_or_else(|| panic!("no tests/golden above {}", manifest.display()))
+    let has_golden = |dir: &std::path::Path| dir.join("tests").join("golden").is_dir();
+    if let Some(root) = std::env::var_os("PHOTOREVIEW_GOLDEN_ROOT").map(PathBuf::from) {
+        assert!(
+            has_golden(&root),
+            "PHOTOREVIEW_GOLDEN_ROOT={} has no tests/golden",
+            root.display()
+        );
+        return root;
+    }
+    let runtime = std::env::var_os("CARGO_MANIFEST_DIR").map(PathBuf::from);
+    let compiled = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+    for manifest in runtime.iter().chain(std::iter::once(&compiled)) {
+        if let Some(dir) = manifest.ancestors().find(|dir| has_golden(dir)) {
+            return dir.to_path_buf();
+        }
+    }
+    panic!(
+        "no tests/golden above {} or {}",
+        runtime.map_or_else(
+            || "<no runtime CARGO_MANIFEST_DIR>".to_owned(),
+            |p| p.display().to_string()
+        ),
+        compiled.display()
+    )
 }
 
 /// Loads `tests/golden/<name>.json`.
