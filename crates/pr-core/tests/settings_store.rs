@@ -681,6 +681,72 @@ fn load_inv11_when_file_locked_uses_in_memory_defaults_and_leaves_file_intact() 
     assert_eq!(r.read(), valid);
 }
 
+// DIVERGENCE (data safety, ST-IMAGING-INV L2): C# `File.Exists` is false on any stat failure, so a real config whose
+// stat fails was taken for "first run" and overwritten by defaults without a backup.
+#[test]
+fn load_when_stat_fails_but_config_is_readable_loads_it_and_does_not_overwrite_it() {
+    let r = Rig::new();
+    let valid = r#"{"ConfigVersion": 2, "LoadingMode": "Original"}"#;
+    r.put(valid);
+    let proxy = ProxyFs::new(Arc::clone(&r.fs));
+    let cfg = r.cfg();
+    *proxy.exists_hook.lock().unwrap_or_else(PoisonError::into_inner) =
+        Some(Box::new(move |p| (p == cfg).then_some(false)));
+
+    let loaded = r
+        .store_on(Arc::clone(&proxy) as Arc<dyn FileSystem>)
+        .load(None)
+        .expect("load");
+
+    assert_eq!(loaded.loading_mode, Some(LoadingMode::Original));
+    assert!(r.read().contains("Original"));
+}
+
+#[test]
+fn load_when_stat_fails_and_read_is_denied_keeps_the_file_and_uses_in_memory_defaults() {
+    let r = Rig::new();
+    let valid = r#"{"ConfigVersion": 2, "LoadingMode": "Original"}"#;
+    r.put(valid);
+    r.fs.fail_times(FsOp::ReadText, r.cfg(), io::ErrorKind::PermissionDenied, 1);
+    let proxy = ProxyFs::new(Arc::clone(&r.fs));
+    let cfg = r.cfg();
+    *proxy.exists_hook.lock().unwrap_or_else(PoisonError::into_inner) =
+        Some(Box::new(move |p| (p == cfg).then_some(false)));
+    let store = r.store_on(Arc::clone(&proxy) as Arc<dyn FileSystem>);
+
+    let loaded = store.load(None).expect("load");
+    let _ = store.save((*loaded).clone());
+
+    assert!(r.startup_messages()[0].contains("Config.json inaccessible"));
+    r.fs.clear_faults();
+    assert_eq!(
+        r.read(),
+        valid,
+        "the unreadable-but-present config must never be overwritten"
+    );
+}
+
+#[test]
+fn first_run_import_when_own_config_stat_fails_does_not_overwrite_it_with_the_csharp_import() {
+    let r = Rig::new();
+    let own = r#"{"ConfigVersion": 2, "LoadingMode": "Original"}"#;
+    r.put(own);
+    let csharp = Path::new(r"C:\csharp\config.json");
+    r.fs.add_file(csharp, br#"{"ConfigVersion": 2, "LoadingMode": "Preview"}"#);
+    let proxy = ProxyFs::new(Arc::clone(&r.fs));
+    let cfg = r.cfg();
+    *proxy.exists_hook.lock().unwrap_or_else(PoisonError::into_inner) =
+        Some(Box::new(move |p| (p == cfg).then_some(false)));
+
+    let loaded = r
+        .store_on(Arc::clone(&proxy) as Arc<dyn FileSystem>)
+        .load_first_run_with_import(csharp)
+        .expect("load");
+
+    assert_eq!(loaded.loading_mode, Some(LoadingMode::Original));
+    assert!(r.read().contains("Original"));
+}
+
 // C#: SettingsStoreTests.Load_TransientReadFailure_IsRetried (unauthorized = true / false)
 #[test]
 fn load_transient_read_failure_is_retried() {
