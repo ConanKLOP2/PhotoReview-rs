@@ -13,7 +13,7 @@ Ký hiệu: ĐÃ SỬA, MỘT PHẦN (còn phần mở), CÒN MỞ, QUYẾT Đ�
 | G1 RefCell qua modal/controller | MỘT PHẦN | H2 ĐÃ SỬA: #255 (`pr-platform-win/src/shell_input/dispatch.rs` `run_pointer` ~718, `pr-app/src/input/pointer/viewer.rs`). H1 giảm nhẹ: `host/main_window/lifecycle.rs:326-337` nhả borrow trước `apply_changes`, `shell_input/main_window.rs:708` và `shell_menus/main_window.rs:338` dùng `try_borrow_mut` và bỏ lệnh khi bận, `lifecycle.rs:341` xếp hàng open; liên quan #318. Còn mở: lệnh modal vẫn giữ borrow suốt vòng lặp lồng (thiết kế), test `closed_disposes_the_bars_once_and_unsubscribes` vẫn `#[ignore = "native: needs desktop"]` (`tests/host_main_window_frame.rs:507`) |
 | G2 Zoom không tới presenter/HUD | ĐÃ SỬA | #338 "shell input zoom changes reach the presenter, D1 loads the full-resolution original" |
 | G3 Recovery thời gian | MỘT PHẦN | H1 ĐÃ SỬA #339 (`shell_startup/locale.rs:16,132` trừ `FILETIME_EPOCH_TICKS`, trả chuỗi rỗng khi âm). L1 CÒN MỞ: `locale.rs:163-189` `local_long_time_text` gọi `format_system_time` với cờ `TIME_NOSECONDS` (C# "T" có giây). L6 CÒN MỞ: `locale.rs:104-117` bảng ngôn ngữ cứng cho `percent_one_decimal` |
-| G4 Settings > General mất View/Instance mode | CÒN MỞ | `dialogs/settings/pages/general.rs:258-259`: `collect` vẫn gọi `set_combo_index` (ghi) thay vì `combo_index` (đọc); không PR nào chạm file sau #162 |
+| G4 Settings > General mất View/Instance mode | ĐÃ SỬA (PR #531) | `dialogs/settings/pages/general.rs:258-259`: `collect` vẫn gọi `set_combo_index` (ghi) thay vì `combo_index` (đọc); không PR nào chạm file sau #162 |
 | G5 Executor panic | ĐÃ SỬA | #462 "ask the disk before restoring after an executor panic (M3)" |
 | G6 Dọn trùng lặp | ĐÃ SỬA | #464 "re-check keeper and copies after the review dialog (ST-INVMAP M1)". Undo nhóm vẫn không có (đúng quyết định Q3) |
 | G7 Prompt/cổng lazy/cài đặt xoá vĩnh viễn | MỘT PHẦN | ĐÃ SỬA: chuyển 3 prompt (#254; `dialogs/dialog_service.rs:296-310`), cảnh báo xoá vĩnh viễn của Recovery (#500; `pr-shell/src/startup/secondary_dialogs.rs:405-413`). CÒN MỞ: `LazySecondaryPort::get` lưu `None` vĩnh viễn (`dialog_service.rs:132-134`, `OnceCell<Option<..>>`, ghi là parity C# `Lazy`), `panic!("{error}")` ở adapter lazy (`pr-shell/src/composition/adapters.rs:189`, bị bắt bởi `catch_unwind` của worker) |
@@ -21,7 +21,7 @@ Ký hiệu: ĐÃ SỬA, MỘT PHẦN (còn phần mở), CÒN MỞ, QUYẾT Đ�
 | G9 Settings pages | MỘT PHẦN | M1 (FEAT-EXTERNAL-EDITORS) đã làm bởi W9-E (#237, #235, #234; `pages/files.rs` có editor, `context.rs:376` `edit_external_editors` có thân). CÒN MỞ: M2 `pages/shortcuts.rs:449` vẫn `EnglishSettingsTexts`; L3 `shortcuts.rs:186` `to_ascii_lowercase`; re-entrancy `EN_CHANGE` (`shortcuts.rs:327-328`, không thấy cờ chống vào lại; chưa xác minh sâu) |
 | G10 Render/painter | MỘT PHẦN | L3 ĐÃ SỬA (`render/draw_context.rs:145-152` `pop_clip` trả `Err` khi độ sâu 0, không giảm). Còn: L2 `draw_context.rs:414` `let _ = self.pop_transform()` (có chú thích "finally", tương đương C#); L1 `render/image_cache/policy.rs:76-77` quy tắc "backend không gọi lại cache" chỉ là tài liệu, cache vẫn giữ borrow qua `upload`; M1 (resize lỗi rồi vẽ) chưa xác minh |
 | G11 Native dialog | CÒN MỞ | Không có dấu vết sửa: `dialogs/native/dialog/` không có `thread::panicking`, không lọc `WS_DISABLED` ở `focus.rs`, không `message_loop = None` ở cleanup; `modal.rs:238` chỉ bọc `ready` bằng `catch_unwind` |
-| G12 Hardening INV | MỘT PHẦN | L3 (Recycle đơn re-stat) ĐÃ SỬA #463. CÒN MỞ: L1 `pr-core/src/file_actions/service.rs:239` `end()` vẫn `pub` và ghi 0 vô điều kiện; L6 `journal_persisted` chỉ dùng ở `pr-app/src/presenters/recovery_window.rs:766`, không có log ở `coordinators/file_actions`; L5/L7/L8 chưa có test khoá hành vi mới (chưa xác minh) |
+| G12 Hardening INV | MỘT PHẦN (parity với C#, cần quyết định nếu muốn hơn; xem PR #532) | L3 (Recycle đơn re-stat) ĐÃ SỬA #463. CÒN MỞ: L1 `pr-core/src/file_actions/service.rs:239` `end()` vẫn `pub` và ghi 0 vô điều kiện; L6 `journal_persisted` chỉ dùng ở `pr-app/src/presenters/recovery_window.rs:766`, không có log ở `coordinators/file_actions`; L5/L7/L8 chưa có test khoá hành vi mới (chưa xác minh) |
 | G13 Shell startup nhỏ | MỘT PHẦN | Lô "low findings of the shell review" #492 và #487 đã sửa một số (chưa đối chiếu từng mục). CÒN MỞ chắc chắn: L1 `pr-app/src/startup/error_log.rs:75` `Backtrace::force_capture()` không phụ thuộc cấu hình log. Forwarded-open có hàng chờ `forwarded_open.rs:114` (parity C#) |
 | G14 Main window nhỏ | CÒN MỞ | `host/main_window/core.rs:511` `UiLocalPoster` không có `PhantomData<*const ()>`; `shell_viewing/frame_log.rs:25` `FrameLog` giữ `File` và ghi đồng bộ |
 | G15 Registry/composition | CÒN MỞ | `pr-shell/src/composition/registry.rs:106` `session_writer: OnceLock<Result<..>>` lưu lỗi tạm |
@@ -36,13 +36,13 @@ Ký hiệu: ĐÃ SỬA, MỘT PHẦN (còn phần mở), CÒN MỞ, QUYẾT Đ�
 | G24 Quyết định Q1..Q8 | ĐÃ CHỐT | P-52 (Q1..Q8), P-57 (Q1 giữ `Fast`, `PowerLossSafe` là lựa chọn người dùng), P-58/P-59 (khác biệt chủ ý). Q4 và Q7 đã được hiện thực hoá (G8, G17) |
 | G25 Retry Recycle sau Prepared | ĐÃ SỬA | #448 "retry nhóm Recycle không xoá vĩnh viễn file bị thay thế (H1/G25)", bổ sung #463, #460 |
 | G26 Writer cache cũ | ĐÃ SỬA | #474 (`pr-imaging/src/service/disk.rs` +105, `cache/atomic_file.rs` +35) |
-| G27 Backup config newer lỗi | QUYẾT ĐỊNH | `pr-core/src/settings/store.rs:665-668`: `backup_newer_config` trả `()`, rồi `newer_file_on_disk = false` bất kể backup lỗi (`store.rs:695-720` chỉ warn). P-52..P-59 không có quyết định về mục này; cần mở P mới (đề xuất: giữ cờ `newer` khi copy lỗi hoặc hoãn downgrade) |
+| G27 Backup config newer lỗi | ĐÃ SỬA (PR #530, P-66: Save bị từ chối khi backup lỗi, khác C# best effort) | `pr-core/src/settings/store.rs:665-668`: `backup_newer_config` trả `()`, rồi `newer_file_on_disk = false` bất kể backup lỗi (`store.rs:695-720` chỉ warn). P-52..P-59 không có quyết định về mục này; cần mở P mới (đề xuất: giữ cờ `newer` khi copy lỗi hoặc hoãn downgrade) |
 | G28 Log ghi dở | MỘT PHẦN | Mã đã tránh lặp byte: `pr-core/src/diagnostics/file_log.rs:439-449` `write_remaining` tăng `offset` theo số byte đã ghi. Còn thiếu test seam short-write (chưa xác minh) |
 | G29 Cache read toàn file | ĐÃ SỬA | #474 (`pr-imaging/src/cache/preview_file.rs` +114, `OutOfMemory` ở `preview_file.rs:73`) |
-| G30 Output lần registry read thứ hai | CÒN MỞ (chưa xác minh sâu) | `pr-platform-win/src/recycle_bin_settings.rs:118-125,162-202` chỉ kiểm kiểu DWORD của từng lần đọc; không thấy seam đổi output giữa probe/read |
+| G30 Output lần registry read thứ hai | ĐÃ SỬA (PR #532) | `pr-platform-win/src/recycle_bin_settings.rs:118-125,162-202` chỉ kiểm kiểu DWORD của từng lần đọc; không thấy seam đổi output giữa probe/read |
 | G31 Restore verb helper | ĐÃ SỬA (phần mã) | #480 "restore_verb in crate": `recycle_bin_shell.rs:34` dùng `crate::restore_verb::CANONICAL_VERB_Z`. Hàng PARITY P-03 giữ Partial (không đổi ở lane này) |
 
-Tổng (31 nhóm): ĐÃ SỬA 8 (G2, G5, G6, G8, G25, G26, G29, G31), MỘT PHẦN 14, CÒN MỞ 7 (G4, G11, G14, G15, G16, G23, G30), QUYẾT ĐỊNH 1 (G27), G24 đã chốt. "Đã sửa" không đồng nghĩa test xanh vì không chạy test.
+Tổng (31 nhóm): ĐÃ SỬA 11 (G2, G4, G5, G6, G8, G25, G26, G27, G29, G30, G31; cập nhật 2026-11-01 sau #530..#532), MỘT PHẦN 14, CÒN MỞ 5 (G11, G14, G15, G16, G23), QUYẾT ĐỊNH 0, G24 đã chốt. "Đã sửa" không đồng nghĩa test xanh vì không chạy test.
 
 ## 2. Top 8 mục CÒN MỞ theo rủi ro dữ liệu
 
@@ -61,6 +61,6 @@ Ghi chú xếp hạng: các mục 1 và 2 là dữ liệu cấu hình của ngư
 
 ## 3. Việc cần người quyết định (P-nn)
 
-- G27: chưa có P-nn; đề xuất mở P mới (backup config newer: giữ cờ khi copy lỗi hay chấp nhận best effort như C#).
+- G27 (đã chốt bằng P-66, PR #530; dòng này là lịch sử): chưa có P-nn; đề xuất mở P mới (backup config newer: giữ cờ khi copy lỗi hay chấp nhận best effort như C#).
 - G7 lazy `None`: hiện là parity C# `Lazy`; nếu muốn thử lại thì ghi vào ADR lệch C# (liên quan P-58/P-59).
 - G24 Q1..Q8 đã chốt (P-52, P-57); không hỏi lại.
