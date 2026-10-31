@@ -224,6 +224,8 @@ pub fn query_mount_point(path: &str) -> Option<String> {
         return None;
     }
     let full = absolute_normalized(Path::new(path))?;
+    // FIX-RECYCLE-C1: resolve links of the containing folder first; unresolved links fail closed (None).
+    let full = resolve_final_path_with(&full, |dir| std::fs::canonicalize(dir))?;
     #[cfg(windows)]
     {
         use windows::Win32::Storage::FileSystem::GetVolumePathNameW;
@@ -242,6 +244,49 @@ pub fn query_mount_point(path: &str) -> Option<String> {
         let _ = full;
         None
     }
+}
+
+/// FIX-RECYCLE-C1 (defence in depth): the final path of `full` with every junction/symlink of its containing folders
+/// resolved, so a volume query sees the volume that really holds the file. The leaf itself is not resolved (a link is
+/// recycled as the link). Missing folders are walked up to the deepest existing one; any other failure (a link loop,
+/// access denied) returns `None`, which callers treat as "no positively known volume". A verbatim input keeps the
+/// verbatim spelling of the answer; otherwise the `\\?\C:\` form is shown as `C:\` and `\\?\UNC\` as `\\`.
+pub fn resolve_final_path_with(
+    full: &str,
+    mut canonicalize: impl FnMut(&Path) -> io::Result<PathBuf>,
+) -> Option<String> {
+    let path = Path::new(full);
+    let (Some(leaf), Some(mut folder)) = (path.file_name(), path.parent()) else {
+        return Some(full.to_owned()); // a volume root has no containing folder to resolve
+    };
+    if folder.as_os_str().is_empty() {
+        return Some(full.to_owned());
+    }
+    let mut missing: Vec<&std::ffi::OsStr> = vec![leaf];
+    let mut result = loop {
+        match canonicalize(folder) {
+            Ok(found) => break found,
+            Err(error) if error.kind() == io::ErrorKind::NotFound => {
+                missing.push(folder.file_name()?);
+                folder = folder.parent()?;
+            }
+            Err(_) => return None,
+        }
+    };
+    for part in missing.into_iter().rev() {
+        result.push(part);
+    }
+    let text = result.to_string_lossy().into_owned();
+    if full.starts_with(r"\\?\") {
+        return Some(text);
+    }
+    Some(match text.strip_prefix(r"\\?\UNC\") {
+        Some(rest) => format!(r"\\{rest}"),
+        None => match text.strip_prefix(r"\\?\") {
+            Some(rest) if rest.as_bytes().get(1) == Some(&b':') => rest.to_owned(),
+            _ => text,
+        },
+    })
 }
 
 fn query_volume_name(mount_point: &str) -> Option<String> {
