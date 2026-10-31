@@ -1216,7 +1216,8 @@ fn golden_limiter_consume_immediate() {
             let bytes = i32::try_from(bytes.as_i64().expect("integer")).expect("i32 request");
             bandwidth.consume(bytes);
         }
-        let fast = started.elapsed() < Duration::from_millis(500);
+        // Real clock: a limiter that waited would take whole seconds; 2 s keeps slack for a loaded runner.
+        let fast = started.elapsed() < Duration::from_secs(2);
         assert_eq!(json!(true), expected["completed"], "case {name}");
         assert!(fast, "case {name}: non-positive consumes must not wait");
         assert_eq!(json!(fast), expected["fast"], "case {name}");

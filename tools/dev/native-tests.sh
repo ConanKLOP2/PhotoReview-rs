@@ -38,7 +38,11 @@ esac
 [ "$list" -eq 1 ] && exit 0
 [ "${#names[@]}" -gt 0 ] || { echo "nothing to run"; exit 0; }
 
-work=$(mktemp -d); rows=(); failed_bins=0; tp=0; tf=0
+work=$(mktemp -d); rows=()
+# Never let a native test read or write the real %LOCALAPPDATA%\PhotoReview data (native-nightly.yml sets the same two variables).
+if [ -z "${PHOTOREVIEW_RS_DATA_ROOT:-}" ]; then export PHOTOREVIEW_RS_DATA_ROOT="$work/data"; mkdir -p "$PHOTOREVIEW_RS_DATA_ROOT"; fi
+export PHOTOREVIEW_RS_ISOLATE_CONFIG=1
+failed_bins=0; tp=0; tf=0
 for b in "${names[@]}"; do
   echo "== running $b"
   log="$work/$b.log"

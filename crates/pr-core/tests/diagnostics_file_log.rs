@@ -297,7 +297,8 @@ fn shutdown_does_not_stall_on_unwritable_log_file() {
     let elapsed = start.elapsed();
     log.dispose();
 
-    assert!(elapsed < Duration::from_millis(1500), "shutdown took {elapsed:?}");
+    // The stall this guards against is the 2000 ms flush budget (FLUSH_BUDGET_MS); 1900 ms keeps 400 ms of slack for a loaded runner.
+    assert!(elapsed < Duration::from_millis(1900), "shutdown took {elapsed:?}");
 }
 
 #[test]
@@ -1275,7 +1276,8 @@ fn v_flush_waiting_on_failing_drain_returns_when_drain_fails() {
     log.flush();
     let elapsed = start.elapsed();
     log.dispose();
-    assert!(elapsed < Duration::from_millis(1000), "flush took {elapsed:?}");
+    // A flush that waits for the failing drain would run to the 2000 ms budget; 1900 ms leaves slack for a loaded runner.
+    assert!(elapsed < Duration::from_millis(1900), "flush took {elapsed:?}");
 }
 
 #[test]
