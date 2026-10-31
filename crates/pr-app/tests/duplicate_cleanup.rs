@@ -1444,6 +1444,25 @@ fn a_missing_hash_service_reports_the_failure() {
     assert!(rig.exec.recorded().is_empty());
 }
 
+// New test (ST-APP-RACES H1): a hasher that panics must still end the run. Without `HashFinished` the file-action gate
+// taken for the check was never released and every Undo/Recycle/Move/Rename stayed a no-op until the app was closed.
+// Rust-only: a C# `Task` fault is caught by the `try`/`finally` of `RemoveDuplicatesAsync`, which releases the slot.
+#[test]
+fn a_panicking_hasher_ends_the_run_with_a_failure_and_recycles_nothing() {
+    let mut rig = Rig::new(Options::default());
+    rig.load_three();
+    rig.hasher.set_hook(|_, _| panic!("hasher exploded"));
+
+    assert_eq!(rig.run_batch(true), DuplicateCleanupStep::Done);
+
+    assert_eq!(
+        rig.sink.last(),
+        Some(en("status.duplicateCheckFailed", &[arg("message", "hasher exploded")]).as_str())
+    );
+    assert!(rig.exec.recorded().is_empty());
+    assert!(!rig.controller.cancel_duplicate_check(), "the hash slot is released");
+}
+
 // New test: an unreadable file is skipped by the finder, not reported as a failure of the check.
 #[test]
 fn an_unreadable_file_is_skipped() {
