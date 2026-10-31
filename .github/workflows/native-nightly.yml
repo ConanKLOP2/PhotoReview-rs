@@ -63,7 +63,10 @@ jobs:
               'file_actions_partial_cleanup', 'file_actions_recovery_check', 'file_actions_service_native', 'io_journal_compaction_files',
               'io_physical', 'io_physical_seams', 'journal_reconcile', 'journal_startup_recovery', 'rename_file_action_matrix',
               'rename_recovery', 'rename_service', 'session_store', 'w2_fs_mutation_killers')
-            'pr-platform-win' = @('w2_fs_flush_killers', 'w4_mutation_killers2', 'w6_platform_native', 'physical_memory')
+            'pr-platform-win' = @('w2_fs_flush_killers', 'w4_mutation_killers2', 'w6_platform_native', 'physical_memory',
+              # Composer twins draw on a WARP device (no window, no input desktop). Added 2026-10-31 without a nightly run yet: the first
+              # night must confirm that windows-latest has WARP, otherwise remove these two.
+              'shell_viewing_composer_twins_native', 'shell_viewing_composer_native')
             'pr-app' = @('folder_load_load', 'windowing_placement_store')
           }
           $failed = @()

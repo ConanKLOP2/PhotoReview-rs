@@ -35,7 +35,7 @@ Rủi ro: **D** = có thể mất/sai dữ liệu người dùng, **C** = crash/
 | 21 | G21 Contract W9 lỗi thời sau #182 | w9-contracts H1, L6..L10 | cao (H1) | T | contracts/W9-*, docs/WAVE-9-PLAN-edt.md | tài liệu |
 | 22 | G22 PARITY/PR evidence mâu thuẫn | pr-164 M4; pr-203 M2 | trung bình | T | docs/PARITY.md | tài liệu |
 | 23 | G23 Chú thích/`DIVERGENCE` lạc hậu | test-quality L1; w9-contracts L8; settings-ui L5 | thấp | T | nhiều | tài liệu |
-| 25 | G25 Retry Recycle xoá nhầm file thay thế sau Prepared | invariants H1 (tái kiểm #212) | cao | D | W3-06; W8-18v gọi UI | sửa mã + test, cần ADR parity |
+| 25 | G25 Retry Recycle xoá nhầm file thay thế sau Prepared | invariants H1 (tái kiểm #212) | cao | D | W3-06; W8-18v gọi UI | ĐÃ ĐÓNG 2026-10-31: sửa ở PR #448 ([FIX-H1](FIX-H1-2026-10-31.md)), PARITY F-18 ghi DIVERGENCE |
 | 24 | G24 Cần quyết định sản phẩm | invariants Q1, Q2, Q3; w9-contracts M2..M5, L11; b4 M1; pr-203 M2; test-quality M1 | n/a | n/a | lead | quyết định |
 | 26 | G26 Writer cache cũ rename sau writer mới | invariants-storage M1 | trung bình | B/T | W4-14c, W4-08a | sửa mã + test, cần ADR parity |
 | 27 | G27 Backup config newer lỗi nhưng vẫn downgrade, mất field chưa biết | invariants-storage M2 | trung bình | D (config) | W2-03 | cần quyết định sản phẩm |
@@ -475,7 +475,7 @@ Bằng chứng, kịch bản và hai PROMPT có phạm vi/lệnh kiểm tra: [re
 | G21 | Đã sửa một phần trong #207/#216: facts H1/L9 Survey, L6 no-save khi full, các chữ ký L7 đã đối chiếu, phân công test L10 một phần. Còn scaffold/generator L8 và các mục chưa có bằng chứng hoàn tất. Không giao lại toàn bộ prompt cũ như việc mới |
 | G22 | Còn rà PARITY theo master và phân biệt head #164 với port đã merge; PR #164 vẫn mở, head 6e45777 không đổi khi kiểm lần này |
 | G24 | Q1..Q8 đã được P-52 chấp nhận; chỉ đóng phần quyết định đó. Không coi quyết định là bằng chứng implementation/test |
-| G25, G26 | Còn sửa; khác biệt an toàn so với C# cần ADR/Different theo prompt, không tự ghi là đã được P-52 chốt |
+| G25 (đã đóng, PR #448), G26 | G26 còn sửa; khác biệt an toàn so với C# cần ADR/Different theo prompt, không tự ghi là đã được P-52 chốt |
 | G27 | Còn quyết định về backup config newer khi backup lỗi; chưa nằm trong Q1..Q8 |
 | G28, G29, G30 | Còn sửa/test fake; các báo cáo #218/#221 chưa sửa production |
 | G31 | Còn nối helper hoặc ADR canonical-only; P-03 hiện Partial, không cần sửa trạng thái thành Full chỉ vì helper có pure test |
