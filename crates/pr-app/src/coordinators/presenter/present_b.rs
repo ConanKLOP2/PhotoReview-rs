@@ -38,6 +38,7 @@ use pr_imaging::decoder_traits::DecodeError;
 use pr_imaging::service::PreviewError;
 use pr_l10n::template::{LocArg, describe};
 
+use crate::coordinators::zoom_detail::catch_job;
 use crate::misc::app_log::AppLog;
 use crate::misc::file_hash::FileHashError;
 use crate::viewmodels::compare::CompareChanges;
@@ -282,7 +283,10 @@ impl ImagePresenter {
             self.runner.run(
                 COMPARE_PREVIEW_THREAD,
                 Box::new(move || {
-                    let result = load_compare_preview_blocking(&service, &path, &cancel, &delay);
+                    let result = catch_job(
+                        || load_compare_preview_blocking(&service, &path, &cancel, &delay),
+                        |text| Err(PreviewError::Panicked(text)),
+                    );
                     inbox.send(PresenterEvent::ComparePreview { token, side, result });
                 }),
             );
@@ -368,8 +372,9 @@ impl ImagePresenter {
             self.runner.run(
                 COMPARE_SIZE_THREAD,
                 Box::new(move || {
-                    let left = compare_file_size(&left_path);
-                    let right = compare_file_size(&right_path);
+                    // A panic is "size unknown" (the suffix is cosmetic), like a failed stat.
+                    let left = catch_job(|| compare_file_size(&left_path), |_| None);
+                    let right = catch_job(|| compare_file_size(&right_path), |_| None);
                     inbox.send(PresenterEvent::CompareSizes { token, left, right });
                 }),
             );
@@ -438,7 +443,14 @@ impl ImagePresenter {
                 self.runner.run(
                     COMPARE_HASH_THREAD,
                     Box::new(move || {
-                        let result = hasher.get(Path::new(&path), &CancelToken::none());
+                        let result = catch_job(
+                            || hasher.get(Path::new(&path), &CancelToken::none()),
+                            |text| {
+                                Err(FileHashError::Io(Arc::new(std::io::Error::other(format!(
+                                    "hash computation panicked: {text}"
+                                )))))
+                            },
+                        );
                         inbox.send(PresenterEvent::CompareHash { token, side, result });
                     }),
                 );
@@ -689,7 +701,10 @@ impl ImagePresenter {
             self.runner.run(
                 DIMENSIONS_THREAD,
                 Box::new(move || {
-                    let result = try_get_original_dimensions(&service, &path, &key);
+                    let result = catch_job(
+                        || try_get_original_dimensions(&service, &path, &key),
+                        |text| Err(PreviewError::Panicked(text)),
+                    );
                     inbox.send(PresenterEvent::Dimensions { token, result });
                 }),
             );

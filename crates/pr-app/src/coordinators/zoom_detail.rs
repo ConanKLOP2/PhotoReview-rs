@@ -33,6 +33,14 @@ use crate::misc::app_log::AppLog;
 /// `UiScheduler::post(|| pump)`; tests count calls. It must not block and must not call back into the inbox owner.
 pub type WakeFn = Arc<dyn Fn() + Send + Sync>;
 
+/// Runs the blocking `work` of a worker job and turns a panic into the job's own failure result (`on_panic` gets the panic text),
+/// so the job still sends its completion event and the coordinator releases its phase / slot / pending count (R0003: a worker
+/// reports a panic as an error; C# a faulted `Task` continuation still runs). The non-panic path is `work()` unchanged.
+pub fn catch_job<T>(work: impl FnOnce() -> T, on_panic: impl FnOnce(String) -> T) -> T {
+    std::panic::catch_unwind(std::panic::AssertUnwindSafe(work))
+        .unwrap_or_else(|payload| on_panic(pr_core::abstractions::panic_message(payload.as_ref())))
+}
+
 /// A unit of blocking work for a worker thread.
 pub type BackgroundJob = Box<dyn FnOnce() + Send + 'static>;
 
@@ -579,7 +587,10 @@ impl ZoomDetailLoader {
         self.runner.run(
             "zoom-detail-decode",
             Box::new(move || {
-                let result = service.decode_original(&path, &key, &cancel).wait();
+                let result = catch_job(
+                    || service.decode_original(&path, &key, &cancel).wait(),
+                    |text| Err(pr_imaging::service::PreviewError::Panicked(text)),
+                );
                 inbox.send(ZoomDetailEvent::OriginalDecoded {
                     load_id,
                     target_id,
