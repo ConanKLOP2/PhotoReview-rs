@@ -610,4 +610,50 @@ mod tests {
             assert_eq!(redirect_target(base, target), None, "{target}");
         }
     }
+
+    #[test]
+    fn wide_appends_one_nul_terminator_and_encodes_utf16() {
+        // New: adapter seam, no C# twin. Mutants: wide -> Ok(vec![]) / Ok(vec![0]), dropping the chain(Some(0)).
+        assert_eq!(wide("").unwrap(), vec![0u16]);
+        assert_eq!(wide("ab").unwrap(), vec![b'a' as u16, b'b' as u16, 0]);
+        // A supplementary-plane char is a surrogate pair in UTF-16, not one unit.
+        assert_eq!(wide("\u{1F600}").unwrap(), vec![0xD83D, 0xDE00, 0]);
+    }
+
+    #[test]
+    fn wide_rejects_an_embedded_nul_anywhere_as_other() {
+        // New: a NUL would truncate the parameter at the WinHTTP boundary (header/URL smuggling), so it fails closed.
+        for value in ["\0", "a\0", "\0a", "a\0b"] {
+            assert_eq!(
+                wide(value),
+                Err(HttpError::Other("embedded NUL in HTTP parameter".to_owned())),
+                "{value:?}"
+            );
+        }
+    }
+
+    #[test]
+    fn os_error_maps_only_the_winhttp_timeout_code_to_timeout() {
+        // New: ERROR_WINHTTP_TIMEOUT = 12002. Mutants: `==` -> `!=`, the Timeout arm swapped with the Request arm.
+        assert_eq!(os_error(12002), HttpError::Timeout);
+        assert_eq!(
+            os_error(12007),
+            HttpError::Request(HttpRequestError::NameResolutionError)
+        );
+        assert_eq!(os_error(12029), HttpError::Request(HttpRequestError::ConnectionError));
+        assert_eq!(os_error(12001), HttpError::Request(HttpRequestError::Unknown));
+        assert_eq!(os_error(0), HttpError::Request(HttpRequestError::Unknown));
+    }
+
+    #[test]
+    fn win_error_keeps_only_the_low_16_bits_of_the_hresult() {
+        // New: HRESULT_FROM_WIN32(12002) = 0x80072EE2; the facility/severity bits must not reach the classifier.
+        let timeout = windows::core::Error::from_hresult(windows::core::HRESULT(0x8007_2EE2_u32 as i32));
+        assert_eq!(win_error(timeout), HttpError::Timeout);
+        let dns = windows::core::Error::from_hresult(windows::core::HRESULT(0x8007_2EE7_u32 as i32));
+        assert_eq!(
+            win_error(dns),
+            HttpError::Request(HttpRequestError::NameResolutionError)
+        );
+    }
 }
