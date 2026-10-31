@@ -1,10 +1,10 @@
-# ADR: intentional differences introduced by the 2026-10-31 fix lanes (DV-1..DV-12)
+# ADR: intentional differences introduced by the 2026-10-31 fix lanes (DV-1..DV-21)
 
 Date: 2026-10-31
 
-Status: accepted under the standing "run end to end" instruction (proposal row `P-58` in `docs/PROPOSED-DECISIONS.md`); every item is merged on master and acted on. The owner may reverse any item with a follow-up PR. DV-11 was decided by the user in chat (Q2, `P-57`).
+Status: accepted under the standing "run end to end" instruction (proposal rows `P-58` (DV-1..DV-12) and `P-59` (DV-13..DV-21) in `docs/PROPOSED-DECISIONS.md`); every item is merged on master and acted on. The owner may reverse any item with a follow-up PR. DV-11 was decided by the user in chat (Q2, `P-57`).
 
-Why one file: all twelve items come from the same review wave (`ST-INVMAP`, `ST-WIN32`, `ST-APP-RACES`, `ST-IMAGING-INV`, `ST-PATHLOSSY`), are small, and share the same reason. AGENTS.md rule: an intentional behaviour difference needs an ADR in `docs/adr/` and a `Different`/DIVERGENCE note on its PARITY row. Each PARITY row below links here by item number. C# baseline `7eaee2a2`, read only.
+Why one file: all items come from the same review wave (`ST-INVMAP`, `ST-WIN32`, `ST-APP-RACES`, `ST-IMAGING-INV`, `ST-PATHLOSSY`; DV-13..DV-21 were added by lane `st-parity-sync4` from `ST-HTTP-SECURITY`, `ST-FFI-LIBS`, `ST-COM-RECYCLE`, `ST-SHELL-REVIEW` and the settings and panic follow-ups, PRs #477..#487), are small, and share the same reason. AGENTS.md rule: an intentional behaviour difference needs an ADR in `docs/adr/` and a `Different`/DIVERGENCE note on its PARITY row. Each PARITY row below links here by item number. C# baseline `7eaee2a2`, read only.
 
 Common reason: the C# code has the same hole in each case (the C# behaviour is the oracle and the oracle is wrong or unsafe for user photos); the Rust fix is strictly safer and does not change any file, config or journal format. Where a golden oracle trace exists, the comparison is adjusted by a named, narrow filter (`divergence_adjusted`), never by editing the golden.
 
@@ -77,7 +77,7 @@ Common reason: the C# code has the same hole in each case (the C# behaviour is t
 - C#: `DuplicateCleanupController.cs:92` `RemoveDuplicatesAsync` has `try`/`catch (Exception)`/`finally`; `FolderLoadCoordinator.cs:59` `LoadAsync` catches any exception of its scan task; a faulted `Task` never leaves a caller waiting.
 - Rust: `catch_unwind` in the hash job (becomes `HashOutcome::Failed`), the scan job (`ScanFailure::Failed(Io)`) and the `FileHashService` worker (`FileHashError::Io`, not cached). Each job converts the panic into the failure its coordinator already handles; no enum gains a variant.
 - Reason: Rust threads die silently; this reproduces the C# catch/finally outcome.
-- Remaining risk: presenter, zoom-detail and sibling-overlay jobs (M3) still drop a result on panic (stale image until the next navigation, no held gate); `MainWorkerPort` ignores `WorkerLane` (M5, lanes are labels only, safe today through the gate and `load_id`); the `Mutex<UndoService>` held during `undo_last` is safe only because every UI-thread lock sits inside the gate turn (M4, an invariant that lives in a comment, no test).
+- Remaining risk: presenter, zoom-detail and sibling-overlay jobs (M3, closed by DV-17) still drop a result on panic (stale image until the next navigation, no held gate); `MainWorkerPort` ignores `WorkerLane` (M5, lanes are labels only, safe today through the gate and `load_id`); the `Mutex<UndoService>` held during `undo_last` is safe only because every UI-thread lock sits inside the gate turn (M4, an invariant that lives in a comment, no test).
 - Tests: `a_panicking_hasher_ends_the_run_with_a_failure_and_recycles_nothing`, `a_panic_in_the_scan_job_fails_the_load_instead_of_leaving_it_scanning`, `file_hash_worker_panic::*`. Reports: `FIX-WORKER-PANICS-2026-10-31.md`, `ST-APP-RACES-2026-10-31.md`.
 
 ## DV-9 Imaging cache: persist commit gate, bounded preview-file read, saturating folder estimate (PR #474, ST-IMAGING-INV M1 M2 M3)
@@ -112,3 +112,84 @@ Common reason: the C# code has the same hole in each case (the C# behaviour is t
 - Rust: `ForwardPipe::wait_reply_delivered(deadline)` after `write_all`, at most `REPLY_DELIVERY_TIMEOUT = 1 s`, reads to EOF (the client closes after reading) and is cancellable by `stop_event`, unlike `FlushFileBuffers`. `ERROR_BROKEN_PIPE` on a pending read is `Ok(0)` (L5). A bad client delays the next accept by at most 1 s.
 - Reason: same observable guarantee as `FlushAsync` without an uncancellable block.
 - Tests: `forward_server_native::server_waits_for_reply_delivery_after_writing_ok_and_err_but_not_after_a_timeout` (fake); native `forward_client_native::rejected_request_reaches_the_client_as_rejected_not_unknown` (`#[ignore]`, green; a red run on the old code could not be produced without a deterministic race). Also in this PR: L13 `requeue_front` keeps the actions after a panicking one in the queue (C# leaves them in `_queue`; this is parity). Report: `FIX-WIN32-LOW-2026-10-31.md`.
+
+## DV-13 A failed stat of `config.json` no longer means "missing, write defaults" (PR #477, ST-IMAGING-INV L2)
+
+- Context: `File.Exists` is false for any failure (access denied, sharing violation, transient error), so `SettingsStore.Load` treated a real config as absent and `Persist(defaults)` replaced it without a backup (INV-11).
+- C#: `src/PhotoReview.Core/Settings/SettingsStore.cs:94` `if (_fileSystem.FileExists(filePath))` (also `:266`, `:377`), `src/PhotoReview.Core/IO/PhysicalFileSystem.cs:11-14` `File.Exists(path)`. The same hole exists in C#.
+- Rust: `crates/pr-core/src/settings/store.rs` `load`: when `file_exists` is false for the default path it probes with `read_all_text`; `Ok` loads the file, `NotFound` is a first run (defaults written as before), any other error is the startup error "Config.json inaccessible" with in-memory defaults, the file untouched (`keep_corrupt_file`). `load_first_run_with_import` uses `own_config_may_exist()` (same probe) so a real own config is never replaced by the C# import. An explicit path (`load(Some(p))`) writes nothing, unchanged.
+- Reason: data safety (INV-11: a locked or unreadable config is never overwritten); the cost is one extra read only when the config is absent.
+- Remaining risk: `backup_newer_config` and `unique_backup_path` still use `file_exists` (a failed stat skips a backup or may reuse a backup name; very rare, kept as C#).
+- Tests: `settings_store::load_when_stat_fails_but_config_is_readable_loads_it_and_does_not_overwrite_it`, `load_when_stat_fails_and_read_is_denied_keeps_the_file_and_uses_in_memory_defaults` (both red before), `first_run_import_when_own_config_stat_fails_does_not_overwrite_it_with_the_csharp_import` (not run red separately). Report: `FIX-SETTINGS-STORE-2026-10-31.md`.
+
+## DV-14 HTTP: WinHTTP automatic logon off, control characters in `Location`, stricter `default_open_url` (PRs #478, #484, ST-HTTP-SECURITY M1 L1 L8; extends DV-10)
+
+- Context: the WinHTTP default autologon policy (`MEDIUM`) may send the current Windows credentials (NTLM/Negotiate) to a proxy or host in the Intranet zone; a hostile PAC or WPAD could therefore harvest an NTLMv2 hash on "Check for updates". C# sets no credentials at all (no `Credentials`, `UseDefaultCredentials`, `DefaultProxyCredentials`, `WebProxy` anywhere in the baseline).
+- C#: `src/PhotoReview.Core/Updates/UpdateChecker.cs:33` `new HttpClient()` (or the injected test handler); redirects are followed by the `HttpClient` defaults; `GeneralSettingsPage.cs:247-249` opens any string (see DV-10).
+- Rust: `crates/pr-platform-win/src/http/transport.rs` `REQUEST_OPTIONS` sets `WINHTTP_OPTION_AUTOLOGON_POLICY = WINHTTP_AUTOLOGON_SECURITY_LEVEL_HIGH` on every request handle in the existing option loop (no new `unsafe`); `redirect_target` trims `Location` and rejects control characters and inner spaces; `default_open_url` passes the trimmed string and `is_web_url` rejects control characters, spaces and double quotes.
+- Reason: security hardening at no behaviour cost for the supported (unauthenticated) update path. `AUTOLOGON_POLICY=HIGH` is Rust-only hardening.
+- Remaining risk: not proved by a rig that "no NTLM is sent" (needs a lab proxy that demands `Proxy-Authenticate: NTLM`); minimum TLS version and revocation are not pinned (OS defaults, as C#, L2); a proxy with credentials in `HTTPS_PROXY=http://user:pass@...` is refused, which .NET accepts (feature gap, safe choice). M2 (the three update-URL constants `checker.rs:17`, `version.rs:99`, `version.rs:187` point at the C# repository) is an undecided product question, unchanged, and deliberately not pinned by a test.
+- Tests: `request_options_disable_automatic_windows_logon`, `redirect_target_rejects_control_characters_and_inner_spaces`, `get_rejects_non_loopback_http_before_opening_any_socket` (pure), `settings_dialog_state::open_url_accepts_only_http_and_https_without_entering_the_shell`. Reports: `FIX-HTTP-AUTOLOGON-2026-10-31.md`, `ST-HTTP-SECURITY-2026-10-31.md`.
+
+## DV-15 LibRaw loads with safe-directory flags (PR #486, ST-FFI-LIBS M1; related L1, L2)
+
+- Context: `pr-libraw` loaded `libraw.dll` with `LOAD_WITH_ALTERED_SEARCH_PATH` (0x8), which also searches the DLL's own directory and the process search path for its dependencies; `pr-turbojpeg` already used the app-folder flags.
+- C#: `src/PhotoReview.Imaging.LibRaw/LibRawAvailability.cs:74` `NativeLibrary.TryLoad(name, assembly, DllImportSearchPath.AssemblyDirectory, ...)` and `LibRawNativeMethods.cs:6` `[assembly: DefaultDllImportSearchPaths(DllImportSearchPath.AssemblyDirectory)]` (application folder only).
+- Rust: `crates/pr-libraw/src/native.rs` `APP_FOLDER_LOAD_FLAGS = LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR | LOAD_LIBRARY_SEARCH_DEFAULT_DIRS` (0x1100); `0x8` removed. Also: `has_interior_nul` makes `LibraryHandle::load_from` refuse a path containing NUL (`LoadFailed`, error 87) and `open_wfile` return `-1` (L1); `TurboJpegLibrary::has_decode_exports` makes `availability::probe` treat a library missing any of the 8 decode exports as unloadable (L2).
+- Reason: closes the DLL-planting surface of dependencies; stricter than C#, which only restricts the search path of the library itself.
+- Remaining risk: a deployment that relied on dependency DLLs found next to `libraw.dll` outside the app folder or the system directories no longer loads (the packaged layout keeps them in the app folder). M2 (watchdog), M3 (child process, fuzzing) and M4 (`pub` raw-pointer helpers used by integration tests, needs a `test-support` feature or moving the tests) are deferred: design work, and M4 would change `unsafe-audit.baseline`.
+- Tests: the flag test replaces the one that pinned 0x8 (`cargo test -p pr-libraw --test native` 30 pass); `decode_exports_are_all_required`; pure tests for `load_from` and `has_interior_nul`. With the pinned `libraw.dll` copied next to the test binary the 9 native tests passed (9/9, DLL removed afterwards). Report: `FIX-FFI-HARDENING-2026-10-31.md`.
+
+## DV-16 `WindowsRecycleBin` is built with the real log (PR #480, ST-COM-RECYCLE T5; T4 partly)
+
+- Context: `WindowsRecycleBin::new` used `NullLog` in production, so every refusal ("Recycle refused (size unreadable)" and similar) was lost.
+- C#: `src/PhotoReview.Platform.Windows/WindowsRecycleBin.cs:24` `public WindowsRecycleBin(ILog? log = null)`, `:44` `_log = log ?? NullLog.Instance`; the composition root passes the app log, so C# is not silent.
+- Rust: `crates/pr-platform-win/src/recycle_bin.rs` `WindowsRecycleBin::with_log(backend, log)` (new constructor; `new` kept, documented as `NullLog`); `crates/pr-shell/src/composition/platform.rs` passes the real log. T4: `restore_verb.rs` is now `pub mod restore_verb` and the production verb bytes come from `restore_verb::CANONICAL_VERB_Z` (single source); the localized-label helpers are still not wired (the C# path via `QueryContextMenu` is not ported).
+- Reason: the difference is the constructor shape (an extra Rust-only API) and the fact that it restores C# observable behaviour; recorded so the rows `recycle_bin_shell`/`restore_verb` are not read as Done.
+- Remaining risk: T1 (restore matches a bin entry by folder, name, size and DateModified, not deletion time) is equal to C# `RecycleCandidateSelector.IsMatch`, ambiguity returns `Ok(false)`; the design needs the journal's recycle time through `RecycleBinRestoreBackend::try_restore`. T2 (TOCTOU and modal `undelete` dialog) is equal to C# apart from the 120 s bound (DV-3). C2 (no proof the item reached the bin) is open, see `FIX-RECYCLE-C1C2-2026-10-31.md`.
+- Tests: `recycle_bin_facade::with_log_routes_production_refusals_to_the_supplied_log`, `production_verb_bytes_are_the_nul_terminated_canonical_verb` (`recycle_bin_facade` 21 and `recycle_restore_selection` 18 passed). Report: `FIX-RECYCLE-TRUNG-2026-10-31.md`.
+
+## DV-17 More background jobs turn a panic into their failure result (PR #482, ST-APP-RACES M3; extends DV-8)
+
+- Context: DV-8 covered the hash, scan and `FileHashService` jobs; the presenter, zoom-detail and sibling-search jobs still dropped their result on a panic (stuck phase, held slot, pending counter never released).
+- C#: `src/PhotoReview.App.Shared/Coordinators/ZoomDetailLoader.cs:224-235` `catch (OperationCanceledException)`, `catch (Exception ex)`, `finally`; `ImagePresenter.cs:489`, `:611`, `:751` `catch (Exception ex) ...` per phase; `SiblingFolderNavigator.cs:51` awaits `Task.Run(...)` (a fault reaches the awaiting caller). A faulted `Task` always runs its continuation.
+- Rust: one helper `coordinators::zoom_detail::catch_job(work, on_panic)` (`catch_unwind`); each job maps the panic to the failure its consumer already handles (`PreviewError::Panicked`, `ThumbnailError::Panicked`, `FileHashError::Io("hash computation panicked: ...")`, `None, None` for the cosmetic compare sizes, `SearchOutcome::Failed`, `SiblingNavError::Panicked`, a new variant that makes the enum non-`Copy`). No event enum gained a variant.
+- Reason: Rust threads die silently; this reproduces the C# catch/finally outcome.
+- Remaining risk: preview wait, thumbnail wait, compare preview, compare size and the zoom decode have no test that panics inside the job (decoders already return `Panicked`; there is no injectable seam), so those catches are covered only by the `catch_job` unit test. The generic `ThreadRunner` is unchanged (a catch there can only log).
+- Tests (red with `catch_job` replaced by a pass-through): `presenter_present_b::present_dimension_job_panic_is_a_failure_not_a_stuck_present`, `present_compare_hash_job_panic_is_a_failure_not_a_stuck_present`, `viewmodels_main_state::overlay_sibling_search_job_panic_still_releases_the_pending_count`, `sibling_folder_search_job_panic_still_releases_the_pending_count`, `zoom_detail::catch_job_turns_a_panic_into_the_failure_result_and_keeps_the_normal_result`. Report: `FIX-PANIC-REST-2026-10-31.md`.
+
+## DV-18 The pipe stops listening before the startup-failure box (PR #487, ST-SHELL-REVIEW M3)
+
+- Context: while the failure message box is open the instance mutex and the pipe are still held, so a second launch forwards its file to a process that is about to die and exits silently.
+- C#: `src/PhotoReview.Shell.Win32/Startup/ShellStartup.cs:218-250` `FailStartup` logs, shows the box, sets the exit code and closes windows (the order the first Rust port copied); `StopListening` runs only in `Cleanup` at `:673`.
+- Rust: `FailureSteps::stop_listening` runs between `log_failure` and `show_failure_box` (idempotent, runs again in `run_shutdown`). The instance lock is not released before the box (deferred).
+- Reason: a following process is not handed to a dying one and starts on its own.
+- Remaining risk: the lock is still held during the box, so the next launch may see "already running" for the box's duration.
+- Tests: `pr-app` `startup_shutdown` and `pr-shell` `startup_run_native` (order tests updated). Report: `FIX-SHELL-LIFECYCLE-2026-10-31.md`.
+
+## DV-19 Settings `version` is the bare crate version (PR #487, ST-SHELL-REVIEW M4)
+
+- Context: the Settings dialog version was always `None`, so the update check always reported "invalid version".
+- C#: `src/PhotoReview.App.Shared/BuildInfo.cs:13-28` `Describe` builds the line from the informational version and the build time; `GetVersion` (`:22-25`) returns the informational version.
+- Rust: `composition_root::settings_version(Option<String>)`: empty or `None` becomes `env!("CARGO_PKG_VERSION")` via `BuildStamp::version()`, used in `make_host_parts`. The label shows a bare "0.1.0", not the C# `Describe` line.
+- Reason: a build-time stamp does not exist yet; the label and the update-check value share one field, so the label stays bare.
+- Remaining risk: the full `Describe` text (build time, commit, dirty flag) is missing; the update check compares a Rust crate version with the release tags of whichever repository M2 of DV-14 ends up naming.
+- Test: `pr-shell/tests/startup_settings_version.rs`.
+
+## DV-20 A forwarded open during a modal command is queued (PR #487, ST-SHELL-REVIEW M1)
+
+- Context: the Rust view model is a `RefCell`; a forwarded open arriving while a modal command held it panicked with `BorrowMutError` and the request was lost.
+- C#: `src/PhotoReview.Shell.Win32/ShellMainWindow.cs:245` `OpenPathAsync(path) => _viewModel.OpenPathAsync(path)`; no RefCell, so there is no equivalent failure; `ForwardedOpenHandler.cs:62-66` awaits it.
+- Rust: `MainWindowInner::open_path` uses `try_borrow_mut`; when busy it pushes to `pending_opens: RefCell<VecDeque<String>>` (`host/main_window/core.rs`); `update_view_model` drains the queue in FIFO order after the borrow is released.
+- Reason: no lost request; the open happens right after the modal command returns.
+- Remaining risk: a request queued behind a modal that never returns stays queued; the queue is not bounded (one entry per forwarded launch).
+- Test: native `host_main_window_lifecycle::open_path_during_a_modal_command_is_queued_and_opened_after_it_returns` (`#[ignore]`, red before with `BorrowMutError`, green after).
+
+## DV-21 Shutdown disposes the `SessionWriter` explicitly (PR #487, ST-SHELL-REVIEW M5)
+
+- Context: the last session write relied on the `Drop` of the last `Arc` before `process::exit`; another live `Arc` skipped it.
+- C#: `src/PhotoReview.Core/Session/SessionWriter.cs:101` `Dispose()` waits at most the Q-R5 bound for an in-flight write; the app disposes it at shutdown.
+- Rust: `StartupGraph.session_writer` is kept and `shutdown::dispose_graph` calls `dispose()` before dropping the graph.
+- Reason: the final session file is written even while another `Arc` of the writer is alive; same observable result as C#.
+- Remaining risk: none known beyond the Q-R5 bound. M6 (a corrupt `config.json` is reset without telling the user) is equal to C# (the `JsonException` branch logs, backs up, uses defaults), no change; a user notice would be a product decision. L1..L8 of `ST-SHELL-REVIEW` remain open.
+- Test: native `composition_graph::dispose_graph_flushes_the_session_writer_while_another_arc_of_it_is_alive` (red without `dispose()`).
