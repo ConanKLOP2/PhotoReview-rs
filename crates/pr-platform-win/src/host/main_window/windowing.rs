@@ -574,4 +574,10 @@ impl MainWindow {
     pub fn fullscreen(&self) -> Option<Rc<ShellFullscreen>> {
         self.inner.windowing.fullscreen.borrow().clone()
     }
+
+    /// The `WM_DISPLAYCHANGE` observer that `register_windowing` put on the shell window (accessor only, like [`MainWindow::prefetch_host`]: a test calls
+    /// `try_handle` on it directly, without a monitor change; the window itself never needs it).
+    pub fn display_change_handler(&self) -> Option<Rc<DisplayChangeHandler>> {
+        self.inner.windowing.display_change_handler.borrow().clone()
+    }
 }
