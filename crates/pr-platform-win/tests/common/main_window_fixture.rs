@@ -400,6 +400,8 @@ pub struct BuildOptions {
     pub window: ShellWindowOptions,
     /// Runs inside the hub subscription of the constructor (see [`FakeHub::on_subscribe`]): what did the window look like at that point?
     pub on_hub_subscribe: Option<HubHook>,
+    /// A test-owned frame clock for the main window (default: the timer clock of the shell window). The shell window keeps its own clock.
+    pub frame_clock: Option<Rc<dyn HostFrameClock>>,
 }
 
 impl Default for BuildOptions {
@@ -418,6 +420,7 @@ impl Default for BuildOptions {
                 ..ShellWindowOptions::default()
             },
             on_hub_subscribe: None,
+            frame_clock: None,
         }
     }
 }
@@ -442,9 +445,13 @@ pub fn build_with_env(build_options: BuildOptions, env: MainEnv) -> Rc<Built> {
         options,
         window: window_options,
         on_hub_subscribe,
+        frame_clock: custom_clock,
     } = build_options;
     let shell = create_window(window_options);
-    let frame_clock: Rc<dyn HostFrameClock> = clock();
+    let frame_clock: Rc<dyn HostFrameClock> = match custom_clock {
+        Some(custom) => custom,
+        None => clock(),
+    };
     let MainEnv {
         vm,
         photos,
