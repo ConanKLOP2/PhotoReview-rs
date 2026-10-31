@@ -137,6 +137,31 @@ fn instance_mode_round_trips() {
 }
 
 #[test]
+// C#: GeneralSettingsPage.Collect reads ViewModeIndex/InstanceModeIndex from the combos (G4/H1)
+fn collect_reads_view_and_instance_mode_from_the_combos() {
+    let mut page = GeneralSettingsPage::new();
+    let mut builder = SettingsPageBuilder::new(1000);
+    page.declare(&mut builder);
+    let host = settings_page_fixture::PageHost::new();
+    host.configure_from(&builder);
+    page.attach(host.context());
+    let loaded = SettingsFormState {
+        view_mode_index: 0,
+        instance_mode_index: 0,
+        ..SettingsFormState::default()
+    };
+    page.load(&loaded);
+    host.put_combo_index(page.ids().view_mode, 1);
+    host.put_combo_index(page.ids().instance_mode, 1);
+    let mut state = loaded.clone();
+    page.collect(&mut state);
+    assert_eq!(state.view_mode_index, 1);
+    assert_eq!(state.instance_mode_index, 1);
+    assert_eq!(host.combo_index(page.ids().view_mode), 1);
+    assert_eq!(host.combo_index(page.ids().instance_mode), 1);
+}
+
+#[test]
 // C#: SettingsPagesTests.General_WithoutALocalizationService_HidesTheLanguageGroup
 fn general_without_a_localization_service_hides_the_language_group() {
     let mut page = GeneralSettingsPage::new();

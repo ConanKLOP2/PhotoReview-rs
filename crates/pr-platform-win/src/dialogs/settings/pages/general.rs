@@ -255,8 +255,8 @@ impl SettingsPageView for GeneralSettingsPage {
 
     fn collect(&mut self, state: &mut SettingsFormState) {
         let c = self.context.context();
-        c.set_combo_index(self.ids.view_mode, state.view_mode_index);
-        c.set_combo_index(self.ids.instance_mode, state.instance_mode_index);
+        state.view_mode_index = c.combo_index(self.ids.view_mode);
+        state.instance_mode_index = c.combo_index(self.ids.instance_mode);
         let sort = c.combo_index(self.ids.sort_mode);
         state.sort_mode_tag = usize::try_from(sort)
             .ok()
