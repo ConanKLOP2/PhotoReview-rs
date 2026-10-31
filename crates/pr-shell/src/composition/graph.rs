@@ -120,6 +120,7 @@ pub fn production_graph_builder_with(overrides: GraphOverrides) -> GraphBuilder 
             }),
             journal: services.journal(),
             clock,
+            session_writer: services.session_writer().ok(),
             dialog_services: dialog_services_of(&services),
         })
     })

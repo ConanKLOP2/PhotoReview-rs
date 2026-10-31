@@ -258,8 +258,10 @@ impl MainWindow {
 
     /// C# `OpenPathAsync(path)` (also the forwarded-open entry): `vm.open_path(path)` and the returned `ChangeSet` through `apply_changes`. The C# `Task` is the
     /// view model's step machine, finished by `pump_view_model`.
+    ///
+    /// When a modal command (Settings, the folder picker) holds the view model, the path is queued and opened as soon as that command returns (never a panic).
     pub fn open_path(&self, path: &str) {
-        self.update_view_model(|vm| vm.open_path(path));
+        self.inner.open_path(path);
     }
 
     /// THE replacement of the C# `PropertyChanged`/`ImageChanging`/`CatalogChanged` subscriptions (D-W8B4M-2). Does nothing when disposed. Fan-out, in this
@@ -330,6 +332,26 @@ impl MainWindowInner {
         // A wake that arrived inside a modal command (nested loop, borrow held) was deferred: drain it now that the borrow is gone.
         if self.pump_deferred.take() {
             self.pump_view_model();
+        }
+        self.open_queued_paths();
+    }
+
+    /// The body of [`MainWindow::open_path`]: opens `path` now, or queues it when the view model is borrowed (a modal command is running its nested loop).
+    pub(crate) fn open_path(&self, path: &str) {
+        if self.view_model.try_borrow_mut().is_err() {
+            self.pending_opens.borrow_mut().push_back(path.to_owned());
+            return;
+        }
+        self.update_view_model(|vm| vm.open_path(path));
+    }
+
+    /// Opens the paths queued by [`Self::open_path`], FIFO, while the view model is free; stops (keeping the rest) if it is borrowed again.
+    fn open_queued_paths(&self) {
+        while self.view_model.try_borrow_mut().is_ok() {
+            let Some(path) = self.pending_opens.borrow_mut().pop_front() else {
+                break;
+            };
+            self.update_view_model(|vm| vm.open_path(&path));
         }
     }
 

@@ -183,3 +183,84 @@ fn production_graph_defers_the_view_model_until_loaded_settings_are_available() 
         std::panic::resume_unwind(payload);
     }
 }
+
+#[test]
+#[ignore = "native: creates a dispatcher and shell message loop on an isolated UI thread"]
+fn dispose_graph_flushes_the_session_writer_while_another_arc_of_it_is_alive() {
+    // new: review ST-SHELL M5. C# `ServiceProvider.Dispose()` always disposes the session writer; in Rust other threads can hold the services, so the
+    // shutdown disposes the writer explicitly. `extra` plays that thread: the last-Arc `Drop` cannot run, only the explicit dispose can write the session.
+    use std::{rc::Rc, sync::mpsc, time::Duration};
+    let (sent, received) = mpsc::channel();
+    let worker = std::thread::spawn(move || {
+        let result = std::panic::catch_unwind(|| {
+            use pr_core::{abstractions::NullLog, app_paths::AppPaths, session::store::SessionState};
+            use pr_platform_win::{
+                host::{message_loop::MessageLoop, ui_dispatcher::Win32UiDispatcher},
+                shell_viewing::presentation_sink::ShellPresentationHub,
+            };
+            use pr_shell::startup::{
+                composition_root::{ShellHostServices, ShellServices, ShellServicesOptions},
+                graph::{GraphInputs, GraphOverrides, production_graph_builder_with},
+                shutdown::dispose_graph,
+            };
+            let (fake_services, root, _) = composition_fixture::shared_services();
+            let paths = AppPaths::new(root.path(), None, true);
+            let sessions_dir = paths.sessions_dir.clone();
+            let log = Arc::new(NullLog);
+            let dispatcher = Win32UiDispatcher::new(log.clone()).unwrap();
+            let message_loop = Rc::new(MessageLoop::new(Rc::new(dispatcher.clone())).unwrap());
+            let hub = Rc::new(ShellPresentationHub::new());
+            let services = Rc::new(ShellServices::build(
+                ShellHostServices {
+                    dispatcher: dispatcher.clone(),
+                    owner_window: Rc::new(|| 0),
+                    message_loop: Some(message_loop.clone()),
+                },
+                hub.clone(),
+                log.clone(),
+                ShellServicesOptions::default(),
+            ));
+            let builder = production_graph_builder_with(GraphOverrides {
+                paths: Some(paths),
+                log: Some(log.clone()),
+                recycle_bin: Some(fake_services.recycle_bin()),
+                explorer_order: Some(fake_services.explorer_order()),
+                clock: Some(fake_services.clock()),
+                decoder_wrapper: None,
+            });
+            let graph = builder(GraphInputs {
+                services,
+                dispatcher: dispatcher.clone(),
+                message_loop,
+                hub,
+                log,
+                mark: Arc::new(|_| {}),
+            })
+            .unwrap();
+            let extra = graph
+                .session_writer
+                .clone()
+                .expect("the production graph keeps the session writer");
+            let mut state = SessionState::new(root.path().to_string_lossy().into_owned());
+            state.current_path = Some("a.jpg".to_owned());
+            extra.update(&state).unwrap();
+            let count_files = || std::fs::read_dir(&sessions_dir).map_or(0, |entries| entries.count());
+            assert_eq!(count_files(), 0, "the write is debounced, nothing on disk yet");
+            dispose_graph(graph);
+            assert!(
+                count_files() >= 1,
+                "dispose_graph must flush the pending session even though `extra` is alive"
+            );
+            drop(extra);
+            dispatcher.shutdown();
+        });
+        sent.send(result).unwrap();
+    });
+    let result = received
+        .recv_timeout(Duration::from_secs(60))
+        .expect("bounded graph UI thread");
+    worker.join().unwrap();
+    if let Err(payload) = result {
+        std::panic::resume_unwind(payload);
+    }
+}

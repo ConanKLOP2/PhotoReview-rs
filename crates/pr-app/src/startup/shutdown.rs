@@ -50,6 +50,9 @@ pub fn run_shutdown(steps: &mut dyn ShutdownSteps) {
 pub trait FailureSteps {
     /// `AppLog.ErrorForced("Startup failed", ex)`: written even when logging is off.
     fn log_failure(&mut self, error: &dyn Error);
+    /// DIVERGENCE from C# (review ST-SHELL M3; C# shows the box with the pipe still listening and the lock held): `_instanceScope?.StopListening()` BEFORE the box, so a file
+    /// forwarded by a later process while the (modal) box is open is not "delivered" to a process that is about to die. Idempotent: `run_shutdown` calls it again.
+    fn stop_listening(&mut self);
     /// `dialogs.ShowError(Tr.AppTitle, Tr.AppStartupFailed(ex.Message))`: the registered dialog service, or (when the services are the thing that failed) a stand-alone box that needs no service graph.
     fn show_failure_box(&mut self, message: &str);
     /// `_forcedExit = ExitStartupFailed`: the error code must win over the `Quit(0)` that closing the window raises.
@@ -62,13 +65,14 @@ pub trait FailureSteps {
     fn quit(&mut self, code: i32);
 }
 
-/// C# `FailStartup(ex)`: `log_failure` and `show_failure_box` each run under `catch_unwind(AssertUnwindSafe(..))` and a panic in either is IGNORED (C# `catch { }`: "a log that cannot be
+/// C# `FailStartup(ex)`: `log_failure`, `stop_listening` and `show_failure_box` each run under `catch_unwind(AssertUnwindSafe(..))` and a panic in either is IGNORED (C# `catch { }`: "a log that cannot be
 /// written, a dialog that cannot be shown must not block the exit": the last-resort handler is an R0003 exception to "the UI thread does not catch panics"); then
 /// `force_exit_code(EXIT_STARTUP_FAILED)`, `close_secondary_windows`, `dispose_main_window`, `quit(EXIT_STARTUP_FAILED)`. `message` is `error.to_string()`.
 pub fn run_fail_startup(steps: &mut dyn FailureSteps, error: &dyn Error) {
     use crate::startup::options::EXIT_STARTUP_FAILED;
     // Last-resort handlers (R0003 exception, D-W8B6-25): a log or a box that cannot be written must not block the exit.
     let _ = catch_unwind(AssertUnwindSafe(|| steps.log_failure(error)));
+    let _ = catch_unwind(AssertUnwindSafe(|| steps.stop_listening()));
     let message = error.to_string();
     let _ = catch_unwind(AssertUnwindSafe(|| steps.show_failure_box(&message)));
     steps.force_exit_code(EXIT_STARTUP_FAILED);

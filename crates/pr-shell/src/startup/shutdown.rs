@@ -15,6 +15,7 @@ use pr_platform_win::dialogs::folder_dialog::{FolderPicker, UnwiredShellFolderDi
 use pr_platform_win::host::frame_clock::HostFrameClock;
 use pr_platform_win::host::message_loop::MessageLoop;
 
+use super::graph::StartupGraph;
 use super::state::StartupState;
 
 /// The steps over a state. Created for one shutdown / one failure; borrows nothing across a step (each step takes its object out of the state first).
@@ -33,6 +34,15 @@ impl StateSteps {
     pub fn new(state: Rc<StartupState>) -> Self {
         Self { state }
     }
+}
+
+/// Disposes the session writer of `graph` explicitly (C# `ServiceProvider.Dispose()` disposes it: flush, bounded 2 s; idempotent), THEN drops the graph. The explicit call matters because
+/// other threads (early decode, preload) can still hold an `Arc` of the services, so the last-`Arc` `Drop` may never run before `process::exit` (review ST-SHELL M5).
+pub fn dispose_graph(graph: StartupGraph) {
+    if let Some(writer) = &graph.session_writer {
+        writer.dispose();
+    }
+    drop(graph);
 }
 
 impl ShutdownSteps for StateSteps {
@@ -80,7 +90,9 @@ impl ShutdownSteps for StateSteps {
     /// `graph.borrow_mut().take()` and `services.borrow_mut().take()`, dropped in that order (the graph first: the dialogs of `ShellServices` are what the graph's view model called).
     fn dispose_services(&mut self) {
         let graph = self.state.graph.borrow_mut().take();
-        drop(graph);
+        if let Some(graph) = graph {
+            dispose_graph(graph);
+        }
         let services = self.state.services.borrow_mut().take();
         drop(services);
     }
@@ -109,6 +121,11 @@ impl FailureSteps for StateSteps {
     /// `AppLog::global().error_forced("Startup failed", error)`.
     fn log_failure(&mut self, error: &dyn Error) {
         AppLog::global().error_forced("Startup failed", &UnhandledError(error.to_string()));
+    }
+
+    /// Same as [`ShutdownSteps::stop_listening`]: closes the pipe before the modal box (no forwarded open is swallowed meanwhile).
+    fn stop_listening(&mut self) {
+        ShutdownSteps::stop_listening(self);
     }
 
     /// With `services` built: `services.dialog_service.show_error(app_title, Localizer::current().format("app.startupFailed", [message=..]))`. Without them (the services are what failed): a stand-alone

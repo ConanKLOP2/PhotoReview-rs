@@ -313,6 +313,36 @@ fn update_view_model_releases_the_borrow_before_the_fan_out() {
     finish(ui);
 }
 
+// Forwarded open while a modal command holds the view model (review ST-SHELL M1): `open_path` used to `borrow_mut` and panic (the dispatcher swallowed
+// it, the image never opened). Now the path is queued and opened when the command returns. C# has no equivalent (its view model is not a RefCell).
+#[test]
+#[ignore = "native: needs desktop"]
+fn open_path_during_a_modal_command_is_queued_and_opened_after_it_returns() {
+    let ui = start_ui();
+    let (status_inside, status_after) = run(&ui, || {
+        let b = build(BuildOptions::default());
+        let mut inside = String::new();
+        // The closure runs with the view model mutably borrowed, like `show_settings`. A path that is not a valid open input answers with the
+        // "no valid input" status, which proves the queued call ran.
+        b.window.update_view_model(|vm| {
+            b.window.open_path("?:\no-such-photo.jpg");
+            inside = vm.status_text();
+            vm.set_instance_label(None)
+        });
+        let after = b.window.view_model().borrow().status_text();
+        (inside, after)
+    });
+    assert!(
+        status_inside.is_empty(),
+        "nothing is opened while the command still holds the view model"
+    );
+    assert!(
+        !status_after.is_empty(),
+        "the queued path was opened after the modal command returned"
+    );
+    finish(ui);
+}
+
 // T1 (re-entrancy) through the real window: a feature applies an empty set from its hook.
 #[test]
 #[ignore = "native: needs desktop"]
