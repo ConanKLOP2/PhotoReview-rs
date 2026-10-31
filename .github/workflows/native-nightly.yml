@@ -10,6 +10,7 @@ name: Native nightly
 #    preview_service_disk and the pr-platform-win binaries wic_imaging_twins_preview and wic_preview_service_broken_entry: they load
 #    the pinned libraw.dll / turbojpeg.dll, which tools/dev/stage-native.ps1 copies from the local C# checkout (the C# repo is not
 #    cloned in CI and fetching real DLLs is blocked by decision P-55).
+#  - (the four window binaries named in the pr-platform-win list below were added 2026-10-31 and are unconfirmed until one night)
 #  - the window, DWM, GPU and input-desktop families of pr-platform-win (dialogs_*, host_*, shell_*, gfx_*, render_*, win32_*, wic_*,
 #    w8_*) and pr-shell (ui_smoke*, startup_*): they need a real desktop and the NativeDialog tooltip tests move the real cursor.
 #  - pr-bench (runs the benchmark tool) and anything that touches the real Recycle Bin: nothing here may.
@@ -66,7 +67,15 @@ jobs:
             'pr-platform-win' = @('w2_fs_flush_killers', 'w4_mutation_killers2', 'w6_platform_native', 'physical_memory',
               # Composer twins draw on a WARP device (no window, no input desktop). Added 2026-10-31 without a nightly run yet: the first
               # night must confirm that windows-latest has WARP, otherwise remove these two.
-              'shell_viewing_composer_twins_native', 'shell_viewing_composer_native')
+              'shell_viewing_composer_twins_native', 'shell_viewing_composer_native',
+              # Added 2026-10-31 (st-parity-sync3), no nightly run yet: one night must confirm each of them, remove a binary that is red
+              # only because the runner has no interactive desktop. None loads a C# DLL or needs stage-native; none touches the real
+              # Recycle Bin or user data. Hidden window / offscreen WARP, needs a desktop session: w8_mainwin_frame_tests (15; one test
+              # shows a window minimised), host_shell_window_fixes (2; creates windows and a WH_CALLWNDPROC hook), dialogs_painter_dpi_empty
+              # (3 native tests; hidden window + PrintWindow). recycle_final_path: its one native test makes a junction with cmd mklink
+              # inside a TempRoot and runs read-only volume queries (no desktop needed); the 6 fake tests run with it.
+              # recycle_restore_timeout has no #[ignore] (fakes) and already runs in ci.yml, so it is not listed.
+              'w8_mainwin_frame_tests', 'host_shell_window_fixes', 'dialogs_painter_dpi_empty', 'recycle_final_path')
             'pr-app' = @('folder_load_load', 'windowing_placement_store')
           }
           $failed = @()

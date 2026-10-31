@@ -192,3 +192,11 @@ Moved verbatim from `task_on_progress.md` (branch docs/tp-compact3, 2026-10-30).
 - CL-TEXTS2 2026-10-31: texts.rs remaining mutants rerun with correct flags: 122 + 2 re-checked caught, 0 missed/timeouts, localizer unviable; all 161 texts mutants accounted for; X-composition-texts-adapters stays Partial (adapters gaps); docs/reviews/CL-TEXTS2-2026-10-31.md.
 - CL-PHYS4 2026-10-31: physical.rs pattern group 115 of 438 run (flag form verified): 92 caught, 20 missed (16 real gaps killed by w2_phys4_killers, 4 equivalent), 3 TIMEOUT (infinite loops, counted undetected); 323 of 438 not run by this lane, X-physical-fs/AR16 stay Partial; docs/reviews/CL-PHYS4-2026-10-31.md.
 - CL-PHYS5 2026-10-31: physical.rs groups create_directory_impl/is_device/open_directory_handle/prefix helpers: 96 run (51 caught, 40 missed, 2 unviable, 3 timeout), killers w2_phys5_killers (incl. fail-fast match_pattern guard); about 227 unrun; rows stay Partial. Evidence docs/reviews/CL-PHYS5-2026-10-31.md.
+
+## Moved 2026-10-31 (st-parity-sync3, verbatim)
+
+- CX-SETUI 2026-10-31: Partial; 32/446 unique mutants evaluated (29 caught, 3 unviable), wrap survivor killed by w8_setui_killers (14 pass); 414 NOT RUN; native preflight 254+81 pass, fmt/clippy/doc-links pass; docs/reviews/CX-SETUI-2026-10-31.md.
+- CX-HOSTREST 2026-10-31: Partial; 27/153 current mutants caught (messages 12/33, loop 15/84, swap 0/36 rerun), 126 NOT RUN; 7 killers pass 20x, 88 covering tests pass; docs/reviews/CX-HOSTREST-2026-10-31.md.
+- CX-PERFCSV 2026-10-31: tests only; 30/178 distinct (29 caught, 1 unviable), 148 NOT RUN; 1 MISSED + 4 suite timeouts killed on killers alone; 6 killers pass 20x, fmt/clippy/doc-links pass; X-perf-diagnostics/F-23/F-22 write Partial; docs/reviews/CX-PERFCSV-2026-10-31.md.
+- CX-SETUI2 2026-10-31: Partial; new 70/446 verdicts (64 caught, 6 unviable, 0 missed/timeouts); groups now fully accounted; inputs 156 + rows 80 + context 87 remain; docs/reviews/CX-SETUI2-2026-10-31.md.
+- CX-PERF2 2026-10-31: Partial (CSV live); 107/148 new evaluated (55 caught, 13 missed, 35 unviable, 4 timeout), 41 unresolved; final killers 9 pass 20x; docs/reviews/CX-PERF2-2026-10-31.md.
