@@ -5,7 +5,7 @@ Keep this file under about 10 KB. When it grows, move old sections verbatim to `
 
 ## How to resume (read this first)
 1. Read `AGENTS.md`, this file and `docs/LESSONS.md`; then `docs/INDEX.md` for the map. Several machines: `docs/MULTI-MACHINE.md` (claims, shared files).
-2. Open questions are rows `P-nn` in `docs/PROPOSED-DECISIONS.md` (P-01..P-53, unconfirmed proposals, all acted on). Contracts: `contracts/README.md`. Autopilot: `tools/autopilot/README.md`. Plan and status of the port: `docs/PARITY.md` (`bash tools/dev/parity.sh stats`).
+2. Open questions are rows `P-nn` in `docs/PROPOSED-DECISIONS.md` (P-01..P-65, unconfirmed proposals, all acted on). Contracts: `contracts/README.md`. Autopilot: `tools/autopilot/README.md`. Plan and status of the port: `docs/PARITY.md` (`bash tools/dev/parity.sh stats`).
 3. Standing user instruction: run the port end to end, auto-fix and auto-merge (squash) every PR, never stop to ask; log open questions as a `P-nn` row and act on the recommended option. Replies in Vietnamese.
 4. Some workflow agents are refused `gh pr merge`, branch deletion or publish commands by the permission classifier; the main session then pushes and opens the PR (rules: `tools/autopilot/README.md`).
 5. Before planning a unit run `git fetch` and `git log origin/master`: a unit already there is done. Older history is in the archives below, never current state.
@@ -13,8 +13,7 @@ Keep this file under about 10 KB. When it grows, move old sections verbatim to `
 ## Current state (2026-10-31)
 
 - Snapshot 2026-10-28 (Not done, Blocked, open debts): verbatim in the archive, section "Moved 2026-10-31 (tp-compact5, verbatim)". Re-check `git log origin/master` first.
-- ST-PARITY-SYNC6 2026-10-31: docs + native-nightly only; PARITY synced to #497..#502 (9 rows noted, no status change: Done 183, Partial 102); real bug fixed by #500 (Recovery window lost the permanent-delete warning); 5 native binaries added to native-nightly, one night must confirm them. [report](docs/reviews/ST-PARITY-SYNC6-2026-10-31.md)
-- ST-PARITY-SYNC7 2026-10-31: docs + native-nightly only; mutation wave "all Partial" (PRs #504..#514) recorded as notes on 17 PARITY rows, NO status change (Done 183, Partial 102); caveat in PARITY and P-65: cargo-mutants does not copy tests/golden, so golden-only catches are not real (bench 4 of 27, checker 13 of 31), older caught counts may be inflated; PR #514 (CL-MUT-STATE2, 15 of 26 state.rs survivors killed, 11 equivalent) merged; nightly +2 binaries (`mut_zoomcore_killers`, `w2_physrest_killers`), unconfirmed until one night. [reports](docs/reviews/README.md)
+- ST-PARITY-SYNC8 2026-10-31: docs + native-nightly only; mutation wave 2 (PRs #516..#525) recorded as notes on 11 PARITY rows, NO status change (Done 183, Partial 102). PARITY caveat and P-65 CORRECTED: cargo-mutants does copy `tests/golden`; the real cause is the compile-time `CARGO_MANIFEST_DIR` in `golden::repo_root()` going stale in a reused target dir (fix #516: `PHOTOREVIEW_GOLDEN_ROOT` + `touch`); list of old reports to re-run is in CL-MUT-GOLDEN-INFRA. #524 and #525 were still open when written. Nightly +1 binary (`w2_physrest2_killers`), unconfirmed until one night. [reports](docs/reviews/README.md)
 
 ## Archives (`docs/archive/`, verbatim, history only)
 Find any section title with `grep -n '^## ' <file>`. Original section order is kept inside each file.
@@ -43,3 +42,4 @@ Find any section title with `grep -n '^## ' <file>`. Original section order is k
 | [`task_on_progress-status-2026-10-28-30.md`](docs/archive/task_on_progress-status-2026-10-28-30.md) | 2026-10-31 | Section "Moved 2026-10-31 (st-parity-sync5, verbatim)": FIX-WORKER-PANICS and ST-PARITY-SYNC3 status lines |
 | [`task_on_progress-status-2026-10-28-30.md`](docs/archive/task_on_progress-status-2026-10-28-30.md) | 2026-10-31 | Section "Moved 2026-10-31 (st-parity-sync6, verbatim)": FIX-RECYCLE-C1C2 and FIX-RESTORE-M3 status lines |
 | [`task_on_progress-status-2026-10-28-30.md`](docs/archive/task_on_progress-status-2026-10-28-30.md) | 2026-10-31 | Section "Moved 2026-10-31 (st-parity-sync7, verbatim)": ST-PARITY-SYNC4 and ST-PARITY-SYNC5 status lines |
+| [`task_on_progress-status-2026-10-28-30.md`](docs/archive/task_on_progress-status-2026-10-28-30.md) | 2026-10-31 | Section "Moved 2026-10-31 (st-parity-sync8, verbatim)": ST-PARITY-SYNC6 and ST-PARITY-SYNC7 status lines |

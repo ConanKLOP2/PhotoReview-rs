@@ -68,7 +68,10 @@ jobs:
               'io_physical', 'io_physical_seams', 'journal_reconcile', 'journal_startup_recovery', 'rename_file_action_matrix',
               'rename_recovery', 'rename_service', 'session_store', 'w2_fs_mutation_killers',
               # Added 2026-10-31 (st-parity-sync7), no nightly run yet: 2 native tests, private TempRoot listing only (CX-PHYSREST).
-              'w2_physrest_killers')
+              'w2_physrest_killers',
+              # Added 2026-10-31 (st-parity-sync8), no nightly run yet: w2_physrest2_killers (CX-PHYSREST2, PR #525; native tests on private
+              # TempRoot only, no Recycle Bin, no C# DLL). One night must confirm it.
+              'w2_physrest2_killers')
             'pr-platform-win' = @('w2_fs_flush_killers', 'w4_mutation_killers2', 'w6_platform_native', 'physical_memory',
               # Composer twins draw on a WARP device (no window, no input desktop). Added 2026-10-31 without a nightly run yet: the first
               # night must confirm that windows-latest has WARP, otherwise remove these two.
