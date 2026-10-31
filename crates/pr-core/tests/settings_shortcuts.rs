@@ -199,10 +199,7 @@ fn get_get_mut_entries_agree_with_property_names() {
 }
 
 // C#: ReviewAction JSON (D-09): PascalCase names in declaration order, Operation written as the enum name.
-// IGNORED until W1-02 merges: the `Operation` value is written by `FileOperationType`'s serde impl
-// (`pr_core::model::serde_ext`), which is still an unimplemented stub in this unit. Remove `#[ignore]` after the W1-02 merge.
 #[test]
-#[ignore = "needs W1-02 serde_ext (FileOperationType JSON); un-ignore after the W1-02 merge"]
 fn serialize_review_action_uses_pascal_case_names() {
     let action = ReviewAction::new("Action 2");
     assert_eq!(

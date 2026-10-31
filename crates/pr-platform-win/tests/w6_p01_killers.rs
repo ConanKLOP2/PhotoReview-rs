@@ -239,9 +239,23 @@ fn query_drive_type_classifies_the_system_drive_and_appends_the_separator() {
     assert_eq!(query_drive_type("C:\\\0"), None);
 }
 
+/// `%TEMP%` on a fixed local volume? These tests assert fixed-disk facts about the real temp volume, so on a network, removable,
+/// RAM or Dev Drive `%TEMP%` they are skipped (with a message) instead of going red.
+fn temp_is_on_fixed_volume(test: &str) -> bool {
+    let temp = std::env::temp_dir().to_string_lossy().into_owned();
+    let fixed = WindowsRecycleBinSettingsSource::default().get_volume_drive_type(&temp) == Some(DriveType::Fixed);
+    if !fixed {
+        eprintln!("SKIP {test}: %TEMP% ({temp}) is not on a fixed local volume");
+    }
+    fixed
+}
+
 #[test]
 fn query_mount_point_returns_the_volume_root_of_a_real_directory() {
     // Mutants query_mount_point: -> None / Some(empty) / Some("xyzzy"), blank and NUL guards, buffer handling.
+    if !temp_is_on_fixed_volume("query_mount_point_returns_the_volume_root_of_a_real_directory") {
+        return;
+    }
     let temp = std::env::temp_dir();
     let temp = temp.to_string_lossy().into_owned();
     let mount = query_mount_point(&temp).expect("temp dir has a volume");
@@ -258,6 +272,9 @@ fn query_mount_point_returns_the_volume_root_of_a_real_directory() {
 fn default_source_resolves_guid_drive_type_and_quota_from_the_real_volume() {
     // Mutants query_volume_name (-> None/empty/"xyzzy"), query_total_bytes (-> None/Some(0)/Some(1)),
     // and the mount-point plumbing in get_volume_guid/get_volume_drive_type/get_user_quota_bytes.
+    if !temp_is_on_fixed_volume("default_source_resolves_guid_drive_type_and_quota_from_the_real_volume") {
+        return;
+    }
     let source = WindowsRecycleBinSettingsSource::default();
     let temp = std::env::temp_dir().to_string_lossy().into_owned();
     let guid = source.get_volume_guid(&temp).expect("volume GUID");

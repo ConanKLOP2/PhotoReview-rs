@@ -1499,11 +1499,13 @@ fn debounce_fractional_ms_over_limit_rejected() {
 
 // Own test (semantics 7): one budget covers the lock wait AND the save; a flush that waited for the lock only has the
 // rest of the budget left for its own save.
+// Margins (real clock, no seam): correct ~= budget (2000 ms), double budget ~= lock wait + budget (3400 ms); the limit sits in the
+// middle (2700 ms), so a loaded runner may delay the correct path by 700 ms before this goes red.
 #[test]
 fn bounded_flush_one_budget_covers_lock_wait_and_save() {
     let f = Fixture::new();
     let writer = Arc::new(f.writer());
-    writer.set_bounded_wait_for_tests(Duration::from_millis(1200));
+    writer.set_bounded_wait_for_tests(Duration::from_millis(2000));
     let (entered, release) = (Event::new(), Event::new());
     f.fs.set_hook(Some(blocking_hook(&entered, &release)));
     update(&writer, r"C:\photos", "one");
@@ -1515,7 +1517,7 @@ fn bounded_flush_one_budget_covers_lock_wait_and_save() {
     update(&writer, r"C:\photos", "two");
     let first_release = release.clone();
     let releaser = thread::spawn(move || {
-        thread::sleep(Duration::from_millis(700));
+        thread::sleep(Duration::from_millis(1400));
         first_release.complete();
     });
     let started = Instant::now();
@@ -1525,7 +1527,7 @@ fn bounded_flush_one_budget_covers_lock_wait_and_save() {
     release2.complete();
     let _ = releaser.join();
     assert!(
-        elapsed < Duration::from_millis(1500),
+        elapsed < Duration::from_millis(2700),
         "flush took {elapsed:?}; the budget must cover lock wait + save"
     );
     assert!(f.has_error("the save is still running after the wait budget"));

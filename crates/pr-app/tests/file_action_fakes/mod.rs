@@ -438,7 +438,12 @@ impl RecycleBin for InertBin {
 /// A real `UndoService` over a journal that is never written (nothing here executes a file action for real).
 pub fn new_undo_service() -> Arc<Mutex<UndoService>> {
     let fs: Arc<dyn pr_core::abstractions::FileSystem> = Arc::new(PhysicalFileSystem);
-    let paths = AppPaths::new(&std::env::temp_dir().join("pr-file-action-fakes"), None, false);
+    // Unique per process, so parallel worktrees and runs never share a journal root; nothing is created or written here.
+    let paths = AppPaths::new(
+        &std::env::temp_dir().join(format!("pr-file-action-fakes-{}", std::process::id())),
+        None,
+        false,
+    );
     let journal = Arc::new(OperationJournal::new(&paths, fs.clone(), Arc::new(SystemClock)));
     Arc::new(Mutex::new(UndoService::new(
         journal,

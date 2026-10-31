@@ -543,6 +543,13 @@ fn session_save_and_load_over_a_data_root() {
 #[ignore = "native: reads the real environment"]
 fn from_environment_constructs_and_names_a_session_file() {
     // C#: SessionStoreEnvironmentRootTests (default constructor); only constructs and calls get_path.
+    // Safety: from_environment() starts a sweep of `*.tmp` files in the sessions folder; without both variables that folder is the
+    // real %LOCALAPPDATA% one. tools/dev/native-tests.sh and native-nightly.yml set them; a hand-run must too.
+    assert!(
+        std::env::var_os("PHOTOREVIEW_RS_DATA_ROOT").is_some_and(|v| !v.is_empty())
+            && std::env::var("PHOTOREVIEW_RS_ISOLATE_CONFIG").is_ok_and(|v| v == "1" || v.eq_ignore_ascii_case("true")),
+        "set PHOTOREVIEW_RS_DATA_ROOT=<temp dir> and PHOTOREVIEW_RS_ISOLATE_CONFIG=1 before running this test by hand"
+    );
     let store = SessionStore::from_environment();
     store.wait_for_startup_sweep();
 
