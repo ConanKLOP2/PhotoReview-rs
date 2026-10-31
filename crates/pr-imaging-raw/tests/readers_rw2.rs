@@ -13,6 +13,9 @@
 //! Helper copies live in the `support` and `fuzz` modules below (no cross-unit visibility, Wave 4 lesson 15).
 #![allow(clippy::unwrap_used, clippy::expect_used)] // test code: a failed precondition should panic with its message.
 
+#[path = "common/corpus_skip.rs"]
+mod corpus_skip;
+
 use std::collections::HashSet;
 use std::path::{Path, PathBuf};
 
@@ -904,6 +907,7 @@ fn corpus_dir() -> Option<PathBuf> {
         "PHOTOREVIEW_RS_RAW_CORPUS_STRICT=1 but {} is missing",
         dir.display()
     );
+    corpus_skip::skipped(&format!("no corpus at {}", dir.display()));
     None
 }
 
