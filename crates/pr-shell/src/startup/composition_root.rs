@@ -287,6 +287,24 @@ impl ShellServices {
     }
 }
 
+/// The version the Settings window shows and the update check compares when the options carry none (review ST-SHELL M4). C# `SettingsDialog`:
+/// `Options.Version ?? BuildInfo.GetVersion(assembly)`; Rust has no assembly attribute, so the running version is the crate version (`env!("CARGO_PKG_VERSION")`,
+/// e.g. `"0.1.0"`, which `AppVersion::try_parse` accepts). DIVERGENCE: the label shows the bare version, not the C# `BuildInfo.Describe` line (`Phiên bản .. · build ..`),
+/// because this one field is also the update-check version; a separate label needs the build time (not stamped yet).
+pub fn settings_version(configured: Option<String>) -> String {
+    configured
+        .filter(|version| !version.trim().is_empty())
+        .unwrap_or_else(|| {
+            pr_app::misc::build_info::BuildStamp {
+                informational_version: Some(env!("CARGO_PKG_VERSION").to_owned()),
+                build_time: None,
+            }
+            .version()
+            .unwrap_or_default()
+            .to_owned()
+        })
+}
+
 fn make_host_parts(
     clipboard: Rc<dyn pr_app::services::contracts::ClipboardService>,
     file_dialog: Rc<dyn ShellFileDialog>,
@@ -302,7 +320,7 @@ fn make_host_parts(
         file_dialog,
         folder_dialog,
         log,
-        version,
+        version: Some(settings_version(version)),
         localizer: Box::new(pr_l10n::localizer::Localizer::current),
         numbers: Rc::new(WindowsNumberFormatting),
         time: Rc::new(WindowsRecoveryTimeFormatter),

@@ -99,6 +99,9 @@ impl FailureSteps for Failing {
             panic!("log cannot be written");
         }
     }
+    fn stop_listening(&mut self) {
+        self.calls.push("stop_listening".to_owned());
+    }
     fn show_failure_box(&mut self, message: &str) {
         self.calls.push(format!("box:{message}"));
         if self.panic_box {
@@ -129,6 +132,8 @@ fn fail_startup_forces_the_exit_code_before_closing_the_window() {
         steps.calls,
         [
             "log:boom message".to_owned(),
+            // Review ST-SHELL M3: the pipe is closed before the modal box.
+            "stop_listening".to_owned(),
             "box:boom message".to_owned(),
             format!("force:{EXIT_STARTUP_FAILED}"),
             "close_secondary".to_owned(),
@@ -147,9 +152,9 @@ fn fail_startup_ignores_a_panicking_log_and_a_panicking_box() {
         ..Failing::default()
     };
     run_fail_startup(&mut steps, &Boom);
-    assert_eq!(steps.calls.len(), 6);
-    assert_eq!(steps.calls[2], format!("force:{EXIT_STARTUP_FAILED}"));
-    assert_eq!(steps.calls[5], format!("quit:{EXIT_STARTUP_FAILED}"));
+    assert_eq!(steps.calls.len(), 7);
+    assert_eq!(steps.calls[3], format!("force:{EXIT_STARTUP_FAILED}"));
+    assert_eq!(steps.calls[6], format!("quit:{EXIT_STARTUP_FAILED}"));
 }
 
 #[test]

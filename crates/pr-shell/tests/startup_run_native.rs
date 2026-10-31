@@ -15,6 +15,9 @@ impl pr_app::startup::shutdown::FailureSteps for FailureRecorder {
     fn log_failure(&mut self, error: &dyn std::error::Error) {
         self.calls.push(format!("log:{error}"));
     }
+    fn stop_listening(&mut self) {
+        self.calls.push("stop-listening".into());
+    }
     fn show_failure_box(&mut self, message: &str) {
         self.calls.push(format!("box:{message}"));
         assert!(!self.throwing_dialog, "test dialog failure");
@@ -42,6 +45,7 @@ fn app_startup_startup_fault_reports_the_error_logs_it_and_shuts_down_with_exit_
         steps.calls,
         [
             "log:startup fault",
+            "stop-listening",
             "box:startup fault",
             "force:1",
             "close-secondary",
@@ -78,7 +82,7 @@ fn fail_startup_when_the_dialog_throws_still_disposes_and_shuts_down() {
     };
     pr_app::startup::shutdown::run_fail_startup(&mut steps, &std::io::Error::other("startup fault"));
     assert_eq!(
-        &steps.calls[2..],
+        &steps.calls[3..],
         ["force:1", "close-secondary", "dispose-main", "quit:1"]
     );
 }

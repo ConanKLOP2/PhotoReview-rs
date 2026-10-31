@@ -732,6 +732,9 @@ pub struct MainWindowInner {
     pub(super) pump_again: Cell<bool>,
     /// A `pump_view_model` call found the view model mutably borrowed (a modal command's nested loop): `update_view_model` pumps once the borrow ends.
     pub(super) pump_deferred: Cell<bool>,
+    /// Forwarded-open paths that arrived while a modal command held the view model (`open_path` found it borrowed): `update_view_model` opens them, FIFO,
+    /// once the borrow ends (otherwise `borrow_mut` would panic and the dispatcher would swallow the open).
+    pub(super) pending_opens: RefCell<VecDeque<String>>,
     /// Features of other units (input, menus, overlay, keep-warm), in registration order.
     pub(super) features: RefCell<Vec<Rc<dyn MainWindowFeature>>>,
     /// C# `_keepAlive` + `_keepWarm` + `_frameLog` as 16d returns them from `register_keep_warm`; `release_renderer` calls `KeepWarmSetup::dispose` FIRST (D-W8B4X-4).
@@ -833,6 +836,7 @@ impl MainWindowInner {
             pumping: Cell::new(false),
             pump_again: Cell::new(false),
             pump_deferred: Cell::new(false),
+            pending_opens: RefCell::new(VecDeque::new()),
             features: RefCell::new(Vec::new()),
             keep_warm: RefCell::new(None),
             frame: FrameState::default(),

@@ -18,6 +18,7 @@ use pr_app::startup::early_decode::MarkFn;
 use pr_core::abstractions::{Clock, DisplayClock, ExplorerOrderProvider, Log};
 use pr_core::diagnostics::diag_options::DiagOptions;
 use pr_core::file_actions::journal::OperationJournal;
+use pr_core::session::writer::SessionWriter;
 use pr_core::settings::store::SettingsStore;
 use pr_platform_win::host::main_window::core::SharedViewModel;
 use pr_platform_win::host::message_loop::MessageLoop;
@@ -76,6 +77,9 @@ pub struct StartupGraph {
     pub journal: Arc<OperationJournal>,
     /// `GetRequiredService<IClock>()`.
     pub clock: Arc<dyn Clock>,
+    /// `GetRequiredService<SessionWriter>()` (review ST-SHELL M5): kept so the shutdown can `dispose()` it explicitly (flush, bounded 2 s) instead of relying on the last `Arc` dropping before
+    /// `process::exit`; background threads (early decode, preload) may still hold the registry. `None` only if the writer could not be built (the view model reports that itself).
+    pub session_writer: Option<Arc<SessionWriter>>,
     /// The services the secondary windows need, for `ShellServices::bind_dialog_services` (D-W8B6-11, D-W8B6-15 c).
     pub dialog_services: Rc<DialogServices>,
 }
