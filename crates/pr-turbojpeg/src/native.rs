@@ -290,6 +290,21 @@ struct Symbols {
     free: Option<Tj3Free>,
 }
 
+impl Symbols {
+    /// Every export the decode path calls. A build missing one of them would load and pass `tj3Init`, then fail every decode
+    /// with `EntryPointNotFound` (FIX-FFI-HARDENING L2). The test-only `compress8`/`free` are not required.
+    fn has_decode_exports(&self) -> bool {
+        self.init.is_some()
+            && self.destroy.is_some()
+            && self.decompress_header.is_some()
+            && self.get.is_some()
+            && self.set.is_some()
+            && self.set_scaling_factor.is_some()
+            && self.decompress8.is_some()
+            && self.get_error_str.is_some()
+    }
+}
+
 /// kernel32 loader calls. Declared by hand: `pr-turbojpeg` takes no `windows` crate dependency (D36 keeps it in
 /// `pr-platform-win`) and no `libloading` (no new external crate; contract open question 1).
 #[cfg(windows)]
@@ -432,6 +447,12 @@ impl TurboJpegLibrary {
 }
 
 impl TurboJpegLibrary {
+    /// `true` when the library exports everything the decode path needs (used by the availability probe so a partial build
+    /// reports "unavailable" up front instead of failing every decode).
+    pub fn has_decode_exports(&self) -> bool {
+        self.symbols.has_decode_exports()
+    }
+
     /// `tj3Init(init)` wrapped into an owning handle bound to this library; NULL -> `InvalidOperation(null_message)`.
     fn create(self: &Arc<Self>, init: TjInit, null_message: &str) -> Result<TurboJpegHandle, NativeError> {
         let tj3_init = self.symbols.init.ok_or_else(|| entry_point_not_found("tj3Init"))?;
@@ -1000,6 +1021,20 @@ mod tests {
 
     // Trap T1: 0 would mean the default search order (working directory, PATH); the exact flags are the C#
     // AssemblyDirectory equivalent.
+    // FIX-FFI-HARDENING L2: pure; no DLL.
+    #[test]
+    fn decode_exports_are_all_required() {
+        assert!(!Symbols::default().has_decode_exports());
+        extern "C" fn init(_: c_int) -> *mut c_void {
+            std::ptr::null_mut()
+        }
+        let only_init = Symbols {
+            init: Some(init),
+            ..Symbols::default()
+        };
+        assert!(!only_init.has_decode_exports());
+    }
+
     #[cfg(windows)]
     #[test]
     fn load_flags_restrict_the_search_to_the_dll_folder_and_the_safe_default_dirs() {
