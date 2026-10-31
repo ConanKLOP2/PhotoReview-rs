@@ -70,7 +70,11 @@ pub fn probe() -> &'static ProbeOutcome {
     PROBE.get_or_run(|| {
         probe_with(
             native::DLL_NAME,
-            || native::default_library_path().and_then(|path| native::TurboJpegLibrary::load(&path).ok()),
+            || {
+                native::default_library_path()
+                    .and_then(|path| native::TurboJpegLibrary::load(&path).ok())
+                    .filter(|library| library.has_decode_exports())
+            },
             drop,
             || native::create_decompressor().map_err(|e| Box::new(e) as Box<dyn Error + Send + Sync>),
         )

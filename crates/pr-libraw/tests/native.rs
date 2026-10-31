@@ -22,10 +22,11 @@ use std::sync::{Arc, Mutex};
 use pr_core::sync::CancelToken;
 use pr_libraw::availability;
 use pr_libraw::native::{
-    DATA_PROBE_LIMIT, DecoderInfo, IMAGE_JPEG, IPARAMS_CDESC_OFFSET, IPARAMS_COLORS_OFFSET, IPARAMS_FILTERS_OFFSET,
-    IPARAMS_READ_LEN, LOAD_WITH_ALTERED_SEARCH_PATH, LibRawHandle, LibraryHandle, LoadError, NativeError, NativeOwner,
-    PINNED_WHITE_BALANCE_LAYOUT, PROCESSED_IMAGE_DATA_OFFSET, ProcessedImageHeader, RawStructure, WhiteBalanceLayout,
-    WhiteBalanceTarget, api, format_error, format_error_message, library_path_next_to, progress_verdict,
+    APP_FOLDER_LOAD_FLAGS, DATA_PROBE_LIMIT, DecoderInfo, IMAGE_JPEG, IPARAMS_CDESC_OFFSET, IPARAMS_COLORS_OFFSET,
+    IPARAMS_FILTERS_OFFSET, IPARAMS_READ_LEN, LOAD_LIBRARY_SEARCH_DEFAULT_DIRS, LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR,
+    LibRawHandle, LibraryHandle, LoadError, NativeError, NativeOwner, PINNED_WHITE_BALANCE_LAYOUT,
+    PROCESSED_IMAGE_DATA_OFFSET, ProcessedImageHeader, RawStructure, WhiteBalanceLayout, WhiteBalanceTarget, api,
+    format_error, format_error_message, has_interior_nul, library_path_next_to, progress_verdict,
     try_read_raw_structure, try_set_use_camera_wb_core, version_string,
 };
 
@@ -121,7 +122,10 @@ fn native_entry_points() -> &'static [&'static str] {
 // loader rule instead (DIVERGENCE): the library is looked up next to the executable only, never by bare name.
 #[test]
 fn library_path_is_next_to_the_executable_never_a_bare_name() {
-    assert_eq!(LOAD_WITH_ALTERED_SEARCH_PATH, 0x8);
+    // FIX-FFI-HARDENING M1: the safe-dirs set (never 0x8 / 0, which would add the working directory and PATH).
+    assert_eq!(LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR, 0x0000_0100);
+    assert_eq!(LOAD_LIBRARY_SEARCH_DEFAULT_DIRS, 0x0000_1000);
+    assert_eq!(APP_FOLDER_LOAD_FLAGS, 0x0000_1100);
     assert_eq!(library_path_next_to(Path::new("PhotoReviewRs.exe"), "libraw.dll"), None);
     assert_windows_exe_folder_join();
 
@@ -130,6 +134,22 @@ fn library_path_is_next_to_the_executable_never_a_bare_name() {
         Err(LoadError::LoadFailed { os_error, .. }) => assert_eq!(os_error, 87),
         other => panic!("relative path must be refused with os_error 87, got {other:?}"),
     }
+}
+
+// FIX-FFI-HARDENING L1: an interior NUL would make the loader load a truncated path; refused like a relative path.
+#[test]
+fn load_from_refuses_a_path_with_an_interior_nul() {
+    #[cfg(windows)]
+    let path = PathBuf::from(r"C:\app").join("libraw\0.dll");
+    #[cfg(not(windows))]
+    let path = PathBuf::from("/app/libraw\0.dll");
+    match LibraryHandle::load_from(&path) {
+        Err(LoadError::LoadFailed { os_error, .. }) => assert_eq!(os_error, 87),
+        other => panic!("a NUL path must be refused with os_error 87, got {other:?}"),
+    }
+    assert!(has_interior_nul(std::ffi::OsStr::new("a\0b")));
+    assert!(!has_interior_nul(std::ffi::OsStr::new("ab")));
+    assert!(!has_interior_nul(std::ffi::OsStr::new("")));
 }
 
 #[cfg(windows)]

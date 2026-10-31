@@ -7,8 +7,8 @@
 //! it as a [`LoadError`] and everything above it (W5-15b availability probe, W5-16 decoder) degrades to "LibRaw
 //! unavailable".
 //!
-//! Every `unsafe` of this unit lives in this file (FFI only, each block with a `// SAFETY:` comment; the W5-15b probe
-//! adapter and, unless the lead removes it, W5-16c's progress callback are the only other `unsafe` of `pr-libraw`). The pure parts
+//! Every `unsafe` of this unit lives in this file (FFI only, each block with a `// SAFETY:` comment; the progress callback
+//! lives here too, and only the W5-15b probe adapter in `availability.rs` has other `unsafe` in `pr-libraw`). The pure parts
 //! (layout proof, iparams plausibility check, error text, cancellation verdict, handle ownership) are safe functions over
 //! plain data so they are tested without the DLL.
 //!
@@ -69,9 +69,14 @@ pub const ENTRY_POINTS: [&str; 23] = [
     "libraw_strerror",
 ];
 
-/// `LoadLibraryExW` flag used for the app-folder load: the path is absolute and the DLL's own dependencies are searched
-/// from the DLL's folder first (what .NET does for `DllImportSearchPath.AssemblyDirectory`).
-pub const LOAD_WITH_ALTERED_SEARCH_PATH: u32 = 0x0000_0008;
+/// `LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR`: the DLL's own dependencies are looked up in the DLL's folder.
+pub const LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR: u32 = 0x0000_0100;
+/// `LOAD_LIBRARY_SEARCH_DEFAULT_DIRS`: application dir + System32 + `AddDllDirectory` dirs; never the working directory or `PATH`.
+pub const LOAD_LIBRARY_SEARCH_DEFAULT_DIRS: u32 = 0x0000_1000;
+/// `LoadLibraryExW` flags used for the app-folder load (same set as `pr-turbojpeg`): the path is absolute, the DLL's
+/// dependencies are searched in its own folder and the safe default dirs only. The old `LOAD_WITH_ALTERED_SEARCH_PATH` (0x8)
+/// also searched the working directory and `PATH` for a missing dependency (FIX-FFI-HARDENING M1).
+pub const APP_FOLDER_LOAD_FLAGS: u32 = LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR | LOAD_LIBRARY_SEARCH_DEFAULT_DIRS;
 
 /// `LoadLibraryExW` flag for [`LibraryHandle::load_system`] (System32 only; used by the W5-15b kernel32 probe test).
 pub const LOAD_LIBRARY_SEARCH_SYSTEM32: u32 = 0x0000_0800;
@@ -395,14 +400,15 @@ pub struct LibraryHandle {
 
 impl LibraryHandle {
     /// Loads `name` from the running executable's folder only: `library_path_next_to(current_exe()?, name)` with
-    /// [`LOAD_WITH_ALTERED_SEARCH_PATH`]. Missing file, wrong architecture, missing dependent runtime => `LoadFailed`.
+    /// [`APP_FOLDER_LOAD_FLAGS`]. Missing file, wrong architecture, missing dependent runtime => `LoadFailed`.
     pub fn load_next_to_exe(name: &str) -> Result<Self, LoadError> {
         let exe = std::env::current_exe().map_err(|_| LoadError::NoExecutableDirectory)?;
         let path = library_path_next_to(&exe, name).ok_or(LoadError::NoExecutableDirectory)?;
         Self::load_from(&path)
     }
 
-    /// Loads an absolute `path` with [`LOAD_WITH_ALTERED_SEARCH_PATH`]. A relative path (`!path.is_absolute()`, which on
+    /// Loads an absolute `path` with [`APP_FOLDER_LOAD_FLAGS`]. A path with an interior NUL is refused like a relative
+    /// one (the loader would silently cut it at the NUL and load another file). A relative path (`!path.is_absolute()`, which on
     /// Windows includes `C:foo` and `\foo`) is refused (`LoadFailed` with `os_error` 87 = `ERROR_INVALID_PARAMETER`)
     /// without calling the loader. The relative check runs BEFORE the `cfg(not(windows))` => `Unsupported` branch, so
     /// that refusal is the same on every platform.
@@ -413,7 +419,13 @@ impl LibraryHandle {
                 os_error: ERROR_INVALID_PARAMETER,
             });
         }
-        Self::load_with_flags(path.as_os_str(), LOAD_WITH_ALTERED_SEARCH_PATH)
+        if has_interior_nul(path.as_os_str()) {
+            return Err(LoadError::LoadFailed {
+                path: path.to_path_buf(),
+                os_error: ERROR_INVALID_PARAMETER,
+            });
+        }
+        Self::load_with_flags(path.as_os_str(), APP_FOLDER_LOAD_FLAGS)
     }
 
     /// Loads a system DLL by name from System32 only ([`LOAD_LIBRARY_SEARCH_SYSTEM32`]); for the W5-15b
@@ -508,6 +520,12 @@ impl LibraryHandle {
 
 /// `ERROR_INVALID_PARAMETER`: the `os_error` of a refused relative library path.
 const ERROR_INVALID_PARAMETER: u32 = 87;
+
+/// `true` when `text` has a NUL before its end: a `W` API would silently cut the string there.
+pub fn has_interior_nul(text: &OsStr) -> bool {
+    let wide = wide_nul(text);
+    wide[..wide.len() - 1].contains(&0)
+}
 
 /// NUL-terminated UTF-16 for the `W` APIs (WTF-16 on Windows: unpaired surrogates pass through like a C# string).
 #[cfg(windows)]
@@ -638,8 +656,8 @@ impl LibRawApi {
             };
         }
         // SAFETY: each field's fn-pointer type is the LibRaw 0.22 prototype of that export from `libraw.h` (cdecl = "C" on
-        // x64; `libraw_data_t *` as `*mut c_void`, `libraw_processed_image_t *` as `*mut ProcessedImageHeader`), and the
-        // library is a LibRaw build (`api` loads only `libraw.dll` from the app folder; W5-15b rejects anything else first).
+        // x64; `libraw_data_t *` as `*mut c_void`, `libraw_processed_image_t *` as `*mut ProcessedImageHeader`); `api()`
+        // checks nothing itself: only the composition root (W5-15b probe) rejects a non-LibRaw `libraw.dll` first.
         let api = unsafe {
             resolve_all!(
                 library;
@@ -831,12 +849,16 @@ impl<'buf> LibRawHandle<'buf> {
         WhiteBalanceTarget::read_i32(self, offset)
     }
 
-    /// `libraw_open_wfile`: `path` encoded as NUL-terminated UTF-16 (`encode_wide` on Windows; an interior NUL ends the
-    /// path for LibRaw, as with the C# string marshaller). Returns LibRaw's error code (0 = success).
+    /// `libraw_open_wfile`: `path` encoded as NUL-terminated UTF-16 (`encode_wide` on Windows; a path with an interior NUL is
+    /// refused with `-1`, where the C# marshaller would let LibRaw stop at the NUL). Returns LibRaw's error code (0 = success).
     pub fn open_wfile(&mut self, path: &OsStr) -> i32 {
         let Some(data) = self.data() else {
             return -1;
         };
+        if has_interior_nul(path) {
+            // Refuse instead of opening the truncated path (FIX-FFI-HARDENING L1).
+            return -1;
+        }
         let wide = wide_nul(path);
         // SAFETY: `data` is the live handle; `wide` is a NUL-terminated UTF-16 path alive for the call (LibRaw copies it).
         unsafe { (self.api.libraw_open_wfile)(data, wide.as_ptr()) }
@@ -1047,9 +1069,9 @@ impl WhiteBalanceTarget for LibRawHandle<'_> {
     fn read_i32(&self, offset: i32) -> Option<i32> {
         let offset = Self::probe_window(offset)?;
         let data = self.data()?;
-        // SAFETY: `offset + 4 <= DATA_PROBE_LIMIT` (65 536) lies inside the live `libraw_data_t`, which is larger: its
-        // `color` member (after `params` at 5232, `rawparams`, `progress_flags`, `process_warnings`) starts with
-        // `ushort curve[0x10000]` (128 KiB). Unaligned read like `Marshal.ReadInt32`; the handle is open and not shared.
+        // SAFETY: `offset + 4 <= DATA_PROBE_LIMIT` (65 536) lies inside the live `libraw_data_t`: larger than that in every
+        // release with `color.curve[0x10000]` (inferred, verified for 0.22.2); an unpinned DLL (no gate here, it is in
+        // `try_set_use_camera_wb_core`) makes the bytes meaningless, not out of the block. Unaligned like `ReadInt32`.
         Some(unsafe { ptr::read_unaligned(data.cast::<u8>().add(offset).cast::<i32>()) })
     }
 
