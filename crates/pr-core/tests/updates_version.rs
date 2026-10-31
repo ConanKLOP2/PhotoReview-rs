@@ -212,7 +212,7 @@ fn golden_app_version() {
     }
 }
 
-/// DIVERGENCE (DV-22, P-60): the goldens come from the C# oracle, which follows `ConanKLOP2/PhotoReview`; this build
+/// DIVERGENCE (DV-22, P-61): the goldens come from the C# oracle, which follows `ConanKLOP2/PhotoReview`; this build
 /// follows `ConanKLOP2/PhotoReview-rs`. Rewrites the C# project path (ASCII case-insensitive) in a golden input or
 /// expected value. Everything else in a case stays byte-for-byte the oracle's.
 fn divergence_adjusted_repo(s: &str) -> String {

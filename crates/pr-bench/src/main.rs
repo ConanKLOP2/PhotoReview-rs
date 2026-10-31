@@ -14,7 +14,7 @@ fn main() {
     let mut err = stderr.lock();
     // The engine backend is wired (real catalog, executor, workload runner, report writers). The platform host (WIC decoder,
     // payload codec, real Recycle Bin) cannot be named from this crate (pr-platform-win -> pr-app -> pr-bench), so profile runs
-    // fail with the "not wired" message until a host crate supplies an `EngineHost`.
+    // fail with the "not wired" message here; the `pr-bench-win` binary (crate `pr-bench-win`) supplies the real Windows `EngineHost`.
     let mut backend = EngineBackend::new(UnwiredEngineHost);
     let code = cli::run(
         &args,

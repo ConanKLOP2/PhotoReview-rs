@@ -194,7 +194,7 @@ Common reason: the C# code has the same hole in each case (the C# behaviour is t
 - Remaining risk: none known beyond the Q-R5 bound. M6 (a corrupt `config.json` is reset without telling the user) is equal to C# (the `JsonException` branch logs, backs up, uses defaults), no change; a user notice would be a product decision. L1..L8 of `ST-SHELL-REVIEW` remain open.
 - Test: native `composition_graph::dispose_graph_flushes_the_session_writer_while_another_arc_of_it_is_alive` (red without `dispose()`).
 
-## DV-22 The update check follows the Rust repository `ConanKLOP2/PhotoReview-rs` (ST-HTTP-SECURITY M2; P-60)
+## DV-22 The update check follows the Rust repository `ConanKLOP2/PhotoReview-rs` (ST-HTTP-SECURITY M2; P-61)
 
 - Context: the update checker, the releases page and the URL allow-list named the C# project's repository, so the Rust build would announce updates for C# releases.
 - C#: `UpdateChecker.cs:11` GETs `https://api.github.com/repos/ConanKLOP2/PhotoReview/releases/latest`; `UpdateUrlPolicy.cs` opens only `https://github.com/ConanKLOP2/PhotoReview[/...]`.

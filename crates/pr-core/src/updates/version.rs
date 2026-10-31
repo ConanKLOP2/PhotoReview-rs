@@ -95,7 +95,7 @@ impl fmt::Display for AppVersion {
     }
 }
 
-/// C# `UpdateUrlPolicy.ReleasesPageUrl`. DIVERGENCE (DV-22, P-60): the Rust build's own repository.
+/// C# `UpdateUrlPolicy.ReleasesPageUrl`. DIVERGENCE (DV-22, P-61): the Rust build's own repository.
 pub const RELEASES_PAGE_URL: &str = concat!("https://github.com/", update_repo!(), "/releases");
 
 /// C# `UpdateUrlPolicy.Validate(string?)`: the normalized absolute URL (what `Uri.AbsoluteUri` would return) when

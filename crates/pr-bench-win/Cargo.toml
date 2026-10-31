@@ -1,0 +1,26 @@
+[package]
+name = "pr-bench-win"
+description = "The benchmark CLI with the real Windows host (WIC decoder, payload codec, memory probe, optional real Recycle Bin); ADR D-2026-10-31-bench-host"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true
+
+# `pr-platform-win -> pr-app -> pr-bench` (D-W8B1-1) means `pr-bench` cannot name the Windows types; this leaf crate can
+# (nothing depends on it), so there is no cycle. It has no `unsafe`: all FFI stays in `pr-platform-win`.
+[dependencies]
+pr-bench.workspace = true
+pr-core.workspace = true
+pr-imaging.workspace = true
+pr-platform-win.workspace = true
+
+[[bin]]
+name = "pr-bench-win"
+path = "src/main.rs"
+
+[dev-dependencies]
+pr-test-support.workspace = true

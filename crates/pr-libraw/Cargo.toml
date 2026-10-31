@@ -10,11 +10,17 @@ publish.workspace = true
 [lints]
 workspace = true
 
+[features]
+# Off by default. Exposes `LibRawHandle::try_set_use_camera_wb_with`, `raw_structure_with` and `read_data_i32`, whose
+# caller-supplied gate/offsets are test seams; the integration tests enable it via the dev-dependency below.
+test-support = []
+
 [dependencies]
 pr-core.workspace = true
 pr-imaging.workspace = true
 
 [dev-dependencies]
+pr-libraw = { path = ".", features = ["test-support"] }
 pr-test-support.workspace = true
 serde_json.workspace = true
 # W5-16c native twin (ReadInfo_PortraitRewritten through the RAW registry); no cycle: pr-imaging-raw does not depend on pr-libraw.

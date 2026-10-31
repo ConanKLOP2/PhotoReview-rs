@@ -1,6 +1,6 @@
 # W10-B1/B3. Explicit fixture and executables only; never discovers user photo folders.
 # Example: powershell -NoProfile -ExecutionPolicy Bypass -File tools/bench-compare.ps1 `
-#   -BaselineExe <absolute C# exe> -CandidateExe <absolute pr-bench.exe> `
+#   -BaselineExe <absolute C# exe> -CandidateExe <absolute pr-bench-win.exe> `
 #   -Folder <fixture> -Profiles preview-light -Out <new evidence directory>
 [CmdletBinding()]
 param(

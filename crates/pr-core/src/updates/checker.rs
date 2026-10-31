@@ -13,7 +13,7 @@ use std::time::Duration;
 use crate::sync::{CancelToken, Canceled};
 use crate::updates::version::{AppVersion, RELEASES_PAGE_URL, UpdateCheckResult, UpdateFailure, validate_update_url};
 
-/// The endpoint (C# `LatestReleaseUrl`). DIVERGENCE (DV-22, P-60): the Rust build's own repository
+/// The endpoint (C# `LatestReleaseUrl`). DIVERGENCE (DV-22, P-61): the Rust build's own repository
 /// ([`crate::updates::UPDATE_REPO`]), not the C# project's `ConanKLOP2/PhotoReview` (contracts/W2-18.md open question 2).
 pub const LATEST_RELEASE_URL: &str = concat!("https://api.github.com/repos/", update_repo!(), "/releases/latest");
 
