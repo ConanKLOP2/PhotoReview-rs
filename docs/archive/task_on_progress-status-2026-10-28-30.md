@@ -211,3 +211,8 @@ Moved verbatim from `task_on_progress.md` (branch docs/tp-compact3, 2026-10-30).
 
 - FIX-WORKER-PANICS 2026-10-31: reliability fix; a panic in the duplicate-hash job, the folder scan job or the FileHashService worker is now a failure result (gate released, load finished, waiter woken; DIVERGENCE, C# catch/finally); 3 red-then-green tests; presenter/zoom/overlay jobs (M3) left for later; docs/reviews/FIX-WORKER-PANICS-2026-10-31.md.
 - ST-PARITY-SYNC3 2026-10-31: docs + 1 test; PARITY synced to #461..#474 (29 rows noted, no status change: Done 183, Partial 102), new ADR `docs/adr/ADR-D-2026-10-31-intentional-differences-from-fix-lanes.md` (DV-1..DV-12, P-58), 4 window/recycle binaries added to native-nightly (unconfirmed until one night), test `composition_registry::undo_takes_the_same_file_action_gate_as_retry`; docs/reviews/ST-PARITY-SYNC3-2026-10-31.md.
+
+## Moved 2026-10-31 (st-parity-sync6, verbatim)
+
+- 2026-10-31 fix-recycle-c1c2 ([report](docs/reviews/FIX-RECYCLE-C1C2-2026-10-31.md)): C1 not reproduced for directory junctions (`GetVolumePathNameW` follows them, run on this machine; symlinks untestable, no privilege); `query_mount_point` now resolves containing-folder links, fail closed; C2 (progress sink) deferred with design. Stays Partial.
+- 2026-10-31 fix-restore-m3 (ST-INVMAP M3, data safety): after an executor panic the catalog entry is restored only if the file still exists on disk; no Undo after a panic (open: journal reconcile). Tests `file_action_core` 68 green, clippy -p pr-app clean; see `docs/reviews/FIX-RESTORE-M3-2026-10-31.md`.
