@@ -1,6 +1,6 @@
 # FIX-RAW-SHARE-DELETE 2026-10-31: xoá/di chuyển file RAW trong lúc full decode (INV-8, M4 của FIX-IMAGING-CACHE)
 
-Status: report (lane `fix-raw-share-delete`). Quyết định: `P-60` (`docs/PROPOSED-DECISIONS.md`) và `DV-22` (`docs/adr/ADR-D-2026-10-31-raw-share-delete.md`); đây là phương án khuyến nghị của câu hỏi 3 trong `ST-PARITY-SYNC4-2026-10-31.md`, chưa có xác nhận người dùng, đã làm theo.
+Status: report (lane `fix-raw-share-delete`). Quyết định: `P-63` (`docs/PROPOSED-DECISIONS.md`) và `DV-24` (`docs/adr/ADR-D-2026-10-31-raw-share-delete.md`); đây là phương án khuyến nghị của câu hỏi 3 trong `ST-PARITY-SYNC4-2026-10-31.md`, chưa có xác nhận người dùng, đã làm theo.
 
 ## Kết quả
 
@@ -34,7 +34,7 @@ Status: report (lane `fix-raw-share-delete`). Quyết định: `P-60` (`docs/PRO
 
 ## Cho orchestrator (không sửa PARITY ở đây)
 
-- Hàng RAW/LibRaw (`I-15b / INV-8`) và `LibRawDecoder`: thêm `Different` DV-22, test `crates/pr-libraw/tests/raw_share_delete.rs`; KHÔNG nâng Done vì chưa chạy corpus thật.
+- Hàng RAW/LibRaw (`I-15b / INV-8`) và `LibRawDecoder`: thêm `Different` DV-24, test `crates/pr-libraw/tests/raw_share_delete.rs`; KHÔNG nâng Done vì chưa chạy corpus thật.
 - Nên thêm 4 test `#[ignore]` native của `raw_share_delete` vào danh sách nightly nếu có quy ước (cần `libraw.dll` + python; không tự thêm vì brief không yêu cầu).
 
 ## Đã chạy (worktree `fix-raw-share-delete`, `CARGO_TARGET_DIR` riêng, `libraw.dll` chép tạm cạnh binary test rồi đã xoá)

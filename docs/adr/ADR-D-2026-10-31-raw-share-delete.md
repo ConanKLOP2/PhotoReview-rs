@@ -1,10 +1,10 @@
-# ADR: RAW full decode reads the file through a Read|Write|Delete share handle (DV-22, INV-8)
+# ADR: RAW full decode reads the file through a Read|Write|Delete share handle (DV-24, INV-8)
 
 Date: 2026-10-31
 
-Status: accepted under the standing "run end to end" instruction (proposal row `P-60` in `docs/PROPOSED-DECISIONS.md`: PROPOSED, acted on, no user confirmation yet). It is option 3 of "Questions waiting for the owner" in `docs/reviews/ST-PARITY-SYNC4-2026-10-31.md` (recommended option). The owner may reverse it with a follow-up PR (see "Undo"). The number DV-22 continues `docs/adr/ADR-D-2026-10-31-intentional-differences-from-fix-lanes.md` (DV-1..DV-21); if another lane took DV-22 first, renumber this file.
+Status: accepted under the standing "run end to end" instruction (proposal row `P-63` in `docs/PROPOSED-DECISIONS.md`: PROPOSED, acted on, no user confirmation yet). It is option 3 of "Questions waiting for the owner" in `docs/reviews/ST-PARITY-SYNC4-2026-10-31.md` (recommended option). The owner may reverse it with a follow-up PR (see "Undo"). The number DV-24 continues `docs/adr/ADR-D-2026-10-31-intentional-differences-from-fix-lanes.md` (DV-1..DV-21); if another lane took DV-24 first, renumber this file.
 
-## DV-22 RAW full decode: shared read into memory, then `libraw_open_buffer` (lane `fix-raw-share-delete`, INV-8)
+## DV-24 RAW full decode: shared read into memory, then `libraw_open_buffer` (lane `fix-raw-share-delete`, INV-8)
 
 - Context: INV-8 says a file under review must stay deletable and movable. `libraw_open_wfile` opens the file without `FILE_SHARE_DELETE` and keeps the handle until `libraw_close`, so while a RAW full decode runs, renaming or deleting that very file fails with sharing violation (`ERROR_SHARING_VIOLATION`, 32). Measured twice: with Python ctypes (`FIX-IMAGING-CACHE-2026-10-31.md` M4) and through the Rust `LibRawDecoder` (`native_path_open_blocks_rename_while_libraw_decodes`).
 - C#: `PhotoReview.Imaging.LibRaw/LibRawDecoder.cs` `DecodeCore` calls `OpenFile` = `libraw_open_wfile` (long-path retry) when the request has no `Bytes`; RAW is never pre-read (`DecodeFromSource`). Same hole.

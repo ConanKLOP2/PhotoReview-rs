@@ -24,6 +24,9 @@
 //! DIVERGENCE: corpus tests read whole files into `InMemoryRawHeaderSource`, not `SourceRawHeaderSource` over a file
 //! stream, so they do not assert `bytes_read` (the golden corpus has zero cases here).
 
+#[path = "common/corpus_skip.rs"]
+mod corpus_skip;
+
 use std::path::{Path, PathBuf};
 
 use pr_core::session::store::sha256;
@@ -1046,6 +1049,7 @@ fn corpus_dir() -> Option<PathBuf> {
         "PHOTOREVIEW_RAW_CORPUS_STRICT is set but no corpus at {}",
         dir.display()
     );
+    corpus_skip::skipped(&format!("no corpus at {}", dir.display()));
     None
 }
 

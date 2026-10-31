@@ -1,4 +1,4 @@
-//! DV-22 (INV-8): a RAW file must be renamable and deletable WHILE LibRaw decodes it. `libraw_open_wfile` opens the file
+//! DV-24 (INV-8): a RAW file must be renamable and deletable WHILE LibRaw decodes it. `libraw_open_wfile` opens the file
 //! without `FILE_SHARE_DELETE` and holds the handle until `libraw_close` (lane `fix-raw-share-delete`; observed with Python
 //! ctypes in `docs/reviews/FIX-IMAGING-CACHE-2026-10-31.md` M4), so Delete/Move of the open RAW fails with sharing violation 32.
 //! `LibRawDecoder::with_shared_file_read` reads the file once through a Read|Write|Delete share handle and decodes the bytes
@@ -344,7 +344,7 @@ fn bgra_of(image: &dyn DecodedImageView) -> (i32, i32, Vec<u8>) {
 }
 
 // Rust-only (native): BASELINE. The C# path (`libraw_open_wfile`) holds the file without FILE_SHARE_DELETE for the whole decode:
-// renaming it at the `opened` stage fails with sharing violation 32. This is the behaviour DV-22 removes.
+// renaming it at the `opened` stage fails with sharing violation 32. This is the behaviour DV-24 removes.
 #[test]
 #[ignore = "native: needs libraw.dll and python (synthetic DNG)"]
 fn native_path_open_blocks_rename_while_libraw_decodes() {

@@ -54,7 +54,7 @@ pub const LONG_PATH_THRESHOLD: usize = 248;
 /// C# `TrailingEoiSearchWindow` (64 KiB): the structure-free fallback looks for the last EOI only in the final window.
 pub const TRAILING_EOI_SEARCH_WINDOW: usize = 64 * 1024;
 
-/// Chunk of the shared-read loop of [`read_file_shared`]: the cancel token is checked between chunks (DV-22).
+/// Chunk of the shared-read loop of [`read_file_shared`]: the cancel token is checked between chunks (DV-24).
 pub const SHARED_READ_CHUNK_BYTES: usize = 4 << 20;
 
 /// `LIBRAW_IO_ERROR`.
@@ -252,7 +252,7 @@ pub struct LibRawDecoder {
     gate: FullDecodeGate,
     /// C# `CoreOverride`.
     core_override: Option<CoreOverride>,
-    /// DV-22 (INV-8): read a RAW given by path through a `Read | Write | Delete` share handle into memory and decode with
+    /// DV-24 (INV-8): read a RAW given by path through a `Read | Write | Delete` share handle into memory and decode with
     /// `libraw_open_buffer`, so Delete/Move of the file is never blocked by the decode. Off by default (C# `libraw_open_wfile`).
     shared_file_read: bool,
 }
@@ -287,7 +287,7 @@ impl LibRawDecoder {
         }
     }
 
-    /// DV-22 (INV-8, Rust-only difference from C#): a decode of a path-only request reads the file once through a handle that
+    /// DV-24 (INV-8, Rust-only difference from C#): a decode of a path-only request reads the file once through a handle that
     /// shares Read, Write and Delete ([`read_file_shared`]) and opens LibRaw on the bytes (`libraw_open_buffer`), so renaming or
     /// deleting the RAW while it decodes is not refused by the OS (`libraw_open_wfile` holds a handle without `FILE_SHARE_DELETE`
     /// until `libraw_close`). Costs the file size in RAM for the length of the decode. Every production composition site calls
@@ -447,7 +447,7 @@ impl LibRawDecoder {
         self.hand_off(&mut pixels, downscaled, width, height, &|| true)
     }
 
-    /// DV-22: the shared-read open of [`Self::decode_core`]. Reads the file with [`read_file_shared`] (same long-path retry,
+    /// DV-24: the shared-read open of [`Self::decode_core`]. Reads the file with [`read_file_shared`] (same long-path retry,
     /// error texts and cancel behaviour as [`open_file_with`]: every read failure is reported as `LIBRAW_IO_ERROR`, an
     /// allocation failure as `LIBRAW_UNSUFFICIENT_MEMORY`), then `open_buffer`; the session keeps the bytes until after
     /// `libraw_close`. A content rejection by LibRaw keeps the C# wording `"open RAW file"`.
@@ -843,7 +843,7 @@ pub fn is_downscaled(target_width: i32, target_height: i32, source_width: i32, s
     target_width < source_width || target_height < source_height
 }
 
-// ------------------------------------------------------------------------------------------------ shared read (DV-22)
+// ------------------------------------------------------------------------------------------------ shared read (DV-24)
 
 /// Why [`read_file_shared`] gave no bytes.
 #[derive(Debug)]
@@ -857,7 +857,7 @@ pub enum SharedReadError {
     OutOfMemory,
 }
 
-/// DV-22 (INV-8): the whole file at `path`, read once through a handle opened with `FILE_SHARE_READ | FILE_SHARE_WRITE |
+/// DV-24 (INV-8): the whole file at `path`, read once through a handle opened with `FILE_SHARE_READ | FILE_SHARE_WRITE |
 /// FILE_SHARE_DELETE` (`PhysicalFileSystem::open_read_shared`, the C# `FileShare.ReadWrite | Delete` rule) that is closed before
 /// this returns, so nothing holds the file while LibRaw decodes the bytes. Order: cancel check, open, length (seek to the end),
 /// headroom check (`2 x length`: the `Vec` and the `Arc<[u8]>` copy exist together for an instant), `try_reserve_exact`, then

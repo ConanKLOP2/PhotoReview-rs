@@ -19,6 +19,9 @@
 // C# unchecked casts of golden numbers (16/32-bit fields, `(ushort)`, `(uint)`, `(byte)`): the truncation is the point.
 #![allow(clippy::cast_possible_truncation, clippy::cast_sign_loss, clippy::cast_possible_wrap)]
 
+#[path = "common/corpus_skip.rs"]
+mod corpus_skip;
+
 use std::io;
 use std::panic::{AssertUnwindSafe, catch_unwind};
 use std::path::PathBuf;
@@ -457,7 +460,7 @@ fn corpus_bytes(contains: &str) -> Option<Vec<u8>> {
     if std::env::var("PHOTOREVIEW_RS_RAW_CORPUS_STRICT").as_deref() == Ok("1") {
         panic!("RAW corpus sample '*.nef' containing '{contains}' not found (PHOTOREVIEW_RS_RAW_CORPUS_STRICT=1)");
     }
-    eprintln!("skipped: RAW corpus sample '*.nef' containing '{contains}' is absent (P-30)");
+    corpus_skip::skipped(&format!("sample '*.nef' containing '{contains}' is absent (P-30)"));
     None
 }
 

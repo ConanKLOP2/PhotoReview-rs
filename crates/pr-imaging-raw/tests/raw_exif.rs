@@ -19,6 +19,9 @@
 //! Local helpers: the C# `ExifTestData` builder is ported in the `exif_data` module below (the `pr-imaging` test builder is
 //! private to its own test file). The TIFF byte builder and the synthetic RAW builders come from `pr_test_support::raw`.
 
+#[path = "common/corpus_skip.rs"]
+mod corpus_skip;
+
 use std::io::Cursor;
 use std::path::{Path, PathBuf};
 
@@ -502,6 +505,7 @@ fn synthetic_tiff_block_yields_exif_summary() {
 fn corpus_samples_exif_summary_matches_survey() {
     // C#: RawExifTests.CorpusSamples_ExifSummaryMatchesSurvey ([Trait Native]; the corpus is required)
     if raw_corpus_dir().is_none() {
+        corpus_skip::skipped("tests/fixtures/raw-corpus absent");
         return;
     }
     let registry = RawContainerReaderRegistry::new();
@@ -719,9 +723,11 @@ fn corpus_cr3_exif_summary(
     lens: &str,
 ) {
     let Some(path) = raw_corpus_dir().map(|dir| dir.join(file)) else {
+        corpus_skip::skipped("tests/fixtures/raw-corpus absent");
         return;
     };
     if !path.is_file() {
+        corpus_skip::skipped(&format!("{file} absent"));
         return;
     }
     let bytes = std::fs::read(&path).expect("read CR3 corpus file");
@@ -974,6 +980,7 @@ fn try_read_exif_hostile_orf_block_does_not_throw() {
 fn corpus_orf_files_expose_exif() {
     // C#: OrfExifMagicTests.CorpusOrfFiles_ExposeExif ([Trait Native]; the corpus is required)
     if raw_corpus_dir().is_none() {
+        corpus_skip::skipped("tests/fixtures/raw-corpus absent");
         return;
     }
     for path in raw_corpus_files() {
