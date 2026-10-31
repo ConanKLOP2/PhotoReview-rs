@@ -388,6 +388,15 @@ mod native_pipe {
                 let _ = unsafe { GetOverlappedResult(pipe, overlapped, &mut transferred, true) };
                 return Err(ForwardPipeError::TimedOut);
             }
+            if result.0 != WAIT_OBJECT_0.0 + 1 {
+                // WAIT_FAILED / WAIT_ABANDONED_*: the operation may still be pending, so it is not "done" (forward_client does the same).
+                // SAFETY: this cancels only the operation using the live handle and stack-owned OVERLAPPED.
+                let _ = unsafe { CancelIoEx(pipe, Some(overlapped)) };
+                let mut transferred = 0;
+                // SAFETY: waiting here drains the canceled operation before its OVERLAPPED/buffer leave scope.
+                let _ = unsafe { GetOverlappedResult(pipe, overlapped, &mut transferred, true) };
+                return Err(ForwardPipeError::Failed(format!("wait failed: {}", result.0)));
+            }
             let mut transferred = 0;
             // SAFETY: the operation event was signaled; handle and OVERLAPPED remain live through result retrieval.
             unsafe { GetOverlappedResult(pipe, overlapped, &mut transferred, false) }

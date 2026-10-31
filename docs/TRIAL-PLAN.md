@@ -1,7 +1,7 @@
 # Two-week real-user trial
 
 > **Status: proposed plan, trial not started (entry gate not met).** Last verified 2026-10-26 against `origin/master` 8b93fbf.
-> Evidence: every item under "Open items" is still TBD and `docs/trial/` does not exist; `bash tools/dev/parity.sh stats` reports 349 status rows with Done 163, Partial 89, Ported 41, Todo 18 (parity not closed); Wave 10 (benchmark parity, release, update HTTP) has contracts and stubs only.
+> Evidence: every item under "Open items" is still TBD and `docs/trial/` does not exist; `bash tools/dev/parity.sh stats` reports 361 status rows (2026-10-31) with Done 183, Partial 102, Ported 38, Todo 4 (parity not closed); Wave 10 (benchmark parity, release, update HTTP) has contracts and stubs only.
 
 ## Purpose and entry gate
 

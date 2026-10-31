@@ -10,11 +10,12 @@ use std::panic::{AssertUnwindSafe, catch_unwind};
 use std::path::Path;
 use std::sync::Arc;
 
-use pr_core::abstractions::FileSystem;
+use pr_core::abstractions::{FileSystem, SkippedEntry, SkippedKind};
 use pr_core::catalog::explorer_types::{ExplorerGroupState, ExplorerOrderStatus, ExplorerViewSnapshot};
 use pr_core::catalog::snapshot_validator::try_validate;
 use pr_core::catalog::sorting::sort_entries;
 use pr_core::catalog::types::{CatalogEntry, ExplorerQueryHandle, get_extension, is_supported_with};
+use pr_core::file_actions::errors::path_to_journal_string;
 use pr_core::model::{ImageSortMode, RawPairMode, uses_explorer_order};
 use pr_core::sync::CancelToken;
 use pr_core::text::dotnet_path::{get_full_path, trim_ending_directory_separator};
@@ -96,7 +97,25 @@ pub(super) fn run_scan(input: ScanJobInput) -> Result<ScanOutput, ScanFailure> {
     let mut sidecar_paths = Vec::new();
     let mut scanned = Vec::new();
     for (path, stat) in all_scanned {
-        let text = path.to_string_lossy().into_owned();
+        let lossy = path.to_string_lossy();
+        let relevant = is_xmp(&lossy) || is_supported_with(&lossy, raw_enabled, webp_heic_enabled);
+        // ST-PATHLOSSY: a name with an unpaired UTF-16 surrogate cannot be a `String`; `to_string_lossy` would give it
+        // the name of ANOTHER file (a sibling really named with U+FFFD) and every later Move/Copy/Recycle/Undo would
+        // act on that one. C# refuses such a path (`UnrepresentablePath`) before it mutates anything. The entry is not
+        // loaded and is reported as skipped, so it is never reachable by an operation.
+        let text = match path_to_journal_string(&path) {
+            Ok(text) => text,
+            Err(error) => {
+                if relevant {
+                    skipped.push(SkippedEntry {
+                        path,
+                        reason: error.message,
+                        kind: SkippedKind::FileUnreadable,
+                    });
+                }
+                continue;
+            }
+        };
         if is_xmp(&text) {
             sidecar_paths.push(text.clone());
         }

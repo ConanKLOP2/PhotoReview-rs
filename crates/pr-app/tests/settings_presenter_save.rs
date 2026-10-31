@@ -17,7 +17,7 @@ use pr_app::presenters::settings_form_state::{
 use pr_core::abstractions::{Clock, FileSystem, Log, ShellIntegration, ShellMenuState};
 use pr_core::app_paths::AppPaths;
 use pr_core::model::enums::{
-    DecoderBackend, FitWidthAnchor, ImageSortMode, InitialViewMode, MiddleClickAction, RawPairMode,
+    DecoderBackend, FileOperationType, FitWidthAnchor, ImageSortMode, InitialViewMode, MiddleClickAction, RawPairMode,
 };
 use pr_core::settings::app_settings::{
     AppSettings, EnglishSettingsTexts, MAX_CLICK_ZOOM_PERCENT, MAX_TOOLBAR_AUTO_HIDE_DELAY_MS,
@@ -689,7 +689,7 @@ fn duplicate_warning_sees_action_shortcuts() {
 fn save_actions_json_is_validated() {
     // C#: SettingsPresenterTests.Save_ActionsJson_IsValidated
     // DIVERGENCE: C# writes `"Operation":0`; the merged W8-10b Actions row refuses a numeric Operation (only names),
-    // so the rows use `"Operation":"Move"`. Reported to the lead as a W8-10b defect.
+    // so the rows use `"Operation":0`. Reported to the lead as a W8-10b defect.
     let env = Env::new();
     let mut presenter = new_presenter(&default_settings());
     let mut state = presenter.load_fields();
@@ -698,27 +698,52 @@ fn save_actions_json_is_validated() {
     state.actions_json = "{ not json".to_owned();
     assert_eq!(presenter.try_save(&state, &env.ctx()).message, refused);
 
-    state.actions_json = r#"[{"Name":"","Shortcut":"F7","Operation":"Move","Destination":"Out"}]"#.to_owned();
+    state.actions_json = r#"[{"Name":"","Shortcut":"F7","Operation":0,"Destination":"Out"}]"#.to_owned();
     assert_eq!(presenter.try_save(&state, &env.ctx()).message, refused);
 
-    state.actions_json = r#"[{"Name":"A","Shortcut":"F7","Operation":"Move","Destination":"Out"},{"Name":"B","Shortcut":"f7","Operation":"Move","Destination":"Out2"}]"#
+    state.actions_json = r#"[{"Name":"A","Shortcut":"F7","Operation":0,"Destination":"Out"},{"Name":"B","Shortcut":"f7","Operation":0,"Destination":"Out2"}]"#
         .to_owned();
     assert_eq!(presenter.try_save(&state, &env.ctx()).message, refused);
 
-    state.actions_json = r#"[{"Name":"A","Shortcut":"F7","Operation":"Move","Destination":"Out"}]"#.to_owned();
+    state.actions_json = r#"[{"Name":"A","Shortcut":"F7","Operation":0,"Destination":"Out"}]"#.to_owned();
     assert!(ok(&mut presenter, &state, &env));
     let names: Vec<&str> = presenter.settings().actions.iter().map(|a| a.name.as_str()).collect();
     assert_eq!(names, ["A"]);
+    assert_eq!(presenter.settings().actions[0].operation, FileOperationType::Move);
+}
+
+#[test]
+fn save_actions_json_numeric_operations_map_to_move_copy_recycle() {
+    // New test: C# `LenientEnumConverter` numbers 0/1/2, names/aliases, and a refused undefined number.
+    let env = Env::new();
+    let mut presenter = new_presenter(&default_settings());
+    let mut state = presenter.load_fields();
+    state.actions_json = r#"[{"Name":"A","Shortcut":"F7","Operation":1,"Destination":"Out"},{"Name":"B","Shortcut":"F8","Operation":2,"Destination":"Out"},{"Name":"C","Shortcut":"F9","Operation":"Delete","Destination":"Out"}]"#.to_owned();
+    assert!(ok(&mut presenter, &state, &env));
+    let ops: Vec<FileOperationType> = presenter.settings().actions.iter().map(|a| a.operation).collect();
+    assert_eq!(
+        ops,
+        [
+            FileOperationType::Copy,
+            FileOperationType::Recycle,
+            FileOperationType::Recycle
+        ]
+    );
+
+    state.actions_json = r#"[{"Name":"A","Shortcut":"F7","Operation":9,"Destination":"Out"}]"#.to_owned();
+    assert_eq!(
+        presenter.try_save(&state, &env.ctx()).message,
+        Some(env.get("dialog.settingsInvalid.actionsJson"))
+    );
 }
 
 #[test]
 fn save_action_destination_problem_is_refused() {
-    // C#: SettingsPresenterTests.Save_ActionDestinationProblem_IsRefused (`"Operation":"Move"`: see the DIVERGENCE note above)
+    // C#: SettingsPresenterTests.Save_ActionDestinationProblem_IsRefused (`"Operation":0`: see the DIVERGENCE note above)
     let env = Env::new();
     let mut presenter = new_presenter(&default_settings());
     let mut state = presenter.load_fields();
-    state.actions_json =
-        r#"[{"Name":"Esc","Shortcut":"F7","Operation":"Move","Destination":"..\\Elsewhere"}]"#.to_owned();
+    state.actions_json = r#"[{"Name":"Esc","Shortcut":"F7","Operation":0,"Destination":"..\\Elsewhere"}]"#.to_owned();
 
     let result = presenter.try_save(&state, &env.ctx());
 

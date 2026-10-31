@@ -226,6 +226,8 @@ pub(super) struct ShellWindowInner {
     pub(super) cursor: Cell<ShellCursor>,
     pub(super) created: Cell<bool>,
     pub(super) destroyed: Cell<bool>,
+    /// `true` while a `Closing` multicast runs (`raise_closing`); a nested `WM_CLOSE` is ignored meanwhile (an `FnMut` handler cannot be re-entered).
+    pub(super) closing_in_progress: Cell<bool>,
     /// Default `true` (C# `_surfaceReady = true`).
     pub(super) surface_ready: Cell<bool>,
     pub(super) render_requested: Cell<bool>,
@@ -282,6 +284,7 @@ impl ShellWindowInner {
             cursor: Cell::new(ShellCursor::Arrow),
             created: Cell::new(false),
             destroyed: Cell::new(false),
+            closing_in_progress: Cell::new(false),
             surface_ready: Cell::new(true),
             render_requested: Cell::new(false),
             is_active: Cell::new(false),
@@ -434,10 +437,15 @@ impl ShellWindowInner {
     fn dispose(&self, rethrow: bool) {
         let hwnd = self.hwnd.get();
         let destroying = hwnd != 0 && !self.destroyed.get();
+        // WM_DESTROY already ran but WM_NCDESTROY has not (the owner is dropped from a `Closed` subscriber): GWLP_USERDATA still points at the cookie, so
+        // `on_native_destroyed` (WM_NCDESTROY) must free it; freeing it here would leave the window procedure a dangling pointer.
+        let native_destroy_pending = hwnd != 0 && self.destroyed.get();
         if destroying {
             let _ = user32::destroy_window(hwnd);
         }
-        self.free_self();
+        if !native_destroy_pending {
+            self.free_self();
+        }
         if destroying && rethrow {
             rethrow_pending();
         }
