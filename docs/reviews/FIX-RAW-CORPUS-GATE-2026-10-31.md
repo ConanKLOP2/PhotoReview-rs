@@ -15,7 +15,7 @@ Các test RAW corpus thoát sớm (xanh giả) khi thiếu `tests/fixtures/raw-c
 Không thêm mới: 7 binary trên đã có sẵn nhiều test container-parse dùng byte tổng hợp dựng trong Rust (ví dụ readers_cr2 33 test, readers_rw2 34, raw_nef 68, raw_exif 70, cr3_reader 57 chạy xanh không corpus; chỉ các test có tên `corpus*` / `all_*corpus*` / golden-có-mẫu là skip). Phần "chỉ khi đơn giản" nên dừng ở (2).
 
 ## Bật STRICT khi có corpus
-Đặt corpus vào `tests/fixtures/raw-corpus` (hoặc `PHOTOREVIEW_RAW_CORPUS_DIR`), rồi:
+Đặt corpus vào thư mục corpus mặc định của repo (hoặc `PHOTOREVIEW_RAW_CORPUS_DIR`), rồi:
 - `PHOTOREVIEW_RAW_CORPUS_STRICT=1` (arw, cr2, cr3, w5_18),
 - `PHOTOREVIEW_RS_RAW_CORPUS_STRICT=1` (rw2, nef).
 Skip thành panic cho các test dùng cờ này; `raw_exif` hiện KHÔNG có nhánh strict (chỉ in SKIPPED) — việc nối strict cho raw_exif là follow-up.
