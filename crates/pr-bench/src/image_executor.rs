@@ -834,4 +834,13 @@ mod default_file_log_tests {
         assert!(when_on, "enabled must follow the global log when on");
         assert!(!when_off, "enabled must follow the global log when off");
     }
+
+    /// No injected probe and no `has_headroom`: fail closed (never headroom, no snapshot). Kills `has_headroom -> true`.
+    #[test]
+    fn missing_probe_fails_closed() {
+        let probe = choose_memory_probe(None, None);
+        assert!(!probe.has_headroom(0.0, 0));
+        assert!(!probe.has_headroom(1.0, i64::MAX));
+        assert!(probe.get_snapshot().is_none());
+    }
 }
