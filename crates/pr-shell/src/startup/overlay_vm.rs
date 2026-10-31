@@ -49,6 +49,17 @@ impl std::fmt::Debug for MainWindowOverlayViewModel {
 }
 
 impl MainWindowOverlayViewModel {
+    /// Runs the read-only dialog command `run` under a SHARED borrow. While another command holds the view model mutably (a modal in its nested message loop) the request is dropped and
+    /// logged instead of panicking on `RefCell` (review L6, same class as `overlay_model` / `settings`).
+    fn with_shared_view_model(&self, command: &str, run: impl FnOnce(&pr_app::viewmodels::main::MainViewModel)) {
+        match self.view_model.try_borrow() {
+            Ok(view_model) => run(&view_model),
+            Err(_) => self.log.warn(&format!(
+                "Overlay command {command} ignored: the view model is busy with another command"
+            )),
+        }
+    }
+
     fn window(&self) -> Option<Rc<MainWindow>> {
         self.window.upgrade().and_then(|slot| slot.borrow().clone())
     }
@@ -168,28 +179,28 @@ impl OverlayViewModel for MainWindowOverlayViewModel {
     /// `view_model.borrow().show_skipped_files()` (`&self` on the view model: a SHARED borrow, so the nested loop of the dialog can still paint).
     fn show_skipped_files(&self) {
         if let Some(_window) = self.window() {
-            self.view_model.borrow().show_skipped_files();
+            self.with_shared_view_model("show_skipped_files", |vm| vm.show_skipped_files());
         }
     }
 
     /// `view_model.borrow().show_recovery()` (shared borrow, as above).
     fn show_recovery(&self) {
         if let Some(_window) = self.window() {
-            self.view_model.borrow().show_recovery();
+            self.with_shared_view_model("show_recovery", |vm| vm.show_recovery());
         }
     }
 
     /// `view_model.borrow().show_diagnostics()` (shared borrow).
     fn show_diagnostics(&self) {
         if let Some(_window) = self.window() {
-            self.view_model.borrow().show_diagnostics();
+            self.with_shared_view_model("show_diagnostics", |vm| vm.show_diagnostics());
         }
     }
 
     /// `view_model.borrow().show_benchmark()` (shared borrow).
     fn show_benchmark(&self) {
         if let Some(_window) = self.window() {
-            self.view_model.borrow().show_benchmark();
+            self.with_shared_view_model("show_benchmark", |vm| vm.show_benchmark());
         }
     }
 

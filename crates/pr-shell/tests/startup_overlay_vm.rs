@@ -121,6 +121,27 @@ fn overlay_vm_read_only_dialogs_allow_a_shared_view_model_borrow() {
 
 #[test]
 #[ignore = "native: needs desktop; hidden MainWindow"]
+fn overlay_vm_read_only_dialogs_are_ignored_while_the_view_model_is_borrowed_mutably() {
+    // review L6: used to panic with "already borrowed" when a modal command held the view model.
+    on_ui(|| {
+        startup_part_a_fixture::with_window(|main, slot, dialog| {
+            let vm = MainWindowOverlayViewModel::new(main.view_model().clone(), slot, Arc::new(NullLog));
+            let modal = main.view_model().borrow_mut();
+            vm.show_skipped_files();
+            vm.show_recovery();
+            vm.show_diagnostics();
+            vm.show_benchmark();
+            drop(modal);
+            assert_eq!(dialog.recovery_shown.load(Ordering::SeqCst), 0);
+            assert_eq!(dialog.diagnostics_shown.load(Ordering::SeqCst), 0);
+            assert!(dialog.skipped_shown.lock().unwrap().is_empty());
+            assert!(dialog.benchmark_folders.lock().unwrap().is_empty());
+        })
+    });
+}
+
+#[test]
+#[ignore = "native: needs desktop; hidden MainWindow"]
 fn settings_dialog_command_does_not_panic_the_paint() {
     // C# ViewModelOverlayCommands.ShowSettings; contract T7 reentrant paint guard.
     on_ui(|| {

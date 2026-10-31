@@ -31,10 +31,13 @@ impl AppPaths {
     /// `<user>\cache`, `<user>\thumbnails`, `<user>\window-placement.json`,
     /// where `<app>` = `<local_app_data>\PhotoReviewRs` and `<data>` = override or `<app>\Data`.
     pub fn new(local_app_data: &Path, data_root_override: Option<&str>, isolate_config: bool) -> Self {
-        let app_root = local_app_data.join(APP_DIR_NAME);
         // Resolved once: a relative override would otherwise follow the (mutable) current directory at every later
         // use. An unusable value must not crash startup or logger init: it is ignored.
-        let override_root = resolve_override(data_root_override);
+        Self::from_override_root(local_app_data, resolve_override(data_root_override), isolate_config)
+    }
+
+    fn from_override_root(local_app_data: &Path, override_root: Option<PathBuf>, isolate_config: bool) -> Self {
+        let app_root = local_app_data.join(APP_DIR_NAME);
         let isolated_root = override_root.as_ref().filter(|_| isolate_config);
 
         let data_root = override_root.clone().unwrap_or_else(|| app_root.join("Data"));
@@ -56,13 +59,11 @@ impl AppPaths {
     /// The only place that reads [`DATA_ROOT_ENV`] / [`ISOLATE_CONFIG_ENV`].
     pub fn from_environment() -> Self {
         let local = std::env::var_os("LOCALAPPDATA").map(PathBuf::from);
-        let data_root = std::env::var(DATA_ROOT_ENV).ok();
+        // `var_os`: a value that is not valid Unicode (a lone surrogate, which .NET strings keep) must still redirect
+        // the data, never silently fall back to the real `%LOCALAPPDATA%` data (test isolation).
+        let data_root = std::env::var_os(DATA_ROOT_ENV).and_then(|value| resolve_override_os(&value));
         let isolate = std::env::var(ISOLATE_CONFIG_ENV).ok();
-        Self::new(
-            &resolve_local_app_data(local),
-            data_root.as_deref(),
-            is_truthy(isolate.as_deref()),
-        )
+        Self::from_override_root(&resolve_local_app_data(local), data_root, is_truthy(isolate.as_deref()))
     }
 }
 
@@ -83,6 +84,14 @@ fn resolve_override(value: Option<&str>) -> Option<PathBuf> {
     std::path::absolute(trimmed).ok()
 }
 
+/// [`resolve_override`] for an OS string: valid Unicode takes the text rules (trim, empty and NUL ignored); anything else is used as it is.
+fn resolve_override_os(value: &std::ffi::OsStr) -> Option<PathBuf> {
+    match value.to_str() {
+        Some(text) => resolve_override(Some(text)),
+        None => std::path::absolute(value).ok(),
+    }
+}
+
 fn is_truthy(value: Option<&str>) -> bool {
     value.is_some_and(|v| {
         let v = v.trim();
@@ -93,6 +102,24 @@ fn is_truthy(value: Option<&str>) -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[cfg(windows)]
+    #[test]
+    fn resolve_override_os_keeps_a_non_unicode_root() {
+        // Review L3: `env::var` ignored a value with a lone surrogate, so the data fell back to the real %LOCALAPPDATA%.
+        use std::os::windows::ffi::OsStringExt;
+        let value = std::ffi::OsString::from_wide(&[0x43, 0x3A, 0x5C, 0xD800, 0x61]);
+        let resolved = resolve_override_os(&value).expect("non-Unicode root is kept");
+        assert_eq!(resolved.as_os_str(), value.as_os_str());
+        let paths = AppPaths::from_override_root(&local(), Some(resolved.clone()), false);
+        assert_eq!(paths.journal_file, resolved.join("operations.jsonl"));
+    }
+
+    #[test]
+    fn resolve_override_os_applies_text_rules_to_unicode() {
+        assert_eq!(resolve_override_os(std::ffi::OsStr::new("  ")), None);
+        assert_eq!(resolve_override_os(std::ffi::OsStr::new("")), None);
+    }
 
     fn local() -> PathBuf {
         PathBuf::from(r"C:\Users\u\AppData\Local")
