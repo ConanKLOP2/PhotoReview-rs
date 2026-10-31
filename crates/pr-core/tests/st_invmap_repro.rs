@@ -48,7 +48,6 @@ fn failed_permanent_delete_group() -> JournalEntry {
 
 // Not a C# port: new test for finding H1 of ST-INVMAP-2026-10-31.
 #[test]
-#[ignore = "H1/G25 open: red until recovery_retry re-stats before the permanent delete; run with --ignored"]
 fn retry_group_permanent_member_replaced_between_precheck_and_mutation_is_not_deleted() {
     let rig = Rig::with_clocks(STAMP + 600_000_000, STAMP + 1_200_000_000);
     rig.fs.seed_text(JPG, "jpeg", ts(STAMP));
