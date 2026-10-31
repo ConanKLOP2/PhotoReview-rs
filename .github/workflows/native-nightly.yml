@@ -91,7 +91,9 @@ jobs:
             # message loop on a UI thread), no C# DLL and no Recycle Bin: startup_overlay_vm (L6 try_borrow, 3 native tests) and
             # composition_graph (2 native tests incl. dispose_graph_flushes_the_session_writer_...). One night must confirm them; remove
             # a binary that is red only because windows-latest has no interactive desktop.
-            'pr-shell' = @('startup_overlay_vm', 'composition_graph')
+            'pr-shell' = @('startup_overlay_vm', 'composition_graph',
+              # Added 2026-10-31 (st-early-stj): green locally (1 test, 0.4 s, hidden WARP window); the process scenario of X-startup-early-decode.
+              'startup_early_decode_native')
           }
           $failed = @()
           foreach ($crate in $plan.Keys) {
