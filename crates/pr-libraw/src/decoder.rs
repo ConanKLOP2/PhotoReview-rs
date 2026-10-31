@@ -17,8 +17,12 @@
 
 use std::ffi::OsStr;
 use std::fmt;
+use std::io::{self, Read, Seek, SeekFrom};
+use std::path::Path;
 use std::sync::{Arc, LazyLock};
 
+use pr_core::abstractions::FileSystem;
+use pr_core::io::physical::PhysicalFileSystem;
 use pr_core::model::enums::DecoderBackend;
 use pr_core::sync::CancelToken;
 use pr_core::text::dotnet_path;
@@ -49,6 +53,9 @@ pub const MAX_QUEUED_PRELOAD_DECODES: i32 = 2;
 pub const LONG_PATH_THRESHOLD: usize = 248;
 /// C# `TrailingEoiSearchWindow` (64 KiB): the structure-free fallback looks for the last EOI only in the final window.
 pub const TRAILING_EOI_SEARCH_WINDOW: usize = 64 * 1024;
+
+/// Chunk of the shared-read loop of [`read_file_shared`]: the cancel token is checked between chunks (DV-22).
+pub const SHARED_READ_CHUNK_BYTES: usize = 4 << 20;
 
 /// `LIBRAW_IO_ERROR`.
 pub const LIBRAW_IO_ERROR: i32 = -100_009;
@@ -245,6 +252,9 @@ pub struct LibRawDecoder {
     gate: FullDecodeGate,
     /// C# `CoreOverride`.
     core_override: Option<CoreOverride>,
+    /// DV-22 (INV-8): read a RAW given by path through a `Read | Write | Delete` share handle into memory and decode with
+    /// `libraw_open_buffer`, so Delete/Move of the file is never blocked by the decode. Off by default (C# `libraw_open_wfile`).
+    shared_file_read: bool,
 }
 
 impl fmt::Debug for LibRawDecoder {
@@ -273,7 +283,19 @@ impl LibRawDecoder {
             memory_info,
             gate: FULL_DECODE_GATE.clone(),
             core_override: None,
+            shared_file_read: false,
         }
+    }
+
+    /// DV-22 (INV-8, Rust-only difference from C#): a decode of a path-only request reads the file once through a handle that
+    /// shares Read, Write and Delete ([`read_file_shared`]) and opens LibRaw on the bytes (`libraw_open_buffer`), so renaming or
+    /// deleting the RAW while it decodes is not refused by the OS (`libraw_open_wfile` holds a handle without `FILE_SHARE_DELETE`
+    /// until `libraw_close`). Costs the file size in RAM for the length of the decode. Every production composition site calls
+    /// this; the default stays the C# path so the oracle tests keep their meaning.
+    #[must_use]
+    pub fn with_shared_file_read(mut self) -> Self {
+        self.shared_file_read = true;
+        self
     }
 
     /// `new LibRawDecoder(codec, stageObserver)` (test seam).
@@ -369,6 +391,9 @@ impl LibRawDecoder {
                 let code = session.open_buffer(Arc::clone(bytes));
                 check_result(code, "open RAW buffer", cancel, &format_error)?;
             }
+            None if self.shared_file_read => {
+                self.open_shared(&mut *session, request, cancel, &format_error)?;
+            }
             None => open_file_with(
                 &mut |path: &OsStr| session.open_wfile(path),
                 request.path.as_os_str(),
@@ -420,6 +445,36 @@ impl LibRawDecoder {
         drop(image);
         let downscaled = is_downscaled(target_width, target_height, width, height);
         self.hand_off(&mut pixels, downscaled, width, height, &|| true)
+    }
+
+    /// DV-22: the shared-read open of [`Self::decode_core`]. Reads the file with [`read_file_shared`] (same long-path retry,
+    /// error texts and cancel behaviour as [`open_file_with`]: every read failure is reported as `LIBRAW_IO_ERROR`, an
+    /// allocation failure as `LIBRAW_UNSUFFICIENT_MEMORY`), then `open_buffer`; the session keeps the bytes until after
+    /// `libraw_close`. A content rejection by LibRaw keeps the C# wording `"open RAW file"`.
+    fn open_shared(
+        &self,
+        session: &mut dyn LibRawSession,
+        request: &DecodeRequest,
+        cancel: &CancelToken,
+        format_error: &dyn Fn(i32) -> String,
+    ) -> Result<(), DecodeError> {
+        let mut loaded: Option<SourceBytes> = None;
+        open_file_with(
+            &mut |path: &OsStr| match read_file_shared(Path::new(path), cancel, self.memory_info.as_ref()) {
+                Ok(bytes) => {
+                    loaded = Some(bytes);
+                    0
+                }
+                Err(SharedReadError::OutOfMemory) => LIBRAW_UNSUFFICIENT_MEMORY,
+                Err(SharedReadError::Canceled | SharedReadError::Io(_)) => LIBRAW_IO_ERROR,
+            },
+            request.path.as_os_str(),
+            cancel,
+            format_error,
+        )?;
+        let bytes = loaded.ok_or_else(|| create_failure(LIBRAW_IO_ERROR, "open RAW file", format_error))?;
+        let code = session.open_buffer(bytes);
+        check_result(code, "open RAW file", cancel, format_error)
     }
 
     /// C# `AdmitDecode`: [`Self::ensure_memory_headroom`] first, then (only when it passes) `lease.mark_worked()`. A refusal is an
@@ -786,6 +841,64 @@ pub fn is_supported_bitmap(header: &ProcessedImageHeader) -> bool {
 /// C# `IsDownscaled`: `target_width < source_width || target_height < source_height`.
 pub fn is_downscaled(target_width: i32, target_height: i32, source_width: i32, source_height: i32) -> bool {
     target_width < source_width || target_height < source_height
+}
+
+// ------------------------------------------------------------------------------------------------ shared read (DV-22)
+
+/// Why [`read_file_shared`] gave no bytes.
+#[derive(Debug)]
+pub enum SharedReadError {
+    /// Open, seek or read failed (missing file, access denied, the file shrank while reading).
+    Io(io::Error),
+    /// The token was canceled before or between chunks.
+    Canceled,
+    /// The file does not fit the memory headroom (twice its length: the read buffer and the shared copy) or the buffer could
+    /// not be allocated.
+    OutOfMemory,
+}
+
+/// DV-22 (INV-8): the whole file at `path`, read once through a handle opened with `FILE_SHARE_READ | FILE_SHARE_WRITE |
+/// FILE_SHARE_DELETE` (`PhysicalFileSystem::open_read_shared`, the C# `FileShare.ReadWrite | Delete` rule) that is closed before
+/// this returns, so nothing holds the file while LibRaw decodes the bytes. Order: cancel check, open, length (seek to the end),
+/// headroom check (`2 x length`: the `Vec` and the `Arc<[u8]>` copy exist together for an instant), `try_reserve_exact`, then
+/// chunks of [`SHARED_READ_CHUNK_BYTES`] with a cancel check before each. A file shorter than its measured length is an error.
+pub fn read_file_shared(
+    path: &Path,
+    cancel: &CancelToken,
+    memory: &dyn MemoryInfoSource,
+) -> Result<SourceBytes, SharedReadError> {
+    if cancel.is_canceled() {
+        return Err(SharedReadError::Canceled);
+    }
+    let mut stream = PhysicalFileSystem
+        .open_read_shared(path, 1)
+        .map_err(SharedReadError::Io)?;
+    let length = stream.seek(SeekFrom::End(0)).map_err(SharedReadError::Io)?;
+    stream.seek(SeekFrom::Start(0)).map_err(SharedReadError::Io)?;
+    let length = usize::try_from(length).map_err(|_| SharedReadError::OutOfMemory)?;
+    let needed = i64::try_from(length).ok().and_then(|n| n.checked_mul(2));
+    let info = memory.read();
+    if !needed.is_some_and(|n| memory_headroom::has_headroom(n, info.total_available, info.load)) {
+        return Err(SharedReadError::OutOfMemory);
+    }
+    let mut buffer: Vec<u8> = Vec::new();
+    buffer
+        .try_reserve_exact(length)
+        .map_err(|_| SharedReadError::OutOfMemory)?;
+    buffer.resize(length, 0);
+    let mut filled = 0;
+    while filled < length {
+        if cancel.is_canceled() {
+            return Err(SharedReadError::Canceled);
+        }
+        let end = length.min(filled + SHARED_READ_CHUNK_BYTES);
+        stream
+            .read_exact(&mut buffer[filled..end])
+            .map_err(SharedReadError::Io)?;
+        filled = end;
+    }
+    drop(stream);
+    Ok(Arc::from(buffer))
 }
 
 // ------------------------------------------------------------------------------------------------ open, results, errors

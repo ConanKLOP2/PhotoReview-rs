@@ -669,11 +669,14 @@ impl SharedServices {
                 config.clock = Some(self.clock());
                 let raw_enabled_store = self.settings_store();
                 if pr_libraw::availability::probe().available {
-                    config.raw_full_decoder = Some(Arc::new(pr_libraw::decoder::LibRawDecoder::new(
-                        Arc::clone(&self.inner.inputs.options.codec),
-                        Arc::clone(&self.platform().libraw_api),
-                        Arc::clone(&self.platform().memory_info),
-                    )));
+                    config.raw_full_decoder = Some(Arc::new(
+                        pr_libraw::decoder::LibRawDecoder::new(
+                            Arc::clone(&self.inner.inputs.options.codec),
+                            Arc::clone(&self.platform().libraw_api),
+                            Arc::clone(&self.platform().memory_info),
+                        )
+                        .with_shared_file_read(),
+                    ));
                 }
                 config.is_raw_full_decode_enabled = Some(Arc::new(move || {
                     let current = raw_enabled_store.current();
