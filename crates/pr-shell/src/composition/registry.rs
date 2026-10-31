@@ -122,6 +122,30 @@ struct Inner {
     preload_scheduler_factory: OnceLock<PreloadSchedulerFactory>,
 }
 
+/// `<directory of the running exe>\Languages` (C# `AppContext.BaseDirectory\Languages`). When `current_exe` fails (review L8) the directory of `argv[0]` is used and a warning is
+/// logged; with neither, the relative `Languages` is kept (the shipped catalogs then fall back to the built-in English).
+pub fn shipped_languages_dir(
+    current_exe: std::io::Result<std::path::PathBuf>,
+    argv0: Option<std::ffi::OsString>,
+    log: &dyn pr_core::abstractions::Log,
+) -> std::path::PathBuf {
+    let parent_of = |path: &std::path::Path| {
+        path.parent()
+            .filter(|parent| !parent.as_os_str().is_empty())
+            .map(std::path::Path::to_path_buf)
+    };
+    let base = match current_exe {
+        Ok(path) => parent_of(&path),
+        Err(error) => {
+            log.warn(&format!(
+                "current_exe failed ({error}); the shipped languages are looked up next to argv[0]"
+            ));
+            argv0.and_then(|arg| parent_of(std::path::Path::new(&arg)))
+        }
+    };
+    base.unwrap_or_default().join("Languages")
+}
+
 /// C# `AddPhotoReviewShared`: the singletons of the shared service graph. `Clone` shares the cells.
 #[derive(Clone)]
 pub struct SharedServices {
@@ -268,11 +292,11 @@ impl SharedServices {
             Arc::new(Mutex::new(pr_app::localization::service::LocalizationService::new(
                 Arc::new(pr_core::io::physical::PhysicalFileSystem),
                 pr_app::localization::service::LocalizationPaths {
-                    shipped_dir: std::env::current_exe()
-                        .ok()
-                        .and_then(|path| path.parent().map(std::path::Path::to_path_buf))
-                        .unwrap_or_default()
-                        .join("Languages"),
+                    shipped_dir: shipped_languages_dir(
+                        std::env::current_exe(),
+                        std::env::args_os().next(),
+                        self.log().as_ref(),
+                    ),
                     user_languages_dir: self
                         .paths()
                         .config_file

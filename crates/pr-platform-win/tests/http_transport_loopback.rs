@@ -293,7 +293,7 @@ impl HttpTransport for LocalTransport {
 fn capped_check(size: usize, chunked: bool) -> pr_core::updates::version::UpdateCheckResult {
     use pr_core::updates::checker::{UpdateCheck, UpdateChecker};
     let mut payload =
-        br#"{"tag_name":"v2.0.94","html_url":"https://github.com/ConanKLOP2/PhotoReview/releases/tag/v2.0.94"}"#
+        br#"{"tag_name":"v2.0.94","html_url":"https://github.com/ConanKLOP2/PhotoReview-rs/releases/tag/v2.0.94"}"#
             .to_vec();
     payload.resize(size, b' ');
     let mut response = if chunked {

@@ -25,7 +25,7 @@ use pr_l10n::template::{LocArg, NumberCulture};
 use pr_test_support::{FakeFileSystem, RecordingLog, TempRoot};
 
 const PHYSICAL_MEMORY: i64 = 32 * 1024 * 1024 * 1024;
-const RELEASE_URL: &str = "https://github.com/ConanKLOP2/PhotoReview/releases/tag/v2.0.94";
+const RELEASE_URL: &str = "https://github.com/ConanKLOP2/PhotoReview-rs/releases/tag/v2.0.94";
 const HANG_GUARD: Duration = Duration::from_secs(10);
 
 // ---------------------------------------------------------------------------------------------------------------
