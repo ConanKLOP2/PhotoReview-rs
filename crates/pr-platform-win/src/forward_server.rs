@@ -17,6 +17,8 @@ const RETRY_DELAY: Duration = Duration::from_millis(500);
 const MAX_RETRY_DELAY: Duration = Duration::from_secs(30);
 const DEFAULT_READ_TIMEOUT: Duration = Duration::from_secs(5);
 const DISPOSE_JOIN_TIMEOUT: Duration = Duration::from_secs(2);
+/// How long the listener waits, after writing a reply, for the client to read it and hang up (ST-WIN32 L2). C# `FlushAsync` after the reply write.
+const REPLY_DELIVERY_TIMEOUT: Duration = Duration::from_secs(1);
 
 type PathsCallback = dyn Fn(&[String]) + Send + Sync;
 /// Predicate used to confirm every decoded path exists before invoking the callback.
@@ -57,6 +59,12 @@ pub trait ForwardPipe: Send {
     fn read(&mut self, buffer: &mut [u8], deadline: Instant) -> Result<usize, ForwardPipeError>;
     /// Writes the reply before the request's original deadline.
     fn write_all(&mut self, bytes: &[u8], deadline: Instant) -> Result<(), ForwardPipeError>;
+    /// Waits (at most until `deadline`) until the client has taken the reply written by [`ForwardPipe::write_all`]. Dropping a native server
+    /// instance disconnects it, which discards unread outbound bytes; without this wait the client sees a broken pipe instead of `OK`/`ERR`
+    /// (ST-WIN32 L2). C# `NamedPipeServerStream.FlushAsync` after the reply. The default does nothing (in-memory fakes).
+    fn wait_reply_delivered(&mut self, _deadline: Instant) -> Result<(), ForwardPipeError> {
+        Ok(())
+    }
 }
 
 /// Creates secure pipe instances and supplies cancellation-aware retry waits.
@@ -294,8 +302,9 @@ fn handle_request(inner: &ServerInner, pipe: &mut dyn ForwardPipe) {
         false
     };
     let reply: &[u8] = if accepted { b"OK\n" } else { b"ERR\n" };
-    if Instant::now() < deadline {
-        let _ = pipe.write_all(reply, deadline);
+    if Instant::now() < deadline && pipe.write_all(reply, deadline).is_ok() {
+        // Best effort: a client that never hangs up only delays the next accept by `REPLY_DELIVERY_TIMEOUT`.
+        let _ = pipe.wait_reply_delivered(Instant::now() + REPLY_DELIVERY_TIMEOUT);
     }
 }
 
@@ -399,9 +408,12 @@ mod native_pipe {
             }
             let mut transferred = 0;
             // SAFETY: the operation event was signaled; handle and OVERLAPPED remain live through result retrieval.
-            unsafe { GetOverlappedResult(pipe, overlapped, &mut transferred, false) }
-                .map_err(|error| ForwardPipeError::Failed(error.to_string()))?;
-            Ok(transferred)
+            match unsafe { GetOverlappedResult(pipe, overlapped, &mut transferred, false) } {
+                Ok(()) => Ok(transferred),
+                // The client hung up: a pending read ends like the synchronous path of `read` (zero bytes), not as a failure (ST-WIN32 L5).
+                Err(error) if error.code().0 == hresult_from_win32(ERROR_BROKEN_PIPE.0) => Ok(0),
+                Err(error) => Err(ForwardPipeError::Failed(error.to_string())),
+            }
         }
 
         fn operation_event(&self) -> Result<HANDLE, ForwardPipeError> {
@@ -424,7 +436,7 @@ mod native_pipe {
 
     impl Drop for NativeForwardPipeFactory {
         fn drop(&mut self) {
-            // SAFETY: this factory owns the stop event and closes it after the listener worker is joined.
+            // SAFETY: this factory owns the stop event; the worker holds an `Arc` of it through `ServerInner`, so this runs only once the worker has ended (also after the 2 s `dispose` timeout).
             let _ = unsafe { CloseHandle(self.stop_event) };
         }
     }
@@ -602,6 +614,16 @@ mod native_pipe {
                 bytes = &bytes[written..];
             }
             Ok(())
+        }
+
+        fn wait_reply_delivered(&mut self, deadline: Instant) -> Result<(), ForwardPipeError> {
+            // The client reads the reply and closes its handle; the server then sees EOF (zero bytes or a broken pipe). Stray bytes are discarded.
+            let mut scratch = [0u8; 64];
+            loop {
+                if self.read(&mut scratch, deadline)? == 0 {
+                    return Ok(());
+                }
+            }
         }
     }
 

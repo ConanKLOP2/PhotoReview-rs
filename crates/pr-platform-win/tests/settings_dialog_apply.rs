@@ -253,3 +253,32 @@ fn wheel_delta_is_a_signed_high_word_and_forwarding_keeps_combo_dropdown_ownersh
         assert!(!is_forwarded(message, false, false));
     }
 }
+
+#[test]
+fn requeue_front_keeps_the_unrun_rest_in_order_ahead_of_newer_posts_and_dies_with_the_window() {
+    // ST-WIN32 L13: a panicking action ends the drained batch; the rest goes back to the front (C# TryDequeue loop leaves it queued).
+    let poster = WindowPoster::new();
+    poster.set_hwnd(0x1234);
+    let observed = Arc::new(Mutex::new(Vec::new()));
+    for value in 0..4 {
+        let observed = observed.clone();
+        poster.post(Box::new(move |_| observed.lock().unwrap().push(value)));
+    }
+    let mut batch = poster.drain();
+    assert_eq!(batch.len(), 4);
+    let context = SettingsPageContext::detached();
+    batch.remove(0)(&context); // action 0 ran, "action 1 panicked" and was consumed
+    let _consumed = batch.remove(0);
+    let observed_late = observed.clone();
+    poster.post(Box::new(move |_| observed_late.lock().unwrap().push(99)));
+    poster.requeue_front(batch);
+    assert_eq!(poster.pending(), 3);
+    for action in poster.drain() {
+        action(&context);
+    }
+    assert_eq!(*observed.lock().unwrap(), vec![0, 2, 3, 99]);
+
+    poster.set_hwnd(0);
+    poster.requeue_front(vec![Box::new(|_| panic!("a closed window must not run requeued work"))]);
+    assert_eq!(poster.pending(), 0);
+}

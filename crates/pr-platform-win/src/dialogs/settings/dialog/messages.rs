@@ -64,6 +64,18 @@ impl WindowPoster {
             .collect()
     }
 
+    /// Puts actions that were drained but not run (a panicking action ended the batch) back at the FRONT of the queue, in order, so the next wake still
+    /// runs them like the C# `TryDequeue` loop that leaves the rest queued (ST-WIN32 L13). Dropped when the window is gone (`hwnd == 0`).
+    pub fn requeue_front(&self, rest: Vec<ContextUiAction>) {
+        let mut queue = self.queue.lock().unwrap_or_else(std::sync::PoisonError::into_inner);
+        if self.hwnd() == 0 {
+            return;
+        }
+        for action in rest.into_iter().rev() {
+            queue.push_front(action);
+        }
+    }
+
     /// How many actions wait (tests).
     pub fn pending(&self) -> usize {
         self.queue
@@ -173,8 +185,15 @@ impl SettingsContent {
                     };
                     action(self, dialog);
                 }
-                for action in self.poster.drain() {
-                    action(&self.context);
+                // A panicking action must not lose the actions behind it (the wndproc guard keeps the panic for the next rethrow point).
+                let mut batch: std::collections::VecDeque<ContextUiAction> = self.poster.drain().into();
+                while let Some(action) = batch.pop_front() {
+                    if let Err(payload) =
+                        std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| action(&self.context)))
+                    {
+                        self.poster.requeue_front(batch.into());
+                        std::panic::resume_unwind(payload);
+                    }
                 }
                 Some(0)
             }

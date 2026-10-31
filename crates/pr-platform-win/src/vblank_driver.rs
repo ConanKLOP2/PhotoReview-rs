@@ -359,34 +359,66 @@ unsafe extern "system" {
 #[cfg(windows)]
 #[link(name = "kernel32")]
 unsafe extern "system" {
-    fn LoadLibraryW(name: *const u16) -> *mut core::ffi::c_void;
-    fn FreeLibrary(module: *mut core::ffi::c_void) -> i32;
+    fn LoadLibraryExW(name: *const u16, file: *mut core::ffi::c_void, flags: u32) -> *mut core::ffi::c_void;
     fn GetProcAddress(module: *mut core::ffi::c_void, name: *const u8) -> *mut core::ffi::c_void;
+}
+
+/// `LOAD_LIBRARY_SEARCH_SYSTEM32`: resolve the bare DLL name in System32 only, never in the application directory (ST-WIN32 L6, DLL planting).
+#[cfg(windows)]
+const LOAD_LIBRARY_SEARCH_SYSTEM32: u32 = 0x0000_0800;
+
+/// A System32 module handle (as `usize`, 0 never stored) or the OS error text of the failed load.
+#[cfg(windows)]
+type CachedModule = Result<usize, String>;
+
+/// Loads `name` (NUL-terminated UTF-16) from System32 once; the module stays loaded for the process lifetime (system DLLs, never freed), so the
+/// per-vblank calls do no `LoadLibrary`/`FreeLibrary` and never take the loader lock (ST-WIN32 L6).
+#[cfg(windows)]
+fn load_system_module(name: &[u16]) -> CachedModule {
+    debug_assert_eq!(name.last(), Some(&0));
+    // SAFETY: `name` is a NUL-terminated UTF-16 string that outlives the call; a null file handle and the System32-only flag are the documented form.
+    let module = unsafe { LoadLibraryExW(name.as_ptr(), core::ptr::null_mut(), LOAD_LIBRARY_SEARCH_SYSTEM32) };
+    if module.is_null() {
+        Err(std::io::Error::last_os_error().to_string())
+    } else {
+        Ok(module as usize)
+    }
+}
+
+#[cfg(windows)]
+fn dwmapi_module() -> &'static CachedModule {
+    static MODULE: std::sync::OnceLock<CachedModule> = std::sync::OnceLock::new();
+    MODULE.get_or_init(|| load_system_module(&[100, 119, 109, 97, 112, 105, 46, 100, 108, 108, 0]))
+}
+
+#[cfg(windows)]
+fn gdi32_module() -> &'static CachedModule {
+    static MODULE: std::sync::OnceLock<CachedModule> = std::sync::OnceLock::new();
+    MODULE.get_or_init(|| load_system_module(&[103, 100, 105, 51, 50, 46, 100, 108, 108, 0]))
 }
 
 #[cfg(windows)]
 unsafe fn with_optional_dwm<T>(
     call: impl FnOnce(unsafe extern "system" fn(isize, *mut DwmTimingInfo) -> i32) -> T,
 ) -> Option<T> {
-    const MODULE_NAME: [u16; 11] = [100, 119, 109, 97, 112, 105, 46, 100, 108, 108, 0];
-    // SAFETY: MODULE_NAME is a static, NUL-terminated UTF-16 string.
-    let module = unsafe { LoadLibraryW(MODULE_NAME.as_ptr()) };
-    if module.is_null() {
+    let Ok(module) = dwmapi_module() else {
         return None;
-    }
-    // SAFETY: module is a live LoadLibraryW reference and the symbol name is static and NUL terminated.
-    let address = unsafe { GetProcAddress(module, c"DwmGetCompositionTimingInfo".as_ptr().cast()) };
-    let result = if address.is_null() {
+    };
+    // SAFETY: the cached module is a System32 dwmapi.dll that is never freed, and the symbol name is static and NUL terminated.
+    let address = unsafe {
+        GetProcAddress(
+            *module as *mut core::ffi::c_void,
+            c"DwmGetCompositionTimingInfo".as_ptr().cast(),
+        )
+    };
+    if address.is_null() {
         None
     } else {
         // SAFETY: GetProcAddress found the documented DWM function; this signature matches dwmapi.h.
         let function: unsafe extern "system" fn(isize, *mut DwmTimingInfo) -> i32 =
             unsafe { core::mem::transmute(address) };
         Some(call(function))
-    };
-    // SAFETY: module is the reference acquired above and is no longer used after this call.
-    let _ = unsafe { FreeLibrary(module) };
-    result
+    }
 }
 
 #[cfg(windows)]
@@ -412,17 +444,13 @@ unsafe fn with_optional_gdi_symbol<T>(
     name: &'static core::ffi::CStr,
     call: impl FnOnce(unsafe extern "system" fn(*mut T) -> i32) -> i32,
 ) -> Result<i32, NativeImportError> {
-    const MODULE_NAME: [u16; 10] = [103, 100, 105, 51, 50, 46, 100, 108, 108, 0];
-    // SAFETY: MODULE_NAME is a static, NUL-terminated UTF-16 string.
-    let module = unsafe { LoadLibraryW(MODULE_NAME.as_ptr()) };
-    if module.is_null() {
-        return Err(NativeImportError::dll_not_found(
-            std::io::Error::last_os_error().to_string(),
-        ));
-    }
-    // SAFETY: module is a live LoadLibraryW reference and name points to a static NUL-terminated export name.
+    let module = match gdi32_module() {
+        Ok(module) => *module as *mut core::ffi::c_void,
+        Err(error) => return Err(NativeImportError::dll_not_found(error.clone())),
+    };
+    // SAFETY: the cached module is a System32 gdi32.dll that is never freed, and name points to a static NUL-terminated export name.
     let address = unsafe { GetProcAddress(module, name.as_ptr().cast()) };
-    let result = if address.is_null() {
+    if address.is_null() {
         Err(NativeImportError::entry_point_not_found(
             std::io::Error::last_os_error().to_string(),
         ))
@@ -430,8 +458,30 @@ unsafe fn with_optional_gdi_symbol<T>(
         // SAFETY: callers request documented D3DKMT exports with the same one-pointer NTSTATUS ABI.
         let function: unsafe extern "system" fn(*mut T) -> i32 = unsafe { core::mem::transmute(address) };
         Ok(call(function))
-    };
-    // SAFETY: module is the reference acquired above and is no longer used after this call.
-    let _ = unsafe { FreeLibrary(module) };
-    result
+    }
+}
+
+#[cfg(all(test, windows))]
+mod module_cache_tests {
+    use super::*;
+
+    #[test]
+    fn system_modules_are_loaded_once_and_the_cache_is_reused() {
+        let first = gdi32_module();
+        assert!(
+            first.as_ref().is_ok_and(|module| *module != 0),
+            "gdi32.dll loads from System32"
+        );
+        assert!(
+            std::ptr::eq(first, gdi32_module()),
+            "the second call reuses the cached result"
+        );
+        assert!(std::ptr::eq(dwmapi_module(), dwmapi_module()));
+    }
+
+    #[test]
+    fn missing_system_module_reports_the_os_error() {
+        let name: Vec<u16> = "pr_no_such_system_dll.dll\0".encode_utf16().collect();
+        assert!(load_system_module(&name).is_err());
+    }
 }

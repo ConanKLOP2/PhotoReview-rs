@@ -238,3 +238,27 @@ fn empty_open_url_is_rejected_without_entering_the_shell() {
         assert_eq!(default_open_url(url), Err("empty url".to_owned()));
     }
 }
+
+#[test]
+fn open_url_accepts_only_http_and_https_without_entering_the_shell() {
+    // ST-WIN32 L11: Rust-only hardening; these are rejected before ShellExecuteExW, so the test never starts a process.
+    for url in [
+        r"C:\Windows\System32\notepad.exe",
+        "file:///C:/Windows/notepad.exe",
+        "javascript:alert(1)",
+        "ms-settings:",
+        "ftp://example.invalid/a",
+        "http://",
+        "https:/x",
+    ] {
+        assert_eq!(default_open_url(url), Err("unsupported url scheme".to_owned()), "{url}");
+        assert!(!is_web_url(url), "{url}");
+    }
+    for url in [
+        "http://example.invalid/",
+        "HTTPS://example.invalid/a?b=c",
+        "  https://example.invalid  ",
+    ] {
+        assert!(is_web_url(url), "{url}");
+    }
+}
