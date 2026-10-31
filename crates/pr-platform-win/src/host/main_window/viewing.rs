@@ -645,6 +645,14 @@ impl MainWindow {
         self.inner.current_prefetcher()
     }
 
+    /// A new `PrefetchHost` over this window (the same type the prefetcher of `attach_renderer` uses), so tests can drive `path_at`, `start_lookup` and
+    /// `schedule_retry` directly. Holds only a `Weak`: it never keeps the window alive and does nothing once the window is gone.
+    pub fn prefetch_host(&self) -> Rc<dyn PrefetchHost> {
+        Rc::new(MainWindowPrefetchHost {
+            window: self.inner.weak_self.clone(),
+        })
+    }
+
     /// C# `Stats`: runs `f` on the frame statistics.
     pub fn with_stats<R>(&self, f: impl FnOnce(&mut FrameStats) -> R) -> R {
         f(&mut self.inner.viewing.stats.borrow_mut())
