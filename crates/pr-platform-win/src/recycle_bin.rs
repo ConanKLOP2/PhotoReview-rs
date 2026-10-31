@@ -60,7 +60,7 @@ impl WindowsRecycleBin {
             |path| path.exists(),
             |path| std::fs::metadata(path).map(|metadata| metadata.len()),
             native_shell_recycle,
-            |path| delete_missing_file_is_success(|| std::fs::remove_file(path)),
+            native_file_delete,
             restore_backend,
         )
     }
@@ -241,28 +241,11 @@ fn display_name(path: &Path) -> String {
         .to_owned()
 }
 
-fn delete_missing_file_is_success(remove: impl FnOnce() -> io::Result<()>) -> io::Result<()> {
-    match remove() {
-        Err(error) if error.kind() == io::ErrorKind::NotFound => Ok(()),
-        result => result,
-    }
-}
-
-#[cfg(test)]
-mod delete_semantics_tests {
-    use super::*;
-
-    #[test]
-    fn permanent_delete_treats_a_missing_source_as_already_deleted() {
-        // C# twin: WindowsRecycleBin.DeletePermanently treats File.Delete on a missing path as success.
-        assert!(delete_missing_file_is_success(|| Err(io::ErrorKind::NotFound.into())).is_ok());
-    }
-
-    #[test]
-    fn permanent_delete_preserves_non_missing_errors() {
-        let error = delete_missing_file_is_success(|| Err(io::ErrorKind::PermissionDenied.into())).unwrap_err();
-        assert_eq!(error.kind(), io::ErrorKind::PermissionDenied);
-    }
+/// Production permanent delete: C# `File.Delete` = `DeleteFileW` through the shared `PhysicalFileSystem::delete`
+/// (already reused by the file-action path). `std::fs::remove_file` also deletes read-only files on Windows, which C#
+/// refuses (`UnauthorizedAccessException`); a missing file stays success. ST-INVMAP M2, user decision Q2 2026-10-31.
+pub fn native_file_delete(path: &Path) -> io::Result<()> {
+    pr_core::abstractions::FileSystem::delete(&pr_core::io::physical::PhysicalFileSystem, path)
 }
 
 fn native_shell_recycle(path: &Path) -> io::Result<()> {
