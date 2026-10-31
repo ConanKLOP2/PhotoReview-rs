@@ -40,6 +40,8 @@ fn second_instance_forwards_its_path_to_the_running_one_and_exits_zero() {
 }
 
 // C#: ShellStartupTests.Startup_WithLoggingOff_WritesNoLogFile.
+// Needs libraw.dll and turbojpeg.dll staged (tools/dev/stage-native.ps1): when a probe fails the app writes a FORCED error
+// (AppLog.ErrorForced, as C# does), which legitimately creates app.log even with logging off. Not an INV-10 violation.
 #[test]
 #[ignore = "native: normal exe startup needs a desktop"]
 fn startup_with_logging_off_writes_no_log_file() {
@@ -47,5 +49,11 @@ fn startup_with_logging_off_writes_no_log_file() {
     let mut process = fixture::ShellProcess::start(&[a.to_string_lossy().into_owned()], None);
     process.wait_for("first frame", |p| p.count_events("RenderedFrame") >= 1);
     process.close();
-    assert!(!process.root.path().join("data/logs/app.log").exists());
+    let log = process.root.path().join("data/logs/app.log");
+    let content = std::fs::read_to_string(&log).unwrap_or_default();
+    assert!(
+        !log.exists(),
+        "log off (INV-10): the exe wrote {}:\n{content}",
+        log.display()
+    );
 }
