@@ -32,7 +32,7 @@ use pr_core::model::DecoderBackend;
 use pr_core::model::serde_ext::LenientEnum;
 use pr_core::sync::CancelToken;
 
-use crate::cache::atomic_file::{AtomicWriteError, write_atomic};
+use crate::cache::atomic_file::{AtomicWriteError, CommitGate, write_atomic, write_atomic_gated};
 use crate::decode_types::{DecodedImage, DecodedImageOptions, DecodedImageView};
 use crate::decoder_traits::PlatformImageCodec;
 use crate::exif_summary::{ExifSummary, codec};
@@ -303,6 +303,33 @@ pub fn build_entry_prefix(
     Ok(prefix)
 }
 
+/// Largest entry file the format can describe: header, EXIF length field, the largest EXIF block, a payload of
+/// `i32::MAX` bytes (C# rejects a longer payload as implausibly large).
+fn max_entry_file_len() -> u64 {
+    (HEADER_SIZE + 2 + MAX_EXIF_BLOCK) as u64 + u64::from(i32::MAX.unsigned_abs())
+}
+
+/// A file longer than any valid entry is an unusable entry ([`PreviewCacheError::InvalidData`], same text as
+/// [`parse_entry`]'s payload check), decided from the file length alone.
+fn check_entry_file_len(len: u64) -> Result<(), PreviewCacheError> {
+    if len > max_entry_file_len() {
+        return Err(PreviewCacheError::InvalidData(
+            "Preview cache entry payload is implausibly large.".to_owned(),
+        ));
+    }
+    Ok(())
+}
+
+/// An empty buffer with room for `capacity` bytes; a failed allocation is [`PreviewCacheError::OutOfMemory`] (the
+/// entry is intact and kept) instead of the process abort `Vec::reserve` causes.
+fn try_entry_buffer(capacity: usize) -> Result<Vec<u8>, PreviewCacheError> {
+    let mut bytes = Vec::new();
+    bytes
+        .try_reserve_exact(capacity)
+        .map_err(|error| PreviewCacheError::OutOfMemory(error.to_string()))?;
+    Ok(bytes)
+}
+
 /// C# `Read(cachePath)`: opens the file with share mode Read|Delete (so a concurrent prune/delete is not blocked),
 /// reads it once, [`parse_entry`], then decodes the payload through `codec` into Bgr32 (alpha flag 0) or Pbgra32.
 ///
@@ -318,10 +345,11 @@ pub fn read(cache_path: &Path, codec: &dyn PreviewPayloadCodec) -> Result<ReadRe
         options.share_mode(0x1 | 0x4);
     }
     let mut file = options.open(cache_path)?;
-    let mut bytes = Vec::new();
-    if let Ok(meta) = file.metadata() {
-        bytes.reserve(usize::try_from(meta.len()).unwrap_or(0));
-    }
+    // ST-IMAGING-INV M2 (G29): judge the size BEFORE any allocation (C# validates the header stream-wise first), and
+    // never abort the process on a huge or hostile file: too large is a corrupt entry, no memory is an error.
+    let declared = file.metadata().map_or(0, |meta| meta.len());
+    check_entry_file_len(declared)?;
+    let mut bytes = try_entry_buffer(usize::try_from(declared).unwrap_or(0))?;
     file.read_to_end(&mut bytes)?;
     drop(file);
 
@@ -370,6 +398,40 @@ pub fn write_atomically(
     codec: &dyn PreviewPayloadCodec,
     cancel: &CancelToken,
 ) -> Result<(), PreviewCacheError> {
+    write_atomically_gated(
+        pixels,
+        actual_backend,
+        orientation,
+        original_width,
+        original_height,
+        cache_path,
+        opacity_verified,
+        exif,
+        codec,
+        cancel,
+        None,
+    )
+}
+
+/// [`write_atomically`] with a Rust-only [`CommitGate`] consulted right before the rename (ST-IMAGING-INV M1): a gate
+/// that answers `None` makes the write end as [`PreviewCacheError::Canceled`] without publishing.
+///
+/// # Errors
+/// See [`write_atomically`].
+#[allow(clippy::too_many_arguments)]
+pub fn write_atomically_gated(
+    pixels: &PixelBuffer,
+    actual_backend: DecoderBackend,
+    orientation: i32,
+    original_width: i32,
+    original_height: i32,
+    cache_path: &Path,
+    opacity_verified: bool,
+    exif: Option<&ExifSummary>,
+    codec: &dyn PreviewPayloadCodec,
+    cancel: &CancelToken,
+    gate: Option<CommitGate<'_>>,
+) -> Result<(), PreviewCacheError> {
     let blank = cache_path.as_os_str().is_empty() || cache_path.to_str().is_some_and(|p| p.trim().is_empty());
     if blank {
         return Err(PreviewCacheError::InvalidArgument(
@@ -400,15 +462,14 @@ pub fn write_atomically(
         exif,
     )?;
 
-    let result = write_atomic(
-        cache_path,
-        |out: &mut dyn Write| {
-            out.write_all(&prefix)?;
-            codec.encode_jpeg(pixels, DEFAULT_JPEG_QUALITY, out)
-        },
-        None,
-        cancel,
-    );
+    let payload = |out: &mut dyn Write| {
+        out.write_all(&prefix)?;
+        codec.encode_jpeg(pixels, DEFAULT_JPEG_QUALITY, out)
+    };
+    let result = match gate {
+        Some(gate) => write_atomic_gated(cache_path, payload, None, cancel, gate),
+        None => write_atomic(cache_path, payload, None, cancel),
+    };
     match result {
         Ok(()) => Ok(()),
         Err(AtomicWriteError::Canceled) => Err(PreviewCacheError::Canceled),
@@ -504,4 +565,29 @@ pub fn to_decoded_image(
         options,
     )
     .map_err(|e| PreviewCacheError::InvalidArgument(e.to_string()))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    // Rust-only (ST-IMAGING-INV M2 / G29): the size verdict needs no allocation, so a declared length beyond the
+    // format's maximum is testable without a huge file.
+    #[test]
+    fn entry_file_longer_than_the_format_allows_is_invalid_data_before_any_allocation() {
+        let limit = max_entry_file_len();
+        assert!(check_entry_file_len(limit).is_ok());
+        for len in [limit + 1, u64::from(u32::MAX) + 1, u64::MAX] {
+            let error = check_entry_file_len(len).expect_err("too large");
+            assert!(matches!(error, PreviewCacheError::InvalidData(_)), "{error:?}");
+        }
+    }
+
+    // Rust-only (G29): an allocation that cannot succeed is an error value, not the abort of `Vec::reserve`.
+    #[test]
+    fn entry_buffer_that_cannot_be_allocated_is_out_of_memory_not_an_abort() {
+        let error = try_entry_buffer(usize::MAX).expect_err("cannot allocate");
+        assert!(matches!(error, PreviewCacheError::OutOfMemory(_)), "{error:?}");
+        assert_eq!(try_entry_buffer(16).expect("small").capacity(), 16);
+    }
 }
