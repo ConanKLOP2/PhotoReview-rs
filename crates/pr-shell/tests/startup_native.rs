@@ -2,29 +2,8 @@
 #![cfg(windows)]
 #[path = "common/w8_20_process_fixture.rs"]
 mod fixture;
-#[path = "common/ui_smoke_fixture.rs"]
-mod rig;
 
-// C#: ShellStartupTests.Startup_EarlyDecode_StartsOnlyAfterTheInstanceLockIsHeld.
-#[test]
-#[ignore = "native: startup window needs a desktop"]
-fn startup_early_decode_starts_only_after_the_instance_lock_is_held() {
-    rig::isolated_test(
-        "startup_early_decode_starts_only_after_the_instance_lock_is_held",
-        || {
-            let run = rig::UiSmokeRun::start(rig::SmokeConfig::default()).unwrap();
-            run.wait_first_image().unwrap();
-            let marks = run.marks();
-            let lock = marks.iter().position(|s| s == "instanceLock").expect("lock mark");
-            let decode = marks
-                .iter()
-                .position(|s| s == "earlyDecodeStarted")
-                .expect("early decode mark");
-            assert!(lock < decode, "{marks:?}");
-            assert_eq!(run.close_and_wait(), Ok(0));
-        },
-    );
-}
+// Startup_EarlyDecode_StartsOnlyAfterTheInstanceLockIsHeld moved to startup_early_decode_native.rs (own binary, in native-nightly).
 
 // C#: ShellStartupTests.SecondInstance_ForwardsItsPathToTheRunningOneAndExitsZero.
 #[test]
