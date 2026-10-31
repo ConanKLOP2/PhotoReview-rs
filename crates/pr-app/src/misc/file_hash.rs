@@ -17,6 +17,7 @@
 use std::collections::HashMap;
 use std::fmt;
 use std::io;
+use std::panic::{AssertUnwindSafe, catch_unwind};
 use std::path::Path;
 use std::sync::{Arc, Condvar, Mutex};
 use std::thread;
@@ -427,21 +428,36 @@ impl FileHasher for FileHashService {
                         state.started = true;
                         worker_flight.done.notify_all();
                     }
-                    let result = compute_and_cache_parts(
-                        ComputeContext {
-                            fs: fs.as_ref(),
-                            reader: reader.as_ref(),
-                            source_bytes: source_bytes.as_deref(),
-                            texts: texts.clone(),
-                            cache: cache.as_ref(),
-                            generation_counter: generation_counter.as_ref(),
-                        },
-                        &worker_path,
-                        stat.length,
-                        stat.last_write_utc,
-                        generation,
-                        &worker_flight.cancel,
-                    );
+                    // A panic in the reader or the hasher must still complete the flight: otherwise every waiter (the
+                    // duplicate check passes a token that never fires) would wait for a result that never comes, and the
+                    // dead flight would stay in `in_flight`. The panic is a failed hash, never a hang.
+                    let result = catch_unwind(AssertUnwindSafe(|| {
+                        compute_and_cache_parts(
+                            ComputeContext {
+                                fs: fs.as_ref(),
+                                reader: reader.as_ref(),
+                                source_bytes: source_bytes.as_deref(),
+                                texts: texts.clone(),
+                                cache: cache.as_ref(),
+                                generation_counter: generation_counter.as_ref(),
+                            },
+                            &worker_path,
+                            stat.length,
+                            stat.last_write_utc,
+                            generation,
+                            &worker_flight.cancel,
+                        )
+                    }))
+                    .unwrap_or_else(|payload| {
+                        let text = payload
+                            .downcast_ref::<&str>()
+                            .map(|t| (*t).to_string())
+                            .or_else(|| payload.downcast_ref::<String>().cloned())
+                            .unwrap_or_else(|| "unexpected error".to_string());
+                        Err(FileHashError::Io(Arc::new(io::Error::other(format!(
+                            "hash computation panicked: {text}"
+                        )))))
+                    });
                     let result = if worker_flight.cancel.is_canceled() {
                         Err(FileHashError::Canceled)
                     } else {

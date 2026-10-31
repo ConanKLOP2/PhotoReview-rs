@@ -54,6 +54,17 @@ fn is_xmp(path: &str) -> bool {
     eq_ignore_case(get_extension(path), ".xmp")
 }
 
+/// The text of a caught panic payload.
+fn panic_text(payload: &(dyn std::any::Any + Send)) -> String {
+    if let Some(text) = payload.downcast_ref::<&str>() {
+        (*text).to_string()
+    } else if let Some(text) = payload.downcast_ref::<String>() {
+        text.clone()
+    } else {
+        "unexpected error".to_string()
+    }
+}
+
 fn count_i32(count: usize) -> i32 {
     i32::try_from(count).unwrap_or(i32::MAX)
 }
@@ -284,7 +295,13 @@ impl FolderLoadCoordinator {
             WorkerLane::Scan,
             Box::new(move || FolderLoadEvent::ScanFinished {
                 load_id,
-                outcome: run_scan(input),
+                // A panic in the listing or the sort must still finish the load: without `ScanFinished` the load would
+                // stay in `Scanning` for good (the user could not open a folder again until a new load superseded it).
+                outcome: catch_unwind(AssertUnwindSafe(|| run_scan(input))).unwrap_or_else(|payload| {
+                    Err(ScanFailure::Failed(FolderLoadError::Io(std::io::Error::other(
+                        panic_text(payload.as_ref()),
+                    ))))
+                }),
             }),
         );
 

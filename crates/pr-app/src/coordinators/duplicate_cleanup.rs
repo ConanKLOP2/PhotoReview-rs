@@ -317,50 +317,52 @@ impl DuplicateCleanupController {
         let job_snapshot = snapshot;
         let job = Box::new(move || {
             let mut service_missing = false;
-            let result = duplicates::find(
-                &candidates,
-                remove_numbered,
-                &mut |path, hash_token| {
-                    // Minimize disk reads: once the folder changed the result is discarded anyway, so stop hashing the
-                    // remaining same-size files instead of reading them all.
-                    if !clock.is_folder_current(pre_hash_generation) {
-                        return Err(HashFailure::Canceled);
-                    }
-                    let Some(hasher) = &hasher else {
-                        service_missing = true;
-                        return Err(HashFailure::Canceled);
-                    };
-                    // Fingerprint BEFORE reading: a file that changes while it is hashed then differs from this record.
-                    let stat = file_system.get_file_stat(Path::new(path));
-                    let hash = hasher.get(Path::new(path), hash_token).map_err(|error| match error {
-                        FileHashError::Canceled => HashFailure::Canceled,
-                        other => HashFailure::Unreadable(io::Error::other(other.to_string())),
-                    })?;
-                    if let Some(stat) = stat {
-                        let content = ignore_case_key(&format!("{}|{hash}", stat.length));
-                        let entry = SnapshotEntry {
-                            path: path.to_string(),
-                            stat,
-                            content,
+            // A panic in the hasher or the finder must still end the run: without `HashFinished` the file-action gate
+            // taken for this check would never be released (every Undo/Recycle/Move/Rename would stay a no-op).
+            let found = catch_unwind(AssertUnwindSafe(|| {
+                duplicates::find(
+                    &candidates,
+                    remove_numbered,
+                    &mut |path, hash_token| {
+                        // Minimize disk reads: once the folder changed the result is discarded anyway, so stop hashing the
+                        // remaining same-size files instead of reading them all.
+                        if !clock.is_folder_current(pre_hash_generation) {
+                            return Err(HashFailure::Canceled);
+                        }
+                        let Some(hasher) = &hasher else {
+                            service_missing = true;
+                            return Err(HashFailure::Canceled);
                         };
-                        job_snapshot
-                            .lock()
-                            .unwrap_or_else(PoisonError::into_inner)
-                            .insert(ignore_case_key(path), entry);
-                    }
-                    Ok(hash)
-                },
-                file_system.as_ref(),
-                &token,
-            );
-            let outcome = if service_missing {
-                HashOutcome::HashServiceMissing
-            } else {
-                match result {
-                    // Esc pressed just as the last hash finished: honor the user's intent, apply nothing.
-                    Ok(list) if token.check().is_ok() => HashOutcome::Found(list),
-                    Ok(_) | Err(Canceled) => HashOutcome::Canceled,
-                }
+                        // Fingerprint BEFORE reading: a file that changes while it is hashed then differs from this record.
+                        let stat = file_system.get_file_stat(Path::new(path));
+                        let hash = hasher.get(Path::new(path), hash_token).map_err(|error| match error {
+                            FileHashError::Canceled => HashFailure::Canceled,
+                            other => HashFailure::Unreadable(io::Error::other(other.to_string())),
+                        })?;
+                        if let Some(stat) = stat {
+                            let content = ignore_case_key(&format!("{}|{hash}", stat.length));
+                            let entry = SnapshotEntry {
+                                path: path.to_string(),
+                                stat,
+                                content,
+                            };
+                            job_snapshot
+                                .lock()
+                                .unwrap_or_else(PoisonError::into_inner)
+                                .insert(ignore_case_key(path), entry);
+                        }
+                        Ok(hash)
+                    },
+                    file_system.as_ref(),
+                    &token,
+                )
+            }));
+            let outcome = match found {
+                Err(payload) => HashOutcome::Failed(describe_panic(payload.as_ref())),
+                Ok(_) if service_missing => HashOutcome::HashServiceMissing,
+                // Esc pressed just as the last hash finished: honor the user's intent, apply nothing.
+                Ok(Ok(list)) if token.check().is_ok() => HashOutcome::Found(list),
+                Ok(Ok(_) | Err(Canceled)) => HashOutcome::Canceled,
             };
             DuplicateCleanupEvent::HashFinished { ticket, outcome }
         });

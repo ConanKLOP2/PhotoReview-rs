@@ -647,6 +647,22 @@ fn current_load_error_reaches_on_failed() {
     assert_eq!(env.coordinator.phase(), LoadPhase::Idle);
 }
 
+// New test (ST-APP-RACES M1): a panic in the scan job is a failed load, not a load stuck in `Scanning` for good.
+#[test]
+fn a_panic_in_the_scan_job_fails_the_load_instead_of_leaving_it_scanning() {
+    let mut env = Env::new();
+    env.three_images(r"C:\photos");
+    *env.fs.listing_hook.lock().unwrap_or_else(PoisonError::into_inner) = Some(Box::new(|| panic!("listing exploded")));
+
+    env.open(r"C:\photos", None);
+    let updates = env.pump();
+
+    assert_eq!(env.sink.failures(), vec![(r"C:\photos".to_owned(), false)]);
+    assert_eq!(env.sink.catalog_ready(), 0);
+    assert_eq!(updates.last().map(|u| u.step), Some(FolderLoadStep::Finished));
+    assert_eq!(env.coordinator.phase(), LoadPhase::Idle);
+}
+
 // ---------------------------------------------------------------------------------------------------------------------
 // FolderLoadCoordinatorTests.PerfMarks.cs
 // ---------------------------------------------------------------------------------------------------------------------
