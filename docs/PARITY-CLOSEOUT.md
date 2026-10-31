@@ -1,7 +1,7 @@
 # Parity closeout
 
 > **Status: active procedure; the counts and row tables below are a snapshot of 2026-10-23, not current.** Last verified 2026-10-26 against `origin/master` 8b93fbf.
-> Current numbers: `bash tools/dev/parity.sh stats` (349 status rows: Done 163, Partial 89, Ported 41, Todo 18, Superseded 17, Different 13, Doing 3, Implementation 3, Contract 2). Its parser is not the one used for the 322-row table below, so the two sets of counts are not comparable row for row. Use `parity.sh reconcile` and `parity.sh unit <ID>` for the live state of a row.
+> Current numbers: `bash tools/dev/parity.sh stats` (361 status rows (2026-10-31): Done 183, Partial 102, Ported 38, Todo 4, Superseded 17, Different 14, Implementation 3). Its parser is not the one used for the 322-row table below, so the two sets of counts are not comparable row for row. Use `parity.sh reconcile` and `parity.sh unit <ID>` for the live state of a row.
 
 ## Baseline and status inventory
 
