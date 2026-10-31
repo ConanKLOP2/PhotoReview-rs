@@ -1,4 +1,4 @@
-# ADR: intentional differences introduced by the 2026-10-31 fix lanes (DV-1..DV-22)
+# ADR: intentional differences introduced by the 2026-10-31 fix lanes (DV-1..DV-22; DV-23 and DV-24 have their own files)
 
 Date: 2026-10-31
 
