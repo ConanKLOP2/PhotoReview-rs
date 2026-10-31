@@ -66,7 +66,9 @@ jobs:
               'catalog_sorting', 'file_actions_destination_policy', 'file_actions_journal', 'file_actions_journal_compaction',
               'file_actions_partial_cleanup', 'file_actions_recovery_check', 'file_actions_service_native', 'io_journal_compaction_files',
               'io_physical', 'io_physical_seams', 'journal_reconcile', 'journal_startup_recovery', 'rename_file_action_matrix',
-              'rename_recovery', 'rename_service', 'session_store', 'w2_fs_mutation_killers')
+              'rename_recovery', 'rename_service', 'session_store', 'w2_fs_mutation_killers',
+              # Added 2026-10-31 (st-parity-sync7), no nightly run yet: 2 native tests, private TempRoot listing only (CX-PHYSREST).
+              'w2_physrest_killers')
             'pr-platform-win' = @('w2_fs_flush_killers', 'w4_mutation_killers2', 'w6_platform_native', 'physical_memory',
               # Composer twins draw on a WARP device (no window, no input desktop). Added 2026-10-31 without a nightly run yet: the first
               # night must confirm that windows-latest has WARP, otherwise remove these two.
@@ -88,7 +90,10 @@ jobs:
               # because the runner has no interactive desktop. shell_input_pan_glide_native (9), dialogs_action_profiles_scenarios_native (7),
               # dialogs_zoom_diagnostics_scenarios_native (9), dialogs_benchmark_scenarios_native (3), w8_mainwin_seams2 (11).
               'shell_input_pan_glide_native', 'dialogs_action_profiles_scenarios_native', 'dialogs_zoom_diagnostics_scenarios_native',
-              'dialogs_benchmark_scenarios_native', 'w8_mainwin_seams2')
+              'dialogs_benchmark_scenarios_native', 'w8_mainwin_seams2',
+              # Added 2026-10-31 (st-parity-sync7), no nightly run yet: mut_zoomcore_killers (2 native tests, two live hidden windows,
+              # needs a desktop session; CL-MUT-ZOOMCORE). One night must confirm it, remove it if red only for lack of a desktop.
+              'mut_zoomcore_killers')
             # Added 2026-10-31 (fix-test-hygiene): green locally with --include-ignored --test-threads=1, no DLL staged. The ACL tests use icacls
             # /deny; a run killed midway can leave an undeletable folder under %TEMP%\pr-rs-tests (hygiene review F12).
             'pr-imaging' = @('cache_disk_store', 'cache_key', 'preview_service_disk', 'thumbnail_cache')

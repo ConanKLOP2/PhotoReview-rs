@@ -216,3 +216,8 @@ Moved verbatim from `task_on_progress.md` (branch docs/tp-compact3, 2026-10-30).
 
 - 2026-10-31 fix-recycle-c1c2 ([report](docs/reviews/FIX-RECYCLE-C1C2-2026-10-31.md)): C1 not reproduced for directory junctions (`GetVolumePathNameW` follows them, run on this machine; symlinks untestable, no privilege); `query_mount_point` now resolves containing-folder links, fail closed; C2 (progress sink) deferred with design. Stays Partial.
 - 2026-10-31 fix-restore-m3 (ST-INVMAP M3, data safety): after an executor panic the catalog entry is restored only if the file still exists on disk; no Undo after a panic (open: journal reconcile). Tests `file_action_core` 68 green, clippy -p pr-app clean; see `docs/reviews/FIX-RESTORE-M3-2026-10-31.md`.
+
+## Moved 2026-10-31 (st-parity-sync7, verbatim)
+
+- ST-PARITY-SYNC4 2026-10-31: docs only; PARITY synced to #476..#487 (25 rows noted, no status change: Done 183, Partial 102), ADR DV-13..DV-21 added (P-59), RAW corpus tests recorded as "data-gated, false green on CI"; 5 owner questions listed in docs/reviews/ST-PARITY-SYNC4-2026-10-31.md.
+- ST-PARITY-SYNC5 2026-10-31: docs + native-nightly only; PARITY synced to #489..#495 (16 rows noted, no status change: Done 183, Partial 102); P-62/P-63 DV numbers fixed (DV-23, DV-24), P-60 ADR link fixed; ADR `docs/adr/ADR-D-2026-10-31-unsafe-policy.md` + P-64 (pr-core/pr-imaging unsafe grandfathered); nightly +3 pr-shell/pr-platform-win binaries (unconfirmed until one night). NOT confirmed: the real Shell calling the C2 sink (attended recycle test not run), RAW corpus, bench W10-B2. docs/reviews/ST-PARITY-SYNC5-2026-10-31.md.
