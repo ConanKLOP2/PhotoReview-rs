@@ -82,7 +82,13 @@ jobs:
               # Added 2026-10-31 (st-parity-sync5), no nightly run yet: host_main_window_lifecycle (16 native tests, hidden MainWindow incl.
               # the M1 pending_opens case) NEEDS A DESKTOP SESSION; one night must confirm it on windows-latest, remove it if it is red only
               # because the runner has no interactive desktop. recycle_delete_sink has no #[ignore] (fakes) and runs in ci.yml: not listed.
-              'host_main_window_lifecycle')
+              'host_main_window_lifecycle',
+              # Added 2026-10-31 (st-parity-sync6), no nightly run yet; hidden windows and a fake windowing seam, no C# DLL, no Recycle Bin,
+              # nothing real in %LOCALAPPDATA%. All need a desktop session: one night must confirm them, remove a binary that is red only
+              # because the runner has no interactive desktop. shell_input_pan_glide_native (9), dialogs_action_profiles_scenarios_native (7),
+              # dialogs_zoom_diagnostics_scenarios_native (9), dialogs_benchmark_scenarios_native (3), w8_mainwin_seams2 (11).
+              'shell_input_pan_glide_native', 'dialogs_action_profiles_scenarios_native', 'dialogs_zoom_diagnostics_scenarios_native',
+              'dialogs_benchmark_scenarios_native', 'w8_mainwin_seams2')
             # Added 2026-10-31 (fix-test-hygiene): green locally with --include-ignored --test-threads=1, no DLL staged. The ACL tests use icacls
             # /deny; a run killed midway can leave an undeletable folder under %TEMP%\pr-rs-tests (hygiene review F12).
             'pr-imaging' = @('cache_disk_store', 'cache_key', 'preview_service_disk', 'thumbnail_cache')
