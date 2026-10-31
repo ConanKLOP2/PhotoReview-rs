@@ -28,6 +28,15 @@ fn aligned_pointer<T>(lparam: Lparam) -> Option<*mut T> {
     (lparam != 0 && lparam as usize % align_of::<T>() == 0).then_some(lparam as *mut T)
 }
 
+/// Clears the flag on drop (also when a `Closing` handler panics).
+struct ResetFlag<'a>(&'a std::cell::Cell<bool>);
+
+impl Drop for ResetFlag<'_> {
+    fn drop(&mut self) {
+        self.0.set(false);
+    }
+}
+
 impl ShellWindowInner {
     /// C# `ProcessMessage(hwnd, message, wParam, lParam)`. See the module doc for the order.
     pub(super) fn process_message(&self, hwnd: Hwnd, message: u32, wparam: Wparam, lparam: Lparam) -> Lresult {
@@ -141,9 +150,16 @@ impl ShellWindowInner {
     /// C# `RaiseClosing()` (`WM_CLOSE`): a fresh `CancelEventArgs`; every `Closing` handler runs (all of them, even after one cancelled, like a C#
     /// multicast); if none set `cancel`, `DestroyWindow(hwnd)`.
     pub(super) fn raise_closing(&self) {
+        // A `WM_CLOSE` that arrives while a `Closing` handler still runs (it pumps messages, e.g. a confirmation box) is ignored: `EventList::raise` skips
+        // the running handler, so the nested call would see `cancel == false` and destroy the window under the outer handler.
+        if self.closing_in_progress.replace(true) {
+            return;
+        }
+        let _reset = ResetFlag(&self.closing_in_progress);
         let mut args = CancelEventArgs::default();
         self.closing
             .raise(LIST_EVENT, &mut |handler: &mut ClosingHandler| handler(&mut args));
+        drop(_reset);
         if !args.cancel {
             let _ = user32::destroy_window(self.hwnd.get());
         }
