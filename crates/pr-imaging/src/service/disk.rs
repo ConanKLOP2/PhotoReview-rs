@@ -26,6 +26,8 @@ use pr_core::model::serde_ext::LenientEnum;
 use pr_core::sync::CancelToken;
 use pr_core::text::path_key;
 
+use crate::cache::atomic_file::CommitHold;
+
 use super::deps::{
     self, DecodeError, ImageCacheKey, ImageSourceKind, PreviewCacheError, delete_stale_temp_files, is_fully_opaque,
     preview_file, sha256, try_delete,
@@ -512,8 +514,21 @@ impl ServiceInner {
             inner: self,
             cache_path: &request.cache_path,
         };
-        // 5. C# passes no cancellation token to the write.
-        preview_file::write_atomically(
+        // 5. C# passes no cancellation token to the write. Rust-only (ST-IMAGING-INV M1 / G26): the commit gate re-checks
+        // the epoch and the newest claim UNDER the owner mutex right before the rename, and keeps the mutex through it.
+        // Without it a writer that was stuck in the encode while Clear Cache and a newer writer ran renamed its old
+        // payload over the newer one, and step 7 below could not delete it (a newer claim exists).
+        let gate = || -> Option<Box<dyn CommitHold + '_>> {
+            let owners = lock(&self.persist.owner_epochs);
+            let newer_claim = owners
+                .get(&path_key(&request.cache_path))
+                .is_some_and(|&(owner_epoch, _)| owner_epoch > request.epoch);
+            if newer_claim || request.epoch != self.current_epoch() {
+                return None;
+            }
+            Some(Box::new(owners))
+        };
+        match preview_file::write_atomically_gated(
             pixels,
             image.actual_backend(),
             image.orientation(),
@@ -524,8 +539,13 @@ impl ServiceInner {
             image.exif(),
             self.payload_codec.as_ref(),
             &CancelToken::none(),
-        )
-        .map_err(PersistFailure::Write)?;
+            Some(&gate),
+        ) {
+            Ok(()) => {}
+            // The gate refused: went stale during the encode. Nothing was published; the temp file is already gone.
+            Err(PreviewCacheError::Canceled) => return Ok(()),
+            Err(error) => return Err(PersistFailure::Write(error)),
+        }
         // 6. Test seam: cloned out of its mutex, never called under a lock.
         let hook = lock(&self.persist.after_write_for_tests).clone();
         if let Some(hook) = hook {
@@ -778,6 +798,8 @@ mod tests {
     struct RawPayloadCodec {
         fail_height: i32,
         encodes: AtomicUsize,
+        /// One-shot: the FIRST encode opens `.0` ("entered") and parks on `.1` ("release"), then finishes.
+        park_first_encode: Mutex<Option<(Arc<Gate>, Arc<Gate>)>>,
     }
 
     impl RawPayloadCodec {
@@ -785,6 +807,14 @@ mod tests {
             Self {
                 fail_height,
                 encodes: AtomicUsize::new(0),
+                park_first_encode: Mutex::new(None),
+            }
+        }
+
+        fn parking_first_encode(entered: &Arc<Gate>, release: &Arc<Gate>) -> Self {
+            Self {
+                park_first_encode: Mutex::new(Some((entered.clone(), release.clone()))),
+                ..Self::default()
             }
         }
     }
@@ -792,6 +822,11 @@ mod tests {
     impl PreviewPayloadCodec for RawPayloadCodec {
         fn encode_jpeg(&self, pixels: &PixelBuffer, _quality: i32, out: &mut dyn Write) -> io::Result<()> {
             self.encodes.fetch_add(1, Ordering::SeqCst);
+            let parked = lock(&self.park_first_encode).take();
+            if let Some((entered, release)) = parked {
+                entered.open();
+                release.wait();
+            }
             if self.fail_height != 0 && pixels.height() == self.fail_height {
                 return Err(io::Error::other("scripted encode failure"));
             }
@@ -980,13 +1015,23 @@ mod tests {
     /// A 120 x 80 downscaled preview (orientation 6, TurboJpeg, original 6000 x 4000; C# `PixelDecoder`) whose pixel
     /// bytes follow a pattern; `alpha` sets every 4th byte.
     fn image_with(layout: PixelLayout, alpha: impl Fn(i32, i32) -> u8, exif: Option<ExifSummary>) -> PreviewImage {
+        image_with_salt(layout, alpha, exif, 0)
+    }
+
+    /// [`image_with`] whose pixel pattern is shifted by `salt` (distinct payloads for the same path).
+    fn image_with_salt(
+        layout: PixelLayout,
+        alpha: impl Fn(i32, i32) -> u8,
+        exif: Option<ExifSummary>,
+        salt: i32,
+    ) -> PreviewImage {
         let (width, height) = (120, 80);
         let mut pixels = PixelBuffer::allocate(width, height, layout).expect("buffer");
         for y in 0..height {
             let row = pixels.get_row_mut(y).expect("row");
             for x in 0..width {
                 let i = usize::try_from(x * 4).expect("index");
-                let seed = u8::try_from((x * 7 + y * 13) % 251).expect("byte");
+                let seed = u8::try_from((x * 7 + y * 13 + salt) % 251).expect("byte");
                 row[i] = seed;
                 row[i + 1] = seed.wrapping_add(1);
                 row[i + 2] = seed.wrapping_add(2);
@@ -1033,7 +1078,7 @@ mod tests {
     }
 
     /// A one-shot gate the hook parks on (bounded by [`TIMEOUT`]).
-    #[derive(Default)]
+    #[derive(Debug, Default)]
     struct Gate {
         open: Mutex<bool>,
         changed: Condvar,
@@ -1241,6 +1286,54 @@ mod tests {
             fx.service.has_disk_cached_preview(&key("A.jpg")),
             "the newer worker's file survives"
         );
+        assert!(fx.owners().is_empty());
+    }
+
+    // Rust-only (ST-IMAGING-INV M1 / G26): a persist worker of an old epoch that is still encoding while Clear Cache and a
+    // newer worker (same path) run must not rename its stale payload over the newer worker's file. (No C# twin: C# has
+    // the same ordering; this is a Different row.)
+    #[test]
+    fn stale_persist_writer_finishing_after_new_epoch_does_not_replace_newer_payload() {
+        let entered = Arc::new(Gate::default());
+        let release = Arc::new(Gate::default());
+        let second_done = Arc::new(Gate::default());
+        let fx = Fixture::with(
+            "m1-stale-writer",
+            Arc::new(PixelsCodec),
+            RawPayloadCodec::parking_first_encode(&entered, &release),
+            false,
+        );
+        {
+            let second_done = second_done.clone();
+            let calls = Arc::new(AtomicUsize::new(0));
+            fx.service.set_after_persist_write_for_tests(Some(Arc::new(move || {
+                // Only the newer worker ever completes a write while the old one is parked in its encode.
+                if calls.fetch_add(1, Ordering::SeqCst) == 0 {
+                    second_done.open();
+                }
+            })));
+        }
+        let path = fx.path("A.jpg");
+        fx.persist(image_with_salt(PixelLayout::Bgr32, |_, _| 255, None, 0), &path);
+        assert!(entered.wait(), "the old writer is parked inside its encode");
+        fx.service.clear_cache();
+        fx.service.clear_disk(); // epoch bump: the parked writer is now stale
+        fx.persist(image_with_salt(PixelLayout::Bgr32, |_, _| 255, None, 100), &path);
+        assert!(second_done.wait(), "the newer writer published its file");
+        let newer = std::fs::read(&path).expect("the newer file");
+        release.open();
+        fx.shutdown();
+        assert_eq!(
+            std::fs::read(&path).expect("the file is still there"),
+            newer,
+            "the old writer must not replace the newer payload"
+        );
+        let leftovers: Vec<_> = std::fs::read_dir(&fx.dir)
+            .expect("dir")
+            .filter_map(Result::ok)
+            .filter(|entry| entry.path().extension().is_some_and(|ext| ext == "tmp"))
+            .collect();
+        assert!(leftovers.is_empty(), "the refused writer cleans its temp file");
         assert!(fx.owners().is_empty());
     }
 

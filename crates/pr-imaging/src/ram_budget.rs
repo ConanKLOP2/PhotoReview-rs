@@ -171,6 +171,27 @@ pub fn estimate_folder_preview_bytes(
     target_box: DecodeBox,
     measured_mean_preview_bytes: Option<f64>,
 ) -> i64 {
+    estimate_folder_preview_bytes_checked(entries, target_box, measured_mean_preview_bytes)
+        .expect("arithmetic operation overflowed")
+}
+
+/// [`estimate_folder_preview_bytes`] for the preload queue (ST-IMAGING-INV M3): where C# throws `OverflowException`, the
+/// folder is reported as `i64::MAX` ("do not preload the whole folder"), so one corrupt RAW entry cannot make every
+/// refresh of the folder fail. The C# faithful panicking function stays for the oracle.
+pub fn estimate_folder_preview_bytes_saturating(
+    entries: &[CatalogEntry],
+    target_box: DecodeBox,
+    measured_mean_preview_bytes: Option<f64>,
+) -> i64 {
+    estimate_folder_preview_bytes_checked(entries, target_box, measured_mean_preview_bytes).unwrap_or(i64::MAX)
+}
+
+/// The estimate, or `None` where C# `checked(...)` throws `OverflowException`.
+fn estimate_folder_preview_bytes_checked(
+    entries: &[CatalogEntry],
+    target_box: DecodeBox,
+    measured_mean_preview_bytes: Option<f64>,
+) -> Option<i64> {
     let bounded = target_box.width > 0 && target_box.height > 0;
     let box_bound = if bounded {
         f64::from(target_box.width) * f64::from(target_box.height) * DEFAULT_AVERAGE_BYTES_PER_PIXEL
@@ -185,7 +206,7 @@ pub fn estimate_folder_preview_bytes(
             calibrated = calibrated.min(box_bound);
         }
         let all = (entries.len() as f64 * calibrated).ceil();
-        return if all >= long_max { i64::MAX } else { all as i64 };
+        return Some(if all >= long_max { i64::MAX } else { all as i64 });
     }
 
     let mut total = 0.0_f64;
@@ -196,12 +217,8 @@ pub fn estimate_folder_preview_bytes(
         let estimate = if width > 0 && height > 0 && (bounded || is_raw) {
             if is_raw {
                 // C# `checked(width * 2)`: OverflowException.
-                width = width
-                    .checked_mul(RAW_PREVIEW_SENSOR_SIZE_FACTOR)
-                    .expect("arithmetic operation overflowed");
-                height = height
-                    .checked_mul(RAW_PREVIEW_SENSOR_SIZE_FACTOR)
-                    .expect("arithmetic operation overflowed");
+                width = width.checked_mul(RAW_PREVIEW_SENSOR_SIZE_FACTOR)?;
+                height = height.checked_mul(RAW_PREVIEW_SENSOR_SIZE_FACTOR)?;
             }
             let scale_w = if target_box.width > 0 {
                 f64::from(target_box.width) / f64::from(width)
@@ -220,7 +237,7 @@ pub fn estimate_folder_preview_bytes(
         } else if is_raw {
             let length = entry.length.unwrap_or(0);
             if length <= 0 {
-                return i64::MAX;
+                return Some(i64::MAX);
             }
             length as f64 * RAW_COMPRESSED_TO_PREVIEW_FACTOR
         } else {
@@ -228,10 +245,10 @@ pub fn estimate_folder_preview_bytes(
         };
         total += estimate;
         if total >= long_max {
-            return i64::MAX;
+            return Some(i64::MAX);
         }
     }
-    total.ceil() as i64
+    Some(total.ceil() as i64)
 }
 
 /// C# `ShouldPreloadWholeFolderEstimate`. Errors: `estimated_bytes < 0` => `ArgumentOutOfRange { "estimatedBytes" }`.
@@ -287,7 +304,7 @@ impl FolderEstimateCache {
         if hit {
             return self.estimate;
         }
-        let estimate = estimate_folder_preview_bytes(entries, decode_box, measured_mean_preview_bytes);
+        let estimate = estimate_folder_preview_bytes_saturating(entries, decode_box, measured_mean_preview_bytes);
         self.entries = Some(Arc::clone(entries));
         self.decode_box = decode_box;
         self.measured = measured_mean_preview_bytes;
@@ -330,5 +347,29 @@ mod folder_estimate_cache_tests {
         cache.get_or_compute(&entries, DecodeBox::UNBOUNDED, Some(1_000_000.0)); // mode (box) changed
         cache.get_or_compute(&raw_folder(50, 25_000_000), DecodeBox::UNBOUNDED, Some(1_000_000.0)); // different snapshot
         assert_eq!(cache.compute_count(), 4);
+    }
+
+    // Rust-only (ST-IMAGING-INV M3): C# throws OverflowException for a RAW entry whose stored dimension exceeds
+    // i32::MAX / 2, which would fail every refresh of the folder. The cache the preload queue uses must instead answer
+    // "do not preload the whole folder" (i64::MAX) and keep working for the other entries and later refreshes.
+    #[test]
+    fn folder_estimate_cache_raw_entry_with_absurd_dimension_means_do_not_preload_instead_of_panicking() {
+        let mut huge = CatalogEntry::new("folder/IMG_HUGE.CR2").expect("test path is not blank");
+        huge.width = Some(i32::MAX / 2 + 1);
+        huge.height = Some(4000);
+        let mut normal = CatalogEntry::new("folder/IMG_OK.CR2").expect("test path is not blank");
+        normal.width = Some(6000);
+        normal.height = Some(4000);
+        let entries: Arc<[CatalogEntry]> = vec![normal, huge].into();
+        let mut cache = FolderEstimateCache::new();
+
+        let estimate = cache.get_or_compute(&entries, DecodeBox::new(1920, 1080), None);
+        assert_eq!(estimate, i64::MAX);
+        // Cached like any other answer (no recompute, no panic on the second refresh).
+        assert_eq!(
+            cache.get_or_compute(&entries, DecodeBox::new(1920, 1080), None),
+            i64::MAX
+        );
+        assert_eq!(cache.compute_count(), 1);
     }
 }

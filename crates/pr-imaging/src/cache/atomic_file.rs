@@ -101,6 +101,37 @@ pub fn write_atomic_with_temp(
     temporary_path_override: Option<&Path>,
     cancel: &CancelToken,
 ) -> Result<(), AtomicWriteError> {
+    write_atomic_impl(cache_path, write_payload, log, temporary_path_override, cancel, None)
+}
+
+/// Marker for whatever a [`CommitGate`] keeps alive across the rename (a lock guard).
+pub trait CommitHold {}
+impl<T> CommitHold for T {}
+
+/// Rust-only commit gate (ST-IMAGING-INV M1 / G26): called right before the rename. `None` aborts the write as
+/// [`AtomicWriteError::Canceled`] (the temp file is deleted); `Some(hold)` keeps `hold` alive until the rename is done,
+/// so the check and the rename are atomic against whatever the hold locks.
+pub type CommitGate<'a> = &'a dyn Fn() -> Option<Box<dyn CommitHold + 'a>>;
+
+/// [`write_atomic`] plus a [`CommitGate`] consulted after the payload is written and the cancel token re-checked.
+pub fn write_atomic_gated(
+    cache_path: &Path,
+    write_payload: impl FnOnce(&mut dyn Write) -> io::Result<()>,
+    log: Option<&dyn Log>,
+    cancel: &CancelToken,
+    gate: CommitGate<'_>,
+) -> Result<(), AtomicWriteError> {
+    write_atomic_impl(cache_path, write_payload, log, None, cancel, Some(gate))
+}
+
+fn write_atomic_impl(
+    cache_path: &Path,
+    write_payload: impl FnOnce(&mut dyn Write) -> io::Result<()>,
+    log: Option<&dyn Log>,
+    temporary_path_override: Option<&Path>,
+    cancel: &CancelToken,
+    gate: Option<CommitGate<'_>>,
+) -> Result<(), AtomicWriteError> {
     cancel.check()?;
 
     // C# `Path.GetDirectoryName(cachePath)!`: no folder part (or a root path) is an `ArgumentException`.
@@ -139,6 +170,10 @@ pub fn write_atomic_with_temp(
     drop(writer);
     // A superseded write (e.g. Clear Cache) must not publish.
     cancel.check()?;
+    let _hold = match gate {
+        Some(gate) => Some(gate().ok_or(AtomicWriteError::Canceled)?),
+        None => None,
+    };
     rename_over(temp_path, cache_path)?;
     Ok(())
 }
