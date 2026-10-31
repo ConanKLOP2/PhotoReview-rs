@@ -4,7 +4,7 @@ Status: done in this PR. Source: `docs/reviews/ST-HTTP-SECURITY-2026-10-31.md` M
 
 ## Decision
 
-User answer (chat, 2026-10-31): the update source is the user's GitHub; understood as the Rust repository. `git remote -v` gives `origin = https://github.com/ConanKLOP2/PhotoReview-rs.git`, so the repository used is **`ConanKLOP2/PhotoReview-rs`**. Recorded as DV-22 (ADR) and P-60.
+User answer (chat, 2026-10-31): the update source is the user's GitHub; understood as the Rust repository. `git remote -v` gives `origin = https://github.com/ConanKLOP2/PhotoReview-rs.git`, so the repository used is **`ConanKLOP2/PhotoReview-rs`**. Recorded as DV-22 (ADR) and P-61.
 
 ## Where the C# repository was named
 
