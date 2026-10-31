@@ -846,4 +846,53 @@ mod unit_tests {
             assert!(!is_tolerated_race_failure(error), "{error:?} must not be tolerated");
         }
     }
+
+    fn state_with(first: i32, second: i32) -> DotNetRandom {
+        // The first sample reads indices 1 and 22 (`inext` 0 -> 1, `inextp` 21 -> 22).
+        let mut seed_array = [0_i32; 56];
+        seed_array[1] = first;
+        seed_array[22] = second;
+        DotNetRandom {
+            seed_array,
+            inext: 0,
+            inextp: 21,
+        }
+    }
+
+    // workload_runner.rs:164 `r -= 1` (-> `+=` overflows, `/=` keeps MAX) in internal_sample: a difference of exactly
+    // i32::MAX is pulled down to MAX - 1 (never returns int.MaxValue, like .NET).
+    #[test]
+    fn internal_sample_never_returns_int_max() {
+        let mut random = state_with(i32::MAX, 0);
+        assert_eq!(random.next(), i32::MAX - 1);
+        assert_eq!(random.seed_array[1], i32::MAX - 1);
+    }
+
+    // workload_runner.rs:166 `r < 0` -> `<=`: a zero difference stays zero (only negative values get int.MaxValue added).
+    #[test]
+    fn internal_sample_keeps_a_zero_difference() {
+        let mut random = state_with(7, 7);
+        assert_eq!(random.next(), 0);
+        let mut negative = state_with(0, 1);
+        assert_eq!(negative.next(), i32::MAX - 1);
+    }
+
+    // workload_runner.rs:388/397/400 NativeFileActionIo read/copy/remove (`-> Ok(..)`): real files in a TempRoot.
+    #[test]
+    fn native_file_action_io_reads_copies_and_removes_real_files() {
+        let root = pr_test_support::TempRoot::new("native-file-action-io");
+        let io = NativeFileActionIo;
+        let source = root.join("source.bin");
+        let copy = root.join("copy.bin");
+        std::fs::write(&source, [1_u8, 2, 3, 4, 5]).unwrap();
+        assert_eq!(io.read(&source).unwrap(), vec![1, 2, 3, 4, 5]);
+        assert!(io.read(&root.join("missing.bin")).is_err());
+        io.copy(&source, &copy).unwrap();
+        assert_eq!(std::fs::read(&copy).unwrap(), vec![1, 2, 3, 4, 5]);
+        assert!(source.exists(), "copy keeps the source");
+        assert!(io.copy(&root.join("missing.bin"), &copy).is_err());
+        io.remove(&copy).unwrap();
+        assert!(!copy.exists(), "remove must delete the file");
+        assert!(io.remove(&copy).is_err(), "removing a missing file is an error");
+    }
 }

@@ -835,6 +835,64 @@ mod default_file_log_tests {
         assert!(!when_off, "enabled must follow the global log when off");
     }
 
+    const CHILD_ENV: &str = "PR_BENCH_DEFAULT_FILE_LOG_CHILD";
+
+    /// Child half of [`default_file_log_forwards_info_warn_error_to_the_log_file`]: only runs when spawned by the parent
+    /// (env marker set), where `PHOTOREVIEW_RS_DATA_ROOT` points at a temp root so the process-wide log lands there.
+    #[test]
+    fn default_file_log_child_writes_messages() {
+        if std::env::var_os(CHILD_ENV).is_none() {
+            return;
+        }
+        let global = FileLog::default_instance();
+        global.set_enabled(true);
+        let log = DefaultFileLog;
+        log.info("bench-default-log-info-marker");
+        log.warn("bench-default-log-warn-marker");
+        log.error("bench-default-log-error-marker", None);
+        global.flush();
+    }
+
+    /// image_executor.rs `DefaultFileLog::info/warn/error` (`-> ()`): the process-wide log cannot be redirected in-process
+    /// without unsafe `set_var`, so this re-runs the test binary as a child with `PHOTOREVIEW_RS_DATA_ROOT` set to a
+    /// TempRoot (`Command::env` is safe) and reads `<root>/logs/app.log`. Not golden based.
+    #[test]
+    fn default_file_log_forwards_info_warn_error_to_the_log_file() {
+        let root = pr_test_support::TempRoot::new("default-file-log");
+        let exe = std::env::current_exe().expect("current exe");
+        let status = std::process::Command::new(exe)
+            .args([
+                "image_executor::default_file_log_tests::default_file_log_child_writes_messages",
+                "--exact",
+                "--test-threads=1",
+            ])
+            .env(CHILD_ENV, "1")
+            .env("PHOTOREVIEW_RS_DATA_ROOT", root.path())
+            .env_remove("PHOTOREVIEW_RS_ISOLATE_CONFIG")
+            .output()
+            .expect("spawn child");
+        assert!(
+            status.status.success(),
+            "child failed: {}",
+            String::from_utf8_lossy(&status.stdout)
+        );
+        assert!(
+            String::from_utf8_lossy(&status.stdout).contains("running 1 test"),
+            "child ran no test"
+        );
+        let text =
+            std::fs::read_to_string(root.join("logs").join("app.log")).expect("log file written in the temp root");
+        let line = |marker: &str| {
+            text.lines()
+                .find(|l| l.contains(marker))
+                .unwrap_or_else(|| panic!("{marker} missing in {text}"))
+                .to_owned()
+        };
+        assert!(line("bench-default-log-info-marker").contains("INFO"));
+        assert!(line("bench-default-log-warn-marker").contains("WARN"));
+        assert!(line("bench-default-log-error-marker").contains("ERROR"));
+    }
+
     /// No injected probe and no `has_headroom`: fail closed (never headroom, no snapshot). Kills `has_headroom -> true`.
     #[test]
     fn missing_probe_fails_closed() {
