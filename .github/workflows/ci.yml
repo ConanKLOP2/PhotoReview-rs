@@ -101,7 +101,7 @@ jobs:
       - name: Install pinned actionlint
         run: go install github.com/rhysd/actionlint/cmd/actionlint@v1.7.7
       - name: Lint workflows
-        run: "$(go env GOPATH)/bin/actionlint -color"
+        run: '"$(go env GOPATH)"/bin/actionlint -color'
 
   # Runner time is the budget, not the number of jobs: every Windows job pays about 30 s of setup (checkout, toolchain, cache) and
   # GitHub runs a limited number of Windows jobs at once, so two overlapping runs (a pull request and the master run of the previous
