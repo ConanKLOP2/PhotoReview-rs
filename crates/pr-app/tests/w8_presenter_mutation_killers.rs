@@ -159,7 +159,7 @@ fn set_update_url_stores_the_url_that_open_update_page_validates_and_opens() {
     // apply.rs:657:9 replace SettingsPresenter::set_update_url with ()
     let env = Env::new();
     let mut presenter = SettingsPresenter::new(&AppSettings::new(&EnglishSettingsTexts), options());
-    let url = "https://github.com/ConanKLOP2/PhotoReview/releases/tag/v2.0.94";
+    let url = "https://github.com/ConanKLOP2/PhotoReview-rs/releases/tag/v2.0.94";
     presenter.set_update_url(Some(url.to_owned()));
     assert_eq!(presenter.update_url(), Some(url));
     let mut opened = Vec::new();
