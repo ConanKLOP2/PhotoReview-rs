@@ -1,6 +1,6 @@
 # ST-MAINWIN-TESTS (2026-10-31)
 
-Lane `st-mainwin-tests`: items 7 and 8 of section 6 of `ST-GAPMAP2-2026-10-31.md`. The brief said `crates/pr-shell/src/windowing/`; the main window actually lives in
+Lane `st-mainwin-tests`: items 7 and 8 of section 6 of `ST-GAPMAP2-2026-10-31.md`. The brief guessed a path in pr-shell (not checked); the main window actually lives in
 `crates/pr-platform-win/src/host/main_window/`, so the tests are in `crates/pr-platform-win/tests/w8_mainwin_frame_tests.rs`.
 
 ## Production change (one additive accessor, no behaviour change)
