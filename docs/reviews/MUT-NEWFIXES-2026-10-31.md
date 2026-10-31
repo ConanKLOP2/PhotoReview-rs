@@ -18,6 +18,8 @@ therefore select with `--in-diff` and a synthetic diff that marks only the targe
 run (`precheck`) and the killer rerun also executed unrelated `delete field` mutants of other functions; they are listed separately and
 are NOT in the numbers below.
 
+Golden check: cargo-mutants does not copy tests/golden, so a mutant caught only by a golden test would not be a real catch. The failing tests in every caught mutant's log were scanned: none was caught only by a golden test (0 golden-only).
+
 ## Results per function
 
 | Function (file lines) | Fix | tested | caught | missed | timeout | unviable | not run |
