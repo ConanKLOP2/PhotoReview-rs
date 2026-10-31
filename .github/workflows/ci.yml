@@ -87,6 +87,22 @@ jobs:
       - name: Audit unsafe code
         run: PY_BIN=python3 bash tools/dev/unsafe-audit.sh
 
+  # ST-CI-RELEASE-TOOLS: static lint of all workflow files. Advisory (continue-on-error) and NOT in `needs` of build-test, so it never
+  # gates a merge; promote it only after one clean run on master. actionlint is built from a pinned module version (the Go module
+  # proxy and checksum database make a version tag immutable), so no unpinned download runs in CI.
+  actionlint:
+    if: github.event_name != 'schedule'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    continue-on-error: true
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Install pinned actionlint
+        run: go install github.com/rhysd/actionlint/cmd/actionlint@v1.7.7
+      - name: Lint workflows
+        run: "$(go env GOPATH)/bin/actionlint -color"
+
   # Runner time is the budget, not the number of jobs: every Windows job pays about 30 s of setup (checkout, toolchain, cache) and
   # GitHub runs a limited number of Windows jobs at once, so two overlapping runs (a pull request and the master run of the previous
   # merge) used to queue. The work is grouped into five jobs of about two minutes each: lint plus release build, pr-core, the rest of
