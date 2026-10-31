@@ -1,14 +1,14 @@
-# ADR: Recycle send reports what the Shell did (DV-22, ST-COM-RECYCLE C2)
+# ADR: Recycle send reports what the Shell did (DV-23, ST-COM-RECYCLE C2)
 
 Date: 2026-10-31
 
-Status: accepted under the standing "run end to end" instruction (proposal row `P-61` in `docs/PROPOSED-DECISIONS.md`); merged code, native confirmation pending. The owner may reverse it with a follow-up PR.
+Status: accepted under the standing "run end to end" instruction (proposal row `P-62` in `docs/PROPOSED-DECISIONS.md`); merged code, native confirmation pending. The owner may reverse it with a follow-up PR.
 
 ## Context
 
 `WindowsRecycleBin::send_to_recycle_bin` (`crates/pr-platform-win/src/recycle_bin.rs`) called `IFileOperation::DeleteItem(&item, None)` and then only checked that the source file was gone. That evidence is the same for a recycle and for a permanent delete. Cases the guard cannot predict (a path over `MAX_PATH`, a wrong size, a bin that is full or disabled in a way the settings do not show) make the Shell delete for good while the call returns `Ok` and the journal says Recycle. C# `ShellFileRecycler` has the same hole (C# baseline `7eaee2a2`, read only); the C# behaviour is not the oracle for a safe answer here.
 
-## Decision (DV-22)
+## Decision (DV-23)
 
 - `IFileOperationProgressSink` (`delete_sink::DeleteSink`, `#[implement]`, 12 methods, only `PostDeleteItem` records). Passed to `DeleteItem` (per item) and registered with `Advise` (whole operation); the two reports are merged keeping the worst.
 - `classify_post_delete(hr, new_item_present)`: failed HRESULT is `Failed(hr)`; success with a new item is `MovedToRecycleBin`; success without one is `DeletedPermanently`. A sink that was never called leaves `Unknown`.

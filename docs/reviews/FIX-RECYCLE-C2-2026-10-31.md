@@ -1,7 +1,7 @@
 # FIX-RECYCLE-C2 - Recycle: report what the Shell did (2026-10-31)
 
 Status: done in code with fakes; the real-Shell behaviour is NOT verified (attended native test exists as an `#[ignore]` skeleton, not run).
-Source: finding C2 of [ST-COM-RECYCLE](ST-COM-RECYCLE-2026-10-31.md), design in [FIX-RECYCLE-C1C2](FIX-RECYCLE-C1C2-2026-10-31.md). Decision `P-61`, [ADR DV-22](../adr/ADR-D-2026-10-31-recycle-c2-shell-outcome.md).
+Source: finding C2 of [ST-COM-RECYCLE](ST-COM-RECYCLE-2026-10-31.md), design in [FIX-RECYCLE-C1C2](FIX-RECYCLE-C1C2-2026-10-31.md). Decision `P-62`, [ADR DV-23](../adr/ADR-D-2026-10-31-recycle-c2-shell-outcome.md).
 
 ## What was done
 
@@ -20,7 +20,7 @@ Source: finding C2 of [ST-COM-RECYCLE](ST-COM-RECYCLE-2026-10-31.md), design in 
 
 ## Not done / open
 
-- Whether the real Shell fills `psiNewlyCreated` for a recycle and calls the sink at all is an assumption. If it does not, every recycle reports `Unknown` and fails (fail closed, file is in the bin, nothing lost). The owner must run the attended test once before release; otherwise switch `Unknown` handling (option B of P-61).
+- Whether the real Shell fills `psiNewlyCreated` for a recycle and calls the sink at all is an assumption. If it does not, every recycle reports `Unknown` and fails (fail closed, file is in the bin, nothing lost). The owner must run the attended test once before release; otherwise switch `Unknown` handling (option B of P-62).
 - `TSF_DELETE_RECYCLE_IF_POSSIBLE` is not checked in the sink. `FOF_NOERRORUI` (design step 5) not changed. L6 (cause of failure) is only improved through the HRESULT text.
 - A file the Shell already deleted permanently cannot be restored; the change makes the report truthful, it does not prevent the loss for cases the guard cannot predict.
 
