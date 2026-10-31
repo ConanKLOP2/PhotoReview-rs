@@ -34,3 +34,6 @@ No survivor, so no killer was added (`tests/w8_dialogsmut_killers.rs` not create
 - None to status. For X-chrome-painter-widgets add: "cl-mut-dialogs 2026-10-31: 5 of 99 combo/trackbar/tick mutants verified caught (correct flags, running 17 tests), 1 unverified, 92 not run; no valid full verdict yet."
 - Other rows: no evidence produced; leave Partial.
 - Rerun needs a quiet machine (about 5 min per mutant under load; roughly 1.5 min idle): 99 mutants is about 2.5 h idle.
+
+## Caveat (golden)
+cargo-mutants does not copy tests/golden into its temp tree, so a mutant failing only on a golden-loading test is not a true catch. The mutant logs were deleted (disk nearly full) before this check, so which failing tests were non-golden was NOT re-verified; the 5 'caught' are therefore provisional ('caught, golden-only not excluded'). target-mut and mut-out were removed.
