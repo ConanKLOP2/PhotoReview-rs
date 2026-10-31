@@ -171,3 +171,11 @@ Moved verbatim from `task_on_progress.md` (branch docs/tp-compact3, 2026-10-30).
 
 - CL-HOST3 2026-10-31: ui_dispatcher.rs lines 246+ rerun (correct flag form): 46 mutants, 0 missed, 0 timeouts (36 caught + 3 unviable + 7 caught earlier); all 90 of the file resolved, X-host-ui-dispatcher back to Done; messages.rs/swap_chain_clock.rs/message_loop.rs NOT run (time-box); docs/reviews/CL-HOST3-2026-10-31.md.
 - CL-REST2RERUN 2026-10-31: correct-flag rerun: initial_viewport 41/41 caught, benchmark `dispose` killers confirmed by hand (2 mutants kill both tests), adapters.rs really 22 caught + 7 MISSED + 5 unviable (CL-REST2's 0 missed was void; killed by CX-TEXTS w8_texts_killers); no row raised; docs/reviews/CL-REST2RERUN-2026-10-31.md.
+
+## Moved 2026-10-31 (cl-jrnl4, lane status lines, verbatim)
+
+- CX-JRNL2 2026-10-31: tests only; 26 new caught, combined 48/179; lane ran 33 of 179 (31 caught, 2 source-unviable); four dismiss field deletions MISSED in the narrow killers-only binary but caught in the full suite; 127 original NOT RUN remain; native reconcile concurrency preflight failed, rows Partial; docs/reviews/CX-JRNL2-2026-10-31.md.
+- CL-JRNL3 2026-10-31: journal mutants rerun (docs/reviews/CL-JRNL3-2026-10-31.md): 22 decided of 127 NOT RUN (16 caught incl. as_str survivor killed by w3_jrnl_killers7, 4 timeout, 2 unviable); combined 64/179 caught, 105 NOT RUN; journal rows stay Partial.
+- CL-PHYS3 2026-10-31: physical.rs +43 mutants (26 caught, 17 missed = 8 equivalent + 9 real gaps now killed by w2_phys3_killers); ~395 not run; X-physical-fs/AR16 Partial; docs/reviews/CL-PHYS3-2026-10-31.md.
+- CL-TEXTS2 2026-10-31: texts.rs remaining mutants rerun with correct flags: 122 + 2 re-checked caught, 0 missed/timeouts, localizer unviable; all 161 texts mutants accounted for; X-composition-texts-adapters stays Partial (adapters gaps); docs/reviews/CL-TEXTS2-2026-10-31.md.
+- CL-PHYS4 2026-10-31: physical.rs pattern group 115 of 438 run (flag form verified): 92 caught, 20 missed (16 real gaps killed by w2_phys4_killers, 4 equivalent), 3 TIMEOUT (infinite loops, counted undetected); 323 of 438 not run by this lane, X-physical-fs/AR16 stay Partial; docs/reviews/CL-PHYS4-2026-10-31.md.
