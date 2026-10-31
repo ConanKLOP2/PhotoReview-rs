@@ -34,7 +34,8 @@ pub fn default_open_url(url: &str) -> Result<(), String> {
     use windows::Win32::UI::Shell::{SEE_MASK_FLAG_DDEWAIT, SEE_MASK_FLAG_NO_UI, SHELLEXECUTEINFOW, ShellExecuteExW};
     use windows::Win32::UI::WindowsAndMessaging::SW_SHOWNORMAL;
     use windows::core::PCWSTR;
-    if url.trim().is_empty() {
+    let url = url.trim();
+    if url.is_empty() {
         return Err("empty url".to_owned());
     }
     if !is_web_url(url) {
@@ -54,9 +55,13 @@ pub fn default_open_url(url: &str) -> Result<(), String> {
     unsafe { ShellExecuteExW(&mut info) }.map_err(|error| format!("ShellExecute failed ({})", error.code().0))
 }
 
-/// `true` when `url` starts with `http://` or `https://` (ASCII case-insensitive) followed by at least one more character. Pure.
+/// `true` when `url` (after trim) starts with `http://` or `https://` (ASCII case-insensitive) followed by at least one more character and contains no control
+/// character, space or double quote (defense in depth, ST-HTTP-SECURITY L8: such characters could inject arguments into a browser command line). Pure.
 pub fn is_web_url(url: &str) -> bool {
     let url = url.trim();
+    if url.chars().any(|c| c.is_control() || c == ' ' || c == '"') {
+        return false;
+    }
     ["http://", "https://"].iter().any(|scheme| {
         url.len() > scheme.len()
             && url.is_char_boundary(scheme.len())

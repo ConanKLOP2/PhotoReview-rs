@@ -250,6 +250,11 @@ fn open_url_accepts_only_http_and_https_without_entering_the_shell() {
         "ftp://example.invalid/a",
         "http://",
         "https:/x",
+        "https://example.invalid/a b",
+        "https://example.invalid/a\"b",
+        "https://example.invalid/a\tb",
+        "https://example.invalid/a\x01b",
+        "https://example.invalid/a\u{7f}",
     ] {
         assert_eq!(default_open_url(url), Err("unsupported url scheme".to_owned()), "{url}");
         assert!(!is_web_url(url), "{url}");

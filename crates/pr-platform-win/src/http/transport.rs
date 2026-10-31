@@ -23,6 +23,15 @@ use windows::core::{PCWSTR, PWSTR, w};
 pub struct WinHttpTransport;
 const READ_SIZE: usize = 16 * 1024;
 const HEADER_CAP: u32 = 64 * 1024;
+/// DWORD options set on every request handle. AUTOLOGON_POLICY=HIGH: never send the current
+/// Windows credentials (NTLM/Negotiate) automatically to a proxy or Intranet server, e.g. one
+/// named by a hostile PAC/WPAD. The C# `new HttpClient()` sends none (no Credentials, no
+/// UseDefaultCredentials), whereas the WinHTTP default (MEDIUM) would for Intranet hosts.
+const REQUEST_OPTIONS: [(u32, u32); 3] = [
+    (WINHTTP_OPTION_REDIRECT_POLICY, WINHTTP_OPTION_REDIRECT_POLICY_NEVER),
+    (WINHTTP_OPTION_MAX_RESPONSE_HEADER_SIZE, HEADER_CAP),
+    (WINHTTP_OPTION_AUTOLOGON_POLICY, WINHTTP_AUTOLOGON_SECURITY_LEVEL_HIGH),
+];
 fn other(message: &str) -> HttpError {
     HttpError::Other(message.to_owned())
 }
@@ -196,11 +205,13 @@ impl Url {
     }
 }
 fn redirect_target(base: &str, location: &str) -> Option<String> {
-    if location.trim().is_empty() {
+    let location = location.trim();
+    // Reject control characters (incl. lone CR, TAB, DEL) and inner spaces: they would reach the request line.
+    if location.is_empty() || location.chars().any(|c| c.is_control() || c == ' ') {
         return None;
     }
     let base = wide(base).ok()?;
-    let relative = wide(location.trim()).ok()?;
+    let relative = wide(location).ok()?;
     let mut buffer = vec![0u16; 32 * 1024];
     let mut size = buffer.len() as u32;
     // SAFETY: terminated inputs, writable output of size UTF-16 elements.
@@ -345,10 +356,7 @@ impl Exchange {
                 },
             )
         })?;
-        for (option, value) in [
-            (WINHTTP_OPTION_REDIRECT_POLICY, WINHTTP_OPTION_REDIRECT_POLICY_NEVER),
-            (WINHTTP_OPTION_MAX_RESPONSE_HEADER_SIZE, HEADER_CAP),
-        ] {
+        for (option, value) in REQUEST_OPTIONS {
             // SAFETY: live request, option expects and copies one DWORD.
             unsafe { WinHttpSetOption(Some(request.raw()), option, Some(&value.to_ne_bytes())) }.map_err(win_error)?;
         }
@@ -608,6 +616,51 @@ mod tests {
         );
         for target in ["", "file:///a", "https://user:secret@example.com", "\0"] {
             assert_eq!(redirect_target(base, target), None, "{target}");
+        }
+    }
+
+    #[test]
+    fn redirect_target_rejects_control_characters_and_inner_spaces() {
+        // ST-HTTP-SECURITY L1: nothing that could alter the request line may follow a redirect.
+        let base = "https://example.com/a/b";
+        for target in [
+            "/x\ry",
+            "/x\ty",
+            "/x y",
+            "/x\u{7f}",
+            "/x\u{1}",
+            "/x\ny",
+            "https://example.com/a\rb",
+        ] {
+            assert_eq!(redirect_target(base, target), None, "{target:?}");
+        }
+        // Surrounding whitespace is still trimmed (unchanged behavior).
+        assert_eq!(redirect_target(base, "  /c \r\n"), Some("https://example.com/c".into()));
+    }
+
+    #[test]
+    fn request_options_disable_automatic_windows_logon() {
+        // ST-HTTP-SECURITY M1: HIGH = never auto-send current credentials (C# HttpClient sends none).
+        assert!(REQUEST_OPTIONS.contains(&(WINHTTP_OPTION_AUTOLOGON_POLICY, WINHTTP_AUTOLOGON_SECURITY_LEVEL_HIGH)));
+        assert_eq!(WINHTTP_AUTOLOGON_SECURITY_LEVEL_HIGH, 2);
+        assert!(REQUEST_OPTIONS.contains(&(WINHTTP_OPTION_REDIRECT_POLICY, WINHTTP_OPTION_REDIRECT_POLICY_NEVER)));
+    }
+
+    #[test]
+    fn get_rejects_non_loopback_http_before_opening_any_socket() {
+        // ST-HTTP-SECURITY L4: plain HTTP to a non-loopback host fails closed at the policy check.
+        for url in ["http://example.invalid/", "http://203.0.113.5/x", "http://localhost/"] {
+            let request = HttpRequest {
+                url: url.to_owned(),
+                user_agent: "t".into(),
+                accept: "*/*".into(),
+            };
+            let result = WinHttpTransport.get(&request, Duration::from_secs(1), &CancelToken::new());
+            assert!(
+                matches!(&result, Err(HttpError::Other(m)) if m.starts_with("HTTPS required")),
+                "{url}: {:?}",
+                result.map(|r| r.status)
+            );
         }
     }
 
