@@ -249,24 +249,7 @@ impl SecondaryWindowDialogs for ProductionSecondaryWindowDialogs {
                 }
             },
         )?;
-        let retry = self.services.recovery_retry.clone().map(|service| {
-            Arc::new(move |entry: &JournalEntry| {
-                service
-                    .retry_move_or_copy(entry, true, &pr_core::sync::CancelToken::new())
-                    .map_err(|_| "canceled".to_owned())
-            }) as pr_app::presenters::recovery_window::RetryFn
-        });
-        let dismiss_journal = journal.clone();
-        let dismiss = Some(Box::new(move |items: &[JournalEntry]| {
-            dismiss_journal.dismiss(items).map_err(|error| error.to_string())
-        }) as pr_app::presenters::recovery_window::DismissFn);
-        let options = RecoveryWindowOptions {
-            retry,
-            dismiss,
-            checker: Arc::new(RecoveryFileCheck::new(self.services.file_system.clone())),
-            allow_permanent_delete: None,
-            current_time_text: self.host.current_time_text.clone(),
-        };
+        let options = recovery_window_options(&self.services, &journal, self.host.current_time_text.clone());
         let services = RecoveryDialogServices {
             texts: RecoveryTextSource::new(
                 (self.host.localizer)(),
@@ -394,5 +377,40 @@ impl SecondaryWindowDialogs for ProductionSecondaryWindowDialogs {
             native,
             Box::new(move |id| if id == ID_OK { dialog.value() } else { None }),
         ))
+    }
+}
+
+/// C# `Win32SecondaryWindowPort.ShowRecovery` 148-160, the delegates handed to `new RecoveryDialog(...)`: Retry is
+/// `RetryMoveOrCopyAsync(entry, confirmedFinishCancelled: true)` (the window confirms a user-cancelled entry explicitly first), Clear is
+/// `journal.Dismiss`, the checker reads through `RecoveryFileCheck`, and the permanent-delete warning of the Retry question reads
+/// `SettingsStore.Current.AllowPermanentDeleteWithoutRecycleBin` at the moment it is asked (`false` without a settings store).
+pub fn recovery_window_options(
+    services: &DialogServices,
+    journal: &Arc<OperationJournal>,
+    current_time_text: Arc<dyn Fn() -> String + Send + Sync>,
+) -> RecoveryWindowOptions {
+    let retry = services.recovery_retry.clone().map(|service| {
+        Arc::new(move |entry: &JournalEntry| {
+            service
+                .retry_move_or_copy(entry, true, &pr_core::sync::CancelToken::new())
+                .map_err(|_| "canceled".to_owned())
+        }) as pr_app::presenters::recovery_window::RetryFn
+    });
+    let dismiss_journal = journal.clone();
+    let dismiss =
+        Some(
+            Box::new(move |items: &[JournalEntry]| dismiss_journal.dismiss(items).map_err(|error| error.to_string()))
+                as pr_app::presenters::recovery_window::DismissFn,
+        );
+    let allow_permanent_delete = services.settings_store.clone().map(|store| {
+        Arc::new(move || store.current().allow_permanent_delete_without_recycle_bin)
+            as pr_core::file_actions::recovery_retry::AllowPermanentDelete
+    });
+    RecoveryWindowOptions {
+        retry,
+        dismiss,
+        checker: Arc::new(RecoveryFileCheck::new(services.file_system.clone())),
+        allow_permanent_delete,
+        current_time_text,
     }
 }
