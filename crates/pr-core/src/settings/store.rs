@@ -664,14 +664,17 @@ impl SettingsStore {
         }
         let newer = lock(&self.state).newer_file_on_disk;
         if newer {
-            self.backup_newer_config(&file_path);
-            lock(&self.state).newer_file_on_disk = false;
+            // P-66: a failed backup aborts the save (the flag stays set, the newer file stays untouched).
+            self.backup_newer_config(&file_path).map_err(SettingsSaveError::Io)?;
         }
         settings.canonicalize_all();
         super::external_editors::ExternalEditors::reconcile(&mut settings);
         settings.config_version = CURRENT_CONFIG_VERSION;
         let json = settings.to_json()?;
         self.file_system.write_all_text_atomic(&file_path, &json, true)?;
+        if newer {
+            lock(&self.state).newer_file_on_disk = false;
+        }
         self.set_current(Arc::new(settings));
         Ok(())
     }
@@ -691,8 +694,9 @@ impl SettingsStore {
         }
     }
 
-    /// `BackupNewerConfig`.
-    fn backup_newer_config(&self, file_path: &Path) {
+    /// `BackupNewerConfig`. Unlike C# (best effort), a failed copy is returned so the caller refuses to overwrite
+    /// the newer-build file and drop its unknown fields (P-66); pruning failures stay warnings.
+    fn backup_newer_config(&self, file_path: &Path) -> io::Result<()> {
         let copied: io::Result<bool> = (|| {
             if !self.file_system.file_exists(file_path) {
                 return Ok(false);
@@ -706,17 +710,17 @@ impl SettingsStore {
             Ok(true)
         })();
         match copied {
-            Ok(false) => return,
+            Ok(false) => return Ok(()),
             Ok(true) => {}
             Err(e) => {
                 self.log.warn(&format!(
                     "Could not back up the newer-build config.json before overwriting it: {e}"
                 ));
-                return;
+                return Err(e);
             }
         }
         let Some(dir) = non_empty_parent(file_path) else {
-            return;
+            return Ok(());
         };
         let name = file_name_string(file_path);
         let prefix = format!("{name}.newer-");
@@ -725,7 +729,7 @@ impl SettingsStore {
             Err(e) => {
                 self.log
                     .warn(&format!("Could not prune old newer-build config backups: {e}"));
-                return;
+                return Ok(());
             }
         };
         let mut keyed: Vec<(String, i32, PathBuf)> = files
@@ -745,6 +749,7 @@ impl SettingsStore {
                     .warn(&format!("Could not delete an old newer-build config backup: {e}"));
             }
         }
+        Ok(())
     }
 
     /// `NewerBackupPath`.
