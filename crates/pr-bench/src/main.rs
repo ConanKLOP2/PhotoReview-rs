@@ -3,7 +3,7 @@
 //! All behaviour lives in [`pr_bench::cli`] so integration tests can drive it with fakes; this file only wires the
 //! real streams, file system and backend. The process exit code is the return value of [`pr_bench::cli::run`].
 
-use pr_bench::cli::{self, SystemToolEnvironment, UnwiredBackend};
+use pr_bench::cli::{self, EngineBackend, SystemToolEnvironment, UnwiredEngineHost};
 use pr_core::io::physical::PhysicalFileSystem;
 
 fn main() {
@@ -12,8 +12,10 @@ fn main() {
     let stderr = std::io::stderr();
     let mut out = stdout.lock();
     let mut err = stderr.lock();
-    // W7-03d wiring: replace `UnwiredBackend` by the engine-backed backend once W7-01..W7-03c are merged.
-    let mut backend = UnwiredBackend;
+    // The engine backend is wired (real catalog, executor, workload runner, report writers). The platform host (WIC decoder,
+    // payload codec, real Recycle Bin) cannot be named from this crate (pr-platform-win -> pr-app -> pr-bench), so profile runs
+    // fail with the "not wired" message until a host crate supplies an `EngineHost`.
+    let mut backend = EngineBackend::new(UnwiredEngineHost);
     let code = cli::run(
         &args,
         &mut out,
