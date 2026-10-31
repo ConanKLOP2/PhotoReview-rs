@@ -844,9 +844,10 @@ impl<'buf> LibRawHandle<'buf> {
     }
 
     /// The `i32` at byte `offset` of `libraw_data_t`, `None` unless `0 <= offset && offset + 4 <= DATA_PROBE_LIMIT`
-    /// (native tests' `ReadInt32`; same window as the [`WhiteBalanceTarget`] impl).
+    /// (native tests' `ReadInt32`; same window as the white-balance proof). Test-only (cargo feature `test-support`).
+    #[cfg(any(test, feature = "test-support"))]
     pub fn read_data_i32(&self, offset: i32) -> Option<i32> {
-        WhiteBalanceTarget::read_i32(self, offset)
+        self.probe_read(offset)
     }
 
     /// `libraw_open_wfile`: `path` encoded as NUL-terminated UTF-16 (`encode_wide` on Windows; a path with an interior NUL is
@@ -963,12 +964,21 @@ impl<'buf> LibRawHandle<'buf> {
     /// C# `TryGetRawStructure` (production): [`raw_structure_with`](Self::raw_structure_with) gated by
     /// `crate::availability::is_exact_pinned_version` (W5-15b).
     pub fn raw_structure(&self) -> Option<RawStructure> {
-        self.raw_structure_with(crate::availability::is_exact_pinned_version)
+        self.raw_structure_impl(crate::availability::is_exact_pinned_version)
     }
 
     /// `version_pinned()` false => `None` without calling `libraw_get_iparams`; null iparams => `None`; else
     /// [`try_read_raw_structure`] over the first [`IPARAMS_READ_LEN`] bytes of the block.
+    ///
+    /// Test-only (cargo feature `test-support`, off by default): the caller-supplied `version_pinned` closure would let
+    /// safe code skip the pinned-version gate before native memory is read. Production uses [`raw_structure`](Self::raw_structure).
+    #[cfg(any(test, feature = "test-support"))]
     pub fn raw_structure_with(&self, version_pinned: impl FnOnce() -> bool) -> Option<RawStructure> {
+        self.raw_structure_impl(version_pinned)
+    }
+
+    /// Body of `raw_structure`/`raw_structure_with`.
+    fn raw_structure_impl(&self, version_pinned: impl FnOnce() -> bool) -> Option<RawStructure> {
         if !version_pinned() {
             return None;
         }
@@ -1017,7 +1027,8 @@ impl<'buf> LibRawHandle<'buf> {
     ///
     /// [`try_set_use_camera_wb_with`]: Self::try_set_use_camera_wb_with
     pub fn try_set_use_camera_wb(&mut self, output_color: i32, output_bps: i32, no_auto_bright: i32) -> bool {
-        self.try_set_use_camera_wb_with(
+        try_set_use_camera_wb_core(
+            &mut ProbeTarget(self),
             output_color,
             output_bps,
             no_auto_bright,
@@ -1028,6 +1039,11 @@ impl<'buf> LibRawHandle<'buf> {
 
     /// C# `TrySetUseCameraWb(SafeLibRawHandle, int, int, int, Func<bool>, WhiteBalanceLayout)`:
     /// [`try_set_use_camera_wb_core`] over this handle.
+    ///
+    /// Test-only (cargo feature `test-support`, off by default): the caller-supplied `version_pinned` closure and
+    /// `layout` would let safe code skip the pinned-version gate and pick the offsets that are read and written in the
+    /// native block. Production uses [`try_set_use_camera_wb`](Self::try_set_use_camera_wb).
+    #[cfg(any(test, feature = "test-support"))]
     pub fn try_set_use_camera_wb_with(
         &mut self,
         output_color: i32,
@@ -1036,7 +1052,14 @@ impl<'buf> LibRawHandle<'buf> {
         version_pinned: impl FnOnce() -> bool,
         layout: WhiteBalanceLayout,
     ) -> bool {
-        try_set_use_camera_wb_core(self, output_color, output_bps, no_auto_bright, version_pinned, layout)
+        try_set_use_camera_wb_core(
+            &mut ProbeTarget(self),
+            output_color,
+            output_bps,
+            no_auto_bright,
+            version_pinned,
+            layout,
+        )
     }
 
     /// Closes now (idempotent); later calls of the other methods are a bug and must not reach LibRaw: they return the
@@ -1053,20 +1076,14 @@ impl<'buf> LibRawHandle<'buf> {
     }
 }
 
-impl WhiteBalanceTarget for LibRawHandle<'_> {
-    fn set_output_color(&mut self, value: i32) {
-        LibRawHandle::set_output_color(self, value);
-    }
+/// Private adapter: the only path from the public API to the raw `i32` probes of a live `libraw_data_t`. Keeping the
+/// [`WhiteBalanceTarget`] impl on this private type means safe code outside the crate cannot call `read_i32`/`write_i32`
+/// on a real handle without going through the pinned-version gate of [`try_set_use_camera_wb_core`].
+struct ProbeTarget<'a, 'buf>(&'a mut LibRawHandle<'buf>);
 
-    fn set_output_bps(&mut self, value: i32) {
-        LibRawHandle::set_output_bps(self, value);
-    }
-
-    fn set_no_auto_bright(&mut self, value: i32) {
-        LibRawHandle::set_no_auto_bright(self, value);
-    }
-
-    fn read_i32(&self, offset: i32) -> Option<i32> {
+impl LibRawHandle<'_> {
+    /// The `i32` at `offset` of the live block inside the probe window, `None` outside it or after close.
+    fn probe_read(&self, offset: i32) -> Option<i32> {
         let offset = Self::probe_window(offset)?;
         let data = self.data()?;
         // SAFETY: `offset + 4 <= DATA_PROBE_LIMIT` (65 536) lies inside the live `libraw_data_t`: larger than that in every
@@ -1075,13 +1092,36 @@ impl WhiteBalanceTarget for LibRawHandle<'_> {
         Some(unsafe { ptr::read_unaligned(data.cast::<u8>().add(offset).cast::<i32>()) })
     }
 
-    fn write_i32(&mut self, offset: i32, value: i32) -> bool {
+    /// Writes `value` at `offset` of the live block inside the probe window; `false` (nothing written) outside it or after close.
+    fn probe_write(&mut self, offset: i32, value: i32) -> bool {
         let (Some(offset), Some(data)) = (Self::probe_window(offset), self.data()) else {
             return false;
         };
-        // SAFETY: same window as `read_i32` (inside the live `libraw_data_t`); `&mut self` means no other access.
+        // SAFETY: same window as `probe_read` (inside the live `libraw_data_t`); `&mut self` means no other access.
         unsafe { ptr::write_unaligned(data.cast::<u8>().add(offset).cast::<i32>(), value) };
         true
+    }
+}
+
+impl WhiteBalanceTarget for ProbeTarget<'_, '_> {
+    fn set_output_color(&mut self, value: i32) {
+        self.0.set_output_color(value);
+    }
+
+    fn set_output_bps(&mut self, value: i32) {
+        self.0.set_output_bps(value);
+    }
+
+    fn set_no_auto_bright(&mut self, value: i32) {
+        self.0.set_no_auto_bright(value);
+    }
+
+    fn read_i32(&self, offset: i32) -> Option<i32> {
+        self.0.probe_read(offset)
+    }
+
+    fn write_i32(&mut self, offset: i32, value: i32) -> bool {
+        self.0.probe_write(offset, value)
     }
 }
 

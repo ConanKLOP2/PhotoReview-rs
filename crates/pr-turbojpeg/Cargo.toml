@@ -10,11 +10,17 @@ publish.workspace = true
 [lints]
 workspace = true
 
+[features]
+# Off by default. Exposes the test-only constructors that turn an arbitrary integer into a native `tjhandle`
+# (`TurboJpegHandle::from_raw`, `with_destroy`, `wrap_init_result`); the integration tests enable it via dev-dependencies.
+test-support = []
+
 [dependencies]
 pr-core.workspace = true
 pr-imaging.workspace = true
 
 [dev-dependencies]
+pr-turbojpeg = { path = ".", features = ["test-support"] }
 pr-test-support.workspace = true
 serde_json.workspace = true
 

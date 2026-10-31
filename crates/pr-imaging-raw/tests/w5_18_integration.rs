@@ -2,6 +2,9 @@
 //! These exercise the real RAW decoder and preview service over synthetic files; corpus sweeps run only when a local
 //! corpus is configured and never fetch samples.
 
+#[path = "common/corpus_skip.rs"]
+mod corpus_skip;
+
 use std::collections::HashMap;
 use std::fs;
 use std::io::{self, Read, Seek, SeekFrom};
@@ -353,7 +356,7 @@ fn all_corpus_tiff_samples_can_be_parsed_through_registry() {
         if corpus_strict() {
             panic!("RAW corpus is required but missing: {}", dir.display());
         }
-        eprintln!("skipped: RAW corpus not present at {}", dir.display());
+        corpus_skip::skipped(&format!("RAW corpus not present at {}", dir.display()));
         return;
     }
 
@@ -423,7 +426,7 @@ fn all_corpus_tiff_samples_can_be_parsed_through_registry() {
         if corpus_strict() {
             panic!("strict RAW corpus contains no TIFF-family files in {}", dir.display());
         }
-        eprintln!("skipped: no TIFF-family samples in {}", dir.display());
+        corpus_skip::skipped(&format!("no TIFF-family samples in {}", dir.display()));
         return;
     }
     if corpus_strict() {
@@ -439,7 +442,7 @@ fn all_tiff_corpus_files_every_listed_preview_lies_inside_file_and_starts_with_s
         if corpus_strict() {
             panic!("RAW corpus is required but missing: {}", dir.display());
         }
-        eprintln!("skipped: RAW corpus not present at {}", dir.display());
+        corpus_skip::skipped(&format!("RAW corpus not present at {}", dir.display()));
         return;
     }
 

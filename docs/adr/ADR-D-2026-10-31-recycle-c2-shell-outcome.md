@@ -2,7 +2,7 @@
 
 Date: 2026-10-31
 
-Status: accepted under the standing "run end to end" instruction (proposal row `P-60` in `docs/PROPOSED-DECISIONS.md`); merged code, native confirmation pending. The owner may reverse it with a follow-up PR.
+Status: accepted under the standing "run end to end" instruction (proposal row `P-61` in `docs/PROPOSED-DECISIONS.md`); merged code, native confirmation pending. The owner may reverse it with a follow-up PR.
 
 ## Context
 

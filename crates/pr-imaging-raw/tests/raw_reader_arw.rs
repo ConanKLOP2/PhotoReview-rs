@@ -20,6 +20,9 @@
 //! No timing asserts (AGENTS.md): the C# p95 budget of `Fuzz_ArwContainerReader_Robust` is dropped (D54), the cargo job timeout
 //! is the hang guard.
 
+#[path = "common/corpus_skip.rs"]
+mod corpus_skip;
+
 use std::fs::{self, File};
 use std::io::{self, Read};
 use std::path::{Path, PathBuf};
@@ -1409,6 +1412,7 @@ fn corpus_sample(source: &Value, optional: bool) -> Option<Vec<u8>> {
     let path = corpus_dir().join(file);
     if !path.is_file() {
         if optional {
+            corpus_skip::skipped(&format!("optional sample {file} absent"));
             return None;
         }
         panic!("RAW corpus sample missing (fetch it first): {}", path.display());
@@ -1456,7 +1460,7 @@ fn golden_raw_arw_reader_all_cases_match_the_oracle() {
         );
 
         let Some(actual) = run_golden_case(input) else {
-            eprintln!("skipped: corpus sample absent for {name}");
+            corpus_skip::skipped(&format!("corpus sample absent for {name}"));
             continue;
         };
         if expected.get("skipped").is_some() {
@@ -1510,7 +1514,7 @@ fn require_corpus_dir() -> bool {
             dir.display()
         );
     }
-    eprintln!("skipped: RAW corpus not present at {}", dir.display());
+    corpus_skip::skipped(&format!("RAW corpus not present at {}", dir.display()));
     false
 }
 
@@ -1547,7 +1551,7 @@ fn corpus_try_get_first(extension: &str, contains: &str) -> Option<PathBuf> {
         .into_iter()
         .find(|p| file_name_of(p).contains(contains));
     if found.is_none() {
-        eprintln!("skipped: no {extension} sample containing {contains:?}");
+        corpus_skip::skipped(&format!("no {extension} sample containing {contains:?}"));
     }
     found
 }
@@ -1561,7 +1565,7 @@ fn corpus_named(file_name: &str) -> Option<PathBuf> {
     if path.is_file() {
         Some(path)
     } else {
-        eprintln!("skipped: {file_name} not present in the RAW corpus");
+        corpus_skip::skipped(&format!("{file_name} not present in the RAW corpus"));
         None
     }
 }

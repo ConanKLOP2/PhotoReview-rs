@@ -60,6 +60,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "pr-bench-win"
+version = "0.1.0"
+dependencies = [
+ "pr-bench",
+ "pr-core",
+ "pr-imaging",
+ "pr-platform-win",
+ "pr-test-support",
+]
+
+[[package]]
 name = "pr-core"
 version = "0.1.0"
 dependencies = [
@@ -105,6 +116,7 @@ dependencies = [
  "pr-core",
  "pr-imaging",
  "pr-imaging-raw",
+ "pr-libraw",
  "pr-platform-win",
  "pr-test-support",
  "pr-turbojpeg",
@@ -170,6 +182,7 @@ dependencies = [
  "pr-imaging",
  "pr-platform-win",
  "pr-test-support",
+ "pr-turbojpeg",
  "serde_json",
 ]
 

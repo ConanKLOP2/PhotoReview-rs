@@ -561,6 +561,9 @@ pub fn create_decompressor() -> Result<TurboJpegHandle, NativeError> {
 /// C# `TurboJpegNative.WrapInitResult(IntPtr)`: 0 -> `InvalidOperation(INIT_FAILED_MESSAGE)`; any other value
 /// (including -1, exactly like C#) -> an owning handle bound to the process-wide library, which is only resolved
 /// when the handle is used or released (C#'s static `tj3Destroy` binds lazily too). Loads nothing itself.
+///
+/// Test-only (cargo feature `test-support`, off by default): it turns an arbitrary integer into an owning handle.
+#[cfg(any(test, feature = "test-support"))]
 pub fn wrap_init_result(ptr: isize) -> Result<TurboJpegHandle, NativeError> {
     if ptr == 0 {
         return Err(NativeError::InvalidOperation {
@@ -578,7 +581,8 @@ pub type DestroyFn = Box<dyn FnMut(isize) -> Result<(), NativeError> + Send>;
 enum Binding {
     /// Created by [`TurboJpegLibrary::create_decompressor`]/`create_compressor`.
     Library(Arc<TurboJpegLibrary>),
-    /// Created by [`TurboJpegHandle::from_raw`]/[`wrap_init_result`]: resolved via [`TurboJpegLibrary::shared`] on use.
+    /// Created by `TurboJpegHandle::from_raw`/`wrap_init_result` (test-only): resolved via [`TurboJpegLibrary::shared`] on use.
+    #[cfg(any(test, feature = "test-support"))]
     Shared,
 }
 
@@ -621,6 +625,11 @@ impl fmt::Debug for TurboJpegHandle {
 impl TurboJpegHandle {
     /// C# `new SafeTurboJpegHandle(IntPtr preexistingHandle, bool ownsHandle)`: released through the process-wide
     /// library's `tj3Destroy`. Does not load the library.
+    ///
+    /// Test-only (cargo feature `test-support`, off by default): the safe signature would accept any integer as a
+    /// native `tjhandle`, which `close` and every `tj3*` call would then pass to the DLL. Production handles come from
+    /// [`TurboJpegLibrary::create_decompressor`]/`create_compressor` only.
+    #[cfg(any(test, feature = "test-support"))]
     pub fn from_raw(raw: isize, owns: bool) -> Self {
         Self {
             raw,
@@ -634,6 +643,11 @@ impl TurboJpegHandle {
 
     /// C# `new SafeTurboJpegHandle(IntPtr, bool, Action<IntPtr>? destroy)` with a non-null `destroy` (test seam):
     /// `destroy` replaces `tj3Destroy`. Native calls on this handle still go to the process-wide library.
+    ///
+    /// Test-only (cargo feature `test-support`, off by default): the safe signature would accept any integer as a
+    /// native `tjhandle`, which `close` and every `tj3*` call would then pass to the DLL. Production handles come from
+    /// [`TurboJpegLibrary::create_decompressor`]/`create_compressor` only.
+    #[cfg(any(test, feature = "test-support"))]
     pub fn with_destroy(
         raw: isize,
         owns: bool,
@@ -709,6 +723,7 @@ impl TurboJpegHandle {
     fn library(&self) -> Result<Arc<TurboJpegLibrary>, NativeError> {
         match &self.binding {
             Binding::Library(library) => Ok(Arc::clone(library)),
+            #[cfg(any(test, feature = "test-support"))]
             Binding::Shared => TurboJpegLibrary::shared(),
         }
     }

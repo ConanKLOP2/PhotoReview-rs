@@ -16,6 +16,9 @@
 //! - The C# per-case (10 s) and per-corpus watchdog of `BinaryFuzz.Run` is replaced by timing each case with `Instant`
 //!   (a hang cannot be preempted in a plain test; no thread is spawned).
 
+#[path = "common/corpus_skip.rs"]
+mod corpus_skip;
+
 use std::collections::{BTreeMap, BTreeSet};
 use std::fs;
 use std::io;
@@ -1136,6 +1139,7 @@ fn corpus_bytes(file: &str, optional: bool) -> Option<Vec<u8>> {
         Ok(bytes) => Some(bytes),
         Err(e) => {
             if optional && !corpus_strict() {
+                corpus_skip::skipped(&format!("optional sample {file} absent"));
                 None
             } else {
                 panic!("RAW corpus sample missing (fetch it first): {} ({e})", path.display())
@@ -2125,13 +2129,13 @@ fn corpus_cr3_files(dir: &std::path::Path) -> Vec<PathBuf> {
                 "RAW corpus missing in strict mode: {} ({e})",
                 dir.display()
             );
-            eprintln!("skipped: RAW corpus not present at {}", dir.display());
+            corpus_skip::skipped(&format!("RAW corpus not present at {}", dir.display()));
             return Vec::new();
         }
     };
     if files.is_empty() {
         assert!(!corpus_strict(), "no *.cr3 files in strict mode: {}", dir.display());
-        eprintln!("skipped: no *.cr3 files in {}", dir.display());
+        corpus_skip::skipped(&format!("no *.cr3 files in {}", dir.display()));
     }
     files
 }
