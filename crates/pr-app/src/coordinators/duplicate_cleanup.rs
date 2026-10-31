@@ -8,19 +8,21 @@
 //! The file-action gate is held by the CALLER (view model), as for `FileActionController`.
 
 use std::any::Any;
+use std::collections::HashMap;
 use std::fmt;
 use std::io;
 use std::panic::{AssertUnwindSafe, catch_unwind};
 use std::path::Path;
 use std::sync::{Arc, Mutex, MutexGuard, PoisonError};
 
-use pr_core::abstractions::{BatchReviewItem, DialogService, FileSystem, Log};
+use pr_core::abstractions::{BatchReviewItem, DialogService, FileStat, FileSystem, Log};
 use pr_core::catalog::generation::GenerationClock;
 use pr_core::catalog::review_catalog::ReviewCatalog;
 use pr_core::file_actions::duplicates::{self, HashFailure};
 use pr_core::file_actions::types::{FileActionRequest, FileActionResult};
 use pr_core::model::FileOperationType;
 use pr_core::sync::{CancelToken, Canceled};
+use pr_core::text::ignore_case_key;
 use pr_imaging::cache::thumbnails::ThumbnailCache;
 use pr_imaging::service::PreviewImageService;
 use pr_l10n::keys;
@@ -134,7 +136,23 @@ pub(crate) struct HashSlot {
     pub token: CancelToken,
     /// C# `preHashGeneration` of this run (a superseded run keeps its own).
     pub pre_hash_generation: i64,
+    /// What the hash job saw of every file it hashed (size, mtime, content key); read back after the review dialog.
+    pub snapshot: Arc<Mutex<HashSnapshot>>,
 }
+
+/// One hashed file as the check saw it.
+#[derive(Debug, Clone)]
+pub(crate) struct SnapshotEntry {
+    /// The path as the catalog spells it.
+    pub path: String,
+    pub stat: FileStat,
+    /// `"{size}|{hash}"`, compared ignoring case (the content group of `duplicates::find`).
+    pub content: String,
+}
+
+/// Fingerprints of every file the hash job hashed, keyed by `ignore_case_key(path)`. A removal is only allowed while its whole
+/// content group (the files to remove AND the keeper that stays) still looks exactly like this (ST-INVMAP M1).
+pub(crate) type HashSnapshot = HashMap<String, SnapshotEntry>;
 
 /// The recycle batch in progress (the C# locals of the `foreach` loop).
 #[derive(Debug)]
@@ -275,6 +293,7 @@ impl DuplicateCleanupController {
         self.next_ticket += 1;
         let ticket = self.next_ticket;
         let token = CancelToken::new();
+        let snapshot: Arc<Mutex<HashSnapshot>> = Arc::default();
         {
             let mut gate = lock_gate(&self.hash_gate);
             // A fresh check supersedes a previous one that is somehow still hashing (the file-action gate normally prevents it).
@@ -286,6 +305,7 @@ impl DuplicateCleanupController {
                 ticket,
                 token: token.clone(),
                 pre_hash_generation,
+                snapshot: snapshot.clone(),
             });
         }
         self.active_ticket = Some(ticket);
@@ -294,6 +314,7 @@ impl DuplicateCleanupController {
         let clock = self.deps.clock.clone();
         let hasher = self.deps.hash_service.clone();
         let file_system = self.deps.file_system.clone();
+        let job_snapshot = snapshot;
         let job = Box::new(move || {
             let mut service_missing = false;
             let result = duplicates::find(
@@ -309,10 +330,25 @@ impl DuplicateCleanupController {
                         service_missing = true;
                         return Err(HashFailure::Canceled);
                     };
-                    hasher.get(Path::new(path), hash_token).map_err(|error| match error {
+                    // Fingerprint BEFORE reading: a file that changes while it is hashed then differs from this record.
+                    let stat = file_system.get_file_stat(Path::new(path));
+                    let hash = hasher.get(Path::new(path), hash_token).map_err(|error| match error {
                         FileHashError::Canceled => HashFailure::Canceled,
                         other => HashFailure::Unreadable(io::Error::other(other.to_string())),
-                    })
+                    })?;
+                    if let Some(stat) = stat {
+                        let content = ignore_case_key(&format!("{}|{hash}", stat.length));
+                        let entry = SnapshotEntry {
+                            path: path.to_string(),
+                            stat,
+                            content,
+                        };
+                        job_snapshot
+                            .lock()
+                            .unwrap_or_else(PoisonError::into_inner)
+                            .insert(ignore_case_key(path), entry);
+                    }
+                    Ok(hash)
                 },
                 file_system.as_ref(),
                 &token,
@@ -481,15 +517,15 @@ impl DuplicateCleanupController {
                 None
             }
         };
-        let (pre_hash_generation, token_canceled, superseded) = match owned {
+        let (pre_hash_generation, token_canceled, superseded, snapshot) = match owned {
             Some(slot) => {
                 self.active_ticket = None;
-                (slot.pre_hash_generation, slot.token.is_canceled(), false)
+                (slot.pre_hash_generation, slot.token.is_canceled(), false, slot.snapshot)
             }
             None => match self.superseded.iter().position(|(t, _)| *t == ticket) {
                 Some(position) => {
                     let (_, generation) = self.superseded.remove(position);
-                    (generation, true, true)
+                    (generation, true, true, Arc::default())
                 }
                 // A result nobody waits for any more.
                 None => return DuplicateCleanupStep::Pending,
@@ -606,8 +642,60 @@ impl DuplicateCleanupController {
             }
         }
 
+        // DIVERGENCE from C# (ST-INVMAP M1, data safety): the files can change while the review dialog is open. Re-stat the whole
+        // content group right before the first Recycle; a group that no longer looks like the one that was hashed is not touched.
+        let (remove, skipped) = self.verify_content_groups(remove, &snapshot);
+        if remove.is_empty() {
+            self.status(cx, keys::STATUS_BATCH_CANCELED, &[]);
+            if let Some(dialog) = &self.deps.dialog_service {
+                dialog.show_error(
+                    &self.deps.texts.get(keys::DIALOG_BATCH_ERRORS_TITLE),
+                    &skipped.join("\r\n"),
+                );
+            }
+            return DuplicateCleanupStep::Done;
+        }
+
         self.active_ticket = Some(ticket);
-        self.start_batch(cx, remove)
+        let step = self.start_batch(cx, remove);
+        if let Some(batch) = self.batch.as_mut() {
+            batch.failures.extend(skipped);
+        }
+        step
+    }
+
+    /// Splits `remove` into the files whose content group is unchanged since hashing and the failure lines of the files left
+    /// alone. A group is unchanged when EVERY file the check hashed with that content (the ones to remove and the keeper that
+    /// stays) still has the recorded size and last write time. A file the check has no record of cannot be verified: left alone.
+    fn verify_content_groups(&self, remove: Vec<String>, snapshot: &Mutex<HashSnapshot>) -> (Vec<String>, Vec<String>) {
+        let snapshot = snapshot.lock().unwrap_or_else(PoisonError::into_inner);
+        let mut verdict: HashMap<String, bool> = HashMap::new();
+        let mut kept = Vec::new();
+        let mut skipped = Vec::new();
+        for path in remove {
+            let intact = snapshot.get(&ignore_case_key(&path)).is_some_and(|entry| {
+                *verdict.entry(entry.content.clone()).or_insert_with(|| {
+                    let mut members = snapshot
+                        .values()
+                        .filter(|other| other.content == entry.content)
+                        .peekable();
+                    members.peek().is_some()
+                        && members.all(|member| {
+                            self.deps.file_system.get_file_stat(Path::new(&member.path)) == Some(member.stat)
+                        })
+                })
+            });
+            if intact {
+                kept.push(path);
+            } else {
+                skipped.push(format!(
+                    "{}: {}",
+                    file_name_of(&path),
+                    self.deps.texts.get(keys::CORE_UNDO_SOURCE_OR_DESTINATION_CHANGED)
+                ));
+            }
+        }
+        (kept, skipped)
     }
 
     /// C# lines 204 to 214: `clock.stop_for_action()`, `preload.cancel()`, `action_folder_generation = clock.current_folder()`,
