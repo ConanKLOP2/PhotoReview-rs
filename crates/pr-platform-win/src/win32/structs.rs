@@ -212,7 +212,8 @@ pub fn new_act_ctx() -> ActCtx {
 
 // ---- UTF-16 helpers shared by the wrappers (C# `StringMarshalling.Utf16` and `fixed (char*)`) ----
 
-/// `text` as UTF-16 code units followed by one NUL. An embedded NUL stays in the buffer (the OS then sees a shorter string, like C#).
+/// `text` as UTF-16 code units followed by one NUL. An embedded NUL stays in the buffer (the OS then sees a shorter string, like C#): a title or
+/// path passed through here is silently cut at the first NUL, so callers that build the text from untrusted input must reject NUL themselves (ST-WIN32 L11).
 pub fn to_utf16z(text: &str) -> Vec<u16> {
     text.encode_utf16().chain(core::iter::once(0)).collect()
 }

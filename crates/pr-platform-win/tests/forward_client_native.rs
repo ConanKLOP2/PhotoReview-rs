@@ -62,3 +62,33 @@ fn send_accepts_same_user_server_and_delivers_empty_front_request() {
     );
     server.dispose();
 }
+
+#[test]
+#[ignore = "native named-pipe integration; requires Windows pipe runtime"]
+fn rejected_request_reaches_the_client_as_rejected_not_unknown() {
+    // ST-WIN32 L2: the server used to disconnect its pipe right after writing `ERR\n`, which could discard the unread reply and turn a refusal
+    // into `Unknown` (treated as "handed off", so the second instance exited silently). Repeated to cover the race.
+    let name = unique_pipe_name();
+    let server = pr_platform_win::forward_server::InstanceForwardServer::new(
+        name.clone(),
+        |_| panic!("a rejected request must not reach the callback"),
+        None,
+        Some(std::sync::Arc::new(|_: &str| false)),
+        Some(Duration::from_secs(2)),
+    )
+    .unwrap();
+    server.start().unwrap();
+    let client = ForwardPipeClient::new(Some(name), false).unwrap();
+    for attempt in 0..25 {
+        assert_eq!(
+            client.send_with_timeout(
+                &[r"C:\pr-no-such-folder\missing.jpg".to_owned()],
+                Duration::from_secs(2),
+                &CancelToken::none()
+            ),
+            Ok(ForwardOutcome::Rejected),
+            "attempt {attempt}"
+        );
+    }
+    server.dispose();
+}

@@ -64,6 +64,8 @@ struct FactoryData {
     create_count: usize,
     retry_delays: Vec<Duration>,
     accept_started: Option<mpsc::Sender<()>>,
+    /// `(reply was already written, ...)` for every `wait_reply_delivered` call, in order.
+    reply_waits: Vec<bool>,
 }
 
 #[derive(Default)]
@@ -102,6 +104,21 @@ impl FakeFactory {
 
     fn retry_delays(&self) -> Vec<Duration> {
         lock(&self.data).retry_delays.clone()
+    }
+
+    fn wait_for_reply_waits(&self, count: usize) -> Vec<bool> {
+        let deadline = Instant::now() + TEST_TIMEOUT;
+        let mut state = lock(&self.data);
+        while state.reply_waits.len() < count {
+            let remaining = deadline.saturating_duration_since(Instant::now());
+            assert!(!remaining.is_zero(), "timed out waiting for wait_reply_delivered");
+            state = self
+                .changed
+                .wait_timeout(state, remaining)
+                .unwrap_or_else(PoisonError::into_inner)
+                .0;
+        }
+        state.reply_waits.clone()
     }
 
     fn counts(&self) -> (usize, usize) {
@@ -219,6 +236,15 @@ impl ForwardPipe for FakePipe {
         if let Some(sender) = sender {
             let _ = sender.send(bytes.to_vec());
         }
+        Ok(())
+    }
+
+    fn wait_reply_delivered(&mut self, _deadline: Instant) -> Result<(), ForwardPipeError> {
+        let request = self.request.as_ref().expect("accept must select a fake request");
+        // `write_all` took the sender, so a missing sender means the reply was written before this call.
+        let written = lock(&request.data).reply.is_none();
+        lock(&self.factory.data).reply_waits.push(written);
+        self.factory.changed.notify_all();
         Ok(())
     }
 }
@@ -546,4 +572,41 @@ mod native {
         assert!(!still_there, "pipe name must be freed by dispose");
         assert!(server.start().is_err(), "disposed listener must reject restart");
     }
+}
+
+#[test]
+fn server_waits_for_reply_delivery_after_writing_ok_and_err_but_not_after_a_timeout() {
+    // ST-WIN32 L2: the native pipe is disconnected on drop, which discards an unread reply; the loop must give the client time to read it first.
+    let server = RunningServer::new(|_| {}, |path| path == r"C:\ok.jpg", Duration::from_millis(200));
+    assert_eq!(
+        receive_reply(server.factory.submit(valid_message(r"C:\ok.jpg"), true)),
+        "OK\n"
+    );
+    assert_eq!(
+        server.factory.wait_for_reply_waits(1),
+        vec![true],
+        "wait comes after the OK reply"
+    );
+    assert_eq!(
+        receive_reply(server.factory.submit(valid_message(r"C:\missing.jpg"), true)),
+        "ERR\n"
+    );
+    assert_eq!(
+        server.factory.wait_for_reply_waits(2),
+        vec![true, true],
+        "wait comes after the ERR reply"
+    );
+
+    // A stalled request times out without any reply, so there is nothing to wait for.
+    let stalled = server.factory.submit_chunks(Vec::new(), false);
+    assert!(stalled.recv_timeout(Duration::from_millis(600)).is_err());
+    assert_eq!(
+        receive_reply(server.factory.submit(valid_message(r"C:\ok.jpg"), true)),
+        "OK\n"
+    );
+    assert_eq!(
+        server.factory.wait_for_reply_waits(3),
+        vec![true, true, true],
+        "exactly one wait per written reply"
+    );
 }

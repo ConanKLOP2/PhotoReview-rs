@@ -28,13 +28,17 @@ use crate::win32::structs::Hwnd;
 /// URL gives an exception and never a system message box. Rust: `ShellExecuteExW` with `SHELLEXECUTEINFOW { fMask = SEE_MASK_FLAG_NO_UI | SEE_MASK_FLAG_DDEWAIT, lpVerb = "open",
 /// lpFile = url, nShow = SW_SHOWNORMAL }` and NOT `SEE_MASK_NOCLOSEPROCESS` (no `hProcess` to close: a handle leak otherwise); `FALSE` is `Err(text with GetLastError)`. Plain
 /// `ShellExecuteW` is wrong: it pops up the shell's own error dialog on the UI thread. The page that wants to open a URL calls `SettingsPageContext::open_url`; this is only the fallback of `SettingsDialogOptions::open_url`.
-/// An empty `url` is `Err`. `unsafe` with a SAFETY comment (NUL-terminated UTF-16 buffers that outlive the call).
+/// An empty `url` is `Err`; so is anything that is not an `http://` or `https://` URL (Rust-only hardening, ST-WIN32 L11: the verb `open` would otherwise start any
+/// path or protocol handler; the only caller passes a `validate_update_url` result). `unsafe` with a SAFETY comment (NUL-terminated UTF-16 buffers that outlive the call).
 pub fn default_open_url(url: &str) -> Result<(), String> {
     use windows::Win32::UI::Shell::{SEE_MASK_FLAG_DDEWAIT, SEE_MASK_FLAG_NO_UI, SHELLEXECUTEINFOW, ShellExecuteExW};
     use windows::Win32::UI::WindowsAndMessaging::SW_SHOWNORMAL;
     use windows::core::PCWSTR;
     if url.trim().is_empty() {
         return Err("empty url".to_owned());
+    }
+    if !is_web_url(url) {
+        return Err("unsupported url scheme".to_owned());
     }
     let verb: Vec<u16> = "open".encode_utf16().chain(Some(0)).collect();
     let file: Vec<u16> = url.encode_utf16().chain(Some(0)).collect();
@@ -48,6 +52,16 @@ pub fn default_open_url(url: &str) -> Result<(), String> {
     };
     // SAFETY: info is a live initialized struct; NUL-terminated UTF-16 buffers outlive the call, null parameters/directory are allowed, and no process handle is requested.
     unsafe { ShellExecuteExW(&mut info) }.map_err(|error| format!("ShellExecute failed ({})", error.code().0))
+}
+
+/// `true` when `url` starts with `http://` or `https://` (ASCII case-insensitive) followed by at least one more character. Pure.
+pub fn is_web_url(url: &str) -> bool {
+    let url = url.trim();
+    ["http://", "https://"].iter().any(|scheme| {
+        url.len() > scheme.len()
+            && url.is_char_boundary(scheme.len())
+            && url[..scheme.len()].eq_ignore_ascii_case(scheme)
+    })
 }
 
 /// The weak adapter. Built by `SettingsContent::new` inside `Rc::new_cyclic`.

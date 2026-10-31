@@ -128,7 +128,9 @@ impl LoopOs for Win32LoopOs {
     }
 
     fn poll_handle(&self, handle: isize) -> bool {
-        // A stale handle value only makes the wait fail (`Failed`, not signaled).
+        // A handle that is closed and not reused only makes the wait fail (`Failed`, not signaled). A closed handle whose number the kernel gave to another
+        // object is NOT detected here (a wait could consume that object's signal): a clock must be given the new swap chain handle after
+        // `recreate_device` (ST-WIN32 L9; today no production caller creates a `SwapChainFrameClock`).
         wait_for_handle(HANDLE(handle as *mut c_void), 0, false).is_signaled()
     }
 
