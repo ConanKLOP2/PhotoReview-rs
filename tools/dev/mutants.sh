@@ -64,6 +64,13 @@ for f in "${files[@]}"; do [ -f "$ROOT/$f" ] || { echo "source file not found (r
 
 # Own target dir OUTSIDE the worktree (cargo-mutants copies the source tree; a shared target dir gives false MISSED).
 export CARGO_TARGET_DIR="$TMPBASE/mut-target-$crate" CARGO_INCREMENTAL=0 CARGO_PROFILE_DEV_DEBUG=0
+# Golden files live at the repo root (tests/golden), but cargo-mutants builds in a temp COPY and a reused target dir keeps pr-test-support
+# "Fresh" from an earlier copy (compile-time CARGO_MANIFEST_DIR then points at a deleted dir: "no tests/golden above ...", every golden test
+# fails and its mutants count as caught). pr_test_support::golden now resolves the root at run time; this variable pins it explicitly.
+export PHOTOREVIEW_GOLDEN_ROOT="$ROOT"
+# A reused target dir can also hold artifacts built from the LAST mutant of an earlier run; the fresh copy keeps older mtimes, cargo calls
+# them Fresh and the unmutated baseline fails (or a survivor is judged against a mutated build). Bump the mtime of the crate sources.
+find "$ROOT/crates/$crate/src" "$ROOT/crates/$crate/tests" -name '*.rs' -exec touch {} + 2>/dev/null
 mkdir -p "$TMPBASE" || exit 1
 out=${MUT_OUT:-$(mktemp -d "$TMPBASE/mut-out-$crate-XXXXXX")}
 mkdir -p "$out" || exit 1
@@ -107,6 +114,9 @@ run_once() { # outdir, extra args...
   ( cd "$ROOT" && "$TIMEOUT_BIN" "$budget" "$CARGO_BIN" mutants -p "$crate" --baseline skip --timeout "${MUT_TIMEOUT:-90}" -j "$jobs" \
       --output "$od" "${fargs[@]}" "${cma[@]}" "$@" )
   rc=$?
+  if grep -rlE 'no tests/golden above|PHOTOREVIEW_GOLDEN_ROOT=.* has no tests/golden' "$od/mutants.out/log" >/dev/null 2>&1; then
+    echo "WARNING: golden files were NOT found inside the cargo-mutants copy (see $od/mutants.out/log). Mutants caught only by golden tests are NOT really caught: rerun them." >&2
+  fi
   if [ $rc -eq 124 ]; then echo "BUDGET EXHAUSTED after ${budget}s: the result below is PARTIAL, not a full mutation verdict"; fi
   return $rc
 }
