@@ -356,6 +356,43 @@ fn recovery_retry_takes_the_file_action_gate() {
 }
 
 #[test]
+fn undo_takes_the_same_file_action_gate_as_retry() {
+    // Twin of `recovery_retry_takes_the_file_action_gate` (ST-INVMAP L2): undo and retry must share the ONE gate of the
+    // file action service (INV-4). While another action holds it, Undo is refused untouched; once released it works.
+    let root = composition_fixture::temp_root();
+    let source_dir = root.path().join("source");
+    let target_dir = root.path().join("target");
+    let from = source_dir.join("from.jpg");
+    let to = target_dir.join("from.jpg");
+    std::fs::create_dir_all(&source_dir).expect("source dir");
+    std::fs::write(&from, b"x").expect("source file");
+    let (services, _fixture_root, _log) = composition_fixture::shared_services();
+    let request = pr_core::file_actions::types::FileActionRequest {
+        destination: Some(target_dir.to_string_lossy().into_owned()),
+        ..pr_core::file_actions::types::FileActionRequest::new(
+            from.to_string_lossy(),
+            pr_core::model::FileOperationType::Move,
+        )
+    };
+    let gate = services.file_action_service();
+    let result = gate.execute(&request, &pr_core::sync::CancelToken::new());
+    assert!(result.succeeded, "{result:?}");
+    let undo = services.undo_service();
+    undo.lock().unwrap().register(&result);
+
+    assert!(gate.try_begin(), "the gate is free after the move finished");
+    let refused = undo.lock().unwrap().undo_move();
+    assert!(refused.rejected, "{refused:?}");
+    assert!(!refused.succeeded);
+    assert!(to.exists(), "a refused undo must not touch the file");
+    assert!(!from.exists());
+    gate.end();
+
+    assert!(undo.lock().unwrap().undo_move().succeeded);
+    assert!(from.exists());
+}
+
+#[test]
 fn preview_state_is_original_loading_mode_follows_settings() {
     // C#: SharedServiceRegistrationTests.PreviewStateContext_IsOriginalLoadingMode_FollowsSettings
     let (services, _root, _log) = composition_fixture::shared_services();

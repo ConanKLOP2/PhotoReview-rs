@@ -60,7 +60,7 @@ One row per document (or per folder where a folder is one document set). Check t
 
 | File | Purpose | Read |
 |---|---|---|
-| [`adr/`](adr/) | R0001 UI framework (proposed; spike done, Win32 + Direct2D) · R0002 coexistence · R0003 concurrency + C#→Rust mapping (accepted) · D59/D60 and the unit and `Different`-row ADRs; list in [`adr/README.md`](adr/README.md) | Relevant area; R0003 before any port |
+| [`adr/`](adr/) | R0001 UI framework (proposed; spike done, Win32 + Direct2D) · R0002 coexistence · R0003 concurrency + C#→Rust mapping (accepted) · D59/D60 and the unit and `Different`-row ADRs (incl. the 2026-10-31 batch DV-1..DV-12); list in [`adr/README.md`](adr/README.md) | Relevant area; R0003 before any port |
 | [`reviews/`](reviews/) | Read-only review reports per area (autopilot, dialogs, invariants, startup, tests, W9 contracts, PR reviews); index with counts and status in [`reviews/README.md`](reviews/README.md); [`reviews/BACKLOG.md`](reviews/BACKLOG.md) merges all findings into one backlog with Codex prompts | Before fixing a review finding or picking cleanup work |
 | [`drafts/`](drafts/) | Proposed CI/release files not yet in `.github/workflows` (`release.yml`, `ci-deny-job.yml`, `deny.toml`, `raw-corpus-workflow.yml.md`), each with its purpose and the decision needed ([`drafts/README.md`](drafts/README.md)); old draft reports in [`archive/drafts/`](archive/drafts/) | Release / CI work |
 | [`archive/`](archive/) | Older `task_on_progress.md` entries moved verbatim (Wave 5 to Wave 9; table in `../task_on_progress.md`), superseded consistency notes and old draft reports | History only |
