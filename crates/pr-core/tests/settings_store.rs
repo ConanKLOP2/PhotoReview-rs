@@ -1943,9 +1943,10 @@ fn save_many_times_keeps_at_most_three_newest_backups() {
     assert!(r.fs.file_exists(&corrupt));
 }
 
-// C#: SettingsStoreSaveAfterNewerVersionLoadTests.Save_WhenBackupFails_StillWritesTheConfig
+// P-66 (intentional difference from C# Save_WhenBackupFails_StillWritesTheConfig): when the newer-build config cannot
+// be backed up, Save fails, the original bytes (with the unknown fields) stay on disk and the newer flag is kept.
 #[test]
-fn save_when_backup_fails_still_writes_the_config() {
+fn save_when_newer_backup_fails_refuses_to_overwrite_and_reports_the_error() {
     let r = Rig::new();
     r.put(NEWER);
     let store = r.store();
@@ -1954,16 +1955,61 @@ fn save_when_backup_fails_still_writes_the_config() {
     edited.click_zoom_percent = 310;
     r.fs.fail(FsOp::Copy, r.cfg(), io::ErrorKind::Other);
 
-    store.save(edited).expect("save is not blocked");
+    let result = store.save(edited);
 
+    assert!(matches!(result, Err(SettingsSaveError::Io(_))), "save must fail");
+    assert_eq!(r.read(), NEWER, "newer-build file must stay byte for byte");
     assert!(r.newer_backups().is_empty());
-    let written = r.read();
-    assert!(written.contains("\"ConfigVersion\": 4"));
-    assert!(written.contains("\"ClickZoomPercent\": 310"));
     assert!(r.has(
         Lv::Warn,
         "Could not back up the newer-build config.json before overwriting it: "
     ));
+}
+
+// P-66: the flag survives the failed backup, so the next Save (fault gone) backs up the original verbatim first.
+#[test]
+fn save_after_failed_newer_backup_retries_the_backup_and_keeps_the_unknown_fields_there() {
+    let r = Rig::new();
+    r.put(NEWER);
+    let store = r.store();
+    let loaded = store.load(None).expect("load");
+    let mut edited = (*loaded).clone();
+    edited.click_zoom_percent = 310;
+    r.fs.fail(FsOp::Copy, r.cfg(), io::ErrorKind::Other);
+    assert!(store.save(edited.clone()).is_err());
+    r.fs.clear_faults();
+
+    store.save(edited).expect("second save");
+
+    let backups = r.newer_backups();
+    assert_eq!(backups.len(), 1);
+    assert_eq!(r.text_of(&backups[0]), NEWER);
+    let written = r.read();
+    assert!(written.contains("\"ConfigVersion\": 4"));
+    assert!(written.contains("\"ClickZoomPercent\": 310"));
+}
+
+// P-66: backup ok but the atomic write fails; the original is still newer on disk, so the next Save backs up again.
+#[test]
+fn save_when_backup_succeeds_but_write_fails_keeps_the_flag_for_the_next_save() {
+    let r = Rig::new();
+    r.put(NEWER);
+    let store = r.store();
+    let loaded = store.load(None).expect("load");
+    let mut edited = (*loaded).clone();
+    edited.click_zoom_percent = 310;
+    r.fs.fail(FsOp::WriteAtomic, r.cfg(), io::ErrorKind::Other);
+    assert!(store.save(edited.clone()).is_err());
+    assert_eq!(r.read(), NEWER);
+    r.fs.clear_faults();
+
+    store.save(edited).expect("second save");
+
+    assert!(!r.newer_backups().is_empty());
+    for b in r.newer_backups() {
+        assert_eq!(r.text_of(&b), NEWER);
+    }
+    assert!(r.read().contains("\"ConfigVersion\": 4"));
 }
 
 // C#: SettingsStoreSaveAfterNewerVersionLoadTests.Load_AfterSaveOfNewerVersionFile_ReadsBackCurrentVersion
@@ -2018,20 +2064,20 @@ fn newer_backup_prune_failures_are_logged_and_never_block_the_save() {
     assert!(r.fs.file_exists(&oldest));
     assert!(r.read().contains("\"ConfigVersion\": 4"));
 
-    // Listing failure: the name picker's listing fails too, so the copy branch takes the warning and prunes nothing.
+    // Listing failure: the name picker's listing fails too, so the backup fails and (P-66) the save is refused.
     let r = Rig::new();
     r.put(NEWER);
     let store = r.store();
     let loaded = store.load(None).expect("load");
     r.fs.fail(FsOp::EnumerateFiles, r.dir(), io::ErrorKind::Other);
 
-    store.save((*loaded).clone()).expect("save");
+    assert!(store.save((*loaded).clone()).is_err());
 
     assert!(r.has(
         Lv::Warn,
         "Could not back up the newer-build config.json before overwriting it: "
     ));
-    assert!(r.read().contains("\"ConfigVersion\": 4"));
+    assert_eq!(r.read(), NEWER);
 }
 
 // ---------------------------------------------------------------------------------------------------------------
@@ -2981,9 +3027,10 @@ fn newer_backup_copy_failure_prunes_nothing() {
     let loaded = store.load(None).expect("load");
     r.fs.fail(FsOp::Copy, r.cfg(), io::ErrorKind::Other);
 
-    store.save((*loaded).clone()).expect("save");
+    assert!(store.save((*loaded).clone()).is_err(), "P-66: the save is refused");
 
     assert_eq!(r.newer_backups().len(), 5);
+    assert_eq!(r.read(), NEWER);
     assert!(r.has(Lv::Warn, "Could not back up the newer-build config.json"));
 }
 
