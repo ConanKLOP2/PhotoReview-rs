@@ -157,3 +157,9 @@ Moved verbatim from `task_on_progress.md` (branch docs/tp-compact3, 2026-10-30).
 - CX-JRNL 2026-10-31: tests only; 22/179 current mutants caught, remaining verdict incomplete; journal rows Partial; docs/reviews/CX-JRNL-2026-10-31.md.
 - CX-PHYS2 2026-10-31: physical.rs selected 30/438 evaluated (29 caught, 1 unviable, 0 missed/timeouts); 97 native-included tests pass, fmt/clippy/doc-links pass; X-physical-fs/AR16 Partial, RV-C05 Done; docs/reviews/CX-PHYS2-2026-10-31.md.
 - CX-TEXTS 2026-10-31: Partial; texts 38/161 valid (37 caught, 1 unviable; 123 unverified), adapters 34/34 (29 caught, 5 unviable), killers-alone 9/9 caught, factories 7/7 (1 caught, 6 unviable); 7 killers pass 20x; docs/reviews/CX-TEXTS-2026-10-31.md.
+
+## Moved 2026-10-31 (CX-SETUI2 size gate, verbatim)
+
+- CX-JRNL 2026-10-31: tests only; 22/179 current mutants caught, remaining verdict incomplete; journal rows Partial; docs/reviews/CX-JRNL-2026-10-31.md.
+- CX-PHYS2 2026-10-31: physical.rs selected 30/438 evaluated (29 caught, 1 unviable, 0 missed/timeouts); 97 native-included tests pass, fmt/clippy/doc-links pass; X-physical-fs/AR16 Partial, RV-C05 Done; docs/reviews/CX-PHYS2-2026-10-31.md.
+- CX-TEXTS 2026-10-31: Partial; texts 38/161 valid (37 caught, 1 unviable; 123 unverified), adapters 34/34 (29 caught, 5 unviable), killers-alone 9/9 caught, factories 7/7 (1 caught, 6 unviable); 7 killers pass 20x; docs/reviews/CX-TEXTS-2026-10-31.md.
