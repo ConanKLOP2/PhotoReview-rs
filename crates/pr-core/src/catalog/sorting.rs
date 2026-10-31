@@ -204,6 +204,8 @@ pub fn sort_sibling_folders(full_current: &str, listed: Vec<String>) -> Vec<Stri
 /// directly inside `parent`, skipping every entry whose attributes include Hidden (0x2) or System (0x4). Non-recursive.
 /// Directory symlinks and junctions count as directories (their attributes have the DIRECTORY bit). Any error from
 /// opening the listing or from reading an entry is returned (`IgnoreInaccessible = false` in C#).
+/// Intentional difference (ST-PATHLOSSY): a directory whose name holds an unpaired UTF-16 surrogate cannot be a `String`
+/// path, so it is left out instead of being returned as the lossy name of another folder.
 /// Implementation: `std::fs::read_dir`, then per entry `entry.metadata()?.file_attributes()` under `#[cfg(windows)]`
 /// (`std::os::windows::fs::MetadataExt`; pr-core already has `cfg(windows)` code in `abstractions/source_reader.rs`).
 pub fn list_visible_directories(parent: &Path) -> io::Result<Vec<String>> {
@@ -212,7 +214,10 @@ pub fn list_visible_directories(parent: &Path) -> io::Result<Vec<String>> {
         let entry = entry?;
         let metadata = entry.metadata()?;
         if is_visible_directory(&metadata) {
-            result.push(entry.path().to_string_lossy().into_owned());
+            // A name with an unpaired surrogate cannot be a `String` path (it would name another folder): not offered.
+            if let Ok(text) = crate::file_actions::errors::path_to_journal_string(&entry.path()) {
+                result.push(text);
+            }
         }
     }
     Ok(result)
