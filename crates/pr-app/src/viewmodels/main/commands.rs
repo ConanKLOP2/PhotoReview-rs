@@ -695,7 +695,13 @@ impl MainViewModel {
     pub fn pick_and_open_folder(&mut self) -> ChangeSet {
         let start = self.start_folder();
         let selected = self.dialog_service.pick_folder(start.as_deref().map(Path::new));
-        let Some(selected) = selected.map(|path| path.to_string_lossy().into_owned()) else {
+        let Some(selected) = selected else {
+            return ChangeSet::default();
+        };
+        // ST-PATHLOSSY: a picked folder whose name holds an unpaired surrogate would open another folder (lossy name).
+        let Ok(selected) = pr_core::file_actions::errors::path_to_journal_string(&selected) else {
+            self.log
+                .error("The picked folder has an unrepresentable name; it was not opened", None);
             return ChangeSet::default();
         };
         if selected.trim().is_empty() {

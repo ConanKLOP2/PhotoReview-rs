@@ -7,7 +7,7 @@
 //! not exist: `UNREPRESENTABLE_PATH` is never emitted. These tests pin down the present behaviour on real files under a
 //! `TempRoot` (a recycle bin that only deletes the temp file; the real Recycle Bin is never touched).
 //!
-//! Windows only. The `#[ignore]`d test is RED on purpose: it states the invariant that is violated today.
+//! Windows only. FIX-PATHLOSSY made the formerly RED (ignored) directory-listing test pass.
 
 #![cfg(windows)]
 
@@ -19,6 +19,7 @@ use std::sync::Arc;
 use pr_core::abstractions::{Clock, FileSystem, RecycleBin, SystemClock};
 use pr_core::app_paths::AppPaths;
 use pr_core::catalog::sorting::list_visible_directories;
+use pr_core::file_actions::errors::{UNREPRESENTABLE_PATH, path_to_journal_string};
 use pr_core::file_actions::journal::OperationJournal;
 use pr_core::file_actions::service::FileActionService;
 use pr_core::file_actions::types::{FileActionRequest, FileActionResult};
@@ -161,19 +162,53 @@ fn lossy_source_with_a_decoy_acts_on_the_wrong_file() {
     assert!(!h.journal_text().contains("UnrepresentablePath"));
 }
 
-// RED, intentionally ignored. Invariant: a path text returned for an entry must name that entry. `list_visible_directories`
+// Was RED (ignored) before FIX-PATHLOSSY; `list_visible_directories` now leaves out a non-Unicode folder name.
+// Invariant: a path text returned for an entry must name that entry. `list_visible_directories`
 // (sibling-folder navigation) returns `entry.path().to_string_lossy()`, so a folder with a lone surrogate comes back as a
 // path that does not exist. Fix options (proposal): skip/err for non-Unicode entries or carry `PathBuf` end to end.
 #[test]
-#[ignore = "ST-PATHLOSSY red: list_visible_directories returns a lossy path for a non-Unicode folder name (see docs/reviews/ST-PATHLOSSY-2026-10-31.md)"]
 fn listed_directory_text_must_name_the_listed_directory() {
     let h = Harness::new("pathlossy-dirs");
     let parent = h.root.join("parent");
     let dir = parent.join(surrogate_name("d"));
     std::fs::create_dir_all(&dir).expect("dir with a lone surrogate");
     let listed = list_visible_directories(&parent).expect("list");
-    assert!(!listed.is_empty());
+    assert!(
+        listed.is_empty(),
+        "the only folder is unrepresentable, so none is offered: {listed:?}"
+    );
     for text in &listed {
         assert!(Path::new(text).exists(), "{text:?} does not name an existing directory");
     }
+}
+
+// FIX-PATHLOSSY: the boundary helper. C# test: JournalAppendRobustnessTests.Append_PathWithUnpairedSurrogate_ThrowsCodedErrorAndWritesNothing.
+#[test]
+fn path_to_journal_string_refuses_a_lone_surrogate_with_the_coded_error() {
+    let lone = PathBuf::from(surrogate_name("a"));
+    let error = path_to_journal_string(&lone).expect_err("not representable");
+    assert_eq!(error.code, UNREPRESENTABLE_PATH);
+    assert!(error.message.contains("unpaired UTF-16 surrogate"), "{}", error.message);
+}
+
+#[test]
+fn path_to_journal_string_passes_a_valid_path_through_unchanged() {
+    let valid = Path::new("photos/a\u{FFFD}.jpg");
+    assert_eq!(
+        path_to_journal_string(valid).as_deref().ok(),
+        Some("photos/a\u{FFFD}.jpg")
+    );
+}
+
+// The sibling-folder list leaves the lone-surrogate folder out and keeps the valid ones (a real U+FFFD folder included).
+#[test]
+fn list_visible_directories_skips_only_the_unrepresentable_folder() {
+    let h = Harness::new("pathlossy-dirs-keep");
+    let parent = h.root.join("parent");
+    std::fs::create_dir_all(parent.join(surrogate_name("d"))).expect("lone dir");
+    std::fs::create_dir_all(parent.join("d\u{FFFD}.jpg")).expect("decoy dir");
+    std::fs::create_dir_all(parent.join("ok")).expect("ok dir");
+    let listed = list_visible_directories(&parent).expect("list");
+    assert_eq!(listed.len(), 2, "{listed:?}");
+    assert!(listed.iter().all(|text| Path::new(text).is_dir()));
 }

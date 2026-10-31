@@ -69,6 +69,23 @@ pub const CODE_KEYS: [(&str, &str); 8] = [
     (UNREPRESENTABLE_PATH, "core.journal.unrepresentablePath"),
 ];
 
+/// Port of the guard in C# `OperationJournal.ThrowIfUnrepresentable`, moved to the `OsStr -> String` boundary: Rust
+/// `String`s (catalog entries, requests, journal lines) cannot hold an unpaired UTF-16 surrogate, so a producer that
+/// turns a `Path` into such text must use this instead of `to_string_lossy` (which would name ANOTHER file, ST-PATHLOSSY).
+/// `Err` carries [`UNREPRESENTABLE_PATH`] with the English text of `core.journal.unrepresentablePath`; nothing is changed.
+pub fn path_to_journal_string(path: &Path) -> Result<String, JournalCodedError> {
+    match path.to_str() {
+        Some(text) => Ok(text.to_owned()),
+        None => {
+            let message = super::journal::ENGLISH_JOURNAL_TEXTS
+                .iter()
+                .find(|entry| entry.0 == "core.journal.unrepresentablePath")
+                .map_or("", |entry| entry.1);
+            Err(JournalCodedError::new(UNREPRESENTABLE_PATH, message))
+        }
+    }
+}
+
 /// `JournalErrors.Text(...)` was asked about a code this build does not know (C# `ArgumentException`).
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct UnknownJournalCode(pub String);
