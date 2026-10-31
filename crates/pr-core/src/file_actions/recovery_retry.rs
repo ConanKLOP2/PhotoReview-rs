@@ -639,6 +639,15 @@ impl RecoveryRetryService {
                     if bin.can_recycle(source) {
                         return Err(Self::plain_error(texts.core_recovery_source_changed()));
                     }
+                    // DIVERGENCE (H1/G25, deliberate fix of a C# data-loss bug): the pre-check ran before the Prepared
+                    // line; another program may have put a different file here since. Re-stat right before the
+                    // irreversible delete and refuse (nothing deleted) when the fingerprint no longer matches.
+                    let unchanged = self
+                        .stat(&member.source)?
+                        .is_some_and(|stat| same_fingerprint(&stat, member.size, &member.last_write_utc));
+                    if !unchanged {
+                        return Err(Self::plain_error(texts.core_recovery_source_changed()));
+                    }
                     bin.delete_permanently(source)?;
                 } else {
                     bin.send_to_recycle_bin(source)?;
