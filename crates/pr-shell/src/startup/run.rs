@@ -57,7 +57,7 @@ impl ShellStartup {
     /// 4. `Win32UiDispatcher::new(global_log())` and `MessageLoop::new(Rc::new(dispatcher.clone()))`: an `Err(HostError)` BEFORE the loop exists is logged `AppLog::error_forced("Startup failed", ..)` and the
     ///    run returns `EXIT_STARTUP_FAILED` (no box: nothing can show one yet; the C# `Main` crashed).
     /// 5. `router = ForwardedOpenRouter::new()` + `attach_to_current_thread()` (D-W8B6-15 e); `hub = Rc::new(ShellPresentationHub::new())`; `StartupState::new(..)`.
-    /// 6. `install_process_hooks(..)` when `options.install_process_hooks` (see there).
+    /// 6. `install_process_hooks(..)` when `options.install_process_hooks`, run BEFORE the warm-up threads of step 3 (see there).
     /// 7. The FIRST step is posted, not run inline (C# `dispatcher.Post(() => _ = RunStartupGuardedAsync())`): `ui_hop(ui, |_| state.begin())` and `send(())`.
     /// 8. The loop (C# lines 175-194): `loop { match catch_unwind(AssertUnwindSafe(|| message_loop.run())) { Ok(Ok(code)) => { exit_code = code; break }, Ok(Err(HostError)) => log forced + `exit_code =
     ///    EXIT_STARTUP_FAILED`, break, Err(payload) => { log_unhandled_forced("UI loop exception", payload); if counter.record(MAX_LOOP_FAULTS) == GiveUp { exit_code = EXIT_STARTUP_FAILED; break } } } }`.
@@ -77,6 +77,10 @@ impl ShellStartup {
         let mark: MarkFn = options.mark.take().unwrap_or_else(|| Arc::new(startup_mark));
         mark("appStartup");
         ensure_per_monitor_v2(None);
+        // Before the warm-up threads start (review L1): a panic in a warm-up thread must reach the hook, not the default one (GUI subsystem: nobody sees that).
+        if options.install_process_hooks {
+            install_process_hooks(log.clone());
+        }
         let warm_mark = mark.clone();
         drop(warm_settings_parser(
             Arc::new(LocalizerSettingsTexts::new(built_in_english_localizer())),
@@ -105,7 +109,6 @@ impl ShellStartup {
         let router = ForwardedOpenRouter::new();
         router.attach_to_current_thread();
         let hub = Rc::new(ShellPresentationHub::new());
-        let install_hooks = options.install_process_hooks;
         let state = StartupState::new(
             args,
             launch,
@@ -118,9 +121,6 @@ impl ShellStartup {
             router,
         );
         *state.perf.borrow_mut() = perf;
-        if install_hooks {
-            install_process_hooks(log);
-        }
 
         // The first step is posted, not run inline: the work starts once the loop pumps (C# dispatcher.Post).
         let weak = Rc::downgrade(&state);
@@ -174,6 +174,7 @@ pub fn install_process_hooks(log: Arc<dyn Log>) {
     if INSTALLED.set(()).is_err() {
         return;
     }
+    // `log` is kept for the signature; the hook writes through `AppLog::global()` (review L1).
     let _ = log;
     let previous = std::panic::take_hook();
     std::panic::set_hook(Box::new(move |info| {

@@ -265,8 +265,8 @@ fn retry_after_http_date_accepts_the_last_real_day_of_every_month_and_rejects_th
 #[test]
 fn lone_surrogate_name_as_long_as_the_key_or_escaping_right_after_it_is_skipped_not_unescaped() {
     use pr_core::updates::version::{AppVersion, UpdateCheckResult};
-    const RELEASES: &str = "https://github.com/ConanKLOP2/PhotoReview/releases";
-    const TAG_URL: &str = "https://github.com/ConanKLOP2/PhotoReview/releases/tag/v2.1.0";
+    const RELEASES: &str = "https://github.com/ConanKLOP2/PhotoReview-rs/releases";
+    const TAG_URL: &str = "https://github.com/ConanKLOP2/PhotoReview-rs/releases/tag/v2.1.0";
     let current = AppVersion::try_parse(Some("2.0.93")).expect("version");
     let cases = [
         (

@@ -3,7 +3,7 @@
 //!
 //! * [`AppVersion`]: numeric `major.minor.patch` plus a pre-release flag; parses `"v2.0.93"`, `"2.0.93+hash"`,
 //!   `"2.1.0-beta.1"`.
-//! * [`validate_update_url`]: only `https://github.com/ConanKLOP2/PhotoReview[/...]` may be opened from the update
+//! * [`validate_update_url`]: only `https://github.com/<UPDATE_REPO>[/...]` (`ConanKLOP2/PhotoReview-rs`, DV-22; C# uses `ConanKLOP2/PhotoReview`) may be opened from the update
 //!   check.
 //! * [`UpdateCheckResult`]: outcome of a manual update check (constructed only through the three factory functions).
 //!
@@ -95,11 +95,11 @@ impl fmt::Display for AppVersion {
     }
 }
 
-/// C# `UpdateUrlPolicy.ReleasesPageUrl`.
-pub const RELEASES_PAGE_URL: &str = "https://github.com/ConanKLOP2/PhotoReview/releases";
+/// C# `UpdateUrlPolicy.ReleasesPageUrl`. DIVERGENCE (DV-22, P-61): the Rust build's own repository.
+pub const RELEASES_PAGE_URL: &str = concat!("https://github.com/", update_repo!(), "/releases");
 
 /// C# `UpdateUrlPolicy.Validate(string?)`: the normalized absolute URL (what `Uri.AbsoluteUri` would return) when
-/// `url` is `https://github.com/ConanKLOP2/PhotoReview` or below it, otherwise `None`.
+/// `url` is `https://github.com/<UPDATE_REPO>` or below it, otherwise `None`.
 pub fn validate_update_url(url: Option<&str>) -> Option<String> {
     let url = url?;
     if url.chars().all(char::is_whitespace) {
@@ -184,7 +184,7 @@ pub fn validate_update_url(url: Option<&str>) -> Option<String> {
     let path = remove_dot_segments(&escape_uri_part(raw_path, Part::Path, iri_rewrite));
 
     // 5. Allow-list.
-    const PROJECT: &str = "/ConanKLOP2/PhotoReview";
+    const PROJECT: &str = concat!("/", update_repo!());
     let ok = path.eq_ignore_ascii_case(PROJECT)
         || (path.len() > PROJECT.len()
             && path.as_bytes()[..PROJECT.len()].eq_ignore_ascii_case(PROJECT.as_bytes())

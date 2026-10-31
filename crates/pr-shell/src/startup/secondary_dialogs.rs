@@ -228,9 +228,9 @@ impl SecondaryWindowDialogs for ProductionSecondaryWindowDialogs {
                 Some(PreparedDialog::new(native, Box::new(move |_| dialog.saved())))
             }
             Err(error) => {
-                self.host
-                    .log
-                    .error("Settings dialog could not be created", Some(&error));
+                // Forced (review L5): the user pressed the gear and sees nothing, so the trace must exist even while logging is off
+                // (C#: the exception of `new SettingsDialog(..)` reached the dispatcher handler, which logs forced).
+                pr_app::misc::app_log::AppLog::global().error_forced("Settings dialog could not be created", &error);
                 None
             }
         }

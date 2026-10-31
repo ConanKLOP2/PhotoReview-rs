@@ -20,12 +20,13 @@ use pr_app::services::contracts::ClipboardService;
 use pr_app::services::prewarm::PrewarmPreviews;
 use pr_app::viewmodels::format::context::FormatContext;
 use pr_app::viewmodels::main::FormatContextSource;
-use pr_core::abstractions::{BatchReviewItem, DialogService, SettingsTarget, SkippedEntry};
+use pr_core::abstractions::{BatchReviewItem, DialogService, Log, SettingsTarget, SkippedEntry};
 use pr_core::model::enums::DecoderBackend;
 use pr_core::time::DateTimeUtc;
 use pr_imaging::cache_key::{CacheKeyError, ImageCacheKey};
 use pr_imaging::decode_types::DecodeBox;
-use pr_imaging::decoder_traits::{ImageDecoder, ImageDecoderFactory};
+use pr_imaging::decode_types::{DecodeRequest, DecodedImageView, ImageInfo};
+use pr_imaging::decoder_traits::{DecodeError, ImageDecoder, ImageDecoderFactory};
 use pr_imaging::service::handle::PreviewHandle;
 use pr_l10n::localizer::{Localizer, number_culture};
 use pr_platform_win::culture::{WindowsDateText, utc_to_local};
@@ -33,7 +34,7 @@ use pr_platform_win::dialogs::dialog_service::Win32DialogService;
 use pr_platform_win::shell_startup::locale::group_separator;
 use pr_platform_win::shell_viewing::presentation_sink::{SinkCallbacks, Win32PresentationSinkFactory};
 
-use super::registry::SharedServices;
+use super::registry::{RegistryError, SharedServices};
 
 /// `IDialogService` of the shell as the `Arc<dyn DialogService>` the view model and its coordinators take. Every method forwards to the `Win32DialogService`.
 pub struct SharedDialogService(pub Rc<Win32DialogService>);
@@ -192,8 +193,7 @@ impl PrewarmPreviews for LazyPrewarmPreviews {
 
 /// The decoder factory as the `Option<Arc<dyn ImageDecoderFactory>>` of `DialogServices::decoder_factory` (C# `GetService<IImageDecoderFactory>()` ran when the Settings window
 /// opened, not at start-up). Resolving the real factory builds `SourceBytesCachePolicy`, which reads the settings: it must not happen before they are loaded (D-W8B6-154). `create` and
-/// `is_registered` call `services.decoder_factory()` (cached) and forward. A registry `Err` cannot happen (`WicDirect` is always registered, so `DefaultImageDecoderFactory::new` has no
-/// failing input): it is logged and then panics with the error text, like [`LazyPrewarmPreviews`].
+/// `is_registered` call `services.decoder_factory()` (cached) and forward. A registry `Err` (only a failing `SourceBytesCache::new`) is logged and answered with an [`UnavailableDecoderFactory`] (review L4).
 pub struct LazyDecoderFactory {
     services: SharedServices,
 }
@@ -210,17 +210,68 @@ impl LazyDecoderFactory {
         Self { services }
     }
 
-    /// The real factory (the registry builds it once).
+    /// The real factory (the registry builds it once). A registry `Err` (review L4) is logged once per call and answered with [`UnavailableDecoderFactory`]: Settings shows every
+    /// backend as unregistered and a decode fails with a typed error instead of a panic on the UI thread.
     fn resolve(&self) -> Arc<dyn ImageDecoderFactory> {
-        match self.services.decoder_factory() {
-            Ok(factory) => factory,
-            Err(error) => {
-                self.services
-                    .log()
-                    .error("The decoder factory could not be created", Some(&error));
-                panic!("{error}")
-            }
+        factory_or_unavailable(self.services.decoder_factory(), self.services.log().as_ref())
+    }
+}
+
+/// `result` when it is `Ok`; else the error is logged (`log.error`) and the answer is an [`UnavailableDecoderFactory`] carrying the error text.
+pub fn factory_or_unavailable(
+    result: Result<Arc<dyn ImageDecoderFactory>, RegistryError>,
+    log: &dyn Log,
+) -> Arc<dyn ImageDecoderFactory> {
+    match result {
+        Ok(factory) => factory,
+        Err(error) => {
+            log.error("The decoder factory could not be created", Some(&error));
+            Arc::new(UnavailableDecoderFactory {
+                message: error.to_string(),
+            })
         }
+    }
+}
+
+/// The factory used when the real one could not be built: no backend is registered and every decoder fails with `DecodeError::NotSupported` (the error text of the registry).
+#[derive(Debug)]
+pub struct UnavailableDecoderFactory {
+    message: String,
+}
+
+impl ImageDecoderFactory for UnavailableDecoderFactory {
+    fn create(&self, _backend: DecoderBackend) -> Arc<dyn ImageDecoder> {
+        Arc::new(UnavailableDecoder {
+            message: self.message.clone(),
+        })
+    }
+
+    fn is_registered(&self, _backend: DecoderBackend) -> bool {
+        false
+    }
+}
+
+struct UnavailableDecoder {
+    message: String,
+}
+
+impl UnavailableDecoder {
+    fn error(&self) -> DecodeError {
+        DecodeError::NotSupported {
+            message: self.message.clone(),
+            user_text: None,
+            inner_hresult: None,
+        }
+    }
+}
+
+impl ImageDecoder for UnavailableDecoder {
+    fn decode(&self, _request: &DecodeRequest) -> Result<Arc<dyn DecodedImageView>, DecodeError> {
+        Err(self.error())
+    }
+
+    fn read_info(&self, _path: &str) -> Result<ImageInfo, DecodeError> {
+        Err(self.error())
     }
 }
 
