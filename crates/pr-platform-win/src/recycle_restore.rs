@@ -6,7 +6,8 @@
 
 use std::io;
 use std::path::Path;
-use std::sync::Arc;
+use std::sync::{Arc, mpsc};
+use std::time::Duration;
 
 use pr_core::abstractions::{Log, NullLog};
 use pr_core::time::DateTimeUtc;
@@ -59,6 +60,11 @@ type SessionFactory = dyn Fn() -> io::Result<Option<Box<dyn RecycleRestoreSessio
 type RestoreProof = dyn Fn(&Path, u64, DateTimeUtc) -> bool + Send + Sync;
 type Pause = dyn Fn() + Send + Sync;
 
+/// Upper bound the caller waits for the Shell worker. The C# `ShellStaRunner.Run` joins without limit; a hidden Shell
+/// dialog (vanished original folder, name conflict) would then hang the caller forever. Here the caller gives up with
+/// an error instead (see `restore_on_worker`). Generous so that a user who answers a real dialog is not cut off.
+pub const SHELL_RESTORE_TIMEOUT: Duration = Duration::from_secs(120);
+
 /// Shell restore backend used by `WindowsRecycleBin`.
 pub struct WindowsRecycleBinRestoreBackend {
     open_session: Arc<SessionFactory>,
@@ -66,6 +72,7 @@ pub struct WindowsRecycleBinRestoreBackend {
     pause: Arc<Pause>,
     attempts: usize,
     log: Arc<dyn Log>,
+    restore_timeout: Duration,
 }
 
 impl std::fmt::Debug for WindowsRecycleBinRestoreBackend {
@@ -109,7 +116,15 @@ impl WindowsRecycleBinRestoreBackend {
             pause: Arc::new(pause),
             attempts,
             log,
+            restore_timeout: SHELL_RESTORE_TIMEOUT,
         }
+    }
+
+    /// Replaces the bound on waiting for the Shell worker (tests use a few milliseconds).
+    #[must_use]
+    pub fn with_restore_timeout(mut self, timeout: Duration) -> Self {
+        self.restore_timeout = timeout;
+        self
     }
 
     fn restore_on_worker(
@@ -127,45 +142,59 @@ impl WindowsRecycleBinRestoreBackend {
         let log = Arc::clone(&self.log);
         let path = original_path.to_owned();
         let attempts = self.attempts;
+        let (sender, receiver) = mpsc::channel::<io::Result<bool>>();
+        // The worker is intentionally detached: a Shell call stuck in a dialog cannot be cancelled, and the caller must
+        // not wait for it forever. If it finishes later its result is dropped (`send` fails on the closed channel).
         std::thread::Builder::new()
             .name("PhotoReviewRs-RestoreShell".to_owned())
             .spawn(move || {
-                let Some(mut session) = (open_session)()? else {
-                    return Ok(false);
-                };
-                let entries = session.entries()?;
-                let mut matches = Vec::new();
-                for entry in entries {
-                    match entry.candidate() {
-                        Ok(Some(candidate))
-                            if recycle_candidate::is_match(
-                                &candidate,
-                                &path,
-                                expected_size_i64,
-                                expected_last_write_utc,
-                            ) =>
-                        {
-                            matches.push(entry)
+                let result = (move || -> io::Result<bool> {
+                    let Some(mut session) = (open_session)()? else {
+                        return Ok(false);
+                    };
+                    let entries = session.entries()?;
+                    let mut matches = Vec::new();
+                    for entry in entries {
+                        match entry.candidate() {
+                            Ok(Some(candidate))
+                                if recycle_candidate::is_match(
+                                    &candidate,
+                                    &path,
+                                    expected_size_i64,
+                                    expected_last_write_utc,
+                                ) =>
+                            {
+                                matches.push(entry)
+                            }
+                            Ok(_) => {}
+                            Err(error) if error.is_per_item() => {
+                                log.error("Recycle Bin item inspection failed", Some(&error.source));
+                            }
+                            Err(error) => return Err(error.source),
                         }
-                        Ok(_) => {}
-                        Err(error) if error.is_per_item() => {
-                            log.error("Recycle Bin item inspection failed", Some(&error.source));
-                        }
-                        Err(error) => return Err(error.source),
                     }
-                }
-                if matches.len() != 1 {
-                    return Ok(false);
-                }
-                matches[0].invoke_restore()?;
-                Ok(wait_for_restore_with(
-                    attempts,
-                    || (prove_restored)(&path, expected_size, expected_last_write_utc),
-                    || (pause)(),
-                ))
-            })?
-            .join()
-            .map_err(|_| io::Error::other("Recycle Bin restore worker panicked"))?
+                    if matches.len() != 1 {
+                        return Ok(false);
+                    }
+                    matches[0].invoke_restore()?;
+                    Ok(wait_for_restore_with(
+                        attempts,
+                        || (prove_restored)(&path, expected_size, expected_last_write_utc),
+                        || (pause)(),
+                    ))
+                })();
+                let _ = sender.send(result);
+            })?;
+        match receiver.recv_timeout(self.restore_timeout) {
+            Ok(result) => result,
+            // Never `Ok(true)`: nothing is known about the outcome. The undo flow then proves by the file system, and an
+            // item the Shell restores late shows up as "target exists" on a retry.
+            Err(mpsc::RecvTimeoutError::Timeout) => Err(io::Error::new(
+                io::ErrorKind::TimedOut,
+                "Recycle Bin restore has not completed (the Shell may be waiting on a hidden dialog); the file may still be restored later",
+            )),
+            Err(mpsc::RecvTimeoutError::Disconnected) => Err(io::Error::other("Recycle Bin restore worker panicked")),
+        }
     }
 }
 
