@@ -31,7 +31,7 @@ const PKEY_SIZE: PROPERTYKEY = PROPERTYKEY {
     fmtid: windows::core::GUID::from_u128(0xb725f130_47ef_101a_a5f1_02608c9eebac),
     pid: 12,
 };
-const RESTORE_VERB: &[u8] = b"undelete\0";
+use crate::restore_verb::CANONICAL_VERB_Z as RESTORE_VERB;
 
 struct ComApartment;
 

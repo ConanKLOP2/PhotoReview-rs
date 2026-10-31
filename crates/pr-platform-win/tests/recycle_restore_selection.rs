@@ -1,13 +1,11 @@
 #[path = "../src/recycle_candidate.rs"]
 mod recycle_candidate;
-#[path = "../src/restore_verb.rs"]
-mod restore_verb;
 
 use std::path::Path;
 
 use pr_core::time::DateTimeUtc;
+use pr_platform_win::restore_verb::{CANONICAL_VERB, CANONICAL_VERB_Z, find_index, invoke, is_restore_name};
 use recycle_candidate::{RecycleCandidate, RecycleItemFailureKind, is_match, is_per_item_failure};
-use restore_verb::{CANONICAL_VERB, find_index, invoke, is_restore_name};
 
 fn timestamp(text: &str) -> DateTimeUtc {
     DateTimeUtc::parse_json(text).expect("test timestamp is valid").0
@@ -369,4 +367,14 @@ fn failing_verb_propagates_without_second_attempt() {
 fn canonical_verb_is_the_shell_undelete_name() {
     // C#: WindowsRecycleBinRestoreVerbTests.CanonicalVerbIsTheShellUndeleteName.
     assert_eq!(CANONICAL_VERB, "undelete");
+}
+
+#[test]
+fn production_verb_bytes_are_the_nul_terminated_canonical_verb() {
+    // ST-COM-RECYCLE T4: the bytes `invoke_restore` passes to the Shell come from this const, so this test covers them.
+    assert_eq!(CANONICAL_VERB_Z.last(), Some(&0));
+    assert_eq!(
+        &CANONICAL_VERB_Z[..CANONICAL_VERB_Z.len() - 1],
+        CANONICAL_VERB.as_bytes()
+    );
 }

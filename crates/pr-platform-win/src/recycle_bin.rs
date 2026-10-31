@@ -51,10 +51,17 @@ impl std::fmt::Debug for WindowsRecycleBin {
 
 impl WindowsRecycleBin {
     /// Creates the production facade. Restore is supplied separately so its Shell backend can be added by W6-02e.
+    ///
+    /// Prefer [`Self::with_log`] in the application: this variant discards every "Recycle refused" warning.
     pub fn new(restore_backend: Arc<dyn RecycleBinRestoreBackend>) -> Self {
+        Self::with_log(restore_backend, Arc::new(NullLog))
+    }
+
+    /// Creates the production facade writing refusals and settings-read failures to `log` (C# passes its `ILog`).
+    pub fn with_log(restore_backend: Arc<dyn RecycleBinRestoreBackend>, log: Arc<dyn Log>) -> Self {
         Self::with_adapters(
             Arc::new(WindowsRecycleBinSettingsSource::default()),
-            Arc::new(NullLog),
+            log,
             crate::recycle_bin_settings::query_drive_type,
             crate::recycle_bin_settings::query_mount_point,
             |path| path.exists(),

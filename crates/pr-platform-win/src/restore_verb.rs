@@ -1,8 +1,16 @@
 //! Port of `PhotoReview.Platform.Windows/WindowsRecycleBin.cs`: localized Shell restore-verb selection.
+//!
+//! Production (`recycle_bin_shell::invoke_restore`) calls only [`CANONICAL_VERB_Z`] with no `QueryContextMenu`
+//! (ST-COM-RECYCLE T4). The localized-label helpers below (`is_restore_name`, `find_index`, `invoke`) are the C# policy
+//! kept under test but NOT wired into production: that needs an HMENU + `QueryContextMenu` pass that can only be
+//! proven against the real Shell. See `docs/reviews/FIX-RECYCLE-TRUNG-2026-10-31.md`.
 
 use pr_core::text::eq_ignore_case;
 
 pub const CANONICAL_VERB: &str = "undelete";
+
+/// NUL-terminated form of [`CANONICAL_VERB`] passed as `CMINVOKECOMMANDINFO::lpVerb` (single source of truth).
+pub const CANONICAL_VERB_Z: &[u8] = b"undelete\0";
 
 const NAME_FRAGMENTS: &[&str] = &[
     "restore",
