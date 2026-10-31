@@ -42,6 +42,9 @@ mod recycle_candidate;
 mod recycle_bin_shell;
 
 #[cfg(windows)]
+pub mod restore_verb;
+
+#[cfg(windows)]
 pub mod recycle_restore;
 
 #[cfg(windows)]

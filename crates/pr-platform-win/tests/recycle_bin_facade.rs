@@ -674,3 +674,27 @@ impl Drop for TestOwnedFile {
         let _ = fs::remove_file(&self.path);
     }
 }
+
+#[test]
+fn with_log_routes_production_refusals_to_the_supplied_log() {
+    // ST-COM-RECYCLE T5: `WindowsRecycleBin::new` used NullLog, so "Recycle refused" never reached the app log. This
+    // uses the production adapters but only read-only queries (drive type, file length) and a path that does not exist:
+    // the size read fails before any Shell call, so nothing is recycled, deleted or restored.
+    let path = std::env::temp_dir().join(format!("pr-recycle-with-log-{}-missing.jpg", std::process::id()));
+    let log = Arc::new(TestLog::default());
+    let bin = recycle_bin::WindowsRecycleBin::with_log(RestoreOutcome::returning(Ok(false)), log.clone());
+
+    let result = bin.send_to_recycle_bin(&path);
+
+    assert!(result.is_err());
+    if result.as_ref().is_err_and(|e| e.kind() == io::ErrorKind::Unsupported) {
+        return; // temp dir is on a non-fixed volume: refused before logging, nothing to assert
+    }
+    let warnings = log.warnings.lock().unwrap();
+    assert!(
+        warnings
+            .iter()
+            .any(|w| w.starts_with("Recycle refused (size unreadable)")),
+        "{warnings:?}"
+    );
+}

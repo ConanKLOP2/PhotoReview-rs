@@ -136,9 +136,10 @@ impl PlatformServices {
         let memory = Arc::new(WindowsPhysicalMemory);
         let recycle_bin = match overrides.recycle_bin {
             Some(value) => value,
-            None => Arc::new(WindowsRecycleBin::new(Arc::new(WindowsRecycleBinRestoreBackend::new(
+            None => Arc::new(WindowsRecycleBin::with_log(
+                Arc::new(WindowsRecycleBinRestoreBackend::new(Arc::clone(&log))),
                 Arc::clone(&log),
-            )))),
+            )),
         };
         let explorer_order = match overrides.explorer_order {
             Some(value) => value,
