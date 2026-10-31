@@ -20,7 +20,7 @@ use std::sync::{Arc, Mutex};
 
 use pr_core::abstractions::{Log, RecycleBin};
 use pr_core::time::DateTimeUtc;
-use recycle_bin::RecycleBinRestoreBackend;
+use recycle_bin::{RecycleBinRestoreBackend, ShellRecycleOutcome};
 use recycle_bin_settings::{DriveType, RecycleBinPolicy, RecycleBinSettingsSource, RecycleBinVolumeSettings};
 
 const PHOTO: &str = r"C:\photos\safe-test-photo.jpg";
@@ -131,7 +131,7 @@ fn make_bin(
     mount_point: impl Fn(&str) -> Option<String> + Send + Sync + 'static,
     exists: impl Fn(&Path) -> bool + Send + Sync + 'static,
     length: impl Fn(&Path) -> io::Result<u64> + Send + Sync + 'static,
-    recycle: impl Fn(&Path) -> io::Result<()> + Send + Sync + 'static,
+    recycle: impl Fn(&Path) -> io::Result<ShellRecycleOutcome> + Send + Sync + 'static,
     delete: impl Fn(&Path) -> io::Result<()> + Send + Sync + 'static,
     restore: Arc<dyn RecycleBinRestoreBackend>,
 ) -> recycle_bin::WindowsRecycleBin {
@@ -154,7 +154,7 @@ fn healthy_bin(
     drive_type: Option<DriveType>,
     exists: impl Fn(&Path) -> bool + Send + Sync + 'static,
     length: impl Fn(&Path) -> io::Result<u64> + Send + Sync + 'static,
-    recycle: impl Fn(&Path) -> io::Result<()> + Send + Sync + 'static,
+    recycle: impl Fn(&Path) -> io::Result<ShellRecycleOutcome> + Send + Sync + 'static,
     delete: impl Fn(&Path) -> io::Result<()> + Send + Sync + 'static,
     restore: Arc<dyn RecycleBinRestoreBackend>,
 ) -> recycle_bin::WindowsRecycleBin {
@@ -356,7 +356,7 @@ fn send_to_recycle_bin_rechecks_grown_file_size_before_shell() {
         move |_| Ok(observed_size.load(Ordering::SeqCst)),
         move |_| {
             observed_shell.fetch_add(1, Ordering::SeqCst);
-            Ok(())
+            Ok(ShellRecycleOutcome::MovedToRecycleBin)
         },
         |_| panic!("recycle refusal must not switch to permanent delete"),
         RestoreOutcome::returning(Ok(false)),
@@ -386,7 +386,7 @@ fn send_to_recycle_bin_refuses_unreadable_size_without_shell() {
         |_| Err(io::Error::new(io::ErrorKind::PermissionDenied, "locked")),
         move |_| {
             observed_calls.fetch_add(1, Ordering::SeqCst);
-            Ok(())
+            Ok(ShellRecycleOutcome::MovedToRecycleBin)
         },
         |_| panic!("size read failure must not delete"),
         RestoreOutcome::returning(Ok(false)),
@@ -413,7 +413,7 @@ fn send_to_recycle_bin_refuses_non_fixed_or_unresolved_volume_before_size_read()
         },
         move |_| {
             seen_shell.fetch_add(1, Ordering::SeqCst);
-            Ok(())
+            Ok(ShellRecycleOutcome::MovedToRecycleBin)
         },
         |_| panic!("ineligible drive must not be permanently deleted"),
         RestoreOutcome::returning(Ok(false)),
@@ -437,7 +437,7 @@ fn send_to_recycle_bin_reports_failure_if_shell_leaves_source_in_place() {
         |_| Ok(1),
         move |_| {
             seen_shell.fetch_add(1, Ordering::SeqCst);
-            Ok(())
+            Ok(ShellRecycleOutcome::MovedToRecycleBin)
         },
         |_| panic!("a failed recycle must not become permanent delete"),
         RestoreOutcome::returning(Ok(false)),
@@ -463,7 +463,7 @@ fn send_to_recycle_bin_refuses_disabled_bin_without_shell_or_delete_fallback() {
         |_| Ok(1),
         move |_| {
             observed_recycle.fetch_add(1, Ordering::SeqCst);
-            Ok(())
+            Ok(ShellRecycleOutcome::MovedToRecycleBin)
         },
         move |_| {
             observed_delete.fetch_add(1, Ordering::SeqCst);
@@ -485,7 +485,7 @@ fn send_to_recycle_bin_accepts_fake_shell_removal_of_test_owned_temp_file() {
         Some(DriveType::Fixed),
         |candidate| candidate.exists(),
         |candidate| fs::metadata(candidate).map(|metadata| metadata.len()),
-        move |_| fs::remove_file(&shell_path),
+        move |_| fs::remove_file(&shell_path).map(|()| ShellRecycleOutcome::MovedToRecycleBin),
         |_| panic!("recycle test must not call permanent delete"),
         RestoreOutcome::returning(Ok(false)),
     );
@@ -697,4 +697,211 @@ fn with_log_routes_production_refusals_to_the_supplied_log() {
             .any(|w| w.starts_with("Recycle refused (size unreadable)")),
         "{warnings:?}"
     );
+}
+
+/// Facade whose Shell seam reports `outcome`; `still_exists` is what the post-call `exists` check answers.
+fn bin_with_shell_outcome(
+    outcome: ShellRecycleOutcome,
+    still_exists: bool,
+) -> (recycle_bin::WindowsRecycleBin, Arc<TestLog>) {
+    let log = Arc::new(TestLog::default());
+    let bin = make_bin(
+        Arc::new(TestSettings::default()),
+        Arc::clone(&log),
+        |_| Some(DriveType::Fixed),
+        |_| Some(r"C:\".to_owned()),
+        move |_| still_exists,
+        |_| Ok(1),
+        move |_| Ok(outcome),
+        |_| panic!("a recycle outcome must never fall back to a permanent delete"),
+        RestoreOutcome::returning(Ok(false)),
+    );
+    (bin, log)
+}
+
+#[test]
+// ST-COM-RECYCLE C2 (no C# twin: C# trusts the Shell). Only a positive "moved" report with a vanished source is Ok.
+fn send_to_recycle_bin_succeeds_only_for_moved_to_recycle_bin_with_source_gone() {
+    let (bin, log) = bin_with_shell_outcome(ShellRecycleOutcome::MovedToRecycleBin, false);
+    bin.send_to_recycle_bin(Path::new(PHOTO)).unwrap();
+    assert!(log.warnings.lock().unwrap().is_empty());
+}
+
+#[test]
+// ST-COM-RECYCLE C2: the Shell says moved but the source is still there -> error, as before.
+fn send_to_recycle_bin_moved_but_source_still_present_is_an_error() {
+    let (bin, _) = bin_with_shell_outcome(ShellRecycleOutcome::MovedToRecycleBin, true);
+    let error = bin.send_to_recycle_bin(Path::new(PHOTO)).unwrap_err();
+    assert!(error.to_string().contains("left the source in place"), "{error}");
+}
+
+#[test]
+// ST-COM-RECYCLE C2: a permanent delete is an error that says so (journal must not record Recycle), and is logged.
+fn send_to_recycle_bin_deleted_permanently_is_a_distinct_fail_closed_error() {
+    let (bin, log) = bin_with_shell_outcome(ShellRecycleOutcome::DeletedPermanently, false);
+    let error = bin.send_to_recycle_bin(Path::new(PHOTO)).unwrap_err();
+    assert!(error.to_string().contains("permanently"), "{error}");
+    assert!(!error.to_string().contains("left the source in place"), "{error}");
+    let warnings = log.warnings.lock().unwrap();
+    assert!(
+        warnings.iter().any(|w| w.contains("deleted permanently")),
+        "{warnings:?}"
+    );
+}
+
+#[test]
+// ST-COM-RECYCLE C2: even if the (fake) source still exists, a permanent-delete report stays the permanent-delete error.
+fn send_to_recycle_bin_deleted_permanently_wins_over_the_exists_check() {
+    let (bin, _) = bin_with_shell_outcome(ShellRecycleOutcome::DeletedPermanently, true);
+    let error = bin.send_to_recycle_bin(Path::new(PHOTO)).unwrap_err();
+    assert!(error.to_string().contains("permanently"), "{error}");
+}
+
+#[test]
+// ST-COM-RECYCLE C2: no per-item report and the file is gone -> unconfirmed error (never Ok).
+fn send_to_recycle_bin_unknown_with_source_gone_is_unconfirmed_error() {
+    let (bin, log) = bin_with_shell_outcome(ShellRecycleOutcome::Unknown, false);
+    let error = bin.send_to_recycle_bin(Path::new(PHOTO)).unwrap_err();
+    assert!(error.to_string().contains("unconfirmed"), "{error}");
+    assert!(!log.warnings.lock().unwrap().is_empty());
+}
+
+#[test]
+// ST-COM-RECYCLE C2: no per-item report and the file is still there -> nothing was lost, "left in place".
+fn send_to_recycle_bin_unknown_with_source_present_reports_left_in_place() {
+    let (bin, _) = bin_with_shell_outcome(ShellRecycleOutcome::Unknown, true);
+    let error = bin.send_to_recycle_bin(Path::new(PHOTO)).unwrap_err();
+    assert!(error.to_string().contains("left the source in place"), "{error}");
+}
+
+#[test]
+// ST-COM-RECYCLE C2 / L6: a failed HRESULT is reported with its value; a surviving source keeps the old message.
+fn send_to_recycle_bin_failed_hresult_is_an_error_carrying_the_code() {
+    let hr = 0x8007_0005u32 as i32;
+    let (bin, _) = bin_with_shell_outcome(ShellRecycleOutcome::Failed(hr), false);
+    let error = bin.send_to_recycle_bin(Path::new(PHOTO)).unwrap_err();
+    assert!(error.to_string().contains("0x80070005"), "{error}");
+
+    let (bin, _) = bin_with_shell_outcome(ShellRecycleOutcome::Failed(hr), true);
+    let error = bin.send_to_recycle_bin(Path::new(PHOTO)).unwrap_err();
+    assert!(error.to_string().contains("left the source in place"), "{error}");
+}
+
+#[test]
+// ST-COM-RECYCLE C2: a seam error is propagated unchanged.
+fn send_to_recycle_bin_propagates_a_shell_seam_error() {
+    let bin = healthy_bin(
+        Some(DriveType::Fixed),
+        |_| false,
+        |_| Ok(1),
+        |_| Err(io::Error::new(io::ErrorKind::PermissionDenied, "shell denied")),
+        |_| panic!("no permanent delete fallback"),
+        RestoreOutcome::returning(Ok(false)),
+    );
+    let error = bin.send_to_recycle_bin(Path::new(PHOTO)).unwrap_err();
+    assert_eq!(error.kind(), io::ErrorKind::PermissionDenied);
+}
+
+fn long_path(total_units: usize) -> PathBuf {
+    // The prefix is ASCII, so the whole path has exactly `total_units` UTF-16 units.
+    let prefix = r"C:\photos\";
+    let name_len = total_units - prefix.len() - ".jpg".len();
+    PathBuf::from(format!("{prefix}{}.jpg", "a".repeat(name_len)))
+}
+
+#[test]
+// ST-COM-RECYCLE C2: a path over MAX_PATH-1 units is refused before the size read and the Shell call.
+fn send_to_recycle_bin_refuses_a_path_longer_than_259_units_before_shell() {
+    let size_reads = Arc::new(AtomicUsize::new(0));
+    let shell_calls = Arc::new(AtomicUsize::new(0));
+    let seen_size = Arc::clone(&size_reads);
+    let seen_shell = Arc::clone(&shell_calls);
+    let log = Arc::new(TestLog::default());
+    let bin = make_bin(
+        Arc::new(TestSettings::default()),
+        Arc::clone(&log),
+        |_| Some(DriveType::Fixed),
+        |_| Some(r"C:\".to_owned()),
+        |_| false,
+        move |_| {
+            seen_size.fetch_add(1, Ordering::SeqCst);
+            Ok(1)
+        },
+        move |_| {
+            seen_shell.fetch_add(1, Ordering::SeqCst);
+            Ok(ShellRecycleOutcome::MovedToRecycleBin)
+        },
+        |_| panic!("a long path must not be permanently deleted"),
+        RestoreOutcome::returning(Ok(false)),
+    );
+    let path = long_path(260);
+    assert_eq!(path.to_str().unwrap().len(), 260);
+    let error = bin.send_to_recycle_bin(&path).unwrap_err();
+    assert_eq!(error.kind(), io::ErrorKind::InvalidInput);
+    assert_eq!(size_reads.load(Ordering::SeqCst), 0);
+    assert_eq!(shell_calls.load(Ordering::SeqCst), 0);
+    assert!(
+        log.warnings
+            .lock()
+            .unwrap()
+            .iter()
+            .any(|w| w.starts_with("Recycle refused (path too long)"))
+    );
+}
+
+#[test]
+// ST-COM-RECYCLE C2: boundary: exactly 259 units is still handed to the Shell seam.
+fn send_to_recycle_bin_accepts_a_path_of_exactly_259_units() {
+    let shell_calls = Arc::new(AtomicUsize::new(0));
+    let seen_shell = Arc::clone(&shell_calls);
+    let bin = healthy_bin(
+        Some(DriveType::Fixed),
+        |_| false,
+        |_| Ok(1),
+        move |_| {
+            seen_shell.fetch_add(1, Ordering::SeqCst);
+            Ok(ShellRecycleOutcome::MovedToRecycleBin)
+        },
+        |_| panic!("no permanent delete"),
+        RestoreOutcome::returning(Ok(false)),
+    );
+    let path = long_path(259);
+    assert_eq!(path.to_str().unwrap().len(), 259);
+    bin.send_to_recycle_bin(&path).unwrap();
+    assert_eq!(shell_calls.load(Ordering::SeqCst), 1);
+}
+
+#[test]
+// ST-COM-RECYCLE C2: the limit counts UTF-16 units, not bytes or scalar values.
+fn send_to_recycle_bin_counts_utf16_units_for_the_length_limit() {
+    // U+1F4F7 is 2 UTF-16 units: 130 of them plus the 10-unit prefix and ".jpg" = 274 > 259, but only 144 chars.
+    let name = "\u{1F4F7}".repeat(130);
+    let path = PathBuf::from(format!(r"C:\photos\{name}.jpg"));
+    assert!(path.to_str().unwrap().chars().count() < 259);
+    let bin = healthy_bin(
+        Some(DriveType::Fixed),
+        |_| false,
+        |_| Ok(1),
+        |_| panic!("long path must not reach the Shell"),
+        |_| panic!("no permanent delete"),
+        RestoreOutcome::returning(Ok(false)),
+    );
+    assert_eq!(
+        bin.send_to_recycle_bin(&path).unwrap_err().kind(),
+        io::ErrorKind::InvalidInput
+    );
+}
+
+#[test]
+#[ignore = "attended: needs a human watching, sends a temp file to the real Recycle Bin"]
+// ST-COM-RECYCLE C2 native check (skeleton, never run by agents or CI). Creates its OWN temp file, sends it through the
+// production Shell path and asserts the sink reported a recycle. Afterwards the human must restore or delete ONLY that
+// item (name `photoreview-rs-w6-02c-<pid>-<n>.tmp`) from the Recycle Bin by hand; this test never touches the bin.
+fn native_attended_recycle_of_own_temp_file_reports_moved_to_recycle_bin() {
+    let owned = TestOwnedFile::create();
+    let bin =
+        recycle_bin::WindowsRecycleBin::with_log(RestoreOutcome::returning(Ok(false)), Arc::new(TestLog::default()));
+    bin.send_to_recycle_bin(&owned.path)
+        .expect("the Shell must report MovedToRecycleBin for a normal temp file");
+    assert!(!owned.path.exists());
 }
