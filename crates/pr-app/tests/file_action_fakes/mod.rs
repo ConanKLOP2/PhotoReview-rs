@@ -460,6 +460,8 @@ pub struct Env {
     pub log: Arc<RecordingLog>,
     pub remembered: Arc<Mutex<Vec<(FileOperationType, String)>>>,
     pub undo: Option<Arc<Mutex<UndoService>>>,
+    /// The default file system of the controller: every file exists until `disk.remove(path)`.
+    pub disk: Arc<HidingFs>,
     pub settings: Arc<Mutex<Arc<AppSettings>>>,
     pub controller: FileActionController,
 }
@@ -502,6 +504,8 @@ impl Env {
         let remembered: Arc<Mutex<Vec<(FileOperationType, String)>>> = Arc::new(Mutex::new(Vec::new()));
         let remembered_for_controller = remembered.clone();
         let undo = options.undo.then(new_undo_service);
+        let disk = HidingFs::virtual_disk();
+        let disk_for_controller = disk.clone();
         let settings = Arc::new(Mutex::new(Arc::new(settings)));
         let settings_for_controller = settings.clone();
         let controller = FileActionController::new(FileActionDeps {
@@ -518,7 +522,7 @@ impl Env {
                 options
                     .file_system_override
                     .clone()
-                    .unwrap_or_else(|| Arc::new(PhysicalFileSystem) as Arc<dyn FileSystem>)
+                    .unwrap_or(disk_for_controller as Arc<dyn FileSystem>)
             }),
             remember_folder: Some(Box::new(move |operation, folder| {
                 remembered_for_controller
@@ -541,6 +545,7 @@ impl Env {
             log,
             remembered,
             undo,
+            disk,
             settings,
             controller,
         }
@@ -740,18 +745,45 @@ impl IFolderPicker for FixedPicker {
 /// C# `HookFileSystem.HideDirectory`: the physical file system, except that one directory "does not exist".
 pub struct HidingFs {
     pub hidden: Mutex<Option<String>>,
+    /// `file_exists` answers "yes" for every path except those in `gone` (the paths of these tests are virtual).
+    pub virtual_files: bool,
+    pub gone: Mutex<Vec<String>>,
 }
 
 impl HidingFs {
     pub fn hiding(directory: &str) -> Arc<Self> {
         Arc::new(Self {
             hidden: Mutex::new(Some(directory.to_string())),
+            virtual_files: false,
+            gone: Mutex::new(Vec::new()),
         })
+    }
+
+    /// A disk where every listed file exists until [`HidingFs::remove`] says it is gone (e.g. sent to the Recycle Bin).
+    pub fn virtual_disk() -> Arc<Self> {
+        Arc::new(Self {
+            hidden: Mutex::new(None),
+            virtual_files: true,
+            gone: Mutex::new(Vec::new()),
+        })
+    }
+
+    pub fn remove(&self, path: &str) {
+        self.gone.lock().unwrap().push(path.to_string());
     }
 }
 
 impl FileSystem for HidingFs {
     fn file_exists(&self, path: &Path) -> bool {
+        if self.virtual_files {
+            let text = path.to_string_lossy();
+            return !self
+                .gone
+                .lock()
+                .unwrap()
+                .iter()
+                .any(|g| pr_core::text::eq_ignore_case(g, &text));
+        }
         PhysicalFileSystem.file_exists(path)
     }
 

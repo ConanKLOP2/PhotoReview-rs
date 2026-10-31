@@ -1181,14 +1181,30 @@ impl FileActionController {
         // The entry already left the catalog before the executor ran: restore it (same as INV-5), but only into the folder the
         // action ran in.
         if flight.is_remove && flight.source_index >= 0 && self.deps.clock.is_folder_current(flight.folder_gen) {
+            // DIVERGENCE from C# (ST-INVMAP M3, data safety): C# restores unconditionally and lets the presenter heal a
+            // missing entry later. A panicking executor may already have sent the file to the Recycle Bin, so with a file
+            // system seam each path is asked first and a path that is no longer on disk is NOT put back in the list.
+            let fs = self.deps.file_system.clone();
+            let on_disk = |path: &str| fs.as_ref().is_none_or(|fs| fs.file_exists(std::path::Path::new(path)));
             match &flight.group {
                 None => {
-                    cx.catalog.restore(&flight.source, flight.source_index);
+                    if on_disk(&flight.source) {
+                        cx.catalog.restore(&flight.source, flight.source_index);
+                    } else {
+                        self.deps.log.error(
+                            &format!(
+                                "File action {operation:?} threw and the file is gone: {}",
+                                flight.source
+                            ),
+                            None,
+                        );
+                    }
                 }
                 Some(group) => {
+                    let available: Vec<String> = group.image_paths().iter().filter(|p| on_disk(p)).cloned().collect();
                     let raw = (self.deps.get_settings)().raw_support_enabled;
                     cx.catalog
-                        .restore_members(group.image_paths(), flight.source_index, Some(group), raw);
+                        .restore_members(&available, flight.source_index, Some(group), raw);
                     cx.sink.on_catalog_changed(None);
                 }
             }

@@ -13,6 +13,7 @@ Keep this file under about 10 KB. When it grows, move old sections verbatim to `
 ## Current state (2026-10-31)
 
 - Snapshot 2026-10-28 (Not done, Blocked, open debts): verbatim in the archive, section "Moved 2026-10-31 (tp-compact5, verbatim)". Re-check `git log origin/master` first.
+- 2026-10-31 fix-restore-m3 (ST-INVMAP M3, data safety): after an executor panic the catalog entry is restored only if the file still exists on disk; no Undo after a panic (open: journal reconcile). Tests `file_action_core` 68 green, clippy -p pr-app clean; see `docs/reviews/FIX-RESTORE-M3-2026-10-31.md`.
 
 ## Archives (`docs/archive/`, verbatim, history only)
 Find any section title with `grep -n '^## ' <file>`. Original section order is kept inside each file.
