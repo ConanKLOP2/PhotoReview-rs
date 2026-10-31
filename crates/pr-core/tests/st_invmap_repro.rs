@@ -101,3 +101,60 @@ fn retry_group_permanent_member_replaced_between_precheck_and_mutation_is_not_de
     );
     assert!(rig.fs.has_file(RAW), "the replacement file must still exist");
 }
+
+// Not a C# port: new test for the H1 follow-up (non-permanent member) of ST-INVMAP-2026-10-31.
+#[test]
+fn retry_group_recycle_member_replaced_between_precheck_and_mutation_is_not_recycled() {
+    let rig = Rig::with_clocks(STAMP + 600_000_000, STAMP + 1_200_000_000);
+    rig.fs.seed_text(JPG, "jpeg", ts(STAMP));
+    rig.fs.seed_text(RAW, "raw data", ts(STAMP));
+    let bin = rig.bin(BinConfig::default());
+    let mut failed = failed_permanent_delete_group();
+    failed.permanent = None;
+    if let Some(members) = failed.group_members.as_mut() {
+        for m in members.iter_mut() {
+            m.permanent = false;
+        }
+    }
+    rig.append(&failed);
+
+    let fs = rig.fs.clone();
+    let replaced = Arc::new(std::sync::atomic::AtomicBool::new(false));
+    let flag = replaced.clone();
+    rig.fs.add_rule(Rule {
+        on: "append",
+        path: None,
+        nth: None,
+        f: Arc::new(move |_fs: &ScriptedFs, _call: &Call<'_>| {
+            if !flag.swap(true, std::sync::atomic::Ordering::SeqCst) {
+                fs.seed_text(RAW, "a brand new, longer replacement photo", ts(STAMP + 5_000_000_000));
+            }
+            Ok(Next::Proceed)
+        }),
+    });
+    let service = rig
+        .service()
+        .with_recycle_bin(bin)
+        .with_allow_permanent_delete(Rig::allow(false));
+
+    let result = service
+        .retry_move_or_copy(&failed, false, &CancelToken::none())
+        .expect("not cancelled");
+
+    let recycled: Vec<String> = rig
+        .fs
+        .ops()
+        .iter()
+        .filter_map(|o| o.strip_prefix("bin.recycle ").map(str::to_owned))
+        .collect();
+    assert!(replaced.load(std::sync::atomic::Ordering::SeqCst), "hook ran");
+    assert!(
+        !result.succeeded,
+        "retry reported success after recycling an unfingerprinted file"
+    );
+    assert!(
+        !recycled.contains(&RAW.to_owned()),
+        "the replacement file was sent to the bin: {recycled:?}"
+    );
+    assert!(rig.fs.has_file(RAW), "the replacement file must still exist");
+}

@@ -1586,3 +1586,53 @@ fn single_copy_destination_stat_failure_is_journaled_as_the_stat_error() {
     assert_eq!(last.error_code, None);
     assert_eq!(last.error.as_deref(), Some("fault"));
 }
+
+/// Replaces `SOURCE` with a different file (other length and write time) when the Prepared line is appended.
+fn replace_source_on_first_append(fx: &Fixture) {
+    let disk = fx.disk.clone();
+    let done = Arc::new(AtomicUsize::new(0));
+    let journal = journal_path();
+    fx.hooks.set_open_append_hook(Some(Arc::new(move |path: &Path| {
+        if path.to_string_lossy().eq_ignore_ascii_case(&journal) && done.fetch_add(1, Ordering::SeqCst) == 0 {
+            disk.add_file_at(
+                Path::new(SOURCE),
+                b"a different, longer replacement",
+                last_write_plus(500),
+            );
+        }
+        None
+    })));
+}
+
+// Not a C# port: L3 of ST-INVMAP-2026-10-31 (re-stat between Prepared and the mutation), permanent branch.
+#[test]
+fn recycle_permanent_source_replaced_after_prepared_is_refused() {
+    let fx = Fixture::new();
+    fx.add_file(SOURCE, 11);
+    fx.bin.set_no_bin_roots(&[r"C:\"]);
+    replace_source_on_first_append(&fx);
+    let mut request = single(SOURCE, Recycle, None);
+    request.allow_permanent_delete = true;
+    let result = fx.run(&request);
+    assert!(!result.succeeded);
+    assert!(
+        fx.bin.permanently_deleted().is_empty(),
+        "the replacement must not be deleted"
+    );
+    assert!(fx.file_exists(SOURCE));
+}
+
+// Not a C# port: L3 of ST-INVMAP-2026-10-31, bin branch.
+#[test]
+fn recycle_source_replaced_after_prepared_is_not_recycled() {
+    let fx = Fixture::new();
+    fx.add_file(SOURCE, 11);
+    replace_source_on_first_append(&fx);
+    let result = fx.run(&single(SOURCE, Recycle, None));
+    assert!(!result.succeeded);
+    assert!(
+        fx.bin.recycled().is_empty(),
+        "the replacement must not be sent to the bin"
+    );
+    assert!(fx.file_exists(SOURCE));
+}

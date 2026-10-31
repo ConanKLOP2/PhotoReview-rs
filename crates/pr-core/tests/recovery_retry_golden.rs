@@ -402,7 +402,7 @@ fn panic_text(payload: &(dyn std::any::Any + Send)) -> String {
 /// DIVERGENCE H1/G25 (docs/reviews/FIX-H1-2026-10-31.md): the C# oracle deletes a permanent group member without a
 /// fresh stat; we deliberately re-stat right before `bin.delete-permanently` so a file that replaced the member after
 /// the pre-check is never deleted (`st_invmap_repro.rs` pins the new behaviour). That adds exactly one `stat P` op
-/// immediately before each `bin.delete-permanently P`; it is removed from OUR op trace here so every other op of
+/// immediately before each `bin.delete-permanently P` and (H1 follow-up) each `bin.recycle P` of a group member; it is removed from OUR op trace here so every other op of
 /// every case still has to match the oracle exactly.
 fn divergence_adjusted(field: &str, got: &Value) -> Value {
     if field != "ops" {
@@ -419,7 +419,9 @@ fn divergence_adjusted(field: &str, got: &Value) -> Value {
             let Some(path) = text(*i).strip_prefix("stat ") else {
                 return true;
             };
-            text(*i + 1).strip_prefix("bin.delete-permanently ") != Some(path)
+            let next = text(*i + 1);
+            next.strip_prefix("bin.delete-permanently ") != Some(path)
+                && next.strip_prefix("bin.recycle ") != Some(path)
         })
         .map(|(_, op)| op.clone())
         .collect();
