@@ -128,11 +128,14 @@ pub fn create_raw_decoder(
         &super::decoders::libraw_probe(),
         &move || -> Arc<dyn RawPreviewFallback> { Arc::new(LibRawPreviewFallback::new(Arc::clone(&fallback_api))) },
         &move || -> Arc<dyn ImageDecoder> {
-            Arc::new(LibRawDecoder::new(
-                Arc::clone(&decoder_codec),
-                Arc::clone(&decoder_api),
-                Arc::clone(&decoder_memory),
-            ))
+            Arc::new(
+                LibRawDecoder::new(
+                    Arc::clone(&decoder_codec),
+                    Arc::clone(&decoder_api),
+                    Arc::clone(&decoder_memory),
+                )
+                .with_shared_file_read(),
+            )
         },
     )
 }

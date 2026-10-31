@@ -250,11 +250,10 @@ pub fn create_decoder_providers_with(
         providers.push((
             DecoderBackend::LibRaw,
             Arc::new(move || -> Arc<dyn ImageDecoder> {
-                Arc::new(LibRawDecoder::new(
-                    Arc::clone(&codec),
-                    Arc::clone(&api),
-                    Arc::clone(&memory_info),
-                ))
+                Arc::new(
+                    LibRawDecoder::new(Arc::clone(&codec), Arc::clone(&api), Arc::clone(&memory_info))
+                        .with_shared_file_read(),
+                )
             }),
         ));
     } else {
