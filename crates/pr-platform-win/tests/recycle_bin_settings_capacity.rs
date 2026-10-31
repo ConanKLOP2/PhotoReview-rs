@@ -11,7 +11,7 @@ use pr_core::abstractions::{Log, NullLog};
 use recycle_bin_capacity::{RecycleBinCapacityGuard, RecycleCapacityVerdict as Verdict};
 use recycle_bin_settings::{
     DriveType, RecycleBinPolicy, RecycleBinSettingsSource, RecycleBinVolumeSettings, RegistryHive, RegistryValue,
-    WindowsRecycleBinSettingsSource,
+    WindowsRecycleBinSettingsSource, read_dword_with_query,
 };
 
 const PHOTO: &str = r"C:\photos\a.jpg";
@@ -511,4 +511,105 @@ fn evaluate_blank_path_is_rejected() {
             .kind(),
         io::ErrorKind::InvalidInput
     );
+}
+
+// FIX-G30 (recycle-policy M1): the type/length of the SECOND registry query are validated as well.
+
+const REG_DWORD: u32 = 4;
+const REG_BINARY: u32 = 3;
+
+/// Scripted two-phase registry: (kind, byte_count, data) for the probe and for the data query.
+type Phase = Option<(u32, u32)>;
+
+fn scripted(probe: Phase, read: Phase, value: u32) -> io::Result<Option<RegistryValue>> {
+    read_dword_with_query(|data, count| {
+        let phase = if data.is_some() { read } else { probe };
+        let Some((kind, bytes)) = phase else { return Ok(None) };
+        if let Some(slot) = data {
+            *slot = value;
+        }
+        *count = bytes;
+        Ok(Some(kind))
+    })
+}
+
+#[test]
+fn second_query_with_changed_kind_or_length_is_other() {
+    let probe = Some((REG_DWORD, 4));
+    for read in [
+        Some((REG_BINARY, 4)),
+        Some((REG_DWORD, 1)),
+        Some((REG_DWORD, 0)),
+        Some((REG_DWORD, 8)),
+    ] {
+        assert_eq!(
+            scripted(probe, read, 0).unwrap(),
+            Some(RegistryValue::Other),
+            "{read:?}"
+        );
+    }
+}
+
+#[test]
+fn first_query_with_wrong_kind_or_length_is_other_and_data_query_is_skipped() {
+    for probe in [(REG_BINARY, 4), (REG_DWORD, 8), (REG_DWORD, 0)] {
+        let mut data_calls = 0;
+        let got = read_dword_with_query(|data, count| {
+            if data.is_some() {
+                data_calls += 1;
+            }
+            *count = probe.1;
+            Ok(Some(probe.0))
+        });
+        assert_eq!(got.unwrap(), Some(RegistryValue::Other));
+        assert_eq!(data_calls, 0, "no data read after a rejected probe");
+    }
+}
+
+#[test]
+fn matching_queries_return_the_dword_including_u32_max() {
+    assert_eq!(
+        scripted(Some((REG_DWORD, 4)), Some((REG_DWORD, 4)), u32::MAX).unwrap(),
+        Some(RegistryValue::Dword(u32::MAX))
+    );
+    assert_eq!(scripted(None, None, 0).unwrap(), None);
+}
+
+#[test]
+fn value_vanishing_or_failing_between_the_queries_fails_closed() {
+    let gone = scripted(Some((REG_DWORD, 4)), None, 0).unwrap_err();
+    assert_eq!(gone.kind(), io::ErrorKind::NotFound);
+    for kind in [io::ErrorKind::PermissionDenied, io::ErrorKind::InvalidData] {
+        let err = read_dword_with_query(|data, count| {
+            if data.is_some() {
+                return Err(io::Error::from(kind));
+            }
+            *count = 4;
+            Ok(Some(REG_DWORD))
+        })
+        .unwrap_err();
+        assert_eq!(err.kind(), kind);
+    }
+    let more_data = read_dword_with_query(|_, _| Err(io::Error::from_raw_os_error(234))).unwrap_err();
+    assert_eq!(more_data.raw_os_error(), Some(234));
+}
+
+#[test]
+fn changed_second_query_blocks_the_capacity_guard_through_the_settings_source() {
+    let source = WindowsRecycleBinSettingsSource::with_adapters(
+        |_, _, name| {
+            if name == "NoRecycleFiles" {
+                scripted(Some((REG_DWORD, 4)), Some((REG_BINARY, 4)), 0)
+            } else {
+                Ok(None)
+            }
+        },
+        |_| Some(r"C:\".to_owned()),
+        |_| Some(format!(r"\?\Volume{}\", VOLUME_GUID)),
+        |_| Some(DriveType::Fixed),
+        |_| Some((100 * GIB) as u64),
+    );
+    assert_eq!(source.read_policy().unwrap_err().kind(), io::ErrorKind::InvalidData);
+    let verdict = RecycleBinCapacityGuard::evaluate(PHOTO, Some(1), &source, Some(&NullLog)).expect("valid test path");
+    assert_eq!(verdict, Verdict::Unknown);
 }
