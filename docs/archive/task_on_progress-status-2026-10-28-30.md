@@ -200,3 +200,9 @@ Moved verbatim from `task_on_progress.md` (branch docs/tp-compact3, 2026-10-30).
 - CX-PERFCSV 2026-10-31: tests only; 30/178 distinct (29 caught, 1 unviable), 148 NOT RUN; 1 MISSED + 4 suite timeouts killed on killers alone; 6 killers pass 20x, fmt/clippy/doc-links pass; X-perf-diagnostics/F-23/F-22 write Partial; docs/reviews/CX-PERFCSV-2026-10-31.md.
 - CX-SETUI2 2026-10-31: Partial; new 70/446 verdicts (64 caught, 6 unviable, 0 missed/timeouts); groups now fully accounted; inputs 156 + rows 80 + context 87 remain; docs/reviews/CX-SETUI2-2026-10-31.md.
 - CX-PERF2 2026-10-31: Partial (CSV live); 107/148 new evaluated (55 caught, 13 missed, 35 unviable, 4 timeout), 41 unresolved; final killers 9 pass 20x; docs/reviews/CX-PERF2-2026-10-31.md.
+
+## Moved 2026-10-31 (st-parity-sync4, verbatim)
+
+- ST-PARITY-SYNC2 2026-10-31: docs + native-nightly list only; PARITY synced to #437/#445/#448/#450/#453..#458 (F-18 H1 DIVERGENCE, F-13 load-time refusal, ShellWindow M1/M2/L1, restore 120 s bound, painter/settings/journal/physical numbers), BACKLOG G25 closed; no status change (Done 183, Partial 102); composer binaries added to native-nightly (unconfirmed until one night).
+- FIX-READONLY-DELETE 2026-10-31: data-safety fix; permanent delete now refuses read-only files like C# (`DeleteFileW`, was `std::fs::remove_file`); red-then-green test `recycle_bin_readonly_delete`; Q1 (journal default Fast) logged as P-57; docs/reviews/FIX-READONLY-DELETE-2026-10-31.md.
+- FIX-DUPCLEAN-M1 2026-10-31: data-safety fix; duplicate cleanup re-stats the whole content group (keeper + copies) after the review dialog and skips a changed/vanished group (DIVERGENCE D-07f-5, C# had no re-check); 3 red-then-green tests; batch Undo still absent (as C#, RV-D5); docs/reviews/FIX-DUPCLEAN-M1-2026-10-31.md.
