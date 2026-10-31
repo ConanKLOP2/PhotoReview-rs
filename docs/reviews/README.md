@@ -17,6 +17,7 @@ There are 18 files here: 17 reports and `BACKLOG.md`. There is no separate repor
 | File | Date | What it covers | Status |
 |---|---|---|---|
 | [`BACKLOG.md`](BACKLOG.md) | 2026-10-23 | Merges the findings of `autopilot`, `dialogs-base`, `native-dialog`, `render-painter`, `settings-ui`, `startup`, `test-quality`, `invariants`, `main-window-input-overlay-viewing`, `w9-contracts`, `pr-164`, `pr-203` into groups G1..G24; section 5 (re-synthesis) adds G25; section 6 adds `invariants-storage` (G26..G29); appended sections fold in `recovery-flow` (into G17), `host-dispatcher` (into G11) and `recycle-policy` (G30, G31); the last section is the status table at master b5d1327. Holds the Codex prompts per group. `test-strengthening-plan.md` is pointed to, not merged line by line. | The source of the Status column below |
+| [`ST-BACKLOG-NOW-2026-11-01.md`](ST-BACKLOG-NOW-2026-11-01.md) | 2026-11-01 | Current status of G1..G31 at master `71d9ea76` (8 fixed, 14 partial, 7 open, 1 needs decision) and the top 8 open items by data risk with file scope and tests to add. | Supersedes the 2026-10-23 status table in `BACKLOG.md` (static, not run) |
 
 ## Autopilot tooling
 
