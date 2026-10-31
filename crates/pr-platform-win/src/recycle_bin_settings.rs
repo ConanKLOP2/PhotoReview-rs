@@ -394,7 +394,7 @@ fn to_wide(value: &str) -> Option<Vec<u16>> {
 pub fn read_registry_value(hive: RegistryHive, key: &str, name: &str) -> io::Result<Option<RegistryValue>> {
     use windows::Win32::Foundation::{ERROR_FILE_NOT_FOUND, ERROR_PATH_NOT_FOUND, ERROR_SUCCESS};
     use windows::Win32::System::Registry::{
-        HKEY_CURRENT_USER, HKEY_LOCAL_MACHINE, KEY_QUERY_VALUE, REG_DWORD, RegOpenKeyExW, RegQueryValueExW,
+        HKEY_CURRENT_USER, HKEY_LOCAL_MACHINE, KEY_QUERY_VALUE, REG_VALUE_TYPE, RegOpenKeyExW, RegQueryValueExW,
     };
     use windows::core::PCWSTR;
 
@@ -423,42 +423,59 @@ pub fn read_registry_value(hive: RegistryHive, key: &str, name: &str) -> io::Res
     let _key = RegistryKey(opened);
     let value_name =
         to_wide(name).ok_or_else(|| io::Error::new(io::ErrorKind::InvalidInput, "registry value contains NUL"))?;
-    let mut kind = Default::default();
+    read_dword_with_query(|data, byte_count| {
+        let mut kind = REG_VALUE_TYPE::default();
+        let data_ptr = data.map(|value| (value as *mut u32).cast::<u8>());
+        // SAFETY: data_ptr is null (type/size probe) or points to a live u32 whose four bytes are the capacity
+        // announced by byte_count; value_name is NUL terminated and opened stays open for this call.
+        let status = unsafe {
+            RegQueryValueExW(
+                opened,
+                PCWSTR(value_name.as_ptr()),
+                None,
+                Some(&mut kind),
+                data_ptr,
+                Some(byte_count),
+            )
+        };
+        if status == ERROR_FILE_NOT_FOUND {
+            return Ok(None);
+        }
+        if status != ERROR_SUCCESS {
+            return Err(io::Error::from_raw_os_error(status.0 as i32));
+        }
+        Ok(Some(kind.0))
+    })
+}
+
+/// Registry type code of `REG_DWORD` (`winnt.h`), kept here so the validation below is platform independent.
+pub const REG_DWORD_KIND: u32 = 4;
+
+/// FIX-G30 (recycle-policy M1): two-phase DWORD read with the type/length of BOTH queries validated.
+/// `query(None, count)` probes the type and byte count; `query(Some(value), count)` reads the data, with `count`
+/// holding the capacity in and the bytes actually copied out. `Ok(None)` from the probe means "value absent"; the same
+/// answer from the data query means the value vanished between the calls and fails closed. A kind other than
+/// `REG_DWORD` or a length other than four in either query yields `RegistryValue::Other`, so the callers treat the
+/// setting as malformed (Unknown) instead of trusting a zero-filled number.
+pub fn read_dword_with_query(
+    mut query: impl FnMut(Option<&mut u32>, &mut u32) -> io::Result<Option<u32>>,
+) -> io::Result<Option<RegistryValue>> {
     let mut byte_count = 0u32;
-    // SAFETY: null data asks RegQueryValueExW to return only the type and required byte count.
-    let status = unsafe {
-        RegQueryValueExW(
-            opened,
-            PCWSTR(value_name.as_ptr()),
-            None,
-            Some(&mut kind),
-            None,
-            Some(&mut byte_count),
-        )
-    };
-    if status == ERROR_FILE_NOT_FOUND {
+    let Some(kind) = query(None, &mut byte_count)? else {
         return Ok(None);
-    }
-    if status != ERROR_SUCCESS {
-        return Err(io::Error::from_raw_os_error(status.0 as i32));
-    }
-    if kind != REG_DWORD || byte_count != 4 {
+    };
+    if kind != REG_DWORD_KIND || byte_count != 4 {
         return Ok(Some(RegistryValue::Other));
     }
     let mut value = 0u32;
-    // SAFETY: value points to exactly four writable bytes and byte_count is their capacity.
-    let status = unsafe {
-        RegQueryValueExW(
-            opened,
-            PCWSTR(value_name.as_ptr()),
-            None,
-            Some(&mut kind),
-            Some((&mut value as *mut u32).cast()),
-            Some(&mut byte_count),
-        )
+    let Some(kind) = query(Some(&mut value), &mut byte_count)? else {
+        return Err(io::Error::new(
+            io::ErrorKind::NotFound,
+            "registry value disappeared between the type probe and the data read",
+        ));
     };
-    if status != ERROR_SUCCESS {
-        return Err(io::Error::from_raw_os_error(status.0 as i32));
+    if kind != REG_DWORD_KIND || byte_count != 4 {
+        return Ok(Some(RegistryValue::Other));
     }
     Ok(Some(RegistryValue::Dword(value)))
 }
