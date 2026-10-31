@@ -20,7 +20,7 @@ use std::sync::{
 };
 use std::time::Duration;
 
-const URL: &str = "https://github.com/ConanKLOP2/PhotoReview/releases/tag/v2.0.94";
+const URL: &str = "https://github.com/ConanKLOP2/PhotoReview-rs/releases/tag/v2.0.94";
 struct Env {
     texts: Arc<Localizer>,
     numbers: NumberCulture,

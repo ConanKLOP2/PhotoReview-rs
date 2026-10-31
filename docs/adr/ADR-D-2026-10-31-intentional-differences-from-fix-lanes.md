@@ -1,4 +1,4 @@
-# ADR: intentional differences introduced by the 2026-10-31 fix lanes (DV-1..DV-21)
+# ADR: intentional differences introduced by the 2026-10-31 fix lanes (DV-1..DV-22)
 
 Date: 2026-10-31
 
@@ -193,3 +193,12 @@ Common reason: the C# code has the same hole in each case (the C# behaviour is t
 - Reason: the final session file is written even while another `Arc` of the writer is alive; same observable result as C#.
 - Remaining risk: none known beyond the Q-R5 bound. M6 (a corrupt `config.json` is reset without telling the user) is equal to C# (the `JsonException` branch logs, backs up, uses defaults), no change; a user notice would be a product decision. L1..L8 of `ST-SHELL-REVIEW` remain open.
 - Test: native `composition_graph::dispose_graph_flushes_the_session_writer_while_another_arc_of_it_is_alive` (red without `dispose()`).
+
+## DV-22 The update check follows the Rust repository `ConanKLOP2/PhotoReview-rs` (ST-HTTP-SECURITY M2; P-60)
+
+- Context: the update checker, the releases page and the URL allow-list named the C# project's repository, so the Rust build would announce updates for C# releases.
+- C#: `UpdateChecker.cs:11` GETs `https://api.github.com/repos/ConanKLOP2/PhotoReview/releases/latest`; `UpdateUrlPolicy.cs` opens only `https://github.com/ConanKLOP2/PhotoReview[/...]`.
+- Rust: one constant (`update_repo!()` in `crates/pr-core/src/updates/mod.rs`, exposed as `UPDATE_REPO`) names `ConanKLOP2/PhotoReview-rs`; `LATEST_RELEASE_URL`, `RELEASES_PAGE_URL` and the `validate_update_url` allow-list path are derived from it. `validate_update_url` keeps every other rule (HTTPS, host `github.com`, no userinfo or port, dot segments, case-insensitive path prefix); it now rejects the C# repository.
+- Reason: the Rust build is released separately; the user confirmed in chat on 2026-10-31 that the update source is their own GitHub and this is understood as the Rust repository.
+- Remaining risk: until the Rust repository publishes a release, `releases/latest` answers 404, which the checker reports as `Failed(BadResponse)` (same mapping as C# for any non-2xx), not as "up to date" and not as an update. Draft and pre-release tags are ignored as in C#.
+- Tests: `updates_version::validate_rejects_the_csharp_repo_and_accepts_the_rust_repo`, `updates_checker::endpoints_follow_the_rust_repository_not_the_csharp_one`, `::no_release_published_404_is_a_failure_not_an_update`, `::release_url_of_the_csharp_repository_falls_back_to_the_rust_releases_page`. The goldens `update-url-policy` and `update-checker` are C# oracle output and stay untouched; their replay rewrites the repository path through `divergence_adjusted_repo` (named adjustment, plus four hand-adjusted dot-segment and percent-encoded cases).

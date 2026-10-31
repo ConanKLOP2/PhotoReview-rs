@@ -110,10 +110,10 @@ fn try_parse_rejects_empty_components() {
 #[test]
 fn validate_project_url_returns_url() {
     for url in [
-        "https://github.com/ConanKLOP2/PhotoReview/releases/tag/v2.0.94",
-        "https://github.com/ConanKLOP2/PhotoReview/releases",
-        "https://github.com/ConanKLOP2/PhotoReview",
-        "https://GITHUB.com/conanklop2/photoreview/releases/latest",
+        "https://github.com/ConanKLOP2/PhotoReview-rs/releases/tag/v2.0.94",
+        "https://github.com/ConanKLOP2/PhotoReview-rs/releases",
+        "https://github.com/ConanKLOP2/PhotoReview-rs",
+        "https://GITHUB.com/conanklop2/photoreview-rs/releases/latest",
     ] {
         assert!(validate_update_url(Some(url)).is_some(), "{url}");
     }
@@ -130,16 +130,16 @@ fn validate_other_returns_none() {
     for url in [
         "",
         "not a url",
-        "http://github.com/ConanKLOP2/PhotoReview/releases",
+        "http://github.com/ConanKLOP2/PhotoReview-rs/releases",
         "https://github.com/Evil/PhotoReview/releases",
-        "https://github.com/ConanKLOP2/PhotoReviewEvil/releases",
+        "https://github.com/ConanKLOP2/PhotoReview-rsEvil/releases",
         "https://github.com/ConanKLOP2/Other",
-        "https://github.com.evil.example/ConanKLOP2/PhotoReview/releases",
-        "https://evil.example/https://github.com/ConanKLOP2/PhotoReview",
-        "https://github.com@evil.example/ConanKLOP2/PhotoReview/releases",
-        "https://user:pw@github.com/ConanKLOP2/PhotoReview/releases",
-        "https://github.com:8443/ConanKLOP2/PhotoReview/releases",
-        "https://github.com/ConanKLOP2/PhotoReview/../Evil/x",
+        "https://github.com.evil.example/ConanKLOP2/PhotoReview-rs/releases",
+        "https://evil.example/https://github.com/ConanKLOP2/PhotoReview-rs",
+        "https://github.com@evil.example/ConanKLOP2/PhotoReview-rs/releases",
+        "https://user:pw@github.com/ConanKLOP2/PhotoReview-rs/releases",
+        "https://github.com:8443/ConanKLOP2/PhotoReview-rs/releases",
+        "https://github.com/ConanKLOP2/PhotoReview-rs/../Evil/x",
         "file:///C:/Windows/System32/calc.exe",
         "ms-settings:",
         "javascript:alert(1)",
@@ -212,22 +212,102 @@ fn golden_app_version() {
     }
 }
 
-// C#: golden update-url-policy
+/// DIVERGENCE (DV-22, P-60): the goldens come from the C# oracle, which follows `ConanKLOP2/PhotoReview`; this build
+/// follows `ConanKLOP2/PhotoReview-rs`. Rewrites the C# project path (ASCII case-insensitive) in a golden input or
+/// expected value. Everything else in a case stays byte-for-byte the oracle's.
+fn divergence_adjusted_repo(s: &str) -> String {
+    const CS: &str = "ConanKLOP2/PhotoReview";
+    let mut out = String::with_capacity(s.len() + 16);
+    let mut i = 0;
+    while i < s.len() {
+        match s.as_bytes().get(i..i + CS.len()) {
+            Some(w) if w.eq_ignore_ascii_case(CS.as_bytes()) => {
+                out.push_str(&s[i..i + CS.len()]);
+                out.push_str("-rs");
+                i += CS.len();
+            }
+            _ => {
+                let c = s[i..].chars().next().expect("char");
+                out.push(c);
+                i += c.len_utf8();
+            }
+        }
+    }
+    out
+}
+
+// C#: golden update-url-policy (with the controlled DV-22 repo adjustment)
 #[test]
 fn golden_update_url_policy() {
     let g = golden::load("update-url-policy");
     for case in &g.cases {
-        let url = case["url"].as_str();
-        let expected = case["result"].as_str();
-        assert_eq!(validate_update_url(url).as_deref(), expected, "{case}");
+        let (url, expected) = match case["url"].as_str() {
+            // Cases where the C# path is not one contiguous `ConanKLOP2/PhotoReview` (dot segments, percent-encoding):
+            // the repository segment is adjusted by hand.
+            Some("https://github.com/ConanKLOP2/./PhotoReview") => (
+                Some("https://github.com/ConanKLOP2/./PhotoReview-rs".to_owned()),
+                Some("https://github.com/ConanKLOP2/PhotoReview-rs".to_owned()),
+            ),
+            Some("https://github.com/ConanKLOP2/x/../PhotoReview") => (
+                Some("https://github.com/ConanKLOP2/x/../PhotoReview-rs".to_owned()),
+                Some("https://github.com/ConanKLOP2/PhotoReview-rs".to_owned()),
+            ),
+            Some("https://github.com/%43onanKLOP2/PhotoReview/x") => (
+                Some("https://github.com/%43onanKLOP2/PhotoReview-rs/x".to_owned()),
+                Some("https://github.com/ConanKLOP2/PhotoReview-rs/x".to_owned()),
+            ),
+            Some("https://github.com/conanklop2/%50hotoreview") => (
+                Some("https://github.com/conanklop2/%50hotoreview-rs".to_owned()),
+                Some("https://github.com/conanklop2/Photoreview-rs".to_owned()),
+            ),
+            url => (
+                url.map(divergence_adjusted_repo),
+                case["result"].as_str().map(divergence_adjusted_repo),
+            ),
+        };
+        assert_eq!(validate_update_url(url.as_deref()), expected, "{case}");
     }
+}
+
+// DV-22: the C# project's repository is no longer an allowed update target; this build's own repository is.
+#[test]
+fn validate_rejects_the_csharp_repo_and_accepts_the_rust_repo() {
+    for url in [
+        "https://github.com/ConanKLOP2/PhotoReview",
+        "https://github.com/ConanKLOP2/PhotoReview/releases",
+        "https://github.com/ConanKLOP2/PhotoReview/releases/tag/v2.0.94",
+        "https://github.com/conanklop2/photoreview/releases",
+        "https://github.com/OtherOwner/PhotoReview-rs/releases",
+        "https://github.com/ConanKLOP2/PhotoReview-rsX/releases",
+        "https://github.com/ConanKLOP2/PhotoReview-r",
+    ] {
+        assert_eq!(validate_update_url(Some(url)), None, "{url}");
+    }
+    assert_eq!(
+        validate_update_url(Some("https://github.com/ConanKLOP2/PhotoReview-rs/releases/tag/v1.0.0")).as_deref(),
+        Some("https://github.com/ConanKLOP2/PhotoReview-rs/releases/tag/v1.0.0")
+    );
+    assert_eq!(
+        validate_update_url(Some("https://GitHub.com/conanklop2/photoreview-RS")).as_deref(),
+        Some("https://github.com/conanklop2/photoreview-RS")
+    );
+    // The derived constants all point at the one configured repository, and are themselves accepted.
+    assert_eq!(pr_core::updates::UPDATE_REPO, "ConanKLOP2/PhotoReview-rs");
+    assert_eq!(
+        RELEASES_PAGE_URL,
+        format!("https://github.com/{}/releases", pr_core::updates::UPDATE_REPO)
+    );
+    assert_eq!(
+        validate_update_url(Some(RELEASES_PAGE_URL)).as_deref(),
+        Some(RELEASES_PAGE_URL)
+    );
 }
 
 // C#: (no direct test) UpdateUrlPolicy.Validate, System.Uri escape edge cases. Every expected value below was
 // produced by the C# UpdateUrlPolicy.Validate (e441d67a) on .NET 10.
 #[test]
 fn validate_matches_net_uri_escape_edge_cases() {
-    const P: &str = "https://github.com/ConanKLOP2/PhotoReview";
+    const P: &str = "https://github.com/ConanKLOP2/PhotoReview-rs";
     let rows: &[(&str, &str)] = &[
         // A lead byte followed by an invalid continuation stays verbatim (case kept).
         ("/%c3%c3", "/%c3%c3"),
@@ -298,8 +378,8 @@ fn validate_matches_net_uri_escape_edge_cases() {
 #[test]
 fn validate_requires_two_separators_after_scheme() {
     for url in [
-        "https:/Xgithub.com/ConanKLOP2/PhotoReview",
-        "https:X/github.com/ConanKLOP2/PhotoReview",
+        "https:/Xgithub.com/ConanKLOP2/PhotoReview-rs",
+        "https:X/github.com/ConanKLOP2/PhotoReview-rs",
     ] {
         assert_eq!(validate_update_url(Some(url)), None, "{url}");
     }
@@ -331,42 +411,42 @@ fn validate_rejects_inputs_too_short_for_scheme_and_two_separators() {
 fn validate_strips_bidi_controls_from_host() {
     let accepted: &[(&str, &str)] = &[
         (
-            "https://git\u{200E}hub.com/ConanKLOP2/PhotoReview",
-            "https://github.com/ConanKLOP2/PhotoReview",
+            "https://git\u{200E}hub.com/ConanKLOP2/PhotoReview-rs",
+            "https://github.com/ConanKLOP2/PhotoReview-rs",
         ),
         (
-            "https://github.com\u{202E}/ConanKLOP2/PhotoReview/releases",
-            "https://github.com/ConanKLOP2/PhotoReview/releases",
+            "https://github.com\u{202E}/ConanKLOP2/PhotoReview-rs/releases",
+            "https://github.com/ConanKLOP2/PhotoReview-rs/releases",
         ),
         (
-            "https://\u{200F}GitHub.Com\u{202A}:443/ConanKLOP2/PhotoReview?q#f",
-            "https://github.com/ConanKLOP2/PhotoReview?q#f",
+            "https://\u{200F}GitHub.Com\u{202A}:443/ConanKLOP2/PhotoReview-rs?q#f",
+            "https://github.com/ConanKLOP2/PhotoReview-rs?q#f",
         ),
         (
-            "https://@github\u{202B}\u{202C}\u{202D}.com/ConanKLOP2/PhotoReview",
-            "https://@github.com/ConanKLOP2/PhotoReview",
+            "https://@github\u{202B}\u{202C}\u{202D}.com/ConanKLOP2/PhotoReview-rs",
+            "https://@github.com/ConanKLOP2/PhotoReview-rs",
         ),
     ];
     for &(url, expected) in accepted {
         assert_eq!(validate_update_url(Some(url)).as_deref(), Some(expected), "{url:?}");
     }
     for url in [
-        "https://git\u{061C}hub.com/ConanKLOP2/PhotoReview",
-        "https://git\u{2066}hub.com/ConanKLOP2/PhotoReview",
-        "https://git\u{2069}hub.com/ConanKLOP2/PhotoReview",
-        "https://git\u{200B}hub.com/ConanKLOP2/PhotoReview",
-        "https://\u{200E}@github.com/ConanKLOP2/PhotoReview",
-        "https://github.com:443\u{200E}/ConanKLOP2/PhotoReview",
-        "https://github.com:4\u{200E}43/ConanKLOP2/PhotoReview",
-        "https://\u{200E}/ConanKLOP2/PhotoReview",
-        "https://evil\u{200E}.example/ConanKLOP2/PhotoReview",
+        "https://git\u{061C}hub.com/ConanKLOP2/PhotoReview-rs",
+        "https://git\u{2066}hub.com/ConanKLOP2/PhotoReview-rs",
+        "https://git\u{2069}hub.com/ConanKLOP2/PhotoReview-rs",
+        "https://git\u{200B}hub.com/ConanKLOP2/PhotoReview-rs",
+        "https://\u{200E}@github.com/ConanKLOP2/PhotoReview-rs",
+        "https://github.com:443\u{200E}/ConanKLOP2/PhotoReview-rs",
+        "https://github.com:4\u{200E}43/ConanKLOP2/PhotoReview-rs",
+        "https://\u{200E}/ConanKLOP2/PhotoReview-rs",
+        "https://evil\u{200E}.example/ConanKLOP2/PhotoReview-rs",
     ] {
         assert_eq!(validate_update_url(Some(url)), None, "{url:?}");
     }
     // Outside the host a bidi control is an ordinary non-ASCII char.
     assert_eq!(
-        validate_update_url(Some("https://github.com/ConanKLOP2/PhotoReview/\u{200E}")).as_deref(),
-        Some("https://github.com/ConanKLOP2/PhotoReview/%E2%80%8E")
+        validate_update_url(Some("https://github.com/ConanKLOP2/PhotoReview-rs/\u{200E}")).as_deref(),
+        Some("https://github.com/ConanKLOP2/PhotoReview-rs/%E2%80%8E")
     );
 }
 
@@ -378,78 +458,78 @@ fn validate_strips_bidi_controls_from_host() {
 fn validate_bidi_host_trims_fragment_like_dotnet() {
     let cases: &[(&str, Option<&str>)] = &[
         (
-            "https://git\u{200E}hub.com/ConanKLOP2/PhotoReview#a%20",
-            Some("https://github.com/ConanKLOP2/PhotoReview#a"),
+            "https://git\u{200E}hub.com/ConanKLOP2/PhotoReview-rs#a%20",
+            Some("https://github.com/ConanKLOP2/PhotoReview-rs#a"),
         ),
         (
-            "https://github.com/ConanKLOP2/PhotoReview#a%20",
-            Some("https://github.com/ConanKLOP2/PhotoReview#a%20"),
+            "https://github.com/ConanKLOP2/PhotoReview-rs#a%20",
+            Some("https://github.com/ConanKLOP2/PhotoReview-rs#a%20"),
         ),
         (
-            "https://git\u{200E}hub.com/ConanKLOP2/PhotoReview/^#a%20",
-            Some("https://github.com/ConanKLOP2/PhotoReview/%5E#a"),
+            "https://git\u{200E}hub.com/ConanKLOP2/PhotoReview-rs/^#a%20",
+            Some("https://github.com/ConanKLOP2/PhotoReview-rs/%5E#a"),
         ),
         (
-            "https://github.com/ConanKLOP2/PhotoReview/^#a%20",
-            Some("https://github.com/ConanKLOP2/PhotoReview/%5E#a%20"),
+            "https://github.com/ConanKLOP2/PhotoReview-rs/^#a%20",
+            Some("https://github.com/ConanKLOP2/PhotoReview-rs/%5E#a%20"),
         ),
         (
-            "https://git\u{200E}hub.com/ConanKLOP2/PhotoReview/%00#a%20\t",
-            Some("https://github.com/ConanKLOP2/PhotoReview/%00#a"),
+            "https://git\u{200E}hub.com/ConanKLOP2/PhotoReview-rs/%00#a%20\t",
+            Some("https://github.com/ConanKLOP2/PhotoReview-rs/%00#a"),
         ),
         (
-            "https://github.com/ConanKLOP2/PhotoReview/%00#a%20\t",
-            Some("https://github.com/ConanKLOP2/PhotoReview/%00#a%20"),
+            "https://github.com/ConanKLOP2/PhotoReview-rs/%00#a%20\t",
+            Some("https://github.com/ConanKLOP2/PhotoReview-rs/%00#a%20"),
         ),
         (
-            "https://git\u{200E}hub.com/ConanKLOP2/PhotoReview/}#a%20",
-            Some("https://github.com/ConanKLOP2/PhotoReview/%7D#a"),
+            "https://git\u{200E}hub.com/ConanKLOP2/PhotoReview-rs/}#a%20",
+            Some("https://github.com/ConanKLOP2/PhotoReview-rs/%7D#a"),
         ),
         (
-            "https://github.com/ConanKLOP2/PhotoReview/}#a%20",
-            Some("https://github.com/ConanKLOP2/PhotoReview/%7D#a%20"),
+            "https://github.com/ConanKLOP2/PhotoReview-rs/}#a%20",
+            Some("https://github.com/ConanKLOP2/PhotoReview-rs/%7D#a%20"),
         ),
         (
-            "https://git\u{200E}hub.com/ConanKLOP2/PhotoReview#a \t",
-            Some("https://github.com/ConanKLOP2/PhotoReview#a"),
+            "https://git\u{200E}hub.com/ConanKLOP2/PhotoReview-rs#a \t",
+            Some("https://github.com/ConanKLOP2/PhotoReview-rs#a"),
         ),
         (
-            "https://github.com\u{202A}/ConanKLOP2/PhotoReview#a%20",
-            Some("https://github.com/ConanKLOP2/PhotoReview#a"),
+            "https://github.com\u{202A}/ConanKLOP2/PhotoReview-rs#a%20",
+            Some("https://github.com/ConanKLOP2/PhotoReview-rs#a"),
         ),
         (
-            "https://\u{200F}github.com/ConanKLOP2/PhotoReview#a%20",
-            Some("https://github.com/ConanKLOP2/PhotoReview#a"),
+            "https://\u{200F}github.com/ConanKLOP2/PhotoReview-rs#a%20",
+            Some("https://github.com/ConanKLOP2/PhotoReview-rs#a"),
         ),
         (
-            "https://github.com\u{200E}:443/ConanKLOP2/PhotoReview#a%20",
-            Some("https://github.com/ConanKLOP2/PhotoReview#a"),
+            "https://github.com\u{200E}:443/ConanKLOP2/PhotoReview-rs#a%20",
+            Some("https://github.com/ConanKLOP2/PhotoReview-rs#a"),
         ),
         (
-            "https://@git\u{200E}hub.com/ConanKLOP2/PhotoReview#a%20",
-            Some("https://@github.com/ConanKLOP2/PhotoReview#a"),
+            "https://@git\u{200E}hub.com/ConanKLOP2/PhotoReview-rs#a%20",
+            Some("https://@github.com/ConanKLOP2/PhotoReview-rs#a"),
         ),
         (
-            "https://git\u{200E}hub.com/ConanKLOP2/PhotoReview?q%20#a%20",
-            Some("https://github.com/ConanKLOP2/PhotoReview?q%20#a"),
+            "https://git\u{200E}hub.com/ConanKLOP2/PhotoReview-rs?q%20#a%20",
+            Some("https://github.com/ConanKLOP2/PhotoReview-rs?q%20#a"),
         ),
         // Only the fragment is trimmed: a trailing %20 in the query or path stays.
         (
-            "https://git\u{200E}hub.com/ConanKLOP2/PhotoReview?q%20",
-            Some("https://github.com/ConanKLOP2/PhotoReview?q%20"),
+            "https://git\u{200E}hub.com/ConanKLOP2/PhotoReview-rs?q%20",
+            Some("https://github.com/ConanKLOP2/PhotoReview-rs?q%20"),
         ),
         (
-            "https://git\u{200E}hub.com/ConanKLOP2/PhotoReview/a%20",
-            Some("https://github.com/ConanKLOP2/PhotoReview/a%20"),
+            "https://git\u{200E}hub.com/ConanKLOP2/PhotoReview-rs/a%20",
+            Some("https://github.com/ConanKLOP2/PhotoReview-rs/a%20"),
         ),
         (
-            "https://git\u{200E}hub.com/ConanKLOP2/PhotoReview/%2fx#%5c",
-            Some("https://github.com/ConanKLOP2/PhotoReview/%2fx#%5c"),
+            "https://git\u{200E}hub.com/ConanKLOP2/PhotoReview-rs/%2fx#%5c",
+            Some("https://github.com/ConanKLOP2/PhotoReview-rs/%2fx#%5c"),
         ),
         // A bidi control in the port or before the `@` is not dropped.
-        ("https://github.com:4\u{200E}43/ConanKLOP2/PhotoReview#a%20", None),
-        ("https://github.com:\u{200E}443/ConanKLOP2/PhotoReview#a%20", None),
-        ("https://\u{200E}@github.com/ConanKLOP2/PhotoReview#a%20", None),
+        ("https://github.com:4\u{200E}43/ConanKLOP2/PhotoReview-rs#a%20", None),
+        ("https://github.com:\u{200E}443/ConanKLOP2/PhotoReview-rs#a%20", None),
+        ("https://\u{200E}@github.com/ConanKLOP2/PhotoReview-rs#a%20", None),
     ];
     for &(url, expected) in cases {
         assert_eq!(validate_update_url(Some(url)).as_deref(), expected, "{url:?}");
@@ -461,7 +541,7 @@ fn validate_bidi_host_trims_fragment_like_dotnet() {
 // query, literal char in path, %-escaped (lowercase) in query, %-escaped (lowercase) in path.
 #[test]
 fn validate_iri_char_range_edges_match_dotnet() {
-    const BASE: &str = "https://github.com/ConanKLOP2/PhotoReview";
+    const BASE: &str = "https://github.com/ConanKLOP2/PhotoReview-rs";
     let rows: &[(u32, &str, &str, &str, &str)] = &[
         (0x9F, "?q=a%C2%9Fb", "/a%C2%9Fb", "?q=%c2%9f", "/a%c2%9fb"),
         (0xA0, "?q=a%C2%A0b", "/a%C2%A0b", "?q=%C2%A0", "/a%C2%A0b"),
@@ -608,19 +688,19 @@ fn try_parse_cuts_at_first_plus() {
 #[test]
 fn validate_userinfo_cases_match_dotnet() {
     assert_eq!(
-        validate_update_url(Some("https://github.com/ConanKLOP2/PhotoReview")).as_deref(),
-        Some("https://github.com/ConanKLOP2/PhotoReview")
+        validate_update_url(Some("https://github.com/ConanKLOP2/PhotoReview-rs")).as_deref(),
+        Some("https://github.com/ConanKLOP2/PhotoReview-rs")
     );
     assert_eq!(
-        validate_update_url(Some("https://@github.com/ConanKLOP2/PhotoReview")).as_deref(),
-        Some("https://@github.com/ConanKLOP2/PhotoReview")
+        validate_update_url(Some("https://@github.com/ConanKLOP2/PhotoReview-rs")).as_deref(),
+        Some("https://@github.com/ConanKLOP2/PhotoReview-rs")
     );
     for url in [
-        "https://@github.com@/ConanKLOP2/PhotoReview",
-        "https://@@github.com/ConanKLOP2/PhotoReview",
-        "https://a@b@github.com/ConanKLOP2/PhotoReview",
-        "https://github.com@/ConanKLOP2/PhotoReview",
-        "https://@github.com@evil.com/ConanKLOP2/PhotoReview",
+        "https://@github.com@/ConanKLOP2/PhotoReview-rs",
+        "https://@@github.com/ConanKLOP2/PhotoReview-rs",
+        "https://a@b@github.com/ConanKLOP2/PhotoReview-rs",
+        "https://github.com@/ConanKLOP2/PhotoReview-rs",
+        "https://@github.com@evil.com/ConanKLOP2/PhotoReview-rs",
     ] {
         assert_eq!(validate_update_url(Some(url)), None, "{url}");
     }

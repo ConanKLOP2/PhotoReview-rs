@@ -14,7 +14,7 @@ use pr_core::updates::version::{RELEASES_PAGE_URL, UpdateCheckResult, UpdateChec
 use pr_test_support::golden;
 use serde_json::Value;
 
-const TAG_URL: &str = "https://github.com/ConanKLOP2/PhotoReview/releases/tag/v2.0.94";
+const TAG_URL: &str = "https://github.com/ConanKLOP2/PhotoReview-rs/releases/tag/v2.0.94";
 
 type Responder = Box<dyn Fn(&HttpRequest, Duration, &CancelToken) -> Result<HttpResponse, HttpError> + Send + Sync>;
 
@@ -284,6 +284,49 @@ fn invalid_current_version_fails_without_network() {
     }
 }
 
+// DV-22: the endpoint and the releases page are the Rust repository's, derived from the one configured repo.
+#[test]
+fn endpoints_follow_the_rust_repository_not_the_csharp_one() {
+    assert_eq!(
+        LATEST_RELEASE_URL,
+        "https://api.github.com/repos/ConanKLOP2/PhotoReview-rs/releases/latest"
+    );
+    assert_eq!(
+        RELEASES_PAGE_URL,
+        "https://github.com/ConanKLOP2/PhotoReview-rs/releases"
+    );
+    assert!(!LATEST_RELEASE_URL.contains("ConanKLOP2/PhotoReview/"));
+    assert!(!RELEASES_PAGE_URL.contains("ConanKLOP2/PhotoReview/"));
+}
+
+// DV-22 risk: a repository without any release answers 404 on `releases/latest`. That is a failure
+// (BadResponse, as in C#), never an update, and never a crash.
+#[test]
+fn no_release_published_404_is_a_failure_not_an_update() {
+    let fake = json(404, r#"{"message":"Not Found"}"#);
+    let r = check(&fake);
+    assert_eq!(r.status(), UpdateCheckStatus::Failed);
+    assert_eq!(r.failure(), UpdateFailure::BadResponse);
+    assert_eq!(r.download_url(), None);
+}
+
+// A release whose html_url points at the old C# repository is not opened: it falls back to the Rust releases page.
+#[test]
+fn release_url_of_the_csharp_repository_falls_back_to_the_rust_releases_page() {
+    let fake = json(
+        200,
+        &release(
+            "v9.0.0",
+            "https://github.com/ConanKLOP2/PhotoReview/releases/tag/v9.0.0",
+            false,
+            false,
+        ),
+    );
+    let r = check(&fake);
+    assert_eq!(r.status(), UpdateCheckStatus::UpdateAvailable);
+    assert_eq!(r.download_url(), Some(RELEASES_PAGE_URL));
+}
+
 // C#: UpdateCheckerTests.Request_IsMinimalAndHttps
 #[test]
 fn request_is_minimal_and_https() {
@@ -294,7 +337,7 @@ fn request_is_minimal_and_https() {
     let request = &requests[0];
     assert_eq!(
         request.url,
-        "https://api.github.com/repos/ConanKLOP2/PhotoReview/releases/latest"
+        "https://api.github.com/repos/ConanKLOP2/PhotoReview-rs/releases/latest"
     );
     assert_eq!(request.url, LATEST_RELEASE_URL);
     assert_eq!(request.user_agent, USER_AGENT);
@@ -495,7 +538,7 @@ fn raw_control_character_in_json_string_is_bad_response() {
 // to unescape that name throws (and then BadResponse); everything else is unaffected.
 #[test]
 fn lone_surrogate_property_name_only_fails_when_compared() {
-    const RELEASES: &str = "https://github.com/ConanKLOP2/PhotoReview/releases";
+    const RELEASES: &str = "https://github.com/ConanKLOP2/PhotoReview-rs/releases";
     let up_to_date_running = UpdateCheckResult::up_to_date("2.0.93");
     let available = UpdateCheckResult::update_available("2.1.0", RELEASES);
     let bad = UpdateCheckResult::failed(UpdateFailure::BadResponse);
@@ -530,10 +573,10 @@ fn lone_surrogate_property_name_only_fails_when_compared() {
         // an escaped but valid name still matches
         (r#"{"\u0074ag_name":"v2.1.0","d\u0072aft":true}"#, &up_to_date_running),
         (
-            r#"{"tag\u005fname":"v2.1.0","html\u005furl":"https://github.com/ConanKLOP2/PhotoReview/releases/tag/v2.1.0"}"#,
+            r#"{"tag\u005fname":"v2.1.0","html\u005furl":"https://github.com/ConanKLOP2/PhotoReview-rs/releases/tag/v2.1.0"}"#,
             &UpdateCheckResult::update_available(
                 "2.1.0",
-                "https://github.com/ConanKLOP2/PhotoReview/releases/tag/v2.1.0",
+                "https://github.com/ConanKLOP2/PhotoReview-rs/releases/tag/v2.1.0",
             ),
         ),
     ];
@@ -620,6 +663,33 @@ fn retry_after_grammar_matches_dotnet() {
 
 // ---- golden ---------------------------------------------------------------------------------------------------
 
+/// DIVERGENCE (DV-22, P-60): the goldens come from the C# oracle, which follows `ConanKLOP2/PhotoReview`; this build
+/// follows `ConanKLOP2/PhotoReview-rs`. Rewrites the C# project path (ASCII case-insensitive) in a golden input or
+/// expected value. Everything else in a case stays byte-for-byte the oracle's.
+fn divergence_adjusted_repo(s: &str) -> String {
+    // The path also appears JSON-escaped (`ConanKLOP2\/PhotoReview`) in some goldens.
+    const FORMS: [&str; 2] = ["ConanKLOP2/PhotoReview", r"ConanKLOP2\/PhotoReview"];
+    let mut out = String::with_capacity(s.len() + 16);
+    let mut i = 0;
+    while i < s.len() {
+        let hit = FORMS.iter().find(|f| {
+            s.as_bytes()
+                .get(i..i + f.len())
+                .is_some_and(|w| w.eq_ignore_ascii_case(f.as_bytes()))
+        });
+        if let Some(f) = hit {
+            out.push_str(&s[i..i + f.len()]);
+            out.push_str("-rs");
+            i += f.len();
+        } else {
+            let c = s[i..].chars().next().expect("char");
+            out.push(c);
+            i += c.len_utf8();
+        }
+    }
+    out
+}
+
 fn hex_decode(s: &str) -> Vec<u8> {
     (0..s.len())
         .step_by(2)
@@ -631,7 +701,7 @@ fn body_bytes(body: &Value) -> Vec<u8> {
     if let Some(hex) = body["raw_hex"].as_str() {
         return hex_decode(hex);
     }
-    let mut text = body["text"].as_str().unwrap_or("").to_owned();
+    let mut text = divergence_adjusted_repo(body["text"].as_str().unwrap_or(""));
     if let Some(n) = body["nested_arrays"].as_u64() {
         let n = n as usize;
         text = format!(r#"{{"a":{}{},"tag_name":"v2.0.94"}}"#, "[".repeat(n), "]".repeat(n));
@@ -791,7 +861,10 @@ fn golden_update_checker_cases() {
             );
             assert_eq!(
                 r.download_url(),
-                expected["download_url"].as_str(),
+                expected["download_url"]
+                    .as_str()
+                    .map(divergence_adjusted_repo)
+                    .as_deref(),
                 "{id}: download_url"
             );
             assert_eq!(
@@ -810,7 +883,11 @@ fn golden_update_checker_cases() {
             if golden::i64_of(case, "request_count") > 0 {
                 let requests = fake.requests.lock().expect("lock");
                 let req = &requests[0];
-                assert_eq!(req.url, expected_request["uri"].as_str().expect("uri"), "{id}: uri");
+                assert_eq!(
+                    req.url,
+                    divergence_adjusted_repo(expected_request["uri"].as_str().expect("uri")),
+                    "{id}: uri"
+                );
                 assert_eq!(
                     req.user_agent,
                     expected_request["user_agent"].as_str().expect("ua"),
