@@ -299,7 +299,25 @@ impl SettingsStore {
         self.reset_load_state();
         let mut ready: Option<Arc<AppSettings>> = None;
 
-        if self.file_system.file_exists(&file_path) {
+        let mut exists = self.file_system.file_exists(&file_path);
+        if !exists && default_path {
+            // DIVERGENCE from C# (data safety): `File.Exists` is false for ANY stat failure (access denied, ...), and a
+            // "missing" default file is overwritten with defaults and no backup. Probe with a read: only NotFound means
+            // "first run"; content = it exists; any other error = unknown, so never overwrite it (in-memory defaults).
+            match self.file_system.read_all_text(&file_path) {
+                Ok(_) => exists = true,
+                Err(e) if e.kind() == io::ErrorKind::NotFound => {}
+                Err(e) => {
+                    self.log_startup_error(
+                        "Config.json inaccessible, using in-memory defaults for this session",
+                        &e,
+                    );
+                    self.set_keep_corrupt_file(true);
+                    return self.use_in_memory_defaults();
+                }
+            }
+        }
+        if exists {
             match self.read_all_text_with_retry(&file_path) {
                 Err(e) => {
                     self.log_startup_error(
@@ -530,6 +548,15 @@ impl SettingsStore {
         Some((settings, bad))
     }
 
+    /// True unless the Rust `config.json` is certainly absent: `file_exists` is false for any stat failure, so a
+    /// failed stat is cross-checked with a read (only `NotFound` means absent). Guards the first-run import from
+    /// overwriting a real config.
+    fn own_config_may_exist(&self) -> bool {
+        let path = &self.app_paths.config_file;
+        self.file_system.file_exists(path)
+            || !matches!(self.file_system.read_all_text(path), Err(e) if e.kind() == io::ErrorKind::NotFound)
+    }
+
     /// Rust-only (R0002). First start of the Rust app: if the Rust `config.json` does not exist yet and the C#
     /// app's does, import it READ-ONLY.
     ///
@@ -541,7 +568,7 @@ impl SettingsStore {
     ///   contains. If it cannot be read or is not a JSON object, log a warning and continue as `load(None)`
     ///   (defaults are written).
     pub fn load_first_run_with_import(&self, csharp_config: &Path) -> io::Result<Arc<AppSettings>> {
-        if self.file_system.file_exists(&self.app_paths.config_file) || !self.file_system.file_exists(csharp_config) {
+        if self.own_config_may_exist() || !self.file_system.file_exists(csharp_config) {
             return self.load(None);
         }
         self.reset_load_state();
