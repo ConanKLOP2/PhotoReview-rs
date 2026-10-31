@@ -60,6 +60,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "pr-bench-win"
+version = "0.1.0"
+dependencies = [
+ "pr-bench",
+ "pr-core",
+ "pr-imaging",
+ "pr-platform-win",
+ "pr-test-support",
+]
+
+[[package]]
 name = "pr-core"
 version = "0.1.0"
 dependencies = [
