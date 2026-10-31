@@ -14,6 +14,7 @@ Keep this file under about 10 KB. When it grows, move old sections verbatim to `
 
 - Snapshot 2026-10-28 (Not done, Blocked, open debts): verbatim in the archive, section "Moved 2026-10-31 (tp-compact5, verbatim)". Re-check `git log origin/master` first.
 - 2026-10-31 fix-recycle-c1c2 ([report](docs/reviews/FIX-RECYCLE-C1C2-2026-10-31.md)): C1 not reproduced for directory junctions (`GetVolumePathNameW` follows them, run on this machine; symlinks untestable, no privilege); `query_mount_point` now resolves containing-folder links, fail closed; C2 (progress sink) deferred with design. Stays Partial.
+- 2026-10-31 fix-restore-m3 (ST-INVMAP M3, data safety): after an executor panic the catalog entry is restored only if the file still exists on disk; no Undo after a panic (open: journal reconcile). Tests `file_action_core` 68 green, clippy -p pr-app clean; see `docs/reviews/FIX-RESTORE-M3-2026-10-31.md`.
 
 ## Archives (`docs/archive/`, verbatim, history only)
 Find any section title with `grep -n '^## ' <file>`. Original section order is kept inside each file.
@@ -44,3 +45,4 @@ Find any section title with `grep -n '^## ' <file>`. Original section order is k
 - CX-PERF2 2026-10-31: Partial (CSV live); 107/148 new evaluated (55 caught, 13 missed, 35 unviable, 4 timeout), 41 unresolved; final killers 9 pass 20x; docs/reviews/CX-PERF2-2026-10-31.md.
 - ST-PARITY-SYNC2 2026-10-31: docs + native-nightly list only; PARITY synced to #437/#445/#448/#450/#453..#458 (F-18 H1 DIVERGENCE, F-13 load-time refusal, ShellWindow M1/M2/L1, restore 120 s bound, painter/settings/journal/physical numbers), BACKLOG G25 closed; no status change (Done 183, Partial 102); composer binaries added to native-nightly (unconfirmed until one night).
 - FIX-READONLY-DELETE 2026-10-31: data-safety fix; permanent delete now refuses read-only files like C# (`DeleteFileW`, was `std::fs::remove_file`); red-then-green test `recycle_bin_readonly_delete`; Q1 (journal default Fast) logged as P-57; docs/reviews/FIX-READONLY-DELETE-2026-10-31.md.
+- FIX-DUPCLEAN-M1 2026-10-31: data-safety fix; duplicate cleanup re-stats the whole content group (keeper + copies) after the review dialog and skips a changed/vanished group (DIVERGENCE D-07f-5, C# had no re-check); 3 red-then-green tests; batch Undo still absent (as C#, RV-D5); docs/reviews/FIX-DUPCLEAN-M1-2026-10-31.md.

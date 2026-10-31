@@ -773,6 +773,61 @@ fn review_confirmed_but_every_file_left_the_catalog_recycles_nothing_and_reports
     assert_eq!(rig.port.queued(), 0);
 }
 
+// ST-INVMAP M1 (data safety). DIVERGENCE from C#: the C# controller re-checks only catalog membership after the review dialog.
+// Here the files of the content group (the keeper that stays and the copies to remove) are re-stat'ed right before the first
+// Recycle; a group that changed while the dialog was open is left alone and reported.
+fn run_review_that_changes(change: impl FnOnce(&FakeFileSystem) + Send + 'static) -> Rig {
+    let mut rig = Rig::with_dialog();
+    rig.load_three();
+    let fs = rig.fs.clone();
+    let mut change = Some(change);
+    *rig.dialog.on_review.lock().unwrap() = Some(Box::new(move || {
+        if let Some(change) = change.take() {
+            change(&fs);
+        }
+    }));
+    assert_eq!(rig.remove_duplicates(true), DuplicateCleanupStep::Pending);
+    let step = rig.pump();
+    assert_eq!(step, DuplicateCleanupStep::Done);
+    rig
+}
+
+fn assert_group_left_alone(rig: &Rig) {
+    assert!(rig.exec.recorded().is_empty(), "nothing may be recycled");
+    assert_eq!(rig.sink.last(), Some(text("status.batchCanceled").as_str()));
+    assert!(rig.sink.reloads.is_empty());
+    let errors = rig.dialog.errors();
+    assert_eq!(errors.len(), 1, "one dialog tells the user which files were left alone");
+    assert!(
+        errors[0].1.contains("a (1).jpg") && errors[0].1.contains("a (2).jpg"),
+        "{}",
+        errors[0].1
+    );
+    assert!(
+        errors[0].1.contains(&text("core.undo.sourceOrDestinationChanged")),
+        "{}",
+        errors[0].1
+    );
+}
+
+#[test]
+fn batch_recycle_skips_group_whose_keeper_vanished_during_review() {
+    let rig = run_review_that_changes(|fs| fs.delete(Path::new(&p("a.jpg"))).expect("delete keeper"));
+    assert_group_left_alone(&rig);
+}
+
+#[test]
+fn batch_recycle_skips_group_whose_keeper_was_replaced_during_review() {
+    let rig = run_review_that_changes(|fs| fs.add_file(p("a.jpg"), &[7u8; 4096]));
+    assert_group_left_alone(&rig);
+}
+
+#[test]
+fn batch_recycle_skips_group_when_a_file_to_remove_was_modified_during_review() {
+    let rig = run_review_that_changes(|fs| fs.add_file(p("a (2).jpg"), &[7u8; 4096]));
+    assert_group_left_alone(&rig);
+}
+
 // ---- DuplicateCleanupControllerMutationGapTests --------------------------------------------------------------------------
 
 // C#: DuplicateCleanupControllerMutationGapTests.RemoveDuplicatesAsync_NoFileActionService_ReturnsWithoutAnyStatus

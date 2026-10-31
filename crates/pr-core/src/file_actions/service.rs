@@ -584,6 +584,16 @@ impl FileActionService {
                 tx.begin()?;
 
                 hand_off(cancel)?;
+                // DIVERGENCE (L3, ST-INVMAP): C# goes straight from the first stat to the shell call. Re-stat right
+                // before the mutation so a file another program put here after the Prepared line is never deleted
+                // (permanent) or recycled under the old fingerprint; nothing is touched when it differs.
+                match self.fs.try_get_file_stat(Path::new(source))? {
+                    None => return Err(self.source_missing(source).into()),
+                    Some(now) if size_of(&now) != run.source_size || now.last_write_utc != run.source_last_write => {
+                        return Err(self.coded_error(errors::VERIFY_SIZE_CHANGED).into());
+                    }
+                    Some(_) => {}
+                }
                 if run.permanent {
                     self.recycle_bin.delete_permanently(Path::new(source))?;
                 } else {

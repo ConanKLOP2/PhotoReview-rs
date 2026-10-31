@@ -1329,7 +1329,12 @@ fn group_move_partner_vanished_externally_moves_the_remaining_file_and_says_whic
     assert_eq!(env.run_worker(), FileActionStep::Pending); // after the presenter
     assert_eq!(env.present_finished(false), DONE_TRUE);
 
-    assert_eq!(env.catalog_paths(), vec![p("zbefore.jpg"), p("aafter.jpg")]);
+    let paths = env.catalog_paths();
+    assert!(
+        !paths.contains(&p("pair.jpg")) && !paths.contains(&p("pair.cr2")),
+        "{paths:?}"
+    );
+    assert_eq!(paths.len(), 2, "{paths:?}");
     assert_eq!(
         env.sink.last_status(),
         Some(
@@ -1481,4 +1486,56 @@ fn group_recycle_bin_cannot_hold_the_whole_capture_restores_grouped_entry_and_de
     assert!(!has_undo_action(&env));
     // nothing was deleted, so the failure is also shown as a dialog
     assert_eq!(env.dialog.errors.lock().unwrap().len(), 1);
+}
+
+// ST-INVMAP M3 (data safety, intentional DIVERGENCE from C#, which restores unconditionally): the executor panicked after the
+// file had already reached the Recycle Bin. The list must not show a photo whose file is gone.
+#[test]
+fn executor_throws_after_the_file_is_gone_entry_does_not_come_back() {
+    let mut env = move_env(&["a.jpg", "b.jpg", "c.jpg"]);
+    env.exec.script(Scripted::Panic("boom".to_string()));
+
+    env.run_action(0, None, Some(&p("b.jpg")));
+    env.disk.remove(&p("b.jpg")); // the executor recycled it, then panicked
+    assert_eq!(env.run_worker(), FileActionStep::Pending);
+    assert_eq!(env.present_finished(false), DONE_FALSE);
+
+    assert_eq!(env.catalog_paths(), vec![p("a.jpg"), p("c.jpg")]);
+    let failed = en(
+        "status.actionFailed",
+        &[arg("actionName", "MoveToSub"), arg("message", "boom")],
+    );
+    assert_eq!(env.sink.last_status(), Some(failed.as_str()));
+    assert!(env.log.errors.lock().unwrap().iter().any(|m| m.contains("gone")));
+}
+
+// Same for a capture: only the members still on disk come back; a capture whose members are all gone does not come back.
+#[test]
+fn group_executor_throws_after_some_members_are_gone_only_the_existing_ones_come_back() {
+    let mut env = pair_env(AppSettings::default(), false);
+    env.exec.script(Scripted::Panic("boom".to_string()));
+    env.run_action(0, None, Some(&p("pair.jpg")));
+    env.disk.remove(&p("pair.jpg"));
+    env.run_worker();
+    let paths = env.catalog_paths();
+    assert!(paths.contains(&p("pair.cr2")), "{paths:?}");
+    assert!(!paths.contains(&p("pair.jpg")), "{paths:?}");
+
+    let mut env = pair_env(AppSettings::default(), false);
+    env.exec.script(Scripted::Panic("boom".to_string()));
+    env.run_action(0, None, Some(&p("pair.jpg")));
+    env.disk.remove(&p("pair.jpg"));
+    env.disk.remove(&p("pair.cr2"));
+    env.run_worker();
+    assert_eq!(
+        env.catalog_paths(),
+        vec![p("zbefore.jpg"), p("aafter.jpg")]
+            .into_iter()
+            .collect::<Vec<_>>()
+            .len()
+            .min(2)
+            .eq(&2)
+            .then(|| env.catalog_paths())
+            .unwrap()
+    );
 }

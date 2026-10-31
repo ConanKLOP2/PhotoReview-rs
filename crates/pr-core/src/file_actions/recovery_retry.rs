@@ -650,6 +650,14 @@ impl RecoveryRetryService {
                     }
                     bin.delete_permanently(source)?;
                 } else {
+                    // DIVERGENCE (H1 follow-up, ST-INVMAP): same re-stat as the permanent branch; a replacement file
+                    // would otherwise be sent to the bin under the old operation's fingerprint.
+                    let unchanged = self
+                        .stat(&member.source)?
+                        .is_some_and(|stat| same_fingerprint(&stat, member.size, &member.last_write_utc));
+                    if !unchanged {
+                        return Err(Self::plain_error(texts.core_recovery_source_changed()));
+                    }
                     bin.send_to_recycle_bin(source)?;
                 }
                 if !is_undo && fs.file_exists(source) {
