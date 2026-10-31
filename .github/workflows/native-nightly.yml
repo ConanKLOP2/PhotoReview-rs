@@ -13,8 +13,9 @@ name: Native nightly
 #    thumbnail_cache only need the file system and icacls: verified green on a machine without staged DLLs on 2026-10-31, so they run
 #    below.)
 #  - (the four window binaries named in the pr-platform-win list below were added 2026-10-31 and are unconfirmed until one night)
+#  - pr-libraw raw_share_delete (4 native tests, 2026-10-31): needs libraw.dll (stage-native, blocked by P-55) and python for the synthetic DNG; no staging mechanism exists in this workflow, so it is NOT listed.
 #  - the window, DWM, GPU and input-desktop families of pr-platform-win (dialogs_*, host_*, shell_*, gfx_*, render_*, win32_*, wic_*,
-#    w8_*) and pr-shell (ui_smoke*, startup_*): they need a real desktop and the NativeDialog tooltip tests move the real cursor.
+#    w8_*) and pr-shell (ui_smoke*, startup_*; except the two pr-shell binaries added 2026-10-31 below): they need a real desktop and the NativeDialog tooltip tests move the real cursor.
 #  - pr-bench (runs the benchmark tool) and anything that touches the real Recycle Bin: nothing here may.
 on:
   schedule:
@@ -77,11 +78,20 @@ jobs:
               # (3 native tests; hidden window + PrintWindow). recycle_final_path: its one native test makes a junction with cmd mklink
               # inside a TempRoot and runs read-only volume queries (no desktop needed); the 6 fake tests run with it.
               # recycle_restore_timeout has no #[ignore] (fakes) and already runs in ci.yml, so it is not listed.
-              'w8_mainwin_frame_tests', 'host_shell_window_fixes', 'dialogs_painter_dpi_empty', 'recycle_final_path')
+              'w8_mainwin_frame_tests', 'host_shell_window_fixes', 'dialogs_painter_dpi_empty', 'recycle_final_path',
+              # Added 2026-10-31 (st-parity-sync5), no nightly run yet: host_main_window_lifecycle (16 native tests, hidden MainWindow incl.
+              # the M1 pending_opens case) NEEDS A DESKTOP SESSION; one night must confirm it on windows-latest, remove it if it is red only
+              # because the runner has no interactive desktop. recycle_delete_sink has no #[ignore] (fakes) and runs in ci.yml: not listed.
+              'host_main_window_lifecycle')
             # Added 2026-10-31 (fix-test-hygiene): green locally with --include-ignored --test-threads=1, no DLL staged. The ACL tests use icacls
             # /deny; a run killed midway can leave an undeletable folder under %TEMP%\pr-rs-tests (hygiene review F12).
             'pr-imaging' = @('cache_disk_store', 'cache_key', 'preview_service_disk', 'thumbnail_cache')
             'pr-app' = @('folder_load_load', 'windowing_placement_store')
+            # Added 2026-10-31 (st-parity-sync5), no nightly run yet; each needs a desktop session (hidden MainWindow, dispatcher and shell
+            # message loop on a UI thread), no C# DLL and no Recycle Bin: startup_overlay_vm (L6 try_borrow, 3 native tests) and
+            # composition_graph (2 native tests incl. dispose_graph_flushes_the_session_writer_...). One night must confirm them; remove
+            # a binary that is red only because windows-latest has no interactive desktop.
+            'pr-shell' = @('startup_overlay_vm', 'composition_graph')
           }
           $failed = @()
           foreach ($crate in $plan.Keys) {
