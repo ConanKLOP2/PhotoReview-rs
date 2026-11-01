@@ -35,7 +35,7 @@ fn shell_launch_matches_every_golden_case() {
             .replace("$DRIVE", &drive)
             .replace("$ROOT", &root)
     };
-    let opt = |v: &Value| v.as_str().map(&expand);
+    let opt = |v: &Value| v.as_str().map(expand);
 
     let mut launches = 0;
     for case in &g.cases {
