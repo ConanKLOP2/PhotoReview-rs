@@ -688,8 +688,7 @@ fn duplicate_warning_sees_action_shortcuts() {
 #[test]
 fn save_actions_json_is_validated() {
     // C#: SettingsPresenterTests.Save_ActionsJson_IsValidated
-    // DIVERGENCE: C# writes `"Operation":0`; the merged W8-10b Actions row refuses a numeric Operation (only names),
-    // so the rows use `"Operation":0`. Reported to the lead as a W8-10b defect.
+    // C# writes `"Operation":0`; the Actions row accepts numeric Operation values (0/1/2) as well as names, so the rows use the C# form.
     let env = Env::new();
     let mut presenter = new_presenter(&default_settings());
     let mut state = presenter.load_fields();

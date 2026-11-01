@@ -289,7 +289,12 @@ fail_unit() {
 with_merge_lock() { # one lock per integration branch
   local l="$STATE_DIR/merge-$TAG.lock" op
   while ! mkdir "$l" 2>/dev/null; do
-    op="$(cat "$l/pid" 2>/dev/null)"; { [ -z "$op" ] || ! kill -0 "$op" 2>/dev/null; } && [ -d "$l" ] && [ -n "$op" ] && rm -rf "$l"
+    op="$(cat "$l/pid" 2>/dev/null)"
+    # stale = recorded pid is dead, or no pid file for over a minute (holder died between mkdir and the pid write; review autopilot M5)
+    if [ -d "$l" ]; then
+      if [ -n "$op" ]; then kill -0 "$op" 2>/dev/null || rm -rf "$l"
+      elif [ -n "$(find "$l" -maxdepth 0 -mmin +1 2>/dev/null)" ]; then rm -rf "$l"; fi
+    fi
     sleep 2
   done
   echo "$BASHPID" > "$l/pid"; "$@"; local rc=$?; rm -rf "$l"; return $rc
