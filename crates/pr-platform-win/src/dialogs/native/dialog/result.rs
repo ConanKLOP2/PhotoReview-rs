@@ -135,9 +135,9 @@ impl NativeDialog {
 mod tests {
     use super::{delete_and_clear, run_closed_callback};
     use crate::host::pending_panic;
+    use crate::win32::dialog_native;
     use std::cell::Cell;
     use std::rc::Rc;
-    use crate::win32::dialog_native;
 
     // P-67 (a): the closed callback runs once; no callback is a no-op.
     #[test]
