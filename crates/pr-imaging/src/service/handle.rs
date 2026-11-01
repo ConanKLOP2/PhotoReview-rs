@@ -12,7 +12,7 @@ use pr_core::diagnostics::perf::{self, PhotoReviewPerf};
 use pr_core::sync::{CancelToken, Canceled};
 
 use super::deps::ImageCacheKey;
-use super::{PreviewResult, ServiceInner, lock};
+use super::{PreviewError, PreviewResult, ServiceInner, lock};
 
 /// Longest a cancellable wait (start delay, viewer slot, original gate) sleeps before re-checking its token.
 /// `CancelToken` has no wake-up registration (R0003), so cancellation is noticed within this slice; a slot release wakes
@@ -288,6 +288,12 @@ impl PreviewHandle {
         Self {
             state: HandleState::Ready(result),
         }
+    }
+
+    /// A finished request that failed before any load started (a caller whose service could not be built answers this instead of
+    /// panicking). `wait` returns `Err(error)` at once; `is_ready` is `true`.
+    pub fn failed(error: PreviewError) -> Self {
+        Self::ready(Err(error))
     }
 
     /// A pending shared load (`retry` = `None`: no joiner rules, `decode_original`).

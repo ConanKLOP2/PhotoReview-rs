@@ -27,6 +27,7 @@ use pr_imaging::cache_key::{CacheKeyError, ImageCacheKey};
 use pr_imaging::decode_types::DecodeBox;
 use pr_imaging::decode_types::{DecodeRequest, DecodedImageView, ImageInfo};
 use pr_imaging::decoder_traits::{DecodeError, ImageDecoder, ImageDecoderFactory};
+use pr_imaging::service::PreviewError;
 use pr_imaging::service::handle::PreviewHandle;
 use pr_l10n::localizer::{Localizer, number_culture};
 use pr_platform_win::culture::{WindowsDateText, utc_to_local};
@@ -144,7 +145,7 @@ impl PresentationSinkFactory for Win32SinkFactoryAdapter {
 /// `services.preview_service()` (built once, cached by the registry) and forwards to the `PrewarmPreviews` impl of `PreviewImageService`. A registry `Err` is a composition defect
 /// (every input of the service is a constant of the registry): it is logged through `services.log()` and then `current_cache_key` answers
 /// `Err(CacheKeyError::SourceNoLongerExists { full_name: full_path })` (the early decode then ends silently, R-PW-5); `start_viewer_preview` is only called with a key this wrapper gave
-/// out, so its `Err` branch is unreachable and panics with the error text (caught by the `catch_unwind` of the worker, R0003).
+/// out, so its `Err` branch is unreachable in practice; it logs and answers `PreviewHandle::failed(PreviewError::Spawn(..))` instead of panicking (P-68).
 pub struct LazyPrewarmPreviews {
     services: SharedServices,
 }
@@ -185,8 +186,15 @@ impl PrewarmPreviews for LazyPrewarmPreviews {
     fn start_viewer_preview(&self, full_path: &str, key: &ImageCacheKey) -> PreviewHandle {
         match self.services.preview_service() {
             Ok(service) => PrewarmPreviews::start_viewer_preview(service.as_ref(), full_path, key),
-            // Unreachable by contract: `key` came from `current_cache_key`, which only answers `Ok` after the service was built.
-            Err(error) => panic!("{error}"),
+            // Unreachable by contract (`key` came from `current_cache_key`, which only answers `Ok` after the service was built), but a panic here is a
+            // user-path panic (P-68): log it and answer an already-failed handle; the prewarm treats it like any failed preview.
+            Err(error) => {
+                self.services.log().error(
+                    "Prewarm: the preview service could not be created, so the viewer preview is skipped",
+                    Some(&error),
+                );
+                PreviewHandle::failed(PreviewError::Spawn(Arc::new(std::io::Error::other(error.to_string()))))
+            }
         }
     }
 }
