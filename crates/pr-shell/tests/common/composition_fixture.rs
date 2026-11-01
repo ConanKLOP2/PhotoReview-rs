@@ -238,6 +238,7 @@ fn shared_services_with_probe_and_options(
 
 /// Services whose `AppPaths::preview_cache_dir` is blank, so `preview_service()` answers a `RegistryError`
 /// (`PreviewServiceBuildError::DiskDirectory`): the seam for the registry-`Err` branches of the lazy adapters.
+#[allow(dead_code)] // Only the preview-failure test binary uses this seam.
 pub fn shared_services_with_failing_preview_service() -> (SharedServices, TempRoot, Arc<RecordingLog>) {
     shared_services_with_parts_and_platform(
         Arc::new(FakeMemoryProbe::new()),
@@ -268,6 +269,7 @@ fn shared_services_with_parts(
     )
 }
 
+#[allow(clippy::too_many_arguments)] // Test fixture: every optional seam is its own parameter.
 fn shared_services_with_parts_and_platform(
     probe: Arc<dyn pr_core::abstractions::MemoryProbe>,
     wpf_fallback_decoder: Option<pr_imaging::factory::DecoderProvider>,
