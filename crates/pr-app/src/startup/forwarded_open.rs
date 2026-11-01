@@ -11,7 +11,7 @@ use std::rc::Rc;
 use std::sync::Arc;
 use std::time::Duration;
 
-use pr_core::abstractions::{Log, UiScheduler};
+use pr_core::abstractions::{Log, NullLog, UiScheduler};
 use pr_core::instance::coalescer::{ForwardedOpenCoalescer, OpenCallback};
 
 thread_local! {
@@ -159,28 +159,41 @@ impl ForwardedOpenRouter {
         CURRENT_ROUTER.with(|slot| *slot.borrow_mut() = Some(Rc::downgrade(self)));
     }
 
-    /// Delivers to the router attached to the current thread; nothing when there is none or it was dropped.
-    fn deliver_on_current_thread(path: Option<String>) {
+    /// Delivers to the router attached to the current thread; `false` when there is none or it was dropped (the request is lost).
+    fn deliver_on_current_thread(path: Option<String>) -> bool {
         CURRENT_ROUTER.with(|slot| {
             if let Some(router) = slot.borrow().as_ref().and_then(std::rc::Weak::upgrade) {
                 router.on_forwarded_open(path);
+                true
+            } else {
+                false
             }
-        });
+        })
     }
 }
 
 /// The `OpenCallback` of the coalescer (C# `path => dispatcher.Post(() => OnForwardedOpen(path))`): runs on the coalescer's worker thread, posts a `Send` job to
-/// `ui` that calls `ForwardedOpenRouter::deliver_on_current_thread(path)` on the UI thread.
+/// `ui` that calls `ForwardedOpenRouter::deliver_on_current_thread(path)` on the UI thread. A request that finds no router is dropped silently.
 pub fn ui_open_callback(ui: Arc<dyn UiScheduler>) -> OpenCallback {
+    ui_open_callback_logged(ui, Arc::new(NullLog))
+}
+
+/// [`ui_open_callback`] that logs a warning when the request finds no router attached to the UI thread (C# `dispatcher.Post` cannot lose the request this way).
+pub fn ui_open_callback_logged(ui: Arc<dyn UiScheduler>, log: Arc<dyn Log>) -> OpenCallback {
     Arc::new(move |path| {
-        ui.post(Box::new(move || ForwardedOpenRouter::deliver_on_current_thread(path)));
+        let log = log.clone();
+        ui.post(Box::new(move || {
+            if !ForwardedOpenRouter::deliver_on_current_thread(path) {
+                log.warn("Forwarded launch: no router is attached to the UI thread; the request was dropped");
+            }
+        }));
     })
 }
 
 /// C# `new ForwardedOpenCoalescer(path => dispatcher.Post(...), ForwardCoalesceWindow, log)`: the coalescer with the production delay and thread.
 pub fn new_forward_coalescer(ui: Arc<dyn UiScheduler>, log: Arc<dyn Log>) -> Arc<ForwardedOpenCoalescer> {
     Arc::new(ForwardedOpenCoalescer::new(
-        ui_open_callback(ui),
+        ui_open_callback_logged(ui, log.clone()),
         FORWARD_COALESCE_WINDOW,
         Some(log),
         None,

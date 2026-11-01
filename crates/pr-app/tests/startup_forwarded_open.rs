@@ -69,3 +69,23 @@ fn failing_open_is_logged_as_forwarded_open_failed(){let t=Rc::new(Calls{fail_op
 }
 #[rustfmt::skip]
 #[test] fn new_forward_coalescer_uses_750_ms_window(){assert_eq!(pr_app::startup::forwarded_open::FORWARD_COALESCE_WINDOW,std::time::Duration::from_millis(750));}
+#[rustfmt::skip]
+#[test] fn ui_open_callback_logged_warns_when_no_router_is_attached_and_stays_quiet_when_attached(){
+ struct InlineUi;
+ impl pr_core::abstractions::UiScheduler for InlineUi {
+  fn post(&self, job: Box<dyn FnOnce()+Send>) { job(); }
+  fn invoke(&self, job: Box<dyn FnOnce()+Send>) -> pr_core::abstractions::UiCompletion { let (tx, done)=pr_core::abstractions::UiCompletion::channel(); job(); let _=tx.send(Ok(())); done }
+ }
+ let log=Arc::new(TestLog::default());
+ let callback=pr_app::startup::forwarded_open::ui_open_callback_logged(Arc::new(InlineUi),log.clone());
+ callback(Some("lost.jpg".to_owned()));
+ assert_eq!(&*log.0.lock().unwrap(), &["warn:Forwarded launch: no router is attached to the UI thread; the request was dropped"]);
+ log.0.lock().unwrap().clear();
+ let router=ForwardedOpenRouter::new();
+ let target=Rc::new(Calls::default());
+ router.set_handler(Rc::new(ForwardedOpenHandler::new(target.clone(),Arc::new(TestLog::default()))));
+ router.attach_to_current_thread();
+ callback(Some("kept.jpg".to_owned()));
+ assert!(log.0.lock().unwrap().is_empty());
+ assert_eq!(&*target.calls.lock().unwrap(), &["activate","open:kept.jpg"]);
+}
