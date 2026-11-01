@@ -1,4 +1,8 @@
-use std::{io, path::Path, sync::Arc};
+use std::{
+    io,
+    path::{Path, PathBuf},
+    sync::Arc,
+};
 
 use pr_app::localization::service::CultureLookup;
 use pr_core::{
@@ -228,6 +232,23 @@ fn shared_services_with_probe_and_options(
         None,
         None,
         None,
+        None,
+    )
+}
+
+/// Services whose `AppPaths::preview_cache_dir` is blank, so `preview_service()` answers a `RegistryError`
+/// (`PreviewServiceBuildError::DiskDirectory`): the seam for the registry-`Err` branches of the lazy adapters.
+#[allow(dead_code)] // Only the preview-failure test binary uses this seam.
+pub fn shared_services_with_failing_preview_service() -> (SharedServices, TempRoot, Arc<RecordingLog>) {
+    shared_services_with_parts_and_platform(
+        Arc::new(FakeMemoryProbe::new()),
+        None,
+        None,
+        None,
+        None,
+        None,
+        None,
+        Some(&|paths: &mut AppPaths| paths.preview_cache_dir = PathBuf::new()),
     )
 }
 
@@ -244,9 +265,11 @@ fn shared_services_with_parts(
         move_override,
         Some(source_reader),
         fake_fs,
+        None,
     )
 }
 
+#[allow(clippy::too_many_arguments)] // Test fixture: every optional seam is its own parameter.
 fn shared_services_with_parts_and_platform(
     probe: Arc<dyn pr_core::abstractions::MemoryProbe>,
     wpf_fallback_decoder: Option<pr_imaging::factory::DecoderProvider>,
@@ -255,6 +278,7 @@ fn shared_services_with_parts_and_platform(
     move_override: Option<Arc<dyn pr_app::coordinators::traits::IMoveOverride>>,
     source_reader: Option<Arc<dyn SourceReader>>,
     fake_fs: Option<Arc<FakeFileSystem>>,
+    edit_paths: Option<&dyn Fn(&mut AppPaths)>,
 ) -> (SharedServices, TempRoot, Arc<RecordingLog>) {
     let root = temp_root();
     let log = Arc::new(RecordingLog::new());
@@ -288,7 +312,13 @@ fn shared_services_with_parts_and_platform(
             wpf_fallback_decoder,
             thumbnail_decoder: Arc::new(|| Arc::new(FixtureDecoder)),
         },
-        paths: AppPaths::new(root.path(), data_root_override.as_deref(), false),
+        paths: {
+            let mut paths = AppPaths::new(root.path(), data_root_override.as_deref(), false);
+            if let Some(edit) = edit_paths {
+                edit(&mut paths);
+            }
+            paths
+        },
         log: log.clone(),
         clock: Arc::new(pr_test_support::FakeClock::new()),
         source_reader: source_reader.unwrap_or_else(|| Arc::new(FixtureSourceReader)),
