@@ -5,7 +5,7 @@ Keep this file under about 10 KB. When it grows, move old sections verbatim to `
 
 ## How to resume (read this first)
 1. Read `AGENTS.md`, this file and `docs/LESSONS.md`; then `docs/INDEX.md` for the map. Several machines: `docs/MULTI-MACHINE.md` (claims, shared files).
-2. Open questions are rows `P-nn` in `docs/PROPOSED-DECISIONS.md` (P-01..P-66, unconfirmed proposals, all acted on). Contracts: `contracts/README.md`. Autopilot: `tools/autopilot/README.md`. Plan and status of the port: `docs/PARITY.md` (`bash tools/dev/parity.sh stats`).
+2. Open questions are rows `P-nn` in `docs/PROPOSED-DECISIONS.md` (P-01..P-68, unconfirmed proposals, all acted on except P-67 and P-68). Contracts: `contracts/README.md`. Autopilot: `tools/autopilot/README.md`. Plan and status of the port: `docs/PARITY.md` (`bash tools/dev/parity.sh stats`).
 3. Standing user instruction: run the port end to end, auto-fix and auto-merge (squash) every PR, never stop to ask; log open questions as a `P-nn` row and act on the recommended option. Replies in Vietnamese.
 4. Some workflow agents are refused `gh pr merge`, branch deletion or publish commands by the permission classifier; the main session then pushes and opens the PR (rules: `tools/autopilot/README.md`).
 5. Before planning a unit run `git fetch` and `git log origin/master`: a unit already there is done. Older history is in the archives below, never current state.
@@ -15,6 +15,7 @@ Keep this file under about 10 KB. When it grows, move old sections verbatim to `
 - Snapshot 2026-10-28 (Not done, Blocked, open debts): verbatim in the archive, section "Moved 2026-10-31 (tp-compact5, verbatim)". Re-check `git log origin/master` first.
 - ST-PARITY-SYNC8 2026-10-31: docs + native-nightly only; mutation wave 2 (PRs #516..#525) recorded as notes on 11 PARITY rows, NO status change (Done 183, Partial 102). PARITY caveat and P-65 CORRECTED: cargo-mutants does copy `tests/golden`; the real cause is the compile-time `CARGO_MANIFEST_DIR` in `golden::repo_root()` going stale in a reused target dir (fix #516: `PHOTOREVIEW_GOLDEN_ROOT` + `touch`); list of old reports to re-run is in CL-MUT-GOLDEN-INFRA. #524 and #525 were still open when written. Nightly +1 binary (`w2_physrest2_killers`), unconfirmed until one night. [reports](docs/reviews/README.md)
 - ST-PARITY-SYNC9 2026-11-01: PRs #527..#532 recorded (docs only). `parity.sh stats`: 361 status rows, Done 183, Partial 102, Ported 38, Superseded 17, Different 14, Todo 4, Implementation 3. No status raised. BACKLOG G4 (#531), G27 (#530, P-66), G30 (#532) fixed; G12 is parity with C#. Cleaned 120 worktrees on 2026-11-01; drive C: has about 177 GB free.
+- ST-PARITY-SYNC10 2026-11-01: PRs #534..#536 recorded (docs only). #534 G11 native dialog checked against C#, no code change; #535 G14 (`UiLocalPoster` `!Send`, timer survives panic) and G15 (`RetryCell`, no cached `Err`) fixed; #536 G9 Shortcuts via l10n and G7 lazy secondary port not locked at `None` fixed. New P-67 and P-68 (not acted on, need owner). `parity.sh stats`: 361 status rows, Done 183, Partial 102, Ported 38, Superseded 17, Different 14, Todo 4, Implementation 3. No status raised.
 
 ## Archives (`docs/archive/`, verbatim, history only)
 Find any section title with `grep -n '^## ' <file>`. Original section order is kept inside each file.
