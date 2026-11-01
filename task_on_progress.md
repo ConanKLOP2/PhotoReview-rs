@@ -5,7 +5,7 @@ Keep this file under about 10 KB. When it grows, move old sections verbatim to `
 
 ## How to resume (read this first)
 1. Read `AGENTS.md`, this file and `docs/LESSONS.md`; then `docs/INDEX.md` for the map. Several machines: `docs/MULTI-MACHINE.md` (claims, shared files).
-2. Open questions are rows `P-nn` in `docs/PROPOSED-DECISIONS.md` (P-01..P-68, unconfirmed proposals, all acted on except P-67 and P-68). Contracts: `contracts/README.md`. Autopilot: `tools/autopilot/README.md`. Plan and status of the port: `docs/PARITY.md` (`bash tools/dev/parity.sh stats`).
+2. Open questions are rows `P-nn` in `docs/PROPOSED-DECISIONS.md` (P-01..P-68, unconfirmed proposals, all acted on). Contracts: `contracts/README.md`. Autopilot: `tools/autopilot/README.md`. Plan and status of the port: `docs/PARITY.md` (`bash tools/dev/parity.sh stats`).
 3. Standing user instruction: run the port end to end, auto-fix and auto-merge (squash) every PR, never stop to ask; log open questions as a `P-nn` row and act on the recommended option. Replies in Vietnamese.
 4. Some workflow agents are refused `gh pr merge`, branch deletion or publish commands by the permission classifier; the main session then pushes and opens the PR (rules: `tools/autopilot/README.md`).
 5. Before planning a unit run `git fetch` and `git log origin/master`: a unit already there is done. Older history is in the archives below, never current state.
@@ -17,6 +17,7 @@ Keep this file under about 10 KB. When it grows, move old sections verbatim to `
 - ST-PARITY-SYNC9 2026-11-01: PRs #527..#532 recorded (docs only). `parity.sh stats`: 361 status rows, Done 183, Partial 102, Ported 38, Superseded 17, Different 14, Todo 4, Implementation 3. No status raised. BACKLOG G4 (#531), G27 (#530, P-66), G30 (#532) fixed; G12 is parity with C#. Cleaned 120 worktrees on 2026-11-01; drive C: has about 177 GB free.
 - ST-PARITY-SYNC10 2026-11-01: PRs #534..#536 recorded (docs only). #534 G11 native dialog checked against C#, no code change; #535 G14 (`UiLocalPoster` `!Send`, timer survives panic) and G15 (`RetryCell`, no cached `Err`) fixed; #536 G9 Shortcuts via l10n and G7 lazy secondary port not locked at `None` fixed. New P-67 and P-68 (not acted on, need owner). `parity.sh stats`: 361 status rows, Done 183, Partial 102, Ported 38, Superseded 17, Different 14, Todo 4, Implementation 3. No status raised.
 - ST-DECISIONS-CONFIRM 2026-11-01: owner confirmed P-60, P-62..P-66 (P-66 keeps option A) and the 404 behaviour of P-61 in chat; P-67 and P-68 confirmed, implementation in separate PRs (not done here). AGENTS.md unsafe sentence (P-64) was already present. Also adds `tools/autopilot/codex-loop.sh` (the four skills at the repo root were already in master).
+- ST-PARITY-SYNC11 2026-11-01: #539 (P-67 native dialog: `closed` callback guarded, L3 disabled tab stop and L4 old font kept, both deliberate C# divergences) and #540 (P-68: `panic!` removed from `LazyPrewarmPreviews`, failed handle plus log, test `fix_p68_preview.rs`) recorded; P-67 and P-68 now implemented. `parity.sh stats`: 361 status rows, Done 183, Partial 102, Ported 38, Superseded 17, Different 14, Todo 4, Implementation 3. No status raised.
 
 ## Archives (`docs/archive/`, verbatim, history only)
 Find any section title with `grep -n '^## ' <file>`. Original section order is kept inside each file.
