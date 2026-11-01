@@ -96,7 +96,11 @@ jobs:
               'dialogs_benchmark_scenarios_native', 'w8_mainwin_seams2',
               # Added 2026-10-31 (st-parity-sync7), no nightly run yet: mut_zoomcore_killers (2 native tests, two live hidden windows,
               # needs a desktop session; CL-MUT-ZOOMCORE). One night must confirm it, remove it if red only for lack of a desktop.
-              'mut_zoomcore_killers')
+              'mut_zoomcore_killers',
+              # Added 2026-11-01 (cl-mut-settings3), no nightly run yet: w8_settingswin4_killers (27 tests; 22 run without a desktop, 5 native tests
+              # open a hidden Settings window on a desktop session and call SetKeyboardState on their own thread only; no C# DLL, no Recycle
+              # Bin, config isolated). One night must confirm it, remove it if red only because windows-latest has no interactive desktop.
+              'w8_settingswin4_killers')
             # Added 2026-10-31 (fix-test-hygiene): green locally with --include-ignored --test-threads=1, no DLL staged. The ACL tests use icacls
             # /deny; a run killed midway can leave an undeletable folder under %TEMP%\pr-rs-tests (hygiene review F12).
             'pr-imaging' = @('cache_disk_store', 'cache_key', 'preview_service_disk', 'thumbnail_cache')
