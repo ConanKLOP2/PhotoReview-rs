@@ -14,6 +14,7 @@ export PATH="$HOME/.cargo/bin:$PATH"
 SELF="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 export PYTHONUTF8=1
 LIB="python $SELF/lib/codex-lib.py"
+. "$SELF/lib/proc.sh"   # kill_tree, lock_stale, lock_reclaim (review autopilot M5, M6)
 TAG=""; DRY=0; ONLY=""; JOBS=2; SMOKE=0; REDO=""; CLI_PLAN=""
 while [ $# -gt 0 ]; do
   case "$1" in
@@ -123,7 +124,9 @@ mkdir -p "$STATE_DIR" "$LOGDIR" "$NEEDS"; LOCK="$STATE_DIR/pipeline.lock"
 if ! mkdir "$LOCK" 2>/dev/null; then
   op="$(cat "$LOCK/pid" 2>/dev/null)"
   if [ -n "$op" ] && kill -0 "$op" 2>/dev/null; then echo "another pipeline is running (pid $op)" >&2; exit 3; fi
-  rm -rf "$LOCK"; mkdir "$LOCK" || exit 3
+  # review autopilot M5: a lock without a pid file is only stale after a grace period, and it is reclaimed by an atomic rename
+  lock_reclaim "$LOCK" || { echo "another pipeline is starting (lock $LOCK has no live owner yet)" >&2; exit 3; }
+  mkdir "$LOCK" 2>/dev/null || exit 3
 fi
 echo $$ > "$LOCK/pid"
 MAINPID=$$
@@ -131,7 +134,11 @@ cleanup_targets() { # target dirs of THIS pipeline only (explicit names), at the
   local d
   for d in "$TDB" "$TDB"-*; do [ -d "$d" ] && rm -rf "$d"; done   # explicit prefix of THIS pipeline: -s<slot>, -mut, -x<n> alternates
 }
-on_exit() { [ "$BASHPID" = "$MAINPID" ] || return 0; cleanup_targets; rm -rf "$LOCK"; }
+on_exit() { # review autopilot M6: stop the unit subshells (and their msys children) BEFORE the targets and the lock are removed
+  [ "$BASHPID" = "$MAINPID" ] || return 0
+  local p; for p in "${SLOTPID[@]:-}"; do [ -n "$p" ] && kill_tree "$p"; done
+  cleanup_targets; rm -rf "$LOCK"
+}
 trap on_exit EXIT; trap 'say "interrupted"; exit 130' INT TERM
 
 env_checks skiplock || { echo "preflight failed, nothing was started" >&2; exit 4; }
@@ -153,8 +160,11 @@ quota_used() { local u r; IFS='|' read -r u r < <(printf '%s' "$UOUT" | $LIB use
 # window is >= QUOTA_MAX % used or has less than <need> % left.
 wait_quota() {
   local need="${1:-0}" rt s why
+  UERR="${UERR:-0}"
   while :; do
     usage_call; quota_used; why=""
+    # review autopilot L9: exit 2 = the usage probe itself failed (no response / broken binary), not "quota used up"; give up after 5 tries
+    if [ "$URC" = 2 ]; then UERR=$((UERR+1)); say "codex usage probe failed ($UERR/5): $UOUT"; [ "$UERR" -ge 5 ] && { say "usage probe keeps failing, stopping"; exit 6; }; else UERR=0; fi
     if [ "$URC" != 0 ]; then why="used ${QUSED:-?}% >= ${QUOTA_MAX}% or limit reached"
     elif [ "$need" != 0 ] && [ -n "$QUSED" ] && awk -v u="$QUSED" -v n="$need" 'BEGIN{exit !((100-u) < n)}'; then why="only $(awk -v u="$QUSED" 'BEGIN{print 100-u}')% left, need ${need}%"; fi
     [ -z "$why" ] && return 0
@@ -291,10 +301,7 @@ with_merge_lock() { # one lock per integration branch
   while ! mkdir "$l" 2>/dev/null; do
     op="$(cat "$l/pid" 2>/dev/null)"
     # stale = recorded pid is dead, or no pid file for over a minute (holder died between mkdir and the pid write; review autopilot M5)
-    if [ -d "$l" ]; then
-      if [ -n "$op" ]; then kill -0 "$op" 2>/dev/null || rm -rf "$l"
-      elif [ -n "$(find "$l" -maxdepth 0 -mmin +1 2>/dev/null)" ]; then rm -rf "$l"; fi
-    fi
+    lock_reclaim "$l" && continue
     sleep 2
   done
   echo "$BASHPID" > "$l/pid"; "$@"; local rc=$?; rm -rf "$l"; return $rc
