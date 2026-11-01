@@ -17,7 +17,8 @@ EMPTY=4b825dc642cb6eb9a060e54bf8d69288fbee4904
 g() { git -C "$REPO" "$@"; }
 cmd="${1:-}"; u="${2:-}"; note="${3:-}"
 
-fetch_claims() { g fetch -q origin '+refs/claims/*:refs/claims/*' 2>/dev/null; }
+# --prune: a claim released/gc'd on origin must disappear from the local copy too (review autopilot H1), else it stays a ghost claim.
+fetch_claims() { g fetch -q --prune origin '+refs/claims/*:refs/claims/*' 2>/dev/null; }
 holder() { g log -1 --format=%an "refs/claims/$1" 2>/dev/null; }
 
 case "$cmd" in
@@ -57,7 +58,7 @@ note: $note")" || exit 2
     now=$(date +%s)
     g for-each-ref --format='%(refname:strip=2)' refs/claims/ | while read -r x; do
       age=$(( now - $(g log -1 --format=%ct "refs/claims/$x") ))
-      if [ -n "$(g log origin/master --oneline -1 --grep "$x")" ] || [ "$age" -gt 1209600 ]; then
+      if [ -n "$(g log origin/master --oneline -1 --fixed-strings --grep "$x")" ] || [ "$age" -gt 1209600 ]; then
         g push -q origin ":refs/claims/$x" && g update-ref -d "refs/claims/$x" && echo "gc: $x removed"
       fi
     done ;;

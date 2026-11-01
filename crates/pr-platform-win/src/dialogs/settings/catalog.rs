@@ -26,7 +26,7 @@ pub type PageFactory = fn() -> Box<dyn SettingsPageView>;
 ///
 /// The seven entries (D-W8B5-708) are `Diagnostics`, `Display`, `Files`, `General`, `Mouse`, `Performance`, `Shortcuts`; each factory is
 /// `|| Box::new(<Page>::new())` for the page type of the same-named unit (`pages::diagnostics::DiagnosticsSettingsPage` ... `pages::shortcuts::ShortcutsSettingsPage`,
-/// each with `pub fn new() -> Self`). The page constructors are `todo!()` until W8-19d..19i, but a function pointer to them is fine: only `create_pages` calls them.
+/// each with `pub fn new() -> Self`). The page constructors are implemented (W8-19d..19i); only `create_pages` calls them.
 pub const FACTORIES: &[(&str, PageFactory)] = &[
     ("Diagnostics", || Box::new(DiagnosticsSettingsPage::new())),
     ("Display", || Box::new(DisplaySettingsPage::new())),
