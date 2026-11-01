@@ -21,6 +21,14 @@ pub(super) fn delete_and_clear(handle: &Cell<Hgdi>) {
     }
 }
 
+/// Step 10 of `cleanup` (pure apart from the callback): runs the `closed` callback under `pending_panic::guarded`, so a panic in it is captured (first one wins)
+/// instead of unwinding out of `cleanup`, which may itself run inside `CleanupGuard::drop` during unwinding (a panic there aborts the process).
+pub(super) fn run_closed_callback(callback: Option<Box<dyn FnOnce()>>) {
+    if let Some(callback) = callback {
+        pending_panic::guarded((), AssertUnwindSafe(callback));
+    }
+}
+
 impl NativeDialog {
     /// C# `Cleanup()` (lines 427 to 509). Idempotent (`cleaned_up`). Order, observable and required:
     /// 1. `cleaned_up = true`, `done = true`.
@@ -35,7 +43,10 @@ impl NativeDialog {
     /// 8. `delete_and_clear` for `font`, `header_font`, `window_brush`, `input_brush`; `controls.children` cleared; `tips.tooltip = 0`; `tip_buffer` emptied and its
     ///    allocation released.
     /// 9. the cookie is freed (`free_cookie(self_cookie)`, then `self_cookie = 0`): safe even from inside the dialog procedure, which holds its own `Rc`.
-    /// 10. `closed_callback.take()` runs.
+    /// 10. `closed_callback.take()` runs under `pending_panic::guarded` (`run_closed_callback`).
+    ///
+    /// DIVERGENCE (P-67, owner-confirmed): the C# `_closedCallback?.Invoke()` is unguarded, but .NET has no abort on a second exception. Here `CleanupGuard::drop`
+    /// runs `cleanup` while unwinding, where a panic in the callback would abort the process, so it is captured like `on_closed` and resumed by `rethrow_pending`.
     ///
     /// `child_hosts`, `sorts` and `laid_out` are NOT reset (as the C#).
     pub(super) fn cleanup(&self) {
@@ -107,9 +118,7 @@ impl NativeDialog {
         unsafe { free_cookie(cookie) };
 
         let callback = state.closed_callback.borrow_mut().take();
-        if let Some(callback) = callback {
-            callback();
-        }
+        run_closed_callback(callback);
     }
 
     /// The `WM_CLOSE` case (lines 583 to 589): `content.can_close_by_user()` -> `end_modal(ID_CANCEL)`; the router answers `1` either way. `close()` from outside
@@ -124,9 +133,36 @@ impl NativeDialog {
 
 #[cfg(test)]
 mod tests {
-    use super::delete_and_clear;
+    use super::{delete_and_clear, run_closed_callback};
+    use crate::host::pending_panic;
     use crate::win32::dialog_native;
     use std::cell::Cell;
+    use std::rc::Rc;
+
+    // P-67 (a): the closed callback runs once; no callback is a no-op.
+    #[test]
+    fn run_closed_callback_runs_the_callback_and_accepts_none() {
+        run_closed_callback(None);
+        let ran = Rc::new(Cell::new(0));
+        let seen = ran.clone();
+        run_closed_callback(Some(Box::new(move || seen.set(seen.get() + 1))));
+        assert_eq!(ran.get(), 1);
+        assert!(!pending_panic::has_pending());
+    }
+
+    // P-67 (a): a panicking callback does not unwind out of the helper (the unguarded form would abort inside CleanupGuard::drop while unwinding); the payload is
+    // captured and `rethrow_pending` resumes it. The abort itself cannot be observed in-process, so this tests the extracted helper (indirect).
+    #[test]
+    fn run_closed_callback_captures_a_panic_instead_of_unwinding() {
+        let outcome = std::panic::catch_unwind(|| {
+            run_closed_callback(Some(Box::new(|| std::panic::panic_any("closed callback boom"))));
+        });
+        assert!(outcome.is_ok(), "the helper must not unwind");
+        assert!(pending_panic::has_pending());
+        let resumed = std::panic::catch_unwind(pending_panic::rethrow_pending).expect_err("pending panic is resumed");
+        assert_eq!(resumed.downcast_ref::<&str>(), Some(&"closed callback boom"));
+        assert!(!pending_panic::has_pending());
+    }
 
     // C#: NativeDialog.DeleteObject with an empty handle.
     #[test]
