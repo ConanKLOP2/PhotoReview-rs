@@ -130,6 +130,10 @@ fn registration_resolves_the_real_port_lazily_and_shared_by_dialogs_and_zoom() {
     assert!(!s.secondary_port.is_value_created());
     assert!(Rc::ptr_eq(&s.secondary_port, &s.secondary_port_host.port));
     assert!(s.secondary_port.get().is_none());
+    // Startup review M3: the unbound answer is not kept (the old assertion said the `None` was kept).
+    assert!(!s.secondary_port.is_value_created());
+    assert!(s.bind_dialog_services(dialog_services()));
+    assert!(s.secondary_port.get().is_some());
     assert!(s.secondary_port.is_value_created());
 }
 #[test]
@@ -264,6 +268,20 @@ fn factory_before_the_graph_is_bound_answers_no_port_and_logs() {
             .0
             .contains("before the service graph was bound")
     );
+}
+// Review startup M3: an early request (graph not bound yet) answers `None` but must not lock the port at `None` for the whole session. C# resolved the port through DI,
+// where the graph always exists, so there was no "not bound yet" answer to cache.
+#[test]
+fn port_requested_before_the_graph_is_bound_is_built_after_the_bind() {
+    let s = build(Rc::new(|| 0), Arc::new(NullLog), Default::default());
+    assert!(s.secondary_port.get().is_none(), "no graph yet");
+    assert!(!s.secondary_port.is_value_created(), "the early None is not kept");
+    assert!(s.bind_dialog_services(dialog_services()));
+    assert!(
+        s.secondary_port.get().is_some(),
+        "the port is built once the graph is bound"
+    );
+    assert!(s.secondary_port.is_value_created());
 }
 #[test]
 fn host_registrations_are_all_mapped() {
