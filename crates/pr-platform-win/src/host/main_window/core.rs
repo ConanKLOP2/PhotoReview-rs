@@ -743,6 +743,8 @@ pub struct MainWindowInner {
     /// Forwarded-open paths that arrived while a modal command held the view model (`open_path` found it borrowed): `update_view_model` opens them, FIFO,
     /// once the borrow ends (otherwise `borrow_mut` would panic and the dispatcher would swallow the open).
     pub(super) pending_opens: RefCell<VecDeque<String>>,
+    /// BACKLOG G1: close / closed / dropped-command intents recorded while a modal command holds the view model; replayed by `replay_modal_intents`.
+    pub(super) modal_intents: super::modal_intents::ModalIntents,
     /// Features of other units (input, menus, overlay, keep-warm), in registration order.
     pub(super) features: RefCell<Vec<Rc<dyn MainWindowFeature>>>,
     /// C# `_keepAlive` + `_keepWarm` + `_frameLog` as 16d returns them from `register_keep_warm`; `release_renderer` calls `KeepWarmSetup::dispose` FIRST (D-W8B4X-4).
@@ -845,6 +847,7 @@ impl MainWindowInner {
             pump_again: Cell::new(false),
             pump_deferred: Cell::new(false),
             pending_opens: RefCell::new(VecDeque::new()),
+            modal_intents: super::modal_intents::ModalIntents::default(),
             features: RefCell::new(Vec::new()),
             keep_warm: RefCell::new(None),
             frame: FrameState::default(),
@@ -1009,6 +1012,11 @@ impl MainWindowInner {
     /// Accessor: C# `ViewModel`.
     pub(crate) fn view_model(&self) -> &SharedViewModel {
         &self.view_model
+    }
+
+    /// BACKLOG G1: records that a command was refused because the view model was busy (a modal command is running its nested loop). Callers also log.
+    pub(crate) fn note_dropped_command(&self) {
+        self.modal_intents.note_dropped_command();
     }
 
     /// Accessor: C# `Viewport`.

@@ -336,9 +336,7 @@ impl MainWindowMenuServices for MainWindowMenuAdapter {
         with_window(self.id, |inner| {
             let changes = {
                 let Ok(mut view_model) = inner.view_model().try_borrow_mut() else {
-                    inner
-                        .log()
-                        .warn("Menu command skipped: the view model is busy (re-entrant call).");
+                    inner.note_busy_drop("Menu command");
                     return;
                 };
                 f(&mut view_model)
@@ -346,6 +344,8 @@ impl MainWindowMenuServices for MainWindowMenuAdapter {
             if !changes.is_empty() {
                 inner.apply_changes(&changes);
             }
+            // BACKLOG G1: a modal command (Settings, the folder picker) ends here: drain the wake, open the queued paths, replay a recorded close.
+            inner.after_view_model_call();
         });
     }
     fn report_shell_error(&self, context: &str, error: &dyn Error) {

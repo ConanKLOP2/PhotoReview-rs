@@ -503,7 +503,7 @@ fn scroll_bars_are_registered_by_the_constructor() {
 // New: the bars are in the window's handler chain only until `Closed`; they are disposed once and do not keep the window alive (16g: the cycle
 // handlers -> bars -> viewport -> window).
 #[test]
-#[ignore = "native: needs desktop"]
+#[ignore = "native: needs desktop (green on a desktop 2026-11-01, G1; stays ignored like the other hidden-window tests of this file)"]
 fn closed_disposes_the_bars_once_and_unsubscribes() {
     let ui = start_ui();
     let (while_open, after_close, still_reachable, drawn_after, window_gone, bars_gone) = run(&ui, || {

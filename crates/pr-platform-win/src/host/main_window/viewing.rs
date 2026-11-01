@@ -102,7 +102,8 @@ impl std::fmt::Debug for MainWindowPrefetchHost {
 impl PrefetchHost for MainWindowPrefetchHost {
     fn path_at(&self, index: i32) -> Option<String> {
         let window = self.window.upgrade()?;
-        let view_model = window.view_model.borrow();
+        // A modal command may hold the view model (BACKLOG G1): no path then, the caller treats it as "not known".
+        let view_model = window.view_model.try_borrow().ok()?;
         let catalog = view_model.catalog();
         // `ReviewCatalog::path_at` panics outside the range, so the range test comes first.
         let index = usize::try_from(index).ok().filter(|index| *index < catalog.count())?;
@@ -116,7 +117,11 @@ impl PrefetchHost for MainWindowPrefetchHost {
         if window.disposed.get() {
             return;
         }
-        let service = Arc::clone(window.view_model.borrow().preview_service());
+        let Ok(view_model) = window.view_model.try_borrow() else {
+            return; // a modal command holds the view model: the lookup is not needed for a window that cannot navigate meanwhile
+        };
+        let service = Arc::clone(view_model.preview_service());
+        drop(view_model);
         let dispatcher = window.dispatcher.clone();
         let id = window.id;
         // T3: the worker holds only `Send` data (the service, the request, the dispatcher, the window id).
@@ -398,7 +403,11 @@ impl MainWindowInner {
         let Some(composer) = self.current_composer() else {
             return;
         };
-        let settings = self.view_model.borrow().settings();
+        let Ok(view_model) = self.view_model.try_borrow() else {
+            return;
+        };
+        let settings = view_model.settings();
+        drop(view_model);
         let Some(duration) = crossfade_duration(settings.image_transition, settings.image_transition_ms) else {
             return;
         };
@@ -463,7 +472,9 @@ impl MainWindowInner {
             return;
         };
         let (index, count) = {
-            let view_model = self.view_model.borrow();
+            let Ok(view_model) = self.view_model.try_borrow() else {
+                return;
+            };
             (
                 view_model.current_index(),
                 i32::try_from(view_model.total_files()).unwrap_or(i32::MAX),
@@ -611,7 +622,12 @@ impl MainWindowInner {
     /// C# `TrySelectCompareAt` (267-285): not disposed and compare visible; `layout::hit_test(client_size_dip, point)` (16b): Left -> select left, Right ->
     /// select right (through the view model, see the contract: `MainViewModel` has no public selector yet), result `true`; otherwise `false`.
     pub(super) fn try_select_compare_at(&self, client_dip: PointD) -> bool {
-        if self.disposed.get() || !self.view_model.borrow().compare().is_visible() {
+        if self.disposed.get()
+            || !self
+                .view_model
+                .try_borrow()
+                .is_ok_and(|view_model| view_model.compare().is_visible())
+        {
             return false;
         }
         let client = self.window.client_size_dip();

@@ -343,6 +343,62 @@ fn open_path_during_a_modal_command_is_queued_and_opened_after_it_returns() {
     finish(ui);
 }
 
+// BACKLOG G1: a close that arrives while a modal command holds the view model used to panic (`borrow` in `on_closing`, swallowed by the window procedure
+// or fatal). Now `Closing` is cancelled and remembered, and the window closes once the command returns. C# re-enters (`Window.Close()` inside the nested
+// loop); a `RefCell` cannot, so the close is replayed after the command (documented in P-69).
+#[test]
+#[ignore = "native: needs desktop"]
+fn close_during_a_modal_command_is_cancelled_then_replayed_when_the_command_returns() {
+    let ui = start_ui();
+    let (destroyed_inside, closing_inside, destroyed_after) = run(&ui, || {
+        let b = build(BuildOptions::default());
+        let mut inside = (false, false);
+        // The closure runs with the view model mutably borrowed, like `show_settings`.
+        b.window.update_view_model(|vm| {
+            b.shell.close(); // WM_CLOSE inside the nested loop: must not panic
+            inside = (b.shell.is_destroyed(), b.window.is_closing_or_closed());
+            vm.set_instance_label(None)
+        });
+        (inside.0, inside.1, b.shell.is_destroyed())
+    });
+    assert!(!destroyed_inside, "the close is cancelled while the command runs");
+    assert!(
+        !closing_inside,
+        "IsClosingOrClosed stays false while the close is deferred"
+    );
+    assert!(
+        destroyed_after,
+        "the recorded close was replayed after the command returned"
+    );
+    finish(ui);
+}
+
+// BACKLOG G1: a command refused because the view model is busy leaves a visible state (counter + log) instead of vanishing.
+#[test]
+#[ignore = "native: needs desktop"]
+fn update_view_model_during_a_modal_command_is_counted_not_a_panic() {
+    let ui = start_ui();
+    let (dropped_inside, ran_nested, dropped_after) = run(&ui, || {
+        let b = build(BuildOptions::default());
+        let mut inside = 0;
+        let ran = Rc::new(Cell::new(false));
+        b.window.update_view_model(|vm| {
+            let flag = Rc::clone(&ran);
+            b.window.update_view_model(move |_| {
+                flag.set(true);
+                ChangeSet::default()
+            });
+            inside = b.window.dropped_busy_commands();
+            vm.set_instance_label(None)
+        });
+        (inside, ran.get(), b.window.dropped_busy_commands())
+    });
+    assert_eq!(dropped_inside, 1, "the nested command is counted");
+    assert!(!ran_nested, "it did not run against a borrowed view model");
+    assert_eq!(dropped_after, 1);
+    finish(ui);
+}
+
 // T1 (re-entrancy) through the real window: a feature applies an empty set from its hook.
 #[test]
 #[ignore = "native: needs desktop"]
