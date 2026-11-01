@@ -13,6 +13,7 @@ use std::time::{Duration, Instant};
 
 use pr_app::coordinators::presenter::state::{ImagePresenterDeps, PresentError, PresenterChanges};
 use pr_core::abstractions::FileSystem;
+use pr_core::model::LoadingMode;
 use support::present_helpers::{ScriptedFs, start};
 use support::presenter_fakes::{
     FakeHasher, FixtureOptions, PresenterFixture, RecordingSink, build_thumbnail_cache, env,
@@ -198,6 +199,9 @@ fn wait_for_event_wakes_on_a_worker_completion_and_keeps_reporting_it_until_pump
     guarded(|| {
         let fs = ScriptedFs::new();
         let mut f = fixture_with_fs(&["a.jpg"], &fs);
+        // Fast mode runs the preview worker only: in Preview mode the thumbnail worker races it, and its late completion lands in the inbox
+        // after the present ended (is_idle already true), which made the final "consumed by the pump" check flaky (CI, PR #548).
+        f.settings.loading_mode = Some(LoadingMode::Fast);
         let a = f.path("a.jpg");
         fs.hold(&a);
         start(&mut f, 0);
