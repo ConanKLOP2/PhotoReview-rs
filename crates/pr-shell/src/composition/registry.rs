@@ -97,28 +97,87 @@ impl fmt::Debug for SharedServiceInputs {
     }
 }
 
+/// A lazily built singleton that does NOT remember a failure: a build that returns `Err` leaves the cell empty, so the next call builds again (MS DI `AddSingleton`
+/// does not cache a throwing factory either; a `OnceLock<Result<..>>` would keep a transient error, such as a thread that could not start, for the whole session).
+/// Builds are serialised, so a success is built once; different cells use different locks and the build graph is acyclic.
+struct RetryCell<T> {
+    value: OnceLock<T>,
+    building: Mutex<()>,
+}
+
+impl<T: Clone> RetryCell<T> {
+    const fn new() -> Self {
+        Self {
+            value: OnceLock::new(),
+            building: Mutex::new(()),
+        }
+    }
+
+    fn get_or_try_init<E>(&self, build: impl FnOnce() -> Result<T, E>) -> Result<T, E> {
+        if let Some(value) = self.value.get() {
+            return Ok(value.clone());
+        }
+        let _building = self.building.lock().unwrap_or_else(std::sync::PoisonError::into_inner);
+        if let Some(value) = self.value.get() {
+            return Ok(value.clone());
+        }
+        let built = build()?;
+        Ok(self.value.get_or_init(|| built).clone())
+    }
+}
+
+#[cfg(test)]
+mod retry_cell_tests {
+    use super::RetryCell;
+    use std::cell::Cell;
+
+    #[test]
+    fn a_failed_build_is_not_remembered_and_the_next_call_builds_again() {
+        let cell: RetryCell<u32> = RetryCell::new();
+        let calls = Cell::new(0);
+        let first: Result<u32, &str> = cell.get_or_try_init(|| {
+            calls.set(calls.get() + 1);
+            Err("transient")
+        });
+        assert_eq!(first, Err("transient"));
+        let second: Result<u32, &str> = cell.get_or_try_init(|| {
+            calls.set(calls.get() + 1);
+            Ok(7)
+        });
+        assert_eq!(second, Ok(7));
+        assert_eq!(calls.get(), 2);
+    }
+
+    #[test]
+    fn a_successful_build_is_cached() {
+        let cell: RetryCell<u32> = RetryCell::new();
+        assert_eq!(cell.get_or_try_init(|| Ok::<_, ()>(1)), Ok(1));
+        assert_eq!(cell.get_or_try_init(|| Ok::<_, ()>(2)), Ok(1));
+    }
+}
+
 struct Inner {
     inputs: SharedServiceInputs,
     file_system: OnceLock<Arc<dyn FileSystem>>,
     settings_store: OnceLock<Arc<SettingsStore>>,
     key_names: OnceLock<Arc<dyn KeyNameValidator>>,
     session_store: OnceLock<Arc<SessionStore>>,
-    session_writer: OnceLock<Result<Arc<SessionWriter>, RegistryError>>,
+    session_writer: RetryCell<Arc<SessionWriter>>,
     localization: OnceLock<SharedLocalization>,
     journal: OnceLock<Arc<OperationJournal>>,
     file_action_service: OnceLock<Arc<FileActionService>>,
     undo_service: OnceLock<Arc<Mutex<UndoService>>>,
     recovery_retry: OnceLock<Arc<RecoveryRetryService>>,
-    file_hash_service: OnceLock<Result<Arc<FileHashService>, RegistryError>>,
+    file_hash_service: RetryCell<Arc<FileHashService>>,
     metrics: OnceLock<Arc<ReviewMetrics>>,
     explorer_snapshot: OnceLock<Arc<LatestExplorerSnapshot>>,
     viewport_size_source: OnceLock<Arc<ViewportSizeSource>>,
     physical_memory_bytes: OnceLock<i64>,
-    decoder_factory: OnceLock<Result<Arc<dyn ImageDecoderFactory>, RegistryError>>,
-    thumbnail_cache: OnceLock<Result<Arc<ThumbnailCache>, RegistryError>>,
-    source_bytes_policy: OnceLock<Result<Arc<SourceBytesCachePolicy>, RegistryError>>,
+    decoder_factory: RetryCell<Arc<dyn ImageDecoderFactory>>,
+    thumbnail_cache: RetryCell<Arc<ThumbnailCache>>,
+    source_bytes_policy: RetryCell<Arc<SourceBytesCachePolicy>>,
     preview_state: OnceLock<PreviewStateContext>,
-    preview_service: OnceLock<Result<Arc<PreviewImageService>, RegistryError>>,
+    preview_service: RetryCell<Arc<PreviewImageService>>,
     preload_scheduler_factory: OnceLock<PreloadSchedulerFactory>,
 }
 
@@ -169,22 +228,22 @@ impl SharedServices {
                 settings_store: OnceLock::new(),
                 key_names: OnceLock::new(),
                 session_store: OnceLock::new(),
-                session_writer: OnceLock::new(),
+                session_writer: RetryCell::new(),
                 localization: OnceLock::new(),
                 journal: OnceLock::new(),
                 file_action_service: OnceLock::new(),
                 undo_service: OnceLock::new(),
                 recovery_retry: OnceLock::new(),
-                file_hash_service: OnceLock::new(),
+                file_hash_service: RetryCell::new(),
                 metrics: OnceLock::new(),
                 explorer_snapshot: OnceLock::new(),
                 viewport_size_source: OnceLock::new(),
                 physical_memory_bytes: OnceLock::new(),
-                decoder_factory: OnceLock::new(),
-                thumbnail_cache: OnceLock::new(),
-                source_bytes_policy: OnceLock::new(),
+                decoder_factory: RetryCell::new(),
+                thumbnail_cache: RetryCell::new(),
+                source_bytes_policy: RetryCell::new(),
                 preview_state: OnceLock::new(),
-                preview_service: OnceLock::new(),
+                preview_service: RetryCell::new(),
                 preload_scheduler_factory: OnceLock::new(),
             }),
         }
@@ -271,17 +330,14 @@ impl SharedServices {
 
     /// Registration 19 `SessionWriter`: `SessionWriter::new(session_store(), Some(log()), None, None)`; `Err` only for an invalid debounce (impossible with the defaults).
     pub fn session_writer(&self) -> Result<Arc<SessionWriter>, RegistryError> {
-        self.inner
-            .session_writer
-            .get_or_init(|| {
-                SessionWriter::new(self.session_store(), Some(self.log()), None, None)
-                    .map(Arc::new)
-                    .map_err(|error| RegistryError {
-                        service: "session_writer",
-                        message: error.to_string(),
-                    })
-            })
-            .clone()
+        self.inner.session_writer.get_or_try_init(|| {
+            SessionWriter::new(self.session_store(), Some(self.log()), None, None)
+                .map(Arc::new)
+                .map_err(|error| RegistryError {
+                    service: "session_writer",
+                    message: error.to_string(),
+                })
+        })
     }
 
     /// Registration 20 `LocalizationService`: `Arc::new(Mutex::new(LocalizationService::new(Arc::new(PhysicalFileSystem), LocalizationPaths { shipped_dir, user_languages_dir },
@@ -388,22 +444,19 @@ impl SharedServices {
     /// Registration 23 `FileHashService`: `FileHashService::with_seams(source_bytes_policy()?.cache().cloned(), file_system(), source_reader(), Arc::new(LocalizedTexts))`;
     /// `Err` for `InvalidCapacity` (impossible) and for a `source_bytes_policy` error.
     pub fn file_hash_service(&self) -> Result<Arc<FileHashService>, RegistryError> {
-        self.inner
-            .file_hash_service
-            .get_or_init(|| {
-                FileHashService::with_seams(
-                    self.source_bytes_policy()?.cache().cloned(),
-                    self.file_system(),
-                    self.source_reader(),
-                    Arc::new(super::texts::LocalizedTexts),
-                )
-                .map(Arc::new)
-                .map_err(|error| RegistryError {
-                    service: "file_hash_service",
-                    message: error.to_string(),
-                })
+        self.inner.file_hash_service.get_or_try_init(|| {
+            FileHashService::with_seams(
+                self.source_bytes_policy()?.cache().cloned(),
+                self.file_system(),
+                self.source_reader(),
+                Arc::new(super::texts::LocalizedTexts),
+            )
+            .map(Arc::new)
+            .map_err(|error| RegistryError {
+                service: "file_hash_service",
+                message: error.to_string(),
             })
-            .clone()
+        })
     }
 
     // ---- 4. diagnostics (golden 26, 27) ----
@@ -499,114 +552,103 @@ impl SharedServices {
     /// factories::create_raw_decoder(standard, source_bytes_policy()?.cache().cloned(), &deps), || settings.raw_support_enabled, texts)), wpf_decoder_factory: options.wpf_fallback_decoder })`.
     /// Resolving it builds `source_bytes_policy`, which reads the settings: call it only after they are loaded.
     pub fn decoder_factory(&self) -> Result<Arc<dyn ImageDecoderFactory>, RegistryError> {
-        self.inner
-            .decoder_factory
-            .get_or_init(|| {
-                let deps = self.decoder_deps();
-                let options = self.inner.inputs.options.clone();
-                let wpf = options.wpf_fallback_decoder.as_ref().map(|provider| provider());
-                let webp =
-                    super::factories::create_webp_heic_decoder(&deps, wpf, Some(self.log()), Some(self.metrics()));
-                let source_bytes_cache = self.source_bytes_policy()?.cache().cloned();
-                let store = self.settings_store();
-                let enabled: Arc<dyn Fn() -> bool + Send + Sync> =
-                    Arc::new(move || store.current().webp_heic_support_enabled);
-                let codecs: Arc<dyn Fn() -> pr_imaging::webp_heic::WicCodecSupport + Send + Sync> =
-                    Arc::new(|| pr_platform_win::wic::availability::current().clone());
-                let raw_setting_store = self.settings_store();
-                let is_libraw_needed: Arc<dyn Fn() -> bool + Send + Sync> = Arc::new(move || {
-                    let settings = raw_setting_store.current();
-                    settings.raw_support_enabled
-                        || settings.decoder_backend == Some(pr_core::model::enums::DecoderBackend::LibRaw)
-                });
-                let providers = super::decoders::create_decoder_providers(
-                    &deps,
-                    options.wpf_fallback_decoder.clone(),
-                    Some(is_libraw_needed),
+        self.inner.decoder_factory.get_or_try_init(|| {
+            let deps = self.decoder_deps();
+            let options = self.inner.inputs.options.clone();
+            let wpf = options.wpf_fallback_decoder.as_ref().map(|provider| provider());
+            let webp = super::factories::create_webp_heic_decoder(&deps, wpf, Some(self.log()), Some(self.metrics()));
+            let source_bytes_cache = self.source_bytes_policy()?.cache().cloned();
+            let store = self.settings_store();
+            let enabled: Arc<dyn Fn() -> bool + Send + Sync> =
+                Arc::new(move || store.current().webp_heic_support_enabled);
+            let codecs: Arc<dyn Fn() -> pr_imaging::webp_heic::WicCodecSupport + Send + Sync> =
+                Arc::new(|| pr_platform_win::wic::availability::current().clone());
+            let raw_setting_store = self.settings_store();
+            let is_libraw_needed: Arc<dyn Fn() -> bool + Send + Sync> = Arc::new(move || {
+                let settings = raw_setting_store.current();
+                settings.raw_support_enabled
+                    || settings.decoder_backend == Some(pr_core::model::enums::DecoderBackend::LibRaw)
+            });
+            let providers = super::decoders::create_decoder_providers(
+                &deps,
+                options.wpf_fallback_decoder.clone(),
+                Some(is_libraw_needed),
+            );
+            // The store, not `self.clone()`: a clone of the registry inside a closure that the registry itself stores (`decoder_factory`) is an `Arc` cycle that keeps the whole graph
+            // (Explorer pump thread, preview persist workers) alive after the shutdown.
+            let raw_setting_store_for_decorator = self.settings_store();
+            let decoder_decorator: pr_imaging::factory::DecoderDecorator = Arc::new(move |_backend, standard| {
+                let texts: Arc<dyn pr_imaging::webp_heic::WebpHeicTexts> = Arc::new(super::texts::LocalizedTexts);
+                let standard: Arc<dyn pr_imaging::decoder_traits::ImageDecoder> =
+                    Arc::new(pr_imaging::webp_heic::WebpHeicRoutingDecoder::new(
+                        standard,
+                        Arc::clone(&webp),
+                        Arc::clone(&enabled),
+                        Arc::clone(&codecs),
+                        Arc::clone(&texts),
+                        None,
+                    ));
+                let raw_enabled_store = Arc::clone(&raw_setting_store_for_decorator);
+                let raw_enabled: Arc<dyn Fn() -> bool + Send + Sync> =
+                    Arc::new(move || raw_enabled_store.current().raw_support_enabled);
+                let raw =
+                    super::factories::create_raw_decoder(Arc::clone(&standard), source_bytes_cache.clone(), &deps);
+                let raw_texts: Arc<dyn pr_imaging_raw::routing::RawRoutingTexts> =
+                    Arc::new(super::texts::LocalizedTexts);
+                let routed: Arc<dyn pr_imaging::decoder_traits::ImageDecoder> = Arc::new(
+                    pr_imaging_raw::routing::FormatRoutingDecoder::new(standard, Arc::new(raw), raw_enabled, raw_texts),
                 );
-                // The store, not `self.clone()`: a clone of the registry inside a closure that the registry itself stores (`decoder_factory`) is an `Arc` cycle that keeps the whole graph
-                // (Explorer pump thread, preview persist workers) alive after the shutdown.
-                let raw_setting_store_for_decorator = self.settings_store();
-                let decoder_decorator: pr_imaging::factory::DecoderDecorator = Arc::new(move |_backend, standard| {
-                    let texts: Arc<dyn pr_imaging::webp_heic::WebpHeicTexts> = Arc::new(super::texts::LocalizedTexts);
-                    let standard: Arc<dyn pr_imaging::decoder_traits::ImageDecoder> =
-                        Arc::new(pr_imaging::webp_heic::WebpHeicRoutingDecoder::new(
-                            standard,
-                            Arc::clone(&webp),
-                            Arc::clone(&enabled),
-                            Arc::clone(&codecs),
-                            Arc::clone(&texts),
-                            None,
-                        ));
-                    let raw_enabled_store = Arc::clone(&raw_setting_store_for_decorator);
-                    let raw_enabled: Arc<dyn Fn() -> bool + Send + Sync> =
-                        Arc::new(move || raw_enabled_store.current().raw_support_enabled);
-                    let raw =
-                        super::factories::create_raw_decoder(Arc::clone(&standard), source_bytes_cache.clone(), &deps);
-                    let raw_texts: Arc<dyn pr_imaging_raw::routing::RawRoutingTexts> =
-                        Arc::new(super::texts::LocalizedTexts);
-                    let routed: Arc<dyn pr_imaging::decoder_traits::ImageDecoder> =
-                        Arc::new(pr_imaging_raw::routing::FormatRoutingDecoder::new(
-                            standard,
-                            Arc::new(raw),
-                            raw_enabled,
-                            raw_texts,
-                        ));
-                    routed
-                });
-                let factory = pr_imaging::factory::DefaultImageDecoderFactory::new(
-                    providers,
-                    pr_imaging::factory::DecoderFactoryOptions {
-                        log: Some(self.log()),
-                        metrics: Some(self.metrics()),
-                        decoder_decorator: Some(decoder_decorator),
-                        wpf_decoder_factory: options.wpf_fallback_decoder,
-                    },
-                )
-                .map_err(|error| RegistryError {
-                    service: "decoder_factory",
-                    message: error.to_string(),
-                })?;
-                let factory: Arc<dyn ImageDecoderFactory> = Arc::new(factory);
-                Ok(self
-                    .inner
-                    .inputs
-                    .decoder_wrapper
-                    .as_ref()
-                    .map_or(factory.clone(), |wrap| wrap(factory)))
-            })
-            .clone()
+                routed
+            });
+            let factory = pr_imaging::factory::DefaultImageDecoderFactory::new(
+                providers,
+                pr_imaging::factory::DecoderFactoryOptions {
+                    log: Some(self.log()),
+                    metrics: Some(self.metrics()),
+                    decoder_decorator: Some(decoder_decorator),
+                    wpf_decoder_factory: options.wpf_fallback_decoder,
+                },
+            )
+            .map_err(|error| RegistryError {
+                service: "decoder_factory",
+                message: error.to_string(),
+            })?;
+            let factory: Arc<dyn ImageDecoderFactory> = Arc::new(factory);
+            Ok(self
+                .inner
+                .inputs
+                .decoder_wrapper
+                .as_ref()
+                .map_or(factory.clone(), |wrap| wrap(factory)))
+        })
     }
 
     /// Registration 38 `ThumbnailCache`: `ThumbnailCache::new(ThumbnailCacheServices { platform_codec: options.codec, cache_image_reader: platform().cache_image_reader,
     /// embedded_backend: platform().embedded_thumbnails, fs: file_system() }, ThumbnailCacheOptions { disk_directory: paths().thumbnail_cache_dir, log: log(), clock: clock(), ..new(dir) })`.
     pub fn thumbnail_cache(&self) -> Result<Arc<ThumbnailCache>, RegistryError> {
-        self.inner
-            .thumbnail_cache
-            .get_or_init(|| {
-                let services = pr_imaging::cache::thumbnails::ThumbnailCacheServices {
-                    platform_codec: Arc::clone(&self.inner.inputs.options.codec),
-                    cache_image_reader: Arc::clone(&self.platform().cache_image_reader),
-                    embedded_backend: Arc::clone(&self.platform().embedded_thumbnails),
-                    fs: self.file_system(),
-                };
-                let options =
-                    pr_imaging::cache::thumbnails::ThumbnailCacheOptions::new(self.paths().thumbnail_cache_dir.clone());
-                ThumbnailCache::new(
-                    services,
-                    pr_imaging::cache::thumbnails::ThumbnailCacheOptions {
-                        log: self.log(),
-                        clock: self.clock(),
-                        ..options
-                    },
-                )
-                .map(Arc::new)
-                .map_err(|error| RegistryError {
-                    service: "thumbnail_cache",
-                    message: error.to_string(),
-                })
+        self.inner.thumbnail_cache.get_or_try_init(|| {
+            let services = pr_imaging::cache::thumbnails::ThumbnailCacheServices {
+                platform_codec: Arc::clone(&self.inner.inputs.options.codec),
+                cache_image_reader: Arc::clone(&self.platform().cache_image_reader),
+                embedded_backend: Arc::clone(&self.platform().embedded_thumbnails),
+                fs: self.file_system(),
+            };
+            let options =
+                pr_imaging::cache::thumbnails::ThumbnailCacheOptions::new(self.paths().thumbnail_cache_dir.clone());
+            ThumbnailCache::new(
+                services,
+                pr_imaging::cache::thumbnails::ThumbnailCacheOptions {
+                    log: self.log(),
+                    clock: self.clock(),
+                    ..options
+                },
+            )
+            .map(Arc::new)
+            .map_err(|error| RegistryError {
+                service: "thumbnail_cache",
+                message: error.to_string(),
             })
-            .clone()
+        })
     }
 
     /// Registration 39 `SourceBytesCachePolicy`: reads `settings_store().current()`. `use_source_bytes_cache == false` -> `SourceBytesCachePolicy::new(None)`. Else
@@ -614,7 +656,7 @@ impl SharedServices {
     /// `bytes <= 0` -> `log().warn("Source-bytes cache disabled: the RAM cache share leaves no room beyond the preview preload window.")` and `new(None)`; else
     /// `SourceBytesCache::new(bytes, physical_memory_bytes(), Some(source_reader()))` `.with_texts(LocalizedTexts)`.
     pub fn source_bytes_policy(&self) -> Result<Arc<SourceBytesCachePolicy>, RegistryError> {
-        self.inner.source_bytes_policy.get_or_init(|| {
+        self.inner.source_bytes_policy.get_or_try_init(|| {
             let settings = self.settings_store().current();
             let cache = if !settings.use_source_bytes_cache { None } else {
                 let window = pr_imaging::preload_order::PreloadWindow::from_settings(&settings);
@@ -626,7 +668,7 @@ impl SharedServices {
                     .with_texts(Arc::new(super::texts::LocalizedTexts)))) }
             };
             Ok(Arc::new(SourceBytesCachePolicy::new(cache)))
-        }).clone()
+        })
     }
 
     /// Registration 40 `PreviewStateContext`: `PreviewStateContext::new()` whose three closures are replaced by the ones of registration 41 (`is_original_loading_mode` = loading mode is
@@ -648,73 +690,69 @@ impl SharedServices {
     /// Some(file_system()), clock: Some(clock()), ..PreviewServiceConfig::new(..) })` with `s = settings_store().current()` read ONCE (the capacity, percent and window apply after a restart,
     /// Q-AR6/Q-R19). Resolving it reads the settings: call it only after they are loaded.
     pub fn preview_service(&self) -> Result<Arc<PreviewImageService>, RegistryError> {
-        self.inner
-            .preview_service
-            .get_or_init(|| {
-                let settings = self.settings_store().current();
-                let preview_state = PreviewStateContext {
-                    is_original_loading_mode: Arc::new({
-                        let store = self.settings_store();
-                        move || store.current().loading_mode == Some(pr_core::model::enums::LoadingMode::Original)
-                    }),
-                    target_decode_box: Arc::new({
-                        let viewport = self.viewport_size_source();
-                        move || viewport.target_decode_box()
-                    }),
-                    current_backend: Arc::new({
-                        let store = self.settings_store();
-                        move || {
-                            store
-                                .current()
-                                .decoder_backend
-                                .unwrap_or(pr_core::model::enums::DecoderBackend::Wpf)
-                        }
-                    }),
-                };
-                let _ = self.inner.preview_state.set(preview_state.clone());
-                let mut config = pr_imaging::service::PreviewServiceConfig::new(
-                    self.metrics(),
-                    Arc::clone(&preview_state.is_original_loading_mode),
-                    Arc::clone(&preview_state.target_decode_box),
-                    Arc::clone(&self.inner.inputs.options.codec),
-                    Arc::clone(&self.platform().payload_codec),
-                );
-                config.capacity_bytes = settings.image_cache_capacity_bytes;
-                config.disk_cache_directory = Some(self.paths().preview_cache_dir.clone());
-                config.decoder_factory = Some(self.decoder_factory()?);
-                config.current_backend = Some(Arc::clone(&preview_state.current_backend));
-                config.log = Some(self.log());
-                config.source_bytes_cache = self.source_bytes_policy()?.cache().cloned();
-                config.cache_ram_percent = Some(settings.image_cache_ram_percent);
-                config.preload_window = Some(pr_imaging::preload_order::PreloadWindow::from_settings(&settings));
-                config.source_reader = Some(self.source_reader());
-                config.physical_memory_bytes = self.physical_memory_bytes();
-                config.file_system = Some(self.file_system());
-                config.clock = Some(self.clock());
-                let raw_enabled_store = self.settings_store();
-                if pr_libraw::availability::probe().available {
-                    config.raw_full_decoder = Some(Arc::new(
-                        pr_libraw::decoder::LibRawDecoder::new(
-                            Arc::clone(&self.inner.inputs.options.codec),
-                            Arc::clone(&self.platform().libraw_api),
-                            Arc::clone(&self.platform().memory_info),
-                        )
-                        .with_shared_file_read(),
-                    ));
-                }
-                config.is_raw_full_decode_enabled = Some(Arc::new(move || {
-                    let current = raw_enabled_store.current();
-                    current.raw_support_enabled
-                        && current.raw_full_decode == pr_core::model::enums::RawFullDecode::OnZoom
-                }));
-                PreviewImageService::new(config)
-                    .map(Arc::new)
-                    .map_err(|error| RegistryError {
-                        service: "preview_service",
-                        message: error.to_string(),
-                    })
-            })
-            .clone()
+        self.inner.preview_service.get_or_try_init(|| {
+            let settings = self.settings_store().current();
+            let preview_state = PreviewStateContext {
+                is_original_loading_mode: Arc::new({
+                    let store = self.settings_store();
+                    move || store.current().loading_mode == Some(pr_core::model::enums::LoadingMode::Original)
+                }),
+                target_decode_box: Arc::new({
+                    let viewport = self.viewport_size_source();
+                    move || viewport.target_decode_box()
+                }),
+                current_backend: Arc::new({
+                    let store = self.settings_store();
+                    move || {
+                        store
+                            .current()
+                            .decoder_backend
+                            .unwrap_or(pr_core::model::enums::DecoderBackend::Wpf)
+                    }
+                }),
+            };
+            let _ = self.inner.preview_state.set(preview_state.clone());
+            let mut config = pr_imaging::service::PreviewServiceConfig::new(
+                self.metrics(),
+                Arc::clone(&preview_state.is_original_loading_mode),
+                Arc::clone(&preview_state.target_decode_box),
+                Arc::clone(&self.inner.inputs.options.codec),
+                Arc::clone(&self.platform().payload_codec),
+            );
+            config.capacity_bytes = settings.image_cache_capacity_bytes;
+            config.disk_cache_directory = Some(self.paths().preview_cache_dir.clone());
+            config.decoder_factory = Some(self.decoder_factory()?);
+            config.current_backend = Some(Arc::clone(&preview_state.current_backend));
+            config.log = Some(self.log());
+            config.source_bytes_cache = self.source_bytes_policy()?.cache().cloned();
+            config.cache_ram_percent = Some(settings.image_cache_ram_percent);
+            config.preload_window = Some(pr_imaging::preload_order::PreloadWindow::from_settings(&settings));
+            config.source_reader = Some(self.source_reader());
+            config.physical_memory_bytes = self.physical_memory_bytes();
+            config.file_system = Some(self.file_system());
+            config.clock = Some(self.clock());
+            let raw_enabled_store = self.settings_store();
+            if pr_libraw::availability::probe().available {
+                config.raw_full_decoder = Some(Arc::new(
+                    pr_libraw::decoder::LibRawDecoder::new(
+                        Arc::clone(&self.inner.inputs.options.codec),
+                        Arc::clone(&self.platform().libraw_api),
+                        Arc::clone(&self.platform().memory_info),
+                    )
+                    .with_shared_file_read(),
+                ));
+            }
+            config.is_raw_full_decode_enabled = Some(Arc::new(move || {
+                let current = raw_enabled_store.current();
+                current.raw_support_enabled && current.raw_full_decode == pr_core::model::enums::RawFullDecode::OnZoom
+            }));
+            PreviewImageService::new(config)
+                .map(Arc::new)
+                .map_err(|error| RegistryError {
+                    service: "preview_service",
+                    message: error.to_string(),
+                })
+        })
     }
 
     /// Registration 42: the scheduler factory (see [`PreloadSchedulerFactory`]). Each call builds `PreloadScheduler::with_thresholds(preview_service()?, metrics(), entries, memory_probe(),

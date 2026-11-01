@@ -15,6 +15,7 @@ use std::cell::{Cell, RefCell};
 use std::cmp::{Ordering as CmpOrdering, Reverse};
 use std::collections::{BinaryHeap, HashMap, VecDeque};
 use std::fmt;
+use std::marker::PhantomData;
 use std::path::{Path, PathBuf};
 use std::rc::{Rc, Weak};
 use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
@@ -472,7 +473,9 @@ impl TimerQueue {
                 Some(due) if due <= now => {
                     if let Some(Reverse(entry)) = heap.pop() {
                         drop(heap);
-                        (entry.action)();
+                        // A panicking action must not kill the one timer thread of the process (every later `post_after` would never run): the action is only a `Send` wake
+                        // (R0003: a worker runs its job inside `catch_unwind`); the dispatcher already logged what it can.
+                        let _ = std::panic::catch_unwind(std::panic::AssertUnwindSafe(entry.action));
                         heap = self.heap.lock().unwrap_or_else(PoisonError::into_inner);
                     }
                 }
@@ -510,6 +513,8 @@ fn timer_queue() -> &'static TimerQueue {
 #[derive(Clone)]
 pub struct UiLocalPoster {
     dispatcher: Win32UiDispatcher,
+    /// `!Send + !Sync`: `post` fills the thread-local queues of the CALLING thread, so a clone used on another thread would lose its jobs.
+    not_send: PhantomData<*const ()>,
 }
 
 impl fmt::Debug for UiLocalPoster {
@@ -521,7 +526,10 @@ impl fmt::Debug for UiLocalPoster {
 impl UiLocalPoster {
     /// A poster over `dispatcher`; must be created on the UI thread (it uses the thread-local queues of that thread).
     pub fn new(dispatcher: Win32UiDispatcher) -> Self {
-        Self { dispatcher }
+        Self {
+            dispatcher,
+            not_send: PhantomData,
+        }
     }
 
     /// `post` after `delay`: a timer thread waits (a bounded channel wait, no polling) and then posts a `Send` wake job; never blocks the UI thread. A window
@@ -1287,6 +1295,32 @@ impl Drop for MainWindow {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    // The timer thread survives a panicking action: the next due action still runs.
+    #[test]
+    fn timer_queue_runs_later_actions_after_one_panics() {
+        let queue: &'static TimerQueue = Box::leak(Box::new(TimerQueue {
+            heap: Mutex::new(BinaryHeap::new()),
+            changed: Condvar::new(),
+            next_seq: AtomicU64::new(0),
+        }));
+        std::thread::spawn(move || queue.run());
+        let (sender, receiver) = std::sync::mpsc::channel();
+        queue.schedule(
+            Duration::ZERO,
+            Box::new(|| panic!("timer action panics (expected by the test)")),
+        );
+        queue.schedule(
+            Duration::from_millis(1),
+            Box::new(move || {
+                let _ = sender.send(());
+            }),
+        );
+        assert!(
+            receiver.recv_timeout(Duration::from_secs(10)).is_ok(),
+            "the timer thread died on the panicking action"
+        );
+    }
 
     // D-W8B4M-6: the registry finds a window by id only while it is alive.
     #[test]

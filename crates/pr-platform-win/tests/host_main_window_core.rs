@@ -162,6 +162,17 @@ fn main_window_is_not_send() {
     <MainWindow as AmbiguousIfSend<_>>::probe();
 }
 
+// The poster is `!Send` (compile-time), as its doc says: it uses the thread-local queues of the thread that created it.
+#[test]
+fn ui_local_poster_is_not_send() {
+    trait AmbiguousIfSend<A> {
+        fn probe() {}
+    }
+    impl<T: ?Sized> AmbiguousIfSend<()> for T {}
+    impl<T: ?Sized + Send> AmbiguousIfSend<u8> for T {}
+    <UiLocalPoster as AmbiguousIfSend<_>>::probe();
+}
+
 // ---- native: the local poster and the wake -----------------------------------------------------------------------------------------------------
 
 #[test]
