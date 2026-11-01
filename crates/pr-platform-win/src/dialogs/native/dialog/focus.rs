@@ -16,6 +16,15 @@ pub fn is_tab_stop(style: u32) -> bool {
     style & 0x0001_0000 != 0
 }
 
+/// `WS_DISABLED` bit of a window style.
+const WS_DISABLED: u32 = 0x0800_0000;
+
+/// Candidate test of `first_tab_stop` (pure). DIVERGENCE DV (P-67, owner-confirmed, L3): the C# `FirstTabStop` tests only `WS_TABSTOP`, so a disabled first
+/// control takes the initial `SetFocus` (which fails and leaves no focus). Here a control with `WS_DISABLED` is skipped.
+pub fn is_focusable_tab_stop(style: u32) -> bool {
+    is_tab_stop(style) && style & WS_DISABLED == 0
+}
+
 impl NativeDialog {
     /// C# `InitializeDialog(hwnd)` (lines 976 to 1014), the `WM_INITDIALOG` handler. Steps, in order (the order is observable: hooks see a half-built dialog):
     /// 1. `modal.hwnd = hwnd`; `metrics.dpi = dpi_for(owner != 0 ? owner : hwnd)`; `host::icons::apply(hwnd, dpi)` (the app icon of the title bar and Alt+Tab).
@@ -78,13 +87,13 @@ impl NativeDialog {
         }
     }
 
-    /// C# `FirstTabStop()` (lines 1016 to 1028): the first registered child whose style has `WS_TABSTOP` (`get_window_long_ptr(child, GWL_STYLE) as u32`); `0`
-    /// when none.
+    /// C# `FirstTabStop()` (lines 1016 to 1028): the first registered child whose style has `WS_TABSTOP` and not `WS_DISABLED` (DIVERGENCE DV, P-67 L3, see
+    /// `is_focusable_tab_stop`; `get_window_long_ptr(child, GWL_STYLE) as u32`); `0` when none.
     pub(super) fn first_tab_stop(&self) -> Hwnd {
         let children = self.inner.controls.children.borrow().clone();
         children
             .into_iter()
-            .find(|&child| is_tab_stop(user32::get_window_long_ptr(child, -16) as u32))
+            .find(|&child| is_focusable_tab_stop(user32::get_window_long_ptr(child, -16) as u32))
             .unwrap_or(0)
     }
 
@@ -99,5 +108,21 @@ impl NativeDialog {
                 }
             }
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{is_focusable_tab_stop, is_tab_stop};
+
+    // P-67 (b), L3: WS_TABSTOP alone is a stop; WS_DISABLED removes it (deliberate difference from the C#).
+    #[test]
+    fn disabled_tab_stops_are_skipped() {
+        assert!(is_focusable_tab_stop(0x0001_0000));
+        assert!(is_focusable_tab_stop(0x5001_0000));
+        assert!(!is_focusable_tab_stop(0x0801_0000));
+        assert!(!is_focusable_tab_stop(0x0800_0000));
+        assert!(!is_focusable_tab_stop(0));
+        assert!(is_tab_stop(0x0801_0000), "the C# rule is unchanged");
     }
 }
