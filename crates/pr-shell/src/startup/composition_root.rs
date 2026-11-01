@@ -181,6 +181,9 @@ impl ShellServices {
         let factory_log = log.clone();
         let loop_copy = host.message_loop.clone();
         let slot = graph_slot.clone();
+        let ready_slot = graph_slot.clone();
+        let ready_log = log.clone();
+        let overridden = port_override.is_some() || dialogs_override.is_some();
         let factory: Box<dyn FnOnce() -> Option<Rc<dyn SecondaryWindowPort>>> = Box::new(move || {
             if let Some(port) = port_override {
                 return Some(port);
@@ -220,7 +223,18 @@ impl ShellServices {
             );
             Some(Rc::new(SecondaryWindowRouter::new(native)))
         });
-        let secondary_port = Rc::new(LazySecondaryPort::new(factory));
+        // A request before the graph is bound answers `None` and is retried later (review startup M3), instead of being kept for the whole session.
+        let ready: Box<dyn Fn() -> bool> = Box::new(move || {
+            let ready = overridden || ready_slot.get().is_some();
+            if !ready {
+                ready_log.error(
+                    "Secondary windows were requested before the service graph was bound",
+                    None,
+                );
+            }
+            ready
+        });
+        let secondary_port = Rc::new(LazySecondaryPort::new_when_ready(ready, factory));
         let secondary_port_host = Rc::new(SecondaryWindowPortHost::new(secondary_port.clone()));
         let zoom_prompt = Rc::new(Win32ZoomPromptService::new(
             host.owner_closure(),

@@ -92,6 +92,8 @@ pub struct PageHost {
     items: RefCell<BTreeMap<i32, usize>>,
     warnings: RefCell<Vec<(String, String)>>,
     args: RefCell<Vec<String>>,
+    actions_json: RefCell<String>,
+    profile_names: RefCell<Vec<Vec<String>>>,
 }
 impl PageHost {
     pub fn new() -> Rc<Self> {
@@ -144,6 +146,14 @@ impl PageHost {
     pub fn explorer_args(&self) -> Vec<String> {
         self.args.borrow().clone()
     }
+    /// The JSON `refresh_actions_json_from_pages` answers (default empty).
+    pub fn put_actions_json(&self, json: &str) {
+        *self.actions_json.borrow_mut() = json.into();
+    }
+    /// The action names of each list handed to `show_action_profiles`.
+    pub fn profile_names(&self) -> Vec<Vec<String>> {
+        self.profile_names.borrow().clone()
+    }
     pub fn put_text(&self, i: i32, v: &str) {
         self.vals.borrow_mut().insert(i, v.into());
     }
@@ -185,8 +195,11 @@ impl SettingsPageHost for PageHost {
     fn show_action_profiles(
         &self,
         _: Hwnd,
-        _: &[ReviewAction],
+        actions: &[ReviewAction],
     ) -> Result<Option<Vec<ReviewAction>>, ActionProfilesUnavailable> {
+        self.profile_names
+            .borrow_mut()
+            .push(actions.iter().map(|a| a.name.clone()).collect());
         Err(ActionProfilesUnavailable)
     }
     fn control_text(&self, i: i32) -> String {
@@ -262,7 +275,7 @@ impl SettingsPageHost for PageHost {
         String::new()
     }
     fn refresh_actions_json_from_pages(&self) -> String {
-        String::new()
+        self.actions_json.borrow().clone()
     }
     fn set_actions_json(&self, _: &str, _: &str) {}
 }

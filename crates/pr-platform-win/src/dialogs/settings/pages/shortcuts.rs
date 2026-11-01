@@ -12,9 +12,11 @@ use pr_app::presenters::settings::SettingsPresenter;
 use pr_app::presenters::settings_field_map::{shortcut_get, shortcut_properties};
 use pr_app::presenters::settings_form_state::SettingsFormState;
 use pr_app::services::shortcut_key_name::try_parse;
-use pr_core::settings::app_settings::EnglishSettingsTexts;
+use pr_core::settings::app_settings::SettingsTexts;
 use pr_core::settings::shortcuts::{ShortcutMappings, canonicalize};
-use pr_l10n::tr;
+use pr_l10n::localizer::{Localizer, number_culture};
+use pr_l10n::template::LocArg;
+use pr_l10n::{keys, tr};
 
 use crate::dialogs::settings::builder::inputs::SettingsPageBuilder;
 use crate::dialogs::settings::builder::layout::SettingsKeyCell;
@@ -191,6 +193,49 @@ pub fn find_problems(texts: &BTreeMap<String, String>) -> BTreeSet<String> {
         problems.extend(owners.iter().cloned());
     }
     problems
+}
+
+/// C# `Tr.*` for the settings texts: every call reads the ambient `Localizer::current()`, so the default action names follow the UI language (the English-only
+/// `EnglishSettingsTexts` named them "Action 2" even in Vietnamese).
+struct AmbientSettingsTexts;
+
+impl AmbientSettingsTexts {
+    fn format(key: &str, args: &[LocArg]) -> String {
+        Localizer::current().format_with(key, args, &number_culture())
+    }
+}
+
+impl SettingsTexts for AmbientSettingsTexts {
+    fn action_default_name(&self, n: u32) -> String {
+        Self::format(keys::ACTION_DEFAULT_NAME, &[LocArg::new("n", n)])
+    }
+    fn action_default_backup(&self) -> String {
+        Localizer::current().get(keys::ACTION_DEFAULT_BACKUP)
+    }
+    fn core_settings_shortcut_invalid(&self, name: &str) -> String {
+        Self::format(keys::CORE_SETTINGS_SHORTCUT_INVALID, &[LocArg::new("name", name)])
+    }
+    fn core_settings_action_invalid(&self) -> String {
+        Localizer::current().get(keys::CORE_SETTINGS_ACTION_INVALID)
+    }
+    fn core_settings_action_binding_name(&self, name: &str) -> String {
+        Self::format(keys::CORE_SETTINGS_ACTION_BINDING_NAME, &[LocArg::new("name", name)])
+    }
+    fn core_settings_shortcut_duplicate(&self, key: &str, names: &str) -> String {
+        Self::format(
+            keys::CORE_SETTINGS_SHORTCUT_DUPLICATE,
+            &[LocArg::new("key", key), LocArg::new("names", names)],
+        )
+    }
+    fn settings_load_repaired(&self, items: &str) -> String {
+        Self::format(keys::SETTINGS_LOAD_REPAIRED, &[LocArg::new("items", items)])
+    }
+    fn dialog_import_settings_repaired(&self, items: &str) -> String {
+        Self::format(keys::DIALOG_IMPORT_SETTINGS_REPAIRED, &[LocArg::new("items", items)])
+    }
+    fn settings_load_shortcut_disabled(&self, name: &str) -> String {
+        Self::format(keys::SETTINGS_LOAD_SHORTCUT_DISABLED, &[LocArg::new("name", name)])
+    }
 }
 
 /// C# `Ids` (internal, for tests).
@@ -446,7 +491,7 @@ impl ShortcutsSettingsPage {
     fn edit_actions(&mut self) {
         let context = self.context.context();
         let actions_json = context.collect_actions_json();
-        let actions = match SettingsPresenter::actions_for_editor(&actions_json, &EnglishSettingsTexts) {
+        let actions = match SettingsPresenter::actions_for_editor(&actions_json, &AmbientSettingsTexts) {
             Ok(actions) => actions,
             Err(_) => {
                 context.show_warning(

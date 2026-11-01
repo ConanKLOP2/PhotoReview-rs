@@ -101,6 +101,8 @@ pub type PortFactory = Box<dyn FnOnce() -> Option<Rc<dyn SecondaryWindowPort>>>;
 /// the zoom prompt service and the `SecondaryWindowPortHost`, like the one C# `Lazy` instance. Single-threaded (the UI thread), so a `OnceCell`.
 pub struct LazySecondaryPort {
     factory: RefCell<Option<PortFactory>>,
+    /// Rust only: while it answers `false` the factory has nothing to build from yet, so `get` answers `None` WITHOUT running the factory or keeping that answer.
+    ready: Option<Box<dyn Fn() -> bool>>,
     value: OnceCell<Option<Rc<dyn SecondaryWindowPort>>>,
 }
 
@@ -109,6 +111,17 @@ impl LazySecondaryPort {
     pub fn new(factory: PortFactory) -> Self {
         Self {
             factory: RefCell::new(Some(factory)),
+            ready: None,
+            value: OnceCell::new(),
+        }
+    }
+
+    /// Like [`new`](Self::new), but the factory only runs once `ready()` is `true`; an earlier `get` answers `None` and is not kept (startup review M3: the Rust service
+    /// graph is bound after the root is built, and a request in between must not lock the port at `None` for the whole session; C# resolved it through DI where the graph always exists).
+    pub fn new_when_ready(ready: Box<dyn Fn() -> bool>, factory: PortFactory) -> Self {
+        Self {
+            factory: RefCell::new(Some(factory)),
+            ready: Some(ready),
             value: OnceCell::new(),
         }
     }
@@ -119,6 +132,7 @@ impl LazySecondaryPort {
         let _ = value.set(port);
         Self {
             factory: RefCell::new(None),
+            ready: None,
             value,
         }
     }
@@ -127,6 +141,11 @@ impl LazySecondaryPort {
     pub fn get(&self) -> Option<Rc<dyn SecondaryWindowPort>> {
         if let Some(value) = self.value.get() {
             return value.clone();
+        }
+        if let Some(ready) = &self.ready
+            && !ready()
+        {
+            return None;
         }
         let factory = self.factory.borrow_mut().take();
         let factory = factory?;
