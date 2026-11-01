@@ -144,8 +144,8 @@ impl RecoveryTimeFormatter for WindowsRecoveryTimeFormatter {
         if unsafe { SystemTimeToTzSpecificLocalTime(None, &utc_time, &mut local) }.is_err() {
             return String::new();
         }
-        let date = format_system_time(&local, true);
-        let time = format_system_time(&local, false);
+        let date = format_system_time(&local, true, false);
+        let time = format_system_time(&local, false, false);
         if date.is_empty() || time.is_empty() {
             String::new()
         } else {
@@ -163,10 +163,11 @@ pub fn group_separator() -> String {
 pub fn local_long_time_text() -> String {
     // SAFETY: the no-argument wrapper returns a fully initialized SYSTEMTIME by value.
     let now = unsafe { windows::Win32::System::SystemInformation::GetLocalTime() };
-    format_system_time(&now, false)
+    format_system_time(&now, false, true)
 }
 
-fn format_system_time(value: &SYSTEMTIME, date: bool) -> String {
+/// `seconds`: the long time pattern ("T"); otherwise the short one ("g" time, `TIME_NOSECONDS`). Ignored for dates.
+fn format_system_time(value: &SYSTEMTIME, date: bool, seconds: bool) -> String {
     let locale = locale_name();
     let mut out = [0u16; 128];
     if locale[0] == 0 {
@@ -186,7 +187,7 @@ fn format_system_time(value: &SYSTEMTIME, date: bool) -> String {
         } else {
             GetTimeFormatEx(
                 PCWSTR(locale.as_ptr()),
-                TIME_NOSECONDS,
+                if seconds { TIME_FORMAT_FLAGS(0) } else { TIME_NOSECONDS },
                 Some(value),
                 None,
                 Some(&mut out),
