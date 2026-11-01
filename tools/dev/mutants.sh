@@ -3,7 +3,7 @@
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 CARGO_BIN=${CARGO_BIN:-cargo}; PY_BIN=${PY_BIN:-python}; TIMEOUT_BIN=${TIMEOUT_BIN:-timeout}
 TMPBASE=${TEMP:-${TMPDIR:-/tmp}}
-usage() { echo 'usage: mutants.sh <crate> <src-file>... [--tests a,b] [--native] [--cargo-arg A]... [--cargo-test-arg A]... [--budget SECONDS] [--jobs N] [--rerun-survivors]
+usage() { echo 'usage: mutants.sh <crate> <src-file>... [--tests a,b] [--native] [--cargo-arg A]... [--cargo-test-arg A]... [--budget SECONDS] [--jobs N] [--rerun-survivors] [-F REGEX]... [--skip REGEX]...
        mutants.sh --lint-args <raw cargo-mutants args...>   (only checks the libtest flag form, runs nothing)' >&2; exit 2; }
 
 # lint_libtest <arg>...: the args are what cargo-mutants hands to `cargo test` (before the libtest separator). A libtest-only flag
@@ -42,7 +42,7 @@ lint_raw_args() { # raw cargo-mutants command line tokens
 }
 if [ "${1:-}" = --lint-args ]; then shift; lint_raw_args "$@"; rc=$?; [ $rc -eq 0 ] && echo "flag form ok"; exit $rc; fi
 
-crate=""; files=(); tests=""; budget=1200; jobs=1; rerun=0; native=0; cargoargs=(); usertc=()
+mfilt=(); crate=""; files=(); tests=""; budget=1200; jobs=1; rerun=0; native=0; cargoargs=(); usertc=()
 while [ $# -gt 0 ]; do
   case "$1" in
     --native) native=1; shift;;
@@ -52,6 +52,8 @@ while [ $# -gt 0 ]; do
     --budget) [ $# -ge 2 ] || usage; budget="$2"; shift 2;;
     --jobs) [ $# -ge 2 ] || usage; jobs="$2"; shift 2;;
     --rerun-survivors) rerun=1; shift;;
+    -F) [ $# -ge 2 ] || usage; mfilt+=(-F "$2"); shift 2;;   # cargo-mutants --re: only mutants whose name matches (regex, use . for spaces)
+    --skip) [ $# -ge 2 ] || usage; mfilt+=(-E "$2"); shift 2;; # cargo-mutants --exclude-re: skip mutants whose name matches
     -*) usage;;
     *) if [ -z "$crate" ]; then crate="$1"; else files+=("$1"); fi; shift;;
   esac
@@ -112,7 +114,7 @@ run_once() { # outdir, extra args...
   for f in "${cargoargs[@]}"; do cma+=("--cargo-arg=$f"); done
   for f in "${testargs[@]}"; do cma+=("--cargo-test-arg=$f"); done
   ( cd "$ROOT" && "$TIMEOUT_BIN" "$budget" "$CARGO_BIN" mutants -p "$crate" --baseline skip --timeout "${MUT_TIMEOUT:-90}" -j "$jobs" \
-      --output "$od" "${fargs[@]}" "${cma[@]}" "$@" )
+      --output "$od" "${fargs[@]}" "${mfilt[@]}" "${cma[@]}" "$@" )
   rc=$?
   if grep -rlE 'no tests/golden above|PHOTOREVIEW_GOLDEN_ROOT=.* has no tests/golden' "$od/mutants.out/log" >/dev/null 2>&1; then
     echo "WARNING: golden files were NOT found inside the cargo-mutants copy (see $od/mutants.out/log). Mutants caught only by golden tests are NOT really caught: rerun them." >&2
