@@ -3,8 +3,9 @@
 # Usage: tools/autopilot/codex-usage.sh [threshold_percent=95]
 C="${CODEX_BIN:-$HOME/.codex/plugins/.plugin-appserver/codex.exe}"
 TH="${1:-95}"
+case "$TH" in ''|*[!0-9.]*) echo '{"ok":false,"reason":"bad threshold"}'; exit 2;; esac   # review autopilot L9: never interpolate arbitrary text into the Python below
 OUT=$( (printf '%s\n' '{"id":1,"method":"initialize","params":{"clientInfo":{"name":"autopilot-usage","title":null,"version":"1"}}}' '{"method":"initialized"}'; sleep 2; printf '%s\n' '{"id":2,"method":"account/rateLimits/read"}'; sleep 10) | timeout 25 "$C" app-server 2>/dev/null | grep '"id":2')
-[ -z "$OUT" ] && { echo '{"ok":false,"reason":"no response"}'; exit 1; }
+[ -z "$OUT" ] && { echo '{"ok":false,"reason":"no response"}'; exit 2; }   # exit 2 = probe failed, 1 = quota not available
 printf '%s' "$OUT" | python -c "
 import sys,json,time
 r=json.loads(sys.stdin.read())['result']; p=r['rateLimits']['primary']; s=r['rateLimits']['secondary']

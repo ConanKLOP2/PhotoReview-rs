@@ -9,6 +9,7 @@ set -u
 U="${1:?unit}"; WT="${2:?worktree}"; CRATE="${3:?crate}"; MODE="${4:-full}"
 SELF="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 LIB="python $SELF/lib/codex-lib.py"
+. "$SELF/lib/proc.sh"   # GATE_IGNORE_RE
 export CARGO_PROFILE_DEV_DEBUG="${CARGO_PROFILE_DEV_DEBUG:-line-tables-only}" CARGO_INCREMENTAL=0
 cd "$WT" || { echo "gate: no worktree $WT"; exit 9; }
 fail() { # step exit-code file
@@ -18,7 +19,7 @@ T="$(mktemp)"
 # 1. changed files must be inside the contract's owned files (tracked changes + untracked, ignoring .codex-* scratch)
 CONTRACT="$WT/contracts/$U.md"; [ -f "$CONTRACT" ] || CONTRACT="$SELF/../../contracts/$U.md"
 $LIB owned "$CONTRACT" | tr -d '\r' | sort -u > "$T.owned"
-git status --porcelain -uall | sed -e 's/^...//' -e 's/.* -> //' -e 's/^"//' -e 's/"$//' | grep -v -E '^(\.codex-|target)' | sort -u > "$T.changed"
+git status --porcelain -uall | sed -e 's/^...//' -e 's/.* -> //' -e 's/^"//' -e 's/"$//' | grep -v -E "$GATE_IGNORE_RE" | sort -u > "$T.changed"
 comm -13 "$T.owned" "$T.changed" > "$T"
 if [ -s "$T" ]; then
   { echo "Files changed outside the contract's Owned files (revert them: git checkout -- <file> / delete untracked):"; cat "$T"; } > "$T.m"

@@ -4,6 +4,7 @@ set -u
 export PATH="$HOME/.cargo/bin:$PATH" PYTHONUTF8=1
 SELF="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 LIB="python $SELF/lib/codex-lib.py"
+. "$SELF/lib/unitpr.sh"
 COMMON="$(git -C "$SELF" rev-parse --path-format=absolute --git-common-dir)" || exit 2
 REPO="$(dirname "$COMMON")"
 # The main checkout may have a different owner from the agent's worktree.
@@ -84,11 +85,15 @@ REMOTE_HEAD="$(git -C "$REPO" ls-remote --heads origin "$BR" 2>>"$LOG")" || {
   echo "cannot check remote branch $BR:"; tail -n 12 "$LOG"; exit 2;
 }
 if [ -n "$REMOTE_HEAD" ]; then
-  echo "already open: $BR"
-  exit 0
+  case "$(unitpr_branch_state "$BR" "$LOG")" in
+    none) echo "remote branch $BR exists but has no open PR (merged or closed?): delete the branch or open the PR by hand" >&2; exit 2 ;;
+    *) echo "already open: $BR"; exit 0 ;;
+  esac
 fi
 git -C "$REPO" rev-parse --verify "$IBR^{commit}" >/dev/null 2>&1 || { echo "missing integration branch: $IBR" >&2; exit 2; }
-CREATED=0
+CREATED=0; PUSHED=0
+# review autopilot M7: a failed run must not leave a dirty worktree that blocks the next run
+trap 'unitpr_cleanup "$REPO" "$WT" "$BR" "$CREATED" "$PUSHED" "$LOG"' EXIT
 if [ -d "$WT" ]; then
   git -C "$WT" rev-parse --is-inside-work-tree >/dev/null 2>&1 || { echo "occupied path: $WT" >&2; exit 2; }
   CURRENT_BRANCH="$(git -C "$WT" symbolic-ref --quiet --short HEAD 2>/dev/null || :)"
@@ -187,6 +192,7 @@ if [ "$DRY" -eq 1 ]; then
   if [ "${CREATED:-0}" = 1 ]; then
     git -C "$REPO" worktree remove --force "$WT" >>"$LOG" 2>&1
     git -C "$REPO" branch -D "$BR" >>"$LOG" 2>&1
+    CREATED=0
   fi
   exit 0
 fi
@@ -196,6 +202,7 @@ BODY="Extra modules copied: $EXTRA_LIST"
 ( cd "$WT" && git add -- "${CHANGED[@]}" &&
   git commit -m "$SUBJECT" -m "$BODY" -m 'Co-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>' &&
   git push -u origin "$BR" ) >>"$LOG" 2>&1 || { tail -n 16 "$LOG"; exit 2; }
+PUSHED=1
 PR_BODY="Owned files: $COPIED
 Tests: cargo test -p $CRATE --locked --no-fail-fast $TA ($TEST_COUNTS)
 Extra modules: $EXTRA_LIST

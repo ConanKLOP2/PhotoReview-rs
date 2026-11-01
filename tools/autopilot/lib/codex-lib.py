@@ -123,7 +123,13 @@ def cmd_extsat(repo, statedir, uid):
         # Skip documentation, maintenance, CI and style commits; other subjects may identify implementation units.
         if subject.startswith(("docs(", "docs:", "chore(", "chore:", "ci(", "style(")):
             continue
-        if uid in expand_unit_ids(subject + "\n" + body):
+        # review autopilot M3: only the commit's own scope counts ("feat(<id>): ..." or "Complete|Merge <id> ..."), never ids that are merely
+        # mentioned later in the subject or in the body; red-test, partial and wip commits do not satisfy a dependency.
+        if subject.startswith("test(") or re.search(r"\b(?:partial|wip)\b|red tests?", subject, re.I):
+            continue
+        sm = re.match(r"^\w+\(([^)]*)\)!?:", subject)
+        scope = sm.group(1) if sm else (subject.split(None, 2)[1] if re.match(r"^(?:Complete|Merge)\s", subject) and len(subject.split(None, 2)) > 1 else "")
+        if uid in expand_unit_ids(scope):
             merged = True
             break
     if not merged:
@@ -189,9 +195,18 @@ def cmd_baseline(contract):
 # ------------------------------------------------------------------ state (JSON, safe for parallel units)
 def state_load(p):
     try:
-        return json.loads(read(p))
+        s = json.loads(read(p))
+        if not isinstance(s, dict): raise ValueError("state is not an object")
     except Exception:
+        # review autopilot L4: keep a corrupt (not merely missing) state file instead of silently overwriting it on the next save
+        try:
+            if os.path.isfile(p) and os.path.getsize(p) > 0:
+                import shutil; shutil.copyfile(p, p + ".corrupt")
+        except OSError: pass
         return {"units": {}, "meta": {}}
+    if not isinstance(s.get("units"), dict): s["units"] = {}
+    if not isinstance(s.get("meta"), dict): s["meta"] = {}
+    return s
 
 class state_lock:
     """Cross-process lock for state read-modify-write (parallel units share the state file)."""
@@ -375,6 +390,16 @@ def _code(l):
 
 UNWRAP_CTX = re.compile(r"fs::|\bFile\b|\bPath(Buf)?\b|path|\bread|\bwrite|\bopen|\bdir|json|settings|journal|session|metadata|canonicalize|\.parent\(|\.file_name\(|\.to_str\(", re.I)
 
+def _test_start(lines):
+    """1-based line after the first REAL `#[cfg(test)] mod ...` item (review autopilot M2); a `#[cfg(test)]` on a use/fn or in a comment
+    does not start the test region. 10**9 when there is none."""
+    for i, x in enumerate(lines):
+        if x.strip() != "#[cfg(test)]": continue
+        j = i + 1
+        while j < len(lines) and (not lines[j].strip() or lines[j].lstrip().startswith("#[")): j += 1
+        if j < len(lines) and re.match(r"\s*(?:pub(?:\([^)]*\))?\s+)?mod\s+\w+", lines[j]): return i + 1
+    return 10 ** 9
+
 def cmd_lint(wt, ownedfile):
     own = [l.strip() for l in read(ownedfile).splitlines() if l.strip()]
     rs = [f for f in own if f.endswith(".rs") and os.path.isfile(os.path.join(wt, f))]
@@ -392,7 +417,7 @@ def cmd_lint(wt, ownedfile):
         elif l.startswith("+") and cur:
             added.append((cur, ln, l[1:])); ln += 1
     files = {f: read(os.path.join(wt, f)).replace("\r", "").split("\n") for f in rs}
-    testfrom = {f: next((i + 1 for i, x in enumerate(v) if "#[cfg(test)]" in x), 10 ** 9) for f, v in files.items()}
+    testfrom = {f: _test_start(v) for f, v in files.items()}
     for f, n, t in added:
         code = _code(t); is_src = "/src/" in f; in_test = n >= testfrom.get(f, 10 ** 9)
         if is_src and not in_test:
@@ -427,7 +452,9 @@ def cmd_lint(wt, ownedfile):
 FN_RE = re.compile(r"(?m)^[ \t]*(?:pub(?:\([^)]*\))?[ \t]+)?(?:async[ \t]+)?fn[ \t]+(\w+)")
 
 def _fn_bodies(src):
-    masked = re.sub(r'"(?:[^"\\\n]|\\.)*"|//[^\n]*', lambda m: " " * len(m.group(0)), src)
+    # review autopilot M1: also mask raw strings, block comments and char literals so a `'{'` or `/* } */` cannot cut a body short
+    pat = (r'\br(#*)"[\s\S]*?"\1|"(?:[^"\\]|\\[\s\S])*"|/\*[\s\S]*?\*/|//[^\n]*|' + "'(?:[^'\\\\\n]|\\\\.)'")
+    masked = re.sub(pat, lambda m: re.sub(r"[^\n]", " ", m.group(0)), src)
     res = {}
     for m in FN_RE.finditer(masked):
         i = masked.find("{", m.end())
@@ -446,6 +473,10 @@ def _fn_bodies(src):
 def cmd_testguard(wt, base, ownedfile, relaxed=False):
     """Test files that existed at <base> may only grow: every old fn keeps all its old lines (in order); no ignore/should_panic added."""
     bad = []
+    if subprocess.run(["git", "-C", wt, "rev-parse", "--verify", "--quiet", base + "^{commit}"], capture_output=True).returncode != 0:
+        # review autopilot M1: an unreadable base used to make every `git show` empty and the guard pass (fail-open)
+        print("Red/test files of the red-tests commit must not be modified or weakened:")
+        print("cannot read the test base revision `%s` (the guard would pass vacuously)" % base); sys.exit(1)
     for f in [l.strip() for l in read(ownedfile).splitlines() if l.strip()]:
         if "/tests/" not in f or not f.endswith(".rs"): continue
         old = _git(wt, "show", "%s:%s" % (base, f)).replace("\r", "")
@@ -466,9 +497,20 @@ def cmd_testguard(wt, base, ownedfile, relaxed=False):
         for name, lines in ob.items():
             if name not in nb:
                 bad.append("%s: test fn `%s` removed or renamed" % (f, name)); continue
-            it = iter(nb[name])
-            if not all(any(x == y for y in it) for x in lines):
+            matched, k, ok = set(), 0, True
+            for x in lines:
+                while k < len(nb[name]) and nb[name][k] != x: k += 1
+                if k >= len(nb[name]): ok = False; break
+                matched.add(k); k += 1
+            if not ok:
                 bad.append("%s: test fn `%s` was modified/weakened (only additions are allowed)" % (f, name))
+            else:
+                # added lines may not neutralise the old assertions: early return, `if false`, a cfg gate
+                for k, y in enumerate(nb[name]):
+                    if k not in matched and re.search(r"^return\b|\bif\s+false\b|#\[cfg|\bloop\s*\{\s*\}", y):
+                        bad.append("%s: test fn `%s` gained a neutralising line (`%s`)" % (f, name, y[:60])); break
+        if len(re.findall(r"#\[cfg\(", new)) > len(re.findall(r"#\[cfg\(", old)):
+            bad.append("%s: new `#[cfg(` attribute added (can silently disable a test)" % f)
         for pat in (r"#\[ignore", r"#\[should_panic"):
             if len(re.findall(pat, new)) > len(re.findall(pat, old)): bad.append("%s: new `%s` attribute added" % (f, pat[2:]))
         if len(re.findall(r"#\[test\]", new)) < len(re.findall(r"#\[test\]", old)): bad.append("%s: number of #[test] decreased" % f)
@@ -536,6 +578,8 @@ def cmd_redcheck(path):
             first = next((l for l in body.splitlines() if l.strip() and "panicked at" not in l and "note:" not in l), "")
             bad.append("%s fails but not through todo!(): %s" % (name, first.strip()[:160]))
     nfail = len(re.findall(r"^test .* \.\.\. FAILED$", t, re.M))
+    if not bad and seen == 0 and nfail == 0:
+        bad.append("no test failed at all (red tests that already pass on the stubs prove nothing)")
     if nfail > seen:
         bad.append("%d failing test(s) without panic output (crash or timeout)" % (nfail - seen))
     if bad:
