@@ -142,7 +142,12 @@ impl ChangeSteps for InnerSteps<'_> {
 
     fn refresh_title(&self) {
         // The borrow ends before `set_title` (it sends `WM_SETTEXT` and re-enters the window procedure).
-        let title = self.0.view_model.borrow().folder_title().to_owned();
+        let Ok(view_model) = self.0.view_model.try_borrow() else {
+            // A modal command holds the view model: the title is refreshed by the fan-out of the command's own result.
+            return;
+        };
+        let title = view_model.folder_title().to_owned();
+        drop(view_model);
         if let Err(error) = self.0.window.set_title(&title) {
             self.0.log.error("SetWindowText failed", Some(&error));
         }
@@ -153,7 +158,11 @@ impl ChangeSteps for InnerSteps<'_> {
     }
 
     fn notify_current_index(&self) {
-        let index = self.0.view_model.borrow().current_index();
+        let Ok(view_model) = self.0.view_model.try_borrow() else {
+            return;
+        };
+        let index = view_model.current_index();
+        drop(view_model);
         for feature in self.0.feature_snapshot() {
             feature.on_current_index_changed(index);
         }
@@ -298,6 +307,12 @@ impl MainWindow {
         self.inner.pump_view_model();
     }
 
+    /// BACKLOG G1: how many commands were refused because a modal command held the view model (input, menu and feature calls; a refused command is also
+    /// logged). Closes and wakes that arrive meanwhile are not lost: they are replayed when the modal command returns.
+    pub fn dropped_busy_commands(&self) -> u32 {
+        self.inner.modal_intents.dropped_commands()
+    }
+
     /// C# `Dispose()` (lines 421-445); see [`MainWindowInner::dispose_inner`]. Idempotent. Safe to call on the UI thread after `WM_CLOSE` or without it.
     pub fn dispose(&self) {
         self.inner.dispose_inner(true);
@@ -325,15 +340,53 @@ impl MainWindowInner {
     /// The body of [`MainWindow::update_view_model`]: `f` runs with the view model borrowed, the borrow ends, THEN the fan-out runs.
     pub(crate) fn update_view_model(&self, f: impl FnOnce(&mut MainViewModel) -> ChangeSet) {
         let changes = {
-            let mut view_model = self.view_model.borrow_mut();
+            // A feature calling back from inside a modal command (nested loop, borrow held) used to panic here: the command is refused, counted and logged.
+            let Ok(mut view_model) = self.view_model.try_borrow_mut() else {
+                self.note_busy_drop("View-model update");
+                return;
+            };
             f(&mut view_model)
         };
         self.apply_changes(&changes);
+        self.after_view_model_call();
+    }
+
+    /// BACKLOG G1: a command that needed the view model while a modal command held it is refused (the closure cannot be kept), but never silently: it is
+    /// counted ([`MainWindow::dropped_busy_commands`]) and logged.
+    pub(crate) fn note_busy_drop(&self, what: &str) {
+        self.note_dropped_command();
+        self.log.warn(&format!(
+            "{what} skipped: the view model is busy (a modal command is running)."
+        ));
+    }
+
+    /// The tail of every view-model call, run once its borrow has ended: drains a wake that arrived inside a modal command, opens the queued paths and
+    /// replays the recorded close intents ([`Self::replay_modal_intents`]). Does nothing while an outer command still holds the borrow.
+    pub(crate) fn after_view_model_call(&self) {
+        if self.view_model.try_borrow_mut().is_err() {
+            return;
+        }
         // A wake that arrived inside a modal command (nested loop, borrow held) was deferred: drain it now that the borrow is gone.
         if self.pump_deferred.take() {
             self.pump_view_model();
         }
         self.open_queued_paths();
+        self.replay_modal_intents();
+    }
+
+    /// BACKLOG G1 steps 2 and 3: with the view model free (asserted in debug builds), runs what `on_closed` and `on_closing` recorded while a modal command
+    /// held it, once each and in this order: the session close (`Closed` already happened), then the close request (`Closing` was cancelled).
+    pub(crate) fn replay_modal_intents(&self) {
+        debug_assert!(
+            self.view_model.try_borrow_mut().is_ok(),
+            "modal intents are replayed only after the view-model borrow ended"
+        );
+        if self.modal_intents.take_closed() {
+            self.finish_closed();
+        }
+        if self.modal_intents.take_close_request() && !self.disposed.get() && !self.window.is_destroyed() {
+            self.window.close();
+        }
     }
 
     /// The body of [`MainWindow::open_path`]: opens `path` now, or queues it when the view model is borrowed (a modal command is running its nested loop).
@@ -472,7 +525,14 @@ impl MainWindowInner {
     /// `close_when_file_action_done_waiter` to the window; return. Otherwise: `is_closing_or_closed = true`; `save_placement()`; `release_renderer()`
     /// WHILE THE HWND IS ALIVE (a flip-model swap chain with a queued Present released after the window is gone can hang the flush for ever).
     pub(super) fn on_closing(&self, args: &mut CancelEventArgs) {
-        let defer = self.view_model.borrow().defer_close_for_file_action();
+        // BACKLOG G1: a close that arrives inside a modal command (the view model is borrowed) is cancelled and remembered; the command's tail asks again.
+        let Ok(view_model) = self.view_model.try_borrow() else {
+            args.cancel = true;
+            self.modal_intents.request_close();
+            return;
+        };
+        let defer = view_model.defer_close_for_file_action();
+        drop(view_model);
         if defer {
             args.cancel = true;
             if !self.close_when_file_action_done.get() {
@@ -527,6 +587,16 @@ impl MainWindowInner {
     pub(super) fn on_closed(&self) {
         self.is_closing_or_closed.set(true);
         self.cloak.stop();
+        // BACKLOG G1: `Closed` inside a modal command (view model borrowed): the session close runs when the command returns.
+        if self.view_model.try_borrow_mut().is_err() {
+            self.modal_intents.note_closed();
+            return;
+        }
+        self.finish_closed();
+    }
+
+    /// The view-model part of C# `OnClosed`: `vm.close_session()`, then the preload controller is stopped (also if that panics). The borrow must be free.
+    fn finish_closed(&self) {
         let preload = self.view_model.borrow().preload_controller().cloned();
         let _stop_preload = StopPreload(preload);
         let _ = self.view_model.borrow_mut().close_session();
