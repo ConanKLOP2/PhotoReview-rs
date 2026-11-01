@@ -104,6 +104,10 @@ pub fn current_path() -> Option<PathBuf> {
 
 /// C# `Report(context, exception)` for a Rust error: `report_details(context, &ErrorDetails::from_error(error))`.
 pub fn report(context: &str, error: &(dyn Error + 'static)) {
+    // C# reads the path first: nothing (no backtrace capture) when not configured.
+    if lock(&CONFIGURED_PATH).is_none() {
+        return;
+    }
     report_details(context, &ErrorDetails::from_error(error));
 }
 

@@ -76,6 +76,26 @@ fn locale_local_long_time_text_has_digits() {
     assert!(text.chars().any(|character| character.is_ascii_digit()), "{text:?}");
 }
 
+// New native (fix-g10-g13, BACKLOG G3 L1): C# `ToString("T")` is the long time pattern WITH seconds (hour, minute and second groups).
+#[test]
+#[ignore = "native: queries the Windows user locale"]
+fn locale_local_long_time_text_includes_seconds() {
+    let text = local_long_time_text();
+    let mut groups = 0;
+    let mut in_digits = false;
+    for character in text.chars() {
+        if character.is_numeric() {
+            if !in_digits {
+                groups += 1;
+            }
+            in_digits = true;
+        } else {
+            in_digits = false;
+        }
+    }
+    assert!(groups >= 3, "expected hour, minute and second groups: {text:?}");
+}
+
 // New native: 2020-01-02 03:04:05 UTC in the fixed UTC zone formats as a local date/time with digits.
 #[test]
 #[ignore = "native: requires the machine time zone to be UTC; skip when UTC is unavailable"]

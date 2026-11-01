@@ -163,7 +163,7 @@ fn locale_recovery_time_formatter_formats_the_local_short_date_and_time() {
     assert_eq!(formatted, expected);
 }
 
-// locale.rs:165:5 `local_long_time_text -> ""/"xyzzy"`, :170:5, :196:10, :197:44: the en-US pattern is `h:mm tt` (TIME_NOSECONDS), no NUL.
+// locale.rs:165:5 `local_long_time_text -> ""/"xyzzy"`, :170:5, :196:10, :197:44: the en-US pattern is `h:mm:ss tt` (C# "T", seconds kept since FIX-G10-G13), no NUL.
 #[test]
 fn locale_local_long_time_text_has_the_en_us_clock_shape() {
     let text = local_long_time_text();
@@ -173,11 +173,14 @@ fn locale_local_long_time_text_has_the_en_us_clock_shape() {
     if is_en_us() {
         let (clock, suffix) = text.split_once(' ').expect("time and AM/PM");
         assert!(suffix == "AM" || suffix == "PM", "{text:?}");
-        let (hour, minute) = clock.split_once(':').expect("h:mm");
-        let hour: u32 = hour.parse().expect("hour digits");
+        let mut parts = clock.split(':');
+        let hour: u32 = parts.next().expect("h:mm:ss").parse().expect("hour digits");
         assert!((1..=12).contains(&hour), "{text:?}");
-        assert_eq!(minute.len(), 2, "{text:?}");
-        assert!(minute.chars().all(|c| c.is_ascii_digit()), "{text:?}");
+        for part in [parts.next().expect("minutes"), parts.next().expect("seconds")] {
+            assert_eq!(part.len(), 2, "{text:?}");
+            assert!(part.chars().all(|c| c.is_ascii_digit()), "{text:?}");
+        }
+        assert!(parts.next().is_none(), "{text:?}");
     }
 }
 
