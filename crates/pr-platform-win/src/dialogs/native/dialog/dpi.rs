@@ -94,6 +94,43 @@ pub fn fallback_log_font(dpi: u32) -> windows::Win32::Graphics::Gdi::LOGFONTW {
     font
 }
 
+/// The fonts a dialog holds after `apply_fonts` and the previous ones to delete (pure; P-67 b).
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct FontSwap {
+    pub font: Hgdi,
+    pub header: Hgdi,
+    pub delete_old_font: bool,
+    pub delete_old_header: bool,
+}
+
+/// Decides the result of `apply_fonts` (pure). DIVERGENCE DV (P-67, owner-confirmed, L4): the C# `ApplyFonts` assigns the new handles and deletes the old ones even
+/// when `CreateFonts` returned `0` (GDI exhausted), leaving the dialog without a font. Here a `0` result keeps the previous handle (and does not delete it), body
+/// and header independently. A header that was not asked for (`want_header == false`) is dropped and the old one deleted, as before.
+pub fn plan_font_swap(
+    old_font: Hgdi,
+    old_header: Hgdi,
+    new_font: Hgdi,
+    new_header: Hgdi,
+    want_header: bool,
+) -> FontSwap {
+    let (font, delete_old_font) = if new_font == 0 && old_font != 0 {
+        (old_font, false)
+    } else {
+        (new_font, old_font != 0 && old_font != new_font)
+    };
+    let (header, delete_old_header) = if want_header && new_header == 0 && old_header != 0 {
+        (old_header, false)
+    } else {
+        (new_header, old_header != 0 && old_header != new_header)
+    };
+    FontSwap {
+        font,
+        header,
+        delete_old_font,
+        delete_old_header,
+    }
+}
+
 /// The header variant of a body font (pure): a copy with `lfHeight = header_font_height(lfHeight)` and `lfWeight = 600`.
 pub fn header_log_font(body: &windows::Win32::Graphics::Gdi::LOGFONTW) -> windows::Win32::Graphics::Gdi::LOGFONTW {
     let mut font = *body;
@@ -147,12 +184,14 @@ impl NativeDialog {
 
     /// C# `ApplyFonts()` (lines 1037 to 1053): recreates the fonts for `metrics.dpi`, gives the body font to the dialog (`WM_SETFONT`) and to every registered
     /// child, except the controls of `content.header_control_ids()`, which get the header font when it exists; THEN deletes the previous fonts (a font in use is
-    /// never deleted); then `measure_units()`.
+    /// never deleted); then `measure_units()`. DIVERGENCE DV (P-67, L4): when `create_fonts` returns `0` the previous font is kept instead of deleted (`plan_font_swap`).
     pub(super) fn apply_fonts(&self) {
         let old_font = self.inner.metrics.font.get();
         let old_header = self.inner.metrics.header_font.get();
         let headers: HashSet<i32> = self.inner.content.header_control_ids().into_iter().collect();
         let (font, header) = Self::create_fonts(self.dpi(), !headers.is_empty());
+        let swap = plan_font_swap(old_font, old_header, font, header, !headers.is_empty());
+        let (font, header) = (swap.font, swap.header);
         self.inner.metrics.font.set(font);
         self.inner.metrics.header_font.set(header);
         let hwnd = self.hwnd();
@@ -173,10 +212,10 @@ impl NativeDialog {
                 dialog_native::user32::send_message(child, 0x0030, selected as usize, 0);
             }
         }
-        if old_font != 0 {
+        if swap.delete_old_font {
             let _ = dialog_native::gdi32::delete_object(old_font);
         }
-        if old_header != 0 {
+        if swap.delete_old_header {
             let _ = dialog_native::gdi32::delete_object(old_header);
         }
         self.measure_units();
@@ -234,5 +273,89 @@ impl NativeDialog {
             Some(unsafe { *(lparam as *const Rect) })
         };
         self.on_dpi_changed((wparam & 0xffff) as u32, suggested);
+    }
+}
+
+#[cfg(test)]
+mod font_swap_tests {
+    use super::{FontSwap, plan_font_swap};
+
+    // P-67 (b), L4: a failed body font creation keeps the old font and does not delete it (the C# would delete it and leave the dialog fontless).
+    #[test]
+    fn failed_body_font_keeps_the_old_one() {
+        let swap = plan_font_swap(10, 0, 0, 0, false);
+        assert_eq!(
+            swap,
+            FontSwap {
+                font: 10,
+                header: 0,
+                delete_old_font: false,
+                delete_old_header: false
+            }
+        );
+    }
+
+    #[test]
+    fn successful_creation_replaces_and_deletes_the_old_fonts() {
+        let swap = plan_font_swap(10, 20, 11, 21, true);
+        assert_eq!(
+            swap,
+            FontSwap {
+                font: 11,
+                header: 21,
+                delete_old_font: true,
+                delete_old_header: true
+            }
+        );
+    }
+
+    #[test]
+    fn first_creation_has_nothing_to_delete() {
+        let swap = plan_font_swap(0, 0, 11, 21, true);
+        assert_eq!(
+            swap,
+            FontSwap {
+                font: 11,
+                header: 21,
+                delete_old_font: false,
+                delete_old_header: false
+            }
+        );
+        assert_eq!(plan_font_swap(0, 0, 0, 0, true).font, 0);
+    }
+
+    #[test]
+    fn failed_header_keeps_the_old_header_independently() {
+        let swap = plan_font_swap(10, 20, 11, 0, true);
+        assert_eq!(
+            swap,
+            FontSwap {
+                font: 11,
+                header: 20,
+                delete_old_font: true,
+                delete_old_header: false
+            }
+        );
+    }
+
+    #[test]
+    fn header_not_asked_for_is_dropped_and_deleted() {
+        let swap = plan_font_swap(10, 20, 11, 0, false);
+        assert_eq!(
+            swap,
+            FontSwap {
+                font: 11,
+                header: 0,
+                delete_old_font: true,
+                delete_old_header: true
+            }
+        );
+    }
+
+    // Defensive: a handle returned again is never deleted while in use.
+    #[test]
+    fn same_handle_is_never_deleted() {
+        let swap = plan_font_swap(10, 20, 10, 20, true);
+        assert!(!swap.delete_old_font && !swap.delete_old_header);
     }
 }
