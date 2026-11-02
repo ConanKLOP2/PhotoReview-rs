@@ -28,12 +28,14 @@ Tổng: 1 cao / 3 trung bình / 5 thấp.
 - Gợi ý: ghi rõ ở PARITY; khi làm W9-E4 thay `todo!()`.
 
 ### M2 (trung bình, xác nhận): `actions_for_editor` dùng `EnglishSettingsTexts`, C# dùng bản địa hoá
+- ĐÃ SỬA (#536): `shortcuts.rs` dùng `AmbientSettingsTexts` (đọc `Localizer::current()`); test `tests/settings_shortcuts_l10n.rs`.
 - File: `pages/shortcuts.rs` `edit_actions` (gọi `SettingsPresenter::actions_for_editor(&actions_json, &EnglishSettingsTexts)`); C#: `ShortcutsSettingsPage.cs:218` → `ActionsForEditor` → `ReviewAction.Defaults()` dùng `Tr.ActionDefaultName(n)`/`Tr.ActionDefaultBackup`.
 - Kịch bản: ngôn ngữ UI là Tiếng Việt, JSON hành động rỗng/null → trình sửa mở với tên hành động tiếng Anh ("Group-2", "Backup" kiểu English) thay vì tên đã dịch; `default_name` cho action thiếu tên cũng tiếng Anh. Lưu lại sẽ ghi tên tiếng Anh vào config.
 - Chưa chắc mức độ hiển thị thực vì không biết `action_default_name` của bản English trả gì so với `Tr`; điểm chắc chắn là tham số khác nguồn.
 - Gợi ý: truyền bản texts theo `Localizer` hiện tại (cùng cách `with_field_context` đang dùng).
 
 ### M3 (trung bình, chỉ nghi ngờ): vào lại (re-entrancy) qua `EN_CHANGE` khi trang đang `&mut self`
+- ĐÃ CHẶN Ở HOST (kiểm lại 2026-11-03): `dialog/apply.rs` `handle_command` trả `true` khi `view.loading` bật và dùng `page.try_borrow_mut()` (`Err` = tiếng vọng của chính trang, D-W8B5-805), nên `EN_CHANGE` lồng không panic. `refresh()` chạy hai lần là vô hại (như C#). Chưa có test nhánh host vì cần `NativeDialog` thật (native).
 - File: `pages/shortcuts.rs` `on_command` nhánh nút Clear (`set_text(box, "")` rồi `refresh()`), `load` (`set_text` từng ô rồi `refresh()`), `reset_keys`; tương tự `performance.rs` `load` (`set_text(forward)` kích `EN_CHANGE`).
 - C# dựa vào việc `SetText` phát `EN_CHANGE` đồng bộ → `OnCommand` → `Refresh` (comment "EN_CHANGE of the box refreshes the warning"). Rust vừa `set_text` (có thể phát `EN_CHANGE` đồng bộ vào chính `on_command` của trang đang giữ `&mut self`) vừa gọi `refresh()` tường minh.
 - Kịch bản: host thật (khung dialog 19j+, hiện là `todo!()` nên không kiểm được) giữ trang trong `RefCell`/con trỏ thô; `SetWindowTextW` → `WM_COMMAND/EN_CHANGE` → `on_command` lồng nhau → hoặc `BorrowMutError` panic trên UI thread (vi phạm R0003) hoặc aliasing `&mut`. Phụ thuộc hoàn toàn vào cách host chặn/hoãn thông báo khi set text.
