@@ -290,7 +290,23 @@ impl SettingsPageView for GeneralSettingsPage {
                 self.start_update_check();
             }
         } else if id == self.ids.open_update_page {
-            let failed = with_field_context(|f| c.presenter().borrow().open_update_page(&mut |url| c.open_url(url), f));
+            // Review settings-ui L1 / D-W8B4I-1: take the re-validated URL under a short borrow, then call the OS (`open_url` may pump messages) after it
+            // is released. Result and failed-text are those of C# `OpenUpdatePage`.
+            let mut url = None;
+            with_field_context(|f| {
+                c.presenter().borrow().open_update_page(
+                    &mut |u| {
+                        url = Some(u.to_owned());
+                        Ok(())
+                    },
+                    f,
+                )
+            });
+            let failed = url.and_then(|u| {
+                c.open_url(&u)
+                    .err()
+                    .map(|_| with_field_context(|f| f.texts.get("update.openPage.failed")))
+            });
             if let Some(t) = failed {
                 self.set_update_status(&t);
             }

@@ -41,6 +41,7 @@ Tổng: 1 cao / 3 trung bình / 5 thấp.
 
 ### L1 (thấp, xác nhận): `Ref` của presenter giữ qua `open_url`
 - File: `pages/general.rs` `on_command` nhánh `open_update_page`: `c.presenter().borrow().open_update_page(&mut |url| c.open_url(url), f)`.
+- ĐÃ SỬA (fix/g9-presenter-borrow): URL lấy trong borrow ngắn, `open_url` gọi sau khi thả; test `open_update_page_does_not_hold_the_presenter_borrow_across_open_url`.
 - Kịch bản: `open_url` (ShellExecute) có thể bơm thông điệp; một handler lồng gọi `presenter().borrow_mut()` (ví dụ `shortcuts.rs` `refresh` dùng `borrow_mut()` không `try_`) → panic trên UI thread. `apply_update_result` đã dùng `try_borrow_mut` nên an toàn. Quy tắc D-W8B4I-1 "không giữ borrow qua gọi OS". Chưa chắc ShellExecute có bơm trong trường hợp này.
 - Gợi ý: lấy URL từ presenter (borrow ngắn) rồi gọi `open_url` sau khi thả borrow.
 

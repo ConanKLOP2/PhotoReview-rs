@@ -1,4 +1,4 @@
-﻿#![allow(dead_code)] // Shared fixture API is consumed by the other settings-page unit tests.
+#![allow(dead_code)] // Shared fixture API is consumed by the other settings-page unit tests.
 
 use pr_app::presenters::settings::{SettingsPresenter, SettingsPresenterOptions};
 use pr_core::settings::shortcuts::ReviewAction;
@@ -94,6 +94,9 @@ pub struct PageHost {
     args: RefCell<Vec<String>>,
     actions_json: RefCell<String>,
     profile_names: RefCell<Vec<Vec<String>>>,
+    opened_urls: RefCell<Vec<String>>,
+    on_open_url: RefCell<Option<Box<dyn Fn()>>>,
+    open_url_result: RefCell<Option<Result<(), String>>>,
 }
 impl PageHost {
     pub fn new() -> Rc<Self> {
@@ -166,6 +169,17 @@ impl PageHost {
     pub fn put_visible(&self, i: i32, v: bool) {
         self.visible.borrow_mut().insert(i, v);
     }
+    /// URLs handed to `open_url`.
+    pub fn opened_urls(&self) -> Vec<String> {
+        self.opened_urls.borrow().clone()
+    }
+    /// Runs `f` inside `open_url` (a fake OS call that pumps messages and re-enters the presenter).
+    pub fn on_open_url(&self, f: impl Fn() + 'static) {
+        *self.on_open_url.borrow_mut() = Some(Box::new(f));
+    }
+    pub fn put_open_url_result(&self, r: Result<(), String>) {
+        *self.open_url_result.borrow_mut() = Some(r);
+    }
     pub fn put_explorer_error(&self, _: Option<String>) {}
 }
 impl SettingsPageHost for PageHost {
@@ -184,8 +198,12 @@ impl SettingsPageHost for PageHost {
     fn version(&self) -> Option<String> {
         Some("2.0.1+test".into())
     }
-    fn open_url(&self, _: &str) -> Result<(), String> {
-        Ok(())
+    fn open_url(&self, url: &str) -> Result<(), String> {
+        self.opened_urls.borrow_mut().push(url.into());
+        if let Some(f) = self.on_open_url.borrow().as_ref() {
+            f();
+        }
+        self.open_url_result.borrow().clone().unwrap_or(Ok(()))
     }
     fn start_explorer(&self, a: &str) -> Option<String> {
         self.args.borrow_mut().push(a.into());
