@@ -218,3 +218,53 @@ fn a_page_that_was_never_declared_does_not_panic() {
     assert_eq!(page.key(), "General");
     assert!(!page.on_command(123456, 0));
 }
+
+const RELEASE_URL: &str = "https://github.com/ConanKLOP2/PhotoReview-rs/releases/tag/v2.0.94";
+
+fn declared_page() -> GeneralSettingsPage {
+    let mut page = GeneralSettingsPage::new();
+    let mut builder = SettingsPageBuilder::new(1000);
+    page.declare(&mut builder);
+    page
+}
+
+#[test]
+// Review settings-ui L1 / D-W8B4I-1: no presenter borrow is held across the OS call `open_url`.
+fn open_update_page_does_not_hold_the_presenter_borrow_across_open_url() {
+    let presenter = settings_page_fixture::presenter(|_| {});
+    presenter.borrow_mut().set_update_url(Some(RELEASE_URL.to_owned()));
+    let mut page = declared_page();
+    let host = settings_page_fixture::PageHost::with_presenter(presenter.clone());
+    page.attach(host.context());
+    let reentrant = presenter.clone();
+    host.on_open_url(move || {
+        // A nested handler (message pumped by ShellExecute) mutably borrows the presenter, like `shortcuts.rs` `refresh`.
+        let _ = reentrant.borrow_mut();
+    });
+    assert!(page.on_command(page.ids().open_update_page, 0));
+    assert_eq!(host.opened_urls(), vec![RELEASE_URL.to_owned()]);
+}
+
+#[test]
+// C# OpenUpdatePage: a failing `open_url` reports `update.openPage.failed` in the status label.
+fn open_update_page_failure_still_sets_the_failed_status() {
+    let presenter = settings_page_fixture::presenter(|_| {});
+    presenter.borrow_mut().set_update_url(Some(RELEASE_URL.to_owned()));
+    let mut page = declared_page();
+    let host = settings_page_fixture::PageHost::with_presenter(presenter.clone());
+    host.put_open_url_result(Err("no browser".to_owned()));
+    page.attach(host.context());
+    assert!(page.on_command(page.ids().open_update_page, 0));
+    assert!(!host.text(page.ids().update_status).is_empty());
+}
+
+#[test]
+// C# OpenUpdatePage: no validated URL -> `open_url` is never called.
+fn open_update_page_without_a_url_does_not_call_open_url() {
+    let presenter = settings_page_fixture::presenter(|_| {});
+    let mut page = declared_page();
+    let host = settings_page_fixture::PageHost::with_presenter(presenter);
+    page.attach(host.context());
+    assert!(page.on_command(page.ids().open_update_page, 0));
+    assert!(host.opened_urls().is_empty());
+}
