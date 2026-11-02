@@ -968,7 +968,17 @@ fn resolve_if_reparse_point(candidate: String) -> io::Result<String> {
 /// `FileSystem.GetFinalLinkTarget`: open the link following it and ask the OS for the final path; when the target is
 /// unreachable (dangling link) follow the chain by hand and return the last target, even if it does not exist.
 fn final_link_target(link: &str) -> io::Result<String> {
-    match fs::canonicalize(link) {
+    final_link_target_with(link, &mut |path| fs::canonicalize(path), &mut immediate_link_target)
+}
+
+/// [`final_link_target`] with the OS canonicalisation and the one-link step injected, so the choice between "follow the
+/// chain by hand" and "fail closed" can be tested with an OS error a test cannot make the real OS return.
+fn final_link_target_with(
+    link: &str,
+    canonicalize: &mut dyn FnMut(&str) -> io::Result<std::path::PathBuf>,
+    step: &mut dyn FnMut(&str) -> Option<String>,
+) -> io::Result<String> {
+    match canonicalize(link) {
         Ok(final_path) => {
             let text = final_path.to_string_lossy().into_owned();
             // .NET trims the `\\?\` of GetFinalPathNameByHandle unless the link path itself was extended, then makes a
@@ -980,18 +990,15 @@ fn final_link_target(link: &str) -> io::Result<String> {
             };
             dotnet_path::get_full_path(trimmed).map_err(path_error)
         }
-        Err(err) if is_path_unreachable(&err) => final_link_target_slow(link),
+        Err(err) if is_path_unreachable(&err) => follow_link_chain(link, step),
         // A loop (`a -> b -> a`, ERROR_CANT_RESOLVE_FILENAME) and every other failure: the caller fails closed (RV-S06).
         Err(err) => Err(err),
     }
 }
 
-/// `GetFinalLinkTargetSlow`: follow immediate targets until one is not a link, at most [`MAX_FOLLOWED_LINKS`] hops.
-fn final_link_target_slow(link: &str) -> io::Result<String> {
-    follow_link_chain(link, &mut immediate_link_target)
-}
-
-/// The walk of [`final_link_target_slow`] with the one-link step injected, so the [`MAX_FOLLOWED_LINKS`] cap can be tested
+/// `GetFinalLinkTargetSlow` is [`follow_link_chain`] with [`immediate_link_target`]: follow immediate targets until one is
+/// not a link, at most [`MAX_FOLLOWED_LINKS`] hops.
+/// The walk of `GetFinalLinkTargetSlow` with the one-link step injected, so the [`MAX_FOLLOWED_LINKS`] cap can be tested
 /// without a real chain: the OS refuses a chain of more than 63 reparse points (1921) before this walk is reached, which
 /// makes the cap unreachable with junctions.
 fn follow_link_chain(link: &str, step: &mut dyn FnMut(&str) -> Option<String>) -> io::Result<String> {
@@ -1015,6 +1022,17 @@ fn follow_link_chain(link: &str, step: &mut dyn FnMut(&str) -> Option<String>) -
 #[doc(hidden)]
 pub fn follow_link_chain_for_tests(link: &str, step: &mut dyn FnMut(&str) -> Option<String>) -> io::Result<String> {
     follow_link_chain(link, step)
+}
+
+/// Test seam of [`final_link_target`]: the same decision with the OS canonicalisation (`canonicalize`) and the manual
+/// one-link step injected.
+#[doc(hidden)]
+pub fn final_link_target_for_tests(
+    link: &str,
+    canonicalize: &mut dyn FnMut(&str) -> io::Result<std::path::PathBuf>,
+    step: &mut dyn FnMut(&str) -> Option<String>,
+) -> io::Result<String> {
+    final_link_target_with(link, canonicalize, step)
 }
 
 /// `GetImmediateLinkTarget(path, returnFullPath: true, throwOnError: false)`: the target of one link as a full path
