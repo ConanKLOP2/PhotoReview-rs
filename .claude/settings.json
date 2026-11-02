@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(git branch -D *)",
+      "PowerShell(git push origin --delete *)",
+      "PowerShell(git worktree remove *)",
+      "PowerShell(git worktree prune*)",
+      "Bash(git branch -D *)",
+      "Bash(git push origin --delete *)",
+      "Bash(git worktree remove *)",
+      "Bash(git worktree prune*)"
+    ]
+  }
+}
