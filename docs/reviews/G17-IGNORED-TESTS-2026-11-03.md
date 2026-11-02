@@ -1,6 +1,6 @@
 # G17-IGNORED-TESTS: audit of `#[ignore]` tests (2026-11-03)
 
-Status: audit report, docs only. No production or test code changed, no `cargo` run. Source: `origin/master` `82da9f7` (worktree `docs/g17-audit`).
+Status: audit report, docs only. No production or test code changed, no `cargo` run. Source: `origin/master` `82da9f7` (branch docs/g17-audit).
 Backlog entry: [BACKLOG G17](BACKLOG.md) ("CI does not run 1157 `#[ignore]` tests"; that figure is the 2026-10-23 count in `test-quality.md` M1).
 Every number below comes from the commands in section 1, run on this commit.
 
