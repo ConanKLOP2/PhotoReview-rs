@@ -471,9 +471,10 @@ Bằng chứng, kịch bản và hai PROMPT có phạm vi/lệnh kiểm tra: [re
 | G6, G8 | Quyết định Q3/Q4 đã có P-52; còn implementation. Không hỏi lại quyết định đã chốt |
 | G12, G19 | Hardening/test còn mở; Q1 giữ Fast, Q2 giữ shell flags và thêm waiting notice đã chốt. Không tự đổi mặc định durability |
 | G16 | Script/tooling còn mở; đọc lại phát hiện theo phiên bản thực tế trước sửa và không chạy mutation bin thật |
-| G17, G20, G23 | Các đề xuất test/comment chưa được thực hiện bởi PR review. 81 mục test là kế hoạch, không phải 81 test đã chạy; recovery-flow M1 thuộc G17 |
-| G21 | Đã sửa một phần trong #207/#216: facts H1/L9 Survey, L6 no-save khi full, các chữ ký L7 đã đối chiếu, phân công test L10 một phần. Còn scaffold/generator L8 và các mục chưa có bằng chứng hoàn tất. Không giao lại toàn bộ prompt cũ như việc mới |
-| G22 | Còn rà PARITY theo master và phân biệt head #164 với port đã merge; PR #164 vẫn mở, head 6e45777 không đổi khi kiểm lần này |
+| G23 | Một phần: comment DIVERGENCE/settings-ui L5 đã sửa trong FIX-G16-G23; còn L3, ba assert cuối test restored-and-edited, L8 (P-73) |
+| G17, G20 | Các đề xuất test/comment chưa được thực hiện bởi PR review. 81 mục test là kế hoạch, không phải 81 test đã chạy; recovery-flow M1 thuộc G17 |
+| G21 | Đã sửa một phần trong #207/#216 (kiểm lại 2026-11-02: không còn câu H1/L6/L7/L9 lạc hậu trong docs; L8 chờ quyết định P-73): facts H1/L9 Survey, L6 no-save khi full, các chữ ký L7 đã đối chiếu, phân công test L10 một phần. Còn scaffold/generator L8 và các mục chưa có bằng chứng hoàn tất. Không giao lại toàn bộ prompt cũ như việc mới |
+| G22 | Đã sửa 2026-11-02 (docs-g21-g23): hàng `X-startup-launch/error-log/cloak-placement` đã `Ported` (#177/#179), ô `X-main-window-frame` đã đánh dấu phát hiện vòng tham chiếu là đã sửa 2026-10-26 (xanh lại 2026-11-01, G1). Trước đó: còn rà PARITY theo master và phân biệt head #164 với port đã merge; PR #164 vẫn mở, head 6e45777 không đổi khi kiểm lần này |
 | G24 | Q1..Q8 đã được P-52 chấp nhận; chỉ đóng phần quyết định đó. Không coi quyết định là bằng chứng implementation/test |
 | G25 (đã đóng, PR #448), G26 | G26 còn sửa; khác biệt an toàn so với C# cần ADR/Different theo prompt, không tự ghi là đã được P-52 chốt |
 | G27 | Còn quyết định về backup config newer khi backup lỗi; chưa nằm trong Q1..Q8 |
