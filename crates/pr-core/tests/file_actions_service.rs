@@ -1079,6 +1079,64 @@ fn fault_rig_arms_a_crash_on_the_move_and_marks_the_process_dead() {
     assert!(fx.file_exists(SOURCE), "the crashed move never happened");
 }
 
+/// Builds a service over a [`FaultInjectionFileSystem`] armed at mutation `at` with `kind`, for the cross-drive Move
+/// tests below. The journal lives on the fixture's own disk, so `fx.journal_entries()` reads what the service wrote.
+fn faulty_service(fx: &Fixture, at: usize, kind: FaultKind) -> (Arc<FaultInjectionFileSystem>, FileActionService) {
+    let rig = Arc::new(FaultInjectionFileSystem::new(fx.disk.clone()));
+    rig.arm(Some(FaultPlan { at, kind }));
+    let rig_fs: Arc<dyn FileSystem> = rig.clone();
+    let paths = common_file_actions::fixture_paths();
+    let journal = Arc::new(OperationJournal::new(&paths, rig_fs.clone(), fx.clock.clone()));
+    let service = FileActionService::new(journal, rig_fs, fx.clock.clone(), fx.bin.clone());
+    (rig, service)
+}
+
+// UNVERIFIED (written without a Rust toolchain; not compiled or run).
+// G19 (docs/reviews/BACKLOG.md): a Move to ANOTHER drive that fails halfway. No C# twin: the C# fault matrix
+// (FileActionFaultInjectionRecoveryTests / FaultInjectionFileSystem) covers it only through `FailPartial` inside its
+// matrices; this pins the single-action outcome. Mutations: mkdir (1), Prepared append (2), move (3). The copy phase of
+// the cross-volume move is cut short (disk full): the source is untouched, a truncated destination may stay (it is never
+// deleted without proof), the action fails and the journal does not stay Prepared.
+#[test]
+fn move_across_drives_cut_short_by_disk_full_keeps_source_and_fails() {
+    let fx = Fixture::new();
+    fx.add_file_bytes(SOURCE, b"hello photo", last_write_plus(0));
+    fx.add_dir(r"D:\");
+    let (rig, service) = faulty_service(&fx, 3, FaultKind::FailPartial);
+    let result = service.execute(&single(SOURCE, Move, Some(r"D:\out")), &CancelToken::none());
+    assert!(!result.succeeded, "a copy phase cut short is a failed Move");
+    assert!(!rig.dead(), "FailPartial keeps the process alive");
+    assert_eq!(
+        fx.content(SOURCE).as_deref(),
+        Some(&b"hello photo"[..]),
+        "the source is intact"
+    );
+    let at_destination = fx.content(r"D:\out\a.jpg");
+    assert!(
+        at_destination.as_ref().is_none_or(|bytes| bytes.len() < 11),
+        "the destination is never a complete copy: {at_destination:?}"
+    );
+    let last = fx.journal_entries().pop().expect("a journal line");
+    assert_eq!(last.state, JournalState::Failed);
+}
+
+// UNVERIFIED (not compiled or run). G19: the other halfway state of a cross-drive Move: the destination is complete but
+// the source was not removed and the process dies (`CrashMoveCopiedNotDeleted`). Nothing may delete either file; the
+// journal stays Prepared so recovery at the next start can decide.
+#[test]
+fn move_across_drives_copied_but_source_not_deleted_leaves_both_files_and_prepared_journal() {
+    let fx = Fixture::new();
+    fx.add_file_bytes(SOURCE, b"hello photo", last_write_plus(0));
+    fx.add_dir(r"D:\");
+    let (rig, service) = faulty_service(&fx, 3, FaultKind::CrashMoveCopiedNotDeleted);
+    let result = service.execute(&single(SOURCE, Move, Some(r"D:\out")), &CancelToken::none());
+    assert!(!result.succeeded);
+    assert!(rig.dead(), "the simulated process died");
+    assert_eq!(fx.content(SOURCE).as_deref(), Some(&b"hello photo"[..]));
+    assert_eq!(fx.content(r"D:\out\a.jpg").as_deref(), Some(&b"hello photo"[..]));
+    let last = fx.journal_entries().pop().expect("a journal line");
+    assert_eq!(last.state, JournalState::Prepared, "a dead process cannot close the entry");
+}
 // ---------------------------------------------------------------------------------------------------------------
 // Texts and the journal's coded messages (JournalErrorCodeTests, EnglishFileActionTexts)
 // ---------------------------------------------------------------------------------------------------------------
