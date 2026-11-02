@@ -119,6 +119,8 @@ fn service_in(root: &TempRoot) -> LocalizationService {
 }
 
 type Posted = Arc<Mutex<Vec<ContextUiAction>>>;
+type Job = Box<dyn FnOnce() + Send>;
+type ParkedJobs = Rc<RefCell<Vec<Job>>>;
 
 struct Poster(Posted);
 
@@ -285,7 +287,7 @@ struct Setup {
     host: Rc<Host>,
     page: GeneralSettingsPage,
     /// Jobs the runner was handed and did not run.
-    jobs: Rc<RefCell<Vec<Box<dyn FnOnce() + Send>>>>,
+    jobs: ParkedJobs,
 }
 
 #[derive(Clone, Copy, PartialEq)]
@@ -314,7 +316,7 @@ fn setup(
     options.update_checker = checker.map(|c| Arc::new(FakeChecker(c)) as Arc<dyn UpdateCheck>);
     let presenter: SharedSettingsPresenter = Rc::new(RefCell::new(SettingsPresenter::new(&settings, options)));
     let host = Host::new(presenter);
-    let jobs: Rc<RefCell<Vec<Box<dyn FnOnce() + Send>>>> = Rc::default();
+    let jobs: ParkedJobs = Rc::default();
     let parked = Rc::clone(&jobs);
     let background: BackgroundRunner = Rc::new(move |job| match runner {
         Runner::Park => {
