@@ -17,8 +17,8 @@ Use repository evidence over recollection; recheck script defaults when they cha
   Why: `tools/autopilot/CODEX-RULES.md` assigns commits to the orchestrator; tool access is not established by an agent's claim.
 - Keep each resumed session ID with one lane and worktree.
   Why: `tools/autopilot/codex-pipeline.sh` resets `SID` per unit and resumes that unit's conversation.
-- Limit concurrent Codex lanes to two and stop at 95% of either quota window; check both machines' usage.
-  Why: `docs/MULTI-MACHINE.md` records a shared account and both limits; the pipeline defaults to two jobs and enforces the 95% ceiling on the 5 h window only, `tools/dev/codex-sched.sh` (`MAX_LANES=2`, `QUOTA_MAX=95`) enforces both windows.
+- Size concurrent Codex lanes for the machine (AGENTS.md "Sizing parallel agents"; two is only the default) and stop at 95% of either quota window; check both machines' usage.
+  Why: `docs/MULTI-MACHINE.md` records a shared account and both limits; the pipeline defaults to two jobs and enforces the 95% ceiling on the 5 h window only, `tools/dev/codex-sched.sh` (`MAX_LANES` default 2, `QUOTA_MAX=95`) enforces both windows.
 - Inspect `git diff --stat`, encoding, line endings and remaining stubs, then rerun fmt, clippy and tests yourself.
   Why: `done` is a claim; `tools/autopilot/test/pipeline-selftest.sh` includes a gate check rejecting `todo!()`.
 

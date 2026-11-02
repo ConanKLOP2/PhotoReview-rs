@@ -67,7 +67,7 @@ the C# code at the baseline in [`docs/SYNC-LEDGER.md`](docs/SYNC-LEDGER.md) deci
 - Give every task to Codex CLI first: implementation, tests, failure repair (including `needs-claude` notes), mutant-killer tests, contracts, infrastructure/scripts, and docs. Use `tools/autopilot/codex-run.sh` or the pipeline.
 - Claude only orchestrates: prepare the prompt, start Codex, inspect its diff, rerun fmt/clippy/tests before trusting its report, merge and open PRs, and handle work Codex cannot do (for example `git index.lock`, PR/CI/claim tools). Claude sub-agents are at most Sonnet.
 - Claude writes code only after Codex fails twice for quota or tool reasons; state this in the PR.
-- Keep Codex lanes busy within the 95% quota limit for the 5-hour window and week, with at most two concurrent Codex lanes per machine (`tools/dev/codex-sched.sh` `MAX_LANES=2`; `codex-pipeline.sh --jobs` defaults to 2; both enforce `QUOTA_MAX=95`, the scheduler also on the week).
+- Keep Codex lanes busy within the 95% quota limit for the 5-hour window and week. The number of concurrent lanes (and of Claude sub-agents that build) is not fixed: size it for the machine with "Sizing parallel agents" below, per machine and per run (`tools/dev/codex-sched.sh` takes `MAX_LANES=<n>`, default 2; `codex-pipeline.sh --jobs <1..4>`, default 2; both defaults are only starting points; both enforce `QUOTA_MAX=95`, the scheduler also on the week).
 - A unit that fails the pipeline gate gets one automatic Codex fixup round (`FIXUP=1` by default; see `tools/autopilot/README.md`) before human or Claude triage.
 - The Codex Windows sandbox writes only to its working directory: run Codex cargo builds with `CARGO_TARGET_DIR` inside the worktree and `cargo-mutants` with its target directory outside the worktree (the pipeline driver is the exception: it builds in `<worktree>/target` and mutates in `<worktree>/target-mut`, see `codex-pipeline.sh`).
 
@@ -133,7 +133,16 @@ Agents and subagents use Sonnet 5.5 at medium effort or lower (Haiku for mechani
 - **Never kill what is not yours:** no `Stop-Process` on `cargo`, `rustc` or `cargo-mutants`, and no `cargo clean` or deleting a target dir that another agent or a running process uses. Stop only the process ids you started.
 - **Tests:** no hard-coded repo-relative or build-directory paths (`../../target-*`, `CARGO_MANIFEST_DIR/..`, `C:\...`); use `pr_test_support::TempRoot`. Helper files under `tests/common/` get a name unique to the unit (`<unit>_fixture.rs`) so parallel agents do not collide on the same file.
 - **Before a PR:** after merging `master` into the branch run `cargo clippy -p <crate> --all-targets --locked -- -D warnings` (a new trait method on master can break a fake in your tests), `cargo fmt -p <crate> --check` (CI formats per package) and `git grep -n -I '^<<<<<<<'`; check that your PARITY rows are still there after resolving conflicts (merge row by row, never take one side of the file).
-- **Machine load:** with more than six agents building, use `-j 2` for clippy and tests and run long commands in the background; do not start a new agent when less than 6 GB of RAM is free.
+- **Machine load:** the more agents build at once, the lower each agent's `CARGO_BUILD_JOBS` (and `-j`) must be; run long commands in the background.
+
+## Sizing parallel agents (no fixed number)
+
+Before starting an agent, work out how many fit on THIS machine right now, and re-check before each new one:
+
+1. Measure, do not assume: free RAM (`Win32_OperatingSystem.FreePhysicalMemory`), logical CPUs, free disk, and the peak RAM of one build of the crate the agent will touch (watch the first build; peak depends on the crate and on `CARGO_BUILD_JOBS`).
+2. `agents = max(1, min(cpus / jobs_per_agent, floor((free_ram - os_reserve) / peak_ram_per_agent), disk_free / disk_per_target))`, where `jobs_per_agent` is its `CARGO_BUILD_JOBS`, `os_reserve` keeps the machine usable (at least 2 GB or 15% of RAM, whichever is larger) and `disk_per_target` is the size of one `target-*` dir. For Codex lanes also cap by the quota (`QUOTA_MAX`, both windows) and, for one shared account, by what the other machine is using.
+3. Start another agent only while the result is above the number already running; if free RAM or CPU drops (swap, a slow machine, a mutation run), do not start new agents and let the running ones finish. Lower `CARGO_BUILD_JOBS` before lowering the agent count.
+4. Never use a fixed limit from a document as the answer: any number written elsewhere (`MAX_LANES`, `--jobs`, an example) is a default for one machine, not a rule. Say in the PR or the status note which numbers you measured.
 
 ## Asking the user to decide
 

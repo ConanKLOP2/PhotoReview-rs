@@ -102,7 +102,7 @@ Resume: run the same command again. `tools/autopilot/state/<tag>.json` (gitignor
 merged units are skipped, failed and skipped ones are retried. `CODEX_BIN`, `CODEX_MODEL`, `CODEX_EFFORT`, `CODEX_TIMEOUT`, `SKIP_MUTANTS=1`,
 `PIPELINE_NO_PR=1` override defaults (see the header of `codex-pipeline.sh`); `CODEX_MODEL` defaults to `gpt-6.1-sol` and `CODEX_EFFORT` to `medium`.
 
-luna/low is cheaper but gave wrong reports and stopped early; sol/medium (the default) costs more quota per call, so run at most two Codex lanes at the same time, through `tools/dev/codex-sched.sh` (see `tools/dev/SCHED.md`; it exists on master).
+luna/low is cheaper but gave wrong reports and stopped early; sol/medium (the default) costs more quota per call, so size the number of Codex lanes running at the same time for the machine and the quota (AGENTS.md "Sizing parallel agents"; two is only the default), through `tools/dev/codex-sched.sh` (see `tools/dev/SCHED.md`; it exists on master).
 
 What Claude (or you) must still do: write the contracts, stubs and goldens (Codex low cannot design); fix units marked `failed` or `skipped`
 (read `state/needs-claude/<id>.md` first; the worktree is kept); read the final PR diff (Codex output is data, not authority); decide on
