@@ -437,7 +437,7 @@ impl Inner {
 }
 
 /// Writes `buffer[*offset..]`, advancing `offset` by what reached the file (so a retry never repeats bytes).
-fn write_remaining(file: &mut fs::File, buffer: &[u8], offset: &mut usize) -> io::Result<()> {
+fn write_remaining<W: Write + ?Sized>(file: &mut W, buffer: &[u8], offset: &mut usize) -> io::Result<()> {
     while *offset < buffer.len() {
         match file.write(&buffer[*offset..]) {
             Ok(0) => return Err(io::Error::from(io::ErrorKind::WriteZero)),
@@ -852,4 +852,74 @@ fn raw_directory_name(p: &[char]) -> Option<String> {
         }
     }
     Some(out)
+}
+
+#[cfg(test)]
+mod write_remaining_tests {
+    use super::write_remaining;
+    use std::io::{self, Write};
+
+    /// Accepts at most `chunk` bytes per call, fails the call numbered `fail_on` (0-based) after accepting nothing,
+    /// and records every byte that reached the sink.
+    struct ScriptedWriter {
+        chunk: usize,
+        fail_on: Option<usize>,
+        calls: usize,
+        sink: Vec<u8>,
+    }
+
+    impl Write for ScriptedWriter {
+        fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
+            let call = self.calls;
+            self.calls += 1;
+            if self.fail_on == Some(call) {
+                return Err(io::Error::other("scripted failure"));
+            }
+            let n = buf.len().min(self.chunk);
+            self.sink.extend_from_slice(&buf[..n]);
+            Ok(n)
+        }
+
+        fn flush(&mut self) -> io::Result<()> {
+            Ok(())
+        }
+    }
+
+    const DATA: &[u8] = b"AAAA\r\nBBBBBB\r\n";
+
+    #[test]
+    fn short_writes_are_continued_until_every_byte_is_written_exactly_once() {
+        let mut w = ScriptedWriter {
+            chunk: 3,
+            fail_on: None,
+            calls: 0,
+            sink: Vec::new(),
+        };
+        let mut offset = 0usize;
+        let result = write_remaining(&mut w, DATA, &mut offset);
+        assert!(result.is_ok());
+        assert_eq!(w.sink, DATA);
+        assert_eq!(offset, DATA.len());
+        assert_eq!(w.calls, DATA.len().div_ceil(3));
+    }
+
+    #[test]
+    fn failure_after_a_short_write_keeps_offset_so_retry_does_not_repeat_bytes() {
+        // Call 0 accepts 3 bytes, call 1 fails, the retry finishes with 3-byte chunks.
+        let mut w = ScriptedWriter {
+            chunk: 3,
+            fail_on: Some(1),
+            calls: 0,
+            sink: Vec::new(),
+        };
+        let mut offset = 0usize;
+        let first = write_remaining(&mut w, DATA, &mut offset);
+        assert!(first.is_err());
+        assert_eq!(offset, 3);
+        assert_eq!(w.sink, &DATA[..3]);
+        let second = write_remaining(&mut w, DATA, &mut offset);
+        assert!(second.is_ok());
+        assert_eq!(w.sink, DATA);
+        assert_eq!(offset, DATA.len());
+    }
 }
