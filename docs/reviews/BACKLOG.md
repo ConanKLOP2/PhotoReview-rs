@@ -28,7 +28,7 @@ Rủi ro: **D** = có thể mất/sai dữ liệu người dùng, **C** = crash/
 | 14 | G14 Main window nhỏ: `UiLocalPoster`, timer, prefetch thread, `FrameLog`, `WM_CONTEXTMENU` | b4 L1..L5 | thấp | C/B | W8-13g..16i | sửa mã |
 | 15 | G15 Registry/composition: vòng `Arc`, lỗi tạm bị lưu `OnceLock`, `percent_one_decimal` | startup L2, L3, L6 | thấp | C | W8-09b | sửa mã |
 | 16 | G16 Công cụ autopilot: `claim.sh`, `codex-lib.py`, pipeline | autopilot H1, M1..M7, L1..L11 | cao (H1) | T | tools/autopilot | sửa mã (script) |
-| 17 | G17 CI không chạy 1157 test `#[ignore]`; ignore stale; test pass giả | test-quality M1..M4, L1..L3; native-dialog M1, M2, L6; settings-ui L5; b4 M2; pr-203 M1, L2 | trung bình | T | nhiều | thêm test |
+| 17 | G17 CI không chạy 1157 test `#[ignore]`; ignore stale; test pass giả | test-quality M1..M4, L1..L3; native-dialog M1, M2, L6; settings-ui L5; b4 M2; pr-203 M1, L2 | trung bình | T | nhiều | thêm test; số đếm 2026-11-03: 1548 `#[ignore]`, 1272 không chạy ở đâu, xem [G17-IGNORED-TESTS-2026-11-03.md](G17-IGNORED-TESTS-2026-11-03.md) |
 | 18 | G18 Golden/test của #164 không so sánh; `dpi.rs` không test; forwarded-open | pr-164 M1, M2, M3, L2, L3, L4 | trung bình | T | W8-17a..17b | thêm test |
 | 19 | G19 Test INV còn thiếu (mất cache journal, composition gate, dọn trùng lặp) | invariants §5, M1..M3, L1..L8 | trung bình | D | W3, W8-06e/07d/07f | thêm test |
 | 20 | G20 Test Rename/StalePreview/Wave 9 chưa có | test-strengthening-plan (tp-pr-core, tp-pr-app) | trung bình | D | W9-R1..R11, W8-06c | thêm test |
