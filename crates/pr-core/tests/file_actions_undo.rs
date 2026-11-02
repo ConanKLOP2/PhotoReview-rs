@@ -2662,6 +2662,23 @@ fn undo_recycle_single_bin_puts_back_the_recycled_file_is_a_successful_undo() {
     assert!(!undo.has_last_undo_action());
 }
 
+// No C# twin: locks the C# `UndoLastAsync` behaviour (BACKLOG G12 L5): a single Recycle undo is parity-unjournaled.
+#[test]
+fn undo_recycle_single_bin_puts_back_the_recycled_file_writes_no_journal_line() {
+    let f = Fixture::at(group_stamp());
+    let mut undo = f.undo();
+    let s = group_stamp();
+    undo.register(&recycled(JPEG, 4, s));
+    let before = f.journal_text();
+
+    let result = undo.undo_last();
+
+    assert_succeeded(&result);
+    assert_eq!(f.bin.restore_calls(), 1);
+    assert_eq!(f.journal_text(), before);
+    assert_eq!(f.journal_text().lines().count(), 0);
+}
+
 // C#: FileActionMutationAuditBTests.UndoRecycle_Group_BinPutsBackSameSizeFileWithOtherWriteTime_IsNotAnUndo (M18b)
 #[test]
 fn undo_recycle_group_bin_puts_back_same_size_file_with_other_write_time_is_not_an_undo() {
