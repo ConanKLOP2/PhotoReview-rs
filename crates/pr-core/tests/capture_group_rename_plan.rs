@@ -10,10 +10,8 @@ use std::collections::BTreeMap;
 // Oracle W9-R1.cs; all declared group cases, including exact new spellings and sidecars.
 #[test]
 fn golden_capture_group_plan_matches_all_11_cases() {
-    let input: Value = serde_json::from_str(include_str!(
-        "../../../tests/golden-inputs/staged/w9-r1-rename-policy.json"
-    ))
-    .unwrap();
+    let input: Value =
+        serde_json::from_str(include_str!("../../../tests/golden-inputs/w9-r1-rename-policy.json")).unwrap();
     let golden = golden::load("w9-r1-rename-policy");
     let cases = golden
         .cases

@@ -1888,7 +1888,7 @@ Contract-only lane R of Wave 9 (plan: `docs/WAVE-9-PLAN-ren.md`; C# baseline `7e
 
 | Unit | Contract | Kind | Oracle command (golden cases) | Depends on |
 |---|---|---|---|---|
-| W9-R1 rename name policy and JPEG+RAW+XMP plan | `contracts/W9-R1.md` | G | `w9-r1-rename-policy` (input staged in `tests/golden-inputs/staged/`) | none |
+| W9-R1 rename name policy and JPEG+RAW+XMP plan | `contracts/W9-R1.md` | G | `w9-r1-rename-policy` (input `tests/golden-inputs/w9-r1-rename-policy.json`) | none |
 | W9-R2 case-only rename and `FileActionService.rename` | `contracts/W9-R2.md` | F + N | none | R1 |
 | W9-R3 journal, undo and recovery for case-only pairs | `contracts/W9-R3.md` | F + N | none | R2 |
 | W9-R4 catalog rekey and cache key | `contracts/W9-R4.md` | F | none | R1 |
@@ -1953,7 +1953,7 @@ The source of all text is C# `src/PhotoReview.Core/Localization/Languages/{en,vi
 1. D-W9R-12: blank current path maps to `RenameNameProblem::Empty`.
 2. Keep WPF-only `ShellOnly` semantics for parity; no WPF window port is planned.
 3. The lead advances `docs/SYNC-LEDGER.md` only after triaging unrelated C# changes in the range; golden-pinned settings stay at `d92d6aae` until then.
-4. Generate the `w9-r1-rename-policy` oracle golden with `-p:W9RenameBaseline=true`; the golden generator moves its input out of `tests/golden-inputs/staged/` in the same change.
+4. Generate the `w9-r1-rename-policy` oracle golden with the default `tools/oracle.ps1` (the old `-p:W9RenameBaseline=true` guard and the `staged` input folder are gone, P-73).
 
 ## Wave 10 (contracts only: manual update HTTP, release, benchmark parity, RAW/native residual)
 

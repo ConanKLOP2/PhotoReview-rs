@@ -127,4 +127,4 @@ Goldens `bench-*`, `benchmark-*`, `slow-link-*`, `cli-arguments`, `cli-dataset-p
 
 7 commands, one oracle file per unit in `tools/oracle-cs/Commands/W8-17*.cs` (case counts: `contracts/README.md`, D-W8B6-102). Generated with `./tools/oracle.ps1 -Commit d92d6aae -Command <name>` (twice, byte-identical). Commands: `shell-launch`, `shell-error-log` (17a), `startup-cloak`, `shell-show-command` (17b), `shell-composition-registrations` (17c), `shell-startup-options` (17d), `shell-startup-texts` (17e). 20a and 20b have no oracle command (D-W8B6-51).
 
-`staged/` holds inputs of oracle commands that need a newer C# baseline than the pinned one (`oracle.ps1` ignores it). Wave 9: `w9-r1-rename-policy` (FEAT-RENAME `RenameNamePolicy` / `CaptureGroupRenamePlan`, needs `-p:W9RenameBaseline=true`); the golden generator moves it up and drops the guard when `docs/SYNC-LEDGER.md` moves to `7eaee2a2`.
+Wave 9: `w9-r1-rename-policy` (FEAT-RENAME `RenameNamePolicy` / `CaptureGroupRenamePlan`) is a normal input here; the old `staged/` folder and the `W9RenameBaseline` guard were removed once the baseline moved to `7eaee2a2` (P-73).
