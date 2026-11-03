@@ -26,6 +26,7 @@ Rules (docs/MULTI-AGENT-PLAN.md §4):
 | `image-file-types` | W1-07 `ImageFileTypes` | IsSupported / IsRawPath / Path.GetExtension |
 | `lru-trace` | W1-08 `BoundedLruCache` | scripted eviction scenarios |
 | `app-version` | W1-10 `AppVersion` | TryParse, CompareTo, operators |
+| `percent-one-decimal` | G3 L6 `WindowsNumberFormatting::percent_one_decimal` | `{ratio:P1}` for 37 cultures x 12 ratios (P-92) |
 | `update-url-policy` | W1-10 update URL policy | allowed / rejected update URLs |
 | `loc-template` | W1-11 `LocTemplate` | parse, placeholder names, render |
 | `loc-render` | W1-11 localized render | Render with arguments |
