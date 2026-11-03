@@ -1,6 +1,6 @@
 {
   "generator": "oracle-cs recovery-retry",
-  "csharp_commit": "7eaee2a2b071c7ca05291c86fb78a347f9e6a15f",
+  "csharp_commit": "e7c2fcd86900d3406e1a0e643c43d5899b7d7a56",
   "cases": [
     {
       "name": "single-move-succeeds",
@@ -7585,8 +7585,10 @@
         "stat C:\\photos\\a.jpg",
         "stat C:\\photos\\a.cr2",
         "bin.fits C:\\photos\\a.jpg 12",
+        "stat C:\\photos\\a.jpg",
         "bin.recycle C:\\photos\\a.jpg",
         "exists C:\\photos\\a.jpg",
+        "stat C:\\photos\\a.cr2",
         "bin.recycle C:\\photos\\a.cr2",
         "exists C:\\photos\\a.cr2"
       ],
@@ -7694,6 +7696,7 @@
         "stat C:\\photos\\a.cr2",
         "stat C:\\photos\\a.cr2",
         "bin.fits C:\\photos\\a.cr2 8",
+        "stat C:\\photos\\a.cr2",
         "bin.recycle C:\\photos\\a.cr2",
         "exists C:\\photos\\a.cr2"
       ],
@@ -7989,8 +7992,10 @@
         "stat C:\\photos\\a.jpg",
         "stat C:\\photos\\a.cr2",
         "bin.fits C:\\photos\\a.jpg 4",
+        "stat C:\\photos\\a.jpg",
         "bin.recycle C:\\photos\\a.jpg",
         "exists C:\\photos\\a.jpg",
+        "stat C:\\photos\\a.cr2",
         "bin.delete-permanently C:\\photos\\a.cr2",
         "exists C:\\photos\\a.cr2"
       ],
@@ -8384,6 +8389,7 @@
         "stat C:\\photos\\a.jpg",
         "stat C:\\photos\\a.cr2",
         "bin.fits C:\\photos\\a.jpg 12",
+        "stat C:\\photos\\a.jpg",
         "bin.recycle C:\\photos\\a.jpg",
         "exists C:\\photos\\a.jpg"
       ],
@@ -8866,6 +8872,7 @@
         "stat C:\\photos\\a.jpg",
         "stat C:\\photos\\a.cr2",
         "bin.fits C:\\photos\\a.jpg 12",
+        "stat C:\\photos\\a.jpg",
         "bin.recycle C:\\photos\\a.jpg",
         "exists C:\\photos\\a.jpg"
       ],
@@ -8997,8 +9004,10 @@
         "stat C:\\photos\\a.jpg",
         "stat C:\\photos\\a.cr2",
         "bin.fits C:\\photos\\a.jpg 12",
+        "stat C:\\photos\\a.jpg",
         "bin.recycle C:\\photos\\a.jpg",
         "exists C:\\photos\\a.jpg",
+        "stat C:\\photos\\a.cr2",
         "bin.recycle C:\\photos\\a.cr2"
       ],
       "gate_busy_after": null,

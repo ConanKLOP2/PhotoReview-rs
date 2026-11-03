@@ -2405,6 +2405,51 @@ fn retry_present_member_changed_since_journal_is_refused_and_nothing_is_recycled
     assert!(bin_calls(&rig, "bin.delete-permanently ").is_empty());
 }
 
+// C#: RecoveryRecycleGroupTests.Retry_MemberReplacedAfterPreparedWasJournaled_TouchesNothingAndFailsAsSourceChanged (Theory: false, true; D1, PhotoReview #534)
+#[test]
+fn retry_member_replaced_after_prepared_was_journaled_touches_nothing_and_fails_as_source_changed_recycle() {
+    retry_member_replaced_after_prepared_was_journaled(false);
+}
+
+// C#: ...Retry_MemberReplacedAfterPreparedWasJournaled_TouchesNothingAndFailsAsSourceChanged (permanent: true)
+#[test]
+fn retry_member_replaced_after_prepared_was_journaled_touches_nothing_and_fails_as_source_changed_permanent() {
+    retry_member_replaced_after_prepared_was_journaled(true);
+}
+
+fn retry_member_replaced_after_prepared_was_journaled(permanent: bool) {
+    let rig = Rig::with_clocks(STAMP + 60 * TICKS_PER_SECOND_RR, STAMP + 120 * TICKS_PER_SECOND_RR);
+    rig.fs.seed_text(DEL_RAW, "rrrrrrrrrr", stamp());
+    let bin = rig.bin(BinConfig {
+        no_bin: if permanent {
+            vec![DEL_RAW.to_owned()]
+        } else {
+            Vec::new()
+        },
+        ..BinConfig::default()
+    });
+    let failed = failed_delete_group(vec![delete_member(DEL_RAW, 10, permanent)]);
+    rig.append(&failed);
+    // The pre-check passed; while Prepared is written another program replaces the file (25 bytes, an hour later).
+    let fs = rig.fs.clone();
+    once_on(&rig.fs, "append", move || {
+        fs.add_file_at_ticks(DEL_RAW, bytes_of(&"x".repeat(25)), STAMP + 3600 * TICKS_PER_SECOND_RR)
+    });
+    let service = rig
+        .service()
+        .with_recycle_bin(bin)
+        .with_allow_permanent_delete(Rig::allow(permanent));
+
+    let result = retry(&service, &failed);
+
+    assert!(!result.succeeded);
+    assert_eq!(result.message, english().core_recovery_source_changed());
+    assert!(bin_calls(&rig, "bin.recycle ").is_empty());
+    assert!(bin_calls(&rig, "bin.delete-permanently ").is_empty());
+    assert!(rig.fs.has_file(DEL_RAW));
+    assert_eq!(result.entry.expect("entry").state, JournalState::Failed);
+}
+
 // C#: RecoveryRecycleGroupTests.Retry_MemberOnDriveWithoutRecycleBinNotJournaledPermanent_IsRefusedAndNeverDeleted
 #[test]
 fn retry_member_on_drive_without_recycle_bin_not_journaled_permanent_is_refused_and_never_deleted() {

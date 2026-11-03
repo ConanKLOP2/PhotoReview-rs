@@ -412,35 +412,6 @@ fn panic_text(payload: &(dyn std::any::Any + Send)) -> String {
         .unwrap_or_default()
 }
 
-/// DIVERGENCE H1/G25 (docs/reviews/FIX-H1-2026-10-31.md): the C# oracle deletes a permanent group member without a
-/// fresh stat; we deliberately re-stat right before `bin.delete-permanently` so a file that replaced the member after
-/// the pre-check is never deleted (`st_invmap_repro.rs` pins the new behaviour). That adds exactly one `stat P` op
-/// immediately before each `bin.delete-permanently P` and (H1 follow-up) each `bin.recycle P` of a group member; it is removed from OUR op trace here so every other op of
-/// every case still has to match the oracle exactly.
-fn divergence_adjusted(field: &str, got: &Value) -> Value {
-    if field != "ops" {
-        return got.clone();
-    }
-    let Some(ops) = got.as_array() else {
-        return got.clone();
-    };
-    let text = |i: usize| ops.get(i).and_then(Value::as_str).unwrap_or_default();
-    let kept: Vec<Value> = ops
-        .iter()
-        .enumerate()
-        .filter(|(i, _)| {
-            let Some(path) = text(*i).strip_prefix("stat ") else {
-                return true;
-            };
-            let next = text(*i + 1);
-            next.strip_prefix("bin.delete-permanently ") != Some(path)
-                && next.strip_prefix("bin.recycle ") != Some(path)
-        })
-        .map(|(_, op)| op.clone())
-        .collect();
-    Value::Array(kept)
-}
-
 /// Every golden case replays exactly: all 106 rows, every compared field. A case that panics (the stubs panic with
 /// `todo!()`) is one mismatch; the other cases still run and are reported together.
 #[test]
@@ -463,7 +434,7 @@ fn recovery_retry_golden_replays_every_case() {
         };
         for field in COMPARED {
             let expected = &case[field];
-            let got = &divergence_adjusted(field, &actual[field]);
+            let got = &actual[field];
             if expected != got {
                 mismatches.push(format!("{name} / {field}:\n  golden: {expected}\n  ours:   {got}"));
             }
