@@ -73,9 +73,10 @@ pub trait CachedImage {
 /// C# `IGpuImageBackend` (lines 303-315): the seam between the cache policy and Direct2D. UI thread only; `&self` with interior
 /// mutability because the cache holds the backend by value and also subscribes a handler to it.
 ///
-/// RULE: a backend method must never call back into the cache synchronously (the cache holds its state borrowed during `upload`,
-/// `upload_rows` and `release`). The device-recreated notification is raised by the surface inside `resize` /
-/// `end_draw_and_present`, never inside these three methods.
+/// RULE: `release` must never call back into the cache synchronously (the cache holds its state borrowed during it). `upload` and
+/// `upload_rows` run with the state borrow released (P-312), so they may read the cache or even change it; the cache re-checks its
+/// state afterwards. The device-recreated notification is raised by the surface inside `resize` /
+/// `end_draw_and_present`, never inside these methods.
 pub trait GpuImageBackend {
     /// The image type created by [`upload`](Self::upload) (`TiledGpuImage<ID2D1Bitmap1>` in production).
     type Image: CachedImage + 'static;
@@ -330,29 +331,61 @@ impl<B: GpuImageBackend> BudgetedImageCache<B> {
     /// (`upload_rows(.., pixel_height)` with the buffer given HERE, not the pending source), touched (most recent) and becomes the
     /// protected "current" image; a new buffer is uploaded with data, `uploaded_rows = pixel_height`, becomes current, then added.
     pub fn get_or_upload(&self, pixels: &PixelBuffer) -> Result<Rc<B::Image>, CacheError> {
+        let id = pixels.id();
+        let cached = {
+            let mut state = self.state.borrow_mut();
+            if state.disposed {
+                return Err(CacheError::Disposed {
+                    object: CACHE_OBJECT_NAME,
+                });
+            }
+            if pixels.is_disposed() {
+                return Err(CacheError::Disposed {
+                    object: PIXEL_BUFFER_OBJECT_NAME,
+                });
+            }
+            match state.entries.get(&id) {
+                Some(entry) if entry.image.is_complete() => {
+                    let image = Rc::clone(&entry.image);
+                    Self::touch(&mut state, id);
+                    state.protected_id = Some(id);
+                    return Ok(image);
+                }
+                Some(entry) => Some((Rc::clone(&entry.image), entry.serial)),
+                None => None,
+            }
+        };
+        if let Some((image, serial)) = cached {
+            // The state borrow is released around the backend call (P-312).
+            self.write_rows(&image, pixels, image.pixel_height())?;
+            let mut state = self.state.borrow_mut();
+            Self::finish_rows(&mut state, id, serial, &image);
+            if state.entries.get(&id).is_some_and(|entry| entry.serial == serial) {
+                Self::touch(&mut state, id);
+                state.protected_id = Some(id);
+            }
+            return Ok(image);
+        }
+        // New buffer: the upload runs with the state borrow released (P-312).
+        let image = self.backend.upload(pixels, true)?;
+        image.set_uploaded_rows(image.pixel_height());
         let mut state = self.state.borrow_mut();
         if state.disposed {
+            self.release_image(&image);
             return Err(CacheError::Disposed {
                 object: CACHE_OBJECT_NAME,
             });
         }
-        if pixels.is_disposed() {
-            return Err(CacheError::Disposed {
-                object: PIXEL_BUFFER_OBJECT_NAME,
-            });
-        }
-        let id = pixels.id();
         if let Some(entry) = state.entries.get(&id) {
-            let image = Rc::clone(&entry.image);
-            if !image.is_complete() {
-                self.upload_rows(&mut state, id, pixels, image.pixel_height())?;
+            // The backend re-entered the cache and cached this buffer meanwhile: keep that entry, give the duplicate back.
+            let existing = Rc::clone(&entry.image);
+            if !Rc::ptr_eq(&existing, &image) {
+                self.release_image(&image);
             }
             Self::touch(&mut state, id);
             state.protected_id = Some(id);
-            return Ok(image);
+            return Ok(existing);
         }
-        let image = self.backend.upload(pixels, true)?;
-        image.set_uploaded_rows(image.pixel_height());
         state.protected_id = Some(id);
         self.add(&mut state, Rc::clone(&image));
         Ok(image)
@@ -362,7 +395,8 @@ impl<B: GpuImageBackend> BudgetedImageCache<B> {
     /// touches). Otherwise uploads empty textures, adds the entry (protecting ONLY this id during that eviction), stores the `Arc`
     /// as pending source and schedules the first stripe. Does NOT change the protected "current" image.
     pub fn prefetch(&self, pixels: &Arc<PixelBuffer>) -> Result<(), CacheError> {
-        let token = {
+        let id = pixels.id();
+        {
             let mut state = self.state.borrow_mut();
             if state.disposed {
                 return Err(CacheError::Disposed {
@@ -372,12 +406,27 @@ impl<B: GpuImageBackend> BudgetedImageCache<B> {
             if pixels.is_disposed() {
                 return Ok(());
             }
-            let id = pixels.id();
             if state.entries.contains_key(&id) {
                 Self::touch(&mut state, id);
                 return Ok(());
             }
-            let image = self.backend.upload(pixels, false)?;
+        }
+        // The upload runs with the state borrow released (P-312).
+        let image = self.backend.upload(pixels, false)?;
+        let token = {
+            let mut state = self.state.borrow_mut();
+            if state.disposed {
+                self.release_image(&image);
+                return Err(CacheError::Disposed {
+                    object: CACHE_OBJECT_NAME,
+                });
+            }
+            if state.entries.contains_key(&id) {
+                // The backend re-entered the cache and cached this buffer meanwhile: keep that entry, give the duplicate back.
+                self.release_image(&image);
+                Self::touch(&mut state, id);
+                return Ok(());
+            }
             let token = self.add(&mut state, image);
             if let Some(entry) = state.entries.get_mut(&token.pixel_buffer_id) {
                 entry.pending_source = Some(Arc::clone(pixels));
@@ -439,7 +488,7 @@ impl<B: GpuImageBackend> BudgetedImageCache<B> {
     /// A backend failure is returned, the entry stays as it was and nothing is rescheduled (C# lets the exception escape the job).
     pub fn run_stripe(&self, token: StripeToken) -> Result<(), CacheError> {
         let id = token.pixel_buffer_id;
-        let finished = {
+        let (source, image, end_row) = {
             let mut state = self.state.borrow_mut();
             if state.disposed {
                 return Ok(());
@@ -465,7 +514,16 @@ impl<B: GpuImageBackend> BudgetedImageCache<B> {
             let image = Rc::clone(&entry.image);
             let rows_per_stripe = self.stripe_bytes.checked_div(source.stride()).unwrap_or(1).max(1);
             let end_row = image.uploaded_rows().saturating_add(rows_per_stripe);
-            self.upload_rows(&mut state, id, &source, end_row)?;
+            (source, image, end_row)
+        };
+        // The state borrow is released around the backend call (P-312).
+        self.write_rows(&image, &source, end_row)?;
+        let finished = {
+            let mut state = self.state.borrow_mut();
+            if !Self::finish_rows(&mut state, id, token.serial, &image) {
+                // The backend call re-entered the cache and removed, replaced or cleared this entry: nothing left to finish.
+                return Ok(());
+            }
             image.is_complete()
         };
         if finished {
@@ -585,28 +643,31 @@ impl<B: GpuImageBackend> BudgetedImageCache<B> {
         state.protected_id = None;
     }
 
-    /// C# `UploadRows`: writes the rows `[uploaded_rows, min(end_row, height))` and then advances `uploaded_rows`.
-    fn upload_rows(
-        &self,
-        state: &mut State<B::Image>,
-        id: i64,
-        pixels: &PixelBuffer,
-        end_row: i32,
-    ) -> Result<(), CacheError> {
-        let Some(entry) = state.entries.get_mut(&id) else {
-            return Ok(());
-        };
-        let image = Rc::clone(&entry.image);
+    /// C# `UploadRows`, first half: writes the rows `[uploaded_rows, min(end_row, height))` and then advances `uploaded_rows`. Takes NO state
+    /// borrow: the backend may call back into the cache (P-312).
+    fn write_rows(&self, image: &B::Image, pixels: &PixelBuffer, end_row: i32) -> Result<(), CacheError> {
         let start = image.uploaded_rows();
         let end = end_row.min(image.pixel_height());
         if end > start {
-            self.backend.upload_rows(&image, pixels, start, end)?;
+            self.backend.upload_rows(image, pixels, start, end)?;
             image.set_uploaded_rows(end);
+        }
+        Ok(())
+    }
+
+    /// C# `UploadRows`, second half, under the state borrow: a complete image no longer needs its pending source. Returns whether the
+    /// entry `id` with `serial` is still cached (a re-entering backend may have removed it).
+    fn finish_rows(state: &mut State<B::Image>, id: i64, serial: u64, image: &B::Image) -> bool {
+        let Some(entry) = state.entries.get_mut(&id) else {
+            return false;
+        };
+        if entry.serial != serial {
+            return false;
         }
         if image.is_complete() {
             entry.pending_source = None;
         }
-        Ok(())
+        true
     }
 }
 

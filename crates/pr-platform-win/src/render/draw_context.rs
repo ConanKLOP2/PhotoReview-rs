@@ -402,7 +402,7 @@ impl D2dDrawContext {
         interpolation: ImageInterpolation,
         opacity: f32,
     ) {
-        self.push_transform(for_exif_orientation(exif_orientation, destination));
+        let pushed = self.try_push_transform(for_exif_orientation(exif_orientation, destination));
         self.draw_image(
             image,
             unoriented_rect(exif_orientation, destination),
@@ -410,8 +410,11 @@ impl D2dDrawContext {
             interpolation,
             opacity,
         );
-        // The C# `finally`: the pop runs on every path (T8). It can only fail when the push was skipped (inactive context).
-        let _ = self.pop_transform();
+        // The C# `finally`: the pop runs on every path (T8) on which the push was applied. A skipped push (released device) must not pop the
+        // CALLER's transform (P-313; Rust-only edge, C# throws instead).
+        if pushed {
+            let _ = self.pop_transform();
+        }
     }
 
     /// C# `FillRectangle`.
@@ -479,8 +482,12 @@ impl D2dDrawContext {
 
     /// C# `PopClip`: depth 0 is `Err(InvalidOperation "PopClip without PushClip.")` (checked before touching the context).
     pub fn pop_clip(&mut self) -> Result<(), RenderFault> {
-        self.frame.pop_clip()?;
+        if self.frame.clip_depth <= 0 {
+            return self.frame.pop_clip();
+        }
+        // The depth drops only when the D2D pop is issued (P-313): with a released device the clip stays counted, and `end` unwinds it.
         if let Some(context) = self.context() {
+            self.frame.pop_clip()?;
             d2d_pop_clip(&context);
         }
         Ok(())
@@ -500,11 +507,17 @@ impl D2dDrawContext {
 
     /// C# `PushTransform`: remembers the current matrix and applies `transform * current` (row vectors: `transform` first).
     pub fn push_transform(&mut self, transform: Matrix3x2) {
+        self.try_push_transform(transform);
+    }
+
+    /// `push_transform` that says whether the push was applied (`false`: no context, nothing was pushed).
+    fn try_push_transform(&mut self, transform: Matrix3x2) -> bool {
         let Some(context) = self.context() else {
-            return;
+            return false;
         };
         self.frame.push_transform(transform);
         self.apply_transform(&context);
+        true
     }
 
     /// C# `PopTransform`: empty stack is `Err(InvalidOperation "PopTransform without PushTransform.")`.
@@ -2002,5 +2015,60 @@ mod tests {
             dc.fill_rectangle(rect(0.0, 0.0, 8.0, 8.0), WHITE);
         });
         assert_eq!(pixel(&pixels, 4, 4), (255, 255, 255, 255), "opacity is 1 again");
+    }
+
+    // ------------------------------------------------------------------ P-313: released device
+
+    /// An active context over offscreen resources that the test can dispose (the context is then `None` for every draw call).
+    fn context_over_disposable_device() -> (Rc<DeviceResources>, D2dDrawContext) {
+        let resources = DeviceResources::create_offscreen(8, 8, 1.0, true).unwrap();
+        let mut dc = D2dDrawContext::new(Rc::clone(&resources));
+        dc.begin();
+        (resources, dc)
+    }
+
+    // new (P-313): Rust-only edge (C# throws ObjectDisposedException); a skipped push must not be popped
+    #[test]
+    fn draw_image_oriented_on_a_released_device_keeps_the_callers_transform() {
+        let (resources, mut dc) = context_over_disposable_device();
+        let outer = Matrix3x2::scale(2.0);
+        dc.push_transform(outer);
+        assert_eq!(dc.frame.transform_stack.len(), 1);
+
+        resources.dispose();
+        dc.draw_image_oriented(&(), rect(0.0, 0.0, 4.0, 4.0), 6, None, ImageInterpolation::Linear, 1.0);
+
+        assert_eq!(
+            dc.frame.transform_stack.len(),
+            1,
+            "the caller's push is still on the stack"
+        );
+        assert_eq!(dc.transform(), outer);
+    }
+
+    // new (P-313): the clip depth drops only when the D2D pop was issued
+    #[test]
+    fn pop_clip_on_a_released_device_keeps_the_depth_and_end_unwinds_it() {
+        let (resources, mut dc) = context_over_disposable_device();
+        dc.push_clip(rect(0.0, 0.0, 4.0, 4.0));
+        assert_eq!(dc.frame.clip_depth, 1);
+
+        resources.dispose();
+        assert!(dc.pop_clip().is_ok());
+        assert_eq!(
+            dc.frame.clip_depth, 1,
+            "no D2D pop was issued, so the clip is still counted"
+        );
+
+        assert!(!dc.end(), "the frame was unbalanced");
+        assert_eq!(dc.frame.clip_depth, 0);
+    }
+
+    // C#: D2DDrawContext.PopClip without PushClip throws InvalidOperation (also with a released device)
+    #[test]
+    fn pop_clip_without_push_is_still_an_error_on_a_released_device() {
+        let (resources, mut dc) = context_over_disposable_device();
+        resources.dispose();
+        assert_eq!(dc.pop_clip().unwrap_err(), invalid("PopClip without PushClip."));
     }
 }
