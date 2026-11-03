@@ -102,7 +102,21 @@ fn group_place_honours_a_hidden_child_and_a_hidden_nested_group() {
     nested.set_visible(false);
     let g = GroupElement::new(1, vec![Box::new(CheckElement::new(2, 0)), Box::new(nested)]);
     let mut s = Surface::new();
-    let _ = g.place(&mut s, 0, 0, 200);
+    let used = g.place(&mut s, 0, 0, 200);
+    // Expected values: the real C# SettingsGroupElement/SettingsCheckElement code (SettingsPageBuilder.cs, identical at e7c2fcd8 and 7eaee2a2)
+    // run verbatim in a scratch console project with this file's fake surface (dx = dy = identity,
+    // line height 16, text height 16); the check is 18 high at (8, 21) inside the 8 px padded group, the hidden nested
+    // group and its child are hidden (id order 3, 4) and the title spans 45 px.
+    assert_eq!(used, 53);
+    assert_eq!(
+        s.calls,
+        vec![
+            (2, 8, 21, 184, 18),
+            (3, i32::MIN, 0, 0, 0),
+            (4, i32::MIN, 0, 0, 0),
+            (1, 0, 0, 200, 45)
+        ]
+    );
 }
 // C#: SettingsLayoutElement.AsGroup
 #[test]
@@ -117,8 +131,13 @@ fn as_group_and_as_group_mut_find_nested_groups_and_toggle_visible() {
 #[test]
 fn check_flow_does_not_skip_hidden_items() {
     let mut s = Surface::new();
+    s.hidden.insert(2);
     let e = CheckFlowElement::new(vec![1, 2], 0);
-    let _ = e.place(&mut s, 0, 0, 200);
+    let used = e.place(&mut s, 0, 0, 200);
+    // C# SettingsCheckFlowElement.PlaceVisible run verbatim (see the group test): the label "text1" is 5 * 7 + 16 = 51 wide,
+    // the second item sits after the 10 px gap, and the hidden id 2 is still placed (no Hide call).
+    assert_eq!(used, 23);
+    assert_eq!(s.calls, vec![(1, 0, 0, 51, 18), (2, 61, 0, 51, 18)]);
 }
 // C#: SettingsRadioElement.PlaceVisible
 #[test]
@@ -126,7 +145,11 @@ fn radio_hidden_hint_alone_is_still_placed() {
     let mut s = Surface::new();
     s.hidden.insert(9);
     let e = RadioElement::new(1, Some(9), 0);
-    let _ = e.place(&mut s, 0, 0, 200);
+    let used = e.place(&mut s, 0, 0, 200);
+    // C# SettingsRadioElement.PlaceVisible run verbatim (see the group test): only the radio's own hidden state hides the
+    // pair, so the hidden hint is placed 12 px in, under the radio.
+    assert_eq!(used, 42);
+    assert_eq!(s.calls, vec![(1, 0, 0, 200, 18), (9, 12, 20, 188, 16)]);
 }
 // C#: SettingsLayoutElement.LabelWidth
 #[test]
@@ -204,11 +227,24 @@ fn layout_elements_are_object_safe() {
         Box::new(GroupElement::new(11, vec![])),
     ];
     let mut s = Surface::new();
-    for e in &mut elements {
-        let _ = e.place(&mut s, 0, 0, 300);
-    }
+    let used: Vec<i32> = elements.iter_mut().map(|e| e.place(&mut s, 0, 0, 300)).collect();
+    // C# run verbatim (see the group test): used heights in declaration order, and the placed rectangles of all 8 elements
+    // (the elements share one surface and one origin, so the rectangles are each element's own, not stacked).
+    assert_eq!(used, vec![22, 28, 29, 21, 28, 24, 23, 31]);
+    assert_eq!(
+        s.calls,
+        vec![
+            (1, 0, 0, 300, 18),
+            (2, 0, 3, 114, 16),
+            (3, 120, 0, 180, 23),
+            (4, 0, 4, 114, 16),
+            (5, 120, 0, 133, 24),
+            (6, 259, 4, 41, 16),
+            (7, 0, 0, 300, 16),
+            (8, 0, 0, 51, 23),
+            (9, 0, 0, 300, 18),
+            (10, 0, 0, 58, 18),
+            (11, 0, 0, 300, 23),
+        ]
+    );
 }
-// C#: SettingsFilesPageTests.ControlsDoNotOverlap
-#[test]
-#[ignore = "native: needs desktop"]
-fn placed_rectangles_are_the_window_rectangles_and_siblings_do_not_overlap() {}
