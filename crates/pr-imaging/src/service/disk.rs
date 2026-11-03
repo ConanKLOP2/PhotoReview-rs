@@ -1337,6 +1337,33 @@ mod tests {
         assert!(fx.owners().is_empty());
     }
 
+    // Rust-only (ST-IMAGING-INV M1 / G26, T9 review 2026-11-03): the commit gate's second condition. A writer whose epoch is
+    // still current but that finds a NEWER claim on the same path (owner epoch > its epoch) publishes nothing and leaves
+    // no temp file. Pins the `owner_epoch > request.epoch` arm on its own (the sibling test above reaches the epoch arm).
+    #[test]
+    fn persist_writer_with_older_epoch_than_a_claim_on_the_path_publishes_nothing() {
+        let fx = Fixture::new("g26-newer-claim");
+        let path = fx.path("A.jpg");
+        let newer = fx.inner().current_epoch() + 1;
+        fx.inner().claim_persist_path(&path, newer);
+        fx.persist(opaque(), &path);
+        fx.shutdown();
+        assert!(fx.entries().is_empty(), "the gate refused the commit: no entry file");
+        assert!(
+            std::fs::read_dir(&fx.dir)
+                .expect("dir")
+                .filter_map(Result::ok)
+                .all(|entry| entry.path().extension().is_none_or(|ext| ext != "tmp")),
+            "the refused writer leaves no temp file"
+        );
+        assert_eq!(
+            fx.owners().get(&path_key(&path)),
+            Some(&(newer, 1)),
+            "only the foreign claim remains"
+        );
+        assert!(fx.errors().is_empty());
+    }
+
     // C#: PreviewImageServicePixelCodecTests.PixelBufferPreview_PersistsAndReadsBack_WithEitherCodec (pixel-buffer
     // codec half; the WPF codec and `LegacyWpfPreviewCache` halves have no Rust twin: there is no WPF in the port)
     #[test]
