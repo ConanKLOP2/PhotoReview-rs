@@ -5,7 +5,7 @@
 - **Decision owner:** owner
 
 ## Context
-C# `FileActionService.End()` is `Volatile.Write(ref _inProgress, 0)` (`FileActionService.cs:50`, as quoted by the P-71 row; the C# source is not on this machine and was not re-read for this ADR). Any caller can run it at any time, so a stray or duplicate `End()` clears the in-progress flag of a LATER action and lets two file actions run at once (INV-4). The Rust port copied this: `FileActionService::end()` was `pub` and stored 0 unconditionally, and the trait `FileActionGate` (`undo.rs`) exposed `end` too. Every internal path already used an RAII guard, and no stray caller existed.
+C# `FileActionService.End()` is `Volatile.Write(ref _inProgress, 0)` (`FileActionService.cs:50`; re-read in the C# repo at the baseline `7eaee2a2` on 2026-11-03: `TryBegin` at `:45`, `End` at `:50`, callers `UndoService.cs:77-93` and `RecoveryRetryService.cs:61-69`, which holds a concrete `FileActionService?`, there is no `IFileActionGate` in C#). Any caller can run it at any time, so a stray or duplicate `End()` clears the in-progress flag of a LATER action and lets two file actions run at once (INV-4). The Rust port copied this: `FileActionService::end()` was `pub` and stored 0 unconditionally, and the trait `FileActionGate` (`undo.rs`) exposed `end` too. Every internal path already used an RAII guard, and no stray caller existed.
 
 ## Decision
 `pr_core::file_actions::undo` gets a release token and the public `end` goes away:
@@ -33,4 +33,4 @@ Restore `FileActionGate::end` and the `bool` return of `try_begin`, make `GateTo
 `docs/PROPOSED-DECISIONS.md` row `P-71`; `docs/reviews/FIX-G30-G12-2026-11-01.md` (BACKLOG G12 L1); `crates/pr-core/src/file_actions/{undo,service,recovery_retry}.rs`.
 
 ## Not verified
-The C# `FileActionService.cs` text was not re-read (not on this machine). Native Windows tests were not run.
+The C# lines above were re-read on 2026-11-03; the C# side is not changed (proposal: PR draft into the C# repo, fragment RP-GATE-END-01). Native Windows tests were not run.
