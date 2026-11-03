@@ -1,6 +1,6 @@
 {
   "generator": "oracle-cs l10n-localizer",
-  "csharp_commit": "7eaee2a2b071c7ca05291c86fb78a347f9e6a15f",
+  "csharp_commit": "b684776786176f886086378f59d39710c9cc31ee",
   "cases": [
     {
       "id": "shipped-english-alone-has-no-warnings",
@@ -1006,6 +1006,7 @@
           "status.actionCompleted",
           "status.actionFailed",
           "status.actionInvalidOperation",
+          "status.actionJournalNotSaved",
           "status.actionNoDestination",
           "status.allImagesProcessed",
           "status.batchCanceled",
@@ -2155,6 +2156,7 @@
           "status.actionCompleted",
           "status.actionFailed",
           "status.actionInvalidOperation",
+          "status.actionJournalNotSaved",
           "status.actionNoDestination",
           "status.allImagesProcessed",
           "status.batchCanceled",
@@ -3269,6 +3271,7 @@
           "status.actionCompleted",
           "status.actionFailed",
           "status.actionInvalidOperation",
+          "status.actionJournalNotSaved",
           "status.actionNoDestination",
           "status.allImagesProcessed",
           "status.batchCanceled",
@@ -4344,6 +4347,7 @@
           "status.actionCompleted",
           "status.actionFailed",
           "status.actionInvalidOperation",
+          "status.actionJournalNotSaved",
           "status.actionNoDestination",
           "status.allImagesProcessed",
           "status.batchCanceled",

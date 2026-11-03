@@ -1,7 +1,7 @@
 # Sync ledger (C# → Rust)
 
-**Current spec baseline:** C# `master` at `7eaee2a2` (2026-10-21, after #533), version line 2.0.N.
-Assets synced from that commit: see `assets/SYNC-MANIFEST.txt`. Goldens regenerated at that commit.
+**Current spec baseline:** C# `master` at `b6847767` (full `b684776786176f886086378f59d39710c9cc31ee`, after #537), version line 2.0.N.
+Assets synced from that commit: see `assets/SYNC-MANIFEST.txt`. Goldens: see "Oracle diff, 7eaee2a2 to b6847767" (only `l10n-generator`, `l10n-localizer` and `translation-export` were regenerated; every other golden keeps `csharp_commit` `7eaee2a2`, its cases are unchanged).
 
 ## How to advance the baseline
 
@@ -32,6 +32,8 @@ Assets synced from that commit: see `assets/SYNC-MANIFEST.txt`. Goldens regenera
 | `a6e530f2` (#531) | Shell-only release workflow | Packaging | Deferred to release tooling owner | — |
 | `02aaee0a` (#532) | Language convention documentation | No | Reference only | — |
 | `7eaee2a2` (#533) | Unknown `Operation` in typed/imported action list is a JSON error; config loader remains lenient | Yes | Rust action-list parser checked against the regenerated golden; config loader parity tracked separately (`D-actions-unknown-operation`). Qualification: C# `LenientEnumConverter.TryReadStrict` also accepts a defined number encoded as a string, while the Rust action-list reader accepts defined JSON numbers but not numeric strings; matching that input is still open | baseline lane (#182) |
+| `1cd6e375` (#536) | Rust-port decision fragments RP-GATE-END-01, RP-JOURNAL-NOTICE-01, RP-SETTINGS-BACKUP-01 and entries in `OPEN-DECISIONS.md` (docs only) | No | Docs only, N/A. The Rust side of the same questions is tracked in `docs/PROPOSED-DECISIONS.md` (P-71, P-72, P-84) | — |
+| `b6847767` (#537) | `FileActionController` logs and shows the status text `status.actionJournalNotSaved` when a successful Move/Copy/Recycle was not journaled (`JournalPersisted` false); new key in `en.json`, `en.notes.json`, `vi.json`; new C# test file `FileActionControllerJournalNoticeTests.cs` | Yes (status bar text; nothing new on disk) | Catalog synced; Rust log + notice pending (P-72, separate PR) | this sync PR (catalog); P-72 PR (behaviour) |
 
 ## G-INPUT input-scripts (note, 2026-10-29)
 
@@ -77,3 +79,15 @@ External editor list reconciliation/migration is W9-E1; dialogs and the remainin
 ## W9-E8 supports replay extension (2026-10-25, machine A)
 
 At unchanged spec baseline7eaee2a2, added six ExternalEditors supports/router cases for settings_enabled true/false/default and regenerated `secondary-window-supports` with `tools/oracle.ps1 -Command secondary-window-supports -Commit 7eaee2a2`. Output50cases; all44previous case objects remain exactly equal. Existing enum row already lists10kinds. No assets or C# checkout changed. RenamePrompt support cases await W9-R8. Cached C# binaries were verified complete before generation; build0errors/89existing duplicate-type warnings.
+
+## Oracle diff, 7eaee2a2 to b6847767
+
+Range `7eaee2a2..b6847767` is two commits: #536 (docs only) and #537 (code plus one catalog key in three files). The oracle was run for all commands at `7eaee2a2` and then at `b6847767` on the same Windows 10 machine (the first run already used the newly synced `assets/languages`, which some oracle commands read, so the catalog goldens were also compared with the committed files). Compared without the `csharp_commit` field, the goldens that changed because of the range are:
+
+| Golden | Semantic change | Rust status |
+|---|---|---|
+| `l10n-generator` | New constant `StatusActionJournalNotSaved` for `status.actionJournalNotSaved` (plan entry and simple member). | Regenerated; `generator_plan_matches_the_csharp_oracle` passes. |
+| `l10n-localizer` | The new key appears in the key lists of the shipped-catalog cases (4 lines). | Regenerated; `localizer_matches_the_csharp_oracle` passes. |
+| `translation-export` | The exported `vi` template and the `xx.todo.json` outputs carry the new key (8 output strings; 39 cases unchanged in count). | Regenerated; `golden_translation_export` now expects `b6847767`. |
+
+These three are the only goldens committed with the new `csharp_commit`. Every other golden keeps `csharp_commit` `7eaee2a2` (tests assert that value; their cases are unchanged). Goldens that differ on this machine regardless of the range (known Windows 10 drift: `cli-tool-path-guard`, `embedded-thumbnail-*`, `recovery-dialog-details`, `session-key`, `turbojpeg-*`, `wic-*`) were not committed; the oracle also rewrote tracked fixtures and `crates/pr-core/src/text/ordinal_casing_table.rs`, which were restored with `git checkout`. Neither commit touches imaging code. Unexplained: none.

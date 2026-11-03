@@ -1,6 +1,6 @@
 {
   "generator": "oracle-cs l10n-generator",
-  "csharp_commit": "7eaee2a2b071c7ca05291c86fb78a347f9e6a15f",
+  "csharp_commit": "b684776786176f886086378f59d39710c9cc31ee",
   "cases": [
     {
       "id": "shipped-en-json-assets-languages",
@@ -2620,6 +2620,10 @@
         {
           "ident": "StatusMoveUnverified",
           "key": "status.moveUnverified"
+        },
+        {
+          "ident": "StatusActionJournalNotSaved",
+          "key": "status.actionJournalNotSaved"
         },
         {
           "ident": "CompareHashUnknown",
@@ -8315,6 +8319,12 @@
           "params": [
             "fileName"
           ]
+        },
+        {
+          "ident": "StatusActionJournalNotSaved",
+          "kind": "simple",
+          "key": "status.actionJournalNotSaved",
+          "params": []
         },
         {
           "ident": "CompareHashUnknown",
