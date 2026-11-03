@@ -10,6 +10,7 @@ use std::collections::BTreeMap;
 use std::path::PathBuf;
 use std::rc::Rc;
 use std::sync::{Arc, Mutex};
+use std::time::Duration;
 
 use pr_app::localization::service::{CultureLookup, LocalizationPaths, LocalizationService};
 use pr_app::presenters::settings::{SettingsPresenter, SettingsPresenterOptions};
@@ -34,7 +35,9 @@ use pr_platform_win::dialogs::settings::dialog::nav::{
     DialogKeyAction, VK_CONTROL, VK_SHIFT, VK_TAB, classify_dialog_key, page_of,
 };
 use pr_platform_win::dialogs::settings::page_view::{SettingsPageView, TextFn};
-use pr_platform_win::dialogs::settings::pages::general::{BackgroundRunner, GeneralSettingsPage};
+use pr_platform_win::dialogs::settings::pages::general::{
+    BackgroundRunner, GeneralSettingsPage, UPDATE_RESULT_MAX_TRIES, UPDATE_RESULT_RETRY_DELAY, UpdateRetryScheduler,
+};
 use pr_platform_win::dialogs::settings::pages::shortcuts::{EN_CHANGE, MARKER, ShortcutsSettingsPage, all_rows};
 use pr_platform_win::win32::dialog_native::BN_CLICKED;
 use pr_platform_win::win32::structs::Hwnd;
@@ -539,6 +542,117 @@ fn a_finished_update_check_posts_its_result_back_and_offers_the_release_page() {
 
     assert!(s.page.on_command(ids.open_update_page, 0));
     assert_eq!(*s.host.urls.borrow(), vec![RELEASE_URL.to_owned()]);
+}
+
+/// Fake clock for the busy-presenter retry: `after` records the wait and parks the job; the test advances the clock by running it.
+#[derive(Default)]
+struct FakeRetryClock {
+    waits: Mutex<Vec<Duration>>,
+    jobs: Mutex<Vec<Box<dyn FnOnce() + Send>>>,
+    gave_up: Mutex<Vec<u32>>,
+}
+
+impl UpdateRetryScheduler for FakeRetryClock {
+    fn after(&self, delay: Duration, job: Box<dyn FnOnce() + Send + 'static>) {
+        self.waits.lock().unwrap().push(delay);
+        self.jobs.lock().unwrap().push(job);
+    }
+    fn give_up(&self, tries: u32) {
+        self.gave_up.lock().unwrap().push(tries);
+    }
+}
+
+#[test]
+fn update_result_that_cannot_apply_retries_with_a_delay_and_gives_up_at_the_cap() {
+    // Rust-only hardening (P-321, ADR D5): C# has no re-post loop. A busy presenter used to re-post the answer at once, without limit.
+    let result = UpdateCheckResult::update_available("2.0.94", RELEASE_URL);
+    let mut s = setup(
+        ShellMenuState::NotRegistered,
+        "auto",
+        None,
+        Some(result),
+        Runner::Inline,
+    );
+    let clock = Arc::new(FakeRetryClock::default());
+    s.page.set_retry_scheduler(clock.clone());
+    let ids = s.page.ids();
+    assert!(s.page.on_command(ids.check_update, 0));
+    let ctx = s.host.context();
+    // The presenter stays borrowed for the whole test: no try can ever apply.
+    let busy = s.host.presenter.borrow_mut();
+    let mut applied_tries = 0u32;
+    loop {
+        let actions: Vec<ContextUiAction> = std::mem::take(&mut *s.host.posted.lock().unwrap());
+        let jobs: Vec<Box<dyn FnOnce() + Send>> = std::mem::take(&mut *clock.jobs.lock().unwrap());
+        if actions.is_empty() && jobs.is_empty() {
+            break;
+        }
+        assert!(
+            actions.is_empty() || jobs.is_empty(),
+            "a failed try must not post again before the delay has passed"
+        );
+        for action in actions {
+            applied_tries += 1;
+            action(&ctx);
+            assert!(
+                s.host.posted.lock().unwrap().is_empty(),
+                "try {applied_tries}: the retry waits for the clock instead of re-posting at once"
+            );
+        }
+        for job in jobs {
+            job();
+        }
+        assert!(applied_tries <= UPDATE_RESULT_MAX_TRIES + 5, "the retry is not bounded");
+    }
+    drop(busy);
+    assert_eq!(applied_tries, UPDATE_RESULT_MAX_TRIES, "exactly the cap, then give up");
+    let waits = clock.waits.lock().unwrap().clone();
+    assert_eq!(
+        waits.len() as u32,
+        UPDATE_RESULT_MAX_TRIES - 1,
+        "one wait between two tries"
+    );
+    assert!(waits.iter().all(|w| *w == UPDATE_RESULT_RETRY_DELAY));
+    assert_eq!(UPDATE_RESULT_RETRY_DELAY, Duration::from_millis(20));
+    assert_eq!(UPDATE_RESULT_MAX_TRIES, 50);
+    assert_eq!(*clock.gave_up.lock().unwrap(), vec![UPDATE_RESULT_MAX_TRIES]);
+    assert!(
+        !s.host.is_enabled(ids.check_update),
+        "the dropped answer changes no control"
+    );
+}
+
+#[test]
+fn update_result_applies_on_a_later_try_once_the_presenter_is_free() {
+    // Rust-only hardening (P-321): one busy try, then the answer is applied after the wait and nothing is logged as dropped.
+    let result = UpdateCheckResult::update_available("2.0.94", RELEASE_URL);
+    let mut s = setup(
+        ShellMenuState::NotRegistered,
+        "auto",
+        None,
+        Some(result),
+        Runner::Inline,
+    );
+    let clock = Arc::new(FakeRetryClock::default());
+    s.page.set_retry_scheduler(clock.clone());
+    let ids = s.page.ids();
+    assert!(s.page.on_command(ids.check_update, 0));
+    let ctx = s.host.context();
+    let busy = s.host.presenter.borrow_mut();
+    for action in std::mem::take(&mut *s.host.posted.lock().unwrap()) {
+        action(&ctx);
+    }
+    drop(busy);
+    assert_eq!(*clock.waits.lock().unwrap(), vec![UPDATE_RESULT_RETRY_DELAY]);
+    for job in std::mem::take(&mut *clock.jobs.lock().unwrap()) {
+        job();
+    }
+    for action in std::mem::take(&mut *s.host.posted.lock().unwrap()) {
+        action(&ctx);
+    }
+    assert!(s.host.text(ids.update_status).contains("2.0.94"));
+    assert!(s.host.is_enabled(ids.check_update));
+    assert!(clock.gave_up.lock().unwrap().is_empty());
 }
 
 // ------------------------------------------------------------------------------------------------------------------
