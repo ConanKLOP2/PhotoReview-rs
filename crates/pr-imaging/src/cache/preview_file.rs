@@ -330,6 +330,20 @@ fn try_entry_buffer(capacity: usize) -> Result<Vec<u8>, PreviewCacheError> {
     Ok(bytes)
 }
 
+/// Reads the whole entry from `source` into a fallibly allocated buffer of `declared` bytes (the read seam of [`read`]; a
+/// fake reader can fail it). A failed allocation is [`PreviewCacheError::OutOfMemory`].
+fn read_entry_bytes(source: &mut dyn Read, declared: u64) -> Result<Vec<u8>, PreviewCacheError> {
+    let mut bytes = try_entry_buffer(usize::try_from(declared).unwrap_or(0))?;
+    match source.read_to_end(&mut bytes) {
+        Ok(_) => {}
+        // P-150 option A (deviates from C#, where `FileStream.Read` raises `IOException`): like the write path, an OS
+        // out-of-memory is not a corrupt entry; the entry is kept and the error propagates.
+        Err(e) if e.kind() == io::ErrorKind::OutOfMemory => return Err(PreviewCacheError::OutOfMemory(e.to_string())),
+        Err(e) => return Err(e.into()),
+    }
+    Ok(bytes)
+}
+
 /// C# `Read(cachePath)`: opens the file with share mode Read|Delete (so a concurrent prune/delete is not blocked),
 /// reads it once, [`parse_entry`], then decodes the payload through `codec` into Bgr32 (alpha flag 0) or Pbgra32.
 ///
@@ -349,8 +363,7 @@ pub fn read(cache_path: &Path, codec: &dyn PreviewPayloadCodec) -> Result<ReadRe
     // never abort the process on a huge or hostile file: too large is a corrupt entry, no memory is an error.
     let declared = file.metadata().map_or(0, |meta| meta.len());
     check_entry_file_len(declared)?;
-    let mut bytes = try_entry_buffer(usize::try_from(declared).unwrap_or(0))?;
-    file.read_to_end(&mut bytes)?;
+    let bytes = read_entry_bytes(&mut file, declared)?;
     drop(file);
 
     let entry = parse_entry(&bytes)?;
@@ -584,6 +597,26 @@ mod tests {
     }
 
     // Rust-only (G29): an allocation that cannot succeed is an error value, not the abort of `Vec::reserve`.
+    struct FailingReader(io::ErrorKind);
+    impl Read for FailingReader {
+        fn read(&mut self, _buf: &mut [u8]) -> io::Result<usize> {
+            Err(io::Error::new(self.0, "injected read failure"))
+        }
+    }
+
+    // Rust-only (P-150 option A, deviates from C# `IOException`): an OS out-of-memory while reading the entry is
+    // `OutOfMemory` (entry kept, error propagates), like the write path; any other read error stays `Io`.
+    #[test]
+    fn read_failing_with_out_of_memory_is_out_of_memory_not_a_cache_entry_failure() {
+        let error = read_entry_bytes(&mut FailingReader(io::ErrorKind::OutOfMemory), 16).expect_err("fails");
+        assert!(matches!(error, PreviewCacheError::OutOfMemory(_)), "{error:?}");
+        assert!(!error.is_cache_entry_failure());
+        let other = read_entry_bytes(&mut FailingReader(io::ErrorKind::PermissionDenied), 16).expect_err("fails");
+        assert!(matches!(other, PreviewCacheError::Io(_)), "{other:?}");
+        assert!(other.is_cache_entry_failure());
+        assert_eq!(read_entry_bytes(&mut &[1u8, 2, 3][..], 3).expect("ok"), vec![1, 2, 3]);
+    }
+
     #[test]
     fn entry_buffer_that_cannot_be_allocated_is_out_of_memory_not_an_abort() {
         let error = try_entry_buffer(usize::MAX).expect_err("cannot allocate");
