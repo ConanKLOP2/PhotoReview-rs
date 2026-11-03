@@ -2,7 +2,9 @@
 //! list. The Settings raw-JSON box uses [`serialize`] (relaxed escaping, Vietnamese stays readable); the Action Profiles
 //! export file uses [`serialize_for_export`] (default .NET escaping). Contract: `contracts/W8-10a.md`.
 use pr_core::model::enums::FileOperationType;
+use pr_core::model::serde_ext::{lenient_from_number, parse_lenient_text};
 use pr_core::settings::shortcuts::ReviewAction;
+use pr_core::text::eq_ignore_case;
 use std::collections::HashSet;
 
 /// Failure of the JSON readers and of [`throw_if_invalid`] (C# `JsonException`).
@@ -106,22 +108,17 @@ fn parse_actions(value: serde_json::Value, default_name: &str) -> Result<Vec<Rev
                     .as_bool()
                     .ok_or_else(|| ActionListJsonError::Malformed("Confirm must be boolean".to_owned()))?,
             };
+            // C# `ThrowIfUnknownOperation` (strict reader) found the property ignoring case and rejected any value that is not a name,
+            // an alias or a defined number; the serializer then reads only the exact name `Operation`.
+            for (key, value) in object {
+                if eq_ignore_case(key, "Operation") && read_operation(value).is_none() {
+                    return Err(ActionListJsonError::Malformed("invalid operation".to_owned()));
+                }
+            }
             let operation = match object.get("Operation") {
                 None => FileOperationType::Move,
-                Some(serde_json::Value::String(s)) if s.eq_ignore_ascii_case("Move") => FileOperationType::Move,
-                Some(serde_json::Value::String(s)) if s.eq_ignore_ascii_case("Copy") => FileOperationType::Copy,
-                Some(serde_json::Value::String(s))
-                    if s.eq_ignore_ascii_case("Recycle") || s.eq_ignore_ascii_case("Delete") =>
-                {
-                    FileOperationType::Recycle
-                }
-                Some(serde_json::Value::Number(n)) => match n.as_i64() {
-                    Some(0) => FileOperationType::Move,
-                    Some(1) => FileOperationType::Copy,
-                    Some(2) => FileOperationType::Recycle,
-                    _ => return Err(ActionListJsonError::Malformed("invalid operation".to_owned())),
-                },
-                Some(_) => return Err(ActionListJsonError::Malformed("invalid operation".to_owned())),
+                Some(value) => read_operation(value)
+                    .ok_or_else(|| ActionListJsonError::Malformed("invalid operation".to_owned()))?,
             };
             Ok(ReviewAction {
                 name,
@@ -132,6 +129,16 @@ fn parse_actions(value: serde_json::Value, default_name: &str) -> Result<Vec<Rev
             })
         })
         .collect()
+}
+
+/// C# `LenientEnumConverter<FileOperationType>.TryReadStrict`: `Some` only for a recognised name/alias (trimmed, ignoring case), int text
+/// naming a defined member, or a JSON integer that is defined; blank text and every other token are `None`.
+fn read_operation(value: &serde_json::Value) -> Option<FileOperationType> {
+    match value {
+        serde_json::Value::String(text) => parse_lenient_text::<FileOperationType>(Some(text)),
+        serde_json::Value::Number(number) => number.as_i64().and_then(lenient_from_number::<FileOperationType>),
+        _ => None,
+    }
 }
 
 fn write_actions(actions: &[ReviewAction], export: bool) -> String {

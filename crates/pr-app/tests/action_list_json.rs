@@ -360,10 +360,10 @@ fn deserialize_missing_operation_uses_default() {
 fn deserialize_operation_text_is_trimmed_and_numeric_text_is_accepted() {
     for (operation, expected) in [
         ("\" Move \"", FileOperationType::Move),
-        ("\"\tCOPY\r\n\"", FileOperationType::Copy),
+        ("\"\\tCOPY\\r\\n\"", FileOperationType::Copy),
         ("\"+1\"", FileOperationType::Copy),
         ("\"0\"", FileOperationType::Move),
-        ("\"\t2 \"", FileOperationType::Recycle),
+        ("\"\\t2 \"", FileOperationType::Recycle),
         ("\" delete\"", FileOperationType::Recycle),
     ] {
         let text = one_operation(operation);
