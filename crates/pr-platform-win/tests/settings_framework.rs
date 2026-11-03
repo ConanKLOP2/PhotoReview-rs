@@ -669,7 +669,6 @@ fn create_pages_with_never_calls_a_factory_whose_key_is_not_in_the_nav() {
 }
 
 #[test]
-#[ignore = "waits for W8-19b/19c: SettingsPageBuilder is a stub (todo!) until then"]
 fn pending_page_declares_one_unaligned_note_with_the_pending_text() {
     // new: PendingSettingsPage.Declare
     let _english = english();
@@ -763,7 +762,6 @@ fn golden_pending_page_titles() {
 }
 
 #[test]
-#[ignore = "waits for W8-19d..19i: page constructors are stubs until then"]
 fn real_create_pages_returns_the_seven_pages_in_nav_order() {
     let golden = pr_test_support::golden::load("settings-catalog");
     let case = golden

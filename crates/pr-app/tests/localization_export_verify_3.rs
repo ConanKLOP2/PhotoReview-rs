@@ -16,10 +16,9 @@ fn tmp(label: &str) -> std::path::PathBuf {
 }
 
 #[test]
+#[ignore = "needs the C# oracle dump: set ESCAPED_ALL (otherwise this test would pass without checking anything)"]
 fn escape_of_every_scalar_matches_dotnet_exactly() {
-    let Ok(path) = std::env::var("ESCAPED_ALL") else {
-        return; // needs the .NET oracle dump
-    };
+    let path = std::env::var("ESCAPED_ALL").expect("set ESCAPED_ALL to the .NET oracle dump");
     let text = std::fs::read_to_string(path).unwrap();
     let mut expected: BTreeMap<u32, String> = BTreeMap::new();
     for line in text.split('\n') {

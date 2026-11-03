@@ -170,7 +170,11 @@ fn label_width_does_not_panic_when_the_scale_inverts_the_clamp() {
 fn layout_arithmetic_saturates_at_i32_extremes() {
     let mut s = Surface::new();
     let e = CheckElement::new(1, i32::MAX);
-    let _ = e.place(&mut s, i32::MAX, i32::MIN, i32::MAX);
+    let used = e.place(&mut s, i32::MAX, i32::MIN, i32::MAX);
+    // Expected values are the ones written down in docs/reviews/test-strengthening-plan.md (tp-pr-platform-win T8), taken from the
+    // C# rule (SettingsCheckElement.PlaceVisible) before any run; the saturation at the i32 extremes is the Rust-only part.
+    assert_eq!(used, 22);
+    assert_eq!(s.calls, vec![(1, i32::MAX, i32::MIN, 0, 18)]);
 }
 // C#: SettingsRow and SettingsSliderRow
 #[test]

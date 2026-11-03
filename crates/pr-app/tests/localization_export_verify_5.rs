@@ -216,8 +216,9 @@ fn kill_notes_table() {
 }
 
 #[test]
+#[ignore = "data generator for the C# oracle, writes into NOTES_DIR; not a check"]
 fn vcmp_gen_kill_cases() {
-    let Ok(dir) = std::env::var("NOTES_DIR") else { return };
+    let dir = std::env::var("NOTES_DIR").expect("set NOTES_DIR to the directory the oracle reads");
     let dir = PathBuf::from(dir);
     std::fs::create_dir_all(&dir).unwrap();
     for (i, (bytes, _)) in cases().iter().enumerate() {
@@ -226,8 +227,9 @@ fn vcmp_gen_kill_cases() {
 }
 
 #[test]
+#[ignore = "needs the C# oracle outputs (N.out) in NOTES_DIR (otherwise this test would pass without checking anything)"]
 fn vcmp_kill_vs_oracle() {
-    let Ok(dir) = std::env::var("NOTES_DIR") else { return };
+    let dir = std::env::var("NOTES_DIR").expect("set NOTES_DIR to the C# oracle outputs");
     let dir = PathBuf::from(dir);
     let mut bad = Vec::new();
     for (i, (_, expected)) in cases().iter().enumerate() {

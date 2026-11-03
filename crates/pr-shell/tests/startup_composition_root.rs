@@ -285,13 +285,17 @@ fn port_requested_before_the_graph_is_bound_is_built_after_the_bind() {
 }
 #[test]
 fn host_registrations_are_all_mapped() {
-    let Ok(golden) = std::fs::read_to_string("tests/golden/shell-composition-registrations.json") else {
-        eprintln!("skip: generated golden is absent");
-        return;
-    };
+    // The goldens live at the repository root; `cargo test` runs in the package directory, so a relative path never found them
+    // and the old test returned early (docs/reviews/test-quality.md M3). Now the files are required.
+    let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("..")
+        .join("..")
+        .join("tests");
+    let golden = std::fs::read_to_string(root.join("golden").join("shell-composition-registrations.json"))
+        .expect("the committed golden shell-composition-registrations.json");
     assert!(golden.contains("ShellPresentationHub"));
     assert!(golden.contains("IFolderPicker"));
-    let input =
-        std::fs::read_to_string("tests/golden-inputs/shell-composition-registrations.json").expect("named input");
+    let input = std::fs::read_to_string(root.join("golden-inputs").join("shell-composition-registrations.json"))
+        .expect("named input");
     assert!(!input.is_empty());
 }
