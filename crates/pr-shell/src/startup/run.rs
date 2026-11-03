@@ -198,6 +198,23 @@ pub fn log_unhandled_forced(message: &str, payload: &(dyn std::any::Any + Send))
     });
 }
 
+/// P-343: waits for a [`StartupTask`](pr_app::startup::context::StartupTask) and answers its result; a task that gave none (its thread could not be started or panicked) is written to `log` at
+/// info level (not an error: the callers carry on without the optional result, e.g. no early-decode plan). Behaviour is otherwise the same as `task.join()`.
+#[doc(hidden)]
+pub fn join_logged<T: Send + 'static>(
+    task: pr_app::startup::context::StartupTask<T>,
+    what: &str,
+    log: &dyn Log,
+) -> Option<T> {
+    let result = task.join();
+    if result.is_none() {
+        log.info(&format!(
+            "Startup task ({what}) did not produce a result (its thread could not be started or panicked); continuing without it"
+        ));
+    }
+    result
+}
+
 impl StartupState {
     /// C# `RunStartupGuardedAsync()` (lines 205-216) as the posted first step: `start_phase_one(done)` where `done = move |result| state.after_phase_one(result)`, wrapped in `catch_step` (a panic or an
     /// `Err` is `fail_startup`).
@@ -253,14 +270,16 @@ impl StartupState {
             .take();
         let settings = self.settings.borrow().clone();
         let size_source = self.graph.borrow().as_ref().map(|graph| graph.size_source.clone());
+        let log = self.graph.borrow().as_ref().map(|graph| graph.log.clone());
         if let (Some(task), Some(file), Some(settings), Some(size_source)) =
             (task, self.launch.initial_file.clone(), settings, size_source)
         {
             let mark = self.mark.clone();
+            let log: Arc<dyn Log> = log.unwrap_or_else(|| Arc::new(pr_core::abstractions::NullLog));
             let _worker = std::thread::Builder::new()
                 .name("PhotoReview.EarlyDecodeStart".into())
                 .spawn(move || {
-                    let plan = task.join().flatten();
+                    let plan = join_logged(task, "early decode plan", &*log).flatten();
                     let _ = early_decode::start_early_decode(plan, &size_source, &settings, &file, &*mark);
                 });
         }

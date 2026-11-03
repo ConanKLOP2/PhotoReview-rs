@@ -16,7 +16,10 @@ use pr_app::coordinators::presenter::state::ImageChange;
 use pr_app::coordinators::sink_callbacks::{MainViewModelSinkCallbacks, PresentationSinkFactory};
 use pr_app::services::contracts::ClipboardService;
 use pr_app::viewmodels::main::FormatContextSource;
-use pr_core::abstractions::{BatchReviewItem, DialogService, SettingsTarget, SkippedEntry, SkippedKind};
+use pr_core::abstractions::{
+    BatchReviewItem, DialogService, RenamePromptRequest, SettingsTarget, SkippedEntry, SkippedKind,
+};
+use pr_core::settings::external_editors::ExternalEditor;
 use pr_imaging::decode_types::PlatformImage;
 use pr_l10n::catalog::LanguageCatalog;
 use pr_l10n::localizer::{Localizer, built_in_english, built_in_english_localizer, set_number_culture};
@@ -126,6 +129,39 @@ impl SecondaryWindowPort for FakePort {
 
     fn prompt_custom_zoom(&self, _owner: Hwnd, _current_percent: i32) -> Option<i32> {
         None
+    }
+
+    // P-340: the three members that have a default body on the port too; the fake records them so a dropped forward is visible.
+    fn prompt_add_external_editor(&self, owner: Hwnd, initial_folder: Option<&Path>) -> Option<ExternalEditor> {
+        self.calls.borrow_mut().push(format!(
+            "editor-add:{owner}:{}",
+            initial_folder.map_or("<none>".to_owned(), |p| p.to_string_lossy().into_owned())
+        ));
+        Some(ExternalEditor {
+            id: "added".into(),
+            name: "Added".into(),
+            path: "editor.exe".into(),
+            ..Default::default()
+        })
+    }
+
+    fn prompt_default_external_editor(
+        &self,
+        owner: Hwnd,
+        editors: &[ExternalEditor],
+        current_id: Option<&str>,
+    ) -> Option<String> {
+        self.calls
+            .borrow_mut()
+            .push(format!("editor-default:{owner}:{}:{current_id:?}", editors.len()));
+        editors.last().map(|e| e.id.clone())
+    }
+
+    fn prompt_rename(&self, owner: Hwnd, request: &RenamePromptRequest) -> Option<String> {
+        self.calls
+            .borrow_mut()
+            .push(format!("rename:{owner}:{}{}", request.initial_name, request.extension));
+        Some(format!("{}-renamed", request.initial_name))
     }
 }
 
@@ -276,6 +312,120 @@ fn shared_dialog_service_forwards_every_method_including_show_settings_at() {
             format!("settings:{OWNER}:Default"),
         ]
     );
+}
+
+/// Every member of `DialogService`, by name. A new trait member must be added here AND exercised in the test below; the test fails when a member
+/// of this list reaches the port without being recorded (P-340: the trait defaults of `prompt_*` answer `None` and hide a missing forward).
+const DIALOG_SERVICE_MEMBERS: [&str; 14] = [
+    "prompt_rename",
+    "show_confirmation",
+    "show_message",
+    "show_error",
+    "pick_folder",
+    "show_batch_review",
+    "show_recovery",
+    "show_diagnostics",
+    "show_settings",
+    "show_settings_at",
+    "show_benchmark",
+    "show_skipped_files",
+    "prompt_add_external_editor",
+    "prompt_default_external_editor",
+];
+
+#[test]
+fn shared_dialog_service_forwards_the_three_defaulted_prompts() {
+    // new (P-340): `prompt_add_external_editor`, `prompt_default_external_editor` and `prompt_rename` have trait defaults (`None`), so a missing forward compiles
+    // and silently answers `None`; here the port answers `Some(..)` and records the owner and the arguments.
+    let h = dialog_harness();
+    let dialog: &dyn DialogService = &h.adapter;
+
+    let added = dialog.prompt_add_external_editor(Some(Path::new(r"C:\start")));
+    assert_eq!(added.map(|e| e.id), Some("added".to_owned()));
+
+    let editors = [
+        ExternalEditor {
+            id: "one".into(),
+            ..Default::default()
+        },
+        ExternalEditor {
+            id: "two".into(),
+            ..Default::default()
+        },
+    ];
+    assert_eq!(
+        dialog.prompt_default_external_editor(&editors, Some("one")),
+        Some("two".to_owned())
+    );
+
+    let request = RenamePromptRequest {
+        initial_name: "IMG_1".to_owned(),
+        extension: ".jpg".to_owned(),
+        validate: Arc::new(|_, _| None),
+    };
+    assert_eq!(dialog.prompt_rename(&request), Some("IMG_1-renamed".to_owned()));
+
+    assert_eq!(
+        h.take(),
+        vec![
+            format!("editor-add:{OWNER}:C:\\start"),
+            format!("editor-default:{OWNER}:2:Some(\"one\")"),
+            format!("rename:{OWNER}:IMG_1.jpg"),
+        ]
+    );
+}
+
+#[test]
+fn shared_dialog_service_every_member_reaches_the_port_or_a_fake_of_the_service() {
+    // new (P-340): calls EVERY member of `DIALOG_SERVICE_MEMBERS` once and checks that each produced at least one recorded call, by prefix. The prefix of
+    // each member is what its fake (port, task dialog or folder dialog) writes.
+    let _ambient = ambient();
+    let h = dialog_harness();
+    let dialog: &dyn DialogService = &h.adapter;
+    let prefix = |member: &str| match member {
+        "prompt_rename" => "rename:",
+        "show_confirmation" | "show_message" | "show_error" => "task:",
+        "pick_folder" => "folder:",
+        "show_batch_review" => "batch:",
+        "show_recovery" => "recovery:",
+        "show_diagnostics" => "diagnostics:",
+        "show_settings" | "show_settings_at" => "settings:",
+        "show_benchmark" => "benchmark:",
+        "show_skipped_files" => "skipped:",
+        "prompt_add_external_editor" => "editor-add:",
+        "prompt_default_external_editor" => "editor-default:",
+        other => panic!("unknown DialogService member {other}"),
+    };
+    let request = RenamePromptRequest {
+        initial_name: "a".to_owned(),
+        extension: ".jpg".to_owned(),
+        validate: Arc::new(|_, _| None),
+    };
+    for member in DIALOG_SERVICE_MEMBERS {
+        h.take();
+        match member {
+            "prompt_rename" => drop(dialog.prompt_rename(&request)),
+            "show_confirmation" => drop(dialog.show_confirmation("t", "m")),
+            "show_message" => dialog.show_message("t", "m"),
+            "show_error" => dialog.show_error("t", "m"),
+            "pick_folder" => drop(dialog.pick_folder(None)),
+            "show_batch_review" => drop(dialog.show_batch_review(&[])),
+            "show_recovery" => dialog.show_recovery(),
+            "show_diagnostics" => dialog.show_diagnostics(),
+            "show_settings" => drop(dialog.show_settings()),
+            "show_settings_at" => drop(dialog.show_settings_at(SettingsTarget::ExternalEditor)),
+            "show_benchmark" => dialog.show_benchmark(None),
+            "show_skipped_files" => dialog.show_skipped_files(&[]),
+            "prompt_add_external_editor" => drop(dialog.prompt_add_external_editor(None)),
+            "prompt_default_external_editor" => drop(dialog.prompt_default_external_editor(&[], None)),
+            other => panic!("unknown DialogService member {other}"),
+        }
+        let recorded = h.take();
+        assert!(
+            recorded.iter().any(|call| call.starts_with(prefix(member))),
+            "{member} was not forwarded (recorded: {recorded:?})"
+        );
+    }
 }
 
 // ---- SharedClipboard -------------------------------------------------------------------------------------------------------------------------------
