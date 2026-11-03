@@ -21,3 +21,10 @@ at least one test). Check a raw command line with `bash tools/dev/mutants.sh --l
 mutant (or a test that must fail) has to be reported MISSED/caught correctly, and the log must contain `running N tests`.
 
 Golden trap: if a log says `no tests/golden above`, the mutants caught only by golden tests are NOT really caught (fixed in `pr_test_support::golden::repo_root`, which reads `PHOTOREVIEW_GOLDEN_ROOT`; `mutants.sh` sets it and warns). Mutation results made before CL-MUT-GOLDEN-INFRA with a reused target dir must be re-checked.
+
+Trap, `-F` does not narrow (P-111 option B, owner decision 2026-11-03): `-F REGEX` (and `--skip`) are passed to cargo-mutants as name filters over the mutant
+names; they do NOT narrow a batch to exactly the functions you wrote. A batch that was meant for `retry_group` also pulled in `retry_core`, `already_handled`
+and `not_journaled`, and a `--skip` list did not stop `retry_core` from running (seen in the recovery_retry.rs batch of docs/reviews/GLUE-MUTANTS-2026-11-03.md). So batches
+of one file overlap: the same mutant can appear in two batches, and the count in a log is the real `Found N mutants` line, never the number of functions you
+named. Report tested/caught/missed from the log of each batch, de-duplicate survivors by `file:line:col` before you count them, and do not assume a function
+outside `-F` was left untested. The cause is not investigated.

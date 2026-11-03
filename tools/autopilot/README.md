@@ -120,6 +120,15 @@ What Claude (or you) must still do: write the contracts, stubs and goldens (Code
 - cargo may not be on PATH in the Bash tool: use `$HOME/.cargo/bin`. Build with `CARGO_PROFILE_DEV_DEBUG=line-tables-only`
   `CARGO_INCREMENTAL=0`; per-worktree `CARGO_TARGET_DIR`; cargo-mutants copies the workspace to `%TEMP%` (~2 GB each).
 - A workflow that hits the account usage limit fails its remaining agents; resume it later with `resumeFromRunId`.
+- Two gate behaviours kept on purpose and documented here (owner decision 2026-11-03, G16 L2 and L6, P-360 option B and P-361 option B):
+  - **Red-tests step (P-360).** `codex-pipeline.sh` (the `for f in "${OWN[@]}"` loop, line 408 on 2026-11-03) sets `has_t=1` as soon as ANY owned
+    `*/tests/*` file exists in the unit's worktree, and then skips the Codex red-tests step entirely. So a unit that owns three test files of which only one
+    was written by Claude does not get the other two from Codex; write all owned test files before the run, or delete the partial one so the step runs.
+  - **Gate test selection (P-361).** `lib/codex-lib.py testargs` returns `--test <name>` for every owned `tests/*.rs` that exists, plus `--lib` (crate-wide) when
+    an owned `src/*.rs` file contains `#[cfg(test)]`. When it returns nothing (no owned test file exists and no owned src file has a test module), `codex-gate.sh`
+    runs the whole crate: `cargo test -p <crate>` in fast mode and `cargo nextest run -p <crate>` / `cargo test -p <crate>` in full mode (lines 50-56 and 59 ff. on
+    2026-11-03; the review's `codex-gate.sh:115` reference moved). Consequence: `--lib` also runs the unit tests of other units in the crate, and an
+    unimplemented stub (`todo!()`) of another unit in the same crate can turn the fast gate red for this unit. Triage such a red gate as "foreign stub", not as a bug of the unit.
 
 ### Codex sandbox and the target dir
 The Codex Windows sandbox writes only to its working directory (`-C`); it gets a per-workspace random SID, so an ACL grant on a shared
