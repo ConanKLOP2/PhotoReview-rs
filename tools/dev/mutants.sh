@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 # Time-boxed cargo-mutants run done the way Wave 8 taught us. Never kills processes by name.
+# Known limit (P-111 option B, 2026-11-03): -F and --skip are cargo-mutants name filters (--re / --exclude-re); they do NOT narrow a batch to exactly the
+# functions you named. A batch meant for a few functions also ran retry_core, already_handled and not_journaled, and --skip did not stop retry_core.
+# Batches therefore overlap: trust only the `Found N mutants` line of each log, and de-duplicate survivors by file:line:col across batches.
+# The cause is not investigated. See .claude/skills/mutants/SKILL.md.
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 CARGO_BIN=${CARGO_BIN:-cargo}; PY_BIN=${PY_BIN:-python}; TIMEOUT_BIN=${TIMEOUT_BIN:-timeout}
 TMPBASE=${TEMP:-${TMPDIR:-/tmp}}

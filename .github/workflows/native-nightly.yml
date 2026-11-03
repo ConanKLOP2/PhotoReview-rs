@@ -12,9 +12,9 @@ name: Native nightly
 #    and fetching real DLLs is blocked by decision P-55). (pr-imaging cache_disk_store, cache_key, preview_service_disk and
 #    thumbnail_cache only need the file system and icacls: verified green on a machine without staged DLLs on 2026-10-31, so they run
 #    below.)
-#  - (the four window binaries named in the pr-platform-win list below were added 2026-10-31 and are unconfirmed until one night)
+#  - (the window binaries named in the pr-platform-win list below ran green on the 2026-11-03 nightly, run 41557791599: all 46 listed binaries, 1002 tests; see docs/reviews/G17-IGNORED-TESTS-2026-11-03.md section 7)
 #  - pr-libraw raw_share_delete (4 native tests, 2026-10-31): needs libraw.dll (stage-native, blocked by P-55) and python for the synthetic DNG; no staging mechanism exists in this workflow, so it is NOT listed.
-#  - the window, DWM, GPU and input-desktop families of pr-platform-win (dialogs_*, host_*, shell_*, gfx_*, render_*, win32_*, wic_*,
+#  - the window, DWM, GPU and input-desktop families of pr-platform-win (dialogs_*, host_*, shell_*, gfx_*, render_*, win32_*, wic_* except the five WIC trial binaries listed below,
 #    w8_*) and pr-shell (ui_smoke*, startup_*; except the two pr-shell binaries added 2026-10-31 below): they need a real desktop and the NativeDialog tooltip tests move the real cursor.
 #  - pr-bench (runs the benchmark tool) and anything that touches the real Recycle Bin: nothing here may.
 on:
@@ -67,48 +67,51 @@ jobs:
               'file_actions_partial_cleanup', 'file_actions_recovery_check', 'file_actions_service_native', 'io_journal_compaction_files',
               'io_physical', 'io_physical_seams', 'journal_reconcile', 'journal_startup_recovery', 'rename_file_action_matrix',
               'rename_recovery', 'rename_service', 'session_store', 'w2_fs_mutation_killers',
-              # Added 2026-10-31 (st-parity-sync7), no nightly run yet: 2 native tests, private TempRoot listing only (CX-PHYSREST).
+              # Added 2026-10-31 (st-parity-sync7), green on the 2026-11-03 nightly: 2 native tests, private TempRoot listing only (CX-PHYSREST).
               'w2_physrest_killers',
-              # Added 2026-10-31 (st-parity-sync8), no nightly run yet: w2_physrest2_killers (CX-PHYSREST2, PR #525; native tests on private
-              # TempRoot only, no Recycle Bin, no C# DLL). One night must confirm it.
+              # Added 2026-10-31 (st-parity-sync8), green on the 2026-11-03 nightly: w2_physrest2_killers (CX-PHYSREST2, PR #525; native tests on private
+              # TempRoot only, no Recycle Bin, no C# DLL).
               'w2_physrest2_killers')
             'pr-platform-win' = @('w2_fs_flush_killers', 'w4_mutation_killers2', 'w6_platform_native', 'physical_memory',
-              # Composer twins draw on a WARP device (no window, no input desktop). Added 2026-10-31 without a nightly run yet: the first
-              # night must confirm that windows-latest has WARP, otherwise remove these two.
+              # Composer twins draw on a WARP device (no window, no input desktop). Added 2026-10-31; the 2026-11-03 nightly confirmed
+              # that windows-latest has WARP.
               'shell_viewing_composer_twins_native', 'shell_viewing_composer_native',
-              # Added 2026-10-31 (st-parity-sync3), no nightly run yet: one night must confirm each of them, remove a binary that is red
-              # only because the runner has no interactive desktop. None loads a C# DLL or needs stage-native; none touches the real
+              # Added 2026-10-31 (st-parity-sync3), green on the 2026-11-03 nightly (a red binary that lacks an interactive desktop would be removed). None loads a C# DLL or needs stage-native; none touches the real
               # Recycle Bin or user data. Hidden window / offscreen WARP, needs a desktop session: w8_mainwin_frame_tests (15; one test
               # shows a window minimised), host_shell_window_fixes (2; creates windows and a WH_CALLWNDPROC hook), dialogs_painter_dpi_empty
               # (3 native tests; hidden window + PrintWindow). recycle_final_path: its one native test makes a junction with cmd mklink
               # inside a TempRoot and runs read-only volume queries (no desktop needed); the 6 fake tests run with it.
               # recycle_restore_timeout has no #[ignore] (fakes) and already runs in ci.yml, so it is not listed.
               'w8_mainwin_frame_tests', 'host_shell_window_fixes', 'dialogs_painter_dpi_empty', 'recycle_final_path',
-              # Added 2026-10-31 (st-parity-sync5), no nightly run yet: host_main_window_lifecycle (16 native tests, hidden MainWindow incl.
-              # the M1 pending_opens case) NEEDS A DESKTOP SESSION; one night must confirm it on windows-latest, remove it if it is red only
-              # because the runner has no interactive desktop. recycle_delete_sink has no #[ignore] (fakes) and runs in ci.yml: not listed.
+              # Added 2026-10-31 (st-parity-sync5), green on the 2026-11-03 nightly: host_main_window_lifecycle (16 native tests, hidden MainWindow incl.
+              # the M1 pending_opens case) needs a desktop session and ran on windows-latest. recycle_delete_sink has no #[ignore] (fakes) and runs in ci.yml: not listed.
               'host_main_window_lifecycle',
-              # Added 2026-10-31 (st-parity-sync6), no nightly run yet; hidden windows and a fake windowing seam, no C# DLL, no Recycle Bin,
-              # nothing real in %LOCALAPPDATA%. All need a desktop session: one night must confirm them, remove a binary that is red only
-              # because the runner has no interactive desktop. shell_input_pan_glide_native (9), dialogs_action_profiles_scenarios_native (7),
+              # Added 2026-10-31 (st-parity-sync6), green on the 2026-11-03 nightly; hidden windows and a fake windowing seam, no C# DLL, no Recycle Bin,
+              # nothing real in %LOCALAPPDATA%. All need a desktop session and ran on windows-latest. shell_input_pan_glide_native (9), dialogs_action_profiles_scenarios_native (7),
               # dialogs_zoom_diagnostics_scenarios_native (9), dialogs_benchmark_scenarios_native (3), w8_mainwin_seams2 (11).
               'shell_input_pan_glide_native', 'dialogs_action_profiles_scenarios_native', 'dialogs_zoom_diagnostics_scenarios_native',
               'dialogs_benchmark_scenarios_native', 'w8_mainwin_seams2',
-              # Added 2026-10-31 (st-parity-sync7), no nightly run yet: mut_zoomcore_killers (2 native tests, two live hidden windows,
-              # needs a desktop session; CL-MUT-ZOOMCORE). One night must confirm it, remove it if red only for lack of a desktop.
+              # Added 2026-10-31 (st-parity-sync7), green on the 2026-11-03 nightly: mut_zoomcore_killers (2 native tests, two live hidden windows,
+              # needs a desktop session; CL-MUT-ZOOMCORE).
               'mut_zoomcore_killers',
-              # Added 2026-11-01 (cl-mut-settings3), no nightly run yet: w8_settingswin4_killers (27 tests; 22 run without a desktop, 5 native tests
+              # Added 2026-11-01 (cl-mut-settings3), green on the 2026-11-03 nightly: w8_settingswin4_killers (27 tests; 22 run without a desktop, 5 native tests
               # open a hidden Settings window on a desktop session and call SetKeyboardState on their own thread only; no C# DLL, no Recycle
-              # Bin, config isolated). One night must confirm it, remove it if red only because windows-latest has no interactive desktop.
-              'w8_settingswin4_killers')
+              # Bin, config isolated).
+              'w8_settingswin4_killers',
+              # TRIAL added 2026-11-03 (P-86 option A, owner choice 2026-11-03; G17 section 7): the WIC binaries below have never run on windows-latest
+              # (only one real WIC encode, w4_mutation_killers2, is proven there). Each is a trial: ONE NIGHT MUST CONFIRM IT, REMOVE a binary that is
+              # red (a missing fixture, a missing codec, or a PHOTOREVIEW_RS_WIC_VERSION that does not match the runner's windowscodecs.dll for the
+              # pixel-hash goldens; tolerance 3 applies otherwise). A red night blocks nothing.
+              # wic_decoder_native (70 native tests: WicDirectDecoder and the goldens), wic_cache_image (14), wic_scaler (6), wic_exif_reader (3),
+              # wic_availability (4). The other needs-WIC binaries and the ones needing staged DLLs (P-55) stay hand-run.
+              'wic_decoder_native', 'wic_cache_image', 'wic_scaler', 'wic_exif_reader', 'wic_availability')
             # Added 2026-10-31 (fix-test-hygiene): green locally with --include-ignored --test-threads=1, no DLL staged. The ACL tests use icacls
             # /deny; a run killed midway can leave an undeletable folder under %TEMP%\pr-rs-tests (hygiene review F12).
             'pr-imaging' = @('cache_disk_store', 'cache_key', 'preview_service_disk', 'thumbnail_cache')
             'pr-app' = @('folder_load_load', 'windowing_placement_store')
-            # Added 2026-10-31 (st-parity-sync5), no nightly run yet; each needs a desktop session (hidden MainWindow, dispatcher and shell
+            # Added 2026-10-31 (st-parity-sync5), green on the 2026-11-03 nightly; each needs a desktop session (hidden MainWindow, dispatcher and shell
             # message loop on a UI thread), no C# DLL and no Recycle Bin: startup_overlay_vm (L6 try_borrow, 3 native tests) and
-            # composition_graph (2 native tests incl. dispose_graph_flushes_the_session_writer_...). One night must confirm them; remove
-            # a binary that is red only because windows-latest has no interactive desktop.
+            # composition_graph (2 native tests incl. dispose_graph_flushes_the_session_writer_...).
             'pr-shell' = @('startup_overlay_vm', 'composition_graph',
               # Added 2026-10-31 (st-early-stj): green locally (1 test, 0.4 s, hidden WARP window); the process scenario of X-startup-early-decode.
               'startup_early_decode_native')
