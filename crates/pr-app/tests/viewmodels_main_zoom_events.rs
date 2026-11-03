@@ -45,3 +45,16 @@ fn overlay_model_follows_each_further_input_zoom_step() {
 
     assert_eq!(env.vm.overlay_model().zoom_indicator_text, "50%");
 }
+
+// P-310 (C# `MainViewModel.cs` lines 140 to 143: `DisplayZoomPercent` -> `InfoOverlay.Refresh()`): the returned change set must tell the shell that the HUD zoom text changed.
+#[test]
+fn input_zoom_reports_the_zoom_indicator_text_as_changed() {
+    use pr_app::viewmodels::info_overlay::InfoOverlayProperty;
+
+    let mut env = hud_env();
+    env.viewer.borrow_mut().set_zoom(2.0);
+
+    let changes = env.vm.on_viewer_zoom_mode_changed();
+
+    assert!(changes.overlay.contains(InfoOverlayProperty::ZoomIndicatorText));
+}
