@@ -235,7 +235,7 @@ use pr_platform_win::dialogs::settings::{
         SharedSettingsPresenter,
     },
     page_view::{SettingsPageView, TextFn},
-    pages::general::GeneralSettingsPage,
+    pages::general::{GeneralSettingsPage, UpdateRetryScheduler},
 };
 use std::{
     cell::RefCell,
@@ -249,6 +249,14 @@ impl SettingsUiPost for Post {
     fn post(&self, action: ContextUiAction) {
         self.0.lock().unwrap_or_else(PoisonError::into_inner).push(action);
     }
+}
+/// Runs the delayed re-post at once (P-321): the page waits 20 ms in production, the test needs no clock.
+struct ImmediateRetry;
+impl UpdateRetryScheduler for ImmediateRetry {
+    fn after(&self, _: Duration, job: Box<dyn FnOnce() + Send + 'static>) {
+        job();
+    }
+    fn give_up(&self, _: u32) {}
 }
 struct UiHost {
     presenter: SharedSettingsPresenter,
@@ -395,6 +403,8 @@ fn general_page_click_guard_completion_visibility_and_open_revalidation_match_cs
             queued.borrow_mut().push(job);
             true
         }));
+        // P-321: a busy answer is re-posted after a delay; run the delayed job at once so the test stays deterministic.
+        page.set_retry_scheduler(Arc::new(ImmediateRetry));
         page.declare(&mut SettingsPageBuilder::new(1000));
         let context = SettingsPageContext::new(host.clone());
         page.attach(context.clone());
