@@ -98,3 +98,30 @@ fn dispatcher_stripe_scheduler_debug_names_the_type_and_the_window() {
     assert!(text.contains("DispatcherStripeScheduler"), "{text}");
     assert!(text.contains("4242"), "{text}");
 }
+
+// BACKLOG G14 (b4 L2): a panicking timer action must not kill the one timer thread. A private queue (the process-wide one is not needed) runs a panicking
+// action and then a normal one; the normal one still runs. The wait is a bounded channel receive, not a sleep. Without the `catch_unwind` in
+// `TimerQueue::run` the thread dies on the first action and the receive times out.
+#[test]
+fn timer_queue_survives_a_panicking_action_and_runs_the_next_one() {
+    let queue: &'static TimerQueue = Box::leak(Box::new(TimerQueue {
+        heap: Mutex::new(BinaryHeap::new()),
+        changed: Condvar::new(),
+        next_seq: AtomicU64::new(0),
+    }));
+    std::thread::Builder::new()
+        .name("test UI timer".to_owned())
+        .spawn(move || queue.run())
+        .expect("spawn the test timer thread");
+    let (sender, receiver) = std::sync::mpsc::channel::<&'static str>();
+    queue.schedule(Duration::ZERO, Box::new(|| panic!("timer action panics on purpose")));
+    queue.schedule(
+        Duration::ZERO,
+        Box::new(move || sender.send("ran").expect("receiver alive")),
+    );
+    assert_eq!(
+        receiver.recv_timeout(Duration::from_secs(10)),
+        Ok("ran"),
+        "the action behind a panicking one must still run"
+    );
+}
