@@ -19,6 +19,11 @@ pub struct ShellProcess {
 
 impl ShellProcess {
     pub fn start(args: &[String], prefix: Option<&str>) -> Self {
+        Self::start_with_config(args, prefix, "{}")
+    }
+
+    /// Like [`ShellProcess::start`] with `config` as the content of `data/config.json` (for example a fixed `UiLanguage`).
+    pub fn start_with_config(args: &[String], prefix: Option<&str>, config: &str) -> Self {
         let root = TempRoot::new("w8-20-real-exe");
         let prefix = prefix.map(str::to_owned).unwrap_or_else(|| {
             format!(
@@ -29,7 +34,7 @@ impl ShellProcess {
         let data = root.path().join("data");
         std::fs::create_dir_all(&data).unwrap();
         // Prevent first-run import from ever inspecting the C# configuration.
-        std::fs::write(data.join("config.json"), "{}").unwrap();
+        std::fs::write(data.join("config.json"), config).unwrap();
         let mut child = Command::new(env!("CARGO_BIN_EXE_PhotoReviewRs"))
             .args(args)
             .env("PHOTOREVIEW_RS_DATA_ROOT", &data)

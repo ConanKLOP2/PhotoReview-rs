@@ -118,6 +118,12 @@ pub fn close_main_window_of_process(pid: u32) -> bool {
     main_window(pid).is_some_and(post_close)
 }
 
+/// The first VISIBLE unowned top-level window of process `pid` (the one [`close_main_window_of_process`] closes), or `None` when the process has none yet. Used by the startup box test
+/// (`startup_unanswered_owner_native`), where the unowned window is the TaskDialog of the "app already running" message.
+pub fn main_window_of_process(pid: u32) -> Option<Hwnd> {
+    main_window(pid)
+}
+
 /// Unit W8-20a (`exe_process`): finds the main window of process `pid` exactly as [`close_main_window_of_process`] does and asks it for its icons with `SendMessageTimeoutW(WM_GETICON,
 /// ICON_BIG / ICON_SMALL, SMTO_ABORTIFHUNG, 5000 ms)` (called from the TEST thread, which is not the window's thread, so the message is delivered and answered normally). Returns
 /// `Some((big_is_set, small_is_set))` (a non-zero icon handle each); `None` when the process has no such window yet or the call timed out (the caller retries on its own bound).

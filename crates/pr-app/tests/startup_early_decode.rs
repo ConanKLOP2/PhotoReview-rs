@@ -111,3 +111,18 @@ fn start_sets_prediction_before_the_worker_and_marks_only_a_started_task() {
         .is_none()
     );
 }
+
+#[test]
+fn the_plan_debug_text_names_the_type_and_the_predicted_box() {
+    // Q6 (X-startup-early-decode) killer for `early_decode.rs:35` (`Debug for EarlyDecodePlan` -> `Ok(Default::default())`). New, no C# twin.
+    let plan = EarlyDecodePlan {
+        previews: Arc::new(Previews(Arc::new(ViewportSizeSource::new()), Mutex::new(vec![]))),
+        decode_box: DecodeBox {
+            width: 1024,
+            height: 768,
+        },
+    };
+    let text = format!("{plan:?}");
+    assert!(text.contains("EarlyDecodePlan"), "{text}");
+    assert!(text.contains("1024") && text.contains("768"), "{text}");
+}
