@@ -32,7 +32,7 @@ Rủi ro: **D** = có thể mất/sai dữ liệu người dùng, **C** = crash/
 | 18 | G18 Golden/test của #164 không so sánh; `dpi.rs` không test; forwarded-open | pr-164 M1, M2, M3, L2, L3, L4 | trung bình | T | W8-17a..17b | thêm test |
 | 19 | G19 Test INV còn thiếu (mất cache journal, composition gate, dọn trùng lặp) | invariants §5, M1..M3, L1..L8 | trung bình | D | W3, W8-06e/07d/07f | thêm test |
 | 20 | G20 Test Rename/StalePreview/Wave 9 chưa có | test-strengthening-plan (tp-pr-core, tp-pr-app) | trung bình | D | W9-R1..R11, W8-06c | thêm test |
-| 21 | G21 Contract W9 lỗi thời sau #182 | w9-contracts H1, L6..L10 | cao (H1) | T | contracts/W9-*, docs/WAVE-9-PLAN-edt.md | tài liệu |
+| 21 | G21 Contract W9 lỗi thời sau #182 | w9-contracts H1, L6..L10 | cao (H1) | T | contracts/W9-*, docs/WAVE-9-PLAN-edt.md | tài liệu ĐÃ ĐÓNG: kiểm lại 2026-11-03, H1 và L6..L10 đã được sửa trước đó ([G21](G21-W9-CONTRACTS-2026-11-03.md)) |
 | 22 | G22 PARITY/PR evidence mâu thuẫn | pr-164 M4; pr-203 M2 | trung bình | T | docs/PARITY.md | tài liệu |
 | 23 | G23 Chú thích/`DIVERGENCE` lạc hậu | test-quality L1; w9-contracts L8; settings-ui L5 | thấp | T | nhiều | tài liệu |
 | 25 | G25 Retry Recycle xoá nhầm file thay thế sau Prepared | invariants H1 (tái kiểm #212) | cao | D | W3-06; W8-18v gọi UI | ĐÃ ĐÓNG 2026-10-31: sửa ở PR #448 ([FIX-H1](FIX-H1-2026-10-31.md)), PARITY F-18 ghi DIVERGENCE |
