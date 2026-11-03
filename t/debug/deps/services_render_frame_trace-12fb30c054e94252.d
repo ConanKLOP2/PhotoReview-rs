@@ -1,9 +1,0 @@
-C:\Users\PC\Projects\PhotoReview-rs\.claude\worktrees\undo-sync\t\debug\deps\services_render_frame_trace-12fb30c054e94252.d: crates\pr-app\tests\services_render_frame_trace.rs Cargo.toml
-
-C:\Users\PC\Projects\PhotoReview-rs\.claude\worktrees\undo-sync\t\debug\deps\libservices_render_frame_trace-12fb30c054e94252.rmeta: crates\pr-app\tests\services_render_frame_trace.rs Cargo.toml
-
-crates\pr-app\tests\services_render_frame_trace.rs:
-Cargo.toml:
-
-# env-dep:CLIPPY_ARGS=-D__CLIPPY_HACKERY__warnings__CLIPPY_HACKERY__
-# env-dep:CLIPPY_CONF_DIR

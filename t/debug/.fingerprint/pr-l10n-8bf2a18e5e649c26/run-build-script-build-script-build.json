@@ -1,1 +1,0 @@
-{"rustc":17664546606611198464,"features":"","declared_features":"","target":0,"profile":0,"path":0,"deps":[[8559344889785211476,"build_script_build",false,11232159098169501638]],"local":[{"RerunIfChanged":{"output":"debug\\build\\pr-l10n-8bf2a18e5e649c26\\output","paths":["build.rs","build/keygen.rs","../../assets/languages/en.json"]}}],"rustflags":[],"config":0,"compile_kind":0}

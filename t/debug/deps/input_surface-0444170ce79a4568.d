@@ -1,9 +1,0 @@
-C:/Users/PC/Projects/PhotoReview-rs/.claude/worktrees/undo-sync/t\debug\deps\input_surface-0444170ce79a4568.d: crates\pr-app\tests\input_surface.rs Cargo.toml
-
-C:/Users/PC/Projects/PhotoReview-rs/.claude/worktrees/undo-sync/t\debug\deps\libinput_surface-0444170ce79a4568.rmeta: crates\pr-app\tests\input_surface.rs Cargo.toml
-
-crates\pr-app\tests\input_surface.rs:
-Cargo.toml:
-
-# env-dep:CLIPPY_ARGS=-D__CLIPPY_HACKERY__warnings__CLIPPY_HACKERY__
-# env-dep:CLIPPY_CONF_DIR
