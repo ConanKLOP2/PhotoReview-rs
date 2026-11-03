@@ -432,9 +432,9 @@ fn deserialize_unknown_operation_under_any_property_case_throws_and_a_known_one_
 #[test]
 fn serialize_escapes_a_carriage_return_with_its_short_form_in_both_modes() {
     let list = [mv("a\rb", "F8")];
-    assert!(serialize(&list).contains("\"Name\": \"a\rb\""), "{}", serialize(&list));
+    assert!(serialize(&list).contains("\"Name\": \"a\\rb\""), "{}", serialize(&list));
     assert!(
-        serialize_for_export(&list).contains("\"Name\": \"a\rb\""),
+        serialize_for_export(&list).contains("\"Name\": \"a\\rb\""),
         "{}",
         serialize_for_export(&list)
     );
