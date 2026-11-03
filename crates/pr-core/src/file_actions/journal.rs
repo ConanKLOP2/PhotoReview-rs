@@ -32,7 +32,7 @@ use std::time::Duration;
 
 use crate::abstractions::{
     AppendStream, Clock, FileSystem, InProcessLiveOperationRegistry, JournalCompactionFiles, LiveOperationRegistry,
-    Log, ReadSeek,
+    Log, ReadSeek, RecycleBin,
 };
 use crate::app_paths::AppPaths;
 use crate::diagnostics::file_log::FileLog;
@@ -256,6 +256,9 @@ pub struct OperationJournalOptions {
     pub texts: Option<Arc<dyn JournalTexts>>,
     /// Default: `File::sync_all`. See [`FlushToDisk`].
     pub flush_to_disk: Option<FlushToDisk>,
+    /// P-331: the Recycle Bin the startup reconcile asks before it confirms a single Recycle whose source is gone.
+    /// Default: `None` = the source being gone is trusted (C# R15, unchecked); production wires the real bin.
+    pub recycle_bin: Option<Arc<dyn RecycleBin>>,
 }
 
 impl fmt::Debug for OperationJournalOptions {
@@ -268,6 +271,7 @@ impl fmt::Debug for OperationJournalOptions {
             .field("log", &self.log.is_some())
             .field("texts", &self.texts.is_some())
             .field("flush_to_disk", &self.flush_to_disk.is_some())
+            .field("recycle_bin", &self.recycle_bin.is_some())
             .finish()
     }
 }
@@ -353,6 +357,8 @@ pub struct OperationJournal {
     texts: Arc<dyn JournalTexts>,
     /// `None` = `File::sync_all`.
     flush_to_disk: Option<FlushToDisk>,
+    /// P-331: see [`OperationJournalOptions::recycle_bin`].
+    recycle_bin: Option<Arc<dyn RecycleBin>>,
 }
 
 impl fmt::Debug for OperationJournal {
@@ -395,6 +401,7 @@ impl OperationJournal {
             log: options.log,
             texts: options.texts.unwrap_or_else(|| Arc::new(EnglishJournalTexts)),
             flush_to_disk: options.flush_to_disk,
+            recycle_bin: options.recycle_bin,
         }
     }
 
@@ -837,6 +844,10 @@ impl ReconcileJournal for OperationJournal {
 
     fn live_operations(&self) -> &dyn LiveOperationRegistry {
         self.live_operations.as_ref()
+    }
+
+    fn recycle_bin(&self) -> Option<&dyn RecycleBin> {
+        self.recycle_bin.as_deref()
     }
 
     fn english_text(&self, code: &str) -> String {

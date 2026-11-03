@@ -905,3 +905,84 @@ fn native_attended_recycle_of_own_temp_file_reports_moved_to_recycle_bin() {
         .expect("the Shell must report MovedToRecycleBin for a normal temp file");
     assert!(!owned.path.exists());
 }
+
+/// Backend that answers `contains` only (P-331); `try_restore` must never be reached by a read-only question.
+struct ContainsBackend {
+    answer: Result<bool, (io::ErrorKind, String)>,
+    calls: Mutex<Vec<(PathBuf, u64, DateTimeUtc)>>,
+}
+
+impl RecycleBinRestoreBackend for ContainsBackend {
+    fn try_restore(&self, _: &Path, _: u64, _: DateTimeUtc) -> io::Result<bool> {
+        panic!("contains_recycled_item must not restore");
+    }
+
+    fn contains(
+        &self,
+        original_path: &Path,
+        expected_size: u64,
+        expected_last_write_utc: DateTimeUtc,
+    ) -> io::Result<bool> {
+        self.calls
+            .lock()
+            .unwrap()
+            .push((original_path.to_path_buf(), expected_size, expected_last_write_utc));
+        self.answer
+            .clone()
+            .map_err(|(kind, message)| io::Error::new(kind, message))
+    }
+}
+
+fn bin_over(restore: Arc<dyn RecycleBinRestoreBackend>) -> recycle_bin::WindowsRecycleBin {
+    healthy_bin(
+        Some(DriveType::Fixed),
+        |_| false,
+        |_| Ok(1),
+        |_| Ok(ShellRecycleOutcome::MovedToRecycleBin),
+        |_| Ok(()),
+        restore,
+    )
+}
+
+#[test]
+// P-331: the facade passes the recorded identity to the backend and returns its answer unchanged.
+fn contains_recycled_item_delegates_to_the_backend_and_keeps_its_answer() {
+    let stamp = DateTimeUtc::from_ticks(638_000_000_000_000_000).unwrap();
+    for answer in [true, false] {
+        let backend = Arc::new(ContainsBackend {
+            answer: Ok(answer),
+            calls: Mutex::new(Vec::new()),
+        });
+        let bin = bin_over(backend.clone());
+        assert_eq!(bin.contains_recycled_item(Path::new(PHOTO), 42, stamp).unwrap(), answer);
+        assert_eq!(
+            backend.calls.lock().unwrap().as_slice(),
+            &[(PathBuf::from(PHOTO), 42, stamp)]
+        );
+    }
+}
+
+#[test]
+// INV-5: a backend error (or a backend that cannot ask) is an error, never `Ok(false)`.
+fn contains_recycled_item_reports_backend_errors_and_unsupported_backends() {
+    let stamp = DateTimeUtc::from_ticks(638_000_000_000_000_000).unwrap();
+    let failing = Arc::new(ContainsBackend {
+        answer: Err((io::ErrorKind::TimedOut, "shell busy".to_owned())),
+        calls: Mutex::new(Vec::new()),
+    });
+    let error = bin_over(failing)
+        .contains_recycled_item(Path::new(PHOTO), 42, stamp)
+        .unwrap_err();
+    assert_eq!(error.kind(), io::ErrorKind::TimedOut);
+
+    let unsupported = bin_over(RestoreOutcome::returning(Ok(true)));
+    let error = unsupported
+        .contains_recycled_item(Path::new(PHOTO), 42, stamp)
+        .unwrap_err();
+    assert_eq!(error.kind(), io::ErrorKind::Unsupported);
+
+    let error = unsupported
+        .contains_recycled_item(Path::new(""), 42, stamp)
+        .unwrap_err();
+    assert_eq!(error.kind(), io::ErrorKind::InvalidInput);
+}

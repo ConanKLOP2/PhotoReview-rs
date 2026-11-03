@@ -65,6 +65,10 @@ type Pause = dyn Fn() + Send + Sync;
 /// an error instead (see `restore_on_worker`). Generous so that a user who answers a real dialog is not cut off.
 pub const SHELL_RESTORE_TIMEOUT: Duration = Duration::from_secs(120);
 
+/// Upper bound the startup reconcile waits for ONE read-only Recycle Bin question (P-331); shorter than the restore bound
+/// because nothing is waiting on a dialog and many pending entries may each ask. On timeout the entry stays Prepared.
+pub const SHELL_CONTAINS_TIMEOUT: Duration = Duration::from_secs(20);
+
 /// Shell restore backend used by `WindowsRecycleBin`.
 pub struct WindowsRecycleBinRestoreBackend {
     open_session: Arc<SessionFactory>,
@@ -152,27 +156,13 @@ impl WindowsRecycleBinRestoreBackend {
                     let Some(mut session) = (open_session)()? else {
                         return Ok(false);
                     };
-                    let entries = session.entries()?;
-                    let mut matches = Vec::new();
-                    for entry in entries {
-                        match entry.candidate() {
-                            Ok(Some(candidate))
-                                if recycle_candidate::is_match(
-                                    &candidate,
-                                    &path,
-                                    expected_size_i64,
-                                    expected_last_write_utc,
-                                ) =>
-                            {
-                                matches.push(entry)
-                            }
-                            Ok(_) => {}
-                            Err(error) if error.is_per_item() => {
-                                log.error("Recycle Bin item inspection failed", Some(&error.source));
-                            }
-                            Err(error) => return Err(error.source),
-                        }
-                    }
+                    let matches = matching_entries(
+                        session.as_mut(),
+                        &path,
+                        expected_size_i64,
+                        expected_last_write_utc,
+                        log.as_ref(),
+                    )?;
                     if matches.len() != 1 {
                         return Ok(false);
                     }
@@ -196,6 +186,50 @@ impl WindowsRecycleBinRestoreBackend {
             Err(mpsc::RecvTimeoutError::Disconnected) => Err(io::Error::other("Recycle Bin restore worker panicked")),
         }
     }
+
+    /// P-331: read-only. True when at least one Recycle Bin item matches the recorded path, size and write time. Runs on
+    /// the same kind of detached Shell worker as the restore, with the same bound on waiting; no item is touched.
+    fn contains_on_worker(
+        &self,
+        original_path: &Path,
+        expected_size: u64,
+        expected_last_write_utc: DateTimeUtc,
+    ) -> io::Result<bool> {
+        let Ok(expected_size_i64) = i64::try_from(expected_size) else {
+            return Ok(false);
+        };
+        let open_session = Arc::clone(&self.open_session);
+        let log = Arc::clone(&self.log);
+        let path = original_path.to_owned();
+        let (sender, receiver) = mpsc::channel::<io::Result<bool>>();
+        std::thread::Builder::new()
+            .name("PhotoReviewRs-RecycleContains".to_owned())
+            .spawn(move || {
+                let result = (move || -> io::Result<bool> {
+                    let Some(mut session) = (open_session)()? else {
+                        // No Recycle Bin folder to ask: nothing can be confirmed (an answer "no" would be a guess).
+                        return Err(io::Error::other("the Recycle Bin could not be opened"));
+                    };
+                    let matches = matching_entries(
+                        session.as_mut(),
+                        &path,
+                        expected_size_i64,
+                        expected_last_write_utc,
+                        log.as_ref(),
+                    )?;
+                    Ok(!matches.is_empty())
+                })();
+                let _ = sender.send(result);
+            })?;
+        match receiver.recv_timeout(self.restore_timeout.min(SHELL_CONTAINS_TIMEOUT)) {
+            Ok(result) => result,
+            Err(mpsc::RecvTimeoutError::Timeout) => Err(io::Error::new(
+                io::ErrorKind::TimedOut,
+                "Recycle Bin query has not completed (the Shell may be busy)",
+            )),
+            Err(mpsc::RecvTimeoutError::Disconnected) => Err(io::Error::other("Recycle Bin query worker panicked")),
+        }
+    }
 }
 
 impl crate::recycle_bin::RecycleBinRestoreBackend for WindowsRecycleBinRestoreBackend {
@@ -207,6 +241,42 @@ impl crate::recycle_bin::RecycleBinRestoreBackend for WindowsRecycleBinRestoreBa
     ) -> io::Result<bool> {
         self.restore_on_worker(original_path, expected_size, expected_last_write_utc)
     }
+
+    fn contains(
+        &self,
+        original_path: &Path,
+        expected_size: u64,
+        expected_last_write_utc: DateTimeUtc,
+    ) -> io::Result<bool> {
+        self.contains_on_worker(original_path, expected_size, expected_last_write_utc)
+    }
+}
+
+/// The entries of `session` that match the recorded file (C# `RecycleCandidateSelector.IsMatch`). A per-item Shell
+/// failure skips that item (logged); any other failure aborts with the error.
+fn matching_entries(
+    session: &mut dyn RecycleRestoreSession,
+    path: &Path,
+    expected_size: i64,
+    expected_last_write_utc: DateTimeUtc,
+    log: &dyn Log,
+) -> io::Result<Vec<Box<dyn RecycleRestoreEntry>>> {
+    let mut matches = Vec::new();
+    for entry in session.entries()? {
+        match entry.candidate() {
+            Ok(Some(candidate))
+                if recycle_candidate::is_match(&candidate, path, expected_size, expected_last_write_utc) =>
+            {
+                matches.push(entry)
+            }
+            Ok(_) => {}
+            Err(error) if error.is_per_item() => {
+                log.error("Recycle Bin item inspection failed", Some(&error.source));
+            }
+            Err(error) => return Err(error.source),
+        }
+    }
+    Ok(matches)
 }
 
 /// C# `WaitForRestore`: `attempts` checks, one pause after each miss, then a final check.
@@ -381,6 +451,87 @@ mod tests {
 
     fn restore(backend: &WindowsRecycleBinRestoreBackend) -> io::Result<bool> {
         backend.try_restore(Path::new(r"C:\photos\photo.jpg"), 123, stamp())
+    }
+
+    fn contains(backend: &WindowsRecycleBinRestoreBackend) -> io::Result<bool> {
+        backend.contains(Path::new(r"C:\photos\photo.jpg"), 123, stamp())
+    }
+
+    #[test]
+    fn contains_is_true_for_a_matching_item_and_never_restores_or_invokes() {
+        // P-331: read-only; every wrapper and the session are released.
+        let invokes = Arc::new(AtomicUsize::new(0));
+        let entry_drops = Arc::new(AtomicUsize::new(0));
+        let session_drops = Arc::new(AtomicUsize::new(0));
+        let entries = vec![
+            FakeEntrySpec::from_metadata(
+                Ok(Some(candidate("other.jpg"))),
+                Arc::clone(&invokes),
+                Arc::clone(&entry_drops),
+            ),
+            FakeEntrySpec::from_metadata(
+                Ok(Some(candidate("photo.jpg"))),
+                Arc::clone(&invokes),
+                Arc::clone(&entry_drops),
+            ),
+        ];
+        let backend = backend(entries, true, Arc::new(AtomicUsize::new(0)), Arc::clone(&session_drops));
+
+        assert!(contains(&backend).expect("answered"));
+        assert_eq!(invokes.load(Ordering::SeqCst), 0);
+        assert_eq!(entry_drops.load(Ordering::SeqCst), 2);
+        assert_eq!(session_drops.load(Ordering::SeqCst), 1);
+    }
+
+    #[test]
+    fn contains_is_false_when_no_item_matches() {
+        let invokes = Arc::new(AtomicUsize::new(0));
+        let entries = vec![FakeEntrySpec::from_metadata(
+            Ok(Some(candidate("other.jpg"))),
+            Arc::clone(&invokes),
+            Arc::new(AtomicUsize::new(0)),
+        )];
+        let backend = backend(
+            entries,
+            true,
+            Arc::new(AtomicUsize::new(0)),
+            Arc::new(AtomicUsize::new(0)),
+        );
+
+        assert!(!contains(&backend).expect("answered"));
+    }
+
+    #[test]
+    fn contains_errors_when_the_bin_cannot_be_enumerated_or_opened() {
+        // INV-5: an unanswerable bin is an error, never `false`.
+        let failing = WindowsRecycleBinRestoreBackend::with_adapters(
+            || Err(io::Error::other("shell down")),
+            |_, _, _| true,
+            || {},
+            1,
+            Arc::new(NullLog),
+        );
+        assert_eq!(contains(&failing).unwrap_err().to_string(), "shell down");
+
+        let no_session =
+            WindowsRecycleBinRestoreBackend::with_adapters(|| Ok(None), |_, _, _| true, || {}, 1, Arc::new(NullLog));
+        assert!(contains(&no_session).is_err());
+
+        let aborting = vec![FakeEntrySpec::from_metadata(
+            Err(RecycleRestoreItemError {
+                kind: RecycleRestoreItemFailureKind::Other,
+                source: io::Error::other("unrelated failure"),
+            }),
+            Arc::new(AtomicUsize::new(0)),
+            Arc::new(AtomicUsize::new(0)),
+        )];
+        let backend = backend(
+            aborting,
+            true,
+            Arc::new(AtomicUsize::new(0)),
+            Arc::new(AtomicUsize::new(0)),
+        );
+        assert_eq!(contains(&backend).unwrap_err().to_string(), "unrelated failure");
     }
 
     #[test]
