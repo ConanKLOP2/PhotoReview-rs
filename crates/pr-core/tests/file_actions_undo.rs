@@ -31,7 +31,7 @@ use pr_core::file_actions::errors::{MOVE_SOURCE_NOT_REMOVED, PENDING_UNCONFIRMED
 use pr_core::file_actions::journal_line::{self, JournalEntry, JournalGroupMember};
 use pr_core::file_actions::recovery_retry::{EnglishRecoveryRetryTexts, RecoveryRetryService};
 use pr_core::file_actions::types::{CaptureGroupActionResult, CaptureGroupMemberResult, FileActionResult, UndoResult};
-use pr_core::file_actions::undo::{EnglishUndoTexts, FileActionGate, MoveOverride, UndoService, UndoTexts};
+use pr_core::file_actions::undo::{EnglishUndoTexts, FileActionGate, GateToken, MoveOverride, UndoService, UndoTexts};
 use pr_core::file_actions::{
     journal::OperationJournal,
     recovery_check::{RecoveryFileCheck, RecoveryVerdict},
@@ -830,7 +830,7 @@ fn undo_move_async_when_gate_busy_returns_rejected() {
     let f = Fixture::new();
     let gate = TestGate::new();
     let mut undo = f.undo().with_gate(gate.clone());
-    assert!(gate.try_begin());
+    let held = gate.try_begin().expect("the gate is free");
     assert!(undo.is_busy());
 
     let result = undo.undo_move();
@@ -839,7 +839,7 @@ fn undo_move_async_when_gate_busy_returns_rejected() {
     assert!(result.rejected);
     assert!(msg(&result).contains(&texts().core_undo_busy()));
 
-    gate.end();
+    drop(held);
     assert!(!undo.is_busy());
 }
 
@@ -1961,12 +1961,12 @@ fn try_begin_without_file_action_service_gate_follows_begin_and_end() {
     let undo = f.undo();
 
     assert!(!undo.is_busy());
-    assert!(undo.try_begin());
+    let held = undo.try_begin().expect("the gate is free");
     assert!(undo.is_busy());
-    assert!(!undo.try_begin(), "already taken");
-    undo.end();
+    assert!(undo.try_begin().is_none(), "already taken");
+    drop(held);
     assert!(!undo.is_busy());
-    assert!(undo.try_begin(), "released by end");
+    assert!(undo.try_begin().is_some(), "released by dropping the token");
 }
 
 // C#: UndoServiceMutationGapTests.Register_FailedMoveWithDestination_IsNotUndoable
@@ -2171,7 +2171,7 @@ fn undo_last_async_recycle_while_another_operation_runs_is_rejected_and_restores
         group_stamp(),
     ));
     // A file action is in flight.
-    assert!(gate.try_begin());
+    let held = gate.try_begin().expect("the gate is free");
 
     let result = undo.undo_last();
 
@@ -2181,7 +2181,7 @@ fn undo_last_async_recycle_while_another_operation_runs_is_rejected_and_restores
     assert_eq!(f.bin.restore_calls(), 0);
     // Still undoable once the gate is free.
     assert!(undo.has_last_undo_action());
-    gate.end();
+    drop(held);
 }
 
 // C#: UndoServiceMutationGapTests.UndoLastAsync_GroupMoveWhenTheMovedFileIsGone_FailsAndDoesNotCountItAsRestored
@@ -2489,14 +2489,14 @@ fn undo_last_while_busy_is_rejected_and_keeps_state() {
     let f = Fixture::at(group_stamp());
     let mut undo = f.undo();
     undo.register(&recycled(JPEG, 4, group_stamp()));
-    assert!(undo.try_begin());
+    let held = undo.try_begin().expect("the gate is free");
 
     let result = undo.undo_last();
 
     assert!(result.rejected);
     assert!(!result.succeeded);
     assert!(undo.has_last_undo_action());
-    undo.end();
+    drop(held);
 }
 
 // C#: UndoServiceSafetyTests.UndoLast_WhileBusy_PermanentOrEmpty_IsRejectedNotMutated
@@ -2504,7 +2504,7 @@ fn undo_last_while_busy_is_rejected_and_keeps_state() {
 fn undo_last_while_busy_permanent_or_empty_is_rejected_not_mutated() {
     let f = Fixture::at(group_stamp());
     let mut undo = f.undo();
-    assert!(undo.try_begin());
+    let held = undo.try_begin().expect("the gate is free");
 
     // Empty history: busy is reported before anything else is read.
     assert!(undo.undo_last().rejected);
@@ -2513,7 +2513,7 @@ fn undo_last_while_busy_permanent_or_empty_is_rejected_not_mutated() {
     undo.register(&permanent);
     assert!(undo.undo_last().rejected);
     assert!(undo.has_last_undo_action());
-    undo.end();
+    drop(held);
 }
 
 // C#: UndoServiceSafetyTests.UndoMove_VerifyThrowsAfterFileReturned_DropsEntry
@@ -3344,10 +3344,9 @@ fn repair_direct_undo_keeps_a_group_move_last_action_with_the_same_destination()
 /// A gate that is not busy for the cheap `is_busy` probe but refuses `try_begin` (lost the race to another action).
 struct RacingGate;
 impl FileActionGate for RacingGate {
-    fn try_begin(&self) -> bool {
-        false
+    fn try_begin(&self) -> Option<GateToken> {
+        None
     }
-    fn end(&self) {}
     fn is_busy(&self) -> bool {
         false
     }

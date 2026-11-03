@@ -9,7 +9,7 @@
 //!   Hook closures run with the hook mutex released, so a hook may read the journal (which calls back into this file system).
 //! * [`ScriptedBin`]: a [`RecycleBin`] over the same disk with the six modes of the oracle plus `Throw` (a bin that fails with an
 //!   error) and `RestoreThenThrow`. It never touches the real Recycle Bin.
-//! * [`TestGate`]: [`FileActionGate`] over an `AtomicBool` (stands in for `FileActionService`, which is W3-04's).
+//! * [`TestGate`]: [`FileActionGate`] over a `GateFlag` (stands in for `FileActionService`, which is W3-04's).
 //! * [`Fixture`] wires the journal (`C:\data\operations.jsonl`, like the oracle), the clock, and the fakes together.
 //!
 //! The helpers here compile against the W3-05 stub; the bodies they call (`UndoService`, the journal) are the ones under test.
@@ -18,7 +18,6 @@
 use std::collections::HashMap;
 use std::io::{self, Write};
 use std::path::{Path, PathBuf};
-use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, Mutex, MutexGuard, PoisonError};
 
 use pr_core::abstractions::{AppendStream, Clock, FileStat, FileSystem, LiveOperationRegistry, ReadSeek, RecycleBin};
@@ -26,7 +25,7 @@ use pr_core::app_paths::AppPaths;
 use pr_core::file_actions::journal::{OperationJournal, OperationJournalOptions};
 use pr_core::file_actions::journal_line::{JournalDateTime, JournalEntry, JournalGroupMember};
 use pr_core::file_actions::types::{CaptureGroupActionResult, CaptureGroupMemberResult, FileActionResult};
-use pr_core::file_actions::undo::{EnglishUndoTexts, FileActionGate, MoveOverride, UndoService};
+use pr_core::file_actions::undo::{EnglishUndoTexts, FileActionGate, GateFlag, GateToken, MoveOverride, UndoService};
 use pr_core::model::{FileOperationType, JournalState};
 use pr_core::text::ignore_case_key;
 use pr_core::time::{DateTimeUtc, TICKS_PER_SECOND};
@@ -677,10 +676,10 @@ impl RecycleBin for ScriptedBin {
 // TestGate
 // ---------------------------------------------------------------------------------------------------------------
 
-/// The shared file-action gate of the tests (C# `FileActionService`'s `TryBegin`/`End`/`IsBusy`, over an `AtomicBool`).
+/// The shared file-action gate of the tests (C# `FileActionService`'s `TryBegin`/`End`/`IsBusy`, over a `GateFlag`).
 #[derive(Default)]
 pub struct TestGate {
-    busy: AtomicBool,
+    flag: Arc<GateFlag>,
 }
 
 impl TestGate {
@@ -689,23 +688,17 @@ impl TestGate {
     }
 
     pub fn is_busy(&self) -> bool {
-        self.busy.load(Ordering::SeqCst)
+        self.flag.is_busy()
     }
 }
 
 impl FileActionGate for TestGate {
-    fn try_begin(&self) -> bool {
-        self.busy
-            .compare_exchange(false, true, Ordering::SeqCst, Ordering::SeqCst)
-            .is_ok()
-    }
-
-    fn end(&self) {
-        self.busy.store(false, Ordering::SeqCst);
+    fn try_begin(&self) -> Option<GateToken> {
+        self.flag.try_begin()
     }
 
     fn is_busy(&self) -> bool {
-        self.busy.load(Ordering::SeqCst)
+        self.flag.is_busy()
     }
 }
 

@@ -317,7 +317,7 @@ fn recovery_retry_takes_the_file_action_gate() {
     // C#: SharedServiceRegistrationTests.RecoveryRetryTakesTheFileActionGate
     let (services, _root, _log) = composition_fixture::shared_services();
     let gate = services.file_action_service();
-    assert!(gate.try_begin());
+    let held = gate.try_begin().expect("the gate is free");
     let fs = services.file_system();
     let result = services
         .recovery_retry()
@@ -352,7 +352,7 @@ fn recovery_retry_takes_the_file_action_gate() {
         "A file action is still running. Wait for it to finish, then retry."
     );
     assert!(!fs.file_exists(std::path::Path::new("missing.jpg")));
-    gate.end();
+    drop(held);
 }
 
 #[test]
@@ -380,13 +380,13 @@ fn undo_takes_the_same_file_action_gate_as_retry() {
     let undo = services.undo_service();
     undo.lock().unwrap().register(&result);
 
-    assert!(gate.try_begin(), "the gate is free after the move finished");
+    let held = gate.try_begin().expect("the gate is free after the move finished");
     let refused = undo.lock().unwrap().undo_move();
     assert!(refused.rejected, "{refused:?}");
     assert!(!refused.succeeded);
     assert!(to.exists(), "a refused undo must not touch the file");
     assert!(!from.exists());
-    gate.end();
+    drop(held);
 
     assert!(undo.lock().unwrap().undo_move().succeeded);
     assert!(from.exists());

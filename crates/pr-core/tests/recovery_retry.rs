@@ -467,7 +467,7 @@ fn retry_while_file_action_in_progress_refuses_with_busy() {
     rig.append(&failed);
     let gate = new_gate();
     let service = rig.service().with_file_action_gate(gate.clone());
-    assert!(gate.try_begin()); // a Move is running
+    let held = gate.try_begin().expect("the gate is free"); // a Move is running
     rig.fs.clear_ops();
 
     let busy = retry(&service, &failed);
@@ -486,7 +486,7 @@ fn retry_while_file_action_in_progress_refuses_with_busy() {
     assert!(!rig.fs.has_file(DEST));
     assert!(gate.is_busy()); // the running action still owns the gate
 
-    gate.end();
+    drop(held);
     let retried = retry(&service, &failed);
     assert!(retried.succeeded, "{}", retried.message);
     assert!(!gate.is_busy()); // the retry released the gate it took
@@ -517,7 +517,7 @@ fn retry_group_while_file_action_in_progress_refuses_with_busy() {
     };
     let gate = new_gate();
     let service = rig.service().with_file_action_gate(gate.clone());
-    assert!(gate.try_begin());
+    let _held = gate.try_begin().expect("the gate is free");
     rig.fs.clear_ops();
 
     let busy = retry(&service, &failed);

@@ -25,7 +25,6 @@
 use std::collections::{HashMap, HashSet};
 use std::io::{self, Cursor, Write};
 use std::path::{Path, PathBuf};
-use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, Mutex, MutexGuard, PoisonError};
 
 use pr_core::abstractions::{AppendStream, Clock, FileStat, FileSystem, ReadSeek, RecycleBin};
@@ -35,7 +34,7 @@ use pr_core::file_actions::journal_line::{JournalDateTime, JournalEntry, Journal
 use pr_core::file_actions::recovery_retry::{
     AllowPermanentDelete, EnglishRecoveryRetryTexts, RecoveryRetryService, RecoveryRetryTexts,
 };
-pub use pr_core::file_actions::undo::FileActionGate;
+pub use pr_core::file_actions::undo::{FileActionGate, GateFlag, GateToken};
 use pr_core::model::{FileOperationType, JournalState};
 use pr_core::sync::CancelToken;
 use pr_core::time::DateTimeUtc;
@@ -906,25 +905,19 @@ impl RecycleBin for ScriptedBin {
 // The gate
 // ---------------------------------------------------------------------------------------------------------------
 
-/// The `FileActionGate` double: `try_begin` is a compare-exchange 0 -> 1, `end` stores 0 (C# `TryBegin/End/IsBusy`).
+/// The `FileActionGate` double: `try_begin` hands out a release token (C# `TryBegin/End/IsBusy`, P-71 option C).
 #[derive(Default)]
 pub struct TestGate {
-    busy: AtomicBool,
+    flag: Arc<GateFlag>,
 }
 
 impl FileActionGate for TestGate {
-    fn try_begin(&self) -> bool {
-        self.busy
-            .compare_exchange(false, true, Ordering::SeqCst, Ordering::SeqCst)
-            .is_ok()
-    }
-
-    fn end(&self) {
-        self.busy.store(false, Ordering::SeqCst);
+    fn try_begin(&self) -> Option<GateToken> {
+        self.flag.try_begin()
     }
 
     fn is_busy(&self) -> bool {
-        self.busy.load(Ordering::SeqCst)
+        self.flag.is_busy()
     }
 }
 

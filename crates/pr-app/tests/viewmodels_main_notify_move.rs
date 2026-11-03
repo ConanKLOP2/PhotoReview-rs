@@ -19,7 +19,7 @@ mod support {
 }
 
 use std::path::Path;
-use std::sync::Arc;
+use std::sync::{Arc, Mutex};
 
 use pr_app::coordinators::traits::{IFileActionSink, IFolderLoadSink, ISiblingNavigatorSink};
 use pr_app::viewmodels::format::status;
@@ -1093,20 +1093,18 @@ fn move_to_state_changed_while_the_dialog_is_open_aborts_with_status() {
         answer(&env, Some(&dest));
         let clock = Arc::clone(&env.clock);
         let service = Arc::clone(&env.service);
-        let held_busy = Arc::new(std::sync::atomic::AtomicBool::new(false));
-        let held = Arc::clone(&held_busy);
+        let held_gate = Arc::new(Mutex::new(None));
+        let held = Arc::clone(&held_gate);
         *lock(&env.picker.while_open) = Some(Box::new(move || match change {
             "folder" => {
                 clock.next_folder(); // a forwarded open started loading another folder
             }
-            _ => held.store(service.try_begin(), std::sync::atomic::Ordering::SeqCst),
+            _ => *held.lock().expect("gate slot") = service.try_begin(),
         }));
 
         env.vm.move_to_folder(false);
         env.settle();
-        if held_busy.load(std::sync::atomic::Ordering::SeqCst) {
-            env.service.end();
-        }
+        drop(held_gate.lock().expect("gate slot").take());
 
         assert!(exists(&files[0]), "{change}");
         assert!(exists(&files[1]), "{change}");

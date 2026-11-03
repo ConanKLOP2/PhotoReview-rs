@@ -586,7 +586,7 @@ fn rename_async_executor_throws_and_sink_cannot_keep_presents_again() {
 fn rename_async_gate_busy_returns_busy_and_changes_nothing() {
     let mut env = RenameEnv::new();
     let paths = env.load(&["a.jpg", "b.jpg", "c.jpg"], 1);
-    assert!(env.service.try_begin());
+    let held = env.service.try_begin().expect("the gate is free");
     let navigation = env.clock.current_navigation();
     let result = finished(env.rename(&paths[1], "x"));
     assert_eq!(result.status, FileRenameStatus::Busy);
@@ -595,7 +595,7 @@ fn rename_async_gate_busy_returns_busy_and_changes_nothing() {
     assert_eq!(env.worker.queued(), 0);
     assert!(env.sink.action_log.lock().expect("ordered log").is_empty());
     assert!(env.exists(&paths[1]));
-    env.service.end();
+    drop(held);
 }
 
 // C#: FileActionControllerRenameTests.RenameAsync_EmptyCatalogOrUnknownPath_IsNothingToRename

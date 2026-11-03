@@ -13,6 +13,7 @@ use std::sync::Arc;
 
 use pr_core::file_actions::journal_line::{JournalDateTime, JournalEntry, JournalGroupMember};
 use pr_core::file_actions::recovery_retry::RecoveryRetryResult;
+use pr_core::file_actions::undo::GateToken;
 use pr_core::model::{FileOperationType, JournalState};
 use pr_core::sync::CancelToken;
 use pr_core::time::DateTimeUtc;
@@ -236,6 +237,8 @@ struct Setup {
     snapshot: JournalEntry,
     bin: Option<Arc<ScriptedBin>>,
     gate: Option<Arc<TestGate>>,
+    /// Keeps a `held` gate taken until the case ends.
+    _held_token: Option<GateToken>,
 }
 
 fn setup(case: &Value) -> Setup {
@@ -285,14 +288,23 @@ fn setup(case: &Value) -> Setup {
         "free" | "held" => Some(new_gate()),
         other => panic!("unknown gate mode {other}"),
     };
-    if gate_mode == "held" {
-        assert!(gate.as_ref().expect("gate").try_begin(), "the test gate starts free");
-    }
+    // A gate held for the whole case: the token lives in `Setup` so the gate stays taken until the case ends.
+    let held_token = if gate_mode == "held" {
+        Some(
+            gate.as_ref()
+                .expect("gate")
+                .try_begin()
+                .expect("the test gate starts free"),
+        )
+    } else {
+        None
+    };
     Setup {
         rig,
         snapshot,
         bin,
         gate,
+        _held_token: held_token,
     }
 }
 
@@ -303,6 +315,7 @@ fn run_case(case: &Value) -> Map<String, Value> {
         snapshot,
         bin,
         gate,
+        _held_token,
     } = setup(case);
     let mut service = rig.service();
     if let Some(bin) = &bin {
