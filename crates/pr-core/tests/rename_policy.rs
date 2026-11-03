@@ -9,13 +9,11 @@ fn verdict(check: &RenameNameCheck) -> Value {
         "unchanged":check.is_unchanged,"case_only":check.differs_only_by_case})
 }
 
-// Oracle W9-R1.cs; input remains staged by the generator contract.
+// Oracle W9-R1.cs; input in tests/golden-inputs/.
 #[test]
 fn golden_single_rename_policy_matches_all_33_cases() {
-    let input: Value = serde_json::from_str(include_str!(
-        "../../../tests/golden-inputs/staged/w9-r1-rename-policy.json"
-    ))
-    .unwrap();
+    let input: Value =
+        serde_json::from_str(include_str!("../../../tests/golden-inputs/w9-r1-rename-policy.json")).unwrap();
     let golden = golden::load("w9-r1-rename-policy");
     let cases = golden
         .cases

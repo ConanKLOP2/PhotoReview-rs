@@ -31,10 +31,8 @@ if (command == "ordinal-casing-table")
 
 JsonArray cases = command switch
 {
-#if W9_RENAME_BASELINE
-    // Wave 9 FEAT-RENAME (needs the C# baseline at 7eaee2a2 or later: -p:W9RenameBaseline=true).
+    // Wave 9 FEAT-RENAME (C# baseline 7eaee2a2).
     "w9-r1-rename-policy" => Commands.W9R1RenamePolicyCases(inputs),
-#endif
     "datetime-json" => Commands.DateTimeJson(inputs),
     "ordinal-ignore-case" => Commands.OrdinalIgnoreCase(inputs),
     "natural-cmp" => Commands.NaturalCompare(inputs),

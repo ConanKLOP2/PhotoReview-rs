@@ -1,10 +1,7 @@
-// W9-R1 FEAT-RENAME, C# baseline 7eaee2a2. Compiled only with -p:W9RenameBaseline=true (it needs RenameNamePolicy, which the
-// pinned baseline d92d6aae does not have; an unguarded file would break the whole oracle build).
-// Dispatch in Program.cs (same guard): "w9-r1-rename-policy" => Commands.W9R1RenamePolicyCases(inputs),
-// Input: tests/golden-inputs/staged/w9-r1-rename-policy.json (the golden generator moves it up one folder when the baseline
-// moves); output: tests/golden/w9-r1-rename-policy.json.
+// W9-R1 FEAT-RENAME, C# baseline 7eaee2a2 (needs RenameNamePolicy, which the older d92d6aae baseline did not have).
+// Dispatch in Program.cs: "w9-r1-rename-policy" => Commands.W9R1RenamePolicyCases(inputs),
+// Input: tests/golden-inputs/w9-r1-rename-policy.json; output: tests/golden/w9-r1-rename-policy.json.
 // A case may give "typed_fill": {"text": "x", "count": 251} instead of "typed" (long names without a long JSON line).
-#if W9_RENAME_BASELINE
 using System.Text.Json.Nodes;
 using PhotoReview.Core.Catalog;
 using PhotoReview.Core.FileActions;
@@ -51,4 +48,3 @@ static partial class Commands
         return result;
     }
 }
-#endif

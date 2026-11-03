@@ -109,7 +109,7 @@ graph LR
 
 ## 3. Suggested order
 
-1. Start in parallel with nothing blocking: **E1** and **R1** (pure Core/golden units, no plan edge; their oracle goldens exist: `external-editor-rules` 77 cases, `w9-r1-rename-policy` 44 cases, the latter staged, see the R lane amendments).
+1. Start in parallel with nothing blocking: **E1** and **R1** (pure Core/golden units, no plan edge; their oracle goldens exist: `external-editor-rules` 77 cases, `w9-r1-rename-policy` 44 cases, the latter no longer staged (P-73)).
 2. After E1: **E5, E6, E7** (pure `pr-app`), then **E9** (needs all three).
 3. After R1: **R2** and **R4**; then **R3**; then **R5**; then **R6**; then **R7**; **R9** after R3, **R10** after R7.
 4. Native units wait for the open Wave 8 dialogs: **E2, E3** (W8-18p/18q), **E4** (W8-19j..19m), **E8** (W8-18o, E4), **R8** then **R11** (W8-18p, R7).
@@ -145,4 +145,4 @@ One lane per machine keeps one pipeline tag per machine (MULTI-MACHINE rule). Cl
 
 ## 7. Open decisions that block or shape the order
 
-From `contracts/README.md` "Wave 9 sync" sections (P-48, P-49): recorded there, defaults applied, listed again only as a pointer. The ones that change ordering: the rename lane waits for lane E on shared files; the `w9-r1-rename-policy` oracle input moves out of `tests/golden-inputs/staged/` when the golden generator runs (R lane amendments).
+From `contracts/README.md` "Wave 9 sync" sections (P-48, P-49): recorded there, defaults applied, listed again only as a pointer. The ones that change ordering: the rename lane waits for lane E on shared files; the `w9-r1-rename-policy` oracle input already moved out of `staged/` to `tests/golden-inputs/` (P-73).
