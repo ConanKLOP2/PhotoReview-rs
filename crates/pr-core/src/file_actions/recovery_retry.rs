@@ -624,31 +624,25 @@ impl RecoveryRetryService {
                     if !restored || !self.is_restored_file(member)? {
                         return Err(Self::plain_error(texts.core_undo_recycle_restore_failed(name)));
                     }
-                } else if member.permanent {
-                    // Q-R8: only on a drive that still has no bin.
-                    if bin.can_recycle(source) {
-                        return Err(Self::plain_error(texts.core_recovery_source_changed()));
-                    }
-                    // DIVERGENCE (H1/G25, deliberate fix of a C# data-loss bug): the pre-check ran before the Prepared
-                    // line; another program may have put a different file here since. Re-stat right before the
-                    // irreversible delete and refuse (nothing deleted) when the fingerprint no longer matches.
-                    let unchanged = self
-                        .stat(&member.source)?
-                        .is_some_and(|stat| same_fingerprint(&stat, member.size, &member.last_write_utc));
-                    if !unchanged {
-                        return Err(Self::plain_error(texts.core_recovery_source_changed()));
-                    }
-                    bin.delete_permanently(source)?;
                 } else {
-                    // DIVERGENCE (H1 follow-up, ST-INVMAP): same re-stat as the permanent branch; a replacement file
-                    // would otherwise be sent to the bin under the old operation's fingerprint.
+                    // D1 (C# #534; first fixed here as H1/G25 + ST-INVMAP, now also in C#): the pre-check ran before the
+                    // Prepared line, so re-stat right before the mutation (like the Move/Copy branch); a file replaced
+                    // or gone since is never recycled or deleted for good under the old fingerprint.
                     let unchanged = self
                         .stat(&member.source)?
                         .is_some_and(|stat| same_fingerprint(&stat, member.size, &member.last_write_utc));
                     if !unchanged {
                         return Err(Self::plain_error(texts.core_recovery_source_changed()));
                     }
-                    bin.send_to_recycle_bin(source)?;
+                    if member.permanent {
+                        // Q-R8: only on a drive that still has no bin.
+                        if bin.can_recycle(source) {
+                            return Err(Self::plain_error(texts.core_recovery_source_changed()));
+                        }
+                        bin.delete_permanently(source)?;
+                    } else {
+                        bin.send_to_recycle_bin(source)?;
+                    }
                 }
                 if !is_undo && fs.file_exists(source) {
                     return Err(self.coded_error(errors::SOURCE_STILL_EXISTS_AFTER_RECOVERY));
