@@ -42,7 +42,7 @@ Rủi ro: **D** = có thể mất/sai dữ liệu người dùng, **C** = crash/
 | 28 | G28 Log short-write rồi retry lỗi làm lặp/dính dòng | invariants-storage L1 | thấp | T | W2-16 | thêm test + hardening log |
 | 29 | G29 Cache read cấp phát toàn file trước kiểm header/length; phân loại I/O OOM | invariants-storage M3 | trung bình | C/B | W4-08b, W4-14c | sửa mã + test; kiểm lại 2026-11-03: phần kiểm kích thước trước khi cấp phát đã đóng ở #474, còn phân loại `OutOfMemory` lúc đọc là P-150 ([G29](G29-CACHE-READ-2026-11-03.md)) |
 | 30 | G30 Kiểm output của lần registry read thứ hai | recycle-policy M1 | trung bình | D/B | W6-02b | ĐÃ ĐÓNG: sửa ở PR #532, test kiểm lại 2026-11-03 ([G30](G30-RECYCLE-REGISTRY-TESTS-2026-11-03.md)) |
-| 31 | G31 Nối restore verb helper vào adapter | recycle-policy L1 | thấp | B/T | W6-02d/e | tích hợp hoặc ADR, giữ Partial |
+| 31 | G31 Nối restore verb helper vào adapter | recycle-policy L1 | thấp | B/T | W6-02d/e | tích hợp hoặc ADR, giữ Partial; kiểm lại 2026-11-03: helper vẫn chưa nối, quyết định ở P-160 ([G31](G31-RESTORE-VERB-2026-11-03.md)) |
 
 Thứ tự đề xuất sau tái kiểm: G25 (nguy cơ xoá vĩnh viễn), rồi G3, G4, G1, G2 (lỗi người dùng thấy ngay); G5, G7, G6 (an toàn dữ liệu); sau đó G10, G11, G9; test (G17..G20) song song vì không xung đột file; G16 độc lập; G21..G23 tài liệu cuối cùng (chạm PARITY, gộp theo hàng).
 
@@ -457,7 +457,7 @@ G11 nhận thêm host-dispatcher M1 (trung bình, W8-13c/18h..18k): filtered mes
 | Nhóm | Nguồn | Mức | Rủi ro | Chủ | Loại |
 |---|---|---|---|---|---|
 | G30 Kiểm output của lần registry read thứ hai | recycle-policy M1 | trung bình | D/B (fail-closed, chưa chứng minh mất file) | W6-02b | ĐÃ ĐÓNG: sửa ở PR #532, test kiểm lại 2026-11-03 ([G30](G30-RECYCLE-REGISTRY-TESTS-2026-11-03.md)) |
-| G31 Nối restore verb helper vào adapter | recycle-policy L1 | thấp | B/T | W6-02d/e | tích hợp hoặc ADR, giữ Partial |
+| G31 Nối restore verb helper vào adapter | recycle-policy L1 | thấp | B/T | W6-02d/e | tích hợp hoặc ADR, giữ Partial; kiểm lại 2026-11-03: helper vẫn chưa nối, quyết định ở P-160 ([G31](G31-RESTORE-VERB-2026-11-03.md)) |
 
 Bằng chứng, kịch bản và hai PROMPT có phạm vi/lệnh kiểm tra: [recycle-policy.md](recycle-policy.md). Không gộp với G25 (fingerprint nguồn) hoặc G12 (journal/Undo), không đếm lại test ignored của G17. Suy luận từ mã, chưa chạy thử.
 
