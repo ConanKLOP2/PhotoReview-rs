@@ -1539,3 +1539,35 @@ fn group_executor_throws_after_some_members_are_gone_only_the_existing_ones_come
             .unwrap()
     );
 }
+
+// Not a C# port: ST-INVMAP M3 follow-up (T4/G5). An executor panic never registers Undo (C# `catch` has no `WithUndo`), also when
+// the file is already gone: the failure path must not leave a stale Undo for a file the app could not verify.
+#[test]
+fn executor_throws_after_the_file_is_gone_registers_no_undo() {
+    let mut env = move_env(&["a.jpg", "b.jpg", "c.jpg"]);
+    assert!(!has_undo_action(&env));
+    env.exec.script(Scripted::Panic("boom".to_string()));
+
+    env.run_action(0, None, Some(&p("b.jpg")));
+    env.disk.remove(&p("b.jpg"));
+    assert_eq!(env.run_worker(), FileActionStep::Pending);
+    assert_eq!(env.present_finished(false), DONE_FALSE);
+
+    assert!(!has_undo_action(&env));
+    assert_eq!(env.catalog_paths(), vec![p("a.jpg"), p("c.jpg")]);
+}
+
+// Not a C# port: ST-INVMAP M3 follow-up (T4/G5). The panic happened before the executor touched the disk: the file is still
+// there, so the entry goes back at its index (the other branch of the M3 existence check).
+#[test]
+fn executor_throws_before_touching_the_disk_entry_comes_back_and_no_undo_is_registered() {
+    let mut env = move_env(&["a.jpg", "b.jpg", "c.jpg"]);
+    env.exec.script(Scripted::Panic("boom".to_string()));
+
+    env.run_action(0, None, Some(&p("b.jpg")));
+    assert_eq!(env.run_worker(), FileActionStep::Pending);
+    assert_eq!(env.present_finished(false), DONE_FALSE);
+
+    assert_eq!(env.catalog_paths(), vec![p("a.jpg"), p("b.jpg"), p("c.jpg")]);
+    assert!(!has_undo_action(&env));
+}

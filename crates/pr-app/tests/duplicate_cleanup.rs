@@ -883,6 +883,23 @@ fn change_between_two_recycles_is_caught_for_the_later_file() {
     assert_eq!(rig.sink.last(), Some(batch_done(1, 1).as_str()));
 }
 
+// Not a C# port: D2 follow-up (T4/G6). The keeper check also runs at every later recycle: a kept copy that vanishes while the
+// FIRST recycle runs stops the second file (nothing is recycled once no copy that stays is left).
+#[test]
+fn keeper_deleted_between_two_recycles_is_caught_for_the_later_file() {
+    let mut rig = Rig::new(Options::default());
+    rig.load_three();
+    assert_eq!(rig.remove_duplicates(true), DuplicateCleanupStep::Pending);
+    assert_eq!(rig.step(), DuplicateCleanupStep::Pending); // hash -> first recycle submitted
+    assert_eq!(rig.step(), DuplicateCleanupStep::Pending); // first recycle done, second submitted
+    rig.fs.delete(Path::new(&p("a.jpg"))).expect("delete keeper");
+    assert_eq!(rig.pump(), DuplicateCleanupStep::Pending);
+    assert_eq!(rig.reload_finished(true), DuplicateCleanupStep::Done);
+
+    assert_eq!(rig.recycled_paths(), vec![p("a (1).jpg")]);
+    assert_eq!(rig.sink.last(), Some(batch_done(1, 1).as_str()));
+}
+
 // ---- DuplicateCleanupControllerMutationGapTests --------------------------------------------------------------------------
 
 // C#: DuplicateCleanupControllerMutationGapTests.RemoveDuplicatesAsync_NoFileActionService_ReturnsWithoutAnyStatus
