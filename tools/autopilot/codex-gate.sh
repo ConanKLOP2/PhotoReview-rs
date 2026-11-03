@@ -8,7 +8,7 @@
 set -u
 U="${1:?unit}"; WT="${2:?worktree}"; CRATE="${3:?crate}"; MODE="${4:-full}"
 SELF="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-LIB="python $SELF/lib/codex-lib.py"
+LIB=(python "$SELF/lib/codex-lib.py")   # array: the path may contain spaces (G16 L8)
 . "$SELF/lib/proc.sh"   # GATE_IGNORE_RE
 export CARGO_PROFILE_DEV_DEBUG="${CARGO_PROFILE_DEV_DEBUG:-line-tables-only}" CARGO_INCREMENTAL=0
 cd "$WT" || { echo "gate: no worktree $WT"; exit 9; }
@@ -18,7 +18,7 @@ T="$(mktemp)"
 
 # 1. changed files must be inside the contract's owned files (tracked changes + untracked, ignoring .codex-* scratch)
 CONTRACT="$WT/contracts/$U.md"; [ -f "$CONTRACT" ] || CONTRACT="$SELF/../../contracts/$U.md"
-$LIB owned "$CONTRACT" | tr -d '\r' | sort -u > "$T.owned"
+"${LIB[@]}" owned "$CONTRACT" | tr -d '\r' | sort -u > "$T.owned"
 git status --porcelain -uall | sed -e 's/^...//' -e 's/.* -> //' -e 's/^"//' -e 's/"$//' | grep -v -E "$GATE_IGNORE_RE" | sort -u > "$T.changed"
 comm -13 "$T.owned" "$T.changed" > "$T"
 if [ -s "$T" ]; then
@@ -27,12 +27,12 @@ if [ -s "$T" ]; then
 fi
 
 # 2. cheap deterministic review gates
-$LIB lint "$WT" "$T.owned" > "$T.l" 2>&1 || { rm -f "$T" "$T.owned" "$T.changed"; fail "static review gate" 5 "$T.l"; }
+"${LIB[@]}" lint "$WT" "$T.owned" > "$T.l" 2>&1 || { rm -f "$T" "$T.owned" "$T.changed"; fail "static review gate" 5 "$T.l"; }
 if [ -n "${GATE_TEST_BASE:-}" ]; then
   if [ "${GATE_TEST_RELAXED:-0}" = 1 ]; then
-    $LIB testguard "$WT" "$GATE_TEST_BASE" "$T.owned" relaxed > "$T.l" 2>&1 || { rm -f "$T" "$T.owned" "$T.changed"; fail "fixup test guard" 6 "$T.l"; }
+    "${LIB[@]}" testguard "$WT" "$GATE_TEST_BASE" "$T.owned" relaxed > "$T.l" 2>&1 || { rm -f "$T" "$T.owned" "$T.changed"; fail "fixup test guard" 6 "$T.l"; }
   else
-    $LIB testguard "$WT" "$GATE_TEST_BASE" "$T.owned" > "$T.l" 2>&1 || { rm -f "$T" "$T.owned" "$T.changed"; fail "red-test guard" 6 "$T.l"; }
+    "${LIB[@]}" testguard "$WT" "$GATE_TEST_BASE" "$T.owned" > "$T.l" 2>&1 || { rm -f "$T" "$T.owned" "$T.changed"; fail "red-test guard" 6 "$T.l"; }
   fi
 fi
 rm -f "$T.l"
@@ -47,7 +47,7 @@ testfail() { # label
 
 if [ "$MODE" = fast ]; then
   cargo check -p "$CRATE" --all-targets > "$T" 2>&1 || { rm -f "$T.owned" "$T.changed"; fail "cargo check -p $CRATE --all-targets" 3 "$T"; }
-  TA="$($LIB testargs "$WT" "$CONTRACT" | tr -d '\r')"
+  TA="$("${LIB[@]}" testargs "$WT" "$CONTRACT" | tr -d '\r')"
   if [ -z "$TA" ]; then TA=""; fi
   if [ "$NX" = 1 ]; then
     # nextest has no --lib/--test mix problem: pass them through
@@ -56,7 +56,7 @@ if [ "$MODE" = fast ]; then
     cargo test -p "$CRATE" $TA > "$T" 2>&1 || testfail "cargo test -p $CRATE $TA"
   fi
 else
-  TA="$($LIB testargs "$WT" "$CONTRACT" | tr -d '\r')"
+  TA="$("${LIB[@]}" testargs "$WT" "$CONTRACT" | tr -d '\r')"
   cargo clippy -p "$CRATE" --all-targets -- -D warnings > "$T" 2>&1 || { rm -f "$T.owned" "$T.changed"; fail "cargo clippy -p $CRATE" 3 "$T"; }
   if [ "$NX" = 1 ]; then
     { cargo nextest run -p "$CRATE" --no-tests=pass $TA; } > "$T" 2>&1 || testfail "cargo nextest run -p $CRATE $TA"

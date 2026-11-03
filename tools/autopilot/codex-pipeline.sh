@@ -13,7 +13,7 @@ CODEX_MODEL_NAME="${CODEX_MODEL:-gpt-6.1-sol}"; CODEX_EFFORT_NAME="${CODEX_EFFOR
 export PATH="$HOME/.cargo/bin:$PATH"
 SELF="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 export PYTHONUTF8=1
-LIB="python $SELF/lib/codex-lib.py"
+LIB=(python "$SELF/lib/codex-lib.py")   # array: the path may contain spaces (G16 L8)
 . "$SELF/lib/proc.sh"   # kill_tree, lock_stale, lock_reclaim (review autopilot M5, M6)
 TAG=""; DRY=0; ONLY=""; JOBS=2; SMOKE=0; REDO=""; CLI_PLAN=""
 while [ $# -gt 0 ]; do
@@ -29,7 +29,7 @@ BATCH="$(echo "${TAG##*-}" | tr a-z A-Z)"
 COMMON="$(git -C "$SELF" rev-parse --path-format=absolute --git-common-dir)"; REPO="$(dirname "$COMMON")"
 if [ -n "$CLI_PLAN" ]; then PLAN_REL="$CLI_PLAN"
 elif [ -n "${PLAN_REL:-}" ]; then PLAN_REL="$PLAN_REL"
-else PLAN_REL="$(cd "$SELF/../.." && $LIB planfor "$(pwd)" "$TAG")" || exit 1; fi
+else PLAN_REL="$(cd "$SELF/../.." && "${LIB[@]}" planfor "$(pwd)" "$TAG")" || exit 1; fi
 export PLAN_REL
 USAGE="${CODEX_USAGE_SH:-$SELF/codex-usage.sh}"
 CODEX_BIN="${CODEX_BIN:-$HOME/.codex/plugins/.plugin-appserver/codex.exe}"; export CODEX_BIN
@@ -85,7 +85,7 @@ smoke() {
   ( cd "$D" && git init -q -b master && git config user.name smoke && git config user.email smoke@example.com && git add -A && git commit -q -m init ) || { echo "smoke: git in throwaway dir failed" >&2; exit 4; }
   echo "Reply with the single word OK." > "$D/.codex-p.txt"
   timeout 300 bash "$SELF/codex-run.sh" "$D" "$D/.codex-p.txt" "$D/.codex-last-message.txt" > "$D/.codex-log" 2>&1 </dev/null; rc=$?
-  IFS='|' read -r sid tin tc tout < <($LIB codexparse "$D/.codex-log" 0 | tr -d '\r')
+  IFS='|' read -r sid tin tc tout < <("${LIB[@]}" codexparse "$D/.codex-log" 0 | tr -d '\r')
   if [ "$rc" != 0 ] || ! grep -qi 'ok' "$D/.codex-last-message.txt" 2>/dev/null; then
     echo "smoke: real Codex call FAILED (exit $rc). Log tail:" >&2; tail -n 15 "$D/.codex-log" >&2; exit 6; fi
   [ -n "$sid" ] || { echo "smoke: Codex call worked but no session id in the --json log (resume would not work)" >&2; exit 6; }
@@ -101,19 +101,19 @@ smoke() {
 [ "$SMOKE" = 1 ] && smoke
 
 # ---------------------------------------------------------------- dry run
-mapfile -t ORDER < <($LIB order "$PLAN" "$BATCH" "$ONLY" | tr -d '\r')
+mapfile -t ORDER < <("${LIB[@]}" order "$PLAN" "$BATCH" "$ONLY" | tr -d '\r')
 [ "${#ORDER[@]}" -gt 0 ] || { echo "no units for batch $BATCH in $PLAN_REL" >&2; exit 1; }
 if [ "$DRY" = 1 ]; then
   echo "plan: tag=$TAG batch=$BATCH integration=$IBR units=${#ORDER[@]} jobs=$JOBS state=$STATE"
   n=0
   for l in "${ORDER[@]}"; do
     n=$((n+1)); u="${l%%$'\t'*}"; d="${l#*$'\t'}"
-    st="$($LIB sget "$STATE" "$u")"; c="$SELF/../../contracts/$u.md"
+    st="$("${LIB[@]}" sget "$STATE" "$u")"; c="$SELF/../../contracts/$u.md"
     if [[ "$u" == W9-* ]]; then
-      ext=""; while IFS= read -r ed; do [ -n "$ed" ] || continue; miss="$($LIB extsat "$REPO" "$STATE_DIR" "$ed" | tr -d '\r')"; [ -n "$miss" ] && ext="${ext:+$ext, }$miss"; done < <($LIB extdeps "$PLAN" "$u")
-      printf '%3d. %-8s deps=%-28s extdeps=%-28s state=%-8s mutation=%-6s contract=%s\n' "$n" "$u" "${d:--}" "${ext:--}" "${st:--}" "$($LIB tier "$PLAN" "$u" | tr -d '\r')" "$([ -f "$c" ] && echo yes || echo MISSING)"
+      ext=""; while IFS= read -r ed; do [ -n "$ed" ] || continue; miss="$("${LIB[@]}" extsat "$REPO" "$STATE_DIR" "$ed" | tr -d '\r')"; [ -n "$miss" ] && ext="${ext:+$ext, }$miss"; done < <("${LIB[@]}" extdeps "$PLAN" "$u")
+      printf '%3d. %-8s deps=%-28s extdeps=%-28s state=%-8s mutation=%-6s contract=%s\n' "$n" "$u" "${d:--}" "${ext:--}" "${st:--}" "$("${LIB[@]}" tier "$PLAN" "$u" | tr -d '\r')" "$([ -f "$c" ] && echo yes || echo MISSING)"
     else
-      printf '%3d. %-8s deps=%-28s state=%-8s mutation=%-6s contract=%s\n' "$n" "$u" "${d:--}" "${st:--}" "$($LIB tier "$PLAN" "$u" | tr -d '\r')" "$([ -f "$c" ] && echo yes || echo MISSING)"
+      printf '%3d. %-8s deps=%-28s state=%-8s mutation=%-6s contract=%s\n' "$n" "$u" "${d:--}" "${st:--}" "$("${LIB[@]}" tier "$PLAN" "$u" | tr -d '\r')" "$([ -f "$c" ] && echo yes || echo MISSING)"
     fi
   done
   exit 0
@@ -154,7 +154,7 @@ usage_call() { # [fresh] -> UOUT (json line), URC (0 = Codex may be used, below 
   UOUT="$(bash "$USAGE" "$QUOTA_MAX" 2>/dev/null </dev/null | head -1; exit "${PIPESTATUS[0]}")"; URC=$?
   [ "$URC" = 0 ] && { printf '%s\n%s\n' "$(now)" "$UOUT" > "$UCACHE.$$" && mv -f "$UCACHE.$$" "$UCACHE"; }
 }
-quota_used() { local u r; IFS='|' read -r u r < <(printf '%s' "$UOUT" | $LIB used | tr -d '\r'); QUSED="$u"; QRESET="$r"; }
+quota_used() { local u r; IFS='|' read -r u r < <(printf '%s' "$UOUT" | "${LIB[@]}" used | tr -d '\r'); QUSED="$u"; QRESET="$r"; }
 
 # wait_quota [need-percent-free]: blocks (sleeping until the 5 h reset, never busy-looping, never using Claude) while the 5 h
 # window is >= QUOTA_MAX % used or has less than <need> % left.
@@ -177,7 +177,7 @@ wait_quota() {
   done
 }
 start_need() { # percent that must be free before a unit starts: avg cost per unit x QUOTA_MARGIN (0 when unknown), capped at 95
-  local est; est="$($LIB avgpct "$STATE" | tr -d '\r')"
+  local est; est="$("${LIB[@]}" avgpct "$STATE" | tr -d '\r')"
   [ -n "$est" ] && awk -v e="$est" -v m="$QUOTA_MARGIN" 'BEGIN{n=e*m; if(n>95)n=95; printf "%.1f", n}' || echo 0
 }
 
@@ -199,8 +199,8 @@ codex_call() {
     echo "=== $label $(date) ${used_sid:+resume $used_sid}" >> "$lg"
     timeout "$CODEX_TIMEOUT" bash "$SELF/codex-run.sh" "$wt" "$send" "$wt/.codex-last-message.txt" "$used_sid" >> "$lg" 2>&1 </dev/null
     rc=$?
-    IFS='|' read -r sid tin tc tout < <($LIB codexparse "$lg" "$sz" | tr -d '\r')
-    $LIB supd "$STATE" "$u" "rounds+=1" "tin+=${tin:-0}" "tcached+=${tc:-0}" "tout+=${tout:-0}" "secs+=$(( $(now) - t0 ))" >/dev/null
+    IFS='|' read -r sid tin tc tout < <("${LIB[@]}" codexparse "$lg" "$sz" | tr -d '\r')
+    "${LIB[@]}" supd "$STATE" "$u" "rounds+=1" "tin+=${tin:-0}" "tcached+=${tc:-0}" "tout+=${tout:-0}" "secs+=$(( $(now) - t0 ))" >/dev/null
     [ -z "$SID" ] && [ -n "$sid" ] && SID="$sid"
     if [ "$rc" -ne 0 ] && tail -c +$((sz+1)) "$lg" | tail -n 60 | grep -qiE 'rate.?limit|usage limit|quota|try again (later|in)'; then
       tries=$((tries+1)); say "$u $label: rate-limit message from Codex (try $tries)"
@@ -241,11 +241,11 @@ fixup_once() {
   { printf 'TASK: fixup. This is the one final fixup round after %s failed. Read the pack. You may edit owned test files only when the test contradicts the C# oracle; cite the exact C# file and test in your final message and list every changed Rust test function. Never weaken tests, reduce test functions/assert macro occurrences, or add #[ignore]. You may fix rustfmt-only test formatting. If the implementation is wrong, fix owned source. Tail (<= 60 lines):\n\n```\n' "$phase"; printf '%s\n' "$err" | tail -n 60; printf '```\n'; } > "$pf"
   codex_call "$wt" "$pf" "$u" fixup || return 1
   printf '%s\n' "${OWN[@]}" > "$LOGDIR/$u.owned.txt"
-  $LIB testguard "$wt" "$base" "$LOGDIR/$u.owned.txt" relaxed > "$LOGDIR/$u.fixup-guard.txt" 2>&1 || return 1
-  $LIB fixupreport "$wt" "$base" "$LOGDIR/$u.owned.txt" "$wt/.codex-last-message.txt" "$LOGDIR/$u.fixup-tests.txt" > "$LOGDIR/$u.fixup-report.txt" 2>&1 || return 1
+  "${LIB[@]}" testguard "$wt" "$base" "$LOGDIR/$u.owned.txt" relaxed > "$LOGDIR/$u.fixup-guard.txt" 2>&1 || return 1
+  "${LIB[@]}" fixupreport "$wt" "$base" "$LOGDIR/$u.owned.txt" "$wt/.codex-last-message.txt" "$LOGDIR/$u.fixup-tests.txt" > "$LOGDIR/$u.fixup-report.txt" 2>&1 || return 1
   changed="$(cat "$LOGDIR/$u.fixup-tests.txt")"
   [ -n "$changed" ] || changed="none"
-  $LIB supd "$STATE" "$u" "fixup=1" "fixup_tests=$changed" >/dev/null
+  "${LIB[@]}" supd "$STATE" "$u" "fixup=1" "fixup_tests=$changed" >/dev/null
   FIXUP_GUARD=1
   return 0
 }
@@ -262,7 +262,7 @@ run_mutants() {
   budget="${MUTANTS_TIMEOUT:-$([ "$tier" = red ] && echo "${MUT_BUDGET_RED:-1800}" || echo "${MUT_BUDGET_YELLOW:-900}")}"
   left=$((budget - MUT_USED))
   if [ "$left" -lt 30 ]; then BUDGET_HIT=1; MUT_NOTE="mutants budget (${budget}s) exhausted"; return; fi
-  ta="$($LIB testargs "$wt" "$wt/contracts/$u.md" | tr -d '\r')"
+  ta="$("${LIB[@]}" testargs "$wt" "$wt/contracts/$u.md" | tr -d '\r')"
   [ -n "$ta" ] || { MUT_NOTE="mutants skipped (unit has no own test binaries)"; return; }
   # Only cargo selectors (--test X, --lib) go here and ignored tests stay skipped. A libtest flag (--include-ignored, --test-threads) needs
   # "--cargo-test-arg=--" in front of it, else cargo rejects it and --baseline skip reports every mutant caught (AUDIT-MUTATION-FLAG-2026-10-30).
@@ -271,7 +271,7 @@ run_mutants() {
   ( cd "$wt" && git add -A -- . ':!.codex-*' && git diff --cached HEAD -- "${SRCS[@]}" > "$LOGDIR/$u.diff" )
   [ -s "$LOGDIR/$u.diff" ] || { MUT_NOTE="mutants skipped (empty diff)"; return; }
   if [ -n "$only" ] && [ -s "$LOGDIR/$u.survivors.txt" ]; then
-    cp "$LOGDIR/$u.survivors.txt" "$LOGDIR/$u.survivors.prev"; FARG=(-F "$($LIB mutregex "$LOGDIR/$u.survivors.prev" | tr -d '\r')")
+    cp "$LOGDIR/$u.survivors.txt" "$LOGDIR/$u.survivors.prev"; FARG=(-F "$("${LIB[@]}" mutregex "$LOGDIR/$u.survivors.prev" | tr -d '\r')")
   fi
   rm -rf "$d"; t0=$(now)
   # Dedicated mutants target dir (never the unit's own: mutant builds must not leak into the real worktree's artifacts), reused across units.
@@ -279,7 +279,7 @@ run_mutants() {
       --timeout "${MUT_TEST_TIMEOUT:-90}" -j "$MUT_JOBS" --no-shuffle --output "$d" "${MUT_EXCLUDE[@]}" "${CTA[@]}" "${FARG[@]}" ) > "$LOGDIR/$u.mutants.log" 2>&1 </dev/null
   rc=$?; MUT_USED=$((MUT_USED + $(now) - t0))
   case "$rc" in 0|2|3) ;; 124) BUDGET_HIT=1; MUT_NOTE="mutants budget (${budget}s) exhausted, partial result";; *) MUT_NOTE="mutants exit $rc"; SURV=-1; return;; esac
-  read -r k sv un to bg < <($LIB mutstat "$d" | tr -d '\r')
+  read -r k sv un to bg < <("${LIB[@]}" mutstat "$d" | tr -d '\r')
   : > "$LOGDIR/$u.survivors.txt"; [ -f "$d/mutants.out/missed.txt" ] && cp "$d/mutants.out/missed.txt" "$LOGDIR/$u.survivors.txt"
   KILLED=$((KILLED + k)); SURV=$sv
   if [ -n "$only" ]; then BUDG=$((BUDG + bg)); else BUDG=$bg; fi
@@ -291,9 +291,9 @@ run_mutants() {
 # fail_unit <unit> <wt> <reason> [error-file]: marks the unit failed and writes the (<= 3 KB) needs-claude triage note.
 fail_unit() {
   local u="$1" wt="$2" why="$3" ef="${4:-}"
-  $LIB triage "$NEEDS/$u.md" "$u" "$why" "$ef" "$wt" "$wt/.codex-last-message.txt" >/dev/null 2>&1
-  $LIB sset "$STATE" "$u" failed "$why; triage: $NEEDS/$u.md; worktree kept: $wt" >/dev/null
-  $LIB supd "$STATE" "$u" "secs=$(( $(now) - UNIT_T0 ))" >/dev/null
+  "${LIB[@]}" triage "$NEEDS/$u.md" "$u" "$why" "$ef" "$wt" "$wt/.codex-last-message.txt" >/dev/null 2>&1
+  "${LIB[@]}" sset "$STATE" "$u" failed "$why; triage: $NEEDS/$u.md; worktree kept: $wt" >/dev/null
+  "${LIB[@]}" supd "$STATE" "$u" "secs=$(( $(now) - UNIT_T0 ))" >/dev/null
 }
 
 with_merge_lock() { # one lock per integration branch
@@ -344,7 +344,7 @@ reset_unit() {
     git -C "$REPO" branch -D "$br" >>"$LOGDIR/$u.log" 2>&1
   fi
   rm -f "$NEEDS/$u.md"
-  $LIB sreset "$STATE" "$u" >/dev/null
+  "${LIB[@]}" sreset "$STATE" "$u" >/dev/null
 }
 
 # red_check <unit> <wt> <crate>: 0 = the owned test files exist, only they changed, compile (`cargo test --no-run`) and every failing
@@ -359,11 +359,11 @@ red_check() {
     case "$f" in */tests/*) ;; *) bad="$bad$f (not a test file: red tests must not touch src)"$'\n';; esac
   done < <(cd "$wt" && git status --porcelain -uall | sed -e 's/^...//' -e 's/.* -> //' -e 's/^"//' -e 's/"$//')
   if [ -n "$bad" ]; then printf 'Files changed that are not owned test files (revert them):\n%s' "$bad"; return 1; fi
-  ta="$($LIB testargs "$wt" "$wt/contracts/$u.md" | tr -d '\r')"
+  ta="$("${LIB[@]}" testargs "$wt" "$wt/contracts/$u.md" | tr -d '\r')"
   [ -n "$ta" ] || { echo "No owned test file exists yet: create the owned files under tests/."; return 1; }
   ( cd "$wt" && cargo test -p "$crate" $ta --no-run ) > "$T" 2>&1 </dev/null || { echo "RED TESTS DO NOT COMPILE (cargo test -p $crate $ta --no-run):"; grep -vE '^\s*(Compiling|Finished|Blocking|Fresh|Downloaded)' "$T" | tail -n 55; return 1; }
   ( cd "$wt" && timeout "${RED_RUN_TIMEOUT:-900}" cargo test -p "$crate" $ta --no-fail-fast ) > "$T" 2>&1 </dev/null
-  out="$($LIB redcheck "$T" 2>&1)" || { printf '%s\n' "$out" | tail -n 40; return 1; }
+  out="$("${LIB[@]}" redcheck "$T" 2>&1)" || { printf '%s\n' "$out" | tail -n 40; return 1; }
   return 0
 }
 # red_loop <unit> <wt> <crate>: red_check with up to 3 Codex repair rounds on the same session. Sets RED_ERR when it gives up.
@@ -395,14 +395,14 @@ run_unit() {
   # the Codex sandbox may write only to its cwd (per-workspace SID, an ACL grant on a shared dir does not work): per-unit target INSIDE the worktree
   export CARGO_TARGET_DIR="$wt/target"
   c="$wt/contracts/$u.md"; [ -f "$c" ] || { fail_unit "$u" "$wt" "no contract $c"; return 1; }
-  mapfile -t OWN < <($LIB owned "$c" | tr -d '\r')
+  mapfile -t OWN < <("${LIB[@]}" owned "$c" | tr -d '\r')
   [ "${#OWN[@]}" -gt 0 ] || { fail_unit "$u" "$wt" "contract lists no owned files"; return 1; }
   crate="$(printf '%s\n' "${OWN[@]}" | grep -m1 '^crates/' | cut -d/ -f2)"; CUR_CRATE="$crate"
   [ -n "$crate" ] || { fail_unit "$u" "$wt" "cannot derive crate"; return 1; }
-  tier="$($LIB tier "$PLAN" "$u" | tr -d '\r')"; $LIB supd "$STATE" "$u" "tier=$tier" >/dev/null
+  tier="$("${LIB[@]}" tier "$PLAN" "$u" | tr -d '\r')"; "${LIB[@]}" supd "$STATE" "$u" "tier=$tier" >/dev/null
   # the pack is built exactly once per unit and sent only in the first Codex call; later calls resume the session
   packout="$(bash "$SELF/codex-pack.sh" "$u" "$wt" 2>>"$LOGDIR/$u.log")" || { fail_unit "$u" "$wt" "pack failed"; return 1; }
-  pb="$(printf '%s' "$packout" | sed -n 's/.*(\([0-9]*\) bytes).*/\1/p' | tail -1)"; $LIB supd "$STATE" "$u" "pack_bytes=${pb:-0}" >/dev/null
+  pb="$(printf '%s' "$packout" | sed -n 's/.*(\([0-9]*\) bytes).*/\1/p' | tail -1)"; "${LIB[@]}" supd "$STATE" "$u" "pack_bytes=${pb:-0}" >/dev/null
   say "$u: pack ${pb:-?} bytes, mutation tier $tier"
 
   for f in "${OWN[@]}"; do case "$f" in */tests/*) [ -f "$wt/$f" ] && has_t=1;; esac; done
@@ -497,13 +497,13 @@ run_unit() {
     fail_unit "$u" "$wt" "merge into $IBR conflicted; branch $br kept"; return 1
   fi
   usage_call fresh; quota_used; pct1="$QUSED"
-  [ -n "$pct0" ] && [ -n "$pct1" ] && $LIB supd "$STATE" "$u" "pct=$(awk -v a="$pct0" -v b="$pct1" 'BEGIN{d=b-a; if(d<0)d=0; print d}')" >/dev/null
+  [ -n "$pct0" ] && [ -n "$pct1" ] && "${LIB[@]}" supd "$STATE" "$u" "pct=$(awk -v a="$pct0" -v b="$pct1" 'BEGIN{d=b-a; if(d<0)d=0; print d}')" >/dev/null
   local mn="${MUT_NOTE:-}"; [ "$BUDGET_HIT" = 1 ] && [ -z "$mn" ] && mn="mutants budget exhausted"
-  [ "$tier" != skip ] && $LIB supd "$STATE" "$u" "killed=$KILLED" "budgeted=$BUDG" >/dev/null
-  $LIB supd "$STATE" "$u" "secs=$(( $(now) - UNIT_T0 ))" >/dev/null
-  if [ "$SURV" -gt 0 ]; then $LIB sset "$STATE" "$u" partial "$SURV surviving mutants${mn:+; $mn}" "$SURV" >/dev/null
-  elif [ "$BUDGET_HIT" = 1 ]; then $LIB sset "$STATE" "$u" partial "${mn:-mutants budget exhausted}" 0 >/dev/null
-  else $LIB sset "$STATE" "$u" done "$mn" 0 >/dev/null; fi
+  [ "$tier" != skip ] && "${LIB[@]}" supd "$STATE" "$u" "killed=$KILLED" "budgeted=$BUDG" >/dev/null
+  "${LIB[@]}" supd "$STATE" "$u" "secs=$(( $(now) - UNIT_T0 ))" >/dev/null
+  if [ "$SURV" -gt 0 ]; then "${LIB[@]}" sset "$STATE" "$u" partial "$SURV surviving mutants${mn:+; $mn}" "$SURV" >/dev/null
+  elif [ "$BUDGET_HIT" = 1 ]; then "${LIB[@]}" sset "$STATE" "$u" partial "${mn:-mutants budget exhausted}" 0 >/dev/null
+  else "${LIB[@]}" sset "$STATE" "$u" done "$mn" 0 >/dev/null; fi
   git -C "$REPO" worktree remove --force "$wt" >/dev/null 2>&1
   return 0
 }
@@ -516,16 +516,16 @@ if [ ! -d "$INT" ]; then
   else git -C "$REPO" worktree add -q -b "$IBR" "$INT" origin/master; fi || { echo "cannot create integration worktree" >&2; exit 1; }
 fi
 PLAN="$INT/$PLAN_REL"
-mapfile -t ORDER < <($LIB order "$PLAN" "$BATCH" "$ONLY" | tr -d '\r')
+mapfile -t ORDER < <("${LIB[@]}" order "$PLAN" "$BATCH" "$ONLY" | tr -d '\r')
 say "pipeline $TAG: ${#ORDER[@]} units, integration $IBR, jobs $JOBS"
 # units already merged on the integration branch (merge commits since origin/master, e.g. "Merge W8-04a (Codex pipeline)" or
 # "merge(W8-15c)") are marked done, so no seeded state file is needed after a restart or a manual merge
 MERGED_ON_IBR="$(git -C "$REPO" log --merges --format=%s origin/master.."$IBR" 2>/dev/null | grep -oE 'W[0-9]+-[0-9]+[a-z]+|W9-[A-Z][0-9]+' | sort -u)"
 for l in "${ORDER[@]}"; do
   u="${l%%$'\t'*}"
-  if [ -n "$REDO" ] && case "$REDO" in *",$u,"*) true;; *) false;; esac; then $LIB sset "$STATE" "$u" failed "redo requested" 0 >/dev/null; say "$u: redo requested, state reset"; continue; fi
-  case "$($LIB sget "$STATE" "$u")" in done|partial) continue;; esac
-  if printf '%s\n' "$MERGED_ON_IBR" | grep -qxF "$u"; then $LIB sset "$STATE" "$u" done "already merged on $IBR" 0 >/dev/null; say "$u: found merged on $IBR, marked done"; fi
+  if [ -n "$REDO" ] && case "$REDO" in *",$u,"*) true;; *) false;; esac; then "${LIB[@]}" sset "$STATE" "$u" failed "redo requested" 0 >/dev/null; say "$u: redo requested, state reset"; continue; fi
+  case "$("${LIB[@]}" sget "$STATE" "$u")" in done|partial) continue;; esac
+  if printf '%s\n' "$MERGED_ON_IBR" | grep -qxF "$u"; then "${LIB[@]}" sset "$STATE" "$u" done "already merged on $IBR" 0 >/dev/null; say "$u: found merged on $IBR, marked done"; fi
 done
 
 # ---------------------------------------------------------------- scheduler (independent units concurrently, <= JOBS)
@@ -539,7 +539,7 @@ reap() {
     p="${SLOTPID[$i]}"
     if [ -n "$p" ] && ! kill -0 "$p" 2>/dev/null; then
       wait "$p" 2>/dev/null; unset "LIVE[${SLOTU[$i]}]"
-      say "${SLOTU[$i]}: $($LIB sget "$STATE" "${SLOTU[$i]}") $($LIB sfield "$STATE" "${SLOTU[$i]}" note | tr -d '\r')"
+      say "${SLOTU[$i]}: $("${LIB[@]}" sget "$STATE" "${SLOTU[$i]}") $("${LIB[@]}" sfield "$STATE" "${SLOTU[$i]}" note | tr -d '\r')"
       SLOTPID[$i]=""; running=$((running-1))
     fi
   done
@@ -551,22 +551,22 @@ while :; do
   REMAIN=(); started=0
   for l in "${PENDING[@]}"; do
     u="${l%%$'\t'*}"; deps="${l#*$'\t'}"
-    case "$($LIB sget "$STATE" "$u")" in done|partial) say "$u: already merged ($($LIB sget "$STATE" "$u")), skipping"; unset "LIVE[$u]"; continue;; esac
+    case "$("${LIB[@]}" sget "$STATE" "$u")" in done|partial) say "$u: already merged ($("${LIB[@]}" sget "$STATE" "$u")), skipping"; unset "LIVE[$u]"; continue;; esac
     bad=""; waitdep=0
     for d in ${deps//,/ }; do
       if [ -n "${LIVE[$d]:-}" ]; then waitdep=1; continue; fi
-      ds="$($LIB sget "$STATE" "$d")"
+      ds="$("${LIB[@]}" sget "$STATE" "$d")"
       case "$ds" in done|partial) ;; *) bad="$d (${ds:-not run})";; esac
     done
-    if [ -n "$bad" ]; then $LIB sset "$STATE" "$u" skipped "dependency $bad is not merged" >/dev/null; say "$u: skipped, dependency $bad"; unset "LIVE[$u]"; continue; fi
+    if [ -n "$bad" ]; then "${LIB[@]}" sset "$STATE" "$u" skipped "dependency $bad is not merged" >/dev/null; say "$u: skipped, dependency $bad"; unset "LIVE[$u]"; continue; fi
     if [[ "$u" == W9-* ]]; then
-      extbad=""; while IFS= read -r ed; do [ -n "$ed" ] || continue; missing="$($LIB extsat "$REPO" "$STATE_DIR" "$ed")"; [ -n "$missing" ] && extbad="${extbad:+$extbad, }$missing"; done < <($LIB extdeps "$PLAN" "$u")
-      if [ -n "$extbad" ]; then note="waiting for $extbad (not on master)"; $LIB sset "$STATE" "$u" skipped "$note" >/dev/null; say "$u: skipped, $note"; unset "LIVE[$u]"; continue; fi
+      extbad=""; while IFS= read -r ed; do [ -n "$ed" ] || continue; missing="$("${LIB[@]}" extsat "$REPO" "$STATE_DIR" "$ed")"; [ -n "$missing" ] && extbad="${extbad:+$extbad, }$missing"; done < <("${LIB[@]}" extdeps "$PLAN" "$u")
+      if [ -n "$extbad" ]; then note="waiting for $extbad (not on master)"; "${LIB[@]}" sset "$STATE" "$u" skipped "$note" >/dev/null; say "$u: skipped, $note"; unset "LIVE[$u]"; continue; fi
     fi
     if [ "$waitdep" = 1 ] || [ "$running" -ge "$JOBS" ]; then REMAIN+=("$l"); continue; fi
     # several machines: a unit is claimed through git before it starts (docs/MULTI-MACHINE.md); 1 = another machine holds it, 2 = origin unreachable (go on)
     bash "$SELF/claim.sh" claim "$u" "pipeline $TAG" >>"$LOGDIR/claims.log" 2>&1; crc=$?
-    if [ "$crc" = 1 ]; then $LIB sset "$STATE" "$u" skipped "claimed by $(bash "$SELF/claim.sh" who "$u")" >/dev/null; say "$u: skipped, claimed by another machine"; unset "LIVE[$u]"; continue; fi
+    if [ "$crc" = 1 ]; then "${LIB[@]}" sset "$STATE" "$u" skipped "claimed by $(bash "$SELF/claim.sh" who "$u")" >/dev/null; say "$u: skipped, claimed by another machine"; unset "LIVE[$u]"; continue; fi
     need="$(start_need)"; wait_quota "$need"
     slot="$(free_slot)"; say "$u: start (slot $slot, quota need ${need}%)"
     ( run_unit "$u" "$slot" ) &
@@ -579,9 +579,9 @@ while :; do
 done
 
 # ---------------------------------------------------------------- workspace gate, push, PR
-merged=$($LIB slist "$STATE" | awk -F'\t' '$2=="done"||$2=="partial"' | grep -c .)
-say "telemetry:"; $LIB table "$STATE"
-[ "$merged" -gt 0 ] || { say "no unit merged; nothing to push"; $LIB slist "$STATE"; exit 1; }
+merged=$("${LIB[@]}" slist "$STATE" | awk -F'\t' '$2=="done"||$2=="partial"' | grep -c .)
+say "telemetry:"; "${LIB[@]}" table "$STATE"
+[ "$merged" -gt 0 ] || { say "no unit merged; nothing to push"; "${LIB[@]}" slist "$STATE"; exit 1; }
 export CARGO_TARGET_DIR="$TDB" CARGO_PROFILE_DEV_DEBUG=line-tables-only CARGO_INCREMENTAL=0
 WG="$LOGDIR/workspace-gate-$TAG.log"; WGOK=1
 say "workspace gate on $IBR"
@@ -595,19 +595,19 @@ BODY="$LOGDIR/pr-body-$TAG.md"
   echo "Wave $wave batch $BATCH ported by the Claude-free Codex pipeline (Codex $CODEX_MODEL_NAME, effort $CODEX_EFFORT_NAME). Review the diff before merging."; echo
   echo "Workspace gate (fmt, clippy --workspace -D warnings, test --workspace): $([ $WGOK = 1 ] && echo PASSED || echo '**FAILED**, auto-merge not enabled')"
   if [ $WGOK = 0 ]; then echo '```'; tail -n 40 "$WG"; echo '```'; fi
-  echo; echo "## Telemetry"; $LIB table "$STATE"
+  echo; echo "## Telemetry"; "${LIB[@]}" table "$STATE"
   echo; echo "## Units"
-  $LIB slist "$STATE" | awk -F'\t' '{printf "- %s: **%s**%s\n",$1,$2,($4!=""?" - "$4:"")}'
+  "${LIB[@]}" slist "$STATE" | awk -F'\t' '{printf "- %s: **%s**%s\n",$1,$2,($4!=""?" - "$4:"")}'
   echo; echo "## Surviving mutants (tests missing)"
   any=0
-  for u in $($LIB slist "$STATE" | awk -F'\t' '$2=="partial" && $3>0{print $1}'); do
+  for u in $("${LIB[@]}" slist "$STATE" | awk -F'\t' '$2=="partial" && $3>0{print $1}'); do
     any=1; echo "- $u"; echo '```'; head -n 15 "$LOGDIR/$u.survivors.txt" 2>/dev/null; echo '```'
   done
   [ $any = 0 ] && echo "none"
   echo; echo "## Needs Claude (failed or skipped units)"
-  fl=$($LIB slist "$STATE" | awk -F'\t' '$2=="failed"||$2=="skipped"{printf "- %s: %s - %s\n",$1,$2,$4}')
+  fl=$("${LIB[@]}" slist "$STATE" | awk -F'\t' '$2=="failed"||$2=="skipped"{printf "- %s: %s - %s\n",$1,$2,$4}')
   if [ -n "$fl" ]; then echo "$fl"; else echo "none"; fi
-  for u in $($LIB slist "$STATE" | awk -F'\t' '$2=="failed"{print $1}'); do
+  for u in $("${LIB[@]}" slist "$STATE" | awk -F'\t' '$2=="failed"{print $1}'); do
     [ -f "$NEEDS/$u.md" ] && { echo; echo "<details><summary>$u triage</summary>"; echo; cat "$NEEDS/$u.md"; echo; echo "</details>"; }
   done
   echo; echo "🤖 Generated with [Claude Code](https://claude.com/claude-code)"
@@ -619,4 +619,4 @@ else
   ( cd "$INT" && gh pr create --base master --head "$IBR" --title "feat: Wave $wave $BATCH ported by Codex pipeline ($TAG)" --body-file "$BODY" ) >>"$LOGDIR/pipeline-$TAG.log" 2>&1 || say "gh pr create failed"
 fi
 if [ $WGOK = 1 ]; then ( cd "$INT" && gh pr merge "$IBR" --auto --squash ) >>"$LOGDIR/pipeline-$TAG.log" 2>&1; fi
-say "done. Summary:"; $LIB slist "$STATE"
+say "done. Summary:"; "${LIB[@]}" slist "$STATE"

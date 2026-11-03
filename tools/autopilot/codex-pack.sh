@@ -7,40 +7,40 @@
 set -u
 U="${1:?unit}"; WT="${2:?worktree}"
 SELF="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-LIB="python $SELF/lib/codex-lib.py"
+LIB=(python "$SELF/lib/codex-lib.py")   # array: the path may contain spaces (G16 L8)
 if [ -z "${PLAN_REL:-}" ]; then
   ROOT="$(git -C "$WT" rev-parse --show-toplevel 2>/dev/null)" || ROOT="$(cd "$SELF/../.." && pwd)"
-  PLAN_REL="$(cd "$ROOT" && $LIB planfor "$ROOT" "$U")" || exit 1
+  PLAN_REL="$(cd "$ROOT" && "${LIB[@]}" planfor "$ROOT" "$U")" || exit 1
 fi
 CS_REPO="${CS_REPO:-C:/MyProjects/PhotoReview}"
 pick() { [ -f "$WT/$1" ] && echo "$WT/$1" || echo "$SELF/../../$1"; }
 CONTRACT="$(pick contracts/$U.md)"
 if [[ "$PLAN_REL" = /* ]]; then PLAN="$PLAN_REL"; else PLAN="$(pick "$PLAN_REL")"; fi
 [ -f "$CONTRACT" ] || { echo "codex-pack: no contract for $U" >&2; exit 1; }
-BASE="$($LIB baseline "$CONTRACT" | tr -d '\r')"; BASE="${BASE:-${CS_BASELINE:-d92d6aae}}"
+BASE="$("${LIB[@]}" baseline "$CONTRACT" | tr -d '\r')"; BASE="${BASE:-${CS_BASELINE:-d92d6aae}}"
 csgit() { git -c safe.directory="$CS_REPO" -C "$CS_REPO" "$@"; }
 OUT="$WT/.codex-pack.md"
 LS="$(mktemp)"; csgit ls-tree -r --name-only "$BASE" > "$LS" 2>/dev/null
 {
   echo "# Pack for $U (generated, read-only context; baseline C# $BASE)"
-  echo; echo "## Plan row"; $LIB row "$PLAN" "$U" | tr -d '\r'
+  echo; echo "## Plan row"; "${LIB[@]}" row "$PLAN" "$U" | tr -d '\r'
   echo; echo "## Contract ($U)"; echo; tr -d '\r' < "$CONTRACT"
   echo; echo "## C# source files (git show $BASE:<path>)"
-  for t in $($LIB cs "$CONTRACT" | tr -d '\r'); do
+  for t in $("${LIB[@]}" cs "$CONTRACT" | tr -d '\r'); do
     p=""
     if grep -qxF "$t" "$LS"; then p="$t"; else
       b="$(basename "$t")"; p="$(grep -F "/$b" "$LS" | awk -F/ -v b="$b" '$NF==b' | head -1)"
     fi
     if [ -z "$p" ]; then echo; echo "### $t: NOT FOUND at $BASE (use the rules' git show command if you need it)"; continue; fi
-    echo; echo "### $p"; echo '```csharp'; csgit show "$BASE:$p" 2>/dev/null | $LIB trimcs "${PACK_FILE_CAP:-24000}"; echo '```'
+    echo; echo "### $p"; echo '```csharp'; csgit show "$BASE:$p" 2>/dev/null | "${LIB[@]}" trimcs "${PACK_FILE_CAP:-24000}"; echo '```'
   done
   echo; echo "## Public signatures of the units this unit depends on (from this worktree)"
-  for d in $($LIB deps "$PLAN" "$U" | tr -d '\r'); do
+  for d in $("${LIB[@]}" deps "$PLAN" "$U" | tr -d '\r'); do
     [ -f "$WT/contracts/$d.md" ] || continue
-    for f in $($LIB owned "$WT/contracts/$d.md" | tr -d '\r' | grep '/src/.*\.rs$'); do
+    for f in $("${LIB[@]}" owned "$WT/contracts/$d.md" | tr -d '\r' | grep '/src/.*\.rs$'); do
       [ -f "$WT/$f" ] || continue
       echo; echo "### $d: $f"; echo '```rust'
-      $LIB sigs "$WT/$f"; echo '```'
+      "${LIB[@]}" sigs "$WT/$f"; echo '```'
     done
   done
   echo; echo "## CODEX-RULES.md"; echo; tr -d '\r' < "$SELF/CODEX-RULES.md"

@@ -470,7 +470,7 @@ Bằng chứng, kịch bản và hai PROMPT có phạm vi/lệnh kiểm tra: [re
 | G3, G4, G7, G9, G11, G13, G15, G18 | Còn mở; có phần chồng vùng máy A/B đang claim. Phải kiểm claim đúng unit và bàn giao trước sửa phần đó; không dùng claim REVIEW để chiếm quyền sửa unit |
 | G6, G8 | Quyết định Q3/Q4 đã có P-52; còn implementation. Không hỏi lại quyết định đã chốt |
 | G12, G19 | Hardening/test còn mở; Q1 giữ Fast, Q2 giữ shell flags và thêm waiting notice đã chốt. Không tự đổi mặc định durability |
-| G16 | Script/tooling còn mở; đọc lại phát hiện theo phiên bản thực tế trước sửa và không chạy mutation bin thật |
+| G16 | Script/tooling còn mở (L8 quoting `$LIB` đã sửa trong nhánh fix/g16-l8: 75 chỗ không quote thành mảng `LIB=(python "$SELF/...")` + `"${LIB[@]}"` ở 4 script, ca đường dẫn có dấu cách trong lib-selftest.sh; pipeline-selftest cần cargo-mutants nên chưa chạy xanh trên máy này); đọc lại phát hiện theo phiên bản thực tế trước sửa và không chạy mutation bin thật |
 | G23 | Một phần: comment DIVERGENCE/settings-ui L5 đã sửa trong FIX-G16-G23; còn L3, ba assert cuối test restored-and-edited, L8 (P-73) |
 | G17, G20 | Các đề xuất test/comment chưa được thực hiện bởi PR review. 81 mục test là kế hoạch, không phải 81 test đã chạy; recovery-flow M1 thuộc G17 |
 | G21 | Đã sửa một phần trong #207/#216 (kiểm lại 2026-11-02: không còn câu H1/L6/L7/L9 lạc hậu trong docs; L8 chờ quyết định P-73): facts H1/L9 Survey, L6 no-save khi full, các chữ ký L7 đã đối chiếu, phân công test L10 một phần. Còn scaffold/generator L8 và các mục chưa có bằng chứng hoàn tất. Không giao lại toàn bộ prompt cũ như việc mới |

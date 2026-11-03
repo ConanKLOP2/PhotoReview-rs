@@ -3,7 +3,7 @@
 set -u
 export PATH="$HOME/.cargo/bin:$PATH" PYTHONUTF8=1
 SELF="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-LIB="python $SELF/lib/codex-lib.py"
+LIB=(python "$SELF/lib/codex-lib.py")   # array: the path may contain spaces (G16 L8)
 . "$SELF/lib/unitpr.sh"
 COMMON="$(git -C "$SELF" rev-parse --path-format=absolute --git-common-dir)" || exit 2
 REPO="$(dirname "$COMMON")"
@@ -24,7 +24,7 @@ while [ "$#" -gt 0 ]; do
   esac
 done
 [[ "$UNIT" =~ ^(W[0-9]+-[0-9][0-9][a-z]|W9-[A-Z][0-9]+)$ ]] || usage
-if [ -z "$PLAN_REL" ]; then PLAN_REL="$(cd "$REPO" && $LIB planfor "$REPO" "$UNIT")" || exit 2; fi
+if [ -z "$PLAN_REL" ]; then PLAN_REL="$(cd "$REPO" && "${LIB[@]}" planfor "$REPO" "$UNIT")" || exit 2; fi
 if [ -z "$IBR" ]; then
   if [[ "$UNIT" == W9-* ]]; then IBR="integration/wave9-$(printf '%s' "${UNIT:3:1}" | tr '[:upper:]' '[:lower:]')"; else IBR="integration/wave8-b2"; fi
 fi
@@ -39,11 +39,11 @@ CONTRACT="$SELF/../../contracts/$UNIT.md"
 mkdir -p "$LOGDIR"
 LOG="$LOGDIR/$UNIT.pr.log"
 : > "$LOG"
-mapfile -t OWN < <($LIB owned "$CONTRACT" | tr -d '\r')
+mapfile -t OWN < <("${LIB[@]}" owned "$CONTRACT" | tr -d '\r')
 [ "${#OWN[@]}" -gt 0 ] || { echo "no owned files: $UNIT" >&2; exit 2; }
 CRATE="$(printf '%s\n' "${OWN[@]}" | grep -m1 '^crates/' | cut -d/ -f2)"
 [ -n "$CRATE" ] || { echo "cannot derive crate: $UNIT" >&2; exit 2; }
-ROW="$($LIB row "$PLAN" "$UNIT" | tr -d '\r')" || exit 2
+ROW="$("${LIB[@]}" row "$PLAN" "$UNIT" | tr -d '\r')" || exit 2
 if [[ "$UNIT" == W9-* ]]; then BATCH="${UNIT:3:1}"; else BATCH="$(printf '%s' "$ROW" | awk -F '|' '{gsub(/^[ \t]+|[ \t]+$/, "", $9); print $9}')"; fi
 TITLE="$(printf '%s' "$ROW" | awk -F '|' '{gsub(/^[ \t]+|[ \t]+$/, "", $3); print $3}')"
 TITLE="$(printf '%s' "$TITLE" | sed -E 's/`//g; s/ = [0-9]+.*$//')"
@@ -56,14 +56,14 @@ if ! git -C "$REPO" fetch -q origin >>"$LOG" 2>&1; then
     tail -n 12 "$LOG"; exit 2
   fi
 fi
-for DEP in $($LIB deps "$PLAN" "$UNIT" | tr -d '\r'); do
-  DEP_ROW="$($LIB row "$PLAN" "$DEP" 2>/dev/null || :)"
+for DEP in $("${LIB[@]}" deps "$PLAN" "$UNIT" | tr -d '\r'); do
+  DEP_ROW="$("${LIB[@]}" row "$PLAN" "$DEP" 2>/dev/null || :)"
   [ -n "$DEP_ROW" ] || continue
   if [[ "$DEP" == W9-* ]]; then DEP_BATCH="${DEP:3:1}"; else DEP_BATCH="$(printf '%s' "$DEP_ROW" | awk -F '|' '{gsub(/^[ \t]+|[ \t]+$/, "", $9); print $9}')"; fi
   [ "$DEP_BATCH" = "$BATCH" ] || continue
   DEP_CONTRACT="$SELF/../../contracts/$DEP.md"
   [ -f "$DEP_CONTRACT" ] || { echo "waiting on $DEP (contract missing)"; exit 3; }
-  mapfile -t DEP_OWN < <($LIB owned "$DEP_CONTRACT" | tr -d '\r')
+  mapfile -t DEP_OWN < <("${LIB[@]}" owned "$DEP_CONTRACT" | tr -d '\r')
   for F in "${DEP_OWN[@]}"; do
     case "$F" in crates/*/src/*.rs) ;; *) continue ;; esac
     if ! git -C "$REPO" cat-file -e "origin/master:$F" 2>/dev/null; then
@@ -77,9 +77,9 @@ done
 if [[ "$UNIT" == W9-* ]]; then
   while IFS= read -r DEP; do
     [ -n "$DEP" ] || continue
-    MISSING="$($LIB extsat "$REPO" "$SELF/state" "$DEP")"
+    MISSING="$("${LIB[@]}" extsat "$REPO" "$SELF/state" "$DEP")"
     [ -z "$MISSING" ] || { echo "waiting on $DEP (not on master)"; exit 3; }
-  done < <($LIB extdeps "$PLAN" "$UNIT")
+  done < <("${LIB[@]}" extdeps "$PLAN" "$UNIT")
 fi
 REMOTE_HEAD="$(git -C "$REPO" ls-remote --heads origin "$BR" 2>>"$LOG")" || {
   echo "cannot check remote branch $BR:"; tail -n 12 "$LOG"; exit 2;
@@ -130,7 +130,7 @@ for F in "${OWN[@]}"; do
   if copy_from_ibr "$F"; then COPIED=$((COPIED+1)); fi
 done
 [ "$COPIED" -gt 0 ] || { echo "nothing to copy: no owned file of $UNIT exists on $IBR" >&2; exit 2; }
-TA="$($LIB testargs "$WT" "$CONTRACT" | tr -d '\r')"
+TA="$("${LIB[@]}" testargs "$WT" "$CONTRACT" | tr -d '\r')"
 read -r -a TEST_ARGS <<< "$TA"
 EXTRA=()
 run_tests() {

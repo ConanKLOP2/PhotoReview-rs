@@ -75,5 +75,13 @@ python -I "$LIBPY" sget "$T/state.json" X > /dev/null
 check "state_load keeps a copy of a corrupt state file" '[ "$(cat "$T/state.json.corrupt")" = "{ not json" ]'
 printf '{"foo": 1}' > "$T/state2.json"
 check "state_load tolerates a state without units/meta" '[ -z "$(python -I "$LIBPY" sget "$T/state2.json" X)" ]'
+echo "== G16 L8 library path with a space"
+SP="$T/sp ace"; mkdir -p "$SP/tools" "$SP/wt/contracts"; cp -r "$SRC" "$SP/tools/autopilot"
+{ echo '# W9-S1: spaced'; echo '- Baseline C# `abc1234`.'; echo; echo '## Owned files (the ONLY files the porter may create or modify)'; echo '    crates/demo/src/w9s1.rs'; } > "$SP/wt/contracts/W9-S1.md"
+echo "| W9-S1 | a | b | spaced path row | t | - |" > "$SP/wt/plan.md"
+PLAN_REL=plan.md CS_REPO="$T/no-cs" bash "$SP/tools/autopilot/codex-pack.sh" W9-S1 "$SP/wt" > "$T/sp.out" 2> "$T/sp.err"; rc=$?
+check "codex-pack.sh runs the lib from a directory whose path contains a space" '[ $rc = 0 ] && grep -q "baseline C# abc1234" "$SP/wt/.codex-pack.md" && grep -q "spaced path row" "$SP/wt/.codex-pack.md" && ! grep -q Traceback "$T/sp.err"'
+check "no autopilot script expands the lib command unquoted" '! grep -nE "[$]LIB([^A-Za-z_]|$)" "$SRC"/*.sh'
+
 rm -rf "$T"
 [ "$FAILS" -eq 0 ] && echo "lib-selftest: all passed" || { echo "lib-selftest: $FAILS failed"; exit 1; }
