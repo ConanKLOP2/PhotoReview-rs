@@ -9,10 +9,9 @@ fn cat(json: &str) -> LanguageCatalog {
 }
 
 #[test]
+#[ignore = "needs the C# oracle dump: set ESCAPED_TXT (otherwise this test would pass without checking anything)"]
 fn escape_set_matches_dotnet_unsafe_relaxed_for_every_bmp_char() {
-    let Ok(path) = std::env::var("ESCAPED_TXT") else {
-        return; // needs the .NET oracle dump
-    };
+    let path = std::env::var("ESCAPED_TXT").expect("set ESCAPED_TXT to the .NET oracle dump");
     let text = std::fs::read_to_string(path).unwrap();
     let mut expected = std::collections::BTreeSet::new();
     for line in text.lines() {
@@ -52,10 +51,9 @@ fn escape_set_matches_dotnet_unsafe_relaxed_for_every_bmp_char() {
 }
 
 #[test]
+#[ignore = "needs the C# oracle battery: set NOTES_DIR (otherwise this test would pass without checking anything)"]
 fn read_notes_matches_dotnet_on_battery() {
-    let Ok(dir) = std::env::var("NOTES_DIR") else {
-        return; // needs the .NET oracle battery
-    };
+    let dir = std::env::var("NOTES_DIR").expect("set NOTES_DIR to the .NET oracle battery");
     let dir = std::path::PathBuf::from(dir);
     let mut diffs = Vec::new();
     let mut i = 0;

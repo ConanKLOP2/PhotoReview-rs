@@ -575,7 +575,8 @@ fn drain_keeps_unwritten_entries_when_the_producer_trims_during_the_write() {
 fn use_after_dispose_never_throws() {
     // C#: FileLogLifecycleTests.UseAfterDispose_NeverThrows
     let root = TempRoot::new("filelog-after-dispose");
-    let log = enabled_log(&log_path(&root));
+    let path = log_path(&root);
+    let log = enabled_log(&path);
     log.info("before");
     log.dispose();
 
@@ -586,6 +587,15 @@ fn use_after_dispose_never_throws() {
     log.set_enabled(false);
     log.shutdown();
     log.dispose();
+
+    // Rust-only addition to the C# test (which only checks nothing throws): nothing reaches the file after dispose.
+    let text = read_text(&path);
+    assert!(text.contains("before"), "the entry written before dispose is on disk");
+    assert!(
+        !text.contains("after"),
+        "no entry written after dispose reaches the file"
+    );
+    assert_eq!(text.lines().count(), 1);
 }
 
 #[test]
