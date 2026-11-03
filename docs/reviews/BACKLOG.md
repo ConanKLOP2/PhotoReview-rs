@@ -289,6 +289,7 @@ Kiểm tra: cargo fmt -p pr-core --check && cargo fmt -p pr-app --check; cargo c
 
 ### G20 thêm test: Rename / StalePreview
 - test-strengthening-plan: Rename (W9-R2/R4/R5) chưa có test; họ `StalePreviewOverwriteTests` (17 test C#, hoãn ở contract W8-06c) chưa có bản Rust; chỉ có bản ngẫu nhiên 5 seed ở `presenter_present_a.rs:1278`. Làm sau khi stub W9-R tương ứng có thân thật; trước đó chỉ test tên đích bị chiếm/lược đồ journal ở mức contract.
+- Cập nhật 2026-11-03 (nhánh `test/g20-stale`, đã kiểm bằng cách đọc `tests/PhotoReview.App.Tests/Coordinators/StalePreviewOverwriteTests.cs` ở baseline 7eaee2a2): họ `StalePreviewOverwriteTests` có đúng 17 test C#; 12 đã có bản Rust từ trước (`g19_stale_preview.rs` 3, `g19_stale_preview2.rs` 9) và 5 còn thiếu được port trong `crates/pr-app/tests/g20_stale_preview3.rs`: `Burst_TwoFiles_EveryThumbnailAndPreviewOrder` (40 thứ tự vét cạn), `Burst_ThreeFilesWithThumbnails_SeededSampleOfOrders` (12 mẫu, xorshift cố định vì không tái tạo được `System.Random`), `JoinedPreloadDecodes_FinishingInReverseOrder`, `PostPresentStat_OfASupersededNavigation_FinishingLate` và `HeaderReadFinishingLate_OfASupersededNavigation` (kèm một test Rust thêm cho ca đọc header về muộn khi điều hướng mới còn đang tải). Họ StalePreview vì vậy đủ 17/17. Phần Rename (W9-R2/R4/R5) CHƯA làm và vẫn mở. Chi tiết và bằng chứng đỏ: xem commit.
 
 **PROMPT Codex G20**
 ```
