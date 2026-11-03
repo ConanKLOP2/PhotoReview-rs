@@ -22,6 +22,12 @@ const NLS_DIFFERENT_CULTURES: [&str; 4] = ["fa", "fa-IR", "ar", "ru"];
 /// Cultures whose only NLS/ICU difference is the negative form (U+2212 or a bidi mark in the golden, `-%n` for tr); positive ratios match.
 const NLS_DIFFERENT_NEGATIVE_CULTURES: [&str; 5] = ["tr", "sv", "fi", "nb", "he"];
 
+/// Newer Windows NLS builds use U+202F (narrow no-break space) as the French group separator where the .NET ICU data of the golden has U+00A0; the number part is produced by
+/// GetNumberFormatEx and is not part of P-92, so the two are compared as equal (seen on the windows-latest runner for fr and fr-CH with ratios of 1000% and more).
+fn same_text(actual: &str, expected: &str) -> bool {
+    actual.replace('\u{202f}', "\u{a0}") == expected.replace('\u{202f}', "\u{a0}")
+}
+
 fn user_locale_name() -> Option<String> {
     let mut locale = [0u16; 85];
     // SAFETY: the output buffer is live and has the documented locale-name maximum capacity.
@@ -60,7 +66,8 @@ fn mismatches_where(culture: &str, include_negative_zero: bool) -> Vec<String> {
             }
             let actual = formatter.percent_one_decimal(ratio);
             let expected = str_of(case, "text");
-            (actual != expected).then(|| format!("{culture} ratio {ratio}: rust {actual:?} vs C# {expected:?}"))
+            (!same_text(&actual, expected))
+                .then(|| format!("{culture} ratio {ratio}: rust {actual:?} vs C# {expected:?}"))
         })
         .collect()
 }
@@ -117,7 +124,7 @@ fn percent_one_decimal_matches_csharp_for_every_golden_ratio() {
         compared += 1;
         let actual = percent_one_decimal_for_locale(culture, ratio);
         let expected = str_of(case, "text");
-        if actual != expected {
+        if !same_text(&actual, expected) {
             diffs.push(format!("{culture} ratio {ratio}: rust {actual:?} vs C# {expected:?}"));
         }
     }
