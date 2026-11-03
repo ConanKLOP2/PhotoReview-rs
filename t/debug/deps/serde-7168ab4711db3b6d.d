@@ -1,0 +1,14 @@
+C:/Users/PC/Projects/PhotoReview-rs/.claude/worktrees/undo-sync/t\debug\deps\serde-7168ab4711db3b6d.d: C:\Users\PC\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.229\src\lib.rs C:\Users\PC\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.229\src\integer128.rs C:\Users\PC\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.229\src\private\mod.rs C:\Users\PC\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.229\src\private\de.rs C:\Users\PC\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.229\src\private\ser.rs C:/Users/PC/Projects/PhotoReview-rs/.claude/worktrees/undo-sync/t\debug\build\serde-3d6d6fd7eef2aaf9\out/private.rs
+
+C:/Users/PC/Projects/PhotoReview-rs/.claude/worktrees/undo-sync/t\debug\deps\libserde-7168ab4711db3b6d.rlib: C:\Users\PC\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.229\src\lib.rs C:\Users\PC\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.229\src\integer128.rs C:\Users\PC\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.229\src\private\mod.rs C:\Users\PC\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.229\src\private\de.rs C:\Users\PC\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.229\src\private\ser.rs C:/Users/PC/Projects/PhotoReview-rs/.claude/worktrees/undo-sync/t\debug\build\serde-3d6d6fd7eef2aaf9\out/private.rs
+
+C:/Users/PC/Projects/PhotoReview-rs/.claude/worktrees/undo-sync/t\debug\deps\libserde-7168ab4711db3b6d.rmeta: C:\Users\PC\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.229\src\lib.rs C:\Users\PC\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.229\src\integer128.rs C:\Users\PC\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.229\src\private\mod.rs C:\Users\PC\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.229\src\private\de.rs C:\Users\PC\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.229\src\private\ser.rs C:/Users/PC/Projects/PhotoReview-rs/.claude/worktrees/undo-sync/t\debug\build\serde-3d6d6fd7eef2aaf9\out/private.rs
+
+C:\Users\PC\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.229\src\lib.rs:
+C:\Users\PC\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.229\src\integer128.rs:
+C:\Users\PC\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.229\src\private\mod.rs:
+C:\Users\PC\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.229\src\private\de.rs:
+C:\Users\PC\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\serde-1.0.229\src\private\ser.rs:
+C:/Users/PC/Projects/PhotoReview-rs/.claude/worktrees/undo-sync/t\debug\build\serde-3d6d6fd7eef2aaf9\out/private.rs:
+
+# env-dep:OUT_DIR=C:/Users/PC/Projects/PhotoReview-rs/.claude/worktrees/undo-sync/t\\debug\\build\\serde-3d6d6fd7eef2aaf9\\out

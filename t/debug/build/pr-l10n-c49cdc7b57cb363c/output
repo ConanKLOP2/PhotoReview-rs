@@ -1,0 +1,3 @@
+cargo:rerun-if-changed=build.rs
+cargo:rerun-if-changed=build/keygen.rs
+cargo:rerun-if-changed=../../assets/languages/en.json
