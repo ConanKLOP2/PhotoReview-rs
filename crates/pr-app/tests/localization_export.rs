@@ -634,7 +634,7 @@ fn export_identical_rewrite_creates_no_backup() {
 // new: golden. Every case of the oracle run is replayed byte for byte.
 fn golden_translation_export() {
     let golden = golden::load("translation-export");
-    assert_eq!(golden.csharp_commit, "b684776786176f886086378f59d39710c9cc31ee");
+    assert_eq!(golden.csharp_commit, "e7c2fcd86900d3406e1a0e643c43d5899b7d7a56");
     assert_eq!(golden.cases.len(), 39);
 
     for case in &golden.cases {

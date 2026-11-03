@@ -1,6 +1,6 @@
 {
   "generator": "oracle-cs l10n-localizer",
-  "csharp_commit": "b684776786176f886086378f59d39710c9cc31ee",
+  "csharp_commit": "e7c2fcd86900d3406e1a0e643c43d5899b7d7a56",
   "cases": [
     {
       "id": "shipped-english-alone-has-no-warnings",
@@ -214,6 +214,7 @@
           "core.dragDrop.noValidInput",
           "core.dragDrop.onlyFirstFolder",
           "core.dragDrop.unsupportedIgnored",
+          "core.duplicate.fileChanged",
           "core.fileAction.busy",
           "core.fileAction.destinationExists",
           "core.fileAction.destinationOutsideSource",
@@ -1364,6 +1365,7 @@
           "core.dragDrop.noValidInput",
           "core.dragDrop.onlyFirstFolder",
           "core.dragDrop.unsupportedIgnored",
+          "core.duplicate.fileChanged",
           "core.fileAction.busy",
           "core.fileAction.destinationExists",
           "core.fileAction.destinationOutsideSource",
@@ -2479,6 +2481,7 @@
           "core.dragDrop.noValidInput",
           "core.dragDrop.onlyFirstFolder",
           "core.dragDrop.unsupportedIgnored",
+          "core.duplicate.fileChanged",
           "core.fileAction.busy",
           "core.fileAction.destinationExists",
           "core.fileAction.destinationOutsideSource",
@@ -3555,6 +3558,7 @@
           "core.dragDrop.noValidInput",
           "core.dragDrop.onlyFirstFolder",
           "core.dragDrop.unsupportedIgnored",
+          "core.duplicate.fileChanged",
           "core.fileAction.busy",
           "core.fileAction.destinationExists",
           "core.fileAction.destinationOutsideSource",

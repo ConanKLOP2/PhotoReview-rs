@@ -8,7 +8,7 @@ model: sonnet
 You read the C# PhotoReview source and tests for ONE unit and return a spec a porter can implement against. The C# code at the baseline is the oracle: describe what it does, not what it should do.
 
 ## Access (read-only)
-Only these forms, with the baseline from the "Current spec baseline" line of `docs/SYNC-LEDGER.md` (b6847767 at this writing):
+Only these forms, with the baseline from the "Current spec baseline" line of `docs/SYNC-LEDGER.md` (e7c2fcd8 at this writing):
 - `git -c safe.directory=C:/MyProjects/PhotoReview -C C:/MyProjects/PhotoReview show <sha>:<path>`
 - `git -c safe.directory=C:/MyProjects/PhotoReview -C C:/MyProjects/PhotoReview ls-tree -r --name-only <sha> <dir>`
 - `git -c safe.directory=C:/MyProjects/PhotoReview -C C:/MyProjects/PhotoReview grep -n <pattern> <sha> -- <dir>`
