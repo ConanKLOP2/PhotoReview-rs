@@ -22,5 +22,20 @@ cb claim U1 >/dev/null; rc=$?; check "H1: B claims U1 after A released (no ghost
 check "H1: who U1 is B" "[ \"\$(ca who U1)\" = B ]"
 cb release U1 >/dev/null
 check "H1: A's local copy has no ghost ref after release" "[ -z \"\$(ca who U1)\" ] && [ -z \"\$(git -C $T/A for-each-ref refs/claims/)\" ]"
+# release safety: another machine's claim is refused without --force, stays on origin, and --force removes it
+ca claim U2 >/dev/null
+cb release U2 >/dev/null; rc=$?
+check "release: B is refused (exit 1) for A's claim" "[ $rc -eq 1 ]"
+check "release: A's claim survives the refused release" "[ \"\$(cb who U2)\" = A ]"
+cb release U2 --force >/dev/null
+check "release --force: the claim is gone for both machines" "[ -z \"\$(cb who U2)\" ] && [ -z \"\$(ca who U2)\" ]"
+# gc on the fake origin only (never the real one). Only behaviour that is not an open policy question (P-88, P-89) is checked:
+# --fixed-strings (M4) and a fresh claim that no master commit mentions is kept.
+git -C "$T/A" -c user.name=t -c user.email=t@e.com commit -q --allow-empty -m "feat(UX1): unrelated unit"
+git -C "$T/A" push -q origin HEAD:refs/heads/master
+ca claim U.1 >/dev/null; ca claim LIVE-7 >/dev/null
+ca gc >/dev/null 2>&1
+check "gc: regex look-alike U.1 is not freed by a commit that only says UX1 (--fixed-strings)" "[ \"\$(ca who U.1)\" = A ]"
+check "gc: a fresh claim that no master commit mentions is kept" "[ \"\$(ca who LIVE-7)\" = A ]"
 rm -rf "$T"
 [ "$FAILS" -eq 0 ] && echo "claim-selftest: all passed" || { echo "claim-selftest: $FAILS failed"; exit 1; }
