@@ -1,7 +1,7 @@
 # Sync ledger (C# → Rust)
 
-**Current spec baseline:** C# `master` at `b6847767` (full `b684776786176f886086378f59d39710c9cc31ee`, after #537), version line 2.0.N.
-Assets synced from that commit: see `assets/SYNC-MANIFEST.txt`. Goldens: see "Oracle diff, 7eaee2a2 to b6847767" (only `l10n-generator`, `l10n-localizer` and `translation-export` were regenerated; every other golden keeps `csharp_commit` `7eaee2a2`, its cases are unchanged).
+**Current spec baseline:** C# `master` at `e7c2fcd8` (full `e7c2fcd86900d3406e1a0e643c43d5899b7d7a56`, after #538), version line 2.0.N.
+Assets synced from that commit: see `assets/SYNC-MANIFEST.txt`. Goldens: see "Oracle diff, b6847767 to e7c2fcd8" (only `l10n-generator`, `l10n-localizer` and `translation-export` were regenerated; every other golden keeps its old `csharp_commit`, its cases are unchanged; `recovery-retry` changed in the oracle but is deliberately not committed until D1 is ported, see P-190).
 
 ## How to advance the baseline
 
@@ -33,7 +33,10 @@ Assets synced from that commit: see `assets/SYNC-MANIFEST.txt`. Goldens: see "Or
 | `02aaee0a` (#532) | Language convention documentation | No | Reference only | — |
 | `7eaee2a2` (#533) | Unknown `Operation` in typed/imported action list is a JSON error; config loader remains lenient | Yes | Rust action-list parser checked against the regenerated golden; config loader parity tracked separately (`D-actions-unknown-operation`). Qualification: C# `LenientEnumConverter.TryReadStrict` also accepts a defined number encoded as a string, while the Rust action-list reader accepts defined JSON numbers but not numeric strings; matching that input is still open | baseline lane (#182) |
 | `1cd6e375` (#536) | Rust-port decision fragments RP-GATE-END-01, RP-JOURNAL-NOTICE-01, RP-SETTINGS-BACKUP-01 and entries in `OPEN-DECISIONS.md` (docs only) | No | Docs only, N/A. The Rust side of the same questions is tracked in `docs/PROPOSED-DECISIONS.md` (P-71, P-72, P-84) | — |
-| `b6847767` (#537) | `FileActionController` logs and shows the status text `status.actionJournalNotSaved` when a successful Move/Copy/Recycle was not journaled (`JournalPersisted` false); new key in `en.json`, `en.notes.json`, `vi.json`; new C# test file `FileActionControllerJournalNoticeTests.cs` | Yes (status bar text; nothing new on disk) | Catalog synced; Rust log + notice pending (P-72, separate PR) | this sync PR (catalog); P-72 PR (behaviour) |
+| `b6847767` (#537) | `FileActionController` logs and shows the status text `status.actionJournalNotSaved` when a successful Move/Copy/Recycle was not journaled (`JournalPersisted` false); new key in `en.json`, `en.notes.json`, `vi.json`; new C# test file `FileActionControllerJournalNoticeTests.cs` | Yes (status bar text; nothing new on disk) | Catalog synced; Rust log + notice ported (P-72 C / P-84 A) | #591 (catalog); #592 (behaviour) |
+| `6bb0d706` (#534, D1) | `RecoveryRetryService` re-stats each group Recycle member right before the mutation on retry; a changed or missing file fails as `core.recovery.sourceChanged`. Oracle `recovery-retry` gains `stat` calls in its call log (several cases) | Yes (retry of a group Recycle) | NOT ported: `pr-core` `recovery_retry` still pre-checks only. Regenerated golden NOT committed (the replay test would go red); tracked as P-190 | follow-up PR |
+| `770f355d` (#535, D2) | `DuplicateCleanupController` / `DuplicateFinder.FindAsync` re-verify the kept and removed copies right before each recycle; new key `core.duplicate.fileChanged` in the three catalogs | Yes (batch duplicate cleanup) | Catalog synced; behaviour NOT ported in `pr_app::coordinators::duplicate_cleanup` (the `duplicates` golden is unchanged, `FindAsync` results are the same); tracked as P-191 | catalog: this sync PR; behaviour: follow-up PR |
+| `e7c2fcd8` (#538) | `FileActionController`: a late SINGLE result whose journal line was not saved calls `_undoService?.Register(singleResult)` before showing `status.actionJournalNotSaved` (it skipped Undo before). New C# test `SingleMove_JournalNotPersistedAfterFolderSwitch_IsStillRegisteredForUndoAndTheNoticeIsShown` | Yes (Ctrl+Z after a folder switch) | Ported in this PR (`file_action_journal_notice`, 10 fake tests); the Rust port of #537 had mirrored the old skip (PR #592), now removed | this PR |
 
 ## G-INPUT input-scripts (note, 2026-10-29)
 
@@ -79,6 +82,18 @@ External editor list reconciliation/migration is W9-E1; dialogs and the remainin
 ## W9-E8 supports replay extension (2026-10-25, machine A)
 
 At unchanged spec baseline7eaee2a2, added six ExternalEditors supports/router cases for settings_enabled true/false/default and regenerated `secondary-window-supports` with `tools/oracle.ps1 -Command secondary-window-supports -Commit 7eaee2a2`. Output50cases; all44previous case objects remain exactly equal. Existing enum row already lists10kinds. No assets or C# checkout changed. RenamePrompt support cases await W9-R8. Cached C# binaries were verified complete before generation; build0errors/89existing duplicate-type warnings.
+
+## Oracle diff, b6847767 to e7c2fcd8
+
+Range `b6847767..e7c2fcd8` is three commits: #534 (D1, `RecoveryRetryService`), #535 (D2, `DuplicateFinder` + `DuplicateCleanupController` + one catalog key) and #538 (`FileActionController`, no catalog or oracle effect). `tools/sync-from-csharp.ps1` at `e7c2fcd8` changes only `en.json`, `en.notes.json`, `vi.json` (key `core.duplicate.fileChanged`) and `assets/SYNC-MANIFEST.txt`; no fixture changed (the script's emptying of `tests/fixtures/` was undone for the Rust-generated image fixtures). The oracle was run at `e7c2fcd8` only for the commands the range can touch (`duplicates`, `recovery-retry`, the five `l10n-*` and the two `translation-*` commands), not for all of them.
+
+| Golden | Semantic change | Rust status |
+|---|---|---|
+| `l10n-generator` | New constant `CoreDuplicateFileChanged` for `core.duplicate.fileChanged`. | Regenerated and committed. |
+| `l10n-localizer` | The new key appears in the key lists of the shipped-catalog cases. | Regenerated and committed. |
+| `translation-export` | The exported `vi` template and the `xx.todo.json` outputs carry the new key. | Regenerated and committed; `golden_translation_export` now expects `e7c2fcd8`. |
+| `recovery-retry` | D1: extra `stat` call per group Recycle member before `bin.recycle` / `bin.delete-permanently` in the call log. | NOT committed: `pr-core` does not re-stat yet (P-190). Keeps `csharp_commit` `7eaee2a2`. |
+| `duplicates`, `l10n-catalog`, `l10n-flat-json`, `l10n-loader`, `translation-problems` | Only `csharp_commit` differs. | Not committed (cases unchanged). |
 
 ## Oracle diff, 7eaee2a2 to b6847767
 

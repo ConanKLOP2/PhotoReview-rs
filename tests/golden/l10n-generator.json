@@ -1,6 +1,6 @@
 {
   "generator": "oracle-cs l10n-generator",
-  "csharp_commit": "b684776786176f886086378f59d39710c9cc31ee",
+  "csharp_commit": "e7c2fcd86900d3406e1a0e643c43d5899b7d7a56",
   "cases": [
     {
       "id": "shipped-en-json-assets-languages",
@@ -528,6 +528,10 @@
         {
           "ident": "CoreFileActionUnsupportedOperation",
           "key": "core.fileAction.unsupportedOperation"
+        },
+        {
+          "ident": "CoreDuplicateFileChanged",
+          "key": "core.duplicate.fileChanged"
         },
         {
           "ident": "CoreFileActionVerifyFailedSizeChanged",
@@ -4893,6 +4897,12 @@
           "params": [
             "operation"
           ]
+        },
+        {
+          "ident": "CoreDuplicateFileChanged",
+          "kind": "simple",
+          "key": "core.duplicate.fileChanged",
+          "params": []
         },
         {
           "ident": "CoreFileActionVerifyFailedSizeChanged",

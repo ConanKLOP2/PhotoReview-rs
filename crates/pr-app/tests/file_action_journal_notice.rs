@@ -1,4 +1,4 @@
-//! RP-JOURNAL-NOTICE-01 (P-72 option C / P-84 option A, C# PR #537): a file action that SUCCEEDED but whose journal line could
+//! RP-JOURNAL-NOTICE-01 (P-72 option C / P-84 option A, C# PRs #537 and #538): a file action that SUCCEEDED but whose journal line could
 //! not be written (`journal_persisted == false`) writes one error log line (with `journal_error`) and shows
 //! `status.actionJournalNotSaved` without blocking, for a single-file and a capture-group result alike. The notice is appended to
 //! the statuses the success already writes (partner missing, all images processed, copied to), shown after the presenter when
@@ -109,7 +109,7 @@ fn single_move_journal_not_persisted_after_folder_switch_announced_through_the_l
     env.clock.next_folder();
     assert_eq!(env.run_worker(), DONE_FALSE);
 
-    // The notice REPLACES the "press Ctrl+Z" hint (status.lateMoveUndoable): Undo may not see this action.
+    // The notice REPLACES the "press Ctrl+Z" hint (status.lateMoveUndoable); the result is still registered for Undo (C# #538).
     assert_eq!(env.sink.late_statuses, vec![text(NOTICE_KEY)]);
     assert!(env.sink.statuses.is_empty());
     assert!(logged_errors(&env).iter().any(|m| m.contains(JOURNAL_ERROR)));
@@ -204,6 +204,26 @@ fn group_move_journal_not_persisted_after_folder_switch_announced_through_the_la
     env.clock.next_folder();
     assert_eq!(env.run_worker(), DONE_FALSE);
 
+    assert_eq!(env.sink.late_statuses, vec![text(NOTICE_KEY)]);
+    assert!(env.sink.statuses.is_empty());
+}
+
+// C#: FileActionControllerJournalNoticeTests.SingleMove_JournalNotPersistedAfterFolderSwitch_IsStillRegisteredForUndoAndTheNoticeIsShown
+// (C# PR #538: the late single path registers the result for Undo, then shows the notice)
+#[test]
+fn single_move_journal_not_persisted_after_folder_switch_is_still_registered_for_undo_and_the_notice_is_shown() {
+    let mut env = two_files_env(&["a.jpg", "z.jpg"]);
+    env.exec.script(unsaved_single(Move, &p("a.jpg"), "Sorted/a.jpg"));
+
+    env.run_action(0, None, Some(&p("a.jpg")));
+    env.clock.next_folder();
+    env.run_worker();
+
+    let registered = env
+        .undo
+        .as_ref()
+        .is_some_and(|u| u.lock().unwrap().has_last_undo_action());
+    assert!(registered, "the late single result must be registered for Undo");
     assert_eq!(env.sink.late_statuses, vec![text(NOTICE_KEY)]);
     assert!(env.sink.statuses.is_empty());
 }

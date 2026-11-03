@@ -1111,6 +1111,8 @@ impl FileActionController {
             }
             IoResult::Single(single) => {
                 if single.succeeded && journal_not_saved {
+                    // C# #538: still registered for Undo (`register` ignores a rejected result); the notice replaces the Ctrl+Z hint.
+                    self.with_undo(|u| u.register(single));
                     cx.sink
                         .show_late_action_status(&self.deps.texts.get(keys::STATUS_ACTION_JOURNAL_NOT_SAVED));
                 } else if single.succeeded {
