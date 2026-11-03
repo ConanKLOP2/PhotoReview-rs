@@ -5,6 +5,7 @@
 //! `folder_dialog::FolderPicker`, every other window through the lazily created `SecondaryWindowPort` (its implementation is `secondary_window_port`, W8-18o).
 //! The WPF `SecondaryWindowFallback` (117 lines) is retired, so a missing port means "false / nothing happens" (D-W8B5-3).
 use std::cell::{OnceCell, RefCell};
+use std::panic::{AssertUnwindSafe, catch_unwind};
 use std::path::{Path, PathBuf};
 use std::rc::Rc;
 use std::sync::Arc;
@@ -137,7 +138,7 @@ impl LazySecondaryPort {
         }
     }
 
-    /// C# `Lazy.Value`: runs the factory once, then returns the kept answer. A re-entrant `get` from inside the factory returns `None` (never panics, never runs it twice). Store the answer with `OnceCell::set`, never `get_or_init` (it panics on a re-entrant init).
+    /// C# `Lazy.Value`: runs the factory once, then returns the kept answer. A factory that panics answers `None` like C# `Port()` (kept, never retried). A re-entrant `get` from inside the factory returns `None` (never panics, never runs it twice). Store the answer with `OnceCell::set`, never `get_or_init` (it panics on a re-entrant init).
     pub fn get(&self) -> Option<Rc<dyn SecondaryWindowPort>> {
         if let Some(value) = self.value.get() {
             return value.clone();
@@ -149,7 +150,8 @@ impl LazySecondaryPort {
         }
         let factory = self.factory.borrow_mut().take();
         let factory = factory?;
-        let answer = factory();
+        // C# `Port()` answers null when the factory throws (P-341): a panic is kept as `None` and the factory is not retried (it was taken above).
+        let answer = catch_unwind(AssertUnwindSafe(factory)).unwrap_or(None);
         let _ = self.value.set(answer.clone());
         self.value.get().cloned().flatten()
     }

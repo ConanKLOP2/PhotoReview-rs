@@ -20,8 +20,9 @@ use pr_app::services::contracts::ClipboardService;
 use pr_app::services::prewarm::PrewarmPreviews;
 use pr_app::viewmodels::format::context::FormatContext;
 use pr_app::viewmodels::main::FormatContextSource;
-use pr_core::abstractions::{BatchReviewItem, DialogService, Log, SettingsTarget, SkippedEntry};
+use pr_core::abstractions::{BatchReviewItem, DialogService, Log, RenamePromptRequest, SettingsTarget, SkippedEntry};
 use pr_core::model::enums::DecoderBackend;
+use pr_core::settings::external_editors::ExternalEditor;
 use pr_core::time::DateTimeUtc;
 use pr_imaging::cache_key::{CacheKeyError, ImageCacheKey};
 use pr_imaging::decode_types::DecodeBox;
@@ -90,6 +91,19 @@ impl DialogService for SharedDialogService {
 
     fn show_skipped_files(&self, entries: &[SkippedEntry]) {
         self.0.show_skipped_files(entries);
+    }
+
+    /// MUST forward (P-340): the trait default answers `None` and would hide the editor prompts and the rename box.
+    fn prompt_add_external_editor(&self, initial_folder: Option<&Path>) -> Option<ExternalEditor> {
+        self.0.prompt_add_external_editor(initial_folder)
+    }
+
+    fn prompt_default_external_editor(&self, editors: &[ExternalEditor], current_id: Option<&str>) -> Option<String> {
+        self.0.prompt_default_external_editor(editors, current_id)
+    }
+
+    fn prompt_rename(&self, request: &RenamePromptRequest) -> Option<String> {
+        self.0.prompt_rename(request)
     }
 }
 
