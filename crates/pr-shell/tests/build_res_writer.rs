@@ -136,3 +136,81 @@ fn release_version_is_type_16_id_1_en_us_without_changing_manifest() {
     let header = 32 + 32 + 8;
     assert_eq!(u16_at(&res, header + 22), 0x0409);
 }
+
+// Q6 (X-exe-entry, linked icon): killers for the `parse_ico` mutants that no assertion above reached (every directory field of every entry; the exact
+// size boundaries of the 6 byte header and of the directory). New tests, no C# twin.
+#[test]
+fn parse_ico_returns_every_directory_field_of_every_entry() {
+    // Three entries with different, non-zero values in every field so that a wrong offset or index cannot read the same byte.
+    type Row = (u8, u8, u8, u16, u16, &'static [u8]);
+    let rows: [Row; 3] = [
+        (16, 17, 2, 3, 4, &[0xA1, 0xA2]),
+        (32, 33, 5, 6, 8, &[0xB1, 0xB2, 0xB3]),
+        (48, 49, 9, 7, 24, &[0xC1]),
+    ];
+    let mut bytes = vec![0, 0, 1, 0, 3, 0];
+    let mut offset = 6 + 3 * 16;
+    for (w, h, c, planes, bits, data) in rows {
+        bytes.extend_from_slice(&[w, h, c, 0]);
+        bytes.extend_from_slice(&planes.to_le_bytes());
+        bytes.extend_from_slice(&bits.to_le_bytes());
+        bytes.extend_from_slice(&(data.len() as u32).to_le_bytes());
+        bytes.extend_from_slice(&(offset as u32).to_le_bytes());
+        offset += data.len();
+    }
+    for (.., data) in rows {
+        bytes.extend_from_slice(data);
+    }
+    let images = parse_ico(&bytes).unwrap();
+    assert_eq!(images.len(), 3);
+    for (image, (w, h, c, planes, bits, data)) in images.iter().zip(rows) {
+        assert_eq!(
+            (
+                image.width,
+                image.height,
+                image.color_count,
+                image.planes,
+                image.bit_count
+            ),
+            (w, h, c, planes, bits)
+        );
+        assert_eq!(image.data, data);
+    }
+}
+
+#[test]
+fn parse_ico_distinguishes_a_short_header_from_a_truncated_directory() {
+    // Exactly 6 bytes is a complete header: one image is announced but its directory entry is missing -> Truncated (not NotAnIco).
+    assert_eq!(parse_ico(&[0, 0, 1, 0, 1, 0]), Err(ResError::Truncated));
+    // Exactly 6 bytes with count 0 -> NotAnIco by the count, not by the length.
+    match parse_ico(&[0, 0, 1, 0, 0, 0]) {
+        Err(ResError::NotAnIco(text)) => assert!(text.contains("count"), "{text}"),
+        other => panic!("{other:?}"),
+    }
+    // 5 bytes is shorter than the header.
+    match parse_ico(&[0, 0, 1, 0, 1]) {
+        Err(ResError::NotAnIco(text)) => assert!(text.contains("shorter"), "{text}"),
+        other => panic!("{other:?}"),
+    }
+}
+
+#[test]
+fn parse_ico_directory_size_is_six_plus_sixteen_per_entry() {
+    // Two empty images whose data lies at offset == len (zero bytes): the file is exactly header + directory long and is valid.
+    let mut exact = vec![0, 0, 1, 0, 2, 0];
+    for _ in 0..2 {
+        exact.extend_from_slice(&[1, 1, 0, 0, 1, 0, 32, 0, 0, 0, 0, 0]);
+        exact.extend_from_slice(&38u32.to_le_bytes());
+    }
+    assert_eq!(exact.len(), 6 + 2 * 16);
+    let images = parse_ico(&exact).unwrap();
+    assert_eq!(images.len(), 2);
+    assert!(images.iter().all(|i| i.data.is_empty()));
+    // One byte short of the directory of three entries is Truncated for any count >= 2 (6 + 3 * 16 = 54).
+    let mut short = vec![0, 0, 1, 0, 3, 0];
+    short.resize(6 + 3 * 16 - 1, 0);
+    assert_eq!(parse_ico(&short), Err(ResError::Truncated));
+    let mut short = vec![0, 0, 1, 0, 2, 0];
+    short.resize(6 + 2 * 16 - 1, 0);
+    assert_eq!(parse_ico(&short), Err(ResError::Truncated));
+}
