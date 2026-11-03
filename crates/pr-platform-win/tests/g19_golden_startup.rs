@@ -84,6 +84,7 @@ fn replay(case: &Value) {
                 *t.disposed.lock().unwrap() = false;
                 Box::new(Disposed(t.disposed.clone()))
             })),
+            log: None,
         },
     );
     let states = case["states"].as_array().unwrap();

@@ -45,4 +45,19 @@ pub trait RecycleBin: Send + Sync {
         let _ = (path, file_size);
         true
     }
+
+    /// P-331: read-only question "is the file recorded as `original_path`, `expected_size` bytes, last written
+    /// `expected_last_write_utc`, in the Recycle Bin right now?" (the same metadata match as [`try_restore`](Self::try_restore),
+    /// without restoring anything). `Ok(true)` = at least one such item; `Ok(false)` = none; `Err` = the bin could not be
+    /// asked (INV-5: never mistaken for "not in the bin"). Default: `Unsupported`, so a bin that cannot answer never
+    /// confirms a recycle by guess.
+    fn contains_recycled_item(
+        &self,
+        original_path: &Path,
+        expected_size: u64,
+        expected_last_write_utc: DateTimeUtc,
+    ) -> io::Result<bool> {
+        let _ = (original_path, expected_size, expected_last_write_utc);
+        Err(io::Error::from(io::ErrorKind::Unsupported))
+    }
 }

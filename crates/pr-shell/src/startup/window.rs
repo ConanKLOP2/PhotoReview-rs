@@ -154,6 +154,7 @@ impl StartupState {
             StartupCloakOptions {
                 on_revealed: Some(Arc::new(move || mark("windowRevealed"))),
                 set_cloaked,
+                log: Some(log.clone()),
                 ..Default::default()
             },
         ));

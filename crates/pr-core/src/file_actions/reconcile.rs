@@ -16,7 +16,8 @@
 //!   latest, W3-02 `journal_rules::is_stale_reconcile_after_committed`).
 //! * A latest `Prepared` entry stamped before `prepared_before_utc` and without a live marker is judged from the files:
 //!   Move = source gone AND destination is the recorded file; Copy = destination is the recorded file; Recycle = source
-//!   gone; a group = every member completed. The verdict is appended only when the Id's raw last line is STILL
+//!   gone AND (P-331, when a bin is wired) the file is in the Recycle Bin; a group = every member completed. The verdict
+//!   is appended only when the Id's raw last line is STILL
 //!   `Prepared` and the Id is still not live (re-read under the journal gate).
 //! * Downgrade guard (ADR 0003, "older builds"): an Id whose latest line has no members although an earlier line had
 //!   them was settled by an older build. The members are restored on a new line; a `Committed` verdict is re-checked
@@ -29,7 +30,7 @@ use std::io;
 use std::panic::{AssertUnwindSafe, catch_unwind};
 use std::path::Path;
 
-use crate::abstractions::{Clock, FileStat, FileSystem, LiveOperationRegistry, Log, panic_message};
+use crate::abstractions::{Clock, FileStat, FileSystem, LiveOperationRegistry, Log, RecycleBin, panic_message};
 use crate::file_actions::case_only_rename::CaseOnlyRename;
 use crate::file_actions::errors::{PENDING_UNCONFIRMED, SOURCE_STILL_EXISTS_AFTER_RECOVERY};
 use crate::file_actions::journal_line::{JournalDateTime, JournalEntry, JournalGroupMember};
@@ -59,6 +60,11 @@ pub trait ReconcileJournal {
     fn clock(&self) -> &dyn Clock;
     /// C# `LiveOperations` (Q-R27): an Id whose marker is live is executing somewhere and is never judged.
     fn live_operations(&self) -> &dyn LiveOperationRegistry;
+    /// P-331: the Recycle Bin asked before a single Recycle whose source is gone is confirmed. `None` (default) = no bin is
+    /// wired and the source being gone is trusted (C# R15 as is); an `Err` of the bin leaves the entry Prepared.
+    fn recycle_bin(&self) -> Option<&dyn RecycleBin> {
+        None
+    }
     /// C# `JournalErrors.EnglishText(code)`: the invariant English text stored next to a reconcile code (the journal's
     /// English catalog, `JournalTexts::english(errors::catalog_key(code))`; never the UI language).
     fn english_text(&self, code: &str) -> String;
@@ -321,12 +327,31 @@ fn reconcile_one(
         _ => match pending.op_type {
             FileOperationType::Recycle => {
                 let source_exists = fs.file_exists(Path::new(&pending.source));
-                with_outcome(
-                    journal,
-                    pending,
-                    verdict(!source_exists),
-                    SOURCE_STILL_EXISTS_AFTER_RECOVERY,
-                )
+                if source_exists {
+                    with_outcome(
+                        journal,
+                        pending,
+                        JournalState::Failed,
+                        SOURCE_STILL_EXISTS_AFTER_RECOVERY,
+                    )
+                } else {
+                    // P-331 (deviates from C# R15 until the C# branch feat/reconcile-recycle-bin-check merges): the
+                    // source being gone is not proof of a recycle (it can be deleted for good or moved away), so the
+                    // bin is asked too. Only an answer is a verdict; an error leaves the entry Prepared (INV-5).
+                    match recycled_item_in_bin(journal, pending) {
+                        Ok(Some(true)) | Ok(None) => with_outcome(
+                            journal,
+                            pending,
+                            JournalState::Committed,
+                            SOURCE_STILL_EXISTS_AFTER_RECOVERY,
+                        ),
+                        Ok(Some(false)) => with_outcome(journal, pending, JournalState::Failed, PENDING_UNCONFIRMED),
+                        Err(error) => {
+                            diagnostics.warn(&format!("Journal reconcile: skipped {}: {error}", pending.id));
+                            return None;
+                        }
+                    }
+                }
             }
             FileOperationType::Move | FileOperationType::Copy => {
                 let source_exists = match CaseOnlyRename::exists_as(fs, &pending.source, pending.destination.as_deref())
@@ -360,6 +385,19 @@ fn reconcile_one(
         },
     };
     try_reconcile_append(|| append_if_still_pending(journal, &outcome), &outcome.id, diagnostics).then_some(outcome)
+}
+
+/// P-331: asks the wired Recycle Bin whether the file `pending` recorded is in it. `Ok(None)` = no bin is wired (the
+/// caller trusts "source gone", C# R15 as is); `Ok(Some(found))` = the bin answered; `Err` = it could not be asked.
+fn recycled_item_in_bin(journal: &dyn ReconcileJournal, pending: &JournalEntry) -> io::Result<Option<bool>> {
+    let Some(bin) = journal.recycle_bin() else {
+        return Ok(None);
+    };
+    let Ok(size) = u64::try_from(pending.size) else {
+        return Ok(Some(false)); // a negative size matches no bin item
+    };
+    bin.contains_recycled_item(Path::new(&pending.source), size, pending.last_write_utc.value)
+        .map(Some)
 }
 
 /// `Committed` when the operation is complete, else `Failed`.

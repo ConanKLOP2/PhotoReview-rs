@@ -9,7 +9,7 @@ use std::panic::{AssertUnwindSafe, catch_unwind};
 use std::sync::{Arc, Mutex, PoisonError};
 use std::time::Duration;
 
-use pr_core::abstractions::{UiAction, UiScheduler};
+use pr_core::abstractions::{Log, UiAction, UiScheduler};
 use pr_core::instance::coalescer::WindowCancel;
 
 use crate::host::main_window::core::StartupCloakPort;
@@ -40,9 +40,36 @@ pub fn try_set_cloaked(hwnd: Hwnd, cloaked: bool) -> bool {
     dwmapi::dwm_set_window_attribute(hwnd, dwmapi::DWMWA_CLOAK, &value).is_ok()
 }
 
+type DeadlineJob = Box<dyn FnOnce() + Send>;
+
+/// Starts the body of the deadline thread (P-342 seam). `Err` = the thread could not be started; the body was dropped without running.
+pub type ThreadSpawner = dyn Fn(Box<dyn FnOnce() + Send>) -> std::io::Result<()> + Send + Sync;
+
+/// The production [`ThreadSpawner`]: one thread named `startup-cloak-deadline`.
+fn spawn_deadline_thread(body: Box<dyn FnOnce() + Send>) -> std::io::Result<()> {
+    std::thread::Builder::new()
+        .name("startup-cloak-deadline".to_owned())
+        .spawn(body)
+        .map(drop)
+}
+
 /// The production [`ScheduleTimeoutFn`]: one named thread that waits on a `pr_core::instance::coalescer::WindowCancel` for the delay and runs the job unless
-/// cancelled (C# `System.Threading.Timer`).
+/// cancelled (C# `System.Threading.Timer`). When the thread cannot be started the job runs at once (see [`schedule_with_spawner`]); that failure is not logged here.
 pub fn schedule_on_thread(delay: Duration, job: Box<dyn FnOnce() + Send>) -> Box<dyn TimerHandle> {
+    schedule_with_spawner(delay, job, &spawn_deadline_thread, None)
+}
+
+/// [`schedule_on_thread`] with the thread start injected (test seam, P-342) and an optional log. When `spawner` fails the deadline can never fire, and a window that
+/// stays cloaked until a first frame that may never come is worse than an early reveal (the C# `Timer` constructor cannot fail this way): the failure is logged as
+/// an error and `job` runs at once on the calling thread (the job only posts the reveal to the UI dispatcher). Otherwise the job runs on the spawned thread unless the
+/// handle is dropped first.
+#[doc(hidden)]
+pub fn schedule_with_spawner(
+    delay: Duration,
+    job: Box<dyn FnOnce() + Send>,
+    spawner: &ThreadSpawner,
+    log: Option<&dyn Log>,
+) -> Box<dyn TimerHandle> {
     struct DeadlineHandle(WindowCancel);
     impl TimerHandle for DeadlineHandle {}
     impl Drop for DeadlineHandle {
@@ -53,15 +80,29 @@ pub fn schedule_on_thread(delay: Duration, job: Box<dyn FnOnce() + Send>) -> Box
 
     let cancel = WindowCancel::new();
     let thread_cancel = cancel.clone();
-    let spawned = std::thread::Builder::new()
-        .name("startup-cloak-deadline".to_owned())
-        .spawn(move || {
-            if !thread_cancel.wait_timeout(delay) {
+    // The job stays reachable from here when the thread never starts (a closure dropped by a failed spawn would take it along).
+    let slot: Arc<Mutex<Option<DeadlineJob>>> = Arc::new(Mutex::new(Some(job)));
+    let thread_slot = Arc::clone(&slot);
+    let started = spawner(Box::new(move || {
+        if !thread_cancel.wait_timeout(delay) {
+            let job = thread_slot.lock().unwrap_or_else(PoisonError::into_inner).take();
+            if let Some(job) = job {
                 job();
             }
-        });
-    if spawned.is_err() {
+        }
+    }));
+    if let Err(error) = started {
         cancel.cancel();
+        if let Some(log) = log {
+            log.error(
+                "Startup cloak deadline thread could not be started; revealing the window now",
+                Some(&error),
+            );
+        }
+        let job = slot.lock().unwrap_or_else(PoisonError::into_inner).take();
+        if let Some(job) = job {
+            job();
+        }
     }
     Box::new(DeadlineHandle(cancel))
 }
@@ -77,6 +118,8 @@ pub struct StartupCloakOptions {
     pub safety_timeout: Option<Duration>,
     /// C# `scheduleTimeout`; `None` = [`schedule_on_thread`].
     pub schedule_timeout: Option<ScheduleTimeoutFn>,
+    /// Where a deadline thread that could not be started is logged (P-342); `None` = not logged.
+    pub log: Option<Arc<dyn Log>>,
 }
 
 impl std::fmt::Debug for StartupCloakOptions {
@@ -119,7 +162,13 @@ impl StartupCloak {
     pub fn new(dispatcher: Arc<dyn UiScheduler>, options: StartupCloakOptions) -> Self {
         let set_cloaked = options.set_cloaked.unwrap_or_else(|| Arc::new(try_set_cloaked));
         let safety_timeout = options.safety_timeout.unwrap_or(SAFETY_TIMEOUT);
-        let schedule_timeout = options.schedule_timeout.unwrap_or_else(|| Arc::new(schedule_on_thread));
+        let log = options.log.clone();
+        let schedule_timeout: ScheduleTimeoutFn = options.schedule_timeout.unwrap_or_else(|| match log {
+            Some(log) => {
+                Arc::new(move |delay, job| schedule_with_spawner(delay, job, &spawn_deadline_thread, Some(&*log)))
+            }
+            None => Arc::new(schedule_on_thread),
+        });
         Self {
             inner: Arc::new(CloakInner {
                 state: Mutex::new(CloakState {

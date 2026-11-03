@@ -69,6 +69,18 @@ pub trait RecycleBinRestoreBackend: Send + Sync {
         expected_size: u64,
         expected_last_write_utc: DateTimeUtc,
     ) -> io::Result<bool>;
+
+    /// P-331: read-only twin of [`try_restore`](Self::try_restore): is at least one item matching the recorded path,
+    /// size and write time in the bin? Default `Unsupported` (a backend that cannot ask never confirms by guess).
+    fn contains(
+        &self,
+        original_path: &Path,
+        expected_size: u64,
+        expected_last_write_utc: DateTimeUtc,
+    ) -> io::Result<bool> {
+        let _ = (original_path, expected_size, expected_last_write_utc);
+        Err(io::Error::from(io::ErrorKind::Unsupported))
+    }
 }
 
 /// Windows IRecycleBin facade with read-only policy checks before any irreversible or Shell action.
@@ -337,6 +349,22 @@ impl RecycleBin for WindowsRecycleBin {
         }
         self.restore_backend
             .try_restore(original_path, expected_size, expected_last_write_utc)
+    }
+
+    fn contains_recycled_item(
+        &self,
+        original_path: &Path,
+        expected_size: u64,
+        expected_last_write_utc: DateTimeUtc,
+    ) -> io::Result<bool> {
+        if Self::path_text(original_path).is_none() {
+            return Err(io::Error::new(
+                io::ErrorKind::InvalidInput,
+                "path cannot be empty or non-Unicode",
+            ));
+        }
+        self.restore_backend
+            .contains(original_path, expected_size, expected_last_write_utc)
     }
 }
 

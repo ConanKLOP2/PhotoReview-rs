@@ -258,6 +258,23 @@ fn zoom_prompt_does_not_load_the_bridge_until_first_use() {
 }
 
 #[test]
+fn lazy_secondary_port_get_answers_none_when_the_factory_panics_and_does_not_retry() {
+    // new (P-341): C# `Port()` answers null when the factory throws. A panic must not unwind out of `get` (the dialog service runs it on the UI thread); the
+    // answer `None` is kept, so the factory is NOT run a second time.
+    let runs = Rc::new(Cell::new(0));
+    let r = Rc::clone(&runs);
+    let factory: PortFactory = Box::new(move || {
+        r.set(r.get() + 1);
+        panic!("factory failed")
+    });
+    let lazy = LazySecondaryPort::new(factory);
+    assert!(lazy.get().is_none());
+    assert!(lazy.get().is_none());
+    assert_eq!(runs.get(), 1);
+    assert!(lazy.is_value_created());
+}
+
+#[test]
 fn show_confirmation_only_yes_is_true() {
     // C#: ShowConfirmation_OnlyYesIsTrue
     for (pressed, expected) in [(IDYES, true), (IDNO, false), (IDCANCEL, false)] {

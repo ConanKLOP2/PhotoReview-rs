@@ -492,7 +492,7 @@ impl TimerQueue {
 }
 
 /// The timer queue, with its thread started on first use.
-fn timer_queue() -> &'static TimerQueue {
+fn timer_queue(log: Option<&dyn Log>) -> &'static TimerQueue {
     static QUEUE: OnceLock<&'static TimerQueue> = OnceLock::new();
     QUEUE.get_or_init(|| {
         let queue: &'static TimerQueue = Box::leak(Box::new(TimerQueue {
@@ -500,12 +500,31 @@ fn timer_queue() -> &'static TimerQueue {
             changed: Condvar::new(),
             next_seq: AtomicU64::new(0),
         }));
-        // A failure to start the thread leaves delayed jobs unrun (later `post_after` calls still queue): there is no better answer on a UI thread.
-        let _ = std::thread::Builder::new()
-            .name("PhotoReviewRs UI timer".to_owned())
-            .spawn(move || queue.run());
+        start_timer_thread(queue, log, |run| {
+            std::thread::Builder::new()
+                .name("PhotoReviewRs UI timer".to_owned())
+                .spawn(run)
+                .map(drop)
+        });
         queue
     })
+}
+
+/// Starts the timer thread through `spawn`. A failure leaves delayed jobs unrun (later `post_after` calls still queue): there is no better answer on a UI
+/// thread, but it is logged (P-300) when the caller that creates the queue has a log. Only that first caller can report it: the queue is built once.
+fn start_timer_thread(
+    queue: &'static TimerQueue,
+    log: Option<&dyn Log>,
+    spawn: impl FnOnce(Box<dyn FnOnce() + Send>) -> std::io::Result<()>,
+) {
+    if let Err(error) = spawn(Box::new(move || queue.run())) {
+        if let Some(log) = log {
+            log.error(
+                "Starting the UI timer thread failed; delayed jobs will not run",
+                Some(&error),
+            );
+        }
+    }
 }
 
 /// The one implementation of [`LocalPoster`] over a [`Win32UiDispatcher`]. `Clone`, `!Send`. FIFO inside one priority. A job that panics unwinds into the
@@ -513,6 +532,8 @@ fn timer_queue() -> &'static TimerQueue {
 #[derive(Clone)]
 pub struct UiLocalPoster {
     dispatcher: Win32UiDispatcher,
+    /// Where a failure to start the process-wide timer thread is reported (P-300); `None` in tests that do not care.
+    log: Option<Arc<dyn Log>>,
     /// `!Send + !Sync`: `post` fills the thread-local queues of the CALLING thread, so a clone used on another thread would lose its jobs.
     not_send: PhantomData<*const ()>,
 }
@@ -528,8 +549,16 @@ impl UiLocalPoster {
     pub fn new(dispatcher: Win32UiDispatcher) -> Self {
         Self {
             dispatcher,
+            log: None,
             not_send: PhantomData,
         }
+    }
+
+    /// The same poster, reporting a failure to start the timer thread to `log` (P-300).
+    #[must_use]
+    pub fn with_log(mut self, log: Arc<dyn Log>) -> Self {
+        self.log = Some(log);
+        self
     }
 
     /// `post` after `delay`: a timer thread waits (a bounded channel wait, no polling) and then posts a `Send` wake job; never blocks the UI thread. A window
@@ -538,7 +567,7 @@ impl UiLocalPoster {
         let token = NEXT_DELAYED_TOKEN.fetch_add(1, Ordering::Relaxed);
         DELAYED_JOBS.with(|jobs| jobs.borrow_mut().insert(token, job));
         let dispatcher = self.dispatcher.clone();
-        timer_queue().schedule(
+        timer_queue(self.log.as_deref()).schedule(
             delay,
             Box::new(move || {
                 // Only a token crosses threads: the job itself stays in the UI thread's table.
@@ -791,7 +820,7 @@ impl MainWindowInner {
         } = deps;
         let mark: StartupMark = mark.unwrap_or_else(|| Box::new(startup_mark));
         let id = NEXT_WINDOW_ID.fetch_add(1, Ordering::Relaxed);
-        let poster = UiLocalPoster::new(dispatcher.clone());
+        let poster = UiLocalPoster::new(dispatcher.clone()).with_log(Arc::clone(&log));
         let viewer = view_model.borrow().viewer().clone();
 
         // Step 2: the viewport, with callbacks that hold a `Weak` (a window that is gone gives the empty content / does nothing).
@@ -1328,6 +1357,53 @@ mod tests {
             receiver.recv_timeout(Duration::from_secs(10)).is_ok(),
             "the timer thread died on the panicking action"
         );
+    }
+
+    // P-300: a failed timer thread start is logged (Rust-only edge, C# has no such thread).
+    #[test]
+    fn timer_thread_start_failure_is_logged() {
+        use std::sync::Mutex as StdMutex;
+        #[derive(Default)]
+        struct Recorder(StdMutex<Vec<String>>);
+        impl Log for Recorder {
+            fn enabled(&self) -> bool {
+                true
+            }
+            fn info(&self, _message: &str) {}
+            fn warn(&self, _message: &str) {}
+            fn error(&self, message: &str, error: Option<&(dyn std::error::Error + 'static)>) {
+                let text = format!("{message} | {}", error.map(ToString::to_string).unwrap_or_default());
+                self.0.lock().unwrap().push(text);
+            }
+        }
+        let queue: &'static TimerQueue = Box::leak(Box::new(TimerQueue {
+            heap: Mutex::new(BinaryHeap::new()),
+            changed: Condvar::new(),
+            next_seq: AtomicU64::new(0),
+        }));
+        let log = Recorder::default();
+        start_timer_thread(queue, Some(&log), |_run| Err(std::io::Error::other("out of threads")));
+        let lines = log.0.lock().unwrap().clone();
+        assert_eq!(lines.len(), 1, "{lines:?}");
+        assert!(
+            lines[0].contains("timer thread") && lines[0].contains("out of threads"),
+            "{lines:?}"
+        );
+
+        // A successful start logs nothing and really runs the queue.
+        let ok_log = Recorder::default();
+        let (sender, receiver) = std::sync::mpsc::channel();
+        start_timer_thread(queue, Some(&ok_log), |run| {
+            std::thread::Builder::new().spawn(run).map(drop)
+        });
+        queue.schedule(
+            Duration::ZERO,
+            Box::new(move || {
+                let _ = sender.send(());
+            }),
+        );
+        assert!(receiver.recv_timeout(Duration::from_secs(10)).is_ok());
+        assert!(ok_log.0.lock().unwrap().is_empty());
     }
 
     // D-W8B4M-6: the registry finds a window by id only while it is alive.

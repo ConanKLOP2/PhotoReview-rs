@@ -127,7 +127,9 @@ fn record_is_visible_to_a_reader_while_open() {
     let mut log = FrameLog::open(file.path(), TPS).expect("open the frame log");
     log.record(5, 5 + TPS / 100, 1.0, 0.5);
 
-    // the measuring tool reads the file while the process is still running (C# AutoFlush = true)
+    // P-301 (Different from C# AutoFlush): the write happens on the writer thread; `flush` is the deterministic sync point
+    log.flush();
+    // the measuring tool reads the file while the process is still running
     let text = std::fs::read_to_string(file.path()).expect("read while the log is open");
     assert!(text.starts_with("F gap=0.0 frame=10.00"), "got {text:?}");
 
@@ -165,4 +167,128 @@ fn record_after_close_is_a_no_op() {
 
     let text = std::fs::read_to_string(file.path()).expect("read the frame log");
     assert_eq!(text, "");
+}
+
+use std::io::{self, Write};
+use std::sync::mpsc;
+use std::sync::{Arc, Mutex};
+
+/// A sink that blocks the writer thread on its first write until the test opens the gate (deterministic backpressure).
+struct GatedSink {
+    gate: mpsc::Receiver<()>,
+    opened: bool,
+    out: Arc<Mutex<Vec<u8>>>,
+}
+
+impl Write for GatedSink {
+    fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
+        if !self.opened {
+            let _ = self.gate.recv(); // returns when the test sends or drops the gate
+            self.opened = true;
+        }
+        self.out.lock().unwrap().extend_from_slice(buf);
+        Ok(buf.len())
+    }
+
+    fn flush(&mut self) -> io::Result<()> {
+        Ok(())
+    }
+}
+
+// new: P-301, a full queue never blocks the UI thread; the lines that do not fit are dropped and counted
+#[test]
+fn record_never_blocks_and_counts_dropped_lines_when_the_writer_is_stuck() {
+    let (open_gate, gate) = mpsc::channel();
+    let out = Arc::new(Mutex::new(Vec::new()));
+    let sink = GatedSink {
+        gate,
+        opened: false,
+        out: Arc::clone(&out),
+    };
+    let mut log = FrameLog::open_with_sink(sink, TPS, 2);
+
+    for i in 1..=10 {
+        log.record(i, i + 1, 0.0, 0.0); // would hang here if the queue blocked the caller
+    }
+    let dropped = log.dropped();
+    assert!(
+        (7..=8).contains(&dropped),
+        "10 lines, queue of 2 plus at most one in the writer: dropped {dropped}"
+    );
+
+    open_gate.send(()).expect("open the gate");
+    log.flush();
+    let lines = out
+        .lock()
+        .unwrap()
+        .split(|b| *b == b'\n')
+        .filter(|l| !l.is_empty())
+        .count() as u64;
+    assert_eq!(
+        lines + dropped,
+        10,
+        "every record is either written or counted as dropped"
+    );
+    log.close();
+}
+
+// new: P-301, close drains the queue, so no record is lost at shutdown
+#[test]
+fn close_writes_every_queued_record() {
+    let file = TempFile::new("drain");
+    let mut log = FrameLog::open(file.path(), TPS).expect("open the frame log");
+    for i in 1..=50 {
+        log.record(i, i + 1, 0.0, 0.0);
+    }
+    log.close();
+    drop(log);
+
+    let text = std::fs::read_to_string(file.path()).expect("read the frame log");
+    assert_eq!(text.lines().count(), 50);
+}
+
+struct PanickingSink;
+
+impl Write for PanickingSink {
+    fn write(&mut self, _buf: &[u8]) -> io::Result<usize> {
+        panic!("test: the writer panics");
+    }
+
+    fn flush(&mut self) -> io::Result<()> {
+        Ok(())
+    }
+}
+
+// new: P-301, a panic in the writer thread is caught: the UI side keeps working and the log goes off
+#[test]
+fn a_panic_in_the_writer_does_not_reach_the_caller() {
+    let mut log = FrameLog::open_with_sink(PanickingSink, TPS, 4);
+    log.record(1, 2, 0.0, 0.0);
+    log.flush(); // returns although the writer died
+    log.record(3, 4, 0.0, 0.0); // no-op, no panic
+    log.close();
+    log.close();
+}
+
+struct FailingSink;
+
+impl Write for FailingSink {
+    fn write(&mut self, _buf: &[u8]) -> io::Result<usize> {
+        Err(io::Error::other("disk full"))
+    }
+
+    fn flush(&mut self) -> io::Result<()> {
+        Ok(())
+    }
+}
+
+// C#: an IOException disposes the writer; the log stays off (existing behaviour kept on the writer thread)
+#[test]
+fn a_write_error_switches_the_log_off_without_a_panic() {
+    let mut log = FrameLog::open_with_sink(FailingSink, TPS, 4);
+    log.record(1, 2, 0.0, 0.0);
+    log.flush();
+    log.record(3, 4, 0.0, 0.0);
+    assert_eq!(log.dropped(), 0, "a switched-off log is not a full queue");
+    log.close();
 }

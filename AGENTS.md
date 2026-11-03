@@ -47,7 +47,7 @@ the C# code at the baseline in [`docs/SYNC-LEDGER.md`](docs/SYNC-LEDGER.md) deci
 ## Tests
 
 - A test must fail when the guarded code is broken (mutate to check; `cargo-mutants` for journal/file-action code).
-- No fixed-delay asserts or sleep polling. Real-OS tests are `#[ignore]`d with a `native`/`slow` reason and clean up after themselves.
+- No fixed-delay asserts or sleep polling. Real-OS tests are `#[ignore]`d with a `native`/`slow` reason (the reason may also start with `oracle:`, `manual:`, `attended:` or `blocked:`) and clean up after themselves.
 - Test names mirror the C# test they port (`method_scenario_expected_result`), with a comment naming the C# test.
 - **Hang guard:** never run tests unbounded; CI has job/step timeouts.
 - **Recycle Bin:** never run code that deletes from, sweeps or empties the user's real Recycle Bin, including mutation

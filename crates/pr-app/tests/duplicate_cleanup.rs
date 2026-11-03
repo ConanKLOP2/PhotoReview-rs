@@ -900,6 +900,81 @@ fn keeper_deleted_between_two_recycles_is_caught_for_the_later_file() {
     assert_eq!(rig.sink.last(), Some(batch_done(1, 1).as_str()));
 }
 
+// ---- D3 / P-191: Rust-only extra on top of D2 (restores the D-07f-5 / DV-7 pre-check where the C# tests do not object) ----
+// Not a C# port. When a copy that stays was MODIFIED while the review dialog was open (it still exists, but size or write time
+// differ from hash time) and no other copy that stays still matches, the group is skipped up front with the
+// `sourceOrDestinationChanged` text. A keeper that was only DELETED is not covered (the C# test
+// RemoveDuplicatesAsync_KeptCopyDeletedWhileReviewOpen_RecyclesNothing expects per-file `fileChanged` lines and BatchDone).
+fn skipped_line(name: &str) -> String {
+    format!("{name}: {}", text("core.undo.sourceOrDestinationChanged"))
+}
+
+#[test]
+fn keeper_replaced_while_review_open_skips_the_group_up_front_and_cancels_the_batch() {
+    let rig = run_review_that_changes(&["a.jpg", "a (1).jpg", "a (2).jpg"], |fs| {
+        fs.add_file(p("a.jpg"), &[7u8; 4096]); // the keeper was replaced after it was hashed
+    });
+
+    assert!(rig.exec.recorded().is_empty(), "nothing may be recycled");
+    assert_eq!(rig.sink.last(), Some(text("status.batchCanceled").as_str()));
+    assert!(rig.sink.reloads.is_empty());
+    let errors = rig.dialog.errors();
+    assert_eq!(errors.len(), 1);
+    assert_eq!(
+        errors[0].1,
+        format!("{}\r\n{}", skipped_line("a (1).jpg"), skipped_line("a (2).jpg"))
+    );
+}
+
+#[test]
+fn keeper_write_time_moved_while_review_open_skips_the_group_up_front() {
+    let rig = run_review_that_changes(&["a.jpg", "a (1).jpg", "a (2).jpg"], |fs| {
+        let before = fs.peek_stat(p("a.jpg")).expect("stat").last_write_utc;
+        fs.set_last_write(p("a.jpg"), before.checked_add_ticks(10_000_000).expect("later"));
+    });
+
+    assert!(rig.exec.recorded().is_empty());
+    assert_eq!(rig.sink.last(), Some(text("status.batchCanceled").as_str()));
+}
+
+#[test]
+fn modified_keeper_skips_only_its_own_group_the_other_group_is_recycled() {
+    let mut rig = Rig::with_dialog();
+    rig.load(&["a.jpg", "a (1).jpg", "b.jpg", "b (1).jpg"]);
+    for name in ["b.jpg", "b (1).jpg"] {
+        rig.hasher
+            .results
+            .lock()
+            .unwrap()
+            .insert(name.into(), Ok("other".into()));
+    }
+    let fs = rig.fs.clone();
+    let mut change = Some(move || fs.add_file(p("a.jpg"), &[7u8; 4096]));
+    *rig.dialog.on_review.lock().unwrap() = Some(Box::new(move || {
+        if let Some(change) = change.take() {
+            change();
+        }
+    }));
+    assert_eq!(rig.remove_duplicates(true), DuplicateCleanupStep::Pending);
+    rig.pump();
+
+    assert_eq!(rig.recycled_paths(), vec![p("b (1).jpg")]);
+    assert_eq!(rig.reload_finished(true), DuplicateCleanupStep::Done);
+    assert_eq!(rig.sink.last(), Some(batch_done(1, 1).as_str()));
+    assert_eq!(rig.dialog.errors()[0].1, skipped_line("a (1).jpg"));
+}
+
+#[test]
+fn one_unmodified_keeper_keeps_the_group_even_when_the_other_keeper_was_replaced() {
+    let mut rig = run_review_that_changes(&["a.jpg", "b.jpg", "a (1).jpg"], |fs| {
+        fs.add_file(p("a.jpg"), &[7u8; 4096]);
+    });
+    assert_eq!(rig.recycled_paths(), vec![p("a (1).jpg")]);
+    assert_eq!(rig.reload_finished(true), DuplicateCleanupStep::Done);
+    assert_eq!(rig.sink.last(), Some(batch_done(1, 0).as_str()));
+    assert!(rig.dialog.errors().is_empty());
+}
+
 // ---- DuplicateCleanupControllerMutationGapTests --------------------------------------------------------------------------
 
 // C#: DuplicateCleanupControllerMutationGapTests.RemoveDuplicatesAsync_NoFileActionService_ReturnsWithoutAnyStatus

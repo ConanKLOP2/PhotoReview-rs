@@ -29,6 +29,7 @@ struct State {
     send_hook: Option<BinHook>,
     delete_permanently_hook: Option<BinHook>,
     restore_hook: Option<BinHook>,
+    contains_hook: Option<BinHook>,
 }
 
 /// Recycles by removing the file from the fake file system and keeping its bytes so `try_restore` can put it back.
@@ -80,6 +81,11 @@ impl FakeRecycleBin {
     /// Runs at the start of every `try_restore` (after the call is recorded): `Some(err)` = the shell failed (P-13).
     pub fn set_restore_hook(&self, hook: Option<BinHook>) {
         self.lock().restore_hook = hook;
+    }
+
+    /// Runs at the start of every `contains_recycled_item`: `Some(err)` = the bin could not be asked (P-331).
+    pub fn set_contains_hook(&self, hook: Option<BinHook>) {
+        self.lock().contains_hook = hook;
     }
 
     /// Original paths of the files currently in the bin, oldest first.
@@ -159,6 +165,21 @@ impl RecycleBin for FakeRecycleBin {
 
     fn fits_in_recycle_bin(&self, _path: &Path, _file_size: u64) -> bool {
         self.lock().fits
+    }
+
+    /// True when a binned file matches path (case-insensitive), size and last write time; the contains hook's error otherwise.
+    fn contains_recycled_item(
+        &self,
+        original_path: &Path,
+        expected_size: u64,
+        expected_last_write_utc: DateTimeUtc,
+    ) -> io::Result<bool> {
+        self.run_hook(|s| s.contains_hook.clone(), original_path)?;
+        Ok(self.lock().binned.iter().any(|(p, content, written)| {
+            path_eq_ignore_case(p, original_path)
+                && content.len() as u64 == expected_size
+                && *written == expected_last_write_utc
+        }))
     }
 }
 

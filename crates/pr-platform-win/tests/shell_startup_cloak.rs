@@ -62,6 +62,7 @@ fn opts(r: Arc<Record>, m: Arc<Manual>, revealed: Arc<Mutex<usize>>, scheduler: 
             *m.job.lock().unwrap() = Some(job);
             Box::new(Handle(m.canceled.clone()))
         })),
+        log: None,
     }
 }
 
@@ -291,4 +292,123 @@ fn startup_cloak_golden_replays() {
     let text = include_str!("../../../tests/golden/startup-cloak.json");
     assert!(text.contains("startup-cloak"));
     assert!(text.contains("hide"));
+}
+
+// ---- P-342 / P-170: the deadline thread cannot be started ----------------------------------------------------------------------------------------------------
+
+use pr_core::abstractions::Log;
+use pr_platform_win::shell_startup::cloak::schedule_with_spawner;
+use std::sync::atomic::{AtomicUsize, Ordering};
+
+#[derive(Default)]
+struct ErrorLog {
+    errors: Mutex<Vec<String>>,
+}
+impl Log for ErrorLog {
+    fn enabled(&self) -> bool {
+        true
+    }
+    fn info(&self, _message: &str) {}
+    fn warn(&self, _message: &str) {}
+    fn error(&self, message: &str, error: Option<&(dyn std::error::Error + 'static)>) {
+        self.errors.lock().unwrap().push(format!(
+            "{message}|{}",
+            error.map(ToString::to_string).unwrap_or_default()
+        ));
+    }
+}
+
+// new: spawn failure -> the job (which posts the reveal) runs at once on the calling thread and the failure is logged as an error.
+#[test]
+fn schedule_with_spawner_runs_the_job_at_once_and_logs_when_the_thread_cannot_start() {
+    let ran = Arc::new(AtomicUsize::new(0));
+    let log = ErrorLog::default();
+    let r = ran.clone();
+    let handle = schedule_with_spawner(
+        Duration::from_secs(3600),
+        Box::new(move || {
+            r.fetch_add(1, Ordering::SeqCst);
+        }),
+        &|_body| Err(std::io::Error::other("no threads")),
+        Some(&log),
+    );
+    assert_eq!(
+        ran.load(Ordering::SeqCst),
+        1,
+        "revealed without waiting for the deadline"
+    );
+    let errors = log.errors.lock().unwrap();
+    assert_eq!(errors.len(), 1);
+    assert!(errors[0].contains("no threads"), "{errors:?}");
+    drop(errors);
+    drop(handle);
+    assert_eq!(
+        ran.load(Ordering::SeqCst),
+        1,
+        "dropping the handle does not run it again"
+    );
+}
+
+// new: spawn failure without a log still reveals.
+#[test]
+fn schedule_with_spawner_without_a_log_still_runs_the_job_when_the_thread_cannot_start() {
+    let ran = Arc::new(AtomicUsize::new(0));
+    let r = ran.clone();
+    let _handle = schedule_with_spawner(
+        Duration::from_secs(3600),
+        Box::new(move || {
+            r.fetch_add(1, Ordering::SeqCst);
+        }),
+        &|_body| Err(std::io::Error::other("no threads")),
+        None,
+    );
+    assert_eq!(ran.load(Ordering::SeqCst), 1);
+}
+
+// new: normal branch -> nothing runs on the calling thread, the spawned body runs the job once after the delay, nothing is logged.
+#[test]
+fn schedule_with_spawner_runs_the_job_on_the_spawned_thread_and_logs_nothing() {
+    let ran = Arc::new(AtomicUsize::new(0));
+    let log = ErrorLog::default();
+    let (tx, rx) = std::sync::mpsc::channel();
+    let r = ran.clone();
+    let _handle = schedule_with_spawner(
+        Duration::from_millis(1),
+        Box::new(move || {
+            r.fetch_add(1, Ordering::SeqCst);
+            let _ = tx.send(());
+        }),
+        &|body| {
+            std::thread::spawn(body);
+            Ok(())
+        },
+        Some(&log),
+    );
+    assert_eq!(rx.recv_timeout(Duration::from_secs(10)), Ok(()));
+    assert_eq!(ran.load(Ordering::SeqCst), 1);
+    assert!(log.errors.lock().unwrap().is_empty());
+}
+
+// new: normal branch with a dropped handle -> the body ends without running the job (cancel), nothing is logged.
+#[test]
+fn schedule_with_spawner_dropping_the_handle_cancels_the_spawned_job() {
+    let log = ErrorLog::default();
+    let (tx, rx) = std::sync::mpsc::channel::<()>();
+    let handle = schedule_with_spawner(
+        Duration::from_secs(3600),
+        Box::new(move || {
+            let _ = tx.send(());
+        }),
+        &|body| {
+            std::thread::spawn(body);
+            Ok(())
+        },
+        Some(&log),
+    );
+    drop(handle);
+    assert_eq!(
+        rx.recv_timeout(Duration::from_secs(10)),
+        Err(std::sync::mpsc::RecvTimeoutError::Disconnected)
+    );
+    assert!(log.errors.lock().unwrap().is_empty());
 }

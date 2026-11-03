@@ -29,13 +29,25 @@ commit to the same ref is rejected by git), so two machines can never hold the s
 bash tools/autopilot/claim.sh claim W8-18o "porting via pipeline"   # 0 = mine, 1 = held by another machine, 2 = origin unreachable
 bash tools/autopilot/claim.sh list                                  # unit, machine, time, note
 bash tools/autopilot/claim.sh release W8-18o                        # give it back (also after a failed unit nobody will retry)
-bash tools/autopilot/claim.sh gc                                    # drop claims whose unit is already on master or older than 14 days
+bash tools/autopilot/claim.sh gc                                    # drop claims whose unit is finished on master (feat(<id>): / Merge <id> / Complete <id> subject)
+bash tools/autopilot/claim.sh gc --stale                            # the same, and also claims older than 14 days (a crashed machine)
 ```
 - `codex-pipeline.sh` claims every unit before it starts it and marks it `skipped (claimed by <machine>)` when another machine holds it.
   Units claimed by hand (Claude lanes, workflows, manual fixes) must be claimed with the same command BEFORE the first edit, released when the
   PR is merged or abandoned.
 - Release only your own claims. `--force` on another machine's claim only after you asked that machine (or the human) and got an answer.
-- Run `claim.sh gc` from time to time; it never touches a claim whose unit has not reached `master`.
+- **A failed unit keeps its claim (P-88 option A, owner decision 2026-11-03).** The pipeline never calls `claim.sh release`: when a unit ends `failed`
+  the machine keeps the claim on purpose, so another machine does not port the same unit while the `needs-claude` note is unread or being triaged (the
+  other machine gets exit 1 and marks the unit `skipped (claimed by <machine>)`). After the triage, a person (or the Claude session) must give the unit
+  back by hand if nobody will retry it at once: `bash tools/autopilot/claim.sh release <unit>` (from the machine that holds it; `--force` only after
+  asking that machine). A unit that nobody releases stays locked until `claim.sh gc` finds it finished on master or `claim.sh gc --stale` drops it
+  after 14 days. `tools/dev/janitor.sh` releases only claims of this machine whose unit is already on origin/master.
+- **`claim.sh gc` (P-89 option A, owner decision 2026-11-03).** `gc` is run only by a person (no script calls it) and frees a claim only when
+  a commit SUBJECT on `origin/master` is `feat(<id>): ...` (the id may be one of several in the scope, `feat(A,<id>):`), `Merge <id> ...` or
+  `Complete <id> ...`; the same scope rule `codex-lib.py extsat` uses (FIX-G16B M3). An id that is only mentioned in a subject or a commit body, a `test(...)`
+  subject, or a subject that says `partial`, `wip` or `red tests` never frees a claim. Age alone frees nothing: a unit that runs longer than 14 days keeps
+  its claim. `gc --stale` additionally drops claims older than 14 days; use it for a crashed or abandoned machine, after checking `claim.sh list`.
+  Never run `gc` against the real origin to test it: `tools/autopilot/test/claim-selftest.sh` covers it with a throw-away bare origin.
 
 ## 4. Branches and PRs
 - Worktrees and `wu/<unit>` branches are local; push only the integration branch, `claude/<topic>` lane branches and PR branches.

@@ -25,6 +25,7 @@ use pr_imaging::pixels::PixelBuffer;
 use pr_imaging::service::CacheClearedSubscription;
 
 use super::core::{LocalJob, LocalPoster, MainWindow, MainWindowInner, WindowImageCache, post_to_window, with_window};
+use super::lookup_pool::{LookupPool, lookup_work};
 use crate::host::contracts::ShellWindowApi;
 use crate::shell_viewing::compare::{CompareFrame, CompareSide, layout};
 use crate::shell_viewing::composer::{
@@ -85,7 +86,7 @@ pub fn compare_retained_ids(images: [Option<&Arc<PixelBuffer>>; 2]) -> Vec<i64> 
 }
 
 /// C# `PrefetchHost` of the main window. Holds a `Weak` (never keeps the window alive); every method runs on the UI thread.
-/// `path_at` reads the catalog (short borrow of the view model). `start_lookup` moves the request and an `Arc<PreviewImageService>` to a worker thread, which
+/// `path_at` reads the catalog (short borrow of the view model). `start_lookup` moves the request and an `Arc<PreviewImageService>` to a lane of the shared lookup pool (`lookup_pool.rs`), which
 /// calls `try_get_cached_preview_path` per path (every key error is a quiet miss) and posts `prefetcher.apply_lookup(generation, &found)` to the window at
 /// `UiPriority::Background` (skipped when the window is gone). `schedule_retry` is `poster.post_after(delay, Background, ..)` ending in
 /// `prefetcher.run_retry(request)`.
@@ -124,29 +125,31 @@ impl PrefetchHost for MainWindowPrefetchHost {
         drop(view_model);
         let dispatcher = window.dispatcher.clone();
         let id = window.id;
-        // T3: the worker holds only `Send` data (the service, the request, the dispatcher, the window id).
-        let spawned = std::thread::Builder::new()
-            .name("prefetch-lookup".to_owned())
-            .spawn(move || {
-                let found: Vec<Option<Arc<PixelBuffer>>> = request
-                    .paths
-                    .iter()
-                    .map(|path| {
-                        service
-                            .try_get_cached_preview_path(path)
-                            .and_then(|image| image.platform_image().as_pixels().cloned())
-                    })
-                    .collect();
-                let generation = request.generation;
+        // T3: the job holds only `Send` data (the service, the request, the dispatcher, the window id). The shared named pool runs all lookups
+        // (G14 L3, R0003, P-74 C); a panic inside a job is caught, logged and counted by the pool.
+        let work = lookup_work(
+            request,
+            move |path| {
+                service
+                    .try_get_cached_preview_path(path)
+                    .and_then(|image| image.platform_image().as_pixels().cloned())
+            },
+            move |generation, found| {
                 dispatcher.post_with_priority(
                     Box::new(move || {
                         with_window(id, |window| window.apply_prefetch_lookup(generation, &found));
                     }),
                     UiPriority::Background,
                 );
-            });
-        if let Err(error) = spawned {
-            window.log.error("Prefetch lookup thread failed to start", Some(&error));
+            },
+        );
+        match LookupPool::shared() {
+            Ok(pool) => {
+                if !pool.submit(Arc::clone(&window.log), work) {
+                    window.log.error("Prefetch lookup pool is gone", None);
+                }
+            }
+            Err(error) => window.log.error("Prefetch lookup thread failed to start", Some(&error)),
         }
     }
 

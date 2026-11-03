@@ -73,6 +73,8 @@ struct FakeState {
     next_handler: Cell<u64>,
     fail_next_upload: Cell<Option<GfxError>>,
     fail_next_rows: Cell<Option<GfxError>>,
+    /// Runs inside `upload` and `upload_rows` (P-312): a backend that calls back into the cache.
+    reenter: RefCell<Option<Rc<dyn Fn()>>>,
 }
 
 impl FakeState {
@@ -80,6 +82,12 @@ impl FakeState {
         let handlers: Vec<Rc<dyn Fn()>> = self.handlers.borrow().iter().map(|(_, h)| Rc::clone(h)).collect();
         for handler in handlers {
             handler();
+        }
+    }
+    fn call_reenter(&self) {
+        let hook = self.reenter.borrow().clone();
+        if let Some(hook) = hook {
+            hook();
         }
     }
     fn has_subscribers(&self) -> bool {
@@ -113,6 +121,7 @@ impl GpuImageBackend for FakeBackend {
     type Image = FakeImage;
 
     fn upload(&self, pixels: &PixelBuffer, with_data: bool) -> Result<Rc<FakeImage>, GfxError> {
+        self.state.call_reenter();
         if let Some(error) = self.state.fail_next_upload.take() {
             return Err(error);
         }
@@ -136,6 +145,7 @@ impl GpuImageBackend for FakeBackend {
         start_row: i32,
         end_row: i32,
     ) -> Result<(), GfxError> {
+        self.state.call_reenter();
         if let Some(error) = self.state.fail_next_rows.take() {
             return Err(error);
         }
@@ -1117,4 +1127,91 @@ fn constants_match_the_csharp_values() {
     assert_eq!(DEFAULT_BUDGET_SCREENS, 6);
     assert_eq!(MINIMUM_SCREEN_BYTES, 8_294_400);
     assert_eq!(MIN_STRIPE_BYTES, 4);
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// P-312: the state borrow is not held across backend.upload / backend.upload_rows
+// ---------------------------------------------------------------------------------------------------------------------
+
+/// Installs a hook that reads the cache from inside the backend call (needs the state borrow free) and counts its runs.
+fn reenter_with_reads(fx: &Fixture) -> Rc<Cell<u32>> {
+    let runs = Rc::new(Cell::new(0));
+    let counter = Rc::clone(&runs);
+    let weak = Rc::downgrade(&fx.cache);
+    *fx.backend.reenter.borrow_mut() = Some(Rc::new(move || {
+        counter.set(counter.get() + 1);
+        let cache = weak.upgrade().unwrap();
+        let _ = (cache.count(), cache.total_gpu_bytes(), cache.contains(0));
+    }));
+    runs
+}
+
+// new (P-312): Rust-only edge, a re-entering backend must not hit a RefCell double borrow
+#[test]
+fn get_or_upload_new_buffer_lets_the_backend_read_the_cache() {
+    let fx = cache(10_000);
+    let runs = reenter_with_reads(&fx);
+    let px = image();
+
+    fx.cache.get_or_upload(&px).unwrap();
+
+    assert_eq!(runs.get(), 1);
+    assert_eq!(fx.cache.count(), 1);
+    assert_eq!(fx.cache.total_gpu_bytes(), 400);
+}
+
+// new (P-312)
+#[test]
+fn prefetch_lets_the_backend_read_the_cache() {
+    let fx = cache(10_000);
+    let runs = reenter_with_reads(&fx);
+    let px = image();
+
+    fx.cache.prefetch(&px).unwrap();
+
+    assert_eq!(runs.get(), 1);
+    assert!(fx.cache.contains(px.id()));
+}
+
+// new (P-312)
+#[test]
+fn run_stripe_lets_the_backend_read_the_cache_and_still_completes() {
+    let fx = cache(10_000);
+    let px = image();
+    fx.cache.prefetch(&px).unwrap();
+    let runs = reenter_with_reads(&fx);
+
+    fx.scheduler.run_all(&fx.cache);
+
+    assert!(runs.get() >= 1);
+    assert!(fx.cache.is_fully_uploaded(px.id()));
+}
+
+// new (P-312)
+#[test]
+fn get_or_upload_completing_a_prefetched_image_lets_the_backend_read_the_cache() {
+    let fx = cache(10_000);
+    let px = image();
+    fx.cache.prefetch(&px).unwrap();
+    let runs = reenter_with_reads(&fx);
+
+    fx.cache.get_or_upload(&px).unwrap();
+
+    assert_eq!(runs.get(), 1);
+    assert!(fx.cache.is_fully_uploaded(px.id()));
+}
+
+// new (P-312): a backend that disposes the cache mid-upload leaves no entry and no leaked image
+#[test]
+fn get_or_upload_disposed_by_the_backend_mid_upload_releases_the_image() {
+    let fx = cache(10_000);
+    let weak = Rc::downgrade(&fx.cache);
+    *fx.backend.reenter.borrow_mut() = Some(Rc::new(move || weak.upgrade().unwrap().dispose()));
+    let px = image();
+
+    let result = fx.cache.get_or_upload(&px);
+
+    assert!(matches!(result, Err(CacheError::Disposed { .. })));
+    assert_eq!(fx.cache.count(), 0);
+    assert_eq!(fx.backend.released(), vec![px.id()]);
 }

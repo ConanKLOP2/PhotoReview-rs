@@ -14,6 +14,7 @@ use pr_app::presenters::settings_form_state::SettingsFormState;
 use pr_app::services::shortcut_key_name::try_parse;
 use pr_core::settings::app_settings::SettingsTexts;
 use pr_core::settings::shortcuts::{ShortcutMappings, canonicalize};
+use pr_core::text::ignore_case_key;
 use pr_l10n::localizer::{Localizer, number_culture};
 use pr_l10n::template::LocArg;
 use pr_l10n::{keys, tr};
@@ -168,7 +169,7 @@ pub fn all_rows() -> impl Iterator<Item = &'static ShortcutRow> {
 }
 
 /// C# `FindProblems(texts)`: the properties to mark: a mandatory box that is empty or not a valid key name, an optional box that is not empty and not a valid key
-/// name, and every box of a group of two or more boxes with the same canonical key (compared ignoring ASCII case).
+/// name, and every box of a group of two or more boxes with the same canonical key (OrdinalIgnoreCase, like the C# dictionary).
 pub fn find_problems(texts: &BTreeMap<String, String>) -> BTreeSet<String> {
     let mut problems = BTreeSet::new();
     let mut by_key: BTreeMap<String, Vec<String>> = BTreeMap::new();
@@ -185,7 +186,7 @@ pub fn find_problems(texts: &BTreeMap<String, String>) -> BTreeSet<String> {
             continue;
         }
         by_key
-            .entry(canonical.to_ascii_lowercase())
+            .entry(ignore_case_key(&canonical))
             .or_default()
             .push(property.clone());
     }
