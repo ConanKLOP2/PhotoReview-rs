@@ -73,7 +73,16 @@ pub(super) enum CoreTail {
         file_name: String,
         missing: String,
         is_remove: bool,
+        /// RP-JOURNAL-NOTICE-01: the journal line was not written; `StatusActionJournalNotSaved` is appended after a space.
+        journal_not_saved: bool,
         /// Move-to / Copy-to: what runs after this tail ended the core (C# code after `ExecuteFileActionCoreAsync` returned true).
+        then: Option<MoveCopyTail>,
+    },
+    /// RP-JOURNAL-NOTICE-01 (C# `else if (journalNotSaved)` branch): nothing else wrote a status for this success except the
+    /// presenter, so after it finished and only while the folder is still current the status is `StatusActionJournalNotSaved`.
+    /// Result `Finished{true}`.
+    JournalNotice {
+        folder_gen: i64,
         then: Option<MoveCopyTail>,
     },
     /// Lines 420 to 428: Move failed verification after the source was removed: if still current, `update_session_path`
@@ -609,6 +618,18 @@ impl FileActionController {
         self.deps.texts.format(key, args)
     }
 
+    /// RP-JOURNAL-NOTICE-01: `status` followed by a space and `StatusActionJournalNotSaved` when the journal line was not written.
+    fn with_journal_notice(&self, status: String, journal_not_saved: bool) -> String {
+        if journal_not_saved {
+            format!(
+                "{status} {}",
+                self.deps.texts.get(keys::STATUS_ACTION_JOURNAL_NOT_SAVED)
+            )
+        } else {
+            status
+        }
+    }
+
     /// Runs `f` on the undo service when there is one (a poisoned lock is recovered, R0003). Never call the sink inside `f`.
     pub(super) fn with_undo<R>(&self, f: impl FnOnce(&mut pr_core::file_actions::undo::UndoService) -> R) -> Option<R> {
         let undo = self.deps.undo_service.as_ref()?;
@@ -896,6 +917,26 @@ impl FileActionController {
         };
         let succeeded = result.succeeded();
         let operation = flight.operation;
+        // RP-JOURNAL-NOTICE-01: the action is real on disk but its journal line was not written, so Undo/Recovery may not see it.
+        let journal_not_saved = succeeded
+            && match &result {
+                IoResult::Group(g) => !g.journal_persisted,
+                IoResult::Single(s) => !s.journal_persisted,
+            };
+        if journal_not_saved {
+            let journal_error = match &result {
+                IoResult::Group(g) => g.journal_error.as_deref(),
+                IoResult::Single(s) => s.journal_error.as_deref(),
+            };
+            self.deps.log.error(
+                &format!(
+                    "File action {operation:?} on {} succeeded but its journal entry could not be saved: {}",
+                    get_file_name(&flight.source),
+                    journal_error.unwrap_or_default()
+                ),
+                None,
+            );
+        }
         let source_removed = match &result {
             IoResult::Group(g) => {
                 g.members.iter().any(|m| m.completed)
@@ -908,14 +949,16 @@ impl FileActionController {
         // and gate state must not be touched. APP-03 (Q-R25 B): a SUCCESSFUL action is real on disk, so it is registered for Undo
         // and the user is told. On failure nothing changed on disk (except an unverified Move): no undo, no INV-5 restore.
         if !self.deps.clock.is_folder_current(flight.folder_gen) {
-            self.report_late(cx, &flight, &result, source_removed);
+            self.report_late(cx, &flight, &result, source_removed, journal_not_saved);
             cx.sink.notify_navigation_state_changed();
             return done(false);
         }
 
         if succeeded {
             // A throw in the bookkeeping must not be treated as a failed action: the file operation is already real.
-            let attempt = catch_unwind(AssertUnwindSafe(|| self.finish_success(cx, &flight, &result)));
+            let attempt = catch_unwind(AssertUnwindSafe(|| {
+                self.finish_success(cx, &flight, &result, journal_not_saved)
+            }));
             return match attempt {
                 Ok(SuccessEnd::Step(step)) => step,
                 // The core returned true: Move-to / Copy-to continues with its own final steps (outside the `try`, like C#).
@@ -1003,13 +1046,18 @@ impl FileActionController {
         flight: &InFlightAction,
         result: &IoResult,
         source_removed: bool,
+        journal_not_saved: bool,
     ) {
         let operation = flight.operation;
         let name = get_file_name(&flight.source).to_string();
         match result {
             IoResult::Group(group_result) => {
                 self.with_undo(|u| u.register_group(group_result)); // also the completed members of a part-way failed Delete
-                if group_result.succeeded {
+                if group_result.succeeded && journal_not_saved {
+                    // More important than "press Ctrl+Z": Undo may not see this action.
+                    cx.sink
+                        .show_late_action_status(&self.deps.texts.get(keys::STATUS_ACTION_JOURNAL_NOT_SAVED));
+                } else if group_result.succeeded {
                     let target = group_result.entry.as_ref().and_then(|e| e.destination.clone());
                     if operation == FileOperationType::Move && target.is_some() {
                         let folder = target.as_deref().and_then(get_directory_name).unwrap_or_default();
@@ -1062,7 +1110,10 @@ impl FileActionController {
                 }
             }
             IoResult::Single(single) => {
-                if single.succeeded {
+                if single.succeeded && journal_not_saved {
+                    cx.sink
+                        .show_late_action_status(&self.deps.texts.get(keys::STATUS_ACTION_JOURNAL_NOT_SAVED));
+                } else if single.succeeded {
                     self.report_late_completion(cx, single);
                 } else if operation == FileOperationType::Move && source_removed {
                     // D-04: a Move whose destination could not be verified after the source was removed.
@@ -1075,7 +1126,13 @@ impl FileActionController {
     }
 
     /// The success branch (lines 386 to 410). A tail may park (`SuccessEnd::Step`).
-    fn finish_success(&mut self, cx: &mut FileActionCx<'_>, flight: &InFlightAction, result: &IoResult) -> SuccessEnd {
+    fn finish_success(
+        &mut self,
+        cx: &mut FileActionCx<'_>,
+        flight: &InFlightAction,
+        result: &IoResult,
+        journal_not_saved: bool,
+    ) -> SuccessEnd {
         match result {
             IoResult::Group(g) => {
                 self.with_undo(|u| u.register_group(g));
@@ -1113,6 +1170,7 @@ impl FileActionController {
                     file_name: get_file_name(&flight.source).to_string(),
                     missing,
                     is_remove: flight.is_remove,
+                    journal_not_saved,
                     then,
                 },
             ));
@@ -1126,16 +1184,32 @@ impl FileActionController {
                     &[LocArg::new("actionName", flight.action_name.clone())],
                 )
             };
-            cx.sink.set_status_text(&text);
+            cx.sink
+                .set_status_text(&self.with_journal_notice(text, journal_not_saved));
         } else if flight.operation == FileOperationType::Copy {
             let destination = match result {
                 IoResult::Group(g) => g.entry.as_ref().and_then(|e| e.destination.clone()),
                 IoResult::Single(s) => s.destination_path.clone(),
             }
             .unwrap_or_default();
-            cx.sink.set_status_text(&self.status_of(
+            let copied = self.status_of(
                 keys::STATUS_COPIED_TO,
                 &[LocArg::new("fileName", get_file_name(&destination).to_string())],
+            );
+            cx.sink
+                .set_status_text(&self.with_journal_notice(copied, journal_not_saved));
+        } else if journal_not_saved {
+            // Nothing else wrote a status for this success except the presenter: let it finish first.
+            let then = match &flight.after {
+                AfterCore::MoveCopyTo(tail) => Some(tail.clone()),
+                AfterCore::Nothing => None,
+            };
+            return SuccessEnd::Step(self.await_present(
+                cx,
+                CoreTail::JournalNotice {
+                    folder_gen: flight.folder_gen,
+                    then,
+                },
             ));
         }
         cx.sink.notify_navigation_state_changed();
@@ -1244,6 +1318,7 @@ impl FileActionController {
                 file_name,
                 missing,
                 is_remove,
+                journal_not_saved,
                 then,
             } => {
                 follow_up = then;
@@ -1261,7 +1336,16 @@ impl FileActionController {
                     } else {
                         missing_text
                     };
-                    cx.sink.set_status_text(&status);
+                    cx.sink
+                        .set_status_text(&self.with_journal_notice(status, journal_not_saved));
+                }
+                done(true)
+            }
+            CoreTail::JournalNotice { folder_gen, then } => {
+                follow_up = then;
+                if self.deps.clock.is_folder_current(folder_gen) {
+                    cx.sink
+                        .set_status_text(&self.deps.texts.get(keys::STATUS_ACTION_JOURNAL_NOT_SAVED));
                 }
                 done(true)
             }
