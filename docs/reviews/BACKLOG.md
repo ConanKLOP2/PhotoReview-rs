@@ -41,7 +41,7 @@ Rủi ro: **D** = có thể mất/sai dữ liệu người dùng, **C** = crash/
 | 27 | G27 Backup config newer lỗi nhưng vẫn downgrade, mất field chưa biết | invariants-storage M2 | trung bình | D (config) | W2-03 | cần quyết định sản phẩm |
 | 28 | G28 Log short-write rồi retry lỗi làm lặp/dính dòng | invariants-storage L1 | thấp | T | W2-16 | thêm test + hardening log |
 | 29 | G29 Cache read cấp phát toàn file trước kiểm header/length; phân loại I/O OOM | invariants-storage M3 | trung bình | C/B | W4-08b, W4-14c | sửa mã + test |
-| 30 | G30 Kiểm output của lần registry read thứ hai | recycle-policy M1 | trung bình | D/B | W6-02b | sửa mã + test fake |
+| 30 | G30 Kiểm output của lần registry read thứ hai | recycle-policy M1 | trung bình | D/B | W6-02b | ĐÃ ĐÓNG: sửa ở PR #532, test kiểm lại 2026-11-03 ([G30](G30-RECYCLE-REGISTRY-TESTS-2026-11-03.md)) |
 | 31 | G31 Nối restore verb helper vào adapter | recycle-policy L1 | thấp | B/T | W6-02d/e | tích hợp hoặc ADR, giữ Partial |
 
 Thứ tự đề xuất sau tái kiểm: G25 (nguy cơ xoá vĩnh viễn), rồi G3, G4, G1, G2 (lỗi người dùng thấy ngay); G5, G7, G6 (an toàn dữ liệu); sau đó G10, G11, G9; test (G17..G20) song song vì không xung đột file; G16 độc lập; G21..G23 tài liệu cuối cùng (chạm PARITY, gộp theo hàng).
@@ -456,7 +456,7 @@ G11 nhận thêm host-dispatcher M1 (trung bình, W8-13c/18h..18k): filtered mes
 
 | Nhóm | Nguồn | Mức | Rủi ro | Chủ | Loại |
 |---|---|---|---|---|---|
-| G30 Kiểm output của lần registry read thứ hai | recycle-policy M1 | trung bình | D/B (fail-closed, chưa chứng minh mất file) | W6-02b | sửa mã + test fake |
+| G30 Kiểm output của lần registry read thứ hai | recycle-policy M1 | trung bình | D/B (fail-closed, chưa chứng minh mất file) | W6-02b | ĐÃ ĐÓNG: sửa ở PR #532, test kiểm lại 2026-11-03 ([G30](G30-RECYCLE-REGISTRY-TESTS-2026-11-03.md)) |
 | G31 Nối restore verb helper vào adapter | recycle-policy L1 | thấp | B/T | W6-02d/e | tích hợp hoặc ADR, giữ Partial |
 
 Bằng chứng, kịch bản và hai PROMPT có phạm vi/lệnh kiểm tra: [recycle-policy.md](recycle-policy.md). Không gộp với G25 (fingerprint nguồn) hoặc G12 (journal/Undo), không đếm lại test ignored của G17. Suy luận từ mã, chưa chạy thử.
@@ -479,7 +479,7 @@ Bằng chứng, kịch bản và hai PROMPT có phạm vi/lệnh kiểm tra: [re
 | G24 | Q1..Q8 đã được P-52 chấp nhận; chỉ đóng phần quyết định đó. Không coi quyết định là bằng chứng implementation/test |
 | G25 (đã đóng, PR #448), G26 | G26 còn sửa; khác biệt an toàn so với C# cần ADR/Different theo prompt, không tự ghi là đã được P-52 chốt |
 | G27 | Còn quyết định về backup config newer khi backup lỗi; chưa nằm trong Q1..Q8 |
-| G28, G29, G30 | Còn sửa/test fake; các báo cáo #218/#221 chưa sửa production |
+| G28, G29 | Còn sửa/test fake; các báo cáo #218/#221 chưa sửa production (G30 đã đóng, xem trên) |
 | G31 | Còn nối helper hoặc ADR canonical-only; P-03 hiện Partial, không cần sửa trạng thái thành Full chỉ vì helper có pure test |
 
 Đã kiểm trực tiếp trạng thái merged của #219/#220/#221 và nội dung master; các claim review của ba việc đã nhả, worktree/branch đã dọn. Claim live ngày này có các unit A/B/VTI, nên danh sách sở hữu trong bảng là cảnh báo phạm vi, không phải quyền tự động cho máy C. Trước mỗi sửa phải lấy lại danh sách claim hiện hành.
