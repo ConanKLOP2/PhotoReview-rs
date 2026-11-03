@@ -9,7 +9,7 @@ use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicUsize, Ordering};
 
 use pr_core::abstractions::{AppendStream, FileStat, FileSystem, ReadSeek};
-use pr_core::file_actions::duplicates::{HashFailure, find, has_numbered_suffix};
+use pr_core::file_actions::duplicates::{DuplicateGroup, HashFailure, find, find_groups, has_numbered_suffix};
 use pr_core::sync::{CancelToken, Canceled};
 use pr_test_support::golden;
 use pr_test_support::{FakeFileSystem, FsOp};
@@ -405,6 +405,69 @@ fn has_numbered_suffix_examples() {
     assert!(!has_numbered_suffix("img(1)"));
     assert!(!has_numbered_suffix("img (1) "));
     assert!(!has_numbered_suffix("img (𝟏)"));
+}
+
+// New tests for `find_groups` (C# #535 added `FindGroupsAsync` without a Core test; its behaviour is covered through the
+// controller tests). `find` must be exactly the flattening of `find_groups`.
+#[test]
+fn find_groups_keeps_the_copies_that_stay_and_find_is_its_flattening() {
+    let names = [
+        r"C:\photos\img.jpg",
+        r"C:\photos\other.jpg",
+        r"C:\photos\img (1).jpg",
+        r"C:\photos\img (2).jpg",
+    ];
+    let fs = fs_with(&names.map(|n| (n, "identical-content")));
+    let hash = || {
+        let mut calls = constant("same");
+        move |p: &str, _c: &CancelToken| calls(p)
+    };
+    let groups = find_groups(&s(&names), true, &mut hash(), &fs, &CancelToken::none()).unwrap();
+    assert_eq!(
+        groups,
+        vec![DuplicateGroup {
+            keep: s(&[r"C:\photos\img.jpg", r"C:\photos\other.jpg"]),
+            remove: s(&[r"C:\photos\img (1).jpg", r"C:\photos\img (2).jpg"]),
+        }]
+    );
+    let flat = find(&s(&names), true, &mut hash(), &fs, &CancelToken::none()).unwrap();
+    assert_eq!(flat, groups[0].remove);
+}
+
+#[test]
+fn find_groups_when_every_member_matches_the_first_one_is_kept() {
+    let names = [r"C:\photos\img (1).jpg", r"C:\photos\img (2).jpg"];
+    let fs = fs_with(&names.map(|n| (n, "identical-content")));
+    let groups = find_groups(
+        &s(&names),
+        true,
+        &mut |p: &str, _c: &CancelToken| constant("same")(p),
+        &fs,
+        &CancelToken::none(),
+    )
+    .unwrap();
+    assert_eq!(
+        groups,
+        vec![DuplicateGroup {
+            keep: s(&[r"C:\photos\img (1).jpg"]),
+            remove: s(&[r"C:\photos\img (2).jpg"]),
+        }]
+    );
+}
+
+#[test]
+fn find_groups_has_no_entry_for_a_group_with_nothing_to_remove() {
+    let names = [r"C:\photos\a.jpg", r"C:\photos\b.jpg"];
+    let fs = fs_with(&names.map(|n| (n, "identical-content")));
+    let groups = find_groups(
+        &s(&names),
+        true,
+        &mut |p: &str, _c: &CancelToken| constant("same")(p),
+        &fs,
+        &CancelToken::none(),
+    )
+    .unwrap();
+    assert!(groups.is_empty());
 }
 
 // ---- golden ----

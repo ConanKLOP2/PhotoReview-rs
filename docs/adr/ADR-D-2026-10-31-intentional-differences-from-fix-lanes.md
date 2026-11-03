@@ -68,6 +68,8 @@ Update 2026-11-03: C# #534 (D1, `6bb0d706`) now re-stats group Recycle members r
 
 ## DV-7 Duplicate cleanup re-checks the whole content group after the review dialog (PR #464, D-07f-5)
 
+> Superseded 2026-11-03: C# #535 (D2) added its own per-file re-check, and the owner decided to port it (P-191, "port both"). The Rust-only pre-check described here was replaced by the C# behaviour (check each file and one kept copy right before its recycle, `core.duplicate.fileChanged`, the rest of the batch goes on); see the PARITY row `X-duplicate-cleanup`. The text below is the historical record.
+
 - Context: while the modal is open the keeper may be deleted or changed.
 - C#: `DuplicateCleanupController.cs:184` shows `ShowBatchReview`; afterwards only `_catalog.IndexOf(path) >= 0` (in-memory) is checked; the keeper is not tracked.
 - Rust: `crates/pr-app/src/coordinators/duplicate_cleanup.rs` records `(size, last write, "size|hash")` per hashed file and `verify_content_groups` re-stats every file of each group (copies and keeper); any difference or missing file leaves the group alone and reports `<name>: The source or destination has changed.`

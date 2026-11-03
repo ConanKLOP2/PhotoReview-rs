@@ -773,12 +773,11 @@ fn review_confirmed_but_every_file_left_the_catalog_recycles_nothing_and_reports
     assert_eq!(rig.port.queued(), 0);
 }
 
-// ST-INVMAP M1 (data safety). DIVERGENCE from C#: the C# controller re-checks only catalog membership after the review dialog.
-// Here the files of the content group (the keeper that stays and the copies to remove) are re-stat'ed right before the first
-// Recycle; a group that changed while the dialog was open is left alone and reported.
-fn run_review_that_changes(change: impl FnOnce(&FakeFileSystem) + Send + 'static) -> Rig {
+// D2 (C# #535): the files are re-checked against the size and write time captured at hash time right before EACH recycle.
+// This replaces the earlier Rust-only D-07f-5 pre-check (whole group, before the first recycle, BatchCanceled).
+fn run_review_that_changes(names: &[&str], change: impl FnOnce(&FakeFileSystem) + Send + 'static) -> Rig {
     let mut rig = Rig::with_dialog();
-    rig.load_three();
+    rig.load(names);
     let fs = rig.fs.clone();
     let mut change = Some(change);
     *rig.dialog.on_review.lock().unwrap() = Some(Box::new(move || {
@@ -787,45 +786,101 @@ fn run_review_that_changes(change: impl FnOnce(&FakeFileSystem) + Send + 'static
         }
     }));
     assert_eq!(rig.remove_duplicates(true), DuplicateCleanupStep::Pending);
-    let step = rig.pump();
-    assert_eq!(step, DuplicateCleanupStep::Done);
+    rig.pump();
     rig
 }
 
-fn assert_group_left_alone(rig: &Rig) {
-    assert!(rig.exec.recorded().is_empty(), "nothing may be recycled");
-    assert_eq!(rig.sink.last(), Some(text("status.batchCanceled").as_str()));
+fn changed_line(name: &str) -> String {
+    format!("{name}: {}", text("core.duplicate.fileChanged"))
+}
+
+// C#: DuplicateCleanupControllerReviewGapTests.RemoveDuplicatesAsync_KeptCopyDeletedWhileReviewOpen_RecyclesNothing
+// Difference: the C# test asserts the status `BatchDone(0, 2)`; the Rust batch, with no success, ends without the reload.
+#[test]
+fn kept_copy_deleted_while_review_open_recycles_nothing() {
+    let rig = run_review_that_changes(&["a.jpg", "a (1).jpg", "a (2).jpg"], |fs| {
+        fs.delete(Path::new(&p("a.jpg"))).expect("delete keeper");
+    });
+
+    assert!(rig.exec.recorded().is_empty());
+    assert!(rig.fs.peek_stat(p("a (1).jpg")).is_some() && rig.fs.peek_stat(p("a (2).jpg")).is_some());
+    assert_eq!(rig.sink.last(), Some(batch_done(0, 2).as_str()));
     assert!(rig.sink.reloads.is_empty());
     let errors = rig.dialog.errors();
-    assert_eq!(errors.len(), 1, "one dialog tells the user which files were left alone");
-    assert!(
-        errors[0].1.contains("a (1).jpg") && errors[0].1.contains("a (2).jpg"),
-        "{}",
-        errors[0].1
-    );
-    assert!(
-        errors[0].1.contains(&text("core.undo.sourceOrDestinationChanged")),
-        "{}",
-        errors[0].1
+    assert_eq!(errors.len(), 1);
+    assert_eq!(
+        errors[0].1,
+        format!("{}\r\n{}", changed_line("a (1).jpg"), changed_line("a (2).jpg"))
     );
 }
 
+// C#: DuplicateCleanupControllerReviewGapTests.RemoveDuplicatesAsync_FileEditedWhileReviewOpen_IsNotRecycledButItsSiblingIs
 #[test]
-fn batch_recycle_skips_group_whose_keeper_vanished_during_review() {
-    let rig = run_review_that_changes(|fs| fs.delete(Path::new(&p("a.jpg"))).expect("delete keeper"));
-    assert_group_left_alone(&rig);
+fn file_edited_while_review_open_is_not_recycled_but_its_sibling_is() {
+    let mut rig = run_review_that_changes(&["a.jpg", "a (1).jpg", "a (2).jpg"], |fs| {
+        fs.add_file(p("a (1).jpg"), &[0u8; 4096]); // edited after it was hashed
+    });
+    assert_eq!(rig.recycled_paths(), vec![p("a (2).jpg")]);
+    assert_eq!(rig.reload_finished(true), DuplicateCleanupStep::Done);
+
+    assert!(rig.fs.peek_stat(p("a (1).jpg")).is_some());
+    assert_eq!(rig.sink.last(), Some(batch_done(1, 1).as_str()));
+    let errors = rig.dialog.errors();
+    assert_eq!(errors.len(), 1);
+    assert_eq!(errors[0].1, changed_line("a (1).jpg"));
 }
 
+// New test (C# `Unchanged` compares size AND write time): same bytes, same size, only the write time moved.
 #[test]
-fn batch_recycle_skips_group_whose_keeper_was_replaced_during_review() {
-    let rig = run_review_that_changes(|fs| fs.add_file(p("a.jpg"), &[7u8; 4096]));
-    assert_group_left_alone(&rig);
+fn file_whose_write_time_moved_while_review_open_is_not_recycled() {
+    let mut rig = run_review_that_changes(&["a.jpg", "a (1).jpg", "a (2).jpg"], |fs| {
+        let before = fs.peek_stat(p("a (2).jpg")).expect("stat").last_write_utc;
+        fs.set_last_write(p("a (2).jpg"), before.checked_add_ticks(10_000_000).expect("later"));
+    });
+    assert_eq!(rig.recycled_paths(), vec![p("a (1).jpg")]);
+    assert_eq!(rig.reload_finished(true), DuplicateCleanupStep::Done);
+    assert_eq!(rig.sink.last(), Some(batch_done(1, 1).as_str()));
+    assert_eq!(rig.dialog.errors()[0].1, changed_line("a (2).jpg"));
 }
 
+// New test (C# `group.Keep.Any(...)`): one copy that stays is enough; losing the other keeper does not stop the batch.
 #[test]
-fn batch_recycle_skips_group_when_a_file_to_remove_was_modified_during_review() {
-    let rig = run_review_that_changes(|fs| fs.add_file(p("a (2).jpg"), &[7u8; 4096]));
-    assert_group_left_alone(&rig);
+fn one_surviving_keeper_is_enough() {
+    let mut rig = run_review_that_changes(&["a.jpg", "b.jpg", "a (1).jpg"], |fs| {
+        fs.delete(Path::new(&p("a.jpg"))).expect("delete one keeper");
+    });
+    assert_eq!(rig.recycled_paths(), vec![p("a (1).jpg")]);
+    assert_eq!(rig.reload_finished(true), DuplicateCleanupStep::Done);
+    assert_eq!(rig.sink.last(), Some(batch_done(1, 0).as_str()));
+    assert!(rig.dialog.errors().is_empty());
+}
+
+// New test: a file to remove that vanished is a change too (not a recycle attempt that fails inside the executor).
+#[test]
+fn file_to_remove_deleted_while_review_open_is_reported_as_changed() {
+    let mut rig = run_review_that_changes(&["a.jpg", "a (1).jpg", "a (2).jpg"], |fs| {
+        fs.delete(Path::new(&p("a (1).jpg"))).expect("delete");
+    });
+    assert_eq!(rig.recycled_paths(), vec![p("a (2).jpg")]);
+    assert_eq!(rig.reload_finished(true), DuplicateCleanupStep::Done);
+    assert_eq!(rig.dialog.errors()[0].1, changed_line("a (1).jpg"));
+}
+
+// New test: the check runs at every recycle, not once up front: a change made while the FIRST recycle runs is caught for the
+// second file.
+#[test]
+fn change_between_two_recycles_is_caught_for_the_later_file() {
+    let mut rig = Rig::new(Options::default());
+    rig.load_three();
+    assert_eq!(rig.remove_duplicates(true), DuplicateCleanupStep::Pending);
+    assert_eq!(rig.step(), DuplicateCleanupStep::Pending); // hash -> first recycle submitted
+    assert_eq!(rig.step(), DuplicateCleanupStep::Pending); // first recycle done, second submitted
+    rig.fs.add_file(p("a (2).jpg"), &[0u8; 4096]);
+    assert_eq!(rig.pump(), DuplicateCleanupStep::Pending);
+    assert_eq!(rig.reload_finished(true), DuplicateCleanupStep::Done);
+
+    assert_eq!(rig.recycled_paths(), vec![p("a (1).jpg")]);
+    assert_eq!(rig.sink.last(), Some(batch_done(1, 1).as_str()));
 }
 
 // ---- DuplicateCleanupControllerMutationGapTests --------------------------------------------------------------------------
@@ -1299,7 +1354,10 @@ fn stale_ticket_event_is_ignored() {
 
     let stale = rig.handle(DuplicateCleanupEvent::HashFinished {
         ticket: 999,
-        outcome: HashOutcome::Found(vec![p("a (1).jpg")]),
+        outcome: HashOutcome::Found(vec![pr_core::file_actions::duplicates::DuplicateGroup {
+            keep: vec![p("a.jpg")],
+            remove: vec![p("a (1).jpg")],
+        }]),
     });
     assert_eq!(stale, DuplicateCleanupStep::Pending);
     assert_eq!(rig.sink.statuses.len(), statuses);
