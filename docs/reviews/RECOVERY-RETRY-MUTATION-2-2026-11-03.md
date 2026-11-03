@@ -1,4 +1,4 @@
-Status: evidence report (2026-11-03), lane mut-recovery-retry-2. Continuation of [RECOVERY-RETRY-MUTATION-2026-11-03.md](RECOVERY-RETRY-MUTATION-2026-11-03.md): the group path of `recovery_retry.rs` is now measured (72 new mutants: 67 caught, 0 missed, 5 unviable). The 34 glue mutants stay NOT RUN; PARITY status not changed by this lane.
+Status: evidence report (2026-11-03), lane mut-recovery-retry-2. Continuation of [RECOVERY-RETRY-MUTATION-2026-11-03.md](RECOVERY-RETRY-MUTATION-2026-11-03.md): the group path of `recovery_retry.rs` is now measured (74 new mutants: 69 caught, 0 missed, 5 unviable). The 32 glue mutants stay NOT RUN; PARITY status not changed by this lane.
 
 # Recovery retry: mutation run of the group path
 
@@ -18,7 +18,7 @@ The `-F` regex of `cargo-mutants` did not narrow the batches as intended: each b
 |---|---|---|---|---|---|
 | 81 | 75 | 1 | 5 | 0 | 0 |
 
-Of the 81, 9 were already measured by the first report (`retry_core` 6, `already_handled` 1, `not_journaled` 2; their 8 caught and 1 missed re-confirm it, nothing new). The NEW group-path mutants are 72: **67 caught, 0 missed, 5 unviable, 0 timeouts**. Per function (all mutants of that function, distinct): `retry_group` 17 caught + 1 unviable, `precheck_group_members` 12 caught, `run_group_members` 23 caught, `run_single` 4 caught, plus `execute_group_retry`, `execute_retry`, `copy_new_or_keep_leftover`, `is_restored_file`, `stat`, `committed_result` (caught except the unviable ones below).
+Of the 81, 7 were already measured by the first report (`retry_core` 6, `already_handled` 1; their 6 caught and 1 missed re-confirm it, nothing new). The NEW mutants are 74 (72 of the group path plus the 2 `not_journaled` glue mutants, both caught): **69 caught, 0 missed, 5 unviable, 0 timeouts**. Per function (all mutants of that function, distinct): `retry_group` 17 caught + 1 unviable, `precheck_group_members` 12 caught, `run_group_members` 23 caught, `run_single` 4 caught, plus `execute_group_retry`, `execute_retry`, `copy_new_or_keep_leftover`, `is_restored_file`, `stat`, `committed_result` (caught except the unviable ones below).
 
 Preflight of every batch (unmutated test command, 3 test binaries): `running` 104 tests, exit 0. No `no tests/golden above` warning.
 
@@ -32,7 +32,7 @@ None new. The only missed mutant in every batch is `:375:13 delete field size ..
 
 ## What was NOT run
 
-34 of the 160 mutants (160 minus the 54 of the first report minus the 72 new): glue without branching, i.e. `RecoveryRetryResult::new`, the builders `with_recycle_bin`, `with_allow_permanent_delete`, `with_file_action_gate`, `Debug::fmt`, `coded_error`, `plain_error`, `failure_message`-adjacent string plumbing and the `EnglishRecoveryRetryTexts` string methods. This report says nothing about them. The exact count of 34 is arithmetic from the two reports, not a fresh `--list` diff.
+32 of the 160 mutants (160 minus the 54 of the first report minus the 74 new): glue without branching, i.e. `RecoveryRetryResult::new`, the builders `with_recycle_bin`, `with_allow_permanent_delete`, `with_file_action_gate`, `Debug::fmt`, `coded_error`, `plain_error`, `failure_message`-adjacent string plumbing and the `EnglishRecoveryRetryTexts` string methods. This report says nothing about them. The exact count of 32 is arithmetic from the two reports, not a fresh `--list` diff.
 
 ## Commands (worktree root, `PY_BIN` = Python 3.12, `TEMP=<worktree>/t`)
 
@@ -45,4 +45,4 @@ bash tools/dev/mutants.sh pr-core crates/pr-core/src/file_actions/recovery_retry
 
 ## Verdict
 
-With the existing tests, the group path of `recovery_retry.rs` (`retry_group`, `precheck_group_members`, `run_group_members`, `execute_group_retry`, `execute_retry`, `run_single`, helpers) is mutation-clean: 0 missed among 72 mutants. Together with the first report, 126 of 160 mutants are measured on current master (116 caught, 1 equivalent, 9 unviable); the remaining 34 are glue. Production code and tests unchanged.
+With the existing tests, the group path of `recovery_retry.rs` (`retry_group`, `precheck_group_members`, `run_group_members`, `execute_group_retry`, `execute_retry`, `run_single`, helpers) is mutation-clean: 0 missed among 74 new mutants. Together with the first report, 128 of 160 mutants are measured on current master (118 caught, 1 equivalent, 9 unviable); the remaining 32 are glue. Production code and tests unchanged.
