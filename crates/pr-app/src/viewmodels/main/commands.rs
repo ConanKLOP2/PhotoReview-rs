@@ -31,7 +31,7 @@ use crate::coordinators::file_actions::recycle::{
     FileActionController, FileActionCx, FileActionDone, FileActionEvent, FileActionStep,
 };
 use crate::services::contracts::ClipboardService;
-use crate::viewmodels::viewer_state::{ViewerChanges, ViewerUpdate};
+use crate::viewmodels::viewer_state::{ViewerChanges, ViewerProperty, ViewerUpdate};
 use crate::viewport::fit::{ViewRefreshOutcome, ZoomDetailRefreshResult};
 
 // ---- seams -------------------------------------------------------------------------------------------------------------------
@@ -461,8 +461,11 @@ impl MainViewModel {
     /// C# `ViewerState.ZoomModeChanged` handler (MainViewModel line 117) for a change made outside the view model (the shell input: D1, wheel, keys,
     /// click zoom, Fit): `presenter.set_viewer_zoom(viewer.effective_zoom())`, which lets the zoom detail loader start or drop the full-resolution decode.
     pub fn on_viewer_zoom_mode_changed(&mut self) -> ChangeSet {
+        // The displayed zoom percent changed with the zoom (C# `MainViewModel.cs` lines 140 to 143: `DisplayZoomPercent` -> `InfoOverlay.Refresh()`), P-310.
+        let mut changes = ViewerChanges::default();
+        changes.insert(ViewerProperty::DisplayZoomPercent);
         self.apply_viewer_update(ViewerUpdate {
-            changes: ViewerChanges::default(),
+            changes,
             zoom_mode_changed: true,
         })
     }
