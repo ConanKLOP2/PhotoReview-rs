@@ -127,11 +127,19 @@ impl FakeTime {
 
 impl TimeSource for FakeTime {
     fn now_ticks(&self) -> i64 {
-        self.now_calls.fetch_add(1, Ordering::SeqCst);
+        // Q9: a mutated limiter loop that never ends must fail this test fast instead of hanging the whole binary until the mutation timeout.
+        assert!(
+            self.now_calls.fetch_add(1, Ordering::SeqCst) < 1_000_000,
+            "clock call budget exhausted: a loop does not end"
+        );
         self.ticks.load(Ordering::SeqCst)
     }
 
     fn sleep(&self, duration: Duration) {
+        assert!(
+            lock(&self.sleeps).len() < 1_000_000,
+            "sleep budget exhausted: a loop does not end"
+        );
         lock(&self.log).push("sleep".to_owned());
         lock(&self.sleeps).push(duration);
         self.advance(duration);
