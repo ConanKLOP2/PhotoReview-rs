@@ -22,7 +22,17 @@ fn locale_name() -> [u16; LOCALE_CAPACITY] {
     if length > 1 { locale } else { [0; LOCALE_CAPACITY] }
 }
 fn query_locale(kind: u32) -> Option<String> {
-    let locale = locale_name();
+    query_locale_of(&locale_name(), kind)
+}
+/// A NUL-terminated UTF-16 locale name (`"fr-FR"`), for the `*_of` helpers that take an explicit locale instead of the user default.
+fn locale_of(name: &str) -> [u16; LOCALE_CAPACITY] {
+    let mut locale = [0u16; LOCALE_CAPACITY];
+    for (slot, unit) in locale.iter_mut().take(LOCALE_CAPACITY - 1).zip(name.encode_utf16()) {
+        *slot = unit;
+    }
+    locale
+}
+fn query_locale_of(locale: &[u16; LOCALE_CAPACITY], kind: u32) -> Option<String> {
     let mut buf = [0u16; 128];
     if locale[0] == 0 {
         return None;
@@ -32,13 +42,15 @@ fn query_locale(kind: u32) -> Option<String> {
     (n > 1).then(|| String::from_utf16_lossy(&buf[..(n - 1) as usize]))
 }
 fn format_number(value: &str, digits: u32) -> String {
-    let locale = locale_name();
-    let dec = query_locale(LOCALE_SDECIMAL).unwrap_or_else(|| ".".into());
-    let sep = query_locale(LOCALE_STHOUSAND).unwrap_or_default();
-    let leading = query_locale(LOCALE_ILZERO)
+    format_number_of(&locale_name(), value, digits)
+}
+fn format_number_of(locale: &[u16; LOCALE_CAPACITY], value: &str, digits: u32) -> String {
+    let dec = query_locale_of(locale, LOCALE_SDECIMAL).unwrap_or_else(|| ".".into());
+    let sep = query_locale_of(locale, LOCALE_STHOUSAND).unwrap_or_default();
+    let leading = query_locale_of(locale, LOCALE_ILZERO)
         .and_then(|s| s.parse::<u32>().ok())
         .unwrap_or(1);
-    let grouping = match query_locale(LOCALE_SGROUPING).as_deref() {
+    let grouping = match query_locale_of(locale, LOCALE_SGROUPING).as_deref() {
         Some("3;2;0") => 32,
         Some("0") => 0,
         _ => 3,
@@ -102,20 +114,37 @@ impl NumberFormatting for WindowsNumberFormatting {
     }
 
     fn percent_one_decimal(&self, ratio: f64) -> String {
-        let scaled = ratio * 100.0;
-        if !scaled.is_finite() {
-            return format!("{scaled}%");
-        }
-        let number = format_number(&format!("{scaled:.1}"), 1);
-        let language = query_locale(LOCALE_SISO639LANGNAME).unwrap_or_default();
-        let symbol = query_locale(LOCALE_SPERCENT).unwrap_or_else(|| "%".into());
-        match language.as_str() {
-            "fr" => format!("{number}\u{202f}{symbol}"),
-            "tr" | "fa" => format!("{symbol}{number}"),
-            "de" | "es" | "ru" | "cs" | "sk" | "sv" | "fi" | "nb" | "da" | "pl" | "uk" | "ro" | "hu" | "bg" | "el"
-            | "it" | "pt" => format!("{number}\u{00a0}{symbol}"),
-            _ => format!("{number}{symbol}"),
-        }
+        percent_one_decimal_of(&locale_name(), ratio)
+    }
+}
+
+/// `{ratio:P1}` for the locale `name` (a BCP-47 name such as `"fr-FR"`); the user-default locale is used by [`WindowsNumberFormatting`], tests pass explicit names.
+pub fn percent_one_decimal_for_locale(name: &str, ratio: f64) -> String {
+    percent_one_decimal_of(&locale_of(name), ratio)
+}
+
+/// The percent pattern comes from the OS (`LOCALE_IPOSITIVEPERCENT`: 0 `n %`, 1 `n%`, 2 `%n`, 3 `% n`), like .NET `NumberFormatInfo.PercentPositivePattern`; patterns
+/// 0 and 3 use a plain U+0020 as .NET does (P-92 option A).
+fn percent_one_decimal_of(locale: &[u16; LOCALE_CAPACITY], ratio: f64) -> String {
+    let scaled = ratio * 100.0;
+    if !scaled.is_finite() {
+        return format!("{scaled}%");
+    }
+    let text = format!("{scaled:.1}");
+    // `GetNumberFormatEx` drops the sign of "-0.0"; .NET keeps it (`-0.0%`), so format the magnitude and put the minus back.
+    let number = match text.strip_prefix('-') {
+        Some(magnitude) if magnitude == "0.0" => format!("-{}", format_number_of(locale, magnitude, 1)),
+        _ => format_number_of(locale, &text, 1),
+    };
+    let symbol = query_locale_of(locale, LOCALE_SPERCENT).unwrap_or_else(|| "%".into());
+    let pattern = query_locale_of(locale, LOCALE_IPOSITIVEPERCENT)
+        .and_then(|s| s.parse::<u32>().ok())
+        .unwrap_or(1);
+    match pattern {
+        0 => format!("{number} {symbol}"),
+        2 => format!("{symbol}{number}"),
+        3 => format!("{symbol} {number}"),
+        _ => format!("{number}{symbol}"),
     }
 }
 
