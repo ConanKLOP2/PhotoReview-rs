@@ -88,3 +88,123 @@ fn track_mouse_leave_with_an_invalid_window_is_a_silent_no_op() {
     track_mouse_leave(0);
     track_mouse_leave(0x7fff_ffff);
 }
+
+/// A hidden `STATIC` popup on this thread, destroyed on drop (the same shape the other native tests use).
+struct ProbeWindow(isize);
+
+impl ProbeWindow {
+    fn new() -> Self {
+        use windows::Win32::UI::WindowsAndMessaging::{CreateWindowExW, WINDOW_EX_STYLE, WS_POPUP};
+        use windows::core::w;
+        // SAFETY: the predefined `STATIC` class with no parent, menu, instance or creation data; created and destroyed on this thread.
+        let hwnd = unsafe {
+            CreateWindowExW(
+                WINDOW_EX_STYLE(0),
+                w!("STATIC"),
+                w!("scrollbar-native"),
+                WS_POPUP,
+                0,
+                0,
+                16,
+                16,
+                None,
+                None,
+                None,
+                None,
+            )
+        }
+        .expect("create the probe window");
+        Self(hwnd.0 as isize)
+    }
+}
+
+impl Drop for ProbeWindow {
+    fn drop(&mut self) {
+        use windows::Win32::Foundation::HWND;
+        use windows::Win32::UI::WindowsAndMessaging::DestroyWindow;
+        // SAFETY: the handle is the live window created by `new` on this thread; a failed destroy only leaks a hidden window.
+        let _ = unsafe { DestroyWindow(HWND(self.0 as *mut core::ffi::c_void)) };
+    }
+}
+
+/// Whether `TrackMouseEvent(TME_QUERY)` reports a pending `TME_LEAVE` request for `hwnd`.
+fn leave_tracking_is_pending(hwnd: isize) -> bool {
+    use windows::Win32::Foundation::HWND;
+    use windows::Win32::UI::Input::KeyboardAndMouse::{TME_LEAVE, TME_QUERY, TRACKMOUSEEVENT, TrackMouseEvent};
+    let mut data = TRACKMOUSEEVENT {
+        cbSize: size_of::<TRACKMOUSEEVENT>() as u32,
+        dwFlags: TME_QUERY,
+        hwndTrack: HWND(hwnd as *mut core::ffi::c_void),
+        dwHoverTime: 0,
+    };
+    // SAFETY: `data` is a local, fully initialised `TRACKMOUSEEVENT` with its own size; the call fills it and keeps no pointer.
+    unsafe { TrackMouseEvent(&mut data) }.expect("TME_QUERY on a live window");
+    (data.dwFlags.0 & TME_LEAVE.0) != 0
+}
+
+/// Takes a posted `WM_MOUSELEAVE` for `hwnd` off this thread's queue; `true` when one was there.
+fn take_posted_mouse_leave(hwnd: isize) -> bool {
+    use windows::Win32::Foundation::HWND;
+    use windows::Win32::UI::WindowsAndMessaging::{MSG, PM_REMOVE, PeekMessageW};
+    let mut msg = MSG::default();
+    // SAFETY: `msg` is a local `MSG`; the filter names a window of this thread and one message id; the call keeps no pointer.
+    unsafe {
+        PeekMessageW(
+            &mut msg,
+            Some(HWND(hwnd as *mut core::ffi::c_void)),
+            WM_MOUSE_LEAVE,
+            WM_MOUSE_LEAVE,
+            PM_REMOVE,
+        )
+    }
+    .as_bool()
+}
+
+// new (native): C# `ScrollBarNative.TrackMouseLeave(hwnd)` asks Windows for ONE `WM_MOUSELEAVE`. The OS either keeps the request pending
+// (`TME_QUERY` reports `TME_LEAVE`, pointer over the window) or, when the pointer is already outside, posts `WM_MOUSELEAVE` at once; both are
+// independent witnesses that the request reached the OS (the invalid-handle test above only proves "no panic").
+#[test]
+#[ignore = "native: creates a hidden window and observes its mouse-leave request"]
+fn track_mouse_leave_requests_a_mouse_leave_for_a_real_window() {
+    let window = ProbeWindow::new();
+    assert!(
+        !leave_tracking_is_pending(window.0),
+        "precondition: no tracking before the call"
+    );
+    assert!(
+        !take_posted_mouse_leave(window.0),
+        "precondition: no WM_MOUSELEAVE queued before the call"
+    );
+    track_mouse_leave(window.0);
+    let pending = leave_tracking_is_pending(window.0);
+    let posted = take_posted_mouse_leave(window.0);
+    assert!(
+        pending || posted,
+        "track_mouse_leave must leave a pending TME_LEAVE or a posted WM_MOUSELEAVE"
+    );
+}
+
+/// `HKCU\Control Panel\Keyboard` value `name` as an integer, read with `reg.exe` (a path independent of `SystemParametersInfoW`).
+fn keyboard_registry_value(name: &str) -> Option<i32> {
+    let output = std::process::Command::new("reg")
+        .args(["query", r"HKCU\Control Panel\Keyboard", "/v", name])
+        .output()
+        .ok()?;
+    let text = String::from_utf8_lossy(&output.stdout).into_owned();
+    let line = text.lines().find(|line| line.trim_start().starts_with(name))?;
+    line.split_whitespace().last()?.parse().ok()
+}
+
+// new (native): the C# `RepeatTiming_IsTheDefaultOfAWpfRepeatButton_OnThisMachine` compares with the WPF default of this machine; the
+// stable witness here is the persisted keyboard setting (the SPI values equal it unless the session changed them live).
+#[test]
+#[ignore = "native: reads the system keyboard settings and the HKCU keyboard registry values"]
+fn repeat_timing_equals_the_formula_of_the_persisted_keyboard_settings() {
+    let delay = keyboard_registry_value("KeyboardDelay").expect("KeyboardDelay in HKCU");
+    let speed = keyboard_registry_value("KeyboardSpeed").expect("KeyboardSpeed in HKCU");
+    assert!(
+        (0..=3).contains(&delay) && (0..=31).contains(&speed),
+        "registry values in range: {delay}/{speed}"
+    );
+    assert_eq!(repeat_timing(), repeat_timing_for(delay, speed));
+}
