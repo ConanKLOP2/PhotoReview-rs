@@ -33,6 +33,7 @@ JsonArray cases = command switch
 {
     // Wave 9 FEAT-RENAME (C# baseline 7eaee2a2).
     "w9-r1-rename-policy" => Commands.W9R1RenamePolicyCases(inputs),
+    "percent-one-decimal" => Commands.PercentOneDecimal(inputs),
     "datetime-json" => Commands.DateTimeJson(inputs),
     "ordinal-ignore-case" => Commands.OrdinalIgnoreCase(inputs),
     "natural-cmp" => Commands.NaturalCompare(inputs),
