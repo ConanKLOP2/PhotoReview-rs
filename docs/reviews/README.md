@@ -21,6 +21,7 @@ There are 18 files here: 17 reports and `BACKLOG.md`. There is no separate repor
 | [`G17-IGNORED-TESTS-2026-11-03.md`](G17-IGNORED-TESTS-2026-11-03.md) | 2026-11-03 | Audit of `#[ignore]` tests at master `82da9f7`: 1548 attributes per crate and reason category, 0 without a reason, 276 run by `native-nightly.yml`, 1272 run nowhere. Commands included; nothing was run with `cargo`. | Counts for BACKLOG G17 (static audit); P-80 asks the owner about the never-run blocks |
 | [`AR16-REMOVEPATHS-MUTATION-2026-11-03.md`](AR16-REMOVEPATHS-MUTATION-2026-11-03.md) | 2026-11-03 | Mutation run of `ReviewCatalog::remove_paths` (AR16): 24 of 24 tested, 20 caught, 3 missed (all equivalent), 1 unviable, 0 timeouts. | Measured; PARITY row AR16 stays Partial |
 | [`STJ-READER-TIMEOUTS-2026-11-03.md`](STJ-READER-TIMEOUTS-2026-11-03.md) | 2026-11-03 | cargo-mutants rerun of the 8 former `*= 1` timeouts of `mod json` (X-stj-reader): 8 of 8 tested, 8 caught (bounded-wait test), 0 missed, 0 timeouts. | Measured; PARITY row X-stj-reader stays Partial |
+| [`SEC01-MUTATION-2026-11-03.md`](SEC01-MUTATION-2026-11-03.md) | 2026-11-03 | Mutation run of the SEC-01 link-walk functions of `physical.rs`: 27 of 27 tested, 17 caught by the pure tests, 10 missed (8 killed by hand-run native tests, 2 equivalent), 0 unviable, 0 timeouts. | Measured; PARITY row SEC-01 stays Partial |
 
 ## Autopilot tooling
 
