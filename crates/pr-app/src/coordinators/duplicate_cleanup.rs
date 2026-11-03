@@ -177,6 +177,21 @@ impl RecycleGuard {
             self.unchanged(file_system, path) && keep.iter().any(|kept| self.unchanged(file_system, kept))
         })
     }
+
+    /// Rust-only extra (D3 / P-191, restores the D-07f-5 / DV-7 pre-check where C# #535 does not object): a copy that stays was
+    /// MODIFIED since it was hashed (it still exists and was stat'ed at hash time, but size or write time differ) and no copy
+    /// that stays still matches. A keeper that was only deleted is not covered: the C# tests expect the per-file
+    /// `fileChanged` lines for it.
+    fn keepers_modified(&self, file_system: &dyn FileSystem, path: &str) -> bool {
+        self.keep_of.get(&ignore_case_key(path)).is_some_and(|keep| {
+            !keep.iter().any(|kept| self.unchanged(file_system, kept))
+                && keep.iter().any(|kept| {
+                    let before = self.hashed_stats.get(&ignore_case_key(kept)).copied().flatten();
+                    let now = file_system.get_file_stat(Path::new(kept));
+                    before.is_some() && now.is_some() && now != before
+                })
+        })
+    }
 }
 
 /// The recycle batch in progress (the C# locals of the `foreach` loop).
@@ -675,8 +690,41 @@ impl DuplicateCleanupController {
         // (`submit_recycle`); a mismatch is one failure line and the rest of the batch goes on.
         let hashed_stats = std::mem::take(&mut *hashed_stats.lock().unwrap_or_else(PoisonError::into_inner));
         let guard = Arc::new(RecycleGuard::new(hashed_stats, &groups));
+
+        // D3 / P-191 (Rust-only, on top of D2): a group whose only copies that stay were modified while the review dialog was
+        // open is skipped up front, whole; the other groups go on. See `RecycleGuard::keepers_modified`.
+        let mut skipped = Vec::new();
+        let remove: Vec<String> = remove
+            .into_iter()
+            .filter(|path| {
+                if !guard.keepers_modified(self.deps.file_system.as_ref(), path) {
+                    return true;
+                }
+                skipped.push(format!(
+                    "{}: {}",
+                    file_name_of(path),
+                    self.deps.texts.get(keys::CORE_UNDO_SOURCE_OR_DESTINATION_CHANGED)
+                ));
+                false
+            })
+            .collect();
+        if remove.is_empty() {
+            self.status(cx, keys::STATUS_BATCH_CANCELED, &[]);
+            if let Some(dialog) = &self.deps.dialog_service {
+                dialog.show_error(
+                    &self.deps.texts.get(keys::DIALOG_BATCH_ERRORS_TITLE),
+                    &skipped.join("\r\n"),
+                );
+            }
+            return DuplicateCleanupStep::Done;
+        }
+
         self.active_ticket = Some(ticket);
-        self.start_batch(cx, remove, guard)
+        let step = self.start_batch(cx, remove, guard);
+        if let Some(batch) = self.batch.as_mut() {
+            batch.failures.extend(skipped);
+        }
+        step
     }
 
     /// C# lines 204 to 214: `clock.stop_for_action()`, `preload.cancel()`, `action_folder_generation = clock.current_folder()`,
