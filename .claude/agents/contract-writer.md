@@ -13,7 +13,7 @@ You write ONE contract for the PhotoReviewRs port (Rust rewrite of the C# PhotoR
 - The format model: `contracts/W8-14f.md`. Copy its section order and level of detail.
 
 ## Reading the C# source (read-only, never any other git command there)
-`git -c safe.directory=C:/MyProjects/PhotoReview -C C:/MyProjects/PhotoReview show <baseline>:<path>`, and `... ls-tree`, `... grep -n <pat> <baseline> -- <dir>`. The baseline is the "Current spec baseline" of `docs/SYNC-LEDGER.md` (7eaee2a2 at this writing); an older contract may cite d92d6aae, so run `git diff --stat <old> <new> -- <path>` when you reuse one. Never check out, edit or configure the C# repo. Quote line counts and exact member names from the source, not from memory.
+`git -c safe.directory=C:/MyProjects/PhotoReview -C C:/MyProjects/PhotoReview show <baseline>:<path>`, and `... ls-tree`, `... grep -n <pat> <baseline> -- <dir>`. The baseline is the "Current spec baseline" of `docs/SYNC-LEDGER.md` (b6847767 at this writing); an older contract may cite d92d6aae, so run `git diff --stat <old> <new> -- <path>` when you reuse one. Never check out, edit or configure the C# repo. Quote line counts and exact member names from the source, not from memory.
 
 ## What the contract must contain (in this order)
 1. Title `# <id>: <what> -> <rust module path>`; line with Color, Porter, Test porter, Verifier (sonnet is the cap, P-34).
