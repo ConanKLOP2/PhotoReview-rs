@@ -8,6 +8,7 @@
 //! [`BackgroundRunner`] and the answer returns as a `ContextUiAction` posted with `SettingsPageContext::ui_post()`.
 use std::rc::Rc;
 use std::sync::{Arc, Mutex, PoisonError};
+use std::time::Duration;
 
 use crate::dialogs::settings::builder::inputs::SettingsPageBuilder;
 use crate::dialogs::settings::context::{SettingsPageContext, with_field_context};
@@ -39,6 +40,43 @@ pub const SORT_TAGS: [&str; 6] = [
 /// Answers `false` when the job could not be started (a thread spawn failure); the page then ends the check with an error line.
 pub type BackgroundRunner = Rc<dyn Fn(Box<dyn FnOnce() + Send + 'static>) -> bool>;
 
+/// Rust-only hardening (no C# counterpart, ADR D5 / P-321): the update answer is applied on the UI thread, but the presenter may be borrowed at that moment
+/// (a modal call of another page). The answer then waits `UPDATE_RESULT_RETRY_DELAY` and tries again, at most `UPDATE_RESULT_MAX_TRIES` times in all.
+pub const UPDATE_RESULT_RETRY_DELAY: Duration = Duration::from_millis(20);
+/// Total number of tries (the first one included) to apply an update answer before giving up.
+pub const UPDATE_RESULT_MAX_TRIES: u32 = 50;
+
+/// Waits for `delay` off the UI thread and then runs `job` (which only posts back to the window). Production: a short-lived named thread; tests: a recording fake
+/// with a fake clock. `give_up` records the log line when the cap is reached.
+pub trait UpdateRetryScheduler: Send + Sync {
+    /// Runs `job` once, no sooner than `delay` from now, on any thread.
+    fn after(&self, delay: Duration, job: Box<dyn FnOnce() + Send + 'static>);
+    /// The answer could not be applied in `tries` tries and is dropped.
+    fn give_up(&self, tries: u32);
+}
+
+/// Production [`UpdateRetryScheduler`]: `std::thread::sleep` on a `settings-update-retry` thread; the give-up line goes to the application log.
+struct ThreadRetryScheduler;
+
+impl UpdateRetryScheduler for ThreadRetryScheduler {
+    fn after(&self, delay: Duration, job: Box<dyn FnOnce() + Send + 'static>) {
+        let started = std::thread::Builder::new()
+            .name("settings-update-retry".to_owned())
+            .spawn(move || {
+                std::thread::sleep(delay);
+                job();
+            });
+        if let Err(error) = started {
+            AppLog::global().error("Update check retry thread failed to start", Some(&error));
+        }
+    }
+    fn give_up(&self, tries: u32) {
+        AppLog::global().warn(&format!(
+            "Update check answer dropped: the Settings presenter stayed busy for {tries} tries"
+        ));
+    }
+}
+
 /// C# `Ids` (internal, for tests).
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct GeneralIds {
@@ -67,6 +105,7 @@ pub struct GeneralSettingsPage {
     update_status_text: Arc<Mutex<String>>,
     shell: Option<ShellIntegrationStatus>,
     runner: BackgroundRunner,
+    retry: Arc<dyn UpdateRetryScheduler>,
 }
 
 impl std::fmt::Debug for GeneralSettingsPage {
@@ -125,7 +164,13 @@ impl GeneralSettingsPage {
             update_status_text: Arc::new(Mutex::new(String::new())),
             shell: None,
             runner,
+            retry: Arc::new(ThreadRetryScheduler),
         }
+    }
+
+    /// Test seam: replaces the delayed re-post of a busy update answer (fake clock).
+    pub fn set_retry_scheduler(&mut self, retry: Arc<dyn UpdateRetryScheduler>) {
+        self.retry = retry;
     }
 
     /// C# `Ids`.
@@ -413,9 +458,12 @@ impl GeneralSettingsPage {
         let post = c.ui_post();
         let ids = self.ids;
         let text = Arc::clone(&self.update_status_text);
+        let retry = Arc::clone(&self.retry);
         let started = (self.runner)(Box::new(move || {
             let completed = job.run();
-            post.post(Box::new(move |ctx| apply_update_result(ctx, completed, ids, text)));
+            post.post(Box::new(move |ctx| {
+                apply_update_result(ctx, completed, ids, text, retry, 1)
+            }));
         }));
         if !started {
             self.set_update_status(&pr_l10n::tr::update_status_failed_bad_response());
@@ -429,11 +477,27 @@ fn apply_update_result(
     completed: UpdateCheckCompleted,
     ids: GeneralIds,
     text: Arc<Mutex<String>>,
+    retry: Arc<dyn UpdateRetryScheduler>,
+    tries: u32,
 ) {
     let shared_presenter = ctx.presenter();
     let Ok(mut presenter) = shared_presenter.try_borrow_mut() else {
+        // The presenter is borrowed (a nested modal call): wait and try again, bounded (Rust-only, no C# loop).
+        if tries >= UPDATE_RESULT_MAX_TRIES {
+            retry.give_up(tries);
+            return;
+        }
+        let post = ctx.ui_post();
         let again = Arc::clone(&text);
-        ctx.post_to_ui(Box::new(move |c| apply_update_result(c, completed, ids, again)));
+        let next_retry = Arc::clone(&retry);
+        retry.after(
+            UPDATE_RESULT_RETRY_DELAY,
+            Box::new(move || {
+                post.post(Box::new(move |c| {
+                    apply_update_result(c, completed, ids, again, next_retry, tries + 1)
+                }));
+            }),
+        );
         return;
     };
     let display = with_field_context(|f| presenter.finish_update_check(completed, f));
