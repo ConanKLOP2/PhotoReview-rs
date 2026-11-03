@@ -54,6 +54,27 @@ pub fn find(
     file_system: &dyn FileSystem,
     cancel: &CancelToken,
 ) -> Result<Vec<String>, Canceled> {
+    let groups = find_groups(files, remove_numbered, hash, file_system, cancel)?;
+    Ok(groups.into_iter().flat_map(|group| group.remove).collect())
+}
+
+/// One set of byte-identical files (C# `DuplicateGroup`, D2 / C# #535): `keep` stay, `remove` are the ones to recycle.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct DuplicateGroup {
+    pub keep: Vec<String>,
+    pub remove: Vec<String>,
+}
+
+/// C# `DuplicateFinder.FindGroupsAsync`: the same selection as [`find`] (which is its flattening), but keeps the groups so a
+/// caller can confirm a copy that stays still exists before it deletes the others. Only groups with something to remove are
+/// returned, in the order of [`find`]; `keep` holds the other members of the content group in hash order.
+pub fn find_groups(
+    files: &[String],
+    remove_numbered: bool,
+    hash: &mut dyn FnMut(&str, &CancelToken) -> Result<String, HashFailure>,
+    file_system: &dyn FileSystem,
+    cancel: &CancelToken,
+) -> Result<Vec<DuplicateGroup>, Canceled> {
     cancel.check()?;
     if files.is_empty() {
         return Ok(Vec::new());
@@ -106,7 +127,7 @@ pub fn find(
     }
 
     // Step 3: naming rule; never remove a whole content group.
-    let mut remove = Vec::new();
+    let mut result = Vec::new();
     for group in content_groups.iter().filter(|g| g.len() > 1) {
         let mut matching: Vec<&str> = group
             .iter()
@@ -116,9 +137,20 @@ pub fn find(
         if matching.len() == group.len() {
             matching.remove(0);
         }
-        remove.extend(matching.into_iter().map(str::to_owned));
+        if matching.is_empty() {
+            continue;
+        }
+        let remove_set: HashSet<String> = matching.iter().map(|p| ignore_case_key(p)).collect();
+        result.push(DuplicateGroup {
+            keep: group
+                .iter()
+                .filter(|p| !remove_set.contains(&ignore_case_key(p)))
+                .map(|p| (*p).to_owned())
+                .collect(),
+            remove: matching.into_iter().map(str::to_owned).collect(),
+        });
     }
-    Ok(remove)
+    Ok(result)
 }
 
 /// `NumberedPattern` = ` \(\d+\)$` (unanchored at the start) applied to a file stem: the stem ends with a space, `(`, one or
