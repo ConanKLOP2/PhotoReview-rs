@@ -483,3 +483,43 @@ Bằng chứng, kịch bản và hai PROMPT có phạm vi/lệnh kiểm tra: [re
 | G31 | Còn nối helper hoặc ADR canonical-only; P-03 hiện Partial, không cần sửa trạng thái thành Full chỉ vì helper có pure test |
 
 Đã kiểm trực tiếp trạng thái merged của #219/#220/#221 và nội dung master; các claim review của ba việc đã nhả, worktree/branch đã dọn. Claim live ngày này có các unit A/B/VTI, nên danh sách sở hữu trong bảng là cảnh báo phạm vi, không phải quyền tự động cho máy C. Trước mỗi sửa phải lấy lại danh sách claim hiện hành.
+
+## Update 2026-11-03 (re-check PRs #612..#621 and the owner decisions D1..D9, E1..E3, F1, F2)
+
+Written in English. The rows above are the 2026-10-23 snapshot; this table is the current state per group. Evidence files are in this folder; decision rows are `P-nn` in [`../PROPOSED-DECISIONS.md`](../PROPOSED-DECISIONS.md). PRs #627 and #628 were open at the time of writing. Items marked "open" are open for the owner or blocked as stated.
+
+| Group | State on 2026-11-03 | Evidence / decision |
+|---|---|---|
+| G1 | Already fixed on master (b4 H1 by P-69/#544, H2 by `SharedViewerAdapter`, pr-203 M2 green 2026-11-01); only native ignored tests guard H1 | [G1-G14](G1-G14-2026-11-03.md), PR #612 |
+| G2 | H3 (1) presenter/zoom-detail already fixed; H3 (2) HUD refresh done by P-310 (view-model level; native check not run) | [G2](G2-2026-11-03.md) PR #621, [D1-IMPL](D1-IMPL-2026-11-03.md) PR #624 |
+| G3 | L6 (percent text) is P-92 A, PR #627 open; H1/L1 not re-checked in this round, see [ST-BACKLOG-NOW](ST-BACKLOG-NOW-2026-11-01.md) | P-92 |
+| G4 | Already fixed (`collect` reads the View/Instance combos); closed | [G4-G9](G4-G9-2026-11-03.md), PR #620 |
+| G5 | Closed (#462); the "outcome unknown" text is P-330, partly done: C# branch `a3dc30cc` local, Rust part waits for the catalog key | [G5-G6-G12](G5-G6-G12-2026-11-03.md) PR #613, [D6-IMPL](D6-IMPL-2026-11-03.md) PR #629 |
+| G6 | Closed (D2, #610); D2 pre-check for modified keepers restored as a Rust-only extra by P-191 | PR #613, [D3-IMPL](D3-IMPL-2026-11-03.md) PR #626 |
+| G7 | startup M2, M3, L4 and dialogs-base M1 closed; startup M1 = P-340 and dialogs-base L1/L2 = P-341 done | [G7-G15](G7-G15-2026-11-03.md) PR #614, [E3-IMPL](E3-IMPL-2026-11-03.md) PR #635 |
+| G8 | Closed | PR #614 |
+| G9 | M1 fixed in code (W9-E4) and covered by 7 tests; M2 fixed (#536); L1 fixed; M3/L4 = P-320 done; L3 = P-322 done; L2 = P-321 (PR #628, open at the time of writing) | [G4-G9](G4-G9-2026-11-03.md), [E2-IMPL](E2-IMPL-2026-11-03.md) PR #634 |
+| G10 | M1 = P-311 (open, owner has not decided, recommendation: keep C#); L1 = P-312, L2 and L3 = P-313 done | [G2](G2-2026-11-03.md), [E1-IMPL](E1-IMPL-2026-11-03.md) PR #633 |
+| G11 | M3, L3, L4 closed by #539 (P-67); L1, L2, L5 stay as deliberate C# parity with no observable effect | [G11](G11-2026-11-03.md), PR #615 |
+| G12 | L1 (P-71 C), L2, L5, L6, L7, L8 closed or locked by tests; L3 and L4 stay with Q2 and two-drive native tests; L8 became P-331 (Rust done in PR #630, C# branch `396d5ac2` local, differs until it merges) | [G5-G6-G12](G5-G6-G12-2026-11-03.md), [D7-IMPL](D7-IMPL-2026-11-03.md) |
+| G13 | pr-164 L1, L5 closed; L6 = P-343 and startup L5 = P-342 done | [G7-G15](G7-G15-2026-11-03.md), PR #635 |
+| G14 | L1, L2, L5 closed; L3 = P-74 C done (PR #625); L4 = P-301 done (PR #632, deviation from C# `AutoFlush`); spawn-error log = P-300 done | [G1-G14](G1-G14-2026-11-03.md), [D2-IMPL](D2-IMPL-2026-11-03.md), [D9-IMPL](D9-IMPL-2026-11-03.md), [E1-IMPL](E1-IMPL-2026-11-03.md) |
+| G15 | L2, L3 closed; L6 (percent text) = P-92 A, PR #627 open | [G7-G15](G7-G15-2026-11-03.md) |
+| G16 | H1, M1..M3, L3, L7..L9 fixed; M4 gc = P-89 A done, L1 = P-88 A done, L2 = P-360 B, L6 = P-361 B (kept and documented); L5, L10, L11 still open | [G16-G22-G23](G16-G22-G23-2026-11-03.md) PR #616, [F1-IMPL](F1-IMPL-2026-11-03.md) PR #622 |
+| G17 | M2 and M3 closed, M4 partly; M1 CI coverage: P-86 A WIC trial in the nightly (one night must confirm), P-370 reason-prefix rule done, per-family owners for the 1272 ignored tests not assigned; P-371 deferred; P-372..P-374 done | [G17-G19](G17-G19-2026-11-03.md) PR #617, [F1-IMPL](F1-IMPL-2026-11-03.md), [F2-IMPL](F2-IMPL-2026-11-03.md) PR #623 |
+| G18 | M1..M3 closed earlier; L2..L4 covered by new tests; the spawn-failure branch (P-170) done by PR #635 | [G18](G18-PR164-TESTS-2026-11-03.md), [E3-IMPL](E3-IMPL-2026-11-03.md) |
+| G19 | All of M1..M3, L1, L2, L4, L5, L7, L8, H1 covered by tests on master; L3 and L6 need a product decision; no test left to add | [G17-G19](G17-G19-2026-11-03.md) |
+| G20 | 115 of 115 C# Rename test names already have a Rust twin | [G20](G20-RENAME-TESTS-2026-11-03.md) |
+| G21 | Closed | [G21](G21-W9-CONTRACTS-2026-11-03.md) |
+| G22 | Closed (X-startup rows Ported, X-main-window-frame annotated); the PR #164 body was edited on GitHub by the lead (P-362), nothing in the repo | [G16-G22-G23](G16-G22-G23-2026-11-03.md) |
+| G23 | Closed: P-363 and P-365 done (PR #623), P-364 was already done by #617 | [F2-IMPL](F2-IMPL-2026-11-03.md) |
+| G24 | Q1..Q8 decided (P-52) | unchanged |
+| G25 | Closed (PR #448) | unchanged |
+| G26 | Fixed in #474 (DV-9); one newer-claim gate test added | [G26-G27](G26-G27-2026-11-03.md) PR #618 |
+| G27 | The re-check reports it fixed by P-66 option A (PR #530, [ADR](../adr/ADR-D-2026-11-03-settings-backup-failure.md)); the lead keeps it as an owner decision, so it is not marked closed here | [G26-G27](G26-G27-2026-11-03.md) |
+| G28 | Seam tests added; the duplication across drains is P-140: open, the owner has not decided | [G28](G28-LOG-SHORT-WRITE-2026-11-03.md) |
+| G29 | Size check fixed in #474; the read-time `OutOfMemory` classification = P-150 A done (PR #631, deviation from C#) | [G29](G29-CACHE-READ-2026-11-03.md), [D8-IMPL](D8-IMPL-2026-11-03.md) |
+| G30 | Closed (#532) | [G30](G30-RECYCLE-REGISTRY-TESTS-2026-11-03.md) |
+| G31 | P-160 closed as option C: leave as is, the helper stays unwired and the PARITY row stays Partial | [G31](G31-RESTORE-VERB-2026-11-03.md) |
+
+Still open for the owner or blocked: P-140, P-311, P-330 Rust part (blocked on the C# merge), P-331 C# merge, P-370 per-family owners, P-371 (deferred), P-86 trial night, and the PRs #627 (P-92) and #628 (P-321) until they merge. PARITY wording for the deviations: [PARITY-WORDING-OWNER-DECISIONS-2026-11-03](PARITY-WORDING-OWNER-DECISIONS-2026-11-03.md).
