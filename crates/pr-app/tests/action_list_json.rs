@@ -301,3 +301,129 @@ fn throw_if_invalid_checks_names_shortcuts_and_duplicate_text() {
         Err(ActionListJsonError::Invalid(SECOND))
     );
 }
+
+fn one_operation(operation: &str) -> String {
+    format!("[{{\"Name\":\"A\",\"Shortcut\":\"F6\",\"Operation\":{operation}}}]")
+}
+
+// C#: ActionListJsonTests.Deserialize_UnknownOperation_Throws (5 InlineData rows, both entry points)
+#[test]
+fn deserialize_unknown_operation_throws() {
+    for operation in ["\"Teleport\"", "99", "\"\"", "null", "true"] {
+        let text = one_operation(operation);
+        assert!(
+            matches!(deserialize(&text, DEFAULT_NAME), Err(ActionListJsonError::Malformed(_))),
+            "deserialize {operation}"
+        );
+        assert!(
+            matches!(
+                deserialize_or_null(&text, DEFAULT_NAME),
+                Err(ActionListJsonError::Malformed(_))
+            ),
+            "deserialize_or_null {operation}"
+        );
+    }
+}
+
+// C#: ActionListJsonTests.Deserialize_KnownOperation_Parses (6 InlineData rows: names, case variants, the alias, numbers, a numeric string)
+#[test]
+fn deserialize_known_operation_parses() {
+    for (operation, expected) in [
+        ("\"Move\"", FileOperationType::Move),
+        ("\"copy\"", FileOperationType::Copy),
+        ("\"Delete\"", FileOperationType::Recycle),
+        ("\"Recycle\"", FileOperationType::Recycle),
+        ("1", FileOperationType::Copy),
+        ("\"2\"", FileOperationType::Recycle),
+    ] {
+        let list =
+            deserialize(&one_operation(operation), DEFAULT_NAME).unwrap_or_else(|e| panic!("{operation}: {e:?}"));
+        assert_eq!(list.len(), 1, "{operation}");
+        assert_eq!(list[0].operation, expected, "{operation}");
+    }
+}
+
+// C#: ActionListJsonTests.Deserialize_MissingOperation_UsesDefault
+#[test]
+fn deserialize_missing_operation_uses_default() {
+    let list = deserialize("[{\"Name\":\"A\",\"Shortcut\":\"F6\"}]", DEFAULT_NAME).unwrap();
+    assert_eq!(list.len(), 1);
+    assert_eq!(list[0].operation, FileOperationType::default());
+    assert_eq!(deserialize("null", DEFAULT_NAME), Ok(vec![]));
+    assert_eq!(deserialize_or_null("null", DEFAULT_NAME), Ok(None));
+}
+
+// new (found by the port of ActionListJsonTests.Deserialize_KnownOperation_Parses): C# `LenientEnumConverter.TryReadStrict` trims the
+// text, matches names/aliases ignoring case and accepts int.TryParse text that names a defined member, so `" Move "`, `"+1"` and
+// `"\t2 "` are NOT errors (the former Rust reader rejected every string that was not exactly Move/Copy/Recycle/Delete).
+#[test]
+fn deserialize_operation_text_is_trimmed_and_numeric_text_is_accepted() {
+    for (operation, expected) in [
+        ("\" Move \"", FileOperationType::Move),
+        ("\"\tCOPY\r\n\"", FileOperationType::Copy),
+        ("\"+1\"", FileOperationType::Copy),
+        ("\"0\"", FileOperationType::Move),
+        ("\"\t2 \"", FileOperationType::Recycle),
+        ("\" delete\"", FileOperationType::Recycle),
+    ] {
+        let text = one_operation(operation);
+        for result in [
+            deserialize(&text, DEFAULT_NAME),
+            deserialize_or_null(&text, DEFAULT_NAME).map(Option::unwrap),
+        ] {
+            let list = result.unwrap_or_else(|e| panic!("{operation}: {e:?}"));
+            assert_eq!(list[0].operation, expected, "{operation}");
+        }
+    }
+}
+
+// new: the same strict reader rejects blank text, undefined numeric text, fractional/exponent/out-of-range numbers.
+#[test]
+fn deserialize_operation_blank_undefined_or_fractional_values_throw() {
+    for operation in [
+        "\" \"",
+        "\"3\"",
+        "\"-1\"",
+        "\"1.0\"",
+        "1.0",
+        "1e0",
+        "2147483648",
+        "-1",
+        "[]",
+        "{}",
+        "false",
+    ] {
+        let text = one_operation(operation);
+        assert!(
+            matches!(deserialize(&text, DEFAULT_NAME), Err(ActionListJsonError::Malformed(_))),
+            "{operation}"
+        );
+        assert!(
+            matches!(
+                deserialize_or_null(&text, DEFAULT_NAME),
+                Err(ActionListJsonError::Malformed(_))
+            ),
+            "or_null {operation}"
+        );
+    }
+}
+
+// new: C# `ThrowIfUnknownOperation` finds the property with OrdinalIgnoreCase, so a bad `operation`/`OPERATION` value throws even
+// though the serializer itself (case-sensitive names) would have ignored that property.
+#[test]
+fn deserialize_unknown_operation_under_any_property_case_throws_and_a_known_one_is_ignored() {
+    for property in ["operation", "OPERATION", "oPeRaTiOn"] {
+        let bad = format!("[{{\"Name\":\"A\",\"Shortcut\":\"F6\",\"{property}\":\"Teleport\"}}]");
+        assert!(
+            matches!(deserialize(&bad, DEFAULT_NAME), Err(ActionListJsonError::Malformed(_))),
+            "{property}"
+        );
+        let good = format!("[{{\"Name\":\"A\",\"Shortcut\":\"F6\",\"{property}\":\"Copy\"}}]");
+        let list = deserialize(&good, DEFAULT_NAME).unwrap();
+        assert_eq!(
+            list[0].operation,
+            FileOperationType::Move,
+            "{property}: only the exact name `Operation` is read"
+        );
+    }
+}
