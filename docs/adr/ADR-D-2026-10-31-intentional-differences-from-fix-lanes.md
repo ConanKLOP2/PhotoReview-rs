@@ -10,6 +10,8 @@ Common reason: the C# code has the same hole in each case (the C# behaviour is t
 
 ## DV-1 Group retry re-stats before `delete_permanently` (PR #448, FIX-H1)
 
+Update 2026-11-03: C# #534 (D1, `6bb0d706`) now re-stats group Recycle members right before the mutation too, in the same order; this item is no longer a divergence from the C# baseline `e7c2fcd8` (see `docs/SYNC-LEDGER.md`).
+
 - Context: `RecoveryRetryService.ExecuteGroupRetry` pre-checks the members, writes Prepared, then deletes. A file replaced in between is deleted for good (INV-4, INV-6).
 - C#: `src/PhotoReview.Core/FileActions/RecoveryRetryService.cs:197` (`ExecuteGroupRetry`), `:225` `_recycleBin.DeletePermanently(member.Source)` with no stat after Prepared.
 - Rust: `crates/pr-core/src/file_actions/recovery_retry.rs` `run_group_members`: `stat` plus `same_fingerprint` right before `delete_permanently`; a missing or changed file fails the transaction with `core_recovery_source_changed` (same error as the Move/Copy branch).
@@ -18,6 +20,8 @@ Common reason: the C# code has the same hole in each case (the C# behaviour is t
 - Tests: `st_invmap_repro` (red before), `recovery_retry` 100; golden `recovery_retry_golden::divergence_adjusted` drops only the extra `stat P` before `bin.delete-permanently P`. Report: `docs/reviews/FIX-H1-2026-10-31.md`.
 
 ## DV-2 Single Recycle and group-retry Recycle re-stat before the mutation (PR #463, ST-INVMAP L3 and H1-follow-up)
+
+Update 2026-11-03: C# #534 (D1, `6bb0d706`) now re-stats group Recycle members right before the mutation too, in the same order; this item is no longer a divergence from the C# baseline `e7c2fcd8` (see `docs/SYNC-LEDGER.md`).
 
 - Context: same race as DV-1 for the plain Recycle path and for the non-permanent member of a group retry; with `permanent` the Recycle becomes a permanent delete when the volume has no bin.
 - C#: `FileActionService.cs:163-170` (Recycle branch decides `permanent` from `CanRecycle`, no stat after Prepared); retry `RecoveryRetryService.cs:197-225`.
