@@ -387,6 +387,8 @@ impl SharedServices {
                     )),
                     log: Some(self.log()),
                     texts: Some(Arc::new(super::texts::LocalizedTexts)),
+                    // P-331: the startup reconcile asks the bin before it confirms a Recycle whose source is gone.
+                    recycle_bin: Some(self.recycle_bin()),
                     ..Default::default()
                 },
             ))
