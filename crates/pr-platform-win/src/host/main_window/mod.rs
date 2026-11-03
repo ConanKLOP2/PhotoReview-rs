@@ -23,6 +23,7 @@
 pub mod core;
 pub mod frame;
 pub mod lifecycle;
+pub mod lookup_pool;
 pub(crate) mod modal_intents;
 pub mod scrollbars;
 pub mod viewing;
