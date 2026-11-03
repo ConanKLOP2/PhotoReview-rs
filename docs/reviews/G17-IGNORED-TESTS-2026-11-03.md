@@ -88,3 +88,20 @@ By category (section 3): never run = 879 desktop + 242 native other + 112 DLL + 
 - 82% of ignored tests (1272 of 1548) have no automated run. The 879 desktop and 112 DLL ones are the large blocks; they need either a desktop runner or staged DLLs, which is an owner decision (P-80).
 - The 95 comment mentions are not defects, but several say "none is left" / "run with --include-ignored"; they were not checked for staleness here.
 - Not examined: whether ignored tests still pass, stale reasons (test-quality M2) and tests that pass vacuously (M3). That needs `cargo`, a desktop and DLLs and is the remaining G17 code work per crate.
+
+## 7. P-80 follow-up (2026-11-03, owner chose option A)
+
+Evidence from `gh run list --workflow native-nightly.yml` and `gh run view <id> --log` (read-only; no run was triggered). The nightly exists and ran four times, all `schedule`, all `success`:
+
+| Run id | Date (UTC) | Binaries run | Tests passed / failed |
+|---|---|---:|---|
+| 41139005966 | 2026-10-30 | 23 | 667 / 0 |
+| 41245151518 | 2026-10-31 | 45 | 973 / 0 |
+| 41356161985 | 2026-11-01 | 45 | 975 / 0 |
+| 41557791599 | 2026-11-03 | 46 | 1002 / 0 |
+
+- Step 1 (confirm one night of the listed desktop binaries): DONE. The 2026-11-03 run executed all 46 listed binaries, including the desktop ones (`w8_mainwin_frame_tests`, `host_main_window_lifecycle`, `w8_settingswin4_killers`, `shell_input_pan_glide_native`, `startup_overlay_vm`, `composition_graph`, `startup_early_decode_native` and the rest) and all passed. The "no nightly run yet" comments in the workflow are therefore out of date (comment-only clean-up, not done here).
+- WIC on windows-latest: partly shown. No `wic_*` binary ran on any night (the only `wic` hits in the logs are the word "twice"). But `w4_mutation_killers2::jpeg_option_bag_keeps_image_quality_observable_in_encoded_bytes` (`#[ignore = "native: needs WIC"]`, real `encode_jpeg` through WIC) ran and passed in all four nights. So WIC encode works on the runner. Decode (`WicDirectDecoder`), the scaler, EXIF reader and the goldens in `wic_decoder_native` (70 tests; pixel hash compared only when `PHOTOREVIEW_RS_WIC_VERSION` matches the runner's `windowscodecs.dll`, otherwise tolerance 3) are not shown to run there.
+- Step 2 (add the `needs WIC` binaries): NOT DONE. The instruction was to add only binaries the logs prove can run; the logs prove none of them. `.github/workflows/native-nightly.yml` is unchanged. The evidence can only come from a first run, which a schedule-only workflow gets only if the binaries are added on trial (as every earlier addition was, with a "one night must confirm" comment). That is a decision, recorded as P-86 in PROPOSED-DECISIONS.
+- Candidate binaries for step 2 (counts of `native: needs WIC` attributes; NOT checked for fixtures, DLLs or a desktop beyond the header text): `wic_decoder_native` 70, `wic_imaging_twins_embedded` 19, `wic_cache_image` 14, `wic_scaler` 6, `wic_imaging_twins_thumbnail` 8, `wic_interop` 7, `preview_cache_wic` 5, `wic_cache_adapters` 5, `wic_availability` 4, `wic_decoder_buffers` 4, `wic_embedded_lifetime` 3, `wic_exif_reader` 3, `wic_repair1` 3. Excluded: `wic_imaging_twins_preview` and `wic_preview_service_broken_entry` (need staged DLLs, P-55), `pr-imaging/cache_preview_file` (same).
+- Step 3 (the rest stays hand-run): documented in `docs/DEVELOPING.md`, section on `native-nightly.yml`, "Running the hand-run families".
