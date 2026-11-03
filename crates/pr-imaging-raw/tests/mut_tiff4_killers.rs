@@ -201,3 +201,34 @@ fn unsigned_array_eight_bytes_are_out_of_line_and_read_from_the_offset() {
     let items = read_tag_unsigned_array(&mut source, &te(0x0100, 3, 4, 16), true, 64).expect("read");
     assert_eq!(items, vec![1, 2, 3, 4]);
 }
+
+/// A source that always hands back only the first `give` bytes of what was asked for (a short read).
+struct ShortReadSource {
+    give: usize,
+    data: Vec<u8>,
+}
+
+impl pr_imaging_raw::RawHeaderSource for ShortReadSource {
+    fn length(&self) -> i64 {
+        i64::try_from(self.data.len()).expect("length")
+    }
+
+    fn read(&mut self, offset: i64, count: i32) -> Result<&[u8], pr_imaging_raw::RawHeaderError> {
+        let start = usize::try_from(offset).expect("offset");
+        let want = usize::try_from(count).expect("count");
+        let end = (start + want.min(self.give)).min(self.data.len());
+        Ok(&self.data[start..end])
+    }
+}
+
+// TIFF-NAV-MUTATION 513:15 `(i + 1) * size > span_len` -> `(i - 1) * size > span_len` in `collect_items`: when the source
+// returns fewer bytes than asked, the loop must stop at the first item that does not fit. The mutant walks on and slices
+// `span[start..]` past the end (panic), so this test fails on it.
+#[test]
+fn unsigned_array_stops_at_the_first_item_that_does_not_fit_a_short_read() {
+    let data: Vec<u8> = (1..=32).collect();
+    let mut source = ShortReadSource { give: 6, data };
+    // LONG x 4 = 16 bytes, out of line at offset 0; the source returns only 6 of them.
+    let items = read_tag_unsigned_array(&mut source, &te(0x0100, 4, 4, 0), true, 64).expect("read");
+    assert_eq!(items, vec![0x0403_0201]);
+}
