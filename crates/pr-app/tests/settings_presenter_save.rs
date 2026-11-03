@@ -738,7 +738,7 @@ fn save_actions_json_numeric_operations_map_to_move_copy_recycle() {
 
 #[test]
 fn save_action_destination_problem_is_refused() {
-    // C#: SettingsPresenterTests.Save_ActionDestinationProblem_IsRefused (`"Operation":0`: see the DIVERGENCE note above)
+    // C#: SettingsPresenterTests.Save_ActionDestinationProblem_IsRefused (`"Operation":0`: see the numeric Operation note at line 691 above)
     let env = Env::new();
     let mut presenter = new_presenter(&default_settings());
     let mut state = presenter.load_fields();
