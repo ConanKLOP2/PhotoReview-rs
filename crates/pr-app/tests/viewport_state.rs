@@ -182,3 +182,122 @@ fn request_before_input_is_applied_with_first_input() {
     assert_eq!(state.horizontal_offset(), 40.0);
     assert_eq!(state.image_origin(), PointD { x: -40.0, y: 0.0 });
 }
+
+// New test (Q1 mutation killer): `input()` returns the last accepted input, also before it is laid out
+// (C# `ViewportState.Input`). Kills `input -> Default::default()`; a default input differs from this one.
+#[test]
+fn input_returns_the_last_accepted_input_even_before_layout() {
+    let mut state = ViewportState::new(FakeEngine::default());
+    let first = input_for(800.0, 600.0, 3000.0, 2000.0);
+    state.set_input(first);
+    assert_eq!(state.input(), first, "pending input is already visible");
+    state.update_layout();
+    assert_eq!(state.input(), first);
+
+    let second = input_for(1000.0, 700.0, 3000.0, 2000.0);
+    state.set_input(second);
+    assert_eq!(
+        state.input(),
+        second,
+        "a changed input replaces the old one before layout"
+    );
+}
+
+// New test (Q1 mutation killer): `scroll_home` is `scroll_to(0, 0)` (C# `ViewportState.ScrollHome`).
+// Kills `scroll_home -> ()`: after a scroll to (100, 50) the home request must bring both offsets back to 0.
+#[test]
+fn scroll_home_requests_offset_zero_on_both_axes() {
+    let mut state = ViewportState::new(FakeEngine::default());
+    state.set_input(input_for(800.0, 600.0, 3000.0, 2000.0));
+    state.scroll_to(100.0, 50.0);
+    state.update_layout();
+    assert_eq!(state.horizontal_offset(), 100.0);
+    assert_eq!(state.vertical_offset(), 50.0);
+
+    state.scroll_home();
+    assert!(state.is_layout_pending(), "scroll_home is a scroll request");
+    assert!(state.update_layout(), "both offsets changed");
+    assert_eq!(state.horizontal_offset(), 0.0);
+    assert_eq!(state.vertical_offset(), 0.0);
+}
+
+// New test (Q1 mutation killer): `update_layout` returns true iff the (layout, horizontal, vertical) triple changed,
+// each component on its own (C# `return _layout != previous || ... `). Kills the `!=`/`||` mutants of the return value.
+#[test]
+fn update_layout_return_value_reports_each_component_change_on_its_own() {
+    let mut state = ViewportState::new(FakeEngine::default());
+    state.set_input(input_for(800.0, 600.0, 3000.0, 2000.0));
+    assert!(state.update_layout(), "first layout differs from the default one");
+
+    // Layout only: the client width changes the layout, the (zero) offsets stay.
+    state.set_input(input_for(900.0, 600.0, 3000.0, 2000.0));
+    assert!(state.update_layout(), "layout changed, offsets did not");
+    assert_eq!((state.horizontal_offset(), state.vertical_offset()), (0.0, 0.0));
+
+    // Horizontal offset only.
+    state.scroll_to(100.0, 0.0);
+    assert!(state.update_layout(), "only the horizontal offset changed");
+
+    // Vertical offset only.
+    state.scroll_to(100.0, 40.0);
+    assert!(state.update_layout(), "only the vertical offset changed");
+
+    // Nothing changed: the same request again.
+    state.scroll_to(100.0, 40.0);
+    assert!(!state.update_layout(), "same request, same layout: no change");
+}
+
+// New test (Q1 mutation killer): `image_origin` = image_rect origin minus the offsets on BOTH axes, and
+// `to_image_element` subtracts that origin (C# `ImageOrigin`, `ToImageElement`). Distinct values per axis so a swapped sign
+// or operator on either axis changes the result.
+#[test]
+fn image_origin_and_to_image_element_use_both_offsets() {
+    let mut state = ViewportState::new(FakeEngine::default());
+    state.set_input(input_for(800.0, 600.0, 3000.0, 2000.0));
+    state.scroll_to(30.0, 40.0);
+    state.update_layout();
+
+    assert_eq!(state.image_origin(), PointD { x: -30.0, y: -40.0 });
+    assert_eq!(
+        state.to_image_element(PointD { x: 100.0, y: 200.0 }),
+        PointD { x: 130.0, y: 240.0 },
+        "viewport point minus origin = point + offsets"
+    );
+    assert_eq!(
+        state.to_image_element(PointD { x: -30.0, y: -40.0 }),
+        PointD { x: 0.0, y: 0.0 }
+    );
+}
+
+// New test (Q1 mutation killer): the image actual size is the laid-out image rect (C# `ImageActualWidth/Height`).
+#[test]
+fn image_actual_size_is_the_laid_out_image_rect() {
+    let mut state = ViewportState::new(FakeEngine::default());
+    assert_eq!((state.image_actual_width(), state.image_actual_height()), (0.0, 0.0));
+    state.set_input(input_for(800.0, 600.0, 3000.0, 2000.0));
+    state.update_layout();
+    assert_eq!(state.image_actual_width(), 3000.0);
+    assert_eq!(state.image_actual_height(), 2000.0);
+}
+
+// New test (Q1 mutation killer): a scroll request is stored as C# `Math.Max(0.0, value)`: negative values and `-0.0`
+// become the literal +0.0 (observable through the sign bit of the effective offset), positive values are kept.
+// Kills the `non_negative` mutants (`> -> >=` keeps -0.0, constants, `> -> < / ==`).
+#[test]
+fn scroll_request_is_max_zero_value_with_positive_zero() {
+    let mut state = ViewportState::new(FakeEngine::default());
+    state.set_input(input_for(800.0, 600.0, 3000.0, 2000.0));
+
+    state.scroll_to(-0.0, -5.0);
+    state.update_layout();
+    assert_eq!(
+        state.horizontal_offset().to_bits(),
+        0.0f64.to_bits(),
+        "-0.0 becomes +0.0"
+    );
+    assert_eq!(state.vertical_offset().to_bits(), 0.0f64.to_bits(), "-5 becomes +0.0");
+
+    state.scroll_to(12.5, 7.25);
+    state.update_layout();
+    assert_eq!((state.horizontal_offset(), state.vertical_offset()), (12.5, 7.25));
+}

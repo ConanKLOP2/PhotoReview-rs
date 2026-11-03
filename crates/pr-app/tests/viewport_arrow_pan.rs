@@ -102,3 +102,49 @@ fn step_diagonal_uses_horizontal_axis_twice() {
     assert!((horizontal - 120.0).abs() < 1e-9);
     assert_eq!(vertical, 0.0, "the vertical offset is not touched when dx != 0");
 }
+
+// New test (Q1 mutation killer): a non-positive step length is the literal +0.0 (C# `length > 0 ? length : 0`),
+// so a negative-zero length (fraction -0.0) must not leak its sign. Kills `length > 0.0` -> `>=`.
+#[test]
+fn step_length_negative_zero_fraction_is_positive_zero() {
+    assert_eq!(step_length(800.0, 600.0, -0.0).to_bits(), 0.0f64.to_bits());
+    assert_eq!(step_length(800.0, 600.0, 0.0).to_bits(), 0.0f64.to_bits());
+}
+
+// New test (Q1 mutation killer): a press toward the origin that overshoots 0 clamps to 0 (C# `Math.Clamp` lower bound
+// first) and still counts as Panned when the current offset is > 0.5. Kills `moved < 0.0` -> `moved == 0.0`.
+#[test]
+fn step_toward_origin_overshoot_clamps_to_zero_and_pans() {
+    let layout = layout_800_by_600();
+    let (outcome, horizontal, vertical) = step(-1, 0, 10.0, 25.0, &layout, 0.1);
+    assert_eq!(outcome, ArrowPanOutcome::Panned);
+    assert_eq!(horizontal, 0.0, "10 - 60 clamps to 0, not to -50");
+    assert_eq!(vertical, 25.0, "the other axis is unchanged");
+
+    let (outcome, horizontal, vertical) = step(0, -1, 25.0, 10.0, &layout, 0.1);
+    assert_eq!(outcome, ArrowPanOutcome::Panned);
+    assert_eq!((horizontal, vertical), (25.0, 0.0));
+}
+
+// New test (Q1 mutation killer): a press past the far edge clamps to the axis maximum (C# `Math.Clamp` upper bound) and
+// a press while already AT the maximum is AtEdge with the inputs unchanged (`|target - current| < 0.5`). Kills
+// `moved > max` -> `==`, and `target - current` -> `target + current` (sum of two non-zero numbers is not < 0.5).
+#[test]
+fn step_past_the_far_edge_clamps_to_max_and_at_max_is_at_edge() {
+    let layout = layout_800_by_600();
+    let (outcome, horizontal, vertical) = step(1, 0, 790.0, 33.0, &layout, 0.1);
+    assert_eq!(outcome, ArrowPanOutcome::Panned);
+    assert_eq!(
+        (horizontal, vertical),
+        (800.0, 33.0),
+        "790 + 60 clamps to the maximum 800"
+    );
+
+    let (outcome, horizontal, vertical) = step(1, 0, 800.0, 33.0, &layout, 0.1);
+    assert_eq!(outcome, ArrowPanOutcome::AtEdge);
+    assert_eq!((horizontal, vertical), (800.0, 33.0), "inputs unchanged at the edge");
+
+    let (outcome, horizontal, vertical) = step(0, 1, 33.0, 600.0, &layout, 0.1);
+    assert_eq!(outcome, ArrowPanOutcome::AtEdge);
+    assert_eq!((horizontal, vertical), (33.0, 600.0));
+}
