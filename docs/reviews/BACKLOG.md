@@ -40,7 +40,7 @@ Rủi ro: **D** = có thể mất/sai dữ liệu người dùng, **C** = crash/
 | 26 | G26 Writer cache cũ rename sau writer mới | invariants-storage M1 | trung bình | B/T | W4-14c, W4-08a | sửa mã + test, cần ADR parity |
 | 27 | G27 Backup config newer lỗi nhưng vẫn downgrade, mất field chưa biết | invariants-storage M2 | trung bình | D (config) | W2-03 | cần quyết định sản phẩm |
 | 28 | G28 Log short-write rồi retry lỗi làm lặp/dính dòng | invariants-storage L1 | thấp | T | W2-16 | thêm test + hardening log |
-| 29 | G29 Cache read cấp phát toàn file trước kiểm header/length; phân loại I/O OOM | invariants-storage M3 | trung bình | C/B | W4-08b, W4-14c | sửa mã + test |
+| 29 | G29 Cache read cấp phát toàn file trước kiểm header/length; phân loại I/O OOM | invariants-storage M3 | trung bình | C/B | W4-08b, W4-14c | sửa mã + test; kiểm lại 2026-11-03: phần kiểm kích thước trước khi cấp phát đã đóng ở #474, còn phân loại `OutOfMemory` lúc đọc là P-150 ([G29](G29-CACHE-READ-2026-11-03.md)) |
 | 30 | G30 Kiểm output của lần registry read thứ hai | recycle-policy M1 | trung bình | D/B | W6-02b | ĐÃ ĐÓNG: sửa ở PR #532, test kiểm lại 2026-11-03 ([G30](G30-RECYCLE-REGISTRY-TESTS-2026-11-03.md)) |
 | 31 | G31 Nối restore verb helper vào adapter | recycle-policy L1 | thấp | B/T | W6-02d/e | tích hợp hoặc ADR, giữ Partial; kiểm lại 2026-11-03: helper vẫn chưa nối, quyết định ở P-160 ([G31](G31-RESTORE-VERB-2026-11-03.md)) |
 
