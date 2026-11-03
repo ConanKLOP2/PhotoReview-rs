@@ -1628,9 +1628,9 @@ fn undo_last_async_while_another_action_runs_is_rejected_and_keeps_the_undo_acti
     )
     .with_gate(shared.clone());
     undo.register_group(&result);
-    assert!(shared.try_begin());
+    let held = shared.try_begin().expect("the gate is free");
     let outcome = undo.undo_last();
-    shared.end();
+    drop(held);
     assert!(outcome.rejected);
     assert!(undo.has_last_undo_action(), "the undo action is kept");
 }

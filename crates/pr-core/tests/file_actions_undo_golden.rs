@@ -13,7 +13,7 @@ use std::sync::{Arc, Mutex};
 
 use pr_core::file_actions::journal_line::{JournalDateTime, JournalEntry, JournalGroupMember};
 use pr_core::file_actions::types::{CaptureGroupActionResult, CaptureGroupMemberResult, FileActionResult, UndoResult};
-use pr_core::file_actions::undo::{MoveOverride, UndoService};
+use pr_core::file_actions::undo::{GateToken, MoveOverride, UndoService};
 use pr_core::model::{FileOperationType, JournalState};
 use pr_core::text::ignore_case_key;
 use pr_core::time::DateTimeUtc;
@@ -305,6 +305,7 @@ fn run_case(case: &Value) -> (Value, Value) {
     };
     let gate = (case["shared_gate"].as_bool() == Some(true)).then(TestGate::new);
     let mut undo: UndoService = f.undo().with_clock(undo_clock);
+    let mut held: Option<GateToken> = None;
     if let Some(gate) = &gate {
         undo = undo.with_gate(gate.clone());
     }
@@ -353,8 +354,17 @@ fn run_case(case: &Value) -> (Value, Value) {
             "push_history" => undo
                 .move_history_mut()
                 .push((text(&step["source"]), text(&step["destination"]))),
-            "gate_begin" => step_result = json!({ "began": undo.try_begin() }),
-            "gate_end" => undo.end(),
+            "gate_begin" => {
+                let began = match undo.try_begin() {
+                    Some(token) => {
+                        held = Some(token);
+                        true
+                    }
+                    None => false,
+                };
+                step_result = json!({ "began": began });
+            }
+            "gate_end" => drop(held.take()),
             "fs" => {
                 for action in parse_actions(&step["actions"]) {
                     run_action(&f.disk, &action);

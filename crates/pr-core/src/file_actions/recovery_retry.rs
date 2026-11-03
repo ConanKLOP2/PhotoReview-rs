@@ -44,16 +44,6 @@ use crate::model::{FileOperationType, JournalState};
 use crate::sync::{CancelToken, Canceled};
 use crate::text::dotnet_path::{get_directory_name, get_file_name};
 
-/// Releases the file-action gate taken by [`RecoveryRetryService::retry_move_or_copy`] on every exit (C# `finally`),
-/// `Err` and panic included.
-struct GateGuard<'a>(&'a dyn FileActionGate);
-
-impl Drop for GateGuard<'_> {
-    fn drop(&mut self) {
-        self.0.end();
-    }
-}
-
 fn is_move_or_copy(op_type: FileOperationType) -> bool {
     matches!(op_type, FileOperationType::Move | FileOperationType::Copy)
 }
@@ -309,7 +299,7 @@ impl RecoveryRetryService {
     ///
     /// Order (contract semantics E): gate (`try_begin`; refused => busy result, NOTHING read or journaled, the gate
     /// is NOT released because this call does not own it); then [`Self::retry_core`]; the gate taken here is released
-    /// on every path (RAII guard calling `end`, also on `Err` and on panic).
+    /// on every path (the `GateToken` drops, also on `Err` and on panic).
     ///
     /// `Err(Canceled)` reproduces the C# `TaskCanceledException` that escapes `await Task.Run(..., ct)` when `cancel`
     /// is already cancelled at the hand-off: AFTER every pre-check passed and BEFORE the live-marker check / Prepared
@@ -324,10 +314,10 @@ impl RecoveryRetryService {
         // RV-C08 (INV-4): refused before anything is read or journaled; the gate is not ours, so it is not released.
         let _guard = match &self.file_action_gate {
             Some(gate) => {
-                if !gate.try_begin() {
+                let Some(token) = gate.try_begin() else {
                     return Ok(RecoveryRetryResult::new(false, self.texts.core_recovery_busy(), None));
-                }
-                Some(GateGuard(gate.as_ref()))
+                };
+                Some(token)
             }
             None => None,
         };

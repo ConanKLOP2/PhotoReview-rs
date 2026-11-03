@@ -144,9 +144,9 @@ fn rename_source_missing_fails_without_journal() {
 fn rename_while_another_action_is_running_is_rejected_as_busy() {
     // C#: RenameFileActionTests.Rename_WhileAnotherActionIsRunning_IsRejectedAsBusy.
     let rig = Rig::new(&[("a.jpg", b"original")]);
-    assert!(rig.service.try_begin());
+    let held = rig.service.try_begin().expect("the gate is free");
     let result = rig.rename(&rig.path("a.jpg"), "x.jpg");
-    rig.service.end();
+    drop(held);
     assert!(!result.succeeded);
     assert!(result.rejected);
     assert_eq!(rig.fs.file_content(rig.path("a.jpg")), Some(b"original".to_vec()));

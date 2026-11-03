@@ -26,7 +26,6 @@ use std::fmt;
 use std::io;
 use std::path::Path;
 use std::sync::Arc;
-use std::sync::atomic::{AtomicI32, Ordering};
 
 use crate::abstractions::{Clock, CopyCreationProof, FileStat, FileSystem, RecycleBin};
 use crate::file_actions::case_only_rename::CaseOnlyRename;
@@ -40,7 +39,7 @@ use crate::file_actions::types::{
     CaptureGroupActionRequest, CaptureGroupActionResult, CaptureGroupMemberResult, FileActionRequest, FileActionResult,
     JournalGroupMember, matches_moved_destination,
 };
-use crate::file_actions::undo::{FileActionGate, MoveOverride};
+use crate::file_actions::undo::{FileActionGate, GateFlag, GateToken, MoveOverride};
 use crate::io::physical::new_guid_n;
 use crate::model::{FileOperationType, JournalState};
 use crate::sync::{CancelToken, Canceled};
@@ -173,9 +172,9 @@ pub struct FileActionService {
     /// C# `_moveOverride`; `None` = `FileSystem::move_file`.
     move_override: Option<MoveOverride>,
     texts: Arc<dyn FileActionTexts>,
-    /// C# `private int _inProgress` (0 = free, 1 = held). `AtomicI32` because C# uses `int` (D3); every access is
+    /// C# `private int _inProgress` (free / held) as a [`GateFlag`] that remembers WHICH token holds it (P-71 option C); every access is
     /// `SeqCst` (C# `Interlocked.CompareExchange` / `Volatile.Read` / `Volatile.Write`).
-    in_progress: AtomicI32,
+    in_progress: Arc<GateFlag>,
 }
 
 impl fmt::Debug for FileActionService {
@@ -207,7 +206,7 @@ impl FileActionService {
             recycle_bin,
             move_override: None,
             texts: Arc::new(EnglishFileActionTexts),
-            in_progress: AtomicI32::new(0),
+            in_progress: Arc::new(GateFlag::new()),
         }
     }
 
@@ -225,19 +224,12 @@ impl FileActionService {
 
     /// C# `IsBusy`: `in_progress != 0` (`SeqCst` load).
     pub fn is_busy(&self) -> bool {
-        self.in_progress.load(Ordering::SeqCst) != 0
+        self.in_progress.is_busy()
     }
 
     /// C# `TryBegin()` (INV-4): compare-exchange 0 -> 1 (`SeqCst`); `true` when THIS call took the gate.
-    pub fn try_begin(&self) -> bool {
-        self.in_progress
-            .compare_exchange(0, 1, Ordering::SeqCst, Ordering::SeqCst)
-            .is_ok()
-    }
-
-    /// C# `End()`: unconditional `SeqCst` store of 0 (also when the gate was not held).
-    pub fn end(&self) {
-        self.in_progress.store(0, Ordering::SeqCst);
+    pub fn try_begin(&self) -> Option<GateToken> {
+        self.in_progress.try_begin()
     }
 
     /// C# `LacksRecycleBin(path)` (Q-R8): `!recycle_bin.can_recycle(path)`, i.e. a Recycle of `path` would be a
@@ -254,14 +246,14 @@ impl FileActionService {
     /// rejected result carries one too); validation; preflight of every member (missing partners are skipped and
     /// reported); capacity (Recycle); destination folder; ONE Prepared manifest line; mutations in member order;
     /// `Committed`; on failure compensation, inspection, then `Failed` or `Dismissed` (fully rolled back). The gate is
-    /// released on every path after the gate was taken (RAII guard calling [`Self::end`]).
+    /// released on every path after the gate was taken (RAII guard dropping the [`GateToken`]).
     ///
     /// A panic inside a `FileSystem`/`RecycleBin` implementation is NOT caught (contract open question 2, option B): it
     /// propagates, the guard still releases the gate and the transaction's `Drop` releases the live marker, so the
     /// Prepared line stays for startup reconcile (the C# "unexpected exception" arm has the same disk/journal outcome).
     pub fn execute_group(&self, request: &CaptureGroupActionRequest, cancel: &CancelToken) -> CaptureGroupActionResult {
         let group_id = new_guid_n();
-        if !self.try_begin() {
+        let Some(gate) = self.try_begin() else {
             return CaptureGroupActionResult::new(
                 false,
                 true,
@@ -271,8 +263,7 @@ impl FileActionService {
                 Vec::new(),
                 Some(self.texts.core_file_action_busy()),
             );
-        }
-        let gate = GateGuard(self);
+        };
         let mut run = GroupRun::new();
         let result = match self.run_group(request, cancel, &group_id, &mut run) {
             Ok(result) => result,
@@ -290,7 +281,7 @@ impl FileActionService {
     /// Gate refused => `rejected: true`, `succeeded: false`, `destination_path: None`, `size: 0`,
     /// `last_write_utc: DateTimeUtc::MIN`, `error: core_file_action_busy` (no id is generated, nothing is read).
     pub fn execute(&self, request: &FileActionRequest, cancel: &CancelToken) -> FileActionResult {
-        if !self.try_begin() {
+        let Some(gate) = self.try_begin() else {
             return FileActionResult {
                 rejected: true,
                 ..FileActionResult::new(
@@ -303,8 +294,7 @@ impl FileActionService {
                     Some(self.texts.core_file_action_busy()),
                 )
             };
-        }
-        let gate = GateGuard(self);
+        };
         let mut run = SingleRun::new(new_guid_n());
         let result = match self.run_single(request, cancel, &mut run, None) {
             Ok(result) => result,
@@ -323,7 +313,7 @@ impl FileActionService {
         new_file_name: &str,
         cancel: &CancelToken,
     ) -> FileActionResult {
-        if !self.try_begin() {
+        let Some(_gate) = self.try_begin() else {
             return FileActionResult {
                 rejected: true,
                 ..FileActionResult::new(
@@ -336,8 +326,7 @@ impl FileActionService {
                     Some(self.texts.core_file_action_busy()),
                 )
             };
-        }
-        let _gate = GateGuard(self);
+        };
         let mut run = SingleRun::new(new_guid_n());
         let outcome = self.run_single(request, cancel, &mut run, Some(new_file_name));
         outcome.unwrap_or_else(|failure| self.single_failure(request, &mut run, failure))
@@ -1375,16 +1364,6 @@ impl FileActionService {
     }
 }
 
-/// Releases the INV-4 gate when dropped (C# `finally { ... End(); }`), also on a panic. Only created AFTER this call took
-/// the gate, so a refused call never releases a gate it does not hold (trap T1).
-struct GateGuard<'a>(&'a FileActionService);
-
-impl Drop for GateGuard<'_> {
-    fn drop(&mut self) {
-        self.0.end();
-    }
-}
-
 /// The local state of one `ExecuteAsync` call (the C# locals the `catch` block reads).
 struct SingleRun<'a> {
     operation_id: String,
@@ -1606,11 +1585,8 @@ fn path_error_to_io(err: PathError, path: &str) -> io::Error {
 // ---------------------------------------------------------------------------------------------------------------
 
 impl FileActionGate for FileActionService {
-    fn try_begin(&self) -> bool {
+    fn try_begin(&self) -> Option<GateToken> {
         FileActionService::try_begin(self)
-    }
-    fn end(&self) {
-        FileActionService::end(self)
     }
     fn is_busy(&self) -> bool {
         FileActionService::is_busy(self)

@@ -5,7 +5,7 @@
 //! `DestinationEscapeTests.cs`, `PermanentDeleteTests.cs` (Recycle part), `FileActionFaultInjectionGapTests.cs` (the four
 //! single/permission tests), `LiveOperationMarkerTests.cs` (single part) and `JournalErrorCodeTests.cs`.
 //!
-//! Baseline d92d6aae. Red until the W3-04 bodies land: every test that reaches `execute`, `try_begin`, `end`,
+//! Baseline d92d6aae. Red until the W3-04 bodies land: every test that reaches `execute`, `try_begin`,
 //! `execute_group` or any other unimplemented method panics with `todo!()`. Each test carries a `// C#:` comment naming the
 //! C# test it ports; a Theory is one Rust test that loops over its rows. Nothing here touches the real Recycle Bin: the
 //! bin is [`ScenarioBin`] over the in-memory disk.
@@ -439,7 +439,7 @@ fn execute_async_move_completed_but_commit_journal_fails_preserves_completed_out
 fn execute_async_when_gate_busy_rejects_second_action() {
     let fx = Fixture::new();
     fx.add_file(SOURCE, 11);
-    assert!(fx.service.try_begin());
+    let held = fx.service.try_begin().expect("the gate is free");
     let result = fx.run(&single(SOURCE, Move, Some("sel")));
     assert!(result.rejected);
     assert!(!result.succeeded);
@@ -449,7 +449,7 @@ fn execute_async_when_gate_busy_rejects_second_action() {
     );
     assert!(fx.file_exists(SOURCE), "a rejected request reads and moves nothing");
     assert!(fx.journal_lines().is_empty());
-    fx.service.end();
+    drop(held);
 }
 
 // C#: FileActionServiceTests.TryBegin_And_End_ManageBusyGate
@@ -457,13 +457,17 @@ fn execute_async_when_gate_busy_rejects_second_action() {
 fn try_begin_and_end_manage_busy_gate() {
     let fx = Fixture::new();
     assert!(!fx.service.is_busy());
-    assert!(fx.service.try_begin());
+    let held = fx.service.try_begin().expect("the gate is free");
     assert!(fx.service.is_busy());
-    assert!(!fx.service.try_begin(), "a second TryBegin while held is refused");
-    fx.service.end();
+    assert!(
+        fx.service.try_begin().is_none(),
+        "a second TryBegin while held is refused"
+    );
+    drop(held);
     assert!(!fx.service.is_busy());
-    assert!(fx.service.try_begin());
-    fx.service.end();
+    let again = fx.service.try_begin().expect("released by dropping the token");
+    again.release();
+    assert!(!fx.service.is_busy());
 }
 
 // C#: FileActionServiceTests.ExecuteAsync_CancelledBeforeStart_DismissesJournalEntry (Theory: Move, Copy, Recycle)
@@ -965,11 +969,11 @@ fn file_action_gate_trait_forwards_to_the_one_gate() {
     let fx = Fixture::new();
     let gate: &dyn FileActionGate = &fx.service;
     assert!(!gate.is_busy());
-    assert!(gate.try_begin());
+    let held = gate.try_begin().expect("the gate is free");
     assert!(gate.is_busy() && fx.service.is_busy());
-    assert!(!gate.try_begin(), "held: a second taker is refused");
-    assert!(!fx.service.try_begin());
-    gate.end();
+    assert!(gate.try_begin().is_none(), "held: a second taker is refused");
+    assert!(fx.service.try_begin().is_none());
+    drop(held);
     assert!(!fx.service.is_busy());
 }
 

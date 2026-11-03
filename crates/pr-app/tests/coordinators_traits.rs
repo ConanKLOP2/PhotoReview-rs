@@ -286,9 +286,9 @@ fn file_action_service_executor_forwards_busy_and_recycle_bin_checks() {
     let executor = FileActionServiceExecutor::new(Arc::clone(&service));
 
     assert!(!executor.is_busy());
-    assert!(service.try_begin());
+    let held = service.try_begin().expect("the gate is free");
     assert!(executor.is_busy(), "the executor reports the service's gate");
-    service.end();
+    drop(held);
     assert!(!executor.is_busy());
 
     assert!(executor.lacks_recycle_bin(r"C:\photos\IMG_0001.jpg"));

@@ -27,7 +27,7 @@ use std::collections::HashMap;
 use std::fmt;
 use std::io;
 use std::path::Path;
-use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::{Arc, Mutex, PoisonError};
 
 use super::case_only_rename::CaseOnlyRename;
@@ -49,15 +49,83 @@ use crate::time::DateTimeUtc;
 
 /// The one file-action gate (INV-4) that `FileActionService` (W3-04) owns. C# passes the whole `FileActionService?`
 /// and calls only `TryBegin`/`End`/`IsBusy` on it; Rust takes only that part so this unit does not depend on W3-04.
-/// W3-04 implements it for `FileActionService` with exactly the C# semantics: `try_begin` = compare-exchange
-/// 0 -> 1 (SeqCst), `end` = store 0, `is_busy` = load != 0.
+/// W3-04 implements it for `FileActionService`: `try_begin` = compare-exchange free -> held (SeqCst), `is_busy` =
+/// load != free. P-71 option C (ADR-D-2026-11-03): there is no public `end`; a successful `try_begin` returns the
+/// [`GateToken`] and only dropping (or [`GateToken::release`]-ing) that token frees the gate, once.
 pub trait FileActionGate: Send + Sync {
-    /// C# `FileActionService.TryBegin`: takes the gate; `false` when it is already held.
-    fn try_begin(&self) -> bool;
-    /// C# `FileActionService.End`: releases the gate (unconditionally, like `Volatile.Write(ref _inProgress, 0)`).
-    fn end(&self);
+    /// C# `FileActionService.TryBegin`: takes the gate; `None` when it is already held (nothing to release then).
+    fn try_begin(&self) -> Option<GateToken>;
     /// C# `FileActionService.IsBusy`.
     fn is_busy(&self) -> bool;
+}
+
+/// Proof that its holder took the gate with a successful [`FileActionGate::try_begin`]. Dropping it (also on a panic)
+/// releases the gate exactly once, and only if the gate is still held by THIS token. It is neither `Clone` nor
+/// constructible from a gate without a successful begin, so a stale or duplicate release cannot clear the flag of
+/// another action (replaces C# `End()`, which stores 0 unconditionally).
+#[must_use = "dropping the token releases the gate immediately"]
+pub struct GateToken {
+    release: Option<Box<dyn FnOnce() + Send + Sync>>,
+}
+
+impl GateToken {
+    /// Builds a token whose release action runs once, on drop. For `FileActionGate` implementors (see [`GateFlag`]).
+    pub fn new(release: impl FnOnce() + Send + Sync + 'static) -> Self {
+        Self {
+            release: Some(Box::new(release)),
+        }
+    }
+
+    /// Releases the gate now (same as dropping the token).
+    pub fn release(self) {}
+}
+
+impl Drop for GateToken {
+    fn drop(&mut self) {
+        if let Some(release) = self.release.take() {
+            release();
+        }
+    }
+}
+
+impl fmt::Debug for GateToken {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.debug_struct("GateToken").finish_non_exhaustive()
+    }
+}
+
+/// The INV-4 flag behind a gate: 0 = free, otherwise the id of the token that holds it. A token releases with a
+/// compare-exchange `id -> 0`, so even a release that somehow ran late can never clear a LATER holder's id.
+#[derive(Debug, Default)]
+pub struct GateFlag {
+    owner: AtomicU64,
+    next_id: AtomicU64,
+}
+
+impl GateFlag {
+    /// A free flag.
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// `owner != 0` (`SeqCst` load).
+    pub fn is_busy(&self) -> bool {
+        self.owner.load(Ordering::SeqCst) != 0
+    }
+
+    /// Compare-exchange free -> held (`SeqCst`); the token of the winner, `None` for every loser.
+    pub fn try_begin(self: &Arc<Self>) -> Option<GateToken> {
+        // Ids start at 1 (0 means free); a lost race wastes an id, which is harmless.
+        let id = self.next_id.fetch_add(1, Ordering::SeqCst).wrapping_add(1).max(1);
+        self.owner
+            .compare_exchange(0, id, Ordering::SeqCst, Ordering::SeqCst)
+            .ok()?;
+        let flag = Arc::clone(self);
+        Some(GateToken::new(move || {
+            // Err = not (or no longer) ours: leave the flag alone.
+            let _ = flag.owner.compare_exchange(id, 0, Ordering::SeqCst, Ordering::SeqCst);
+        }))
+    }
 }
 
 /// C# `Func<string, string, Task>? moveOverride`: replaces `FileSystem::move_file` for the reverse move(s) of an undo,
@@ -217,23 +285,6 @@ struct PartialGroupUndo {
     failed_entries: Vec<JournalEntry>,
 }
 
-/// Holds the gate taken by [`UndoService::try_begin`] and releases it on drop (C# `finally { End(); }`), so a panic
-/// inside the undo (a buggy `FileSystem`) cannot leave the gate locked (C# test
-/// `UndoRecycle_FileSystemThrows_GateIsReleased`). Built from clones so it does not borrow the service.
-struct GateHold {
-    gate: Option<Arc<dyn FileActionGate>>,
-    own_gate: Arc<AtomicBool>,
-}
-
-impl Drop for GateHold {
-    fn drop(&mut self) {
-        match &self.gate {
-            Some(gate) => gate.end(),
-            None => self.own_gate.store(false, Ordering::SeqCst),
-        }
-    }
-}
-
 // ---------------------------------------------------------------------------------------------------------------
 // UndoService
 // ---------------------------------------------------------------------------------------------------------------
@@ -249,7 +300,7 @@ pub struct UndoService {
     clock: Arc<dyn Clock>,
     texts: Arc<dyn UndoTexts>,
     /// C# `_internalInProgress` (used only when `gate` is `None`).
-    own_gate: Arc<AtomicBool>,
+    own_gate: Arc<GateFlag>,
     /// C# `Stack<(string Source, string Destination)> _moveHistory`: the TOP is the LAST element.
     move_history: Vec<(String, String)>,
     /// C# `Dictionary<string, (long, DateTime)>(StringComparer.OrdinalIgnoreCase)`: keyed by
@@ -298,7 +349,7 @@ impl UndoService {
             move_override: None,
             clock: Arc::new(SystemClock),
             texts,
-            own_gate: Arc::new(AtomicBool::new(false)),
+            own_gate: Arc::new(GateFlag::new()),
             move_history: Vec::new(),
             move_fingerprints: HashMap::new(),
             last_undo_action: None,
@@ -358,26 +409,16 @@ impl UndoService {
     pub fn is_busy(&self) -> bool {
         match &self.gate {
             Some(gate) => gate.is_busy(),
-            None => self.own_gate.load(Ordering::SeqCst),
+            None => self.own_gate.is_busy(),
         }
     }
 
-    /// C# `TryBegin` (INV-4): the shared gate's `try_begin()`, else compare-exchange of the own flag false -> true.
-    pub fn try_begin(&self) -> bool {
+    /// C# `TryBegin` (INV-4): the shared gate's `try_begin()`, else the own flag's. The token releases the gate on
+    /// drop (C# `finally { End(); }`, so a panic inside an undo cannot leave it locked; P-71 option C: no public `end`).
+    pub fn try_begin(&self) -> Option<GateToken> {
         match &self.gate {
             Some(gate) => gate.try_begin(),
-            None => self
-                .own_gate
-                .compare_exchange(false, true, Ordering::SeqCst, Ordering::SeqCst)
-                .is_ok(),
-        }
-    }
-
-    /// C# `End`: the shared gate's `end()`, else store false.
-    pub fn end(&self) {
-        match &self.gate {
-            Some(gate) => gate.end(),
-            None => self.own_gate.store(false, Ordering::SeqCst),
+            None => self.own_gate.try_begin(),
         }
     }
 
@@ -557,14 +598,8 @@ impl UndoService {
     // ---- private helpers ----
 
     /// Takes the gate and returns its RAII release, or `None` when it is held (C# `if (!TryBegin()) return ...`).
-    fn begin_hold(&self) -> Option<GateHold> {
-        if !self.try_begin() {
-            return None;
-        }
-        Some(GateHold {
-            gate: self.gate.clone(),
-            own_gate: Arc::clone(&self.own_gate),
-        })
+    fn begin_hold(&self) -> Option<GateToken> {
+        self.try_begin()
     }
 
     /// C# `SafeFileExistsAs`: inspection failures are non-critical and fail closed.
