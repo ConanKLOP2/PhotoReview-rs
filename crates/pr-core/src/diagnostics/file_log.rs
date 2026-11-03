@@ -922,4 +922,116 @@ mod write_remaining_tests {
         assert_eq!(w.sink, DATA);
         assert_eq!(offset, DATA.len());
     }
+
+    /// Accepts `accept` bytes in call 0, then fails every write call; `flush` fails the first `flush_failures` times.
+    struct FailingTail {
+        accept: usize,
+        calls: usize,
+        flush_failures: usize,
+        sink: Vec<u8>,
+    }
+
+    impl Write for FailingTail {
+        fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
+            let call = self.calls;
+            self.calls += 1;
+            if call == 0 {
+                let n = buf.len().min(self.accept);
+                self.sink.extend_from_slice(&buf[..n]);
+                return Ok(n);
+            }
+            Err(io::Error::other("scripted failure"))
+        }
+
+        fn flush(&mut self) -> io::Result<()> {
+            if self.flush_failures > 0 {
+                self.flush_failures -= 1;
+                return Err(io::Error::other("scripted flush failure"));
+            }
+            Ok(())
+        }
+    }
+
+    #[test]
+    fn write_then_write_fail_twice_keeps_offset_at_half_of_b_and_a_later_retry_completes_without_repeating_a() {
+        // A = "AAAA\r\n" (6 bytes), B = "BBBBBB\r\n" (8 bytes): call 0 takes A plus half of B (10 bytes), then two failures.
+        let mut w = FailingTail {
+            accept: 10,
+            calls: 0,
+            flush_failures: 0,
+            sink: Vec::new(),
+        };
+        let mut offset = 0usize;
+        assert!(write_remaining(&mut w, DATA, &mut offset).is_err());
+        assert!(write_remaining(&mut w, DATA, &mut offset).is_err());
+        assert_eq!(offset, 10);
+        assert_eq!(w.sink, &DATA[..10]);
+        // The sink recovers: only the rest of B is appended, A is not repeated and no half line is glued on.
+        w.accept = usize::MAX;
+        w.calls = 0;
+        assert!(write_remaining(&mut w, DATA, &mut offset).is_ok());
+        assert_eq!(w.sink, DATA);
+        assert_eq!(w.sink.windows(6).filter(|s| *s == b"AAAA\r\n").count(), 1);
+    }
+
+    #[test]
+    fn flush_failing_twice_after_all_bytes_were_written_never_rewrites_them() {
+        let mut w = FailingTail {
+            accept: usize::MAX,
+            calls: 0,
+            flush_failures: 2,
+            sink: Vec::new(),
+        };
+        let mut offset = 0usize;
+        assert!(write_remaining(&mut w, DATA, &mut offset).is_err());
+        assert!(write_remaining(&mut w, DATA, &mut offset).is_err());
+        assert_eq!(offset, DATA.len());
+        assert_eq!(w.sink, DATA);
+        assert_eq!(w.calls, 1, "the retries must only flush, never write again");
+        assert!(write_remaining(&mut w, DATA, &mut offset).is_ok());
+        assert_eq!(w.sink, DATA);
+    }
+
+    #[test]
+    fn zero_byte_write_is_write_zero_and_keeps_the_offset() {
+        let mut w = FailingTail {
+            accept: 0,
+            calls: 0,
+            flush_failures: 0,
+            sink: Vec::new(),
+        };
+        let mut offset = 0usize;
+        let err = write_remaining(&mut w, DATA, &mut offset).unwrap_err();
+        assert_eq!(err.kind(), io::ErrorKind::WriteZero);
+        assert_eq!(offset, 0);
+        assert!(w.sink.is_empty());
+    }
+
+    #[test]
+    fn interrupted_write_is_retried_without_losing_or_repeating_bytes() {
+        struct Interrupting {
+            interrupted: bool,
+            sink: Vec<u8>,
+        }
+        impl Write for Interrupting {
+            fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
+                if !self.interrupted {
+                    self.interrupted = true;
+                    return Err(io::Error::from(io::ErrorKind::Interrupted));
+                }
+                self.sink.extend_from_slice(buf);
+                Ok(buf.len())
+            }
+            fn flush(&mut self) -> io::Result<()> {
+                Ok(())
+            }
+        }
+        let mut w = Interrupting {
+            interrupted: false,
+            sink: Vec::new(),
+        };
+        let mut offset = 0usize;
+        assert!(write_remaining(&mut w, DATA, &mut offset).is_ok());
+        assert_eq!(w.sink, DATA);
+    }
 }
