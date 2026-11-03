@@ -48,7 +48,6 @@ fn create_directory_device_forms_keep_trailing_dot_and_other_forms_trim_it() {
     let q = "\u{5c}";
     let b = base.to_string_lossy().into_owned();
     let plain = b.strip_prefix(&format!("{q}{q}?{q}")).unwrap_or(&b).to_owned();
-    let fs = PhysicalFileSystem;
     let forms = [
         format!("{q}{q}?{q}{plain}{q}s1."), // extended device: dot kept
         format!("{q}{q}.{q}{plain}{q}s2."), // dot device: normalised, dot trimmed
@@ -61,10 +60,29 @@ fn create_directory_device_forms_keep_trailing_dot_and_other_forms_trim_it() {
         format!("{q}{q}?{q}{plain}{q}s10"),
         format!("{plain}{q}s11."), // plain drive path: dot trimmed
     ];
-    for form in &forms {
-        let path = std::path::PathBuf::from(form);
-        fs.create_directory(&path).unwrap_or_else(|e| panic!("{form}: {e}"));
-        assert!(fs.directory_exists(&path), "{form}");
+    // Q3 2026-11-04: the creation runs on a worker thread with a bounded wait. The `-=` -> `+=` / `/=` mutants of the walk back in
+    // `create_directory_impl` (:696) never end; this test sorts after `create_directory_deep_paths...`, whose guard fails first, and
+    // an unguarded call here would hang the whole test binary (cargo-mutants TIMEOUT instead of a caught mutant).
+    let (tx, rx) = mpsc::channel();
+    let worker_forms = forms.to_vec();
+    std::thread::spawn(move || {
+        let outcome: Vec<(String, Result<(), String>, bool)> = worker_forms
+            .into_iter()
+            .map(|form| {
+                let path = std::path::PathBuf::from(&form);
+                let created = PhysicalFileSystem.create_directory(&path).map_err(|e| e.to_string());
+                let exists = PhysicalFileSystem.directory_exists(&path);
+                (form, created, exists)
+            })
+            .collect();
+        let _ = tx.send(outcome);
+    });
+    let outcome = rx
+        .recv_timeout(Duration::from_secs(20))
+        .expect("create_directory must terminate on device-form paths");
+    for (form, created, exists) in outcome {
+        assert_eq!(created, Ok(()), "{form}");
+        assert!(exists, "{form}");
     }
     let mut names: Vec<String> = std::fs::read_dir(&base)
         .unwrap()

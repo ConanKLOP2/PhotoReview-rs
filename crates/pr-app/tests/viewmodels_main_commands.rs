@@ -2119,6 +2119,30 @@ fn pick_and_open_folder_opens_the_selected_folder() {
     assert_eq!(env.vm.current_index(), 0);
 }
 
+#[cfg(windows)]
+#[test]
+fn pick_and_open_folder_refuses_a_folder_whose_name_cannot_be_represented() {
+    // No C# twin: DV-5 (PR #455 FIX-PATHLOSSY, PARITY F-13). C# refuses at action time (`ThrowIfUnrepresentable`); Rust keeps `String`
+    // catalog paths, so the picked folder is refused before any load. A real folder named with U+FFFD sits next to the lossy
+    // spelling: opening the lossy name would open that decoy, so "nothing opened" proves the refusal.
+    use std::ffi::OsString;
+    use std::os::windows::ffi::OsStringExt;
+    let mut env = MainEnv::new();
+    let (folder, _) = env.images("lossy_decoy_\u{FFFD}", &["a.png"]);
+    let wide: Vec<u16> = folder
+        .encode_utf16()
+        .map(|unit| if unit == 0xFFFD { 0xD800 } else { unit })
+        .collect();
+    assert!(wide.contains(&0xD800));
+    *lock(&env.dialog.picked) = Some(PathBuf::from(OsString::from_wide(&wide)));
+
+    let changes = env.vm.pick_and_open_folder();
+    env.settle();
+
+    assert_eq!(changes, Default::default());
+    assert_eq!(env.vm.total_files(), 0);
+}
+
 #[test]
 fn pick_and_open_folder_starts_the_picker_in_the_open_folder() {
     // C#: MutationGaps.PickAndOpenFolderAsync_StartsThePickerInTheOpenFolder
