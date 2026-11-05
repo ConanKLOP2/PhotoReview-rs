@@ -416,6 +416,9 @@ fn tick_xs_degenerate_inputs() {
             }
         }
     }
+    // Bounded guard (MUT9, widgets.rs 641:56): the step is `ceil(min_gap / max(0.01, span / gaps))`; with `span * gaps` the step would be 1 and the call below
+    // would loop 2^31 times (a timeout, not a failure). Count 1000 shows the same step rule in 1000 iterations, so the mutant fails here by assertion first.
+    assert_eq!(tick_xs(0, 11, 1000, 0, 1000, true, None, 1.0), [0, 6, 10]);
     // A huge count with a tiny span: the step grows (600), so the loop is a few million iterations at most.
     assert!(!tick_xs(0, 2, i32::MAX, 0, 10, true, None, 1.0).is_empty());
 }
