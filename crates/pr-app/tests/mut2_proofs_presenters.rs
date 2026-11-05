@@ -219,9 +219,44 @@ fn dotnet_double_text_without_e_branch(value: f64) -> String {
     text
 }
 
+/// Frozen copy of `dotnet_double_text` as it was BEFORE the dead `split_once('e')` branch was removed (P-393 option 1). The
+/// production function must stay byte-for-byte equal to it on every input.
+fn dotnet_double_text_original(value: f64) -> String {
+    if value.is_nan() {
+        return "NaN".to_owned();
+    }
+    if value == f64::INFINITY {
+        return "Infinity".to_owned();
+    }
+    if value == f64::NEG_INFINITY {
+        return "-Infinity".to_owned();
+    }
+    if value == 0.0 {
+        return "0".to_owned();
+    }
+    let text = value.to_string();
+    if let Some((mantissa, exponent)) = text.split_once('e') {
+        let exponent = exponent.parse::<i32>().unwrap_or(0);
+        if !(-4..17).contains(&exponent) {
+            return format!("{mantissa}E{exponent:+03}");
+        }
+    } else if value.abs() < 1.0e-4 || value.abs() >= 1.0e17 {
+        let (whole, frac) = text.split_once('.').unwrap_or((&text, ""));
+        let digits = format!("{whole}{frac}");
+        let first = digits.trim_start_matches('0').chars().next().unwrap_or('0');
+        let exp = if whole == "0" {
+            -(frac.chars().take_while(|c| *c == '0').count() as i32) - 1
+        } else {
+            whole.len() as i32 - 1
+        };
+        return format!("{first}E{exp:+03}");
+    }
+    text
+}
+
 #[test]
 fn dotnet_double_text_never_takes_the_exponent_branch_and_equals_the_function_without_it() {
-    // Mutants 289:12 (delete `!`) and 289:14 (delete `-`) live only inside `if let Some(..) = text.split_once('e')`. Domain: every
+    // Mutants 289:12 (delete `!`) and 289:14 (delete `-`) lived only inside `if let Some(..) = text.split_once('e')` (now removed). Domain: every
     // finite f64 class: ALL 2046 normal biased exponents and the subnormal one, times a spread of mantissas, both signs, plus
     // 400k pseudo-random bit patterns. For each, `to_string()` has no `e` (so the branch is dead) and the function equals the
     // function with the branch removed.
@@ -249,6 +284,11 @@ fn dotnet_double_text_never_takes_the_exponent_branch_and_equals_the_function_wi
         assert_eq!(
             dotnet_double_text(value),
             dotnet_double_text_without_e_branch(value),
+            "{value:e}"
+        );
+        assert_eq!(
+            dotnet_double_text(value),
+            dotnet_double_text_original(value),
             "{value:e}"
         );
         seen += 1;

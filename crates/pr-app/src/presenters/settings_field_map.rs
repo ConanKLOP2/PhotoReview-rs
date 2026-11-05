@@ -284,12 +284,9 @@ pub fn dotnet_double_text(value: f64) -> String {
         return "0".to_owned();
     }
     let text = value.to_string();
-    if let Some((mantissa, exponent)) = text.split_once('e') {
-        let exponent = exponent.parse::<i32>().unwrap_or(0);
-        if !(-4..17).contains(&exponent) {
-            return format!("{mantissa}E{exponent:+03}");
-        }
-    } else if value.abs() < 1.0e-4 || value.abs() >= 1.0e17 {
+    // Rust's `f64` Display never uses exponent notation, so `text` has no `e` (proved over all exponent classes in
+    // tests/mut2_proofs_presenters.rs); the E-format below is the only exponent path.
+    if value.abs() < 1.0e-4 || value.abs() >= 1.0e17 {
         let (whole, frac) = text.split_once('.').unwrap_or((&text, ""));
         let digits = format!("{whole}{frac}");
         let first = digits.trim_start_matches('0').chars().next().unwrap_or('0');
