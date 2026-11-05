@@ -67,6 +67,11 @@ Use repository evidence over recollection; recheck script defaults when they cha
 - Correct a test only when the C# oracle proves it wrong; cite the exact source/test and changed Rust functions.
   Why: the pipeline's fixup prompt requires those citations and forbids weakening tests or adding ignores.
 
+## E. Cost
+
+- Start with "How to resume" and the newest dated status in `task_on_progress.md`; expand into older sections only for relevant details.
+  Why: that file sends historical entries to `docs/archive/`; `CLAUDE.md` requires reading status but does not prescribe a shortened reading mode.
+
 ## F. Mutation sweeps (sessions 2026-11-04 to 2026-11-06)
 
 - Count an infrastructure failure (build died, paging file too small, LNK1102, E0463, a log overwritten by a sibling mutant) as NOT RUN, never as tested or unviable.
@@ -94,8 +99,3 @@ A public write-up of a 1 vCPU, 2 GB server contest (SQLite, io_uring) is mostly 
   Why: the Rust and Lean entries read the feed by ID range only when IDs are consecutive and otherwise run the standard query.
 - Do not copy the extreme tricks (hand-written assembly, bypassing the SQL layer, reimplementing the storage engine).
   Why: the contest author himself said nobody would run these in production because of data-loss risk and maintenance cost.
-
-## G. Cost
-
-- Start with "How to resume" and the newest dated status in `task_on_progress.md`; expand into older sections only for relevant details.
-  Why: that file sends historical entries to `docs/archive/`; `CLAUDE.md` requires reading status but does not prescribe a shortened reading mode.
