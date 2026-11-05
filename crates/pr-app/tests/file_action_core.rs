@@ -1501,12 +1501,67 @@ fn executor_throws_after_the_file_is_gone_entry_does_not_come_back() {
     assert_eq!(env.present_finished(false), DONE_FALSE);
 
     assert_eq!(env.catalog_paths(), vec![p("a.jpg"), p("c.jpg")]);
+    // P-330 (C# 5e5a9ce5): the source is gone, so the outcome is unknown, not "failed".
+    let unknown = en(
+        "status.actionOutcomeUnknown",
+        &[
+            arg("actionName", "MoveToSub"),
+            arg("fileName", "b.jpg"),
+            arg("message", "boom"),
+        ],
+    );
+    assert_eq!(env.sink.last_status(), Some(unknown.as_str()));
+    assert!(env.log.errors.lock().unwrap().iter().any(|m| m.contains("gone")));
+}
+
+// C#: FileActionControllerUnexpectedThrowTests.ExecutorThrows_AfterTheSourceIsGone_StatusSaysOutcomeUnknown_NotActionFailed
+#[test]
+fn executor_throws_after_the_source_is_gone_status_says_outcome_unknown_not_action_failed() {
+    let mut env = move_env(&["a.jpg", "b.jpg"]);
+    env.exec.script(Scripted::Panic("boom".to_string()));
+
+    env.run_action(0, None, Some(&p("a.jpg")));
+    env.disk.remove(&p("a.jpg"));
+    assert_eq!(env.run_worker(), FileActionStep::Pending);
+    assert_eq!(env.present_finished(false), DONE_FALSE);
+
+    let unknown = en(
+        "status.actionOutcomeUnknown",
+        &[
+            arg("actionName", "MoveToSub"),
+            arg("fileName", "a.jpg"),
+            arg("message", "boom"),
+        ],
+    );
     let failed = en(
         "status.actionFailed",
         &[arg("actionName", "MoveToSub"), arg("message", "boom")],
     );
-    assert_eq!(env.sink.last_status(), Some(failed.as_str()));
-    assert!(env.log.errors.lock().unwrap().iter().any(|m| m.contains("gone")));
+    assert_eq!(env.sink.last_status(), Some(unknown.as_str()));
+    assert_ne!(env.sink.last_status(), Some(failed.as_str()));
+    assert!(env.log.errors.lock().unwrap().iter().any(|m| m.contains("threw")));
+}
+
+// C#: FileActionControllerUnexpectedThrowTests.GroupExecutorThrows_AfterOneMemberIsGone_StatusSaysOutcomeUnknown
+#[test]
+fn group_executor_throws_after_one_member_is_gone_status_says_outcome_unknown() {
+    let mut env = pair_env(AppSettings::default(), false);
+    env.exec.script(Scripted::Panic("boom".to_string()));
+
+    env.run_action(0, None, Some(&p("pair.jpg")));
+    env.disk.remove(&p("pair.cr2")); // only the RAW member is gone
+    assert_eq!(env.run_worker(), FileActionStep::Pending);
+    assert_eq!(env.present_finished(false), DONE_FALSE);
+
+    let unknown = en(
+        "status.actionOutcomeUnknown",
+        &[
+            arg("actionName", "MoveToSub"),
+            arg("fileName", "pair.jpg"),
+            arg("message", "boom"),
+        ],
+    );
+    assert_eq!(env.sink.last_status(), Some(unknown.as_str()));
 }
 
 // Same for a capture: only the members still on disk come back; a capture whose members are all gone does not come back.
