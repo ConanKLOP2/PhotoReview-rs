@@ -96,6 +96,17 @@ jobs:
             $runAudit = @($changed | Where-Object { $_ -match '(^|/)(Cargo\.toml|Cargo\.lock)$|^deny\.toml$|^\.github/workflows/ci\.yml$' }).Count -gt 0
           }
           "audit=$($runAudit.ToString().ToLowerInvariant())" >> $env:GITHUB_OUTPUT
+      # Compiling cargo-deny from source took about 200 s and was the longest job of every pull request that changes Cargo files or this
+      # workflow. rust-cache (already pinned for the jobs below) also restores what `cargo install` put into ~/.cargo/bin, so with a
+      # saved cache the install below finds the pinned version and does nothing. Only master saves it (the audit always runs there);
+      # no target directory is cached because this job builds none.
+      - name: Cache cargo-deny
+        if: steps.scope.outputs.audit == 'true'
+        uses: Swatinem/rust-cache@f13886b937689c021905a6b90929199931d60db1 # v2.8.1
+        with:
+          shared-key: cargo-deny-0.19.9
+          cache-targets: false
+          save-if: ${{ github.ref == 'refs/heads/master' }}
       - name: Install pinned cargo-deny
         if: steps.scope.outputs.audit == 'true'
         shell: pwsh
