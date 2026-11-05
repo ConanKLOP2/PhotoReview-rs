@@ -107,7 +107,7 @@ the state of `tools/autopilot/state/` local.
   and the `target-*` dirs it used (check by diff, AGENTS.md "Git" above), update `task_on_progress.md`.
 - Before opening the PR: `cargo fmt --all --check`, `cargo clippy --workspace --all-targets --locked -- -D warnings`,
   `cargo test --workspace --locked` on the final head; say in the PR body which of these were NOT run.
-- CI (`.github/workflows/ci.yml`): jobs `changes`, `repo-checks`, `lint`, `test (core | crates-rest | win | app)` and the required gate `build-test`; a PR that touches only `docs/`, `tools/` or `*.md` skips `lint` and `test` (`changes` sets `rust=false`), `repo-checks` and `build-test` still run. Details: `docs/DEVELOPING.md`.
+- CI (`.github/workflows/ci.yml`): jobs `changes`, `repo-checks` (also the cargo-deny audit), `unsafe-audit` (also the advisory actionlint), `lint`, `release build`, `test (core | crates-shell | crates-rest | win | app)` and the required gate `build-test`; a PR that touches only `docs/`, `tools/` or `*.md` skips `lint`, `release build` and `test` (`changes` sets `rust=false`), `repo-checks` and `build-test` still run. Details: `docs/DEVELOPING.md`.
 - CI runs on `windows-latest`: temp paths can be 8.3 short names (`RUNNER~1`); never compare a path string built from
   `TempRoot` with one the code under test printed, compare a stable tail.
 - Toolchain: Rust is pinned in `rust-toolchain.toml`; `cargo` lives in `%USERPROFILE%\.cargo\bin` and may not be on

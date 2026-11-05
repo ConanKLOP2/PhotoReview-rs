@@ -56,14 +56,17 @@ jobs:
             echo "Only docs/tools changed: Rust jobs skipped"
           fi
 
-  # Required by the master-ci ruleset together with build-test: it must always run and succeed.
+  # Required by the master-ci ruleset together with build-test: it must always run and succeed. It also carries the dependency audit
+  # (W10-R3, formerly the separate `deny` job): both are short Windows jobs, so one runner saves a second job's setup and a slot.
   repo-checks:
     if: github.event_name != 'schedule'
     runs-on: windows-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
       # Synced assets (language catalogs, fixtures) are owned by the C# repo; edits must come from a re-sync.
       - name: Check synced assets
         shell: powershell
@@ -74,162 +77,8 @@ jobs:
         run: |
           ./tools/dev/test/release-selftest.ps1
           ./tools/dev/test/release-workflow-selftest.ps1
-
-  # Cheap (no toolchain, a few seconds): every unsafe block needs a SAFETY comment and unsafe stays in the FFI crates (AGENTS.md).
-  # It always runs, also for docs-only pull requests, and build-test below requires it.
-  unsafe-audit:
-    if: github.event_name != 'schedule'
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    steps:
-      - name: Checkout
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - name: Audit unsafe code
-        run: PY_BIN=python3 bash tools/dev/unsafe-audit.sh
-
-  # ST-CI-RELEASE-TOOLS: static lint of all workflow files. Advisory (continue-on-error) and NOT in `needs` of build-test, so it never
-  # gates a merge; promote it only after one clean run on master. actionlint is built from a pinned module version (the Go module
-  # proxy and checksum database make a version tag immutable), so no unpinned download runs in CI.
-  actionlint:
-    if: github.event_name != 'schedule'
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    continue-on-error: true
-    steps:
-      - name: Checkout
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - name: Install pinned actionlint
-        run: go install github.com/rhysd/actionlint/cmd/actionlint@v1.7.7
-      - name: Lint workflows
-        run: '"$(go env GOPATH)"/bin/actionlint -color'
-
-  # Runner time is the budget, not the number of jobs: every Windows job pays about 30 s of setup (checkout, toolchain, cache) and
-  # GitHub runs a limited number of Windows jobs at once, so two overlapping runs (a pull request and the master run of the previous
-  # merge) used to queue. The work is grouped into five jobs of about two minutes each: lint plus release build, pr-core, the rest of
-  # the workspace, pr-platform-win with the pr-app unit tests, and the pr-app integration tests. Only master saves the cache.
-  lint:
-    needs: changes
-    if: ${{ needs.changes.outputs.rust == 'true' }}
-    name: lint and release build
-    runs-on: windows-latest
-    timeout-minutes: 25
-    env:
-      # No debug info: nothing in CI reads it and writing PDBs is the slowest part of linking on Windows.
-      CARGO_PROFILE_DEV_DEBUG: 0
-    steps:
-      - name: Checkout
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      # rustup is preinstalled on windows-latest; rust-toolchain.toml selects the version and components.
-      - name: Toolchain
-        run: rustup show
-      - name: Cache
-        uses: Swatinem/rust-cache@f13886b937689c021905a6b90929199931d60db1 # v2.8.1
-        with:
-          shared-key: lint-release
-          save-if: ${{ github.ref == 'refs/heads/master' }}
-      # One rustfmt run per package: `cargo fmt --all` hands every test file of the whole workspace to one rustfmt process, which
-      # fails with os error 206 (command line too long) on Windows once pr-platform-win and pr-app have enough test files.
-      - name: Format
-        shell: pwsh
-        run: |
-          $names = (cargo metadata --no-deps --format-version 1 | ConvertFrom-Json).packages.name | Sort-Object
-          foreach ($name in $names) {
-            cargo fmt -p $name --check
-            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          }
-      - name: Clippy
-        run: cargo clippy --workspace --all-targets --locked -- -D warnings
-      - name: Build release
-        run: cargo build --workspace --release --locked
-
-  # `pr-app` has over a hundred integration test files, each linked as its own binary, so it dominates the test time. Its files are
-  # split round-robin over 4 shards (computed from the directory on every run, so a new test file needs no workflow edit); the groups
-  # below take the shards that balance them (measured step times: core 120 s, crates-rest 120 s, win 69 s + app-unit 12 s + shard 2
-  # 23 s, app shards 0, 1 and 3 43 + 31 + 41 s).
-  test:
-    needs: changes
-    if: ${{ needs.changes.outputs.rust == 'true' }}
-    name: test (${{ matrix.group }})
-    runs-on: windows-latest
-    # Hang guard: a stuck test fails the job instead of burning the runner (C#: test.runsettings).
-    timeout-minutes: 25
-    strategy:
-      fail-fast: false
-      matrix:
-        group: [core, crates-rest, win, app]
-    env:
-      CARGO_PROFILE_DEV_DEBUG: 0
-    steps:
-      - name: Checkout
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - name: Toolchain
-        run: rustup show
-      - name: Cache
-        uses: Swatinem/rust-cache@f13886b937689c021905a6b90929199931d60db1 # v2.8.1
-        with:
-          shared-key: test-${{ matrix.group }}
-          save-if: ${{ github.ref == 'refs/heads/master' }}
-      - name: Test
-        timeout-minutes: 15
-        shell: pwsh
-        run: |
-          $group = '${{ matrix.group }}'
-          function Invoke-Cargo {
-            cargo @args
-            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          }
-          # pr-app integration tests of the given shards (round-robin over 4), one cargo invocation.
-          function Invoke-AppShards([int[]]$shards) {
-            $names = @(Get-ChildItem crates/pr-app/tests -Filter *.rs -File | Sort-Object Name | ForEach-Object { $_.BaseName })
-            $targets = @()
-            for ($k = 0; $k -lt $names.Count; $k++) {
-              if ($shards -contains ($k % 4)) { $targets += '--test'; $targets += $names[$k] }
-            }
-            Write-Host "shards $($shards -join ',') run $($targets.Count / 2) of $($names.Count) pr-app test files"
-            if ($targets.Count -gt 0) { Invoke-Cargo test -p pr-app --locked @targets }
-          }
-          switch ($group) {
-            'core' { Invoke-Cargo test -p pr-core --locked }
-            'crates-rest' { Invoke-Cargo test --workspace --exclude pr-app --exclude pr-core --exclude pr-platform-win --locked }
-            'win' {
-              Invoke-Cargo test -p pr-platform-win --locked
-              Invoke-Cargo test -p pr-app --lib --bins --locked
-              Invoke-Cargo test -p pr-app --doc --locked
-              Invoke-AppShards @(2)
-            }
-            'app' { Invoke-AppShards @(0, 1, 3) }
-          }
-
-  # Gate with the name the master-ci ruleset requires. `if: always()` is needed: a skipped job would otherwise count as passing when
-  # an upstream job fails. lint and test are skipped on purpose (and only then) when `changes` found nothing but docs and tools.
-  build-test:
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    needs: [changes, lint, test, unsafe-audit, deny]
-    if: ${{ always() && github.event_name != 'schedule' }}
-    steps:
-      - name: Require the checks that apply
-        run: |
-          test "${{ needs.deny.result }}" = "success" || exit 1
-          echo "unsafe-audit=${{ needs.unsafe-audit.result }}"
-          test "${{ needs.unsafe-audit.result }}" = "success" || exit 1
-          echo "changes=${{ needs.changes.result }} rust=${{ needs.changes.outputs.rust }} lint=${{ needs.lint.result }} test=${{ needs.test.result }}"
-          test "${{ needs.changes.result }}" = "success" || exit 1
-          if [ "${{ needs.changes.outputs.rust }}" = "true" ]; then
-            test "${{ needs.lint.result }}" = "success" && test "${{ needs.test.result }}" = "success"
-          else
-            test "${{ needs.lint.result }}" = "skipped" && test "${{ needs.test.result }}" = "skipped"
-          fi
-
-  # W10-R3: Cargo-scope PR audit and nightly advisory refresh.
-  deny:
-    runs-on: windows-latest
-    timeout-minutes: 15
-    steps:
-      - name: Checkout
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # from this repo ci.yml
-        with:
-          fetch-depth: 0
+      # W10-R3: Cargo-scope PR audit and nightly advisory refresh; the audit itself runs only when Cargo files, deny.toml or this
+      # workflow changed (and on every push or manual run).
       - name: Toolchain
         run: rustup show
       - name: Detect Cargo changes
@@ -259,3 +108,185 @@ jobs:
         run: |
           cargo deny --locked check --config deny.toml advisories licenses bans sources --deny unmaintained --deny unsound
           if ($LASTEXITCODE -ne 0) { throw 'Dependency audit failed' }
+
+  # Cheap (no Rust toolchain, a few seconds): every unsafe block needs a SAFETY comment and unsafe stays in the FFI crates (AGENTS.md).
+  # It always runs, also for docs-only pull requests, and build-test below requires it. The advisory workflow lint rides along.
+  unsafe-audit:
+    if: github.event_name != 'schedule'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Audit unsafe code
+        run: PY_BIN=python3 bash tools/dev/unsafe-audit.sh
+      # ST-CI-RELEASE-TOOLS: static lint of all workflow files (formerly the separate `actionlint` job). Advisory: continue-on-error on
+      # each step, and build-test only reads this job's result, which stays green when actionlint fails; promote it only after one clean
+      # run on master. It is built from a pinned module version (the Go module proxy and checksum database make a version tag
+      # immutable), so no unpinned download runs in CI.
+      - name: Install pinned actionlint
+        continue-on-error: true
+        run: go install github.com/rhysd/actionlint/cmd/actionlint@v1.7.7
+      - name: Lint workflows
+        continue-on-error: true
+        run: '"$(go env GOPATH)"/bin/actionlint -color'
+
+  # Runner time is the budget, not the number of jobs: every Windows job pays about 30 s of setup (checkout, toolchain, cache) and
+  # GitHub runs a limited number of Windows jobs at once, so two overlapping runs (a pull request and the master run of the previous
+  # merge) used to queue. The work is grouped into jobs of about two minutes each: lint (fmt + clippy), release build, pr-core, two
+  # halves of the rest of the workspace, pr-platform-win with the pr-app unit tests, and the pr-app integration tests. Only master
+  # saves the cache.
+  #
+  # Cache keys: the split jobs reuse existing shared-keys instead of inventing new ones, so a pull request run restores the cache that
+  # master saved (a new key would start cold until master had run once). On a PR nothing is saved. On master exactly one job saves
+  # each key, otherwise two jobs would race to write the same immutable entry and the loser's artifacts would be lost: `release build`
+  # saves lint-release (release deps are the slow ones to rebuild; `lint` only restores it), and the shell half saves test-crates-rest
+  # (pr-shell depends on nearly every crate, so its dependency set is a superset of the other half's).
+  lint:
+    needs: changes
+    if: ${{ needs.changes.outputs.rust == 'true' }}
+    name: lint
+    runs-on: windows-latest
+    timeout-minutes: 25
+    env:
+      # No debug info: nothing in CI reads it and writing PDBs is the slowest part of linking on Windows.
+      CARGO_PROFILE_DEV_DEBUG: 0
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      # rustup is preinstalled on windows-latest; rust-toolchain.toml selects the version and components.
+      - name: Toolchain
+        run: rustup show
+      - name: Cache
+        uses: Swatinem/rust-cache@f13886b937689c021905a6b90929199931d60db1 # v2.8.1
+        with:
+          shared-key: lint-release
+          # Restore only: `release build` below saves this key on master.
+          save-if: false
+      # One rustfmt run per package: `cargo fmt --all` hands every test file of the whole workspace to one rustfmt process, which
+      # fails with os error 206 (command line too long) on Windows once pr-platform-win and pr-app have enough test files.
+      - name: Format
+        shell: pwsh
+        run: |
+          $names = (cargo metadata --no-deps --format-version 1 | ConvertFrom-Json).packages.name | Sort-Object
+          foreach ($name in $names) {
+            cargo fmt -p $name --check
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          }
+      - name: Clippy
+        run: cargo clippy --workspace --all-targets --locked -- -D warnings
+
+  # The release profile is a separate compile (optimised, no clippy/test coverage of it), so it stays; as its own job it runs in
+  # parallel with lint instead of after it.
+  release-build:
+    needs: changes
+    if: ${{ needs.changes.outputs.rust == 'true' }}
+    name: release build
+    runs-on: windows-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Toolchain
+        run: rustup show
+      - name: Cache
+        uses: Swatinem/rust-cache@f13886b937689c021905a6b90929199931d60db1 # v2.8.1
+        with:
+          shared-key: lint-release
+          save-if: ${{ github.ref == 'refs/heads/master' }}
+      - name: Build release
+        run: cargo build --workspace --release --locked
+
+  # `pr-app` has over a hundred integration test files, each linked as its own binary, so it dominates the test time. Its files are
+  # split round-robin over 4 shards (computed from the directory on every run, so a new test file needs no workflow edit); the groups
+  # below take the shards that balance them (measured step times: core 120 s, crates-rest 120 s, win 69 s + app-unit 12 s + shard 2
+  # 23 s, app shards 0, 1 and 3 43 + 31 + 41 s). The old crates-rest group was the critical path, so it is split into `crates-shell`
+  # (pr-shell, pr-turbojpeg and three small crates) and `crates-rest` (everything else); crates-rest is computed with --exclude, so a
+  # new workspace crate is tested there without a workflow edit.
+  test:
+    needs: changes
+    if: ${{ needs.changes.outputs.rust == 'true' }}
+    name: test (${{ matrix.group }})
+    runs-on: windows-latest
+    # Hang guard: a stuck test fails the job instead of burning the runner (C#: test.runsettings).
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        group: [core, crates-shell, crates-rest, win, app]
+    env:
+      CARGO_PROFILE_DEV_DEBUG: 0
+      # Faster linking of the many test binaries (stable flags only; rust-lld.exe ships in the pinned toolchain). Measured locally,
+      # cold `cargo test --workspace --no-run`, 4 build jobs: link.exe 147 s, rust-lld 126 s, rust-lld + /DEBUG:NONE 118 s (about
+      # -20%); on CI the test jobs were 9 to 15% shorter than the identical jobs with link.exe. /DEBUG:NONE writes no PDB: a failing
+      # test still prints its panic message and location, only RUST_BACKTRACE frames lose symbol names. The lint and release-build jobs
+      # do not use it: clippy and the release build measured the same with and without. RUSTFLAGS is part of the rust-cache key, so
+      # master saves the cache with these flags and pull requests restore exactly that one (the first master run after this change
+      # builds the test caches cold).
+      RUSTFLAGS: -D warnings -C linker=rust-lld.exe -C link-arg=/DEBUG:NONE
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Toolchain
+        run: rustup show
+      - name: Cache
+        uses: Swatinem/rust-cache@f13886b937689c021905a6b90929199931d60db1 # v2.8.1
+        with:
+          # crates-shell reuses the test-crates-rest key (see the cache note above) and is the half that saves it on master.
+          shared-key: test-${{ matrix.group == 'crates-shell' && 'crates-rest' || matrix.group }}
+          save-if: ${{ github.ref == 'refs/heads/master' && matrix.group != 'crates-rest' }}
+      - name: Test
+        timeout-minutes: 15
+        shell: pwsh
+        run: |
+          $group = '${{ matrix.group }}'
+          function Invoke-Cargo {
+            cargo @args
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          }
+          # pr-app integration tests of the given shards (round-robin over 4), one cargo invocation.
+          function Invoke-AppShards([int[]]$shards) {
+            $names = @(Get-ChildItem crates/pr-app/tests -Filter *.rs -File | Sort-Object Name | ForEach-Object { $_.BaseName })
+            $targets = @()
+            for ($k = 0; $k -lt $names.Count; $k++) {
+              if ($shards -contains ($k % 4)) { $targets += '--test'; $targets += $names[$k] }
+            }
+            Write-Host "shards $($shards -join ',') run $($targets.Count / 2) of $($names.Count) pr-app test files"
+            if ($targets.Count -gt 0) { Invoke-Cargo test -p pr-app --locked @targets }
+          }
+          switch ($group) {
+            'core' { Invoke-Cargo test -p pr-core --locked }
+            'crates-shell' { Invoke-Cargo test -p pr-shell -p pr-turbojpeg -p pr-bench-win -p pr-perf -p pr-test-support --locked }
+            'crates-rest' {
+              Invoke-Cargo test --workspace --exclude pr-app --exclude pr-core --exclude pr-platform-win `
+                --exclude pr-shell --exclude pr-turbojpeg --exclude pr-bench-win --exclude pr-perf --exclude pr-test-support --locked
+            }
+            'win' {
+              Invoke-Cargo test -p pr-platform-win --locked
+              Invoke-Cargo test -p pr-app --lib --bins --locked
+              Invoke-Cargo test -p pr-app --doc --locked
+              Invoke-AppShards @(2)
+            }
+            'app' { Invoke-AppShards @(0, 1, 3) }
+          }
+
+  # Gate with the name the master-ci ruleset requires. `if: always()` is needed: a skipped job would otherwise count as passing when
+  # an upstream job fails. lint, release-build and test are skipped on purpose (and only then) when `changes` found nothing but docs and tools.
+  build-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs: [changes, lint, release-build, test, unsafe-audit, repo-checks]
+    if: ${{ always() && github.event_name != 'schedule' }}
+    steps:
+      - name: Require the checks that apply
+        run: |
+          test "${{ needs.repo-checks.result }}" = "success" || exit 1
+          echo "unsafe-audit=${{ needs.unsafe-audit.result }}"
+          test "${{ needs.unsafe-audit.result }}" = "success" || exit 1
+          echo "changes=${{ needs.changes.result }} rust=${{ needs.changes.outputs.rust }} lint=${{ needs.lint.result }} release-build=${{ needs.release-build.result }} test=${{ needs.test.result }}"
+          test "${{ needs.changes.result }}" = "success" || exit 1
+          if [ "${{ needs.changes.outputs.rust }}" = "true" ]; then
+            test "${{ needs.lint.result }}" = "success" && test "${{ needs.release-build.result }}" = "success" && test "${{ needs.test.result }}" = "success"
+          else
+            test "${{ needs.lint.result }}" = "skipped" && test "${{ needs.release-build.result }}" = "skipped" && test "${{ needs.test.result }}" = "skipped"
+          fi

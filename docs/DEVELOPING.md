@@ -53,15 +53,18 @@ To add a command, add its input file under `tests/golden-inputs/`, add a command
 | Job | Work |
 |---|---|
 | `changes` | Detects whether Rust checks are needed. |
-| `repo-checks` | Runs `tools/sync-from-csharp.ps1 -Check` on Windows. |
-| `lint` | Per-package format, workspace Clippy and locked release build. |
+| `repo-checks` | Runs `tools/sync-from-csharp.ps1 -Check` and the release tooling selftests on Windows, and the cargo-deny audit when Cargo files, `deny.toml` or the workflow changed (formerly the separate `deny` job). |
+| `unsafe-audit` | Every `unsafe` block has a SAFETY comment; the advisory actionlint workflow lint runs in the same Ubuntu job and never fails it (formerly the separate `actionlint` job). |
+| `lint` | Per-package format and workspace Clippy. |
+| `release build` | Locked workspace release build, parallel to `lint`. |
 | `test (core)` | `pr-core` tests. |
-| `test (crates-rest)` | Workspace tests excluding `pr-app`, `pr-core` and `pr-platform-win`. |
+| `test (crates-shell)` | `pr-shell`, `pr-turbojpeg`, `pr-bench-win`, `pr-perf`, `pr-test-support` tests. |
+| `test (crates-rest)` | Workspace tests excluding `pr-app`, `pr-core`, `pr-platform-win` and the `crates-shell` crates. |
 | `test (win)` | `pr-platform-win`, `pr-app` unit/doc/binary tests, plus app shard 2. |
 | `test (app)` | `pr-app` integration test shards 0, 1 and 3. |
 | `build-test` | Required aggregate gate; checks the result of `changes` and applicable Rust jobs. |
 
-The `pr-app` integration files are sorted by name and assigned round-robin to four shards. On a pull request changing only `docs/`, `tools/`, or Markdown files, `changes` sets `rust=false`, so `lint` and `test` are skipped. `repo-checks` still runs, and required `build-test` still runs and succeeds only if `changes` succeeded and both Rust jobs were skipped. Pushes to `master`, manual runs, workflow changes, Cargo files, crate files, fixtures or toolchain changes set `rust=true` and run Rust checks.
+The `pr-app` integration files are sorted by name and assigned round-robin to four shards. On a pull request changing only `docs/`, `tools/`, or Markdown files, `changes` sets `rust=false`, so `lint`, `release build` and `test` are skipped. `repo-checks` still runs, and required `build-test` still runs and succeeds only if `changes` succeeded and all Rust jobs were skipped. Pushes to `master`, manual runs, workflow changes, Cargo files, crate files, fixtures or toolchain changes set `rust=true` and run Rust checks.
 
 `.github/workflows/native-nightly.yml` is a separate, **non-required** workflow (`schedule` 18:30 UTC daily plus `workflow_dispatch`, `windows-latest`, `contents: read`, one run at a time, 60 min limit). It is not in `needs` of `build-test`, so a red night never blocks a pull request. It runs the `#[ignore = "native"]` tests that need only the file system with `-- --include-ignored --test-threads=1`, `PHOTOREVIEW_RS_ISOLATE_CONFIG=1` and `PHOTOREVIEW_RS_DATA_ROOT` in `$RUNNER_TEMP` (never `%LOCALAPPDATA%\PhotoReview`, never the real Recycle Bin):
 
