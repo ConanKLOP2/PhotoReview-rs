@@ -791,3 +791,8 @@ fn combo_item_text(combo: Hwnd, index: i32) -> String {
     }
     String::from_utf16_lossy(buffer.get(..length).unwrap_or(&[]))
 }
+
+// Seam for the drop effect of `Reselect` (P-394): the tests live in a sibling file so they can call `with_pen` and `with_pen_and_brush`.
+#[cfg(test)]
+#[path = "widgets_reselect_tests.rs"]
+mod reselect_tests;

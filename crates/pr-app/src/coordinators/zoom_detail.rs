@@ -445,9 +445,11 @@ impl ZoomDetailLoader {
         }
 
         self.refresh_hold = true;
+        // One snapshot of `held`, no second read after `update`: `showing_original` was false on entry (early return above) and
+        // `update` sets it only in the branch that has `self.original`, so `held || showing_original` is `held` (P-394).
         let held = self.original.is_some();
         self.update(&mut effects);
-        let result = if held || self.showing_original {
+        let result = if held {
             ZoomDetailRefreshResult::ShowedOriginal
         } else if retried {
             ZoomDetailRefreshResult::RetryingOriginal
