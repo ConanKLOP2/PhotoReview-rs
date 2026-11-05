@@ -1,7 +1,7 @@
 # Sync ledger (C# → Rust)
 
-**Current spec baseline:** C# `master` at `e7c2fcd8` (full `e7c2fcd86900d3406e1a0e643c43d5899b7d7a56`, after #538), version line 2.0.N.
-Assets synced from that commit: see `assets/SYNC-MANIFEST.txt`. Goldens: see "Oracle diff, b6847767 to e7c2fcd8" (only `l10n-generator`, `l10n-localizer` and `translation-export` were regenerated; every other golden keeps its old `csharp_commit`, its cases are unchanged; `recovery-retry` was regenerated afterwards in the D1 port PR, see the row for #534).
+**Current spec baseline:** C# `master` at `5e5a9ce5` (full `5e5a9ce5881a8afdf5f71895ba1c257e83d4a211`, after #539 and #540), version line 2.0.N.
+Assets synced from that commit: see `assets/SYNC-MANIFEST.txt`. Goldens: see "Oracle diff, e7c2fcd8 to 5e5a9ce5" (only `l10n-generator`, `l10n-localizer` and `translation-export` were regenerated; every other golden keeps its old `csharp_commit`, its cases are unchanged) and the earlier "Oracle diff, b6847767 to e7c2fcd8" (`recovery-retry` was regenerated in the D1 port PR, see the row for #534).
 
 ## How to advance the baseline
 
@@ -37,6 +37,8 @@ Assets synced from that commit: see `assets/SYNC-MANIFEST.txt`. Goldens: see "Or
 | `770f355d` (#535, D2) | `DuplicateCleanupController` / `DuplicateFinder.FindAsync` re-verify the kept and removed copies right before each recycle; new key `core.duplicate.fileChanged` in the three catalogs | Yes (batch duplicate cleanup) | Catalog synced; behaviour PORTED 2026-11-03 in `pr_app::coordinators::duplicate_cleanup` + `pr_core::file_actions::duplicates::find_groups` (PR `feat/d2-duplicate-reverify`; the `duplicates` golden is unchanged and still replays `find`, which is the flattening of `find_groups`). P-191 resolved by the owner's "port both" decision. | catalog: the baseline sync PR; behaviour: D2 port PR |
 | `6bb0d706` (#534, D1) | `RecoveryRetryService` re-stats each group Recycle member right before the mutation on retry; a changed or missing file fails as `core.recovery.sourceChanged`. Oracle `recovery-retry` gains `stat` calls in its call log (several cases) | Yes (retry of a group Recycle) | Ported (branch `feat/d1-recovery-restat`, owner decision "port both" resolves P-190): the group Recycle re-stat already existed in `pr-core` since #448 and #463 (DV-1, DV-2) as a Rust-only fix; this port aligns the order with C# (re-stat first, then the permanent / `can_recycle` check), ports C# `Retry_MemberReplacedAfterPreparedWasJournaled_TouchesNothingAndFailsAsSourceChanged` (2 rows) and commits the regenerated golden (`csharp_commit` `e7c2fcd8`), so `recovery_retry_golden` no longer strips the extra `stat` op | ported |
 | `e7c2fcd8` (#538) | `FileActionController`: a late SINGLE result whose journal line was not saved calls `_undoService?.Register(singleResult)` before showing `status.actionJournalNotSaved` (it skipped Undo before). New C# test `SingleMove_JournalNotPersistedAfterFolderSwitch_IsStillRegisteredForUndoAndTheNoticeIsShown` | Yes (Ctrl+Z after a folder switch) | Ported in this PR (`file_action_journal_notice`, 10 fake tests); the Rust port of #537 had mirrored the old skip (PR #592), now removed | this PR |
+| `f57061ef` (#540) | P-331: `OperationJournal` takes an optional `IRecycleBin`; startup reconcile of a single Recycle whose source is gone asks the bin (`IRecycleBin.ContainsRecycledItem`, default `NotSupportedException`; new `RecycleBinRestorer.Contains`, `WindowsRecycleBin.ContainsRecycledItem`, wired in `SharedServiceRegistration`). In bin = Committed, not in bin = Failed `PendingUnconfirmed`, bin cannot be asked = stays Prepared | Yes (reconcile after a crash) | Already ported in PR #630 (P-331); compared with the merged C# in this PR, no mismatch; the `Different` wording becomes Equal. Remaining non-behaviour differences: Rust bounds the shell query at 20 s, log text after `skipped {id}:` differs | #630 and this PR |
+| `5e5a9ce5` (#539) | P-330: when an executor throws and the source file (or any group image member) is gone, `FileActionController` shows `status.actionOutcomeUnknown` (new key, `actionName`, `fileName`, `message`) instead of `status.actionFailed`; two C# tests | Yes (status text) | Ported in this PR (`executor_threw`, 3 tests in `file_action_core.rs`); assets and 3 goldens re-synced | this PR |
 
 ## G-INPUT input-scripts (note, 2026-10-29)
 
@@ -82,6 +84,18 @@ External editor list reconciliation/migration is W9-E1; dialogs and the remainin
 ## W9-E8 supports replay extension (2026-10-25, machine A)
 
 At unchanged spec baseline7eaee2a2, added six ExternalEditors supports/router cases for settings_enabled true/false/default and regenerated `secondary-window-supports` with `tools/oracle.ps1 -Command secondary-window-supports -Commit 7eaee2a2`. Output50cases; all44previous case objects remain exactly equal. Existing enum row already lists10kinds. No assets or C# checkout changed. RenamePrompt support cases await W9-R8. Cached C# binaries were verified complete before generation; build0errors/89existing duplicate-type warnings.
+
+## Oracle diff, e7c2fcd8 to 5e5a9ce5
+
+Range `e7c2fcd8..5e5a9ce5` is two commits: #540 (P-331, journal and Recycle Bin) and #539 (P-330, `FileActionController` plus one catalog key `status.actionOutcomeUnknown` in three files). `tools/sync-from-csharp.ps1 -CSharpRepo <absolute path> -Commit 5e5a9ce5` changes only `en.json`, `en.notes.json`, `vi.json` and `assets/SYNC-MANIFEST.txt` (a relative `-CSharpRepo` fails from a nested worktree); the script's emptying of the Rust-generated fixtures under `tests/fixtures/` was undone. The oracle was run at `5e5a9ce5` for the seven l10n commands the range can touch, not for all of them.
+
+| Golden | Semantic change | Rust status |
+|---|---|---|
+| `l10n-generator` | New constant `StatusActionOutcomeUnknown` with params `actionName`, `fileName`, `message`. | Regenerated and committed. |
+| `l10n-localizer` | The new key appears in 4 key lists. | Regenerated and committed. |
+| `translation-export` | The exported `vi` template and the `xx.todo.json` outputs carry the new key (9 lines). | Regenerated and committed; `localization_export` pins `5e5a9ce5`. |
+| `l10n-catalog`, `l10n-flat-json`, `l10n-loader`, `translation-problems` | Only `csharp_commit` differs. | Not committed (cases unchanged). |
+| every other golden | Not run: the range touches no oracle code (`recovery-retry` and `duplicates` unaffected by #539 and #540). | Unchanged. |
 
 ## Oracle diff, b6847767 to e7c2fcd8
 

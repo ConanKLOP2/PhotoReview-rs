@@ -1254,6 +1254,16 @@ impl FileActionController {
             &format!("File action {operation:?} threw: {}: {text}", flight.source),
             None,
         );
+        // P-330 (C# 5e5a9ce5): when the executor threw and the source is no longer where it was, the file may already be moved,
+        // recycled or deleted: ActionFailed would claim "could not run". Say the outcome is unknown instead. Only with a file
+        // system seam; a group counts when any image member is gone. Probed before the catalog restore below, which stays as is.
+        let outcome_unknown = self.deps.file_system.as_ref().is_some_and(|fs| match &flight.group {
+            None => !fs.file_exists(std::path::Path::new(&flight.source)),
+            Some(group) => group
+                .image_paths()
+                .iter()
+                .any(|p| !fs.file_exists(std::path::Path::new(p))),
+        });
         // The entry already left the catalog before the executor ran: restore it (same as INV-5), but only into the folder the
         // action ran in.
         if flight.is_remove && flight.source_index >= 0 && self.deps.clock.is_folder_current(flight.folder_gen) {
@@ -1285,13 +1295,24 @@ impl FileActionController {
                 }
             }
         }
-        let status = self.status_of(
-            keys::STATUS_ACTION_FAILED,
-            &[
-                LocArg::new("actionName", flight.action_name.clone()),
-                LocArg::new("message", text.to_string()),
-            ],
-        );
+        let status = if outcome_unknown {
+            self.status_of(
+                keys::STATUS_ACTION_OUTCOME_UNKNOWN,
+                &[
+                    LocArg::new("actionName", flight.action_name.clone()),
+                    LocArg::new("fileName", get_file_name(&flight.source).to_string()),
+                    LocArg::new("message", text.to_string()),
+                ],
+            )
+        } else {
+            self.status_of(
+                keys::STATUS_ACTION_FAILED,
+                &[
+                    LocArg::new("actionName", flight.action_name.clone()),
+                    LocArg::new("message", text.to_string()),
+                ],
+            )
+        };
         let recycle_failure =
             (operation == FileOperationType::Recycle).then(|| (flight.source.clone(), Some(text.to_string())));
         self.await_present(
