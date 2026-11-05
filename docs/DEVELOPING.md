@@ -53,7 +53,8 @@ To add a command, add its input file under `tests/golden-inputs/`, add a command
 | Job | Work |
 |---|---|
 | `changes` | Detects whether Rust checks are needed. |
-| `repo-checks` | Runs `tools/sync-from-csharp.ps1 -Check` on Windows. |
+| `repo-checks` | Runs `tools/sync-from-csharp.ps1 -Check` and the release tooling selftests on Windows, and the cargo-deny audit when Cargo files, `deny.toml` or the workflow changed (formerly the separate `deny` job). |
+| `unsafe-audit` | Every `unsafe` block has a SAFETY comment; the advisory actionlint workflow lint runs in the same Ubuntu job and never fails it (formerly the separate `actionlint` job). |
 | `lint` | Per-package format and workspace Clippy. |
 | `release build` | Locked workspace release build, parallel to `lint`. |
 | `test (core)` | `pr-core` tests. |

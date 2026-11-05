@@ -216,6 +216,14 @@ jobs:
         group: [core, crates-shell, crates-rest, win, app]
     env:
       CARGO_PROFILE_DEV_DEBUG: 0
+      # Faster linking of the many test binaries (stable flags only; rust-lld.exe ships in the pinned toolchain). Measured locally,
+      # cold `cargo test --workspace --no-run`, 4 build jobs: link.exe 147 s, rust-lld 126 s, rust-lld + /DEBUG:NONE 118 s (about
+      # -20%); on CI the test jobs were 9 to 15% shorter than the identical jobs with link.exe. /DEBUG:NONE writes no PDB: a failing
+      # test still prints its panic message and location, only RUST_BACKTRACE frames lose symbol names. The lint and release-build jobs
+      # do not use it: clippy and the release build measured the same with and without. RUSTFLAGS is part of the rust-cache key, so
+      # master saves the cache with these flags and pull requests restore exactly that one (the first master run after this change
+      # builds the test caches cold).
+      RUSTFLAGS: -D warnings -C linker=rust-lld.exe -C link-arg=/DEBUG:NONE
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
