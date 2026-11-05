@@ -985,6 +985,8 @@ pub struct TurboJpegDecoder {
     decompressors: Arc<dyn DecompressorFactory>,
     /// UI sentences (D41).
     texts: Arc<dyn TurboJpegTexts>,
+    /// P-393 fault-injection seam: how `load_file` opens the source ([`open_shared`] in production).
+    open_file: fn(&Path) -> io::Result<File>,
 }
 
 impl fmt::Debug for TurboJpegDecoder {
@@ -1010,7 +1012,16 @@ impl TurboJpegDecoder {
             memory_info,
             decompressors,
             texts,
+            open_file: open_shared,
         }
+    }
+
+    /// P-393 test seam: replace the file open of `load_file` (default [`open_shared`]) to simulate a file that vanishes
+    /// between the existence check and the open.
+    #[must_use]
+    pub fn with_file_opener(mut self, open_file: fn(&Path) -> io::Result<File>) -> Self {
+        self.open_file = open_file;
+        self
     }
 
     /// Production wiring: [`NativeDecompressors`].
@@ -1199,7 +1210,7 @@ impl TurboJpegDecoder {
             return Err(image_not_found(&self.texts, path));
         }
         // INV-8: the file is closed (dropped) before the decode starts.
-        let mut file = match open_shared(path) {
+        let mut file = match (self.open_file)(path) {
             Ok(file) => file,
             Err(error) if error.kind() == io::ErrorKind::NotFound => return Err(image_not_found(&self.texts, path)),
             Err(error) => return Err(DecodeError::Io(error)),
