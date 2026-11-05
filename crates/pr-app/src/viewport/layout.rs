@@ -369,3 +369,8 @@ struct MeasuredSize {
     unclipped_width: f64,
     unclipped_height: f64,
 }
+
+// Seam for the private order-type functions (P-394): the tests live in a sibling file so they can call `net_max`, `net_min` and `arrange_length`.
+#[cfg(test)]
+#[path = "layout_whole_domain_tests.rs"]
+mod whole_domain_tests;
