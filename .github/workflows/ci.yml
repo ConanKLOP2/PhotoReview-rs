@@ -259,3 +259,5 @@ jobs:
         run: |
           cargo deny --locked check --config deny.toml advisories licenses bans sources --deny unmaintained --deny unsound
           if ($LASTEXITCODE -ne 0) { throw 'Dependency audit failed' }
+
+# measurement control: touches the workflow only so the same audit and full test run as the variants
