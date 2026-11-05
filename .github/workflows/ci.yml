@@ -193,7 +193,7 @@ jobs:
         uses: Swatinem/rust-cache@f13886b937689c021905a6b90929199931d60db1 # v2.8.1
         with:
           shared-key: lint-release
-          save-if: ${{ github.ref == 'refs/heads/master' }}
+          save-if: true
       - name: Build release
         run: cargo build --workspace --release --locked
 
@@ -234,7 +234,7 @@ jobs:
         with:
           # crates-shell reuses the test-crates-rest key (see the cache note above) and is the half that saves it on master.
           shared-key: test-${{ matrix.group == 'crates-shell' && 'crates-rest' || matrix.group }}
-          save-if: ${{ github.ref == 'refs/heads/master' && matrix.group != 'crates-rest' }}
+          save-if: true
       - name: Test
         timeout-minutes: 15
         shell: pwsh
