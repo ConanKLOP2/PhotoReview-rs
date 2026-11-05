@@ -24,3 +24,6 @@ tools/autopilot/state/
 .codex-*
 /target-mut/
 /mut-out-*/
+
+__pycache__/
+*.pyc
