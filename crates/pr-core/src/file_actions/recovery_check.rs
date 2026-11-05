@@ -304,9 +304,9 @@ impl RecoveryFileCheck {
     /// C# `CheckGroupMember(group, member)`: `check()` of a copy of the group entry with `source`, `destination`,
     /// `size`, `last_write_utc` from the member, `permanent = Some(member.permanent)`, `group_id`, `group_members` and
     /// `undo` cleared. When `group.undo == Some(true)` and `group.op_type == Recycle` the result's entry becomes the
-    /// group entry and its verdict is replaced by the "is it back at its original path" rule (source `Exists` with
-    /// size and last-write equal to the member => `AlreadyDone`; `Exists` otherwise => `Conflict`; `Missing` =>
-    /// `RecycleUnverifiable` even when the member is `permanent`; `Changed`/`Unreadable` => `Unknown`).
+    /// group entry and its verdict is replaced by the "is it back at its original path" rule (source `Exists`, which
+    /// means size and last-write equal to the member's => `AlreadyDone`; `Missing` => `RecycleUnverifiable` even when
+    /// the member is `permanent`; `Changed`/`Unreadable` => `Unknown`).
     fn check_group_member(&self, group: &JournalEntry, member: &JournalGroupMember) -> RecoveryGroupMemberCheck {
         let single_entry = JournalEntry {
             source: member.source.clone(),
@@ -322,14 +322,10 @@ impl RecoveryFileCheck {
         let mut single = self.check(&single_entry);
         if group.undo == Some(true) && group.op_type == FileOperationType::Recycle {
             // "Is the file back at its original path?" Ticks only (C# `DateTime ==` ignores Kind).
+            // `Exists` already means size and last-write (ticks only, C# `DateTime ==` ignores Kind) equal the member's
+            // (`check_path` with `compare_last_write: true`), so no second comparison is needed.
             let verdict = match single.source.status {
-                RecoveryPathStatus::Exists
-                    if single.source.current_size == Some(member.size)
-                        && single.source.current_last_write_utc == Some(member.last_write_utc.value) =>
-                {
-                    RecoveryVerdict::AlreadyDone
-                }
-                RecoveryPathStatus::Exists => RecoveryVerdict::Conflict,
+                RecoveryPathStatus::Exists => RecoveryVerdict::AlreadyDone,
                 RecoveryPathStatus::Missing => RecoveryVerdict::RecycleUnverifiable,
                 RecoveryPathStatus::Changed | RecoveryPathStatus::Unreadable => RecoveryVerdict::Unknown,
             };
@@ -389,17 +385,19 @@ impl RecoveryFileCheck {
 /// C# `AggregateGroupVerdict(entry, members)`. Rules in this exact order (first match wins; `verdicts` = the member
 /// verdicts, `all`/`contains` as LINQ; the list is never empty):
 ///
-/// 1. `undo == Some(true)`, Move, all of `{CanRetry, AlreadyDone}` and contains `CanRetry` => `CanRetry`.
-/// 2. `undo == Some(true)`, Recycle, all of `{RecycleUnverifiable, AlreadyDone}` and contains `RecycleUnverifiable`
+/// 1. `undo == Some(true)`, Recycle, all of `{RecycleUnverifiable, AlreadyDone}` and contains `RecycleUnverifiable`
 ///    => `CanRetry`.
-/// 3. Recycle and `undo != Some(true)`, all of `{NotRecycled, RecycleUnverifiable, PermanentlyDeleted}` and contains
+/// 2. Recycle and `undo != Some(true)`, all of `{NotRecycled, RecycleUnverifiable, PermanentlyDeleted}` and contains
 ///    `NotRecycled` => `CanRetry` when every `NotRecycled` member's SOURCE status is `Exists` (not `Changed`), else
 ///    `NotRecycled`.
-/// 4. all of `{AlreadyDone, RecycleUnverifiable, PermanentlyDeleted}`: all `PermanentlyDeleted` =>
+/// 3. all of `{AlreadyDone, RecycleUnverifiable, PermanentlyDeleted}`: all `PermanentlyDeleted` =>
 ///    `PermanentlyDeleted`; contains `PermanentlyDeleted` => `PartiallyPermanentlyDeleted`; else Recycle with
 ///    `undo != Some(true)` => `RecycleUnverifiable`, otherwise `AlreadyDone`.
-/// 5. all of `{AlreadyDone, CanRetry}` and contains `CanRetry` => `CanRetry`.
-/// 6. contains `Conflict` => `Conflict`; `SourceChanged`; `DestinationChanged`; `Lost`; `NotRecycled` (in that
+/// 4. all of `{AlreadyDone, CanRetry}` and contains `CanRetry` => `CanRetry`. (The C# code
+///    has an earlier rule for the UNDO of a Move with this same condition and the same result. It is redundant: rules 1
+///    to 3 each require every member verdict to be outside `CanRetry`, so none of them matches before rule 4. The
+///    Rust port omits it; the truth-table test in this file's `tests` module covers every input.)
+/// 5. contains `Conflict` => `Conflict`; `SourceChanged`; `DestinationChanged`; `Lost`; `NotRecycled` (in that
 ///    order); otherwise `Unknown`.
 fn aggregate_group_verdict(entry: &JournalEntry, members: &[RecoveryGroupMemberCheck]) -> RecoveryVerdict {
     use RecoveryVerdict as V;
@@ -408,13 +406,6 @@ fn aggregate_group_verdict(entry: &JournalEntry, members: &[RecoveryGroupMemberC
     let contains = |wanted: RecoveryVerdict| verdicts.contains(&wanted);
     let undo = entry.undo == Some(true);
 
-    if undo
-        && entry.op_type == FileOperationType::Move
-        && all(&|v| matches!(v, V::CanRetry | V::AlreadyDone))
-        && contains(V::CanRetry)
-    {
-        return V::CanRetry;
-    }
     if undo
         && entry.op_type == FileOperationType::Recycle
         && all(&|v| matches!(v, V::RecycleUnverifiable | V::AlreadyDone))
@@ -470,4 +461,231 @@ fn aggregate_group_verdict(entry: &JournalEntry, members: &[RecoveryGroupMemberC
 /// C# `string.IsNullOrWhiteSpace` for a non-null string (`char::is_whitespace` = .NET `char.IsWhiteSpace`).
 fn is_null_or_white_space(text: &str) -> bool {
     text.chars().all(char::is_whitespace)
+}
+
+#[cfg(test)]
+mod tests {
+    //! P-393b: exhaustive truth-table proof that `aggregate_group_verdict` needs no separate "undo Move" rule (the later
+    //! "all of {AlreadyDone, CanRetry} and contains CanRetry" rule returns the same `CanRetry` for it). The reference
+    //! below restates the documented rules independently; the flag `with_undo_move_rule` switches the old rule on so the
+    //! test shows both forms agree, and the production function must equal the form without it.
+    use super::*;
+    use crate::file_actions::journal_line::JournalDateTime;
+
+    use RecoveryVerdict as V;
+
+    const VERDICTS: [RecoveryVerdict; 11] = [
+        V::CanRetry,
+        V::AlreadyDone,
+        V::Conflict,
+        V::SourceChanged,
+        V::DestinationChanged,
+        V::Lost,
+        V::Unknown,
+        V::RecycleUnverifiable,
+        V::NotRecycled,
+        V::PermanentlyDeleted,
+        V::PartiallyPermanentlyDeleted,
+    ];
+    const STATUSES: [RecoveryPathStatus; 4] = [
+        RecoveryPathStatus::Exists,
+        RecoveryPathStatus::Missing,
+        RecoveryPathStatus::Changed,
+        RecoveryPathStatus::Unreadable,
+    ];
+    const OPS: [FileOperationType; 3] = [
+        FileOperationType::Move,
+        FileOperationType::Copy,
+        FileOperationType::Recycle,
+    ];
+    const UNDOS: [Option<bool>; 3] = [None, Some(false), Some(true)];
+
+    type Picked = (RecoveryVerdict, RecoveryPathStatus);
+
+    fn stamp() -> DateTimeUtc {
+        DateTimeUtc::from_ticks(639_264_384_000_000_000).expect("ticks in range")
+    }
+
+    fn entry(op: FileOperationType, undo: Option<bool>) -> JournalEntry {
+        JournalEntry {
+            id: "group".to_owned(),
+            op_type: op,
+            state: JournalState::Prepared,
+            source: r"C:\photos\group.jpg".to_owned(),
+            destination: None,
+            size: 0,
+            last_write_utc: JournalDateTime::utc(stamp()),
+            timestamp_utc: JournalDateTime::utc(stamp()),
+            error: None,
+            error_code: None,
+            permanent: None,
+            undo,
+            group_id: Some("capture".to_owned()),
+            group_members: None,
+        }
+    }
+
+    fn member(verdict: RecoveryVerdict, status: RecoveryPathStatus) -> RecoveryGroupMemberCheck {
+        let source = RecoveryPathCheck::new(r"C:\photos\m.jpg", status, None, None, false);
+        RecoveryGroupMemberCheck {
+            member: JournalGroupMember {
+                source: source.path.clone(),
+                destination: None,
+                size: 0,
+                last_write_utc: JournalDateTime::utc(stamp()),
+                permanent: false,
+            },
+            check: RecoveryCheckResult {
+                entry: entry(FileOperationType::Copy, None),
+                source,
+                destination: None,
+                verdict,
+                group_members: None,
+            },
+        }
+    }
+
+    /// Independent restatement of the documented rules; `with_undo_move_rule` adds the old rule 1.
+    fn reference(op: FileOperationType, undo: Option<bool>, members: &[Picked], with_undo_move_rule: bool) -> V {
+        let undo = undo == Some(true);
+        let all = |set: &[V]| members.iter().all(|(v, _)| set.contains(v));
+        let has = |v: V| members.iter().any(|(m, _)| *m == v);
+        if with_undo_move_rule
+            && undo
+            && op == FileOperationType::Move
+            && all(&[V::CanRetry, V::AlreadyDone])
+            && has(V::CanRetry)
+        {
+            return V::CanRetry;
+        }
+        if undo
+            && op == FileOperationType::Recycle
+            && all(&[V::RecycleUnverifiable, V::AlreadyDone])
+            && has(V::RecycleUnverifiable)
+        {
+            return V::CanRetry;
+        }
+        if op == FileOperationType::Recycle
+            && !undo
+            && all(&[V::NotRecycled, V::RecycleUnverifiable, V::PermanentlyDeleted])
+            && has(V::NotRecycled)
+        {
+            let all_present_unchanged = members
+                .iter()
+                .filter(|(v, _)| *v == V::NotRecycled)
+                .all(|(_, s)| *s == RecoveryPathStatus::Exists);
+            return if all_present_unchanged {
+                V::CanRetry
+            } else {
+                V::NotRecycled
+            };
+        }
+        if all(&[V::AlreadyDone, V::RecycleUnverifiable, V::PermanentlyDeleted]) {
+            if all(&[V::PermanentlyDeleted]) {
+                return V::PermanentlyDeleted;
+            }
+            if has(V::PermanentlyDeleted) {
+                return V::PartiallyPermanentlyDeleted;
+            }
+            return if op == FileOperationType::Recycle && !undo {
+                V::RecycleUnverifiable
+            } else {
+                V::AlreadyDone
+            };
+        }
+        if all(&[V::AlreadyDone, V::CanRetry]) && has(V::CanRetry) {
+            return V::CanRetry;
+        }
+        [
+            V::Conflict,
+            V::SourceChanged,
+            V::DestinationChanged,
+            V::Lost,
+            V::NotRecycled,
+        ]
+        .into_iter()
+        .find(|v| has(*v))
+        .unwrap_or(V::Unknown)
+    }
+
+    #[derive(Default)]
+    struct Counts {
+        groups: usize,
+        undo_move_rule_domain: usize,
+    }
+
+    fn check(picked: &[Picked], counts: &mut Counts) {
+        let members: Vec<RecoveryGroupMemberCheck> = picked.iter().map(|(v, s)| member(*v, *s)).collect();
+        for op in OPS {
+            for undo in UNDOS {
+                let actual = aggregate_group_verdict(&entry(op, undo), &members);
+                let without = reference(op, undo, picked, false);
+                let with = reference(op, undo, picked, true);
+                assert_eq!(actual, without, "{op:?} undo {undo:?} members {picked:?}");
+                assert_eq!(
+                    with, without,
+                    "the undo-Move rule changes the result: {op:?} undo {undo:?} {picked:?}"
+                );
+                counts.groups += 1;
+                if undo == Some(true)
+                    && op == FileOperationType::Move
+                    && picked.iter().all(|(v, _)| matches!(v, V::CanRetry | V::AlreadyDone))
+                    && picked.iter().any(|(v, _)| *v == V::CanRetry)
+                {
+                    counts.undo_move_rule_domain += 1;
+                    assert_eq!(actual, V::CanRetry);
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn aggregate_group_verdict_is_identical_with_and_without_the_undo_move_rule_for_every_member_combination() {
+        // Domain: 3 ops (Move, Copy, Recycle: the only values) x 3 undo values x every ordered group of 1..=3 members over
+        // the 44 (verdict, source status) pairs (11 verdicts x 4 statuses), every ordered group of 4 verdicts with
+        // status Exists, and every non-empty SET of verdicts (2047) with the status of every member uniform for each of
+        // the 4 statuses. The function reads the members only through `all`/`contains` of the verdict and the source
+        // status of the `NotRecycled` members, so a set plus the statuses covers any longer group.
+        let pairs: Vec<Picked> = VERDICTS
+            .iter()
+            .flat_map(|v| STATUSES.iter().map(move |s| (*v, *s)))
+            .collect();
+        let mut counts = Counts::default();
+        for a in &pairs {
+            check(&[*a], &mut counts);
+            for b in &pairs {
+                check(&[*a, *b], &mut counts);
+                for c in &pairs {
+                    check(&[*a, *b, *c], &mut counts);
+                }
+            }
+        }
+        let exists = RecoveryPathStatus::Exists;
+        for a in VERDICTS {
+            for b in VERDICTS {
+                for c in VERDICTS {
+                    for d in VERDICTS {
+                        check(&[(a, exists), (b, exists), (c, exists), (d, exists)], &mut counts);
+                    }
+                }
+            }
+        }
+        for mask in 1u32..(1 << VERDICTS.len()) {
+            for status in STATUSES {
+                let picked: Vec<Picked> = VERDICTS
+                    .iter()
+                    .enumerate()
+                    .filter(|(i, _)| mask & (1 << i) != 0)
+                    .map(|(_, v)| (*v, status))
+                    .collect();
+                check(&picked, &mut counts);
+            }
+        }
+        assert!(counts.groups > 700_000, "{}", counts.groups);
+        assert!(
+            counts.undo_move_rule_domain > 100,
+            "the domain of the undo-Move rule was barely reached: {}",
+            counts.undo_move_rule_domain
+        );
+    }
 }
