@@ -133,12 +133,19 @@ jobs:
 
   # Runner time is the budget, not the number of jobs: every Windows job pays about 30 s of setup (checkout, toolchain, cache) and
   # GitHub runs a limited number of Windows jobs at once, so two overlapping runs (a pull request and the master run of the previous
-  # merge) used to queue. The work is grouped into five jobs of about two minutes each: lint plus release build, pr-core, the rest of
-  # the workspace, pr-platform-win with the pr-app unit tests, and the pr-app integration tests. Only master saves the cache.
+  # merge) used to queue. The work is grouped into jobs of about two minutes each: lint (fmt + clippy), release build, pr-core, two
+  # halves of the rest of the workspace, pr-platform-win with the pr-app unit tests, and the pr-app integration tests. Only master
+  # saves the cache.
+  #
+  # Cache keys: the split jobs reuse existing shared-keys instead of inventing new ones, so a pull request run restores the cache that
+  # master saved (a new key would start cold until master had run once). On a PR nothing is saved. On master exactly one job saves
+  # each key, otherwise two jobs would race to write the same immutable entry and the loser's artifacts would be lost: `release build`
+  # saves lint-release (release deps are the slow ones to rebuild; `lint` only restores it), and the shell half saves test-crates-rest
+  # (pr-shell depends on nearly every crate, so its dependency set is a superset of the other half's).
   lint:
     needs: changes
     if: ${{ needs.changes.outputs.rust == 'true' }}
-    name: lint and release build
+    name: lint
     runs-on: windows-latest
     timeout-minutes: 25
     env:
@@ -154,7 +161,8 @@ jobs:
         uses: Swatinem/rust-cache@f13886b937689c021905a6b90929199931d60db1 # v2.8.1
         with:
           shared-key: lint-release
-          save-if: ${{ github.ref == 'refs/heads/master' }}
+          # Restore only: `release build` below saves this key on master.
+          save-if: false
       # One rustfmt run per package: `cargo fmt --all` hands every test file of the whole workspace to one rustfmt process, which
       # fails with os error 206 (command line too long) on Windows once pr-platform-win and pr-app have enough test files.
       - name: Format
@@ -167,13 +175,34 @@ jobs:
           }
       - name: Clippy
         run: cargo clippy --workspace --all-targets --locked -- -D warnings
+
+  # The release profile is a separate compile (optimised, no clippy/test coverage of it), so it stays; as its own job it runs in
+  # parallel with lint instead of after it.
+  release-build:
+    needs: changes
+    if: ${{ needs.changes.outputs.rust == 'true' }}
+    name: release build
+    runs-on: windows-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Toolchain
+        run: rustup show
+      - name: Cache
+        uses: Swatinem/rust-cache@f13886b937689c021905a6b90929199931d60db1 # v2.8.1
+        with:
+          shared-key: lint-release
+          save-if: ${{ github.ref == 'refs/heads/master' }}
       - name: Build release
         run: cargo build --workspace --release --locked
 
   # `pr-app` has over a hundred integration test files, each linked as its own binary, so it dominates the test time. Its files are
   # split round-robin over 4 shards (computed from the directory on every run, so a new test file needs no workflow edit); the groups
   # below take the shards that balance them (measured step times: core 120 s, crates-rest 120 s, win 69 s + app-unit 12 s + shard 2
-  # 23 s, app shards 0, 1 and 3 43 + 31 + 41 s).
+  # 23 s, app shards 0, 1 and 3 43 + 31 + 41 s). The old crates-rest group was the critical path, so it is split into `crates-shell`
+  # (pr-shell, pr-turbojpeg and three small crates) and `crates-rest` (everything else); crates-rest is computed with --exclude, so a
+  # new workspace crate is tested there without a workflow edit.
   test:
     needs: changes
     if: ${{ needs.changes.outputs.rust == 'true' }}
@@ -184,7 +213,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        group: [core, crates-rest, win, app]
+        group: [core, crates-shell, crates-rest, win, app]
     env:
       CARGO_PROFILE_DEV_DEBUG: 0
     steps:
@@ -195,8 +224,9 @@ jobs:
       - name: Cache
         uses: Swatinem/rust-cache@f13886b937689c021905a6b90929199931d60db1 # v2.8.1
         with:
-          shared-key: test-${{ matrix.group }}
-          save-if: ${{ github.ref == 'refs/heads/master' }}
+          # crates-shell reuses the test-crates-rest key (see the cache note above) and is the half that saves it on master.
+          shared-key: test-${{ matrix.group == 'crates-shell' && 'crates-rest' || matrix.group }}
+          save-if: ${{ github.ref == 'refs/heads/master' && matrix.group != 'crates-rest' }}
       - name: Test
         timeout-minutes: 15
         shell: pwsh
@@ -218,7 +248,11 @@ jobs:
           }
           switch ($group) {
             'core' { Invoke-Cargo test -p pr-core --locked }
-            'crates-rest' { Invoke-Cargo test --workspace --exclude pr-app --exclude pr-core --exclude pr-platform-win --locked }
+            'crates-shell' { Invoke-Cargo test -p pr-shell -p pr-turbojpeg -p pr-bench-win -p pr-perf -p pr-test-support --locked }
+            'crates-rest' {
+              Invoke-Cargo test --workspace --exclude pr-app --exclude pr-core --exclude pr-platform-win `
+                --exclude pr-shell --exclude pr-turbojpeg --exclude pr-bench-win --exclude pr-perf --exclude pr-test-support --locked
+            }
             'win' {
               Invoke-Cargo test -p pr-platform-win --locked
               Invoke-Cargo test -p pr-app --lib --bins --locked
@@ -229,11 +263,11 @@ jobs:
           }
 
   # Gate with the name the master-ci ruleset requires. `if: always()` is needed: a skipped job would otherwise count as passing when
-  # an upstream job fails. lint and test are skipped on purpose (and only then) when `changes` found nothing but docs and tools.
+  # an upstream job fails. lint, release-build and test are skipped on purpose (and only then) when `changes` found nothing but docs and tools.
   build-test:
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    needs: [changes, lint, test, unsafe-audit, repo-checks]
+    needs: [changes, lint, release-build, test, unsafe-audit, repo-checks]
     if: ${{ always() && github.event_name != 'schedule' }}
     steps:
       - name: Require the checks that apply
@@ -241,10 +275,10 @@ jobs:
           test "${{ needs.repo-checks.result }}" = "success" || exit 1
           echo "unsafe-audit=${{ needs.unsafe-audit.result }}"
           test "${{ needs.unsafe-audit.result }}" = "success" || exit 1
-          echo "changes=${{ needs.changes.result }} rust=${{ needs.changes.outputs.rust }} lint=${{ needs.lint.result }} test=${{ needs.test.result }}"
+          echo "changes=${{ needs.changes.result }} rust=${{ needs.changes.outputs.rust }} lint=${{ needs.lint.result }} release-build=${{ needs.release-build.result }} test=${{ needs.test.result }}"
           test "${{ needs.changes.result }}" = "success" || exit 1
           if [ "${{ needs.changes.outputs.rust }}" = "true" ]; then
-            test "${{ needs.lint.result }}" = "success" && test "${{ needs.test.result }}" = "success"
+            test "${{ needs.lint.result }}" = "success" && test "${{ needs.release-build.result }}" = "success" && test "${{ needs.test.result }}" = "success"
           else
-            test "${{ needs.lint.result }}" = "skipped" && test "${{ needs.test.result }}" = "skipped"
+            test "${{ needs.lint.result }}" = "skipped" && test "${{ needs.release-build.result }}" = "skipped" && test "${{ needs.test.result }}" = "skipped"
           fi
