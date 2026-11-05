@@ -161,6 +161,9 @@ impl FileActionTexts for EnglishFileActionTexts {
 // FileActionService
 // ---------------------------------------------------------------------------------------------------------------
 
+/// P-393 test seam type: see [`FileActionService::with_after_mutation_fault`].
+pub type AfterMutationFault = Arc<dyn Fn() -> io::Result<()> + Send + Sync>;
+
 /// C# `FileActionService` (`sealed class`). Thread-safe; share it as `Arc<FileActionService>`: the App, `UndoService`
 /// (W3-05) and `RecoveryRetryService` (W3-06), both through W3-05's [`FileActionGate`] trait, all use the
 /// SAME instance, so its gate is the one INV-4 gate of the process.
@@ -171,6 +174,8 @@ pub struct FileActionService {
     recycle_bin: Arc<dyn RecycleBin>,
     /// C# `_moveOverride`; `None` = `FileSystem::move_file`.
     move_override: Option<MoveOverride>,
+    /// P-393 test seam: runs right after a Recycle marked its mutation completed (always `None` in production).
+    after_mutation_fault: Option<AfterMutationFault>,
     texts: Arc<dyn FileActionTexts>,
     /// C# `private int _inProgress` (free / held) as a [`GateFlag`] that remembers WHICH token holds it (P-71 option C); every access is
     /// `SeqCst` (C# `Interlocked.CompareExchange` / `Volatile.Read` / `Volatile.Write`).
@@ -205,6 +210,7 @@ impl FileActionService {
             clock,
             recycle_bin,
             move_override: None,
+            after_mutation_fault: None,
             texts: Arc::new(EnglishFileActionTexts),
             in_progress: Arc::new(GateFlag::new()),
         }
@@ -213,6 +219,13 @@ impl FileActionService {
     /// The C# `moveOverride` constructor argument (test seam).
     pub fn with_move_override(mut self, move_override: MoveOverride) -> Self {
         self.move_override = Some(move_override);
+        self
+    }
+
+    /// P-393 test seam: a fault raised right after a Recycle completed its mutation, so a test can run `single_failure`
+    /// with `mutation_completed` set (production never sets it).
+    pub fn with_after_mutation_fault(mut self, fault: AfterMutationFault) -> Self {
+        self.after_mutation_fault = Some(fault);
         self
     }
 
@@ -593,6 +606,9 @@ impl FileActionService {
                     return Err(self.coded_error(errors::SOURCE_STILL_EXISTS_AFTER_RECOVERY).into());
                 }
                 tx.mark_mutation_completed();
+                if let Some(fault) = &self.after_mutation_fault {
+                    fault()?;
+                }
 
                 let (_, journal_error) = tx.commit();
                 Ok(FileActionResult {

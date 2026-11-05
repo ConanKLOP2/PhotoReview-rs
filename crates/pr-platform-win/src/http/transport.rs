@@ -41,6 +41,17 @@ fn wide(value: &str) -> Result<Vec<u16>, HttpError> {
     }
     Ok(value.encode_utf16().chain(Some(0)).collect())
 }
+/// P-393 seam: `cap` is a parameter so a test can use a small one (production passes `HEADER_CAP`); the size query counts the NUL.
+fn header_block_too_large(bytes: u32, cap: u32) -> bool {
+    bytes > 2 * cap + 2
+}
+/// P-393 seam: a read completion is accepted only when it carries at most the `count` bytes asked for.
+fn read_completion(event: Event, count: usize) -> Result<Vec<u8>, HttpError> {
+    match event {
+        Event::Read(bytes) if bytes.len() <= count => Ok(bytes),
+        _ => Err(other("unexpected read completion")),
+    }
+}
 fn os_error(code: u32) -> HttpError {
     if code == ERROR_WINHTTP_TIMEOUT {
         HttpError::Timeout
@@ -440,7 +451,7 @@ impl Exchange {
                 return Err(win_error(error));
             }
         }
-        if bytes > 2 * HEADER_CAP + 2 {
+        if header_block_too_large(bytes, HEADER_CAP) {
             return Err(HttpError::Request(HttpRequestError::ConfigurationLimitExceeded));
         }
         let mut raw = vec![0u16; bytes as usize / 2 + 1];
@@ -497,13 +508,9 @@ impl HttpBody for Body {
             // Reads never overlap; the callback copies the data before reporting completion.
             unsafe { WinHttpReadData(exchange.request.raw(), pointer.cast(), count as u32, null_mut()) }
                 .map_err(win_error)?;
-            match exchange.deadline.wait(&exchange.rx)? {
-                Event::Read(bytes) if bytes.len() <= count => {
-                    buf[..bytes.len()].copy_from_slice(&bytes);
-                    Ok(bytes.len())
-                }
-                _ => Err(other("unexpected read completion")),
-            }
+            let bytes = read_completion(exchange.deadline.wait(&exchange.rx)?, count)?;
+            buf[..bytes.len()].copy_from_slice(&bytes);
+            Ok(bytes.len())
         })();
         if !matches!(result, Ok(n) if n > 0) {
             self.exchange.take();
@@ -708,5 +715,42 @@ mod tests {
             win_error(dns),
             HttpError::Request(HttpRequestError::NameResolutionError)
         );
+    }
+
+    #[test]
+    fn header_block_size_check_fires_exactly_above_twice_the_cap_plus_two() {
+        // P-393 (kills 443:18 and 443:35 mutants of the old inline check): a small injected cap makes the boundary reachable.
+        // Whole domain of the small caps 0..=16 and sizes 0..=64, against an independent wide-integer statement of the rule.
+        for cap in 0u32..=16 {
+            for bytes in 0u32..=64 {
+                let expected = u64::from(bytes) > 2 * u64::from(cap) + 2;
+                assert_eq!(header_block_too_large(bytes, cap), expected, "cap {cap} bytes {bytes}");
+            }
+        }
+        assert!(!header_block_too_large(10, 4) && header_block_too_large(11, 4));
+        // The production cap: 64 Ki characters = 131 072 bytes + 2 for the NUL the size query counts.
+        assert!(!header_block_too_large(131_074, HEADER_CAP) && header_block_too_large(131_075, HEADER_CAP));
+    }
+
+    #[test]
+    fn read_completion_accepts_at_most_the_requested_count_and_only_a_read_event() {
+        // P-393 (kills 501:39 `<=` -> `true` of the old inline guard): a completion with MORE bytes than asked for is refused.
+        for count in 0usize..=8 {
+            for len in 0usize..=12 {
+                let result = read_completion(Event::Read(vec![7; len]), count);
+                if len <= count {
+                    assert_eq!(result, Ok(vec![7; len]), "count {count} len {len}");
+                } else {
+                    assert_eq!(
+                        result,
+                        Err(HttpError::Other("unexpected read completion".to_owned())),
+                        "count {count} len {len}"
+                    );
+                }
+            }
+        }
+        for event in [Event::Sent, Event::Headers, Event::Error(12002)] {
+            assert!(read_completion(event, 4).is_err());
+        }
     }
 }
