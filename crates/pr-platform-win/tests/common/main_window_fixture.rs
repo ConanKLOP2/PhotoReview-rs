@@ -434,6 +434,11 @@ pub fn built() -> Rc<Built> {
     BUILT.with(|slot| slot.borrow().clone()).expect("build() first")
 }
 
+thread_local! {
+    /// `Debug` text of the `MainWindowDeps` and the `ViewportCallbacks` of every `build` on this thread (mut3: the Debug impls are otherwise unobserved).
+    pub static DEBUG_TEXT: RefCell<Vec<String>> = const { RefCell::new(Vec::new()) };
+}
+
 /// Makes a hidden shell window, a real `MainViewModel` and the main window over them. UI thread only. The window is NOT shown.
 pub fn build(build_options: BuildOptions) -> Rc<Built> {
     build_with_env(build_options, MainEnv::new())
@@ -509,6 +514,7 @@ pub fn build_with_env(build_options: BuildOptions, env: MainEnv) -> Rc<Built> {
         mark: Some(Box::new(move |name| mark_log.borrow_mut().push(name.to_owned()))),
         viewport_factory: Box::new(move |callbacks: ViewportCallbacks| {
             factory_order.borrow_mut().push("viewport".to_owned());
+            DEBUG_TEXT.with(|slot| slot.borrow_mut().push(format!("{callbacks:?}")));
             let viewport = ViewportController::new(
                 callbacks.window,
                 Rc::new(callbacks.poster),
@@ -522,6 +528,7 @@ pub fn build_with_env(build_options: BuildOptions, env: MainEnv) -> Rc<Built> {
         }),
         options,
     };
+    DEBUG_TEXT.with(|slot| slot.borrow_mut().push(format!("{deps:?}")));
     let window = MainWindow::new(deps);
     let built = Rc::new(Built {
         window,
