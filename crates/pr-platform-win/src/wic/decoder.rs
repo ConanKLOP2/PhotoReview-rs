@@ -1390,4 +1390,13 @@ mod tests {
         drop(output);
         drop(chain);
     }
+
+    /// MUT7: the `Debug` text of a chain that holds no COM object (`active: false`); a body that prints nothing is caught.
+    #[test]
+    fn color_transform_chain_debug_reports_whether_it_is_active() {
+        assert_eq!(
+            format!("{:?}", ColorTransformChain::default()),
+            "ColorTransformChain { active: false, .. }"
+        );
+    }
 }
