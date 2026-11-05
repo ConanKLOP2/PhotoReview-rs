@@ -71,3 +71,31 @@ Use repository evidence over recollection; recheck script defaults when they cha
 
 - Start with "How to resume" and the newest dated status in `task_on_progress.md`; expand into older sections only for relevant details.
   Why: that file sends historical entries to `docs/archive/`; `CLAUDE.md` requires reading status but does not prescribe a shortened reading mode.
+
+## F. Mutation sweeps (sessions 2026-11-04 to 2026-11-06)
+
+- Count an infrastructure failure (build died, paging file too small, LNK1102, E0463, a log overwritten by a sibling mutant) as NOT RUN, never as tested or unviable.
+  Why: the P3 verifier rejected `pixels.rs` "tested 8, caught 6" because 2 build failures were counted as tested; `tested = caught + missed + unviable + timeout` must hold.
+- Treat "proven equivalent" as a claim until the run covers the whole domain or every input class; a lattice of sampled exponents and mantissas is run-supported, open.
+  Why: N2 found the M1 equivalence claims for `layout.rs` 361:12 and 349:15 wrong (overflow near f64::MAX), and the P4 verifier did not accept class-complete lattices as closure (P-395).
+- Never write a wait loop whose success pattern differs in case from the real output; give every `until grep` a timeout and a fallback read.
+  Why: P2 waited on `NOT run` while `pre-pr.sh` printed `NOT RUN`, so the loop could not match and idled until its 595 s timeout.
+- Open the evidence PRs first and the PARITY/PROPOSED-DECISIONS PR after they merge.
+  Why: `pre-pr.sh` doc-links fails on links to `docs/reviews/*` files that are not yet on master.
+- Pin the machine budget before a long sweep: one `cargo-mutants -j 1` per agent, and expect memory exhaustion when several agents link `pr-platform-win` at once.
+  Why: P3 got 335 of 1000 mutants because of the time box and commit-memory exhaustion; 40+ verdicts were infrastructure failures. Exclude `target-*` from Windows Defender and lower test debug info before the next sweep (not yet measured).
+
+## G. Performance (from an external write-up, unverified, kept short)
+
+A public write-up of a 1 vCPU, 2 GB server contest (SQLite, io_uring) is mostly about servers and does not apply to this desktop app. These points do carry over:
+
+- Measure a tuning constant before reasoning about it; one in-flight accept constant (16 to 256) doubled a contestant's score, and a targeted cancel instead of a per-socket scan raised another from 226k to 270k.
+  Why: both were found by measuring, not by design; apply it to cache sizes, thread counts and queue depths here, with a benchmark in `pr-bench`.
+- Bound every batch (count or time) so a fuller batch cannot break the tail latency; one entry stalled for 13 s when batching had no bound.
+  Why: the UI thread and the thumbnail/preview pipeline need a worst case, not only a good average.
+- Keep housekeeping (checkpoint, flush, cache cleanup) off the thread that serves the user, and wake it by signal instead of a fixed sleep (57 ms to 6 ms in the write-up).
+  Why: same rule as the project's UI-thread rule in `AGENTS.md`; check any sleep-polling loop against it.
+- A fast path that relies on a data invariant needs a runtime check and a fallback to the plain path.
+  Why: the Rust and Lean entries read the feed by ID range only when IDs are consecutive and otherwise run the standard query.
+- Do not copy the extreme tricks (hand-written assembly, bypassing the SQL layer, reimplementing the storage engine).
+  Why: the contest author himself said nobody would run these in production because of data-loss risk and maintenance cost.
