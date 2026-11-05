@@ -491,3 +491,8 @@ fn hit_box(b: &ScrollBarBox, point: PointD) -> ScrollBarPart {
         ScrollBarPart::Background
     }
 }
+
+// Seam for the private `cs_min` (P-394): the tests live in a sibling file so they can call it.
+#[cfg(test)]
+#[path = "scrollbar_whole_domain_tests.rs"]
+mod whole_domain_tests;
