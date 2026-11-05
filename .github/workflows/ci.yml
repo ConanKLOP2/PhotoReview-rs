@@ -56,14 +56,17 @@ jobs:
             echo "Only docs/tools changed: Rust jobs skipped"
           fi
 
-  # Required by the master-ci ruleset together with build-test: it must always run and succeed.
+  # Required by the master-ci ruleset together with build-test: it must always run and succeed. It also carries the dependency audit
+  # (W10-R3, formerly the separate `deny` job): both are short Windows jobs, so one runner saves a second job's setup and a slot.
   repo-checks:
     if: github.event_name != 'schedule'
     runs-on: windows-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
       # Synced assets (language catalogs, fixtures) are owned by the C# repo; edits must come from a re-sync.
       - name: Check synced assets
         shell: powershell
@@ -74,9 +77,40 @@ jobs:
         run: |
           ./tools/dev/test/release-selftest.ps1
           ./tools/dev/test/release-workflow-selftest.ps1
+      # W10-R3: Cargo-scope PR audit and nightly advisory refresh; the audit itself runs only when Cargo files, deny.toml or this
+      # workflow changed (and on every push or manual run).
+      - name: Toolchain
+        run: rustup show
+      - name: Detect Cargo changes
+        id: scope
+        shell: pwsh
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          $runAudit = $env:GITHUB_EVENT_NAME -ne 'pull_request'
+          if (-not $runAudit) {
+            git fetch --no-tags origin $env:BASE_REF
+            if ($LASTEXITCODE -ne 0) { throw 'Cannot fetch PR base' }
+            $changed = git diff --name-only "origin/$($env:BASE_REF)...HEAD"
+            if ($LASTEXITCODE -ne 0) { throw 'Cannot inspect changed files' }
+            $runAudit = @($changed | Where-Object { $_ -match '(^|/)(Cargo\.toml|Cargo\.lock)$|^deny\.toml$|^\.github/workflows/ci\.yml$' }).Count -gt 0
+          }
+          "audit=$($runAudit.ToString().ToLowerInvariant())" >> $env:GITHUB_OUTPUT
+      - name: Install pinned cargo-deny
+        if: steps.scope.outputs.audit == 'true'
+        shell: pwsh
+        run: |
+          cargo install --locked cargo-deny --version 0.19.9
+          if ($LASTEXITCODE -ne 0) { throw 'cargo-deny installation failed' }
+      - name: Audit dependency graph
+        if: steps.scope.outputs.audit == 'true'
+        shell: pwsh
+        run: |
+          cargo deny --locked check --config deny.toml advisories licenses bans sources --deny unmaintained --deny unsound
+          if ($LASTEXITCODE -ne 0) { throw 'Dependency audit failed' }
 
-  # Cheap (no toolchain, a few seconds): every unsafe block needs a SAFETY comment and unsafe stays in the FFI crates (AGENTS.md).
-  # It always runs, also for docs-only pull requests, and build-test below requires it.
+  # Cheap (no Rust toolchain, a few seconds): every unsafe block needs a SAFETY comment and unsafe stays in the FFI crates (AGENTS.md).
+  # It always runs, also for docs-only pull requests, and build-test below requires it. The advisory workflow lint rides along.
   unsafe-audit:
     if: github.event_name != 'schedule'
     runs-on: ubuntu-latest
@@ -86,21 +120,15 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Audit unsafe code
         run: PY_BIN=python3 bash tools/dev/unsafe-audit.sh
-
-  # ST-CI-RELEASE-TOOLS: static lint of all workflow files. Advisory (continue-on-error) and NOT in `needs` of build-test, so it never
-  # gates a merge; promote it only after one clean run on master. actionlint is built from a pinned module version (the Go module
-  # proxy and checksum database make a version tag immutable), so no unpinned download runs in CI.
-  actionlint:
-    if: github.event_name != 'schedule'
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    continue-on-error: true
-    steps:
-      - name: Checkout
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      # ST-CI-RELEASE-TOOLS: static lint of all workflow files (formerly the separate `actionlint` job). Advisory: continue-on-error on
+      # each step, and build-test only reads this job's result, which stays green when actionlint fails; promote it only after one clean
+      # run on master. It is built from a pinned module version (the Go module proxy and checksum database make a version tag
+      # immutable), so no unpinned download runs in CI.
       - name: Install pinned actionlint
+        continue-on-error: true
         run: go install github.com/rhysd/actionlint/cmd/actionlint@v1.7.7
       - name: Lint workflows
+        continue-on-error: true
         run: '"$(go env GOPATH)"/bin/actionlint -color'
 
   # Runner time is the budget, not the number of jobs: every Windows job pays about 30 s of setup (checkout, toolchain, cache) and
@@ -205,12 +233,12 @@ jobs:
   build-test:
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    needs: [changes, lint, test, unsafe-audit, deny]
+    needs: [changes, lint, test, unsafe-audit, repo-checks]
     if: ${{ always() && github.event_name != 'schedule' }}
     steps:
       - name: Require the checks that apply
         run: |
-          test "${{ needs.deny.result }}" = "success" || exit 1
+          test "${{ needs.repo-checks.result }}" = "success" || exit 1
           echo "unsafe-audit=${{ needs.unsafe-audit.result }}"
           test "${{ needs.unsafe-audit.result }}" = "success" || exit 1
           echo "changes=${{ needs.changes.result }} rust=${{ needs.changes.outputs.rust }} lint=${{ needs.lint.result }} test=${{ needs.test.result }}"
@@ -220,42 +248,3 @@ jobs:
           else
             test "${{ needs.lint.result }}" = "skipped" && test "${{ needs.test.result }}" = "skipped"
           fi
-
-  # W10-R3: Cargo-scope PR audit and nightly advisory refresh.
-  deny:
-    runs-on: windows-latest
-    timeout-minutes: 15
-    steps:
-      - name: Checkout
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # from this repo ci.yml
-        with:
-          fetch-depth: 0
-      - name: Toolchain
-        run: rustup show
-      - name: Detect Cargo changes
-        id: scope
-        shell: pwsh
-        env:
-          BASE_REF: ${{ github.base_ref }}
-        run: |
-          $runAudit = $env:GITHUB_EVENT_NAME -ne 'pull_request'
-          if (-not $runAudit) {
-            git fetch --no-tags origin $env:BASE_REF
-            if ($LASTEXITCODE -ne 0) { throw 'Cannot fetch PR base' }
-            $changed = git diff --name-only "origin/$($env:BASE_REF)...HEAD"
-            if ($LASTEXITCODE -ne 0) { throw 'Cannot inspect changed files' }
-            $runAudit = @($changed | Where-Object { $_ -match '(^|/)(Cargo\.toml|Cargo\.lock)$|^deny\.toml$|^\.github/workflows/ci\.yml$' }).Count -gt 0
-          }
-          "audit=$($runAudit.ToString().ToLowerInvariant())" >> $env:GITHUB_OUTPUT
-      - name: Install pinned cargo-deny
-        if: steps.scope.outputs.audit == 'true'
-        shell: pwsh
-        run: |
-          cargo install --locked cargo-deny --version 0.19.9
-          if ($LASTEXITCODE -ne 0) { throw 'cargo-deny installation failed' }
-      - name: Audit dependency graph
-        if: steps.scope.outputs.audit == 'true'
-        shell: pwsh
-        run: |
-          cargo deny --locked check --config deny.toml advisories licenses bans sources --deny unmaintained --deny unsound
-          if ($LASTEXITCODE -ne 0) { throw 'Dependency audit failed' }
