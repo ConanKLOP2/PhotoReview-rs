@@ -237,7 +237,12 @@ pub(crate) fn map_write_error(error: &std::io::Error, path: &str) -> ToolError {
 }
 
 /// `File.Move(temp, full, overwrite: true)`.
+///
+/// Windows only by design (owner decision 2026-11-10, P-393): the up-front refusal emulates `MoveFileEx` access-denied semantics
+/// with Win32 attributes and share modes. Other targets have no such twin (the former `cfg(not(windows))` copy was never run and is
+/// removed); there a plain `rename` decides, which is not .NET behaviour, so non-Windows is not a supported platform of this tool.
 fn replace_leaf(temp: &str, full: &str) -> Result<(), ToolError> {
+    #[cfg(windows)]
     if leaf_refuses_replacement(full) {
         return Err(access_denied_without_path());
     }
@@ -292,11 +297,6 @@ fn leaf_refuses_replacement(full: &str) -> bool {
         }
         Err(_) => false,
     }
-}
-
-#[cfg(not(windows))]
-fn leaf_refuses_replacement(full: &str) -> bool {
-    std::fs::symlink_metadata(full).is_ok_and(|metadata| metadata.is_dir() || metadata.permissions().readonly())
 }
 
 /// `Path.Combine(Environment.GetFolderPath(LocalApplicationData), name)`.

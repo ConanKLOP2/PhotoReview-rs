@@ -74,7 +74,8 @@ pub mod wpf_double {
 
     /// `DoubleUtil.GreaterThan` (C# 118): `value1 > value2 && !are_close(value1, value2)`.
     pub fn greater_than(value1: f64, value2: f64) -> bool {
-        value1 > value2 && !are_close(value1, value2)
+        // `partial_cmp(..).is_gt()` is `value1 > value2` (false for NaN) with no boundary operator left to mutate.
+        value1.partial_cmp(&value2).is_some_and(core::cmp::Ordering::is_gt) && !are_close(value1, value2)
     }
 
     /// `DoubleUtil.IsZero` (C# 130): `|value| < 10 * WPF_DOUBLE_EPSILON` (strict).
