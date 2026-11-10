@@ -814,3 +814,27 @@ fn comma_enum_text_is_rejected_for_type_and_state() {
         assert!(try_parse(&line).is_none(), "{ty}/{st}");
     }
 }
+
+// Pins the integer-token contract of `integer_token` (the `Size` field): no `.`, `e` or `E`, must fit i64, `-0` is 0.
+// With the redundant `.`/`e`/`E` guard removed, `str::parse::<i64>` alone must still give these results.
+#[test]
+fn size_integer_token_accepts_only_plain_i64_integers() {
+    for (token, expected) in [
+        ("1.5", None),
+        ("1e5", None),
+        ("1E5", None),
+        ("-0", Some(0)),
+        ("-0.0", None),
+        ("9223372036854775807", Some(i64::MAX)),
+        ("9223372036854775808", None),
+        ("-9223372036854775808", Some(i64::MIN)),
+        ("-", None),
+        ("+1", None),
+        ("007", None), // leading zero is not valid JSON
+    ] {
+        let line = format!(
+            r#"{{"Id":"i","Type":"Move","State":"Prepared","Source":"x","Destination":null,"Size":{token},"LastWriteUtc":"2026-01-01T00:00:00Z","TimestampUtc":"2026-01-01T00:00:00Z"}}"#
+        );
+        assert_eq!(try_parse(&line).map(|e| e.size), expected, "Size {token}");
+    }
+}

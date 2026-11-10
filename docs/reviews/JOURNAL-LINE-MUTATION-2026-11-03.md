@@ -38,3 +38,7 @@ TEMP=<repo>/.claude/tmp-mut-journal-line MUT_OUT=$TEMP/out bash tools/dev/mutant
 ## Verdict
 
 For the 92 mutants run (the writer, `parse_json`, `stj_shape_ok`, `to_line`, `push_unit`, `try_parse*`, `nests_too_deep`, the `decode_*` helpers, `integer_token`, `recognize`, most of `member_from_text`): 78 caught, 4 killable survivors now covered by new tests, 1 equivalent, 9 unviable. The 44 NOT RUN mutants (the enum/text recognition tail, the field accumulators and the member readers) are still open. The D-03 / F-11 / F-13 / F-16 / INV-6 rows stay Partial; no P-number was needed.
+
+## Update 2026-11-10 (MUT-2): the `integer_token` equivalent survivor is removed
+
+The `:380:31` guard (`!raw.bytes().any(|b| matches!(b, b'.' | b'e' | b'E'))`) was removed from `integer_token`: `str::parse::<i64>` already rejects `.`, `e` and `E`, so the guard never changed a result (the equivalence argued in the table above is now closed by removal, not by argument). Test `size_integer_token_accepts_only_plain_i64_integers` (`journal_line` binary) pins `1.5`, `1e5`, `1E5`, `-0.0`, `-`, `+1`, `007` and 2^63 to rejected, `-0` to 0, i64::MIN/MAX accepted. Re-run of `integer_token` mutants (`tools/dev/mutants.sh pr-core ... -F integer_token`, 8 test binaries, `-j 1`, preflight 103 tests executed): 5 tested / 5, 5 caught, 0 missed, 0 unviable, 0 timeouts. Only the `integer_token` mutants were run; the rest of the file is unchanged by this note.

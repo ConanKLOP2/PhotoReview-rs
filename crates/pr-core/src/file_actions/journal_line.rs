@@ -377,7 +377,7 @@ fn decode_bool(raw: &str) -> Option<bool> {
 /// An integer JSON token: no `.`, `e` or `E`, and it fits i64. `-0` is 0.
 fn integer_token(raw: &str) -> Option<i64> {
     match raw.as_bytes().first()? {
-        b'-' | b'0'..=b'9' if !raw.bytes().any(|b| matches!(b, b'.' | b'e' | b'E')) => raw.parse::<i64>().ok(),
+        b'-' | b'0'..=b'9' => raw.parse::<i64>().ok(),
         _ => None,
     }
 }
