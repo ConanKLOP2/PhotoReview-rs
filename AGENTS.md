@@ -63,7 +63,7 @@ the C# code at the baseline in [`docs/SYNC-LEDGER.md`](docs/SYNC-LEDGER.md) deci
 
 ## Codex lanes (optional, no routing rule)
 
-- Keep Codex lanes busy within the 95% quota limit for the 5-hour window and week. The number of concurrent lanes (and of Claude sub-agents that build) is not fixed: size it for the machine with "Sizing parallel agents" below, per machine and per run (`tools/dev/codex-sched.sh` takes `MAX_LANES=<n>`, default 2; `codex-pipeline.sh --jobs <1..4>`, default 2; both defaults are only starting points; both enforce `QUOTA_MAX=95`, the scheduler also on the week).
+- Read docs/LESSONS.md before launching Codex lanes: it lists the traps that already cost hours.
 - A unit that fails the pipeline gate gets one automatic Codex fixup round (`FIXUP=1` by default; see `tools/autopilot/README.md`) before human or Claude triage.
 - The Codex Windows sandbox writes only to its working directory: run Codex cargo builds with `CARGO_TARGET_DIR` inside the worktree and `cargo-mutants` with its target directory outside the worktree (the pipeline driver is the exception: it builds in `<worktree>/target` and mutates in `<worktree>/target-mut`, see `codex-pipeline.sh`).
 
