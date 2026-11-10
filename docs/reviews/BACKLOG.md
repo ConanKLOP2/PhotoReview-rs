@@ -506,7 +506,7 @@ Written in English. The rows above are the 2026-10-23 snapshot; this table is th
 | G14 | L1, L2, L5 closed; L3 = P-74 C done (PR #625); L4 = P-301 done (PR #632, deviation from C# `AutoFlush`); spawn-error log = P-300 done | [G1-G14](G1-G14-2026-11-03.md), [D2-IMPL](D2-IMPL-2026-11-03.md), [D9-IMPL](D9-IMPL-2026-11-03.md), [E1-IMPL](E1-IMPL-2026-11-03.md) |
 | G15 | L2, L3 closed; L6 (percent text) = P-92 A, PR #627 open | [G7-G15](G7-G15-2026-11-03.md) |
 | G16 | H1, M1..M3, L3, L7..L9 fixed; M4 gc = P-89 A done, L1 = P-88 A done, L2 = P-360 B, L6 = P-361 B (kept and documented); L5, L10, L11 still open | [G16-G22-G23](G16-G22-G23-2026-11-03.md) PR #616, [F1-IMPL](F1-IMPL-2026-11-03.md) PR #622 |
-| G17 | M2 and M3 closed, M4 partly; M1 CI coverage: P-86 A WIC trial in the nightly (one night must confirm), P-370 reason-prefix rule done, per-family owners for the 1272 ignored tests not assigned; P-371 deferred; P-372..P-374 done | [G17-G19](G17-G19-2026-11-03.md) PR #617, [F1-IMPL](F1-IMPL-2026-11-03.md), [F2-IMPL](F2-IMPL-2026-11-03.md) PR #623 |
+| G17 | M2 and M3 closed, M4 partly; M1 CI coverage: P-86 A WIC trial in the nightly (one night must confirm), P-370 reason-prefix rule done, per-family owners for the 1272 ignored tests drafted 2026-11-10 as an unconfirmed proposal ([G17-IGNORED-TESTS section 8](G17-IGNORED-TESTS-2026-11-03.md)); P-371 deferred; P-372..P-374 done | [G17-G19](G17-G19-2026-11-03.md) PR #617, [F1-IMPL](F1-IMPL-2026-11-03.md), [F2-IMPL](F2-IMPL-2026-11-03.md) PR #623 |
 | G18 | M1..M3 closed earlier; L2..L4 covered by new tests; the spawn-failure branch (P-170) done by PR #635 | [G18](G18-PR164-TESTS-2026-11-03.md), [E3-IMPL](E3-IMPL-2026-11-03.md) |
 | G19 | All of M1..M3, L1, L2, L4, L5, L7, L8, H1 covered by tests on master; L3 and L6 need a product decision; no test left to add | [G17-G19](G17-G19-2026-11-03.md) |
 | G20 | 115 of 115 C# Rename test names already have a Rust twin | [G20](G20-RENAME-TESTS-2026-11-03.md) |
@@ -522,4 +522,6 @@ Written in English. The rows above are the 2026-10-23 snapshot; this table is th
 | G30 | Closed (#532) | [G30](G30-RECYCLE-REGISTRY-TESTS-2026-11-03.md) |
 | G31 | P-160 closed as option C: leave as is, the helper stays unwired and the PARITY row stays Partial | [G31](G31-RESTORE-VERB-2026-11-03.md) |
 
-Still open for the owner or blocked: P-140, P-311, P-330 Rust part (blocked on the C# merge), P-331 C# merge, P-370 per-family owners, P-371 (deferred), P-86 trial night, and the PRs #627 (P-92) and #628 (P-321) until they merge. PARITY wording for the deviations: [PARITY-WORDING-OWNER-DECISIONS-2026-11-03](PARITY-WORDING-OWNER-DECISIONS-2026-11-03.md).
+Still open for the owner or blocked: P-140, P-311, P-330 Rust part (blocked on the C# merge), P-331 C# merge, P-371 (deferred), P-86 trial night, and the PRs #627 (P-92) and #628 (P-321) until they merge. PARITY wording for the deviations: [PARITY-WORDING-OWNER-DECISIONS-2026-11-03](PARITY-WORDING-OWNER-DECISIONS-2026-11-03.md).
+
+Owner action (2026-11-10, from docs/LESSONS.md): exclude `target-*` folders from Windows Defender and measure the effect on a mutation or test sweep; this is a system setting that agents must not change, and the gain is not measured yet.

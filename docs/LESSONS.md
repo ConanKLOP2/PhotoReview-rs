@@ -83,7 +83,7 @@ Use repository evidence over recollection; recheck script defaults when they cha
 - Open the evidence PRs first and the PARITY/PROPOSED-DECISIONS PR after they merge.
   Why: `pre-pr.sh` doc-links fails on links to `docs/reviews/*` files that are not yet on master.
 - Pin the machine budget before a long sweep: one `cargo-mutants -j 1` per agent, and expect memory exhaustion when several agents link `pr-platform-win` at once.
-  Why: P3 got 335 of 1000 mutants because of the time box and commit-memory exhaustion; 40+ verdicts were infrastructure failures. Exclude `target-*` from Windows Defender and lower test debug info before the next sweep (not yet measured).
+  Why: P3 got 335 of 1000 mutants because of the time box and commit-memory exhaustion; 40+ verdicts were infrastructure failures. Exclude `target-*` from Windows Defender and lower test debug info before the next sweep (not yet measured; owner action tracked in docs/reviews/BACKLOG.md).
 
 ## G. Performance (from an external write-up, unverified, kept short)
 
