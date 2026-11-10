@@ -186,7 +186,10 @@ mod tests {
     thread_local! {
         static DEFAULT_CALLS: Cell<u32> = const { Cell::new(0) };
     }
-
+    /// Stands for `DefWindowProc`: counts the call and answers a value no default arm gives.
+    ///
+    /// # Safety
+    /// Only matches the `DefaultWindowProc` signature; it never dereferences its arguments.
     /// Stands for `DefWindowProc`: counts the call and answers a value no default arm gives.
     unsafe fn counting_default(_hwnd: Hwnd, _message: u32, _wparam: Wparam, _lparam: Lparam) -> Lresult {
         DEFAULT_CALLS.with(|calls| calls.set(calls.get() + 1));
