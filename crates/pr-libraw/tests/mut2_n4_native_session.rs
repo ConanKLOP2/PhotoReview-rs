@@ -122,14 +122,24 @@ fn session_set_no_auto_bright_reaches_libraw() {
     assert_ne!(off.data, on.data, "no_auto_bright 0 and 1 must render differently");
 }
 
-/// `try_set_use_camera_wb -> bool`: on the pinned runtime the write happens and says so. (A `-> true` constant is therefore
-/// equivalent on THIS runtime; only a second, unpinned DLL could tell it apart. See the evidence file.)
+/// `try_set_use_camera_wb -> bool`: on the pinned runtime the write happens and says so. (The `-> true` mutant is killed by
+/// the closed-gate test below, P-399.)
 #[test]
 #[ignore = "native: needs libraw.dll and python"]
 fn session_try_set_use_camera_wb_is_written_on_the_pinned_runtime() {
     require_libraw();
     let mut session = NativeLibRaw.init().expect("libraw_init");
     assert!(session.try_set_use_camera_wb(1, 8, 1));
+}
+
+/// `try_set_use_camera_wb -> true` (P-399): with the version gate forced to "not pinned" (test-only seam
+/// `NativeLibRaw::init_with_version_gate`, one real 0.22.2 DLL) the session must refuse the raw write and say `false`.
+#[test]
+#[ignore = "native: needs libraw.dll"]
+fn session_try_set_use_camera_wb_is_refused_when_the_version_gate_is_closed() {
+    require_libraw();
+    let mut session = NativeLibRaw.init_with_version_gate(|| false).expect("libraw_init");
+    assert!(!session.try_set_use_camera_wb(1, 8, 1));
 }
 
 /// `set_progress_handler` -> `()`: with a canceled token installed, LibRaw stops at its first progress callback.

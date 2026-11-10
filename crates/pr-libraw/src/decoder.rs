@@ -1038,7 +1038,7 @@ impl LibRawApi for NativeLibRaw {
     /// `Err(e)` => [`map_native_error`]`(&e)`.
     fn init(&self) -> Result<Box<dyn LibRawSession>, DecodeError> {
         match native::LibRawHandle::init(0) {
-            Ok(handle) => Ok(Box::new(NativeSession { handle })),
+            Ok(handle) => Ok(Box::new(NativeSession::new(handle))),
             Err(error) => Err(map_native_error(&error)),
         }
     }
@@ -1081,6 +1081,39 @@ pub fn map_native_error(error: &native::NativeError) -> DecodeError {
 /// boxed as `NativeImage`). Drop = the handle's drop (`libraw_close`, then the token box and the buffer).
 struct NativeSession {
     handle: native::LibRawHandle<'static>,
+    /// Test-only version gate for `try_set_use_camera_wb` (P-399): defaults to `availability::is_exact_pinned_version`, so a
+    /// test can force the "runtime is not the pinned 0.22.2" branch on the one real DLL.
+    #[cfg(any(test, feature = "test-support"))]
+    version_gate: fn() -> bool,
+}
+
+impl NativeSession {
+    fn new(handle: native::LibRawHandle<'static>) -> Self {
+        Self {
+            handle,
+            #[cfg(any(test, feature = "test-support"))]
+            version_gate: crate::availability::is_exact_pinned_version,
+        }
+    }
+
+    /// Test-only (P-399): replaces the pinned-version gate of `try_set_use_camera_wb`.
+    #[cfg(any(test, feature = "test-support"))]
+    fn with_version_gate(mut self, gate: fn() -> bool) -> Self {
+        self.version_gate = gate;
+        self
+    }
+}
+
+#[cfg(any(test, feature = "test-support"))]
+impl NativeLibRaw {
+    /// Like [`LibRawApi::init`] but with the pinned-version gate of `try_set_use_camera_wb` replaced by `gate`
+    /// (test-only, P-399: lets one real DLL exercise the "version not pinned" result).
+    pub fn init_with_version_gate(&self, gate: fn() -> bool) -> Result<Box<dyn LibRawSession>, DecodeError> {
+        match native::LibRawHandle::init(0) {
+            Ok(handle) => Ok(Box::new(NativeSession::new(handle).with_version_gate(gate))),
+            Err(error) => Err(map_native_error(&error)),
+        }
+    }
 }
 
 impl LibRawSession for NativeSession {
@@ -1101,8 +1134,21 @@ impl LibRawSession for NativeSession {
     }
 
     fn try_set_use_camera_wb(&mut self, output_color: i32, output_bps: i32, no_auto_bright: i32) -> bool {
-        self.handle
-            .try_set_use_camera_wb(output_color, output_bps, no_auto_bright)
+        #[cfg(any(test, feature = "test-support"))]
+        {
+            self.handle.try_set_use_camera_wb_with(
+                output_color,
+                output_bps,
+                no_auto_bright,
+                self.version_gate,
+                native::PINNED_WHITE_BALANCE_LAYOUT,
+            )
+        }
+        #[cfg(not(any(test, feature = "test-support")))]
+        {
+            self.handle
+                .try_set_use_camera_wb(output_color, output_bps, no_auto_bright)
+        }
     }
 
     fn open_wfile(&mut self, path: &OsStr) -> i32 {
