@@ -42,3 +42,22 @@ bash tools/dev/mutants.sh pr-core crates/pr-core/src/io/physical.rs --tests io_p
 ## Verdict for SEC-01
 
 The fail-closed guard, `is_path_unreachable` and the hop cap are mutation-clean. The remaining gap is structural: `immediate_link_target` / `strip_nt_prefix` / the `final_link_target` wrapper are only covered by hand-run native tests, and one of those (63 junctions) fails here. The SEC-01 row stays Partial.
+
+## Update 2026-11-10 (task T4): the two `&` survivors were NOT equivalent; all 33 mutants of the resolver closed
+
+Correction of the "equivalent in practice" claim above: `&` -> `^` fires for attributes exactly `0x400` (a file symlink without the archive bit) and then returns `None` where the real code follows `read_link`; `&` -> `|` makes a non-reparse entry with a readable target look like a link. Both change the result, so they were killable, not equivalent. No attribute enumeration can prove them equal because the function reads the disk.
+
+Change: behaviour-neutral seam. `immediate_link_target` is now a wrapper over `immediate_link_target_with(path, attributes, read_link)` (same code, the two OS calls injected) plus the `#[doc(hidden)]` `immediate_link_target_for_tests`. New pure tests: `crates/pr-core/tests/w2_sec01_immediate_step.rs` (6 tests: exactly 0x400 followed, junction and archive symlink followed, entries without the reparse bit never reach `read_link`, missing entry or unreadable link is `None`, NT/UNC prefix stripping, relative targets). No privilege or real disk needed.
+
+Runs (cargo-mutants, `-j 1 --baseline skip`, own target dir, unmutated preflight shown with `running N tests`, N > 0):
+
+| Run | Tests | Tested / total | Caught | Missed | Unviable | Timeouts |
+|---|---|---|---|---|---|---|
+| A: `-F 'final_link_target\|follow_link_chain\|immediate_link_target\|strip_nt_prefix\|is_path_unreachable'`, pure tests (23 preflight tests, 17 min) | the 3 w2_sec tests + `w2_sec01_immediate_step` + `io_physical_seams` | 33 / 33 | 27 | 5 | 1 | 0 |
+| C: the 5 A survivors, native `io_physical resolve_real_path*` with `--include-ignored --test-threads=1 --skip dangling_chain_of_63` (9 preflight tests) | `io_physical` | 5 / 5 | 5 | 0 | 0 | 0 |
+| B: `file_exists_full` + `win32_file_exists` probe, native `io_physical exists` (4 preflight tests) | `io_physical` | 7 / 7 | 7 | 0 | 0 | 0 |
+
+- The 5 run-A survivors are the thin wrappers `final_link_target` -> `Ok("")`/`Ok("xyzzy")` and `immediate_link_target` -> `None`/`Some("")`/`Some("xyzzy")`: they only act on a real reparse point, so only native tests reach them; run C catches all 5 (cargo-mutants does count the native binary once `--include-ignored` is passed in the correct form).
+- The 1 unviable mutant is `==` -> `!=` at the reparse-bit test (cargo-mutants reports it unviable). Checked by hand: with `!= 0` applied, 5 of the 6 new tests fail, so the test set guards it; this is not a cargo-mutants verdict.
+- The 8 earlier "native-only" survivors and the 2 `&` survivors are therefore all closed: no resolver mutant is missed by every run.
+- Not done: the `dangling_chain_of_63_junctions` native test still fails here (1921, see above); skipped, not investigated. PARITY.md wording is unchanged (docs agent).

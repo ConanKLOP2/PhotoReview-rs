@@ -1039,11 +1039,21 @@ pub fn final_link_target_for_tests(
 /// (relative targets resolve against the link's folder, the NT `\??\` prefix removed), `None` when `path` is not a
 /// readable link.
 fn immediate_link_target(path: &str) -> Option<String> {
-    let attributes = entry_attributes(path)?;
+    immediate_link_target_with(path, &mut entry_attributes, &mut |p| fs::read_link(p).ok())
+}
+
+/// [`immediate_link_target`] with the attribute query and `read_link` injected, so the reparse-attribute shortcut, the NT
+/// prefix removal and the relative-target resolution can be tested without a real link (a file symlink needs a privilege).
+fn immediate_link_target_with(
+    path: &str,
+    attributes_of_entry: &mut dyn FnMut(&str) -> Option<u32>,
+    read_link: &mut dyn FnMut(&str) -> Option<std::path::PathBuf>,
+) -> Option<String> {
+    let attributes = attributes_of_entry(path)?;
     if attributes & FILE_ATTRIBUTE_REPARSE_POINT == 0 {
         return None;
     }
-    let target = fs::read_link(path).ok()?;
+    let target = read_link(path)?;
     let target = target.to_string_lossy();
     let target = strip_nt_prefix(&target);
     let combined = if dotnet_path::is_path_rooted(&target) {
@@ -1061,7 +1071,17 @@ fn immediate_link_target(path: &str) -> Option<String> {
     dotnet_path::get_full_path(&combined).ok()
 }
 
-/// `\??\C:\x` and `\\?\C:\x` => `C:\x`; `\??\UNC\s\x` and `\\?\UNC\s\x` => `\\s\x`.
+/// Test seam of [`immediate_link_target`]: the same step with the attribute query and `read_link` injected.
+#[doc(hidden)]
+pub fn immediate_link_target_for_tests(
+    path: &str,
+    attributes_of_entry: &mut dyn FnMut(&str) -> Option<u32>,
+    read_link: &mut dyn FnMut(&str) -> Option<std::path::PathBuf>,
+) -> Option<String> {
+    immediate_link_target_with(path, attributes_of_entry, read_link)
+}
+
+/// `\??\C:\x` and `\\?\C:\x` =>`C:\x`; `\??\UNC\s\x` and `\\?\UNC\s\x` => `\\s\x`.
 fn strip_nt_prefix(target: &str) -> String {
     for prefix in [r"\??\", r"\\?\"] {
         if let Some(rest) = target.strip_prefix(prefix) {
