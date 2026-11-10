@@ -282,6 +282,32 @@ fn modal_disables_the_owner_and_restores_it_on_close() {
     });
 }
 
+/// True when the per-cycle samples of a GUI resource count keep growing: the lowest value of the second half is above the highest value of the first half.
+/// A real leak adds at least one object per open/close cycle, so over `n` cycles the second-half minimum exceeds the first-half maximum. A plateau, or a
+/// count that one lazily freed object makes oscillate by one (observed 4, 5, 4, 5 in Q5), does not.
+fn keeps_growing(samples: &[u32]) -> bool {
+    let (first, second) = samples.split_at(samples.len() / 2);
+    match (first.iter().max(), second.iter().min()) {
+        (Some(high), Some(low)) => low > high,
+        _ => false,
+    }
+}
+
+// Root cause of the Q5 flake: the old assertion compared one sample after 5 cycles with one before, but the process USER count oscillates by one object
+// (a lazily freed object), so `after <= before` failed on the high phase. Judge the trend of a series instead.
+#[test]
+fn keeps_growing_ignores_a_plateau_and_a_one_object_oscillation_but_sees_a_leak() {
+    assert!(!keeps_growing(&[]));
+    assert!(!keeps_growing(&[7]));
+    assert!(!keeps_growing(&[7; 8]));
+    assert!(!keeps_growing(&[4, 5, 4, 5, 4, 5, 4, 5]));
+    assert!(!keeps_growing(&[5, 4, 5, 4, 5, 4, 5, 4]));
+    assert!(!keeps_growing(&[9, 8, 7, 6, 5, 4, 3, 2]));
+    assert!(keeps_growing(&[4, 5, 6, 7, 8, 9, 10, 11]));
+    assert!(keeps_growing(&[18, 18, 18, 18, 19, 19, 19, 19]));
+    assert!(keeps_growing(&[1, 1, 2, 2]));
+}
+
 // C#: OpeningAndClosing_DoesNotLeakGdiOrUserObjects.
 #[test]
 #[ignore = "native: needs desktop; GUI resource counts require exclusive process use"]
@@ -303,14 +329,14 @@ fn opening_and_closing_does_not_leak_gdi_or_user_objects() {
                 .unwrap();
         };
         cycle(); // Warm process-wide common-controls/font caches before measuring.
-        let before = (desktop::gdi_objects(), desktop::user_objects());
-        for _ in 0..5 {
+        let mut gdi = Vec::new();
+        let mut user = Vec::new();
+        for _ in 0..8 {
             cycle();
+            gdi.push(desktop::gdi_objects());
+            user.push(desktop::user_objects());
         }
-        let after = (desktop::gdi_objects(), desktop::user_objects());
-        assert!(
-            after.0 <= before.0 && after.1 <= before.1,
-            "GUI resources: {before:?} -> {after:?}"
-        );
+        assert!(!keeps_growing(&gdi), "GDI objects grow with every cycle: {gdi:?}");
+        assert!(!keeps_growing(&user), "USER objects grow with every cycle: {user:?}");
     });
 }
