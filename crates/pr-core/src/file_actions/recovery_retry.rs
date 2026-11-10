@@ -367,12 +367,12 @@ impl RecoveryRetryService {
             Err(err) => return Ok(RecoveryRetryResult::new(false, err.to_string(), None)),
         };
 
+        // `size` stays failed.size: precheck_single only returns a stat whose length equals it (same_fingerprint).
         // Keeps Undo / Permanent / the group fields: dropping Undo turns a retried undo-Move into a redo after a restart.
         let prepared = JournalEntry {
             state: JournalState::Prepared,
             error: None,
             error_code: None,
-            size: length_as_i64(&source_stat).unwrap_or(i64::MAX),
             last_write_utc: JournalDateTime::utc(source_stat.last_write_utc),
             timestamp_utc: JournalDateTime::utc(self.clock.utc_now()),
             ..failed.clone()

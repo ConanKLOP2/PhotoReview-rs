@@ -42,3 +42,7 @@ TEMP=<repo>/.claude/tmp-mut-recovery-retry MUT_OUT=$TEMP/out bash tools/dev/muta
 ## Verdict
 
 The single-retry decisions and pure helpers of `recovery_retry.rs` are mutation-clean (49 caught, 1 equivalent, 4 unviable). The group path (`retry_group`, `precheck_group_members`, `run_group_members`, `run_single`) was not measured here and is the open gap. Production code and tests unchanged; no P-102/P-103 rows were needed.
+
+## Update 2026-11-10 (MUT-3): the equivalent survivor was removed from the source
+
+`size: length_as_i64(&source_stat).unwrap_or(i64::MAX)` was deleted from the `prepared` literal in `retry_core` (`..failed.clone()` supplies `failed.size`). Proof by reading: `source_stat` comes only from `precheck_single`, which returns it only when `same_fingerprint(&stat, failed.size, ..)` held, i.e. `length_as_i64(stat) == Some(failed.size)`; a length above `i64::MAX` gives `None` and is refused as "source changed". So the removed value was always `failed.size`, and the later reader (`same_fingerprint(&stat, prepared.size, ..)` in `run_single`) sees the same number. The mutant `:375:13 delete field size` no longer exists. Tests `recovery_retry` (102), `recovery_retry_golden` (1), `journal_mutation_killers_4` (3) pass; clippy and rustfmt are clean. Re-run of the `retry_core` mutants is PARTIAL (machine heavily loaded, about 10 min per mutant): see the PR body for the exact counts.
