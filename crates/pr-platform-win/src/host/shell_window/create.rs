@@ -199,6 +199,10 @@ impl<H> Default for EventList<H> {
     }
 }
 
+/// The default window procedure (`DefWindowProc`) that `process_message` falls back to. A seam: production always uses
+/// `user32::def_window_proc`; an in-crate test swaps it to tell the default `WM_DPICHANGED => 0` arm apart from its deletion (P-397).
+pub(super) type DefaultWindowProc = unsafe fn(Hwnd, u32, Wparam, Lparam) -> Lresult;
+
 /// A `Render` subscriber.
 pub type RenderHandler = Box<dyn FnMut(&FrameTick)>;
 
@@ -235,6 +239,8 @@ pub(super) struct ShellWindowInner {
     pub(super) render_count: Cell<i64>,
     /// The id of the one frame-clock subscription while `render_requested` (C# `_onFrame` delegate identity).
     pub(super) frame_subscription: Cell<Option<FrameHandlerId>>,
+    /// The fallback of `process_message` for messages without a default arm (see [`DefaultWindowProc`]).
+    pub(super) default_proc: Cell<DefaultWindowProc>,
 }
 
 impl fmt::Debug for ShellWindowInner {
@@ -262,7 +268,7 @@ impl WindowTarget for ShellWindowInner {
 }
 
 impl ShellWindowInner {
-    fn new(
+    pub(super) fn new(
         options: ShellWindowOptions,
         frame_clock: Rc<dyn HostFrameClock>,
         weak_self: Weak<ShellWindowInner>,
@@ -290,6 +296,7 @@ impl ShellWindowInner {
             is_active: Cell::new(false),
             render_count: Cell::new(0),
             frame_subscription: Cell::new(None),
+            default_proc: Cell::new(user32::def_window_proc),
         }
     }
 

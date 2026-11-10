@@ -1123,8 +1123,9 @@ pub struct MainWindow {
 
 impl fmt::Debug for MainWindow {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        // Through the inner state's own `Debug`, so that impl is reachable (and tested) from the public type (P-397).
         f.debug_struct("MainWindow")
-            .field("id", &self.inner.id)
+            .field("inner", &self.inner)
             .finish_non_exhaustive()
     }
 }

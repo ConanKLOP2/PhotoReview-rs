@@ -45,3 +45,7 @@ The 2 missed: `icons.rs:30:16`, proven equivalent below (closed); `messages.rs:8
 ## NOT RUN
 
 None (114 of 114 tested). Open: `messages.rs:88:13`.
+
+## Follow-up P-397 (2026-11-10): `messages.rs:88:13` closed
+
+Seam: `ShellWindowInner.default_proc` (`DefaultWindowProc`, default `user32::def_window_proc`; production behaviour unchanged, the fallback arm of `process_message` calls it). New in-crate tests `shell_window::messages::tests::default_wm_dpichanged_answers_zero_without_the_default_window_procedure` (the stand-in default procedure is not reached, result 0) and its control `message_without_a_default_arm_reaches_the_default_window_procedure`. cargo-mutants re-run (`-F messages.rs:88:13`, `-j 1`, `--baseline skip`, `--lib`): 1 of 1 CAUGHT. Open: 0 (114 of 114 closed).
