@@ -380,3 +380,7 @@ Nothing else is open. In particular `783:67 > -> >=` (not equivalent as a result
 | 783:67 | > with < | combo_item_text | MISSED | caught | mut9: the_closed_combo_draws_the_text_of_the_selected_item (== and <), an_empty_item_text_is_not_fetched_with_cb_getlbtext (>=) |
 | 783:67 | > with == | combo_item_text | MISSED | caught | mut9: the_closed_combo_draws_the_text_of_the_selected_item (== and <), an_empty_item_text_is_not_fetched_with_cb_getlbtext (>=) |
 | 783:67 | > with >= | combo_item_text | MISSED | caught | mut9: the_closed_combo_draws_the_text_of_the_selected_item (== and <), an_empty_item_text_is_not_fetched_with_cb_getlbtext (>=) |
+
+## Follow-up 2026-11-10: E3 removed by deleting the redundant guard
+
+The `range_max > range_min` guard in `trackbar_layout` was dropped: `top` and `bottom` are used only inside the per-tick `ticks.push`, and `tick_xs` returns an empty vector first thing for `count < 2 || max <= min`, so the output is identical for every input. The three 562:68 mutants no longer exist (the operator is gone), so E3 is closed by removal, not by argument. Re-run of `trackbar_layout` (cargo-mutants 27.1.0, `-j 1`, `--baseline skip`, `-F trackbar_layout`, tests `dialogs_painter_widgets` and `mut9_painter_widgets`): 11 tested, 10 caught, 0 missed, 0 timeouts, 1 unviable (550:5 `Default::default()`), 0 NOT RUN.

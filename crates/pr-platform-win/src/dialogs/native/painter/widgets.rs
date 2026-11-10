@@ -559,7 +559,8 @@ pub fn trackbar_layout(input: &TrackbarInput) -> TrackbarLayout {
     let filled_right = thumb_center.max(channel.left).min(channel.right);
     let tick_key = if enabled { keys::TEXT_MUTED } else { keys::TEXT_FAINT };
     let mut ticks = Vec::new();
-    if !input.no_ticks && input.tick_count >= 2 && input.range_max > input.range_min {
+    // No `range_max > range_min` guard here: `tick_xs` returns no ticks for `max <= min` (and `top`/`bottom` are only used per tick).
+    if !input.no_ticks && input.tick_count >= 2 {
         let top = thumb.bottom.wrapping_add(scaled(input.scale, 1));
         let bottom = input.height.min(top.wrapping_add(scaled(input.scale, 4)));
         for x in tick_xs(
