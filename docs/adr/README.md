@@ -1,6 +1,6 @@
 # ADR index
 
-Accepted records: `D59-decode-error-inner-hresult.md`, `D60-raw-orientation-test-helper.md`, `R0002-coexistence-with-csharp-app.md`, `R0003-concurrency.md`, `ADR-INV-journal-durability-recycle-ui-native-ci.md`, `ADR-I-07-preview-registration-recheck.md`, `ADR-S3-preload-factory-lifetime.md`; `ADR-D-2026-10-31-intentional-differences-from-fix-lanes.md` (DV-1..DV-22, the intentional differences of the 2026-10-31 fix lanes); `R0001-ui-framework.md` is proposed (see its header); the ten `ADR-D-*`, `ADR-F-*`, `ADR-X-*` drafts below are Proposed. The status of every file, checked 2026-10-26, is in the table at the end of this index.
+Accepted records: `D59-decode-error-inner-hresult.md`, `D60-raw-orientation-test-helper.md`, `R0002-coexistence-with-csharp-app.md`, `R0003-concurrency.md`, `ADR-INV-journal-durability-recycle-ui-native-ci.md`, `ADR-I-07-preview-registration-recheck.md`, `ADR-S3-preload-factory-lifetime.md`; `ADR-D-2026-10-31-intentional-differences-from-fix-lanes.md` (DV-1..DV-22, the intentional differences of the 2026-10-31 fix lanes); `ADR-D-2026-11-10-mutation-gate-exclusions.md` (COM glue and Recycle Bin code outside the mutation gate, P-402/P-403); `R0001-ui-framework.md` is proposed (see its header); the ten `ADR-D-*`, `ADR-F-*`, `ADR-X-*` drafts below are Proposed. The status of every file, checked 2026-10-26, is in the table at the end of this index.
 
 ## Drafts for the "Different" rows of `docs/PARITY-CLOSEOUT.md` (DOC-ADR-DRAFTS, status Proposed, not yet reviewed)
 
