@@ -312,3 +312,146 @@ fn fit_axis_zoom_guard_disagreement_set_d_always_gives_positive_zero() {
     }
     assert!(d_a > 20_000 && d_b > 1000, "{d_a} {d_b}");
 }
+
+// ---- P-395 / task 3B (2026-11-10): the redundant guards were removed from production; before/after differential ----
+
+fn old_normalize_dpi(dpi: f64) -> f64 {
+    if (0.25..=16.0).contains(&dpi) { dpi } else { 1.0 }
+}
+
+fn old_math_min(a: f64, b: f64) -> f64 {
+    if a.is_nan() || b.is_nan() { f64::NAN } else { a.min(b) }
+}
+
+/// Verbatim copy of `fit_axis_zoom` before the refactor (guards `source <= 0 || !limit.is_finite() || limit <= 1.0` and `fit > 0.0`).
+fn old_fit_axis_zoom(dpi_scale: f64, limit: f64, source: i32) -> f64 {
+    if source <= 0 || !limit.is_finite() || limit <= 1.0 {
+        return 0.0;
+    }
+    let fit = (limit * old_normalize_dpi(dpi_scale)) / f64::from(source);
+    if fit.is_finite() && fit > 0.0 { fit } else { 0.0 }
+}
+
+/// Verbatim copy of `fit_zoom` before the refactor.
+fn old_fit_zoom(s: &ViewerState) -> f64 {
+    if s.source_pixel_width() <= 0 || s.source_pixel_height() <= 0 {
+        return 0.0;
+    }
+    let usable = |v: f64| v.is_finite() && v > 1.0;
+    if !usable(s.max_image_width()) || !usable(s.max_image_height()) {
+        return 0.0;
+    }
+    let dpi = old_normalize_dpi(s.dpi_scale());
+    let fit = old_math_min(
+        (s.max_image_width() * dpi) / f64::from(s.source_pixel_width()),
+        (s.max_image_height() * dpi) / f64::from(s.source_pixel_height()),
+    );
+    if fit.is_finite() && fit > 0.0 { fit } else { 0.0 }
+}
+
+fn special_limits() -> Vec<f64> {
+    let mut v = vec![
+        f64::NAN,
+        f64::from_bits(0x7ff8_0000_0000_0001),
+        f64::from_bits(0xfff8_0000_0000_0001),
+        f64::INFINITY,
+        f64::NEG_INFINITY,
+        f64::MAX,
+        -f64::MAX,
+        f64::MIN_POSITIVE,
+        5e-324,
+        -5e-324,
+        0.0,
+        -0.0,
+        0.5,
+        -1.0,
+        next_down(1.0),
+        1.0,
+        next_up(1.0),
+        2.0,
+        1e9,
+        1e300,
+    ];
+    v.extend(limit_classes_above_one());
+    // negative mirror and the sub-1 exponents
+    for exponent in (0u64..1023).step_by(37) {
+        let x = f64::from_bits(exponent << 52 | 1);
+        v.push(x);
+        v.push(-x);
+    }
+    v
+}
+
+#[test]
+fn fit_zoom_and_fit_axis_zoom_are_bit_identical_to_the_pre_refactor_guards_over_ieee_special_values() {
+    let sources = [i32::MIN, -1, 0, 1, 2, 3, 7, 1000, 1 << 30, i32::MAX - 1, i32::MAX];
+    let dpis = dpi_classes();
+    let limits = special_limits();
+    let mut compared = 0u64;
+    for &dpi in &dpis {
+        for &limit in &limits {
+            for &source in &sources {
+                let s = state(limit, limit, source, source, dpi);
+                // set_source_size clamps a negative source to 0; the reference gets the stored value.
+                let stored = s.source_pixel_width();
+                let want = old_fit_axis_zoom(dpi, limit, stored);
+                assert_eq!(
+                    s.fit_width_zoom().to_bits(),
+                    want.to_bits(),
+                    "width {limit:?} {source} {dpi:?}"
+                );
+                assert_eq!(
+                    s.fit_height_zoom().to_bits(),
+                    want.to_bits(),
+                    "height {limit:?} {source} {dpi:?}"
+                );
+                assert_eq!(
+                    s.fit_zoom().to_bits(),
+                    old_fit_zoom(&s).to_bits(),
+                    "fit_zoom {limit:?} {source} {dpi:?}"
+                );
+                compared += 1;
+            }
+        }
+    }
+    // Mixed axes (different limits and sources per axis) on the special pool.
+    let small = [
+        f64::NAN,
+        f64::INFINITY,
+        0.0,
+        -0.0,
+        1.0,
+        next_up(1.0),
+        2.0,
+        1e300,
+        f64::MAX,
+    ];
+    for &dpi in &dpis {
+        for &lw in &small {
+            for &lh in &small {
+                for &sw in &[0, 1, i32::MAX] {
+                    for &sh in &[0, 1, i32::MAX] {
+                        let s = state(lw, lh, sw, sh, dpi);
+                        assert_eq!(
+                            s.fit_zoom().to_bits(),
+                            old_fit_zoom(&s).to_bits(),
+                            "mixed {lw:?} {lh:?} {sw} {sh} {dpi:?}"
+                        );
+                        assert_eq!(
+                            s.fit_width_zoom().to_bits(),
+                            old_fit_axis_zoom(dpi, lw, sw).to_bits(),
+                            "mixed width {lw:?} {sw} {dpi:?}"
+                        );
+                        assert_eq!(
+                            s.fit_height_zoom().to_bits(),
+                            old_fit_axis_zoom(dpi, lh, sh).to_bits(),
+                            "mixed height {lh:?} {sh} {dpi:?}"
+                        );
+                        compared += 1;
+                    }
+                }
+            }
+        }
+    }
+    assert!(compared > 100_000, "{compared}");
+}

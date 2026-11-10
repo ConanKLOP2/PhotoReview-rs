@@ -320,7 +320,9 @@ impl ViewerState {
             (self.max_image_width * dpi) / f64::from(self.source_pixel_width),
             (self.max_image_height * dpi) / f64::from(self.source_pixel_height),
         );
-        if fit.is_finite() && fit > 0.0 { fit } else { 0.0 }
+        // Both sources are > 0 and both limits are finite and > 1.0, so `fit` is a positive number or +inf (overflow), never
+        // NaN, +-0 or negative: `is_finite` is the whole guard.
+        if fit.is_finite() { fit } else { 0.0 }
     }
 
     /// C# `FitWidthZoom`: zoom at which the width fills `MaxImageWidth` at the current DPI (0 = unknown).
@@ -708,11 +710,18 @@ impl ViewerState {
 
     /// Shared by `fit_width_zoom` and `fit_height_zoom`.
     fn fit_axis_zoom(&self, limit: f64, source: i32) -> f64 {
-        if source <= 0 || !limit.is_finite() || limit <= 1.0 {
+        // A source <= 0 (private-domain only: `set_source_size` clamps) gives 0.0 either way: 0 yields +inf below, a negative
+        // one is rejected here. NaN fails `limit > 1.0`; +inf limit yields +inf below. A limit > 1.0 and a source > 0 give a
+        // positive result or +inf (overflow), so `is_finite` is the whole result guard.
+        let Ok(source) = u32::try_from(source) else {
             return 0.0;
+        };
+        if limit > 1.0 {
+            let fit = (limit * normalize_dpi(self.dpi_scale)) / f64::from(source);
+            if fit.is_finite() { fit } else { 0.0 }
+        } else {
+            0.0
         }
-        let fit = (limit * normalize_dpi(self.dpi_scale)) / f64::from(source);
-        if fit.is_finite() && fit > 0.0 { fit } else { 0.0 }
     }
 
     fn clear_fit_axis(&mut self) {
