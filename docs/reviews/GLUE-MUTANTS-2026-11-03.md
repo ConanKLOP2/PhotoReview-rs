@@ -61,3 +61,5 @@ bash tools/dev/mutants.sh pr-core crates/pr-core/src/file_actions/recovery_retry
 bash tools/dev/mutants.sh pr-core crates/pr-core/src/file_actions/journal_line.rs --tests journal_line,file_actions_journal_rules,journal_reconcile,w3_jrnl_killers5,w3_jrnl_killers6,w3_jrnl_killers7,w3_jrnl_killers8 --budget 900 --jobs 1 -F 'expecting|hash|reject'
 bash tools/dev/mutants.sh pr-core crates/pr-core/src/file_actions/journal_line.rs --tests journal_line_hash_killers --budget 600 --jobs 1 -F 'journal_line.rs:124:'
 ```
+
+Update 2026-11-10 (MUT-3): the `retry_core` `delete field size` (:375:13) survivor in the table above is gone because the redundant `size:` field was removed from the source (see RECOVERY-RETRY-MUTATION-2026-11-03.md, "Update 2026-11-10").
