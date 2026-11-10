@@ -49,7 +49,7 @@ One row per document (or per folder where a folder is one document set). Check t
 | [`RUNBOOK-AUTOPILOT.md`](RUNBOOK-AUTOPILOT.md) | Operator runbook for the Codex pipeline (`tools/autopilot/`) | Before running or debugging the pipeline |
 | [`../tools/autopilot/README.md`](../tools/autopilot/README.md) | Autopilot kit: pipeline scripts, state files, how the port is run end to end | Before running the pipeline scripts |
 | [`../tools/autopilot/CODEX-RULES.md`](../tools/autopilot/CODEX-RULES.md) | The rules every Codex call receives (owned files only, C# is the spec, no real Recycle Bin) | Before writing a Codex prompt or pack |
-| [`../tools/autopilot/loop-prompt.md`](../tools/autopilot/loop-prompt.md) | Prompt of the autopilot loop (Codex-first routing, tick steps) | Before changing the loop |
+| [`../tools/autopilot/loop-prompt.md`](../tools/autopilot/loop-prompt.md) | Prompt of the autopilot loop (tick steps) | Before changing the loop |
 | [`../tools/dev/README.md`](../tools/dev/README.md) | Developer tools table (`status.sh`, `janitor.sh`, `dashboard.sh`, `parity.sh`, ...) with docs in `tools/dev/docs/` and the matching skills; `tools/dev/doc-links.py` checks the links of every document | Before cleaning worktrees or using a dev tool |
 | [`../tools/dev/SCHED.md`](../tools/dev/SCHED.md) | Codex scheduler `codex-sched.sh`: lanes, quota limit, environment | Before running several Codex calls |
 | [`../tools/dev/hooks/README.md`](../tools/dev/hooks/README.md) | Claude Code hooks (`post-edit-rustfmt.sh`, `pre-bash-guard.sh`) and how to register them | Before enabling or changing hooks |
