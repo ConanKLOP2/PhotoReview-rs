@@ -111,7 +111,7 @@ impl ShellWindowInner {
                 0
             }
             // SAFETY: the parameters are the ones the window procedure received for this message.
-            _ => unsafe { user32::def_window_proc(hwnd, message, wparam, lparam) },
+            _ => unsafe { (self.default_proc.get())(hwnd, message, wparam, lparam) },
         }
     }
 
@@ -169,5 +169,93 @@ impl ShellWindowInner {
     pub(super) fn raise_event(&self, event: ShellWindowEvent) {
         self.events
             .raise(event, &mut |handler: &mut WindowEventHandler| handler());
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::super::create::ShellWindowOptions;
+    use super::*;
+    use crate::host::error::HostError;
+    use crate::host::frame_clock::base::{FrameHandler, FrameHandlerId, HostFrameClock};
+    use std::cell::Cell;
+    use std::rc::Rc;
+
+    const SENTINEL: Lresult = 0x5EED;
+
+    thread_local! {
+        static DEFAULT_CALLS: Cell<u32> = const { Cell::new(0) };
+    }
+
+    /// Stands for `DefWindowProc`: counts the call and answers a value no default arm gives.
+    unsafe fn counting_default(_hwnd: Hwnd, _message: u32, _wparam: Wparam, _lparam: Lparam) -> Lresult {
+        DEFAULT_CALLS.with(|calls| calls.set(calls.get() + 1));
+        SENTINEL
+    }
+
+    /// A clock that records nothing: `invalidate` only needs `subscribe`.
+    struct NullClock;
+
+    impl HostFrameClock for NullClock {
+        fn subscribe(&self, _handler: FrameHandler) -> FrameHandlerId {
+            1
+        }
+        fn unsubscribe(&self, _id: FrameHandlerId) {}
+        fn request_frame(&self) {}
+        fn is_armed(&self) -> bool {
+            false
+        }
+        fn tick_count(&self) -> i64 {
+            0
+        }
+        fn wait_handle(&self) -> isize {
+            0
+        }
+        fn deadline_timestamp(&self) -> i64 {
+            0
+        }
+        fn ticks_until_deadline(&self) -> i64 {
+            i64::MAX
+        }
+        fn on_signaled(&self) -> Result<bool, HostError> {
+            Ok(false)
+        }
+        fn on_deadline(&self) -> Result<bool, HostError> {
+            Ok(false)
+        }
+        fn dispose(&self) {}
+    }
+
+    fn inner() -> Rc<ShellWindowInner> {
+        let inner = Rc::new_cyclic(|weak| {
+            ShellWindowInner::new(ShellWindowOptions::default(), Rc::new(NullClock), weak.clone())
+        });
+        inner.default_proc.set(counting_default);
+        DEFAULT_CALLS.with(|calls| calls.set(0));
+        inner
+    }
+
+    // messages.rs 88:13 (P-397): the default `WM_DPICHANGED => 0` arm answers 0 itself; without the arm the message would go to the default window
+    // procedure (here the counting stand-in answers SENTINEL).
+    #[test]
+    fn default_wm_dpichanged_answers_zero_without_the_default_window_procedure() {
+        let inner = inner();
+        let result = inner.process_message(0, WM_DPICHANGED, 144, 0);
+        assert_eq!(result, 0, "WM_DPICHANGED is answered with 0 by its own arm");
+        assert_eq!(
+            DEFAULT_CALLS.with(Cell::get),
+            0,
+            "the default window procedure is not reached"
+        );
+        assert_eq!(inner.dpi.get(), 144, "the window still took the new dpi");
+    }
+
+    // Control: a message without a default arm does reach the default window procedure, so the test above can tell the two apart.
+    #[test]
+    fn message_without_a_default_arm_reaches_the_default_window_procedure() {
+        let inner = inner();
+        let result = inner.process_message(0, 0, 0, 0); // WM_NULL
+        assert_eq!(result, SENTINEL);
+        assert_eq!(DEFAULT_CALLS.with(Cell::get), 1);
     }
 }
