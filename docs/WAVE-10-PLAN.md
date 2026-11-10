@@ -107,7 +107,7 @@ Edges between lanes are written in the contracts: R1 and R4 describe the same tw
 | Benchmark | `wave10-b` | no plan table yet | B2 is manual, B1 and B3 fit Codex |
 | RAW/native | `wave10-n` | no plan table yet | N1..N3 are attended-desktop or consent-gated; only N4 is bookkeeping |
 
-Until then, run the units by hand with `tools/autopilot/codex-run.sh` per AGENTS.md ("Who does what").
+Until then, run the units by hand with `tools/autopilot/codex-run.sh` (optional lane, see AGENTS.md "Codex lanes").
 
 ## 6. Machine split (proposal for the lead; the ownership table in `docs/MULTI-MACHINE.md` is not changed here)
 
