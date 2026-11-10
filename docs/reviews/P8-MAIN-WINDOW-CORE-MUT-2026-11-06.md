@@ -69,3 +69,7 @@ The two timeouts of P3 were NOT counted as caught on faith: they were rerun and 
 ## NOT RUN
 
 None (142 of 142 tested). Open: 792:9 (needs a seam).
+
+## Follow-up P-397 (2026-11-10): 792:9 closed
+
+`MainWindow`'s `Debug` now prints the inner state through `{:?}` (`MainWindow { inner: MainWindowInner { id: .. , .. }, .. }`), so the public type reaches the `Debug for MainWindowInner` impl. New native test `mut8_main_window_core::main_window_debug_shows_the_inner_state_with_its_id` (`#[ignore]`, 1 passed). cargo-mutants re-run (`-F core.rs:792:9`, `-j 1`, `--baseline skip`, test binary `mut8_main_window_core`, `--include-ignored`): 792:9 CAUGHT (the filter also matched `core.rs:1247:13`, also caught): 2 of 2 caught. Open: 0.

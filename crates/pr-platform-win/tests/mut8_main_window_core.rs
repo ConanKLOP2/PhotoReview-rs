@@ -273,3 +273,21 @@ fn open_initial_divides_the_client_pixels_by_the_dpi_scale() {
     assert_eq!(after, expected);
     finish(ui);
 }
+
+// core.rs 792:9 `Debug for MainWindowInner -> Ok(Default::default())` (P-397): `MainWindow`'s `Debug` now prints the inner state through `{:?}`, so the
+// text shows the type name and the window id; the mutant prints nothing for it.
+#[test]
+#[ignore = "native: needs desktop"]
+fn main_window_debug_shows_the_inner_state_with_its_id() {
+    let ui = start_ui();
+    let text = run(&ui, || {
+        let b = build(BuildOptions::default());
+        format!("{:?}", b.window)
+    });
+    assert!(
+        text.starts_with("MainWindow { inner: MainWindowInner { id: "),
+        "unexpected Debug text: {text}"
+    );
+    assert!(text.ends_with(", .. }, .. }"), "unexpected Debug text: {text}");
+    finish(ui);
+}

@@ -54,7 +54,7 @@ checks), `codex-run.sh` (one Codex call, `--json`, `resume`), `CODEX-RULES.md`, 
 helpers), `test/pipeline-selftest.sh` (fake-Codex control-flow test, also covers every gate and helper).
 
 ## Routing
-Follow [AGENTS.md](../../AGENTS.md#who-does-what-codex-first): use `codex-pipeline.sh` for units, `codex-run.sh` for one-off tasks, and `claim.sh` for coordination.
+Codex is an optional lane (see [AGENTS.md](../../AGENTS.md#codex-lanes-optional-no-routing-rule)); when it is used, `codex-pipeline.sh` runs units, `codex-run.sh` runs one-off tasks, and `claim.sh` handles coordination. Claude may also implement a unit directly.
 
 Run (terminal, main checkout, contracts of the batch already merged to `master`):
 ```

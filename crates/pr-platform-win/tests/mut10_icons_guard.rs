@@ -1,4 +1,4 @@
-//! MUT10 (2026-11-06): `host/icons.rs:30:16` (`||` to `&&` in `load`) is EQUIVALENT, see `docs/reviews/P10-HOST-SMALL-MUT-2026-11-06.md`.
+//! MUT10 (2026-11-06; REMOVED by refactor 2026-11-10: `load` no longer has its own guard, only `load_from` does): `host/icons.rs:30:16` (`||` to `&&` in `load`) is EQUIVALENT, see `docs/reviews/P10-HOST-SMALL-MUT-2026-11-06.md`.
 //! Proof (over all of i32 x i32, by the sign classes of the guard, no sampling): `load` and `load_from` guard the same predicate `P(cx, cy) = cx <= 0 || cy <= 0`.
 //! With `&&` in `load`: if P holds with both sides non-positive, `load` returns 0 itself; if P holds for one side only, `load` falls through to
 //! `GetModuleHandle` and then to `load_from`, whose own (unmutated) guard P returns 0, or `GetModuleHandle` fails and `load` returns 0. If P does not hold
