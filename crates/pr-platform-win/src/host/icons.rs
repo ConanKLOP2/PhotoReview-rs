@@ -24,12 +24,11 @@ pub const SM_CXSMICON: i32 = 49;
 /// C# `SmCySmIcon`.
 pub const SM_CYSMICON: i32 = 50;
 
-/// C# `Load(cx, cy)`: `cx <= 0 || cy <= 0` gives `0` without calling the OS; else `LoadImage(exe module, RESOURCE_ID, IMAGE_ICON, cx, cy,
+/// C# `Load(cx, cy)`: `cx <= 0 || cy <= 0` gives `0` without calling `LoadImage` (the guard is in [`load_from`]); else `LoadImage(exe module, RESOURCE_ID, IMAGE_ICON, cx, cy,
 /// LR_SHARED)`; `0` when the resource is missing.
 pub fn load(cx: i32, cy: i32) -> isize {
-    if cx <= 0 || cy <= 0 {
-        return 0;
-    }
+    // The `cx <= 0 || cy <= 0` guard lives in `load_from` only (one copy), so `load` has no equivalent mutant; a non-positive size costs one
+    // stateless `GetModuleHandle(NULL)` call and still gives `0`.
     // A failing `GetModuleHandle` cannot happen for the running exe; `0` would load from the system module, so give up instead.
     match kernel32::get_module_handle() {
         Ok(instance) => load_from(instance, cx, cy),
