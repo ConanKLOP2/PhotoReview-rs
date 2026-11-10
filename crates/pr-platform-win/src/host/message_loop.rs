@@ -167,7 +167,8 @@ pub fn wait_timeout_ms(until_deadline: i64, frequency: i64) -> u32 {
     }
     let frequency = i128::from(frequency.max(1));
     let ms = (i128::from(until_deadline) * 1000 + frequency - 1) / frequency;
-    u32::try_from(ms.min(i128::from(INFINITE - 1))).unwrap_or(INFINITE - 1)
+    // `ms` is positive here; capping it below INFINITE makes the cast lossless.
+    ms.min(i128::from(INFINITE - 1)) as u32
 }
 
 /// Clears `running` on every exit of `run` (an `Err`, or a resumed panic).

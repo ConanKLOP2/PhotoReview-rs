@@ -1,5 +1,7 @@
 # P5 mutation evidence: `host/message_loop.rs` NOT RUN list, bounded `add_frame_clock` killer, `wait_timeout_ms` 170:72 (2026-11-06)
 
+P-396 (2026-11-10): mutant 170:72 no longer exists because the dead `unwrap_or` arm is removed; the historical evidence below is unchanged.
+
 Status: evidence report, task P5, worktree `mut5-message-loop`, branch `test/mut5-message-loop`, base `origin/master` 52f1efb9.
 PARITY.md, README, BACKLOG, PROPOSED-DECISIONS, task_on_progress and SYNC-LEDGER are NOT edited. Production code unchanged
 (`git diff origin/master --stat -- crates/*/src` is empty). Rule B (P-391, strict): a mutant is closed only if caught, unviable, or proven
