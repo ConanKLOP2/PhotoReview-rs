@@ -98,10 +98,9 @@ jobs:
               # open a hidden Settings window on a desktop session and call SetKeyboardState on their own thread only; no C# DLL, no Recycle
               # Bin, config isolated).
               'w8_settingswin4_killers',
-              # TRIAL added 2026-11-03 (P-86 option A, owner choice 2026-11-03; G17 section 7): the WIC binaries below have never run on windows-latest
-              # (only one real WIC encode, w4_mutation_killers2, is proven there). Each is a trial: ONE NIGHT MUST CONFIRM IT, REMOVE a binary that is
-              # red (a missing fixture, a missing codec, or a PHOTOREVIEW_RS_WIC_VERSION that does not match the runner's windowscodecs.dll for the
-              # pixel-hash goldens; tolerance 3 applies otherwise). A red night blocks nothing.
+              # Added 2026-11-03 (P-86 option A, owner choice 2026-11-03; G17 section 7): the WIC binaries below ran as a trial and were green on the
+              # 2026-11-03 nightly (run 41740157481) and on every nightly through 2026-11-10 (7 runs, 0 failed in each binary). Pixel-hash goldens are
+              # compared only when PHOTOREVIEW_RS_WIC_VERSION matches the runner's windowscodecs.dll; tolerance 3 applies otherwise.
               # wic_decoder_native (70 native tests: WicDirectDecoder and the goldens), wic_cache_image (14), wic_scaler (6), wic_exif_reader (3),
               # wic_availability (4). The other needs-WIC binaries and the ones needing staged DLLs (P-55) stay hand-run.
               'wic_decoder_native', 'wic_cache_image', 'wic_scaler', 'wic_exif_reader', 'wic_availability')
