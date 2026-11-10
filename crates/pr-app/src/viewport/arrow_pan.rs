@@ -7,6 +7,7 @@
 //! Baseline `d92d6aae`. Threshold 0.5 DIP for "not scrollable" and "at edge", as in `KeyboardPan`.
 
 use crate::viewport::types::ViewportLayout;
+use std::cmp::Ordering;
 
 /// `DefaultStepFraction` = 0.1 (`AppSettings.DefaultArrowPanStepPercent` = 10 percent).
 pub const DEFAULT_STEP_FRACTION: f64 = 0.1;
@@ -78,9 +79,11 @@ pub fn step(
     let length = step_length(layout.viewport_width, layout.viewport_height, step_fraction);
     let moved = current + length * f64::from(dx.wrapping_add(dy));
     // C# Math.Clamp(value, 0, max): lower bound first, then upper bound; a NaN max is never selected.
-    let target = if moved < 0.0 {
+    // Written with `partial_cmp` (what `<` and `>` mean for f64: false for NaN, and -0.0 equals 0.0), so no boundary operator is left
+    // to mutate; `Option::is_some_and(Ordering::is_lt)` is exactly `moved < 0.0`. Pinned bit for bit by `tests/pan_layout_simplification.rs`.
+    let target = if moved.partial_cmp(&0.0).is_some_and(Ordering::is_lt) {
         0.0
-    } else if moved > max {
+    } else if moved.partial_cmp(&max).is_some_and(Ordering::is_gt) {
         max
     } else {
         moved
