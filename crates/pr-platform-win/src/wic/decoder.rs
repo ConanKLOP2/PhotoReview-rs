@@ -229,8 +229,9 @@ impl WicDirectDecoder {
 
         // Semantics 10: EXIF orientation through a flip-rotator; 9, 0, negatives (T10) create none.
         let mut rotator: Option<Com<IWICBitmapFlipRotator>> = None;
-        if request.apply_orientation && orientation > 1 {
-            let options = map_to_transform_options(orientation);
+        let rotate_by = if request.apply_orientation { orientation } else { 1 };
+        if rotate_by > 1 {
+            let options = map_to_transform_options(rotate_by);
             if options != WICBitmapTransformRotate0 {
                 let flip = create_bitmap_flip_rotator(&factory).map_err(|e| decode_error_from_wic(&e))?;
                 flip_rotator_initialize(&flip, &current, options)?;
