@@ -1957,7 +1957,7 @@ The source of all text is C# `src/PhotoReview.Core/Localization/Languages/{en,vi
 
 ## Wave 10 (contracts only: manual update HTTP, release, benchmark parity, RAW/native residual)
 
-Merged from the four lane drafts (`contracts/drafts-w10-*.md`, removed in the same change). Decision numbers D-W10http-n, D-W10release-n, D-W10BENCH-n, D-W10RAW-n are kept. Nothing here is implemented; every decision is open for the lead unless a row says otherwise. Plans: `docs/WAVE-10-PLAN-http.md`.
+Merged from the four lane drafts (contracts/drafts-w10-*.md, removed in the same change). Decision numbers D-W10http-n, D-W10release-n, D-W10BENCH-n, D-W10RAW-n are kept. Nothing here is implemented; every decision is open for the lead unless a row says otherwise. Plans: `docs/WAVE-10-PLAN-http.md`.
 
 
 ### Wave 10 HTTP lane (W10-H1..H3: manual update transport)

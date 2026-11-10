@@ -6,7 +6,7 @@ Machine C (cloud). Phạm vi đọc: phần ĐÃ cài đặt của
 - menu (14e..14g): `shell_menus/{controller,mapping,message_handler,owner_draw_style,popup_host,owner_draw,main_window}.rs`
 - overlay (15f..15j): `shell_overlay/{host,messages,native,tooltips,main_window}.rs`, `shell_overlay/overlay/{state,input,paint,autohide}.rs`
 - viewing (16b..16i): `shell_viewing/{compare,crossfade,composer,prefetcher,keep_warm,frame_log,frame_stats,pacer,presentation_sink,viewport_controller,scrollbar_native}.rs`, `shell_viewing/scrollbars/{state,input,paint}.rs`
-- test: `crates/pr-platform-win/tests/{host_main_window_*,shell_input_*,shell_menus_*,shell_overlay_*,shell_viewing_*}.rs` và `tests/common/*fixture*.rs` (đọc có chọn lọc, và một script đếm test không có `assert`).
+- test: `crates/pr-platform-win/tests/{host_main_window_*,shell_input_*,shell_menus_*,shell_overlay_*,shell_viewing_*}.rs` và `crates/pr-platform-win/tests/common/*fixture*.rs` (đọc có chọn lọc, và một script đếm test không có `assert`).
 
 So với C# tại `7eaee2a2` (`ShellMainWindow*.cs`, `Input/ShellInput.cs`, `Overlay/ShellMainWindow.Overlay.cs`, `Overlay/DeferredTooltips.cs`, `Menus/ContextMenuMessageHandler.cs`, `PhotoReview.App.Shared/ViewModels/MainViewModel.cs`).
 

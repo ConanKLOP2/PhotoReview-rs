@@ -73,7 +73,7 @@ A `Done` row can still contain a `Different` qualification or note about unrun e
 | AR16 | Partial (W2-14) | W2-14 | see row | `PhysicalFileSystem::enumerate_files_with_stat` |
 | SEC-01 / F-05 | Partial (W2-08 policy; W2-14 resolver) | W2-08 | see row | `PhysicalFileSystem::resolve_real_path`; `file_actions::destination_policy` |
 | X-perf-diagnostics | Partial (W2-17; P-16, W-05) | W2-17 | see row | `pr_core::diagnostics::{perf, perf_csv, metrics}` |
-| X-stj-reader | Partial (W2-01: surrogate-guard and Infinity-sign mutants killed; 2 equivalent mutants remain, nothing left to kill) | W2-01 | see row | `pr_core::settings::app_settings::json` |
+| X-stj-reader | Done (2026-11-10, rule B, N1 312 of 312; the Partial text of W2-01 is superseded, see `docs/PARITY.md` and `docs/reviews/N1-MUT-2026-11-05.md`) | W2-01 | see row | `pr_core::settings::app_settings::json` |
 | P-09 | Partial (W2-18) | W2-18 | see row | `pr_core::updates::checker` |
 | P-01 (Explorer COM boundary) | Partial (W6-01a focused tests, fmt, and Clippy pass; workspace/mutation gates pending crate-root wiring) | W6-01a | Native/desktop evidence; see row. | `pr_platform_win::explorer_com_interop::{ShellWindowsSource, ShellWebBrowser, ExplorerNativeVtable}` |
 | W6-01b (Explorer window selection policy) | Partial (18 focused C#-named tests pass; crate-root integration and mutation verdict pending) | W6-01b | see row | `pr_platform_win::explorer_window_selector::{select, try_canonicalize_location}` |
