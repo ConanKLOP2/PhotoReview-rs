@@ -1,7 +1,7 @@
 # Two-week real-user trial
 
-> **Status: proposed plan, trial not started (entry gate not met).** Last verified 2026-10-26 against `origin/master` 8b93fbf.
-> Evidence: every item under "Open items" is still TBD and `docs/trial/` does not exist; `bash tools/dev/parity.sh stats` reports 361 status rows (2026-10-31) with Done 183, Partial 102, Ported 38, Todo 4 (parity not closed); Wave 10 (benchmark parity, release, update HTTP) has contracts and stubs only.
+> **Status: proposed plan, trial not started (entry gate not met).** Last verified 2026-11-11 against `origin/master` c6b39078.
+> Evidence: every item under "Open items" is still TBD and `docs/trial/` does not exist; `bash tools/dev/parity.sh stats` reports 368 status rows (2026-11-11) with Done 203, Partial 98, Ported 23, Todo 2 (X-attended-remeasure, X-swapchain-latency-experiment), Different 22, Superseded 17, Implementation 3 (parity not closed); Wave 10 (benchmark parity, release, update HTTP) has code on master (#303, #325, #329, #330, #335) but the attended measurement (X-attended-remeasure, Todo), real RAW corpus validation and a hosted release dispatch are not done.
 
 ## Purpose and entry gate
 
