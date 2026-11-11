@@ -67,7 +67,7 @@ A	crates/pr-turbojpeg/src/native.rs	let code = unsafe {
 A	crates/pr-turbojpeg/src/native.rs	let code = unsafe { header(self.ptr(), jpeg.as_ptr(), jpeg.len()) };
 A	crates/pr-turbojpeg/src/native.rs	unsafe extern "system" {
 B	crates/pr-core/src/io/journal_compaction_files.rs	let ok = unsafe {
-B	crates/pr-core/src/io/journal_compaction_files.rs	let ok = unsafe { win32::DeleteFileW(wide.as_ptr()) };
+B	crates/pr-core/src/io/journal_compaction_files.rs	unsafe { win32::DeleteFileW(wide.as_ptr()) };
 B	crates/pr-core/src/io/journal_compaction_files.rs	unsafe extern "system" {
 B	crates/pr-core/src/io/physical.rs	check(unsafe {
 B	crates/pr-core/src/io/physical.rs	check(unsafe { DeleteFileW(path.as_ptr()) })
