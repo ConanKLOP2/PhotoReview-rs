@@ -47,7 +47,7 @@ fn settings_dialog_debug_and_error_texts_are_written() {
     assert!(format!("{:?}", dialog.content()).starts_with("SettingsContent"));
 }
 
-// P-400: kills host.rs field-deletion mutants of the SHELLEXECUTEINFOW (cbSize, fMask, lpVerb, lpFile, nShow). Builds the struct only; ShellExecuteExW is never called.
+// P-404: kills host.rs field-deletion mutants of the SHELLEXECUTEINFOW (cbSize, fMask, lpVerb, lpFile, nShow). Builds the struct only; ShellExecuteExW is never called.
 #[test]
 fn open_url_info_sets_every_shell_execute_field() {
     use windows::Win32::UI::Shell::{

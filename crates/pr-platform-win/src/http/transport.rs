@@ -41,12 +41,12 @@ fn wide(value: &str) -> Result<Vec<u16>, HttpError> {
     }
     Ok(value.encode_utf16().chain(Some(0)).collect())
 }
-/// P-400 seam: the URL text without its trailing NUL terminator (`wide` always appends exactly one). Identical to the former `&text[..text.len() - 1]` for every
+/// P-404 seam: the URL text without its trailing NUL terminator (`wide` always appends exactly one). Identical to the former `&text[..text.len() - 1]` for every
 /// non-empty buffer; an empty buffer (unreachable, `wide` never returns one) used to panic on the subtraction and now stays empty.
 fn without_terminator(text: &[u16]) -> &[u16] {
     text.split_last().map_or(text, |(_, rest)| rest)
 }
-/// P-400 seam: `WinHttpSetStatusCallback` reports failure as `WINHTTP_INVALID_STATUS_CALLBACK` (`-1`, i.e. `usize::MAX`); `None` (no previous callback) and any
+/// P-404 seam: `WinHttpSetStatusCallback` reports failure as `WINHTTP_INVALID_STATUS_CALLBACK` (`-1`, i.e. `usize::MAX`); `None` (no previous callback) and any
 /// real address are success. `previous` is the returned callback pointer as an address.
 fn callback_registration_failed(previous: Option<usize>) -> bool {
     previous == Some(usize::MAX)
@@ -580,7 +580,7 @@ mod tests {
     use super::*;
     #[test]
     fn without_terminator_matches_the_old_slice_for_every_wide_buffer() {
-        // P-400 differential: old formula `&text[..text.len() - 1]` over every buffer `wide` can produce (always >= 1 unit, ends in NUL).
+        // P-404 differential: old formula `&text[..text.len() - 1]` over every buffer `wide` can produce (always >= 1 unit, ends in NUL).
         fn old(text: &[u16]) -> &[u16] {
             &text[..text.len() - 1]
         }
@@ -598,7 +598,7 @@ mod tests {
 
     #[test]
     fn callback_registration_fails_only_for_the_invalid_sentinel() {
-        // P-400: None = no previous callback (success), a real address = success, usize::MAX = WINHTTP_INVALID_STATUS_CALLBACK.
+        // P-404: None = no previous callback (success), a real address = success, usize::MAX = WINHTTP_INVALID_STATUS_CALLBACK.
         assert!(!callback_registration_failed(None));
         assert!(callback_registration_failed(Some(usize::MAX)));
         for address in [0usize, 1, 0x1000, usize::MAX - 1] {
@@ -608,7 +608,7 @@ mod tests {
 
     #[test]
     fn parse_cracks_a_loopback_url_through_the_terminator_seam() {
-        // P-400: Url::parse feeds the NUL-less text to WinHttpCrackUrl (no network); a wrongly cut buffer changes host/path.
+        // P-404: Url::parse feeds the NUL-less text to WinHttpCrackUrl (no network); a wrongly cut buffer changes host/path.
         let url = Url::parse("http://127.0.0.1:8080/a/b?x=1").unwrap();
         assert!(url.loopback && !url.https);
         assert_eq!(url.port, 8080);

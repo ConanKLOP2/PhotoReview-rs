@@ -46,7 +46,7 @@ pub fn default_open_url(url: &str) -> Result<(), String> {
     unsafe { ShellExecuteExW(&mut info) }.map_err(|error| format!("ShellExecute failed ({})", error.code().0))
 }
 
-/// P-400 seam: the `SHELLEXECUTEINFOW` of [`default_open_url`], built without calling the shell so a test can check every field. `verb` and `file` must be NUL-terminated
+/// P-404 seam: the `SHELLEXECUTEINFOW` of [`default_open_url`], built without calling the shell so a test can check every field. `verb` and `file` must be NUL-terminated
 /// UTF-16 buffers that outlive the use of the returned struct (it only holds their addresses). Pure; never calls `ShellExecuteExW`.
 #[doc(hidden)]
 pub fn open_url_info(verb: &[u16], file: &[u16]) -> windows::Win32::UI::Shell::SHELLEXECUTEINFOW {
