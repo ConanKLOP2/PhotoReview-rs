@@ -184,7 +184,7 @@ impl Drop for PhysicalStagedReplacement {
         }
         // C# `File.Delete` inside `catch (IOException or UnauthorizedAccessException)`: left behind on any error, the
         // next compaction removes stale replacement files.
-        let _ = delete_file(&self.path);
+        delete_file(&self.path);
     }
 }
 
@@ -434,9 +434,10 @@ fn rename_by_handle(_: &File, _: &str) -> io::Result<()> {
 
 /// .NET `File.Delete` = `DeleteFileW` on the full path, through `EnsureExtendedPrefixIfNeeded` (`\\?\` form when 260
 /// units or longer; the trailing period/space branch never fires: `path` comes from `get_full_path`, which trimmed them).
-/// NOT `fs::remove_file`, which clears the read-only attribute first (trap T6).
+/// NOT `fs::remove_file`, which clears the read-only attribute first (trap T6). Best effort: the only caller
+/// (`PhysicalStagedReplacement::drop`) ignores every failure, so the result of `DeleteFileW` is not reported.
 #[cfg(windows)]
-fn delete_file(path: &Path) -> io::Result<()> {
+fn delete_file(path: &Path) {
     use std::os::windows::ffi::OsStrExt;
     let text = ensure_extended_prefix_if_needed(&path.to_string_lossy());
     let wide: Vec<u16> = std::ffi::OsStr::new(&text)
@@ -444,17 +445,12 @@ fn delete_file(path: &Path) -> io::Result<()> {
         .chain(std::iter::once(0))
         .collect();
     // SAFETY: `wide` is a NUL-terminated UTF-16 string that outlives the call; DeleteFileW only reads it.
-    let ok = unsafe { win32::DeleteFileW(wide.as_ptr()) };
-    if ok != 0 {
-        Ok(())
-    } else {
-        Err(io::Error::last_os_error())
-    }
+    unsafe { win32::DeleteFileW(wide.as_ptr()) };
 }
 
 #[cfg(not(windows))]
-fn delete_file(path: &Path) -> io::Result<()> {
-    std::fs::remove_file(path)
+fn delete_file(path: &Path) {
+    let _ = std::fs::remove_file(path);
 }
 
 #[cfg(windows)]
