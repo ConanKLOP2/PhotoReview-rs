@@ -71,3 +71,169 @@ fn open_url_info_sets_every_shell_execute_field() {
     assert!(info.lpParameters.is_null() && info.lpDirectory.is_null());
     assert!(info.hwnd.is_invalid() && info.hProcess.is_invalid());
 }
+
+// ---- inputs.rs killers (builder/inputs.rs) ----
+use pr_platform_win::dialogs::settings::builder::inputs::{MAX_CONTROLS, SettingsBuilderError, SettingsPageBuilder};
+use pr_platform_win::dialogs::settings::builder::layout::SettingsKeyCellSpec;
+use pr_platform_win::dialogs::settings::page_view::TextFn;
+
+fn txt(value: &'static str) -> TextFn {
+    std::rc::Rc::new(move || value.to_owned())
+}
+
+fn style_of(builder: &SettingsPageBuilder, id: i32) -> u32 {
+    builder.items().iter().find(|item| item.id == id).expect("item").style
+}
+
+// Kills inputs.rs:46:9 `Display::fmt -> Ok(Default::default())`.
+#[test]
+fn settings_builder_error_display_texts_are_exact() {
+    assert_eq!(
+        SettingsBuilderError::TooManyControls.to_string(),
+        "A settings page can declare at most 999 controls."
+    );
+    assert_eq!(
+        SettingsBuilderError::RadioNeedsTwoOptions.to_string(),
+        "A radio group needs at least two options."
+    );
+    assert_eq!(
+        SettingsBuilderError::RadioHintCountMismatch.to_string(),
+        "There must be one hint (or null) per radio option."
+    );
+}
+
+// Kills inputs.rs:75:9 `Debug::fmt -> Ok(Default::default())`.
+#[test]
+fn settings_page_builder_debug_names_type_id_base_and_item_count() {
+    let mut builder = SettingsPageBuilder::new(4321);
+    builder.check(txt("a"), 0);
+    builder.check(txt("b"), 0);
+    let text = format!("{builder:?}");
+    assert!(text.contains("SettingsPageBuilder"), "{text}");
+    assert!(text.contains("id_base: 4321"), "{text}");
+    assert!(text.contains("items: 2"), "{text}");
+}
+
+fn fill_to(builder: &mut SettingsPageBuilder, count: i32) {
+    for _ in 0..count {
+        builder.check(txt("x"), 0);
+    }
+}
+
+// Kills inputs.rs:432:12 `delete !` in check_flow: success adds one element, a budget failure adds none.
+#[test]
+fn check_flow_pushes_its_element_only_on_success() {
+    let mut ok = SettingsPageBuilder::new(1000);
+    let ids = ok.check_flow(&[txt("a"), txt("b")], 0);
+    assert_eq!(ids, vec![1001, 1002]);
+    assert_eq!(ok.elements().len(), 1);
+    assert_eq!(ok.flatten().len(), 1);
+
+    let mut failing = SettingsPageBuilder::new(1000);
+    fill_to(&mut failing, MAX_CONTROLS - 1);
+    let before = failing.elements().len();
+    let ids = failing.check_flow(&[txt("a"), txt("b")], 0);
+    assert_eq!(ids, vec![1999, 0]);
+    assert_eq!(
+        failing.elements().len(),
+        before,
+        "a failed check_flow must add no element"
+    );
+    assert_eq!(failing.error(), Some(SettingsBuilderError::TooManyControls));
+}
+
+// Kills inputs.rs:494:12 `delete !` in key_grid: success adds one element, a budget failure adds none.
+#[test]
+fn key_grid_pushes_its_element_only_on_success() {
+    let spec = || SettingsKeyCellSpec {
+        label: txt("k"),
+        clearable: true,
+    };
+    let mut ok = SettingsPageBuilder::new(1000);
+    let cells = ok.key_grid(&[spec()]);
+    assert_eq!(cells.len(), 1);
+    assert_eq!(ok.elements().len(), 1);
+
+    let mut failing = SettingsPageBuilder::new(1000);
+    fill_to(&mut failing, MAX_CONTROLS - 1);
+    let before = failing.elements().len();
+    let cells = failing.key_grid(&[spec()]);
+    assert!(cells.is_empty());
+    assert_eq!(
+        failing.elements().len(),
+        before,
+        "a failed key_grid must add no element"
+    );
+    assert_eq!(failing.error(), Some(SettingsBuilderError::TooManyControls));
+}
+
+// Kills inputs.rs:507:34 `==`->`!=`, 507:73 `&`->`|` and `&`->`^`: a pending break_group skips the group box and lands on the next non-group control.
+#[test]
+fn pending_break_group_skips_group_box_then_marks_next_control() {
+    const WS_GROUP: u32 = 0x0002_0000;
+    let mut builder = SettingsPageBuilder::new(2000);
+    builder.radio(&[txt("one"), txt("two")], None, 0);
+    let mut inner = 0;
+    let group_id = builder.group(txt("box"), |b| inner = b.check(txt("in"), 0));
+    let after = builder.check(txt("after"), 0);
+    assert_eq!(style_of(&builder, group_id) & 0x0f, 7, "group box keeps BS_GROUPBOX");
+    assert_eq!(
+        style_of(&builder, group_id) & WS_GROUP,
+        0,
+        "group box must not get WS_GROUP"
+    );
+    assert_ne!(
+        style_of(&builder, inner) & WS_GROUP,
+        0,
+        "first control after the box opens the group"
+    );
+    assert_eq!(style_of(&builder, after) & WS_GROUP, 0, "flag is consumed once");
+}
+
+// Kills inputs.rs:507:34/73 from the other side: a non-group Button and a non-Button control both take WS_GROUP.
+#[test]
+fn pending_break_group_marks_check_button_and_static_control() {
+    const WS_GROUP: u32 = 0x0002_0000;
+    let mut button = SettingsPageBuilder::new(3000);
+    button.radio(&[txt("one"), txt("two")], None, 0);
+    let check = button.check(txt("c"), 0);
+    assert_ne!(style_of(&button, check) & WS_GROUP, 0);
+
+    let mut other = SettingsPageBuilder::new(3000);
+    other.radio(&[txt("one"), txt("two")], None, 0);
+    let label = other.text(Some(txt("t")));
+    assert_ne!(style_of(&other, label) & WS_GROUP, 0);
+}
+
+// Item 6: the `|`->`^` mutants at the style-constant sites are equivalent because every OR-ed operand set is pairwise disjoint.
+#[test]
+fn style_operand_sets_used_by_the_builder_are_pairwise_disjoint() {
+    use pr_platform_win::dialogs::native::controls::basic::ComboBoxControl;
+    use pr_platform_win::dialogs::native::template::DIALOG_STYLE_CHILD;
+    use pr_platform_win::win32::control_constants::{
+        BS_AUTOCHECKBOX, BS_AUTORADIOBUTTON, BS_GROUPBOX, ES_READONLY, TBS_NOTICKS,
+    };
+    use pr_platform_win::win32::dialog_chrome::BS_MULTILINE;
+    use pr_platform_win::win32::dialog_native::{BS_PUSHBUTTON, ES_AUTOHSCROLL, SS_NOPREFIX, WS_GROUP, WS_TABSTOP};
+    let c = DIALOG_STYLE_CHILD;
+    let sets: &[&[u32]] = &[
+        &[c, BS_GROUPBOX],
+        &[c, WS_TABSTOP, BS_AUTOCHECKBOX, BS_MULTILINE],
+        &[c, SS_NOPREFIX],
+        &[c, ComboBoxControl::DEFAULT_STYLE],
+        &[c, WS_TABSTOP, ES_AUTOHSCROLL],
+        &[c, WS_TABSTOP, TBS_NOTICKS],
+        &[c, WS_TABSTOP, BS_PUSHBUTTON],
+        &[c, BS_AUTORADIOBUTTON, BS_MULTILINE],
+        &[WS_GROUP, WS_TABSTOP],
+        &[c, WS_TABSTOP, BS_AUTOCHECKBOX],
+        &[c, WS_TABSTOP, ES_AUTOHSCROLL, ES_READONLY],
+    ];
+    for set in sets {
+        let mut seen = 0u32;
+        for operand in *set {
+            assert_eq!(seen & operand, 0, "overlapping operands in {set:x?}");
+            seen |= operand;
+        }
+    }
+}
