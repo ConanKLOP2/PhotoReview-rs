@@ -840,6 +840,47 @@ pub struct FinishPlan {
     pub exif: Option<ExifSummary>,
 }
 
+/// The size-dependent part of a [`FinishPlan`] (everything that is a pure function of the source size, the decode target,
+/// the transposition and the DCT scaling factor).
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct PlanGeometry {
+    pub scaled_width: i32,
+    pub scaled_height: i32,
+    pub buffer_length: i32,
+    /// `downscale && (scaled_width > target_width || scaled_height > target_height)`.
+    pub fine_scale: bool,
+    /// `downscale && (scaled_width < orig_width || target_width < orig_width || target_height < orig_height)`.
+    pub downscaled: bool,
+    pub original_width: i32,
+    pub original_height: i32,
+}
+
+/// The pure size computation of `FinishPlan` (C# `FinishPlan` build): the DCT-scaled output via
+/// [`calculate_output_buffer`] (`Err` = the "output dimensions are too large" refusal), then the `fine_scale` /
+/// `downscaled` flags and the orientation-corrected original size (`transposed` swaps width and height).
+pub fn plan_geometry(
+    downscale: bool,
+    orig_width: i32,
+    orig_height: i32,
+    target_width: i32,
+    target_height: i32,
+    transposed: bool,
+    factor: TjScalingFactor,
+) -> Result<PlanGeometry, OversizedOutput> {
+    let output = calculate_output_buffer(orig_width, orig_height, factor)?;
+    let (scaled_width, scaled_height) = (output.width, output.height);
+    Ok(PlanGeometry {
+        scaled_width,
+        scaled_height,
+        buffer_length: output.buffer_length,
+        fine_scale: downscale && (scaled_width > target_width || scaled_height > target_height),
+        downscaled: downscale
+            && (scaled_width < orig_width || target_width < orig_width || target_height < orig_height),
+        original_width: if transposed { orig_height } else { orig_width },
+        original_height: if transposed { orig_width } else { orig_height },
+    })
+}
+
 /// C# `FinishWithCodec(pixels, codec, plan)`: TAKES `pixels`. Fine scale (`scaler.resize(&pixels, target_w, target_h)`,
 /// the source is dropped right after), then `apply_orientation` when `plan.orient`; `FineScaleError::OutOfMemory` or an
 /// orientation allocation failure (`PixelBufferError::OutOfMemory`) -> the admission refusal for the SCALED size
@@ -1113,8 +1154,16 @@ impl TurboJpegDecoder {
         }
 
         // Output buffer and guard (the SCALED size is what is allocated).
-        let output = match calculate_output_buffer(orig_width, orig_height, factor) {
-            Ok(output) => output,
+        let geometry = match plan_geometry(
+            downscale,
+            orig_width,
+            orig_height,
+            target_width,
+            target_height,
+            transposed,
+            factor,
+        ) {
+            Ok(geometry) => geometry,
             Err(oversized) => {
                 let texts = Arc::clone(&self.texts);
                 return Err(invalid_data(
@@ -1126,20 +1175,20 @@ impl TurboJpegDecoder {
                 ));
             }
         };
-        let (scaled_width, scaled_height, buffer_length) = (output.width, output.height, output.buffer_length);
+        let (scaled_width, scaled_height, buffer_length) =
+            (geometry.scaled_width, geometry.scaled_height, geometry.buffer_length);
         let plan = FinishPlan {
             scaled_width,
             scaled_height,
             target_width,
             target_height,
             buffer_length,
-            fine_scale: downscale && (scaled_width > target_width || scaled_height > target_height),
+            fine_scale: geometry.fine_scale,
             orient: request.apply_orientation && orientation > 1,
             orientation,
-            downscaled: downscale
-                && (scaled_width < orig_width || target_width < orig_width || target_height < orig_height),
-            original_width: if transposed { orig_height } else { orig_width },
-            original_height: if transposed { orig_width } else { orig_height },
+            downscaled: geometry.downscaled,
+            original_width: geometry.original_width,
+            original_height: geometry.original_height,
             exif,
         };
         if !output_fits(buffer_length, self.memory_info.as_ref()) {
