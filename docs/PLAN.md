@@ -1,7 +1,7 @@
 # Kế hoạch port PhotoReview sang Rust
 
-> **Trạng thái: đang dùng (lộ trình phase và gate).** Kiểm lại 2026-10-26 trên `origin/master` 8b93fbf.
-> Điều cần biết: Wave 1 đến 7 đã có PR port trên master (#5, #8, #17, #20, #24/#26, #25/#28, #30), Wave 8 đạt 147/151 đơn vị (`bash tools/dev/dashboard.sh`; chưa thấy trên master: W8-12j có điều kiện, W8-17e, W8-20a, W8-20b), Wave 9 lane E (W9-E1..E9) đã merge, lane R và Wave 10 mới có hợp đồng và stub. Phase 7 (parity 100%, benchmark, chạy thử 2 tuần) chưa bắt đầu: [TRIAL-PLAN.md](TRIAL-PLAN.md) ghi mọi mục mở là TBD.
+> **Trạng thái: đang dùng (lộ trình phase và gate).** Kiểm lại 2026-11-11 trên `origin/master` c6b39078.
+> Điều cần biết (kiểm lại 2026-11-11, `bash tools/dev/parity.sh stats`: 368 hàng trạng thái, Done 203, Partial 98, Ported 23, Todo 2, Different 22, Superseded 17, Implementation 3): Wave 1 đến 7 đã có PR port trên master (#5, #8, #17, #20, #24/#26, #25/#28, #30). Wave 8 đạt 150/151 đơn vị (`bash tools/dev/dashboard.sh`; còn lại W8-12j có điều kiện, chưa bắt đầu; W8-17e, W8-20a, W8-20b đã merge: #296/#308, #290/#298, #306/#309). Wave 9 đã merge cả lane E (W9-E1..E9, #233..#256) và lane R (W9-R1..R11, #275..#305). Wave 10 có mã trên master (benchmark compare gate và CLI #325/#335, native staging #303, update HTTP #330, workflow release #329) nhưng đo có người ngồi máy (X-attended-remeasure), corpus RAW thật, review release và dispatch release trên host chưa làm. Phase 7 (parity 100%, benchmark, chạy thử 2 tuần) chưa bắt đầu: [TRIAL-PLAN.md](TRIAL-PLAN.md) ghi mọi mục mở là TBD.
 > UI đã chốt hướng Win32 + Direct2D (P-06), không phải egui/Slint; R0001 vẫn Proposed. Dòng UI trong bảng Stack đã sửa theo đó; dòng cũ nằm ở [archive/plans-banners-replaced-lines.md](archive/plans-banners-replaced-lines.md).
 
 Mục tiêu: hành vi **y chang** bản C# (baseline trong [SYNC-LEDGER.md](SYNC-LEDGER.md)), tốc độ **bằng hoặc hơn**,

@@ -9,9 +9,10 @@ How to read this page:
 - **Status of findings**: derived ONLY from the status table "Trạng thái xử lý tại master b5d1327 (2026-10-23)" and the Q1..Q8 decision table (G24) in `BACKLOG.md`. If `BACKLOG.md` does not say, the cell says "see file". `BACKLOG.md` is a 2026-10-23 snapshot and may be stale; check `task_on_progress.md` and `docs/PARITY.md` for newer state.
 - Every finding in every report is inferred from the code and was NOT run (each file says so). `BACKLOG.md` marks no group as closed (G21 is "partly fixed", G24 decisions are "decided"), so no row below says closed.
 - G1..G31 are the backlog groups in `BACKLOG.md` section 1; Q1..Q8 are the product decisions in G24 (accepted as P-52 in `docs/PROPOSED-DECISIONS.md`).
+- 2026-11-11 update: the mutation reports of 2026-11-04..11 are indexed at the end of the first table; the current state of the groups is "Update 2026-11-11" at the end of [`BACKLOG.md`](BACKLOG.md), which supersedes the 2026-11-03 section where they differ.
 - 2026-11-03 update: the "Status of findings" cells in the tables below are the 2026-10-23 snapshot and are stale for many groups. The current state of G1..G31 is in the section "Update 2026-11-03" at the end of [`BACKLOG.md`](BACKLOG.md); the rows above (re-check evidence and owner-decision implementations) point to the PRs, and the decision rows are P-300..P-390 in [`PROPOSED-DECISIONS.md`](../PROPOSED-DECISIONS.md).
 
-There are 18 files here: 17 reports and `BACKLOG.md`. There is no separate report for Wave 10 contracts; the only contract review is the Wave 9 one. No two reports are exact duplicates and none supersedes another (see "Relations between files").
+There were 18 files here on 2026-10-23: 17 reports and `BACKLOG.md` (the first table now also indexes later reports). There is no separate report for Wave 10 contracts; the only contract review is the Wave 9 one. No two reports are exact duplicates and none supersedes another (see "Relations between files").
 
 ## Consolidated backlog
 
@@ -49,10 +50,10 @@ There are 18 files here: 17 reports and `BACKLOG.md`. There is no separate repor
 | [`D1-IMPL-2026-11-03.md`](D1-IMPL-2026-11-03.md) | 2026-11-03 | Owner decision D1 (P-310): refresh the HUD zoom text after an input zoom; restores C# `MainViewModel.cs:140-143`. | Done (PR #624, merged) |
 | [`D2-IMPL-2026-11-03.md`](D2-IMPL-2026-11-03.md) | 2026-11-03 | Owner decision D2 (P-74 C): bounded pool of prefetch lookup lanes with `catch_unwind`. | Done (PR #625, merged) |
 | [`D3-IMPL-2026-11-03.md`](D3-IMPL-2026-11-03.md) | 2026-11-03 | Owner decision D3 (P-191): restore the D-07f-5 pre-check as a Rust-only extra when every kept copy was modified. | Done (PR #626, merged) |
-| [`D4-IMPL-2026-11-03.md`](D4-IMPL-2026-11-03.md) | 2026-11-03 | Owner decision D4 (P-92 A): percent pattern read from the OS, `-0.0` sign fixed, known NLS-vs-ICU differences listed. | PR #627, merged; the file is not on master yet |
-| [`D5-IMPL-2026-11-03.md`](D5-IMPL-2026-11-03.md) | 2026-11-03 | Owner decision D5 (P-321): update-result retry every 20 ms, 50 tries at most. | PR #628, merged |
-| [`D6-IMPL-2026-11-03.md`](D6-IMPL-2026-11-03.md) | 2026-11-03 | Owner decision D6 (P-330): evidence only; the C# branch `feat/executor-throw-unverified-status` (`a3dc30cc`, local) adds `status.actionOutcomeUnknown`; the Rust part waits for the catalog sync. | Partly done (PR #629, merged, evidence only) |
-| [`D7-IMPL-2026-11-03.md`](D7-IMPL-2026-11-03.md) | 2026-11-03 | Owner decision D7 (P-331): reconcile of a single Recycle asks the Recycle Bin; C# branch `feat/reconcile-recycle-bin-check` (`396d5ac2`, local). | Rust done (PR #630, merged); differs from C# until the C# merge |
+| [`D4-IMPL-2026-11-03.md`](D4-IMPL-2026-11-03.md) | 2026-11-03 | Owner decision D4 (P-92 A): percent pattern read from the OS, `-0.0` sign fixed, known NLS-vs-ICU differences listed. | Done (PR #627, merged; the file is on master) |
+| [`D5-IMPL-2026-11-03.md`](D5-IMPL-2026-11-03.md) | 2026-11-03 | Owner decision D5 (P-321): update-result retry every 20 ms, 50 tries at most. | Done (PR #628, merged) |
+| [`D6-IMPL-2026-11-03.md`](D6-IMPL-2026-11-03.md) | 2026-11-03 | Owner decision D6 (P-330): evidence only; the C# branch `feat/executor-throw-unverified-status` (`a3dc30cc`, local) adds `status.actionOutcomeUnknown`; the Rust part waited for the catalog sync. | Closed 2026-11-06: C# #539, Rust #671 (PR #629 was evidence only) |
+| [`D7-IMPL-2026-11-03.md`](D7-IMPL-2026-11-03.md) | 2026-11-03 | Owner decision D7 (P-331): reconcile of a single Recycle asks the Recycle Bin; C# branch `feat/reconcile-recycle-bin-check` (`396d5ac2`, local at the time). | Closed 2026-11-06: Rust #630 and #671, C# #540 (`f57061ef`); matches baseline `5e5a9ce5` |
 | [`D8-IMPL-2026-11-03.md`](D8-IMPL-2026-11-03.md) | 2026-11-03 | Owner decision D8 (P-150 A): a read-time `OutOfMemory` keeps the preview cache entry. | Done (PR #631, merged); deviation from C# |
 | [`D9-IMPL-2026-11-03.md`](D9-IMPL-2026-11-03.md) | 2026-11-03 | Owner decision D9 (P-301): `FrameLog` writes on a bounded writer thread. | Done (PR #632, merged); deviation from C# `AutoFlush` |
 | [`E1-IMPL-2026-11-03.md`](E1-IMPL-2026-11-03.md) | 2026-11-03 | Group B items P-300, P-312, P-313: timer spawn log, image cache borrow, released-device pops. | Done (PR #633, merged) |
@@ -61,6 +62,35 @@ There are 18 files here: 17 reports and `BACKLOG.md`. There is no separate repor
 | [`F1-IMPL-2026-11-03.md`](F1-IMPL-2026-11-03.md) | 2026-11-03 | Section C decisions: P-86 A, P-374, P-88 A, P-89 A, P-360 B, P-361 B, P-111 B, P-370 rule part, P-390 wording. | Done (PR #622, merged) |
 | [`F2-IMPL-2026-11-03.md`](F2-IMPL-2026-11-03.md) | 2026-11-03 | Section C test cleanups: P-363, P-365, P-372, P-373 (P-364 was already done by #617). | Done (PR #623, merged) |
 | [`PARITY-WORDING-OWNER-DECISIONS-2026-11-03.md`](PARITY-WORDING-OWNER-DECISIONS-2026-11-03.md) | 2026-11-03 | Proposed PARITY `Different` rows, notes and ADR wording for the owner decisions of 2026-11-03 (P-92, P-150, P-301, P-331, P-191, P-74, P-321 and the Rust-only hardening notes). | For the lead; not applied to `PARITY.md` |
+| [`M1-MUT-2026-11-04.md`](M1-MUT-2026-11-04.md) | 2026-11-04 | M1: mutation of `viewport/types.rs`, `input/primitives.rs` and `viewport/layout.rs` (the batches Q1 left NOT RUN), hand-written tests only. | Measured; row status in `PARITY.md` |
+| [`M2-MUT-2026-11-04.md`](M2-MUT-2026-11-04.md) | 2026-11-04 | M2: mutation of `pr-app` `viewport/render_geometry.rs` (X-render-geometry), closes the Q1 NOT RUN list for that file. | Measured |
+| [`M3-MUT-2026-11-04.md`](M3-MUT-2026-11-04.md) | 2026-11-04 | M3: `viewer_state.rs` and `kinetic_pan.rs` (X-viewer-state, X-kinetic-pan), 20 new tests, no production change. | Measured |
+| [`M4-MUT-2026-11-04.md`](M4-MUT-2026-11-04.md) | 2026-11-04 | M4: presenters, scrollbar geometry, zoom detail and recovery check, 10 files decided with non-golden tests. | Measured |
+| [`M5-MUT-2026-11-04.md`](M5-MUT-2026-11-04.md) | 2026-11-04 | M5: the NOT RUN batches of the Q3..Q11 close-outs that a machine can run (`perf.rs`, F-13 files, resampler, checker, `journal_line.rs`). | Measured |
+| [`N1-MUT-2026-11-05.md`](N1-MUT-2026-11-05.md) | 2026-11-05 | N1: `pr-core` io mutation close-out under rule B (P-391): updates checker, `app_settings.rs` JSON reader, F-21 service side, run-proofs for the M5 survivors. | Measured |
+| [`N2-MUT-2026-11-05.md`](N2-MUT-2026-11-05.md) | 2026-11-05 | N2: run-proofs and killers for the 19 equivalents of M1, M2, M3 that were argued only by reading; 3 were not equivalent and are killed. | Measured |
+| [`N3-MUT-2026-11-05.md`](N3-MUT-2026-11-05.md) | 2026-11-05 | N3: run-proofs for the 21 equivalents of M4 and the 25 NOT RUN `zoom_detail.rs` mutants. | Measured |
+| [`N4-MUT-2026-11-05.md`](N4-MUT-2026-11-05.md) | 2026-11-05 | N4: native decoders (libraw, turbojpeg), RAW readers, bench presenter and WinHTTP transport under rule B. | Measured; survivors continue in P2 |
+| [`P1-MUT-2026-11-06.md`](P1-MUT-2026-11-06.md) | 2026-11-06 | P1: RAW selector shard 0/2, `tiff_nav.rs` and the N4 reader survivors under rule B (strict). | Measured |
+| [`P2-MUT-2026-11-06.md`](P2-MUT-2026-11-06.md) | 2026-11-06 | P2: second pass over the open N4 survivors (libraw and turbojpeg `decoder.rs`, `tool_path_guard.rs`, presenter `benchmark.rs`, `http/transport.rs`). | Measured; later work in P393, P-398, P-399 |
+| [`P3-MUT-2026-11-06.md`](P3-MUT-2026-11-06.md) | 2026-11-06 | P3: pr-platform-win host, WIC decode and cache codec, painter widgets, main-window core under rule B; lists what a Windows session can run. | Measured; see P4..P10 |
+| [`P4-MUT-2026-11-06.md`](P4-MUT-2026-11-06.md) | 2026-11-06 | P4: whole-domain attempt on the viewport rows held at Ported. | Measured |
+| [`P4-WIC-SCALER-MUT-2026-11-06.md`](P4-WIC-SCALER-MUT-2026-11-06.md) | 2026-11-06 | P4: `wic/scaler.rs` and `host/native.rs` (33 mutants, NOT RUN in P3). | Measured |
+| [`P5-MESSAGE-LOOP-MUT-2026-11-06.md`](P5-MESSAGE-LOOP-MUT-2026-11-06.md) | 2026-11-06 | P5: `host/message_loop.rs`, bounded `add_frame_clock` killer; mutant 170:72 no longer exists since P-396. | Measured |
+| [`P6-CACHE-IMAGE-MUT-2026-11-06.md`](P6-CACHE-IMAGE-MUT-2026-11-06.md) | 2026-11-06 | P6: `wic/cache_image.rs` (W4-11e) under rule B; 679:13/680:13 stay open (P-402). | Measured; two mutants open by owner decision |
+| [`P7-WIC-DECODER-MUT-2026-11-06.md`](P7-WIC-DECODER-MUT-2026-11-06.md) | 2026-11-06 | P7: `wic/decoder.rs`, all 218 mutants run. | Measured |
+| [`P8-MAIN-WINDOW-CORE-MUT-2026-11-06.md`](P8-MAIN-WINDOW-CORE-MUT-2026-11-06.md) | 2026-11-06 | P8: `host/main_window/core.rs` (X-main-window-core) under rule B. | Measured; see the file for survivors |
+| [`P9-PAINTER-WIDGETS-MUT-2026-11-06.md`](P9-PAINTER-WIDGETS-MUT-2026-11-06.md) | 2026-11-06 | P9: `painter/widgets.rs`, all 266 mutants run. | Measured |
+| [`P10-HOST-SMALL-MUT-2026-11-06.md`](P10-HOST-SMALL-MUT-2026-11-06.md) | 2026-11-06 | P10: `host/icons.rs`, `shell_window/messages.rs`, `swap_chain_clock.rs`, `wndproc.rs` under rule B. | Measured |
+| [`P393-MUT-2026-11-06.md`](P393-MUT-2026-11-06.md) | 2026-11-06 | P-393 seams for the N1/N4 survivors (turbojpeg 1204:27, WinHTTP transport 443/501, service 683:13). | Done (seams); tool_path_guard 299 and LibRaw were closed later by #709 and #713 |
+| [`P393B-APP-2026-11-06.md`](P393B-APP-2026-11-06.md) | 2026-11-06 | P-393 option 1: dead `e` branch of `dotnet_double_text` removed, no behaviour change. | Done |
+| [`P393B-CORE-2026-11-06.md`](P393B-CORE-2026-11-06.md) | 2026-11-06 | P-393B-CORE: redundant rule 1 of `aggregate_group_verdict` and redundant `Exists` guard in `check_group_member` removed after exhaustive tests. | Done |
+| [`P394-MUT-2026-11-06.md`](P394-MUT-2026-11-06.md) | 2026-11-06 | P-394 seams: mutation evidence, no behaviour change versus the C# baseline. | Done |
+| [`TRANSACTION-RERUN-2026-11-10.md`](TRANSACTION-RERUN-2026-11-10.md) | 2026-11-10 | F-12 / F-15 transaction rerun: `journal_rules.rs`, `transaction.rs` and the first 24 identities of `journal_compaction_files.rs` (no valid verdict for that file yet). | Measured; `journal_compaction_files.rs` NOT decided |
+| [`PHYSICAL-TAIL-MUTATION-2026-11-10.md`](PHYSICAL-TAIL-MUTATION-2026-11-10.md) | 2026-11-10 | `physical.rs` tail: 76 identities of the groups Q3 listed as never run; the rest of the 440 identities is not decided here. | Measured; remainder open |
+| [`P393-GUARD-2026-11-10.md`](P393-GUARD-2026-11-10.md) | 2026-11-10 | P-393 / P-398: the non-Windows twin of `tool_path_guard` `leaf_refuses_replacement` removed; replace refusal is Windows only. | Done (PR #709, merged) |
+| [`D10-SETTINGS-GLUE-2026-11-10.md`](D10-SETTINGS-GLUE-2026-11-10.md) | 2026-11-10 | P-401: PARTIAL mutation run of the Settings window glue, 79 of 846 identities; not a verdict for any file. | Partial (PR #712, merged); 767 NOT RUN |
+| [`P399-MUT-2026-11-11.md`](P399-MUT-2026-11-11.md) | 2026-11-11 | P-399: LibRaw `try_set_use_camera_wb` mutant closed with a test-only version-gate seam, no DLL downloaded. | Done (PR #713, merged) |
 
 ## Autopilot tooling
 
