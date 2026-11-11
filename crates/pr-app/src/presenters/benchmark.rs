@@ -387,7 +387,8 @@ impl BenchmarkPresenter {
     /// C# static `ApplyImageLimit(files, limit)`: the first `limit` files when `limit > 0 && files.len() > limit`, else a copy; order kept.
     pub fn apply_image_limit(files: &[String], limit: i32) -> Vec<String> {
         match usize::try_from(limit) {
-            Ok(limit) if limit > 0 && files.len() > limit => files[..limit].to_vec(),
+            // `get(..limit)` is `None` only when `limit > files.len()`: then the whole list, as C# `files.Count > limit` false.
+            Ok(limit) if limit > 0 => files.get(..limit).unwrap_or(files).to_vec(),
             _ => files.to_vec(),
         }
     }

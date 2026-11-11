@@ -66,3 +66,29 @@ fn a_canceled_token_stays_canceled_and_decides_the_result_of_a_scan() {
     let listed = enumerate_image_files(&text, 0, &CancelToken::new()).expect("not canceled");
     assert_eq!(listed.len(), 600);
 }
+
+/// Reference: the C# rule as the old Rust code wrote it (`limit > 0 && len > limit => first limit, else a copy`).
+fn apply_image_limit_reference(files: &[String], limit: i32) -> Vec<String> {
+    match usize::try_from(limit) {
+        Ok(limit) if limit > 0 && files.len() > limit => files[..limit].to_vec(),
+        _ => files.to_vec(),
+    }
+}
+
+/// `apply_image_limit` (`files.get(..limit)` form) equals the old comparison form for every length 0..=70 and every limit in
+/// -3..=75 plus `i32::MIN`, `-1`, `0`, `i32::MAX` (len == limit, len == limit +- 1, limit <= 0 and limit far above len included).
+#[test]
+fn apply_image_limit_matches_the_comparison_form_on_every_boundary() {
+    for len in 0..=70usize {
+        let files: Vec<String> = (0..len).map(|i| format!("d/f{i:03}.jpg")).collect();
+        let limits = (-3..=75i32).chain([i32::MIN, i32::MIN + 1, i32::MAX - 1, i32::MAX]);
+        for limit in limits {
+            assert_eq!(
+                BenchmarkPresenter::apply_image_limit(&files, limit),
+                apply_image_limit_reference(&files, limit),
+                "len {len} limit {limit}"
+            );
+        }
+    }
+    assert!(BenchmarkPresenter::apply_image_limit(&[], 0).is_empty());
+}
