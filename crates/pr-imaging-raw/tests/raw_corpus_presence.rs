@@ -39,7 +39,9 @@ fn raw_corpus_presence_report() {
     let skip_sites: usize = GATED_FILES
         .iter()
         .filter_map(|name| std::fs::read_to_string(tests_dir.join(name)).ok())
-        .map(|text| text.matches("corpus_skip::skipped(").count())
+        .map(|text| {
+            text.matches("corpus_skip::skipped(").count() + text.matches("corpus_skip::skip_or_strict_fail(").count()
+        })
         .sum();
     let strict = ["PHOTOREVIEW_RAW_CORPUS_STRICT", "PHOTOREVIEW_RS_RAW_CORPUS_STRICT"]
         .iter()
