@@ -260,6 +260,13 @@ fn access_denied_without_path() -> ToolError {
     ToolError::new("UnauthorizedAccessException", "Access to the path is denied.")
 }
 
+/// Win32 attribute bits that make `MoveFileEx(MOVEFILE_REPLACE_EXISTING)` answer `ERROR_ACCESS_DENIED`: `FILE_ATTRIBUTE_READONLY` (0x1)
+/// | `FILE_ATTRIBUTE_DIRECTORY` (0x10). A const item so the `|` is evaluated at compile time (the bits are disjoint, so `|` equals `^`).
+#[cfg(windows)]
+const REPLACE_REFUSING_ATTRIBUTES: u32 = 0x1 | 0x10;
+#[cfg(windows)]
+const _: () = assert!(REPLACE_REFUSING_ATTRIBUTES == 0x11);
+
 /// True when `MoveFileEx(MOVEFILE_REPLACE_EXISTING)` would answer `ERROR_ACCESS_DENIED` for the existing `full`: a directory (also a
 /// directory link), a read-only file, or a file another handle holds open WITH `FILE_SHARE_DELETE` (Rust's `rename` has POSIX
 /// semantics and would replace it). A leaf held open without `FILE_SHARE_DELETE` is left to `rename`, which fails with a
@@ -268,8 +275,6 @@ fn access_denied_without_path() -> ToolError {
 fn leaf_refuses_replacement(full: &str) -> bool {
     use std::fs::OpenOptions;
     use std::os::windows::fs::{MetadataExt, OpenOptionsExt};
-    const FILE_ATTRIBUTE_READONLY: u32 = 0x1;
-    const FILE_ATTRIBUTE_DIRECTORY: u32 = 0x10;
     const DELETE: u32 = 0x1_0000;
     const FILE_SHARE_ALL: u32 = 0x7;
     const FILE_FLAG_OPEN_REPARSE_POINT: u32 = 0x0020_0000;
@@ -278,7 +283,7 @@ fn leaf_refuses_replacement(full: &str) -> bool {
     let Ok(metadata) = std::fs::symlink_metadata(full) else {
         return false;
     };
-    if metadata.file_attributes() & (FILE_ATTRIBUTE_READONLY | FILE_ATTRIBUTE_DIRECTORY) != 0 {
+    if metadata.file_attributes() & REPLACE_REFUSING_ATTRIBUTES != 0 {
         return true;
     }
     let open = |share: u32| {
@@ -421,5 +426,30 @@ mod tests {
             "{}",
             sharing.message
         );
+    }
+
+    /// The old inline expression, kept as the reference for the differential test.
+    #[cfg(windows)]
+    fn old_refuses(attributes: u32) -> bool {
+        attributes & (0x1 | 0x10) != 0
+    }
+
+    #[cfg(windows)]
+    #[test]
+    fn replace_refusing_mask_matches_old_expression_for_every_bit_class() {
+        assert_eq!(REPLACE_REFUSING_ATTRIBUTES, 0x11);
+        let mut samples = vec![0u32, u32::MAX, 0x11, 0x20, 0x80, 0x400, 0x0FFF_FFEE];
+        for bit in 0..32 {
+            samples.push(1u32 << bit);
+            samples.push(!(1u32 << bit));
+            samples.push(0x11 | (1u32 << bit));
+        }
+        for attributes in samples {
+            assert_eq!(
+                attributes & REPLACE_REFUSING_ATTRIBUTES != 0,
+                old_refuses(attributes),
+                "{attributes:#x}"
+            );
+        }
     }
 }
