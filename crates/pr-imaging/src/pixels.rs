@@ -439,17 +439,18 @@ fn copy_rows(src: &PixelBuffer, dst: &mut PixelBuffer, orientation: i32) {
 }
 
 /// Orientations 5..=8, tiled by [`TRANSPOSE_TILE`]. Destination `(x, y)` takes source pixel index
-/// `origin + x * step_x + y * step_y` (source `W x H`, destination `H x W`):
+/// `origin + x * step_x + y * step_y` (`step_y` = +1 for 5, 6; -1 for 7, 8) (source `W x H`, destination `H x W`):
 /// 5 transpose `src(y, x)`; 6 rotate 90 CW `src(y, H-1-x)`; 7 transverse `src(W-1-y, H-1-x)`; 8 rotate 270 CW
 /// `src(W-1-y, x)`.
 fn copy_transposed(src: &PixelBuffer, dst: &mut PixelBuffer, orientation: i32) {
     let w = i64::from(src.width);
     let h = i64::from(src.height);
-    let (origin, step_x, step_y): (i64, i64, i64) = match orientation {
-        5 => (0, w, 1),
-        6 => ((h - 1) * w, -w, 1),
-        7 => ((h - 1) * w + w - 1, -w, -1),
-        8 => (w - 1, w, -1),
+    // `step_y` is +1 (5, 6) or -1 (7, 8); kept as a direction flag so the per-row base is one add/sub, not a multiply.
+    let (origin, step_x, rows_descend): (i64, i64, bool) = match orientation {
+        5 => (0, w, false),
+        6 => ((h - 1) * w, -w, false),
+        7 => ((h - 1) * w + w - 1, -w, true),
+        8 => (w - 1, w, true),
         _ => return,
     };
     let (Ok(source), Ok(target)) = (src.bytes(), dst.bytes_mut()) else {
@@ -464,8 +465,13 @@ fn copy_transposed(src: &PixelBuffer, dst: &mut PixelBuffer, orientation: i32) {
         while tile_x < dst_width {
             let end_x = (tile_x + TRANSPOSE_TILE).min(dst_width);
             for y in tile_y..end_y {
+                let row_base = if rows_descend {
+                    origin - y as i64
+                } else {
+                    origin + y as i64
+                };
                 for x in tile_x..end_x {
-                    let src_index = origin + x as i64 * step_x + y as i64 * step_y;
+                    let src_index = row_base + x as i64 * step_x;
                     let from = src_index as usize * 4;
                     let to = (y * dst_width + x) * 4;
                     target[to..to + 4].copy_from_slice(&source[from..from + 4]);
