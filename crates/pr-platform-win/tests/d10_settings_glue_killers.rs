@@ -7,7 +7,7 @@ mod fixture;
 mod host_fixture;
 
 use pr_platform_win::dialogs::settings::context::SettingsPageHost;
-use pr_platform_win::dialogs::settings::dialog::host::default_open_url;
+use pr_platform_win::dialogs::settings::dialog::host::{default_open_url, open_url_info};
 
 // Kills context.rs:82:9 `show_external_editors -> Ok(None)`: a host that does not wire the editors dialog answers `Err` (C# `ShowExternalEditors == null`), never "cancelled".
 #[test]
@@ -45,4 +45,29 @@ fn settings_dialog_debug_and_error_texts_are_written() {
     );
     let dialog = fixture::dialog();
     assert!(format!("{:?}", dialog.content()).starts_with("SettingsContent"));
+}
+
+// P-404: kills host.rs field-deletion mutants of the SHELLEXECUTEINFOW (cbSize, fMask, lpVerb, lpFile, nShow). Builds the struct only; ShellExecuteExW is never called.
+#[test]
+fn open_url_info_sets_every_shell_execute_field() {
+    use windows::Win32::UI::Shell::{
+        SEE_MASK_FLAG_DDEWAIT, SEE_MASK_FLAG_NO_UI, SEE_MASK_NOCLOSEPROCESS, SHELLEXECUTEINFOW,
+    };
+    use windows::Win32::UI::WindowsAndMessaging::SW_SHOWNORMAL;
+    let verb: Vec<u16> = "open".encode_utf16().chain(Some(0)).collect();
+    let file: Vec<u16> = "https://example.test/x".encode_utf16().chain(Some(0)).collect();
+    let info = open_url_info(&verb, &file);
+    assert_eq!(info.cbSize as usize, std::mem::size_of::<SHELLEXECUTEINFOW>());
+    assert!(info.cbSize > 0);
+    assert_eq!(info.fMask, SEE_MASK_FLAG_NO_UI | SEE_MASK_FLAG_DDEWAIT);
+    assert_eq!(
+        info.fMask & SEE_MASK_NOCLOSEPROCESS,
+        0,
+        "no hProcess may be requested (handle leak)"
+    );
+    assert!(std::ptr::eq(info.lpVerb.0, verb.as_ptr()));
+    assert!(std::ptr::eq(info.lpFile.0, file.as_ptr()));
+    assert_eq!(info.nShow, SW_SHOWNORMAL.0);
+    assert!(info.lpParameters.is_null() && info.lpDirectory.is_null());
+    assert!(info.hwnd.is_invalid() && info.hProcess.is_invalid());
 }

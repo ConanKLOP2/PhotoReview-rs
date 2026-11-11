@@ -31,9 +31,7 @@ use crate::win32::structs::Hwnd;
 /// An empty `url` is `Err`; so is anything that is not an `http://` or `https://` URL (Rust-only hardening, ST-WIN32 L11: the verb `open` would otherwise start any
 /// path or protocol handler; the only caller passes a `validate_update_url` result). `unsafe` with a SAFETY comment (NUL-terminated UTF-16 buffers that outlive the call).
 pub fn default_open_url(url: &str) -> Result<(), String> {
-    use windows::Win32::UI::Shell::{SEE_MASK_FLAG_DDEWAIT, SEE_MASK_FLAG_NO_UI, SHELLEXECUTEINFOW, ShellExecuteExW};
-    use windows::Win32::UI::WindowsAndMessaging::SW_SHOWNORMAL;
-    use windows::core::PCWSTR;
+    use windows::Win32::UI::Shell::ShellExecuteExW;
     let url = url.trim();
     if url.is_empty() {
         return Err("empty url".to_owned());
@@ -43,16 +41,26 @@ pub fn default_open_url(url: &str) -> Result<(), String> {
     }
     let verb: Vec<u16> = "open".encode_utf16().chain(Some(0)).collect();
     let file: Vec<u16> = url.encode_utf16().chain(Some(0)).collect();
-    let mut info = SHELLEXECUTEINFOW {
+    let mut info = open_url_info(&verb, &file);
+    // SAFETY: info is a live initialized struct; NUL-terminated UTF-16 buffers outlive the call, null parameters/directory are allowed, and no process handle is requested.
+    unsafe { ShellExecuteExW(&mut info) }.map_err(|error| format!("ShellExecute failed ({})", error.code().0))
+}
+
+/// P-404 seam: the `SHELLEXECUTEINFOW` of [`default_open_url`], built without calling the shell so a test can check every field. `verb` and `file` must be NUL-terminated
+/// UTF-16 buffers that outlive the use of the returned struct (it only holds their addresses). Pure; never calls `ShellExecuteExW`.
+#[doc(hidden)]
+pub fn open_url_info(verb: &[u16], file: &[u16]) -> windows::Win32::UI::Shell::SHELLEXECUTEINFOW {
+    use windows::Win32::UI::Shell::{SEE_MASK_FLAG_DDEWAIT, SEE_MASK_FLAG_NO_UI, SHELLEXECUTEINFOW};
+    use windows::Win32::UI::WindowsAndMessaging::SW_SHOWNORMAL;
+    use windows::core::PCWSTR;
+    SHELLEXECUTEINFOW {
         cbSize: std::mem::size_of::<SHELLEXECUTEINFOW>() as u32,
         fMask: SEE_MASK_FLAG_NO_UI | SEE_MASK_FLAG_DDEWAIT,
         lpVerb: PCWSTR(verb.as_ptr()),
         lpFile: PCWSTR(file.as_ptr()),
         nShow: SW_SHOWNORMAL.0,
         ..Default::default()
-    };
-    // SAFETY: info is a live initialized struct; NUL-terminated UTF-16 buffers outlive the call, null parameters/directory are allowed, and no process handle is requested.
-    unsafe { ShellExecuteExW(&mut info) }.map_err(|error| format!("ShellExecute failed ({})", error.code().0))
+    }
 }
 
 /// `true` when `url` (after trim) starts with `http://` or `https://` (ASCII case-insensitive) followed by at least one more character and contains no control

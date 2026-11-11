@@ -41,6 +41,16 @@ fn wide(value: &str) -> Result<Vec<u16>, HttpError> {
     }
     Ok(value.encode_utf16().chain(Some(0)).collect())
 }
+/// P-404 seam: the URL text without its trailing NUL terminator (`wide` always appends exactly one). Identical to the former `&text[..text.len() - 1]` for every
+/// non-empty buffer; an empty buffer (unreachable, `wide` never returns one) used to panic on the subtraction and now stays empty.
+fn without_terminator(text: &[u16]) -> &[u16] {
+    text.split_last().map_or(text, |(_, rest)| rest)
+}
+/// P-404 seam: `WinHttpSetStatusCallback` reports failure as `WINHTTP_INVALID_STATUS_CALLBACK` (`-1`, i.e. `usize::MAX`); `None` (no previous callback) and any
+/// real address are success. `previous` is the returned callback pointer as an address.
+fn callback_registration_failed(previous: Option<usize>) -> bool {
+    previous == Some(usize::MAX)
+}
 /// P-393 seam: `cap` is a parameter so a test can use a small one (production passes `HEADER_CAP`); the size query counts the NUL.
 fn header_block_too_large(bytes: u32, cap: u32) -> bool {
     bytes > 2 * cap + 2
@@ -182,7 +192,7 @@ impl Url {
             ..Default::default()
         };
         // SAFETY: initialized structure; returned ranges borrow text and are copied before it drops.
-        unsafe { WinHttpCrackUrl(&text[..text.len() - 1], 0, &mut parts) }.map_err(win_error)?;
+        unsafe { WinHttpCrackUrl(without_terminator(&text), 0, &mut parts) }.map_err(win_error)?;
         if parts.dwUserNameLength != 0 || parts.dwPasswordLength != 0 {
             return Err(other("credentials in update URL"));
         }
@@ -385,7 +395,7 @@ impl Exchange {
                 0,
             )
         };
-        if previous.is_some_and(|f| f as usize == usize::MAX) {
+        if callback_registration_failed(previous.map(|f| f as usize)) {
             return Err(other("WinHTTP callback registration failed"));
         }
         let context = Arc::into_raw(state.clone()) as usize;
@@ -568,6 +578,44 @@ impl HttpTransport for WinHttpTransport {
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn without_terminator_matches_the_old_slice_for_every_wide_buffer() {
+        // P-404 differential: old formula `&text[..text.len() - 1]` over every buffer `wide` can produce (always >= 1 unit, ends in NUL).
+        fn old(text: &[u16]) -> &[u16] {
+            &text[..text.len() - 1]
+        }
+        for url in ["", "a", "http://127.0.0.1:1/x", "\u{1F600}", "https://h/p?q=1#f"] {
+            let text = wide(url).unwrap();
+            assert_eq!(without_terminator(&text), old(&text), "{url:?}");
+            assert_eq!(without_terminator(&text).len(), text.len() - 1);
+            assert!(!without_terminator(&text).contains(&0));
+        }
+        // Empty buffer: unreachable through `wide`; the seam stays empty instead of underflowing.
+        assert_eq!(without_terminator(&[]), &[] as &[u16]);
+        assert_eq!(without_terminator(&[0]), &[] as &[u16]);
+        assert_eq!(without_terminator(&[7, 8, 0]), &[7u16, 8][..]);
+    }
+
+    #[test]
+    fn callback_registration_fails_only_for_the_invalid_sentinel() {
+        // P-404: None = no previous callback (success), a real address = success, usize::MAX = WINHTTP_INVALID_STATUS_CALLBACK.
+        assert!(!callback_registration_failed(None));
+        assert!(callback_registration_failed(Some(usize::MAX)));
+        for address in [0usize, 1, 0x1000, usize::MAX - 1] {
+            assert!(!callback_registration_failed(Some(address)), "{address:#x}");
+        }
+    }
+
+    #[test]
+    fn parse_cracks_a_loopback_url_through_the_terminator_seam() {
+        // P-404: Url::parse feeds the NUL-less text to WinHttpCrackUrl (no network); a wrongly cut buffer changes host/path.
+        let url = Url::parse("http://127.0.0.1:8080/a/b?x=1").unwrap();
+        assert!(url.loopback && !url.https);
+        assert_eq!(url.port, 8080);
+        assert_eq!(url.host, wide("127.0.0.1").unwrap());
+        assert_eq!(url.path, wide("/a/b?x=1").unwrap());
+    }
+
     #[test]
     fn no_proxy_leading_dot_entry_requires_a_longer_host() {
         // C#: default HttpClient proxy grammar seam; no direct C# unit-test twin.
