@@ -14,6 +14,7 @@
 use crate::formats::limits::{DEFAULT_EXIF_BLOCK_BYTES, MAX_ENTRIES_PER_IFD, MAX_EXIF_BLOCK_BYTES};
 use crate::{ExifBlock, RawHeaderError, RawHeaderSource};
 use pr_imaging::tiff::{read_u16, read_u32, read_unsigned, type_size};
+use std::num::NonZeroUsize;
 
 /// IFD0 tags whose values the EXIF summary reads (Make, Model, DateTime, ExifIFD pointer).
 const IFD0_TAGS: [u16; 4] = [0x010F, 0x0110, 0x0132, 0x8769];
@@ -166,18 +167,24 @@ pub fn read_tag_unsigned_array(
     max_items: i32,
 ) -> Result<Vec<i64>, RawHeaderError> {
     let size = i64::from(type_size(entry.field_type));
+    // An unknown type has no item size: the `NonZeroUsize` cannot exist for it, so nothing below can divide into zero-size items.
+    let Some(item_size) = usize::try_from(size).ok().and_then(NonZeroUsize::new) else {
+        return Ok(Vec::new());
+    };
     let Ok(max_u32) = u32::try_from(max_items) else {
         return Ok(Vec::new());
     };
-    if size == 0 || entry.count == 0 || max_u32 == 0 {
+    // `count == 0` or `max_items == 0` asks for nothing: answer before any `length()` / `read()` call, like C#.
+    let wanted = entry.count.min(max_u32);
+    if wanted == 0 {
         return Ok(Vec::new());
     }
-    let n = i64::from(entry.count.min(max_u32));
+    let n = i64::from(wanted);
     let total = size * i64::from(entry.count);
     let mut result = Vec::new();
     if total <= 4 {
         let buf = inline_bytes(entry.value_or_offset, little_endian);
-        collect_items(&buf, n, size, entry.field_type, little_endian, &mut result);
+        collect_items(&buf, n, item_size, entry.field_type, little_endian, &mut result);
         return Ok(result);
     }
     let len = source.length();
@@ -192,7 +199,7 @@ pub fn read_tag_unsigned_array(
         return Ok(result);
     };
     let span = source.read(offset, want_i32)?;
-    collect_items(span, n, size, entry.field_type, little_endian, &mut result);
+    collect_items(span, n, item_size, entry.field_type, little_endian, &mut result);
     Ok(result)
 }
 
@@ -506,19 +513,12 @@ fn inline_bytes(value: u32, little_endian: bool) -> [u8; 4] {
 }
 
 /// Decodes up to `n` items of `size` bytes from `span` into `out` (RATIONAL rounded half away from zero, items without an
-/// unsigned reading skipped).
-fn collect_items(span: &[u8], n: i64, size: i64, field_type: u16, little_endian: bool, out: &mut Vec<i64>) {
-    let span_len = i64::try_from(span.len()).unwrap_or(i64::MAX);
-    for i in 0..n {
-        if (i + 1) * size > span_len {
-            break;
-        }
-        let Ok(start) = usize::try_from(i * size) else { break };
-        let item = &span[start..];
+/// unsigned reading skipped). Only the whole items the span holds are decoded: a source that answered fewer bytes than
+/// asked ends the list at its last whole item, exactly as the C# loop breaks at the first item that would end past the span.
+fn collect_items(span: &[u8], n: i64, size: NonZeroUsize, field_type: u16, little_endian: bool, out: &mut Vec<i64>) {
+    let n = usize::try_from(n).unwrap_or(usize::MAX);
+    for item in span.chunks_exact(size.get()).take(n) {
         if field_type == 5 {
-            if item.len() < 8 {
-                continue;
-            }
             let num = read_u32(item, 0, little_endian);
             let den = read_u32(item, 4, little_endian);
             if den == 0 {

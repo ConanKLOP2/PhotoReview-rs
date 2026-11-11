@@ -397,7 +397,6 @@ pub fn is_adobe_rgb_exif(payload: &[u8]) -> bool {
     };
     read_u16_at(tiff, entry + 2, little) == 2
         && read_u32_at(tiff, entry + 4, little) == 4
-        && entry + 12 <= tiff.len() as i64
         && usize::try_from(entry + 8)
             .ok()
             .and_then(|s| tiff.get(s..s + 4))
@@ -414,11 +413,16 @@ fn try_find_long_entry(tiff: &[u8], ifd_offset: i64, tag: u16, little: bool) -> 
     Some(i64::from(read_u32_at(tiff, entry + 8, little)))
 }
 
-/// C# `TryFindEntry`: `ifd_offset < 8 || ifd_offset + 2 > tiff.len()` -> `None`; scans the `count` (u16) entries, `None` as
-/// soon as one entry would end past `tiff.len()`, otherwise the offset of the FIRST entry with `tag`.
-fn try_find_entry(tiff: &[u8], ifd_offset: i64, tag: u16, little: bool) -> Option<i64> {
+/// C# `TryFindEntry`: `ifd_offset < 8` -> `None` (C# also refuses `ifd_offset + 2 > tiff.len()`, which the scan answers the same
+/// way); scans the `count` (u16) entries, `None` as soon as one entry would end past `tiff.len()`, otherwise the offset of
+/// the FIRST entry with `tag`. `pub` + `#[doc(hidden)]` only so the integration tests can pin it against the C# text.
+#[doc(hidden)]
+#[must_use]
+pub fn try_find_entry(tiff: &[u8], ifd_offset: i64, tag: u16, little: bool) -> Option<i64> {
     let len = tiff.len() as i64;
-    if ifd_offset < 8 || ifd_offset + 2 > len {
+    // C# also returns early for `ifd_offset + 2 > len`; that guard is implied by the loop below: such an IFD reads a count of
+    // 0 (no iteration) or a count whose first entry starts at `ifd_offset + 2 > len` and ends past `len` (`None`).
+    if ifd_offset < 8 {
         return None;
     }
     let count = read_u16_at(tiff, ifd_offset, little);
