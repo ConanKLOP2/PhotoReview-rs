@@ -298,8 +298,9 @@ fn path_of_length(root: &TempRoot, units: usize, file_name: &str) -> PathBuf {
         if left == 0 {
             break;
         }
-        // Each folder costs `\` plus its name; keep names <= 200 and never leave a remainder of exactly 1.
-        let name_len = if left <= 201 { left - 1 } else { (left - 2).min(200) };
+        // Each folder costs `\` plus its name; keep names <= 200 and never leave a remainder of exactly 1 (a long name
+        // takes at most `left - 3`; `left - 2` left exactly 1 when `left` was 202 and the path came out one unit short).
+        let name_len = if left <= 201 { left - 1 } else { (left - 3).min(200) };
         folder.push("d".repeat(name_len));
         used += 1 + name_len;
     }
