@@ -13,3 +13,41 @@ pub fn skipped(why: &str) {
     let line = format!("SKIPPED (no RAW corpus: {test}) {why}\n");
     let _ = std::io::stderr().write_all(line.as_bytes());
 }
+
+/// What a corpus test does at its gate.
+#[derive(Debug, PartialEq, Eq, Clone, Copy)]
+pub enum CorpusGate {
+    /// The corpus (or sample) is there: run the test body.
+    Run,
+    /// Absent and not strict: print `SKIPPED` and return.
+    Skip,
+    /// Absent and strict: fail the test.
+    Fail,
+}
+
+/// `PHOTOREVIEW_RAW_CORPUS_STRICT` value is `1` or `true` (trimmed, case-insensitive), as in `cr3_reader.rs`.
+pub fn strict_value(value: Option<&str>) -> bool {
+    value.is_some_and(|v| {
+        let v = v.trim();
+        v == "1" || v.eq_ignore_ascii_case("true")
+    })
+}
+
+/// Pure decision over the env value and corpus presence (no process-environment access, so it is testable in parallel).
+pub fn gate(strict_env: Option<&str>, corpus_present: bool) -> CorpusGate {
+    match (corpus_present, strict_value(strict_env)) {
+        (true, _) => CorpusGate::Run,
+        (false, false) => CorpusGate::Skip,
+        (false, true) => CorpusGate::Fail,
+    }
+}
+
+/// Absent-corpus gate for a test that returns early: strict mode (`PHOTOREVIEW_RAW_CORPUS_STRICT`) panics, otherwise prints
+/// the `SKIPPED` line via [`skipped`].
+pub fn skip_or_strict_fail(why: &str) {
+    let env = std::env::var("PHOTOREVIEW_RAW_CORPUS_STRICT").ok();
+    match gate(env.as_deref(), false) {
+        CorpusGate::Fail => panic!("PHOTOREVIEW_RAW_CORPUS_STRICT is set but the RAW corpus is missing: {why}"),
+        _ => skipped(why),
+    }
+}

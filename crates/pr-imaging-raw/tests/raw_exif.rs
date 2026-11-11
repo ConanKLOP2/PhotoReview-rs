@@ -502,10 +502,37 @@ fn synthetic_tiff_block_yields_exif_summary() {
 }
 
 #[test]
+fn corpus_gate_decision_is_strict_aware() {
+    // Pure decision over (env value, corpus presence); the process environment is not touched (parallel-safe).
+    use corpus_skip::{CorpusGate, gate, strict_value};
+    for on in [
+        "1", "true", "TRUE", "True", " 1 ", "	true
+",
+    ] {
+        assert!(strict_value(Some(on)), "{on:?}");
+        assert_eq!(gate(Some(on), false), CorpusGate::Fail, "{on:?}");
+        assert_eq!(gate(Some(on), true), CorpusGate::Run, "{on:?}");
+    }
+    for off in [
+        None,
+        Some(""),
+        Some("0"),
+        Some("false"),
+        Some("yes"),
+        Some("2"),
+        Some("t"),
+    ] {
+        assert!(!strict_value(off), "{off:?}");
+        assert_eq!(gate(off, false), CorpusGate::Skip, "{off:?}");
+        assert_eq!(gate(off, true), CorpusGate::Run, "{off:?}");
+    }
+}
+
+#[test]
 fn corpus_samples_exif_summary_matches_survey() {
     // C#: RawExifTests.CorpusSamples_ExifSummaryMatchesSurvey ([Trait Native]; the corpus is required)
     if raw_corpus_dir().is_none() {
-        corpus_skip::skipped("tests/fixtures/raw-corpus absent");
+        corpus_skip::skip_or_strict_fail("tests/fixtures/raw-corpus absent");
         return;
     }
     let registry = RawContainerReaderRegistry::new();
@@ -723,11 +750,11 @@ fn corpus_cr3_exif_summary(
     lens: &str,
 ) {
     let Some(path) = raw_corpus_dir().map(|dir| dir.join(file)) else {
-        corpus_skip::skipped("tests/fixtures/raw-corpus absent");
+        corpus_skip::skip_or_strict_fail("tests/fixtures/raw-corpus absent");
         return;
     };
     if !path.is_file() {
-        corpus_skip::skipped(&format!("{file} absent"));
+        corpus_skip::skip_or_strict_fail(&format!("{file} absent"));
         return;
     }
     let bytes = std::fs::read(&path).expect("read CR3 corpus file");
@@ -980,7 +1007,7 @@ fn try_read_exif_hostile_orf_block_does_not_throw() {
 fn corpus_orf_files_expose_exif() {
     // C#: OrfExifMagicTests.CorpusOrfFiles_ExposeExif ([Trait Native]; the corpus is required)
     if raw_corpus_dir().is_none() {
-        corpus_skip::skipped("tests/fixtures/raw-corpus absent");
+        corpus_skip::skip_or_strict_fail("tests/fixtures/raw-corpus absent");
         return;
     }
     for path in raw_corpus_files() {
