@@ -237,3 +237,89 @@ fn style_operand_sets_used_by_the_builder_are_pairwise_disjoint() {
         }
     }
 }
+
+// ---- context.rs / builder layout killers ----
+use pr_platform_win::dialogs::settings::builder::groups::CheckFlowElement;
+use pr_platform_win::dialogs::settings::builder::rows::{ButtonsElement, SettingsLayoutElement, SettingsLayoutSurface};
+use pr_platform_win::dialogs::settings::context::SettingsPageContext;
+
+// Kills context.rs:140:9 `Debug::fmt -> Ok(Default::default())` (writes nothing).
+#[test]
+fn settings_page_context_debug_names_the_type() {
+    let text = format!("{:?}", SettingsPageContext::detached());
+    assert!(text.starts_with("SettingsPageContext"), "{text}");
+}
+
+// context.rs:220:55 (`unwrap_or(-1)` -> `unwrap_or(1)`), :404:9 (`hwnd -> Default::default()`), :419:9 (3 variants) and :426:9 (`Ok(None)`) are
+// equivalent, see the report: the fallback needs > i32::MAX ids, Hwnd = isize defaults to the same 0, and the detached `warn` is a no-op.
+// The unchanged observable contract is pinned here.
+#[test]
+fn detached_context_answers_the_documented_defaults() {
+    let ctx = SettingsPageContext::detached();
+    assert_eq!(ctx.owner(), 0);
+    assert_eq!(ctx.radio_index(&[1, 2, 3]), -1);
+    assert!(ctx.edit_action_profiles(&[]).is_none());
+}
+
+/// Fixed-metric surface: dx/dy identity, every label 0 wide, so a check-flow item is 16 wide and a button 50 wide.
+struct FlatSurface {
+    placed: Vec<(i32, i32, i32)>,
+}
+
+impl SettingsLayoutSurface for FlatSurface {
+    fn dx(&self, n: i32) -> i32 {
+        n
+    }
+    fn dy(&self, n: i32) -> i32 {
+        n
+    }
+    fn line_height(&self) -> i32 {
+        16
+    }
+    fn field_height(&self) -> i32 {
+        23
+    }
+    fn text_of(&self, _id: i32) -> String {
+        String::new()
+    }
+    fn text_height(&self, _id: i32, _width: i32) -> i32 {
+        16
+    }
+    fn text_width(&self, _text: &str) -> i32 {
+        0
+    }
+    fn is_hidden(&self, _id: i32) -> bool {
+        false
+    }
+    fn combo_drop_height(&self, _id: i32) -> i32 {
+        80
+    }
+    fn place(&mut self, id: i32, x: i32, y: i32, _w: i32, _h: i32) {
+        self.placed.push((id, x, y));
+    }
+    fn hide(&mut self, _id: i32) {}
+}
+
+// Kills groups.rs:234:41 `>` -> `>=`: second item ends exactly at `right` (26 + 16 == 42) and must stay on the first row.
+#[test]
+fn check_flow_item_ending_exactly_at_the_limit_stays_on_the_row() {
+    let mut surface = FlatSurface { placed: Vec::new() };
+    let used = CheckFlowElement::new(vec![1, 2], 0).place(&mut surface, 0, 0, 42);
+    assert_eq!(surface.placed, vec![(1, 0, 0), (2, 26, 0)]);
+    assert_eq!(used, 23, "a single row");
+    let mut narrow = FlatSurface { placed: Vec::new() };
+    CheckFlowElement::new(vec![1, 2], 0).place(&mut narrow, 0, 0, 41);
+    assert_eq!(narrow.placed, vec![(1, 0, 0), (2, 0, 22)], "one unit narrower wraps");
+}
+
+// Kills rows.rs:333:41 `>` -> `>=`: second button ends exactly at `right` (56 + 50 == 106) and must stay on the first row.
+#[test]
+fn buttons_item_ending_exactly_at_the_limit_stays_on_the_row() {
+    let mut surface = FlatSurface { placed: Vec::new() };
+    let used = ButtonsElement::new(vec![1, 2], false).place(&mut surface, 0, 0, 106);
+    assert_eq!(surface.placed, vec![(1, 0, 0), (2, 56, 0)]);
+    assert_eq!(used, 28, "a single row");
+    let mut narrow = FlatSurface { placed: Vec::new() };
+    ButtonsElement::new(vec![1, 2], false).place(&mut narrow, 0, 0, 105);
+    assert_eq!(narrow.placed, vec![(1, 0, 0), (2, 0, 27)], "one unit narrower wraps");
+}
