@@ -46,6 +46,15 @@ thread_local! {
     static NEXT_SUBCLASS_KEY: Cell<usize> = const { Cell::new(1) };
 }
 
+/// Test seam: the number of entries in the CURRENT thread's subclass registry (`0` when the registry is already torn down or momentarily borrowed). Read only, no
+/// behaviour change; it lets the native killers observe `forget_subclass_key` and `Drop for SettingsContent`.
+#[doc(hidden)]
+pub fn subclass_registry_len() -> usize {
+    SUBCLASS_REGISTRY
+        .try_with(|registry| registry.try_borrow().map_or(0, |registry| registry.len()))
+        .unwrap_or(0)
+}
+
 // ---- ids of the frame (C# lines 54 to 76; a page control id is `1000 * (page index + 1) + n`) -------------------------------------------------------------
 
 /// C# `HeaderId`: the "Settings" heading above the navigation list (drawn with the header font).
