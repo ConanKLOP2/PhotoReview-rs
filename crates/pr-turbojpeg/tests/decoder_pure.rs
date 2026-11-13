@@ -1916,11 +1916,18 @@ mod repair {
         data: io::Cursor<Vec<u8>>,
         interrupt_next: bool,
         fail_with: Option<io::ErrorKind>,
+        /// Calls that failed so far: after 1000 the stream "ends", so a mutated retry loop stops with a wrong answer
+        /// (fails fast) instead of spinning for ever.
+        failed_calls: usize,
     }
 
     impl Read for Flaky {
         fn read(&mut self, buf: &mut [u8]) -> io::Result<usize> {
             if let Some(kind) = self.fail_with {
+                self.failed_calls += 1;
+                if self.failed_calls > 1000 {
+                    return Ok(0);
+                }
                 return Err(io::Error::from(kind));
             }
             if self.interrupt_next {
@@ -1940,12 +1947,14 @@ mod repair {
             data: io::Cursor::new(data.clone()),
             interrupt_next: true,
             fail_with: None,
+            failed_calls: 0,
         };
         assert_eq!(read_all_bytes(&mut reader, 10).unwrap(), data);
         let mut reader = Flaky {
             data: io::Cursor::new(data),
             interrupt_next: false,
             fail_with: Some(io::ErrorKind::PermissionDenied),
+            failed_calls: 0,
         };
         match read_all_bytes(&mut reader, 10) {
             Err(SourceReadError::Io(e)) => assert_eq!(e.kind(), io::ErrorKind::PermissionDenied),

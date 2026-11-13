@@ -730,15 +730,29 @@ fn read_info_header_the_native_parser_rejects_carries_the_native_detail() {
 #[ignore = "native: needs turbojpeg.dll"]
 fn decode_jpeg_without_a_frame_header_reports_invalid_dimensions_or_header_failure() {
     // C#: TurboJpegGuardMutationTests.Decode_JpegWithoutAFrameHeader_ReportsInvalidDimensions
-    let Some(decoder) = native_decoder_with(memory(1 << 36, 0)) else {
-        return;
-    };
-    let jpeg = hex("FFD8FFE00002FFD9");
-    let error = decoder
-        .decode(&DecodeRequest::new("n.jpg", 0).with_bytes(jpeg.into()))
-        .err()
-        .expect("no frame");
-    assert!(matches!(error.kind(), DecodeError::InvalidData { .. }), "{error:?}");
+    // Bounded: the segment `FFE0 0002` has length 2, so a mutant of `try_read_segment` that does not advance past it
+    // (`2 + length` -> `2 - length`) spins for ever. The body runs on a worker thread and the test fails after 20 s instead
+    // of hanging the whole binary (the spinner is leaked; a panic of the worker is re-raised here).
+    let (tx, rx) = std::sync::mpsc::channel();
+    std::thread::spawn(move || {
+        let outcome = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+            let Some(decoder) = native_decoder_with(memory(1 << 36, 0)) else {
+                return;
+            };
+            let jpeg = hex("FFD8FFE00002FFD9");
+            let error = decoder
+                .decode(&DecodeRequest::new("n.jpg", 0).with_bytes(jpeg.into()))
+                .err()
+                .expect("no frame");
+            assert!(matches!(error.kind(), DecodeError::InvalidData { .. }), "{error:?}");
+        }));
+        let _ = tx.send(outcome);
+    });
+    match rx.recv_timeout(std::time::Duration::from_secs(20)) {
+        Ok(Ok(())) => {}
+        Ok(Err(payload)) => std::panic::resume_unwind(payload),
+        Err(err) => panic!("decode of a JPEG with a length-2 segment did not finish within 20 s ({err})"),
+    }
 }
 
 #[test]
