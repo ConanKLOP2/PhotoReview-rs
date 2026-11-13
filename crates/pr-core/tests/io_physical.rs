@@ -40,6 +40,29 @@ fn phys() -> PhysicalFileSystem {
     PhysicalFileSystem
 }
 
+/// Runs `work` on a worker thread and waits for it at most 20 s (a channel wait, not a sleep). A mutant that makes the
+/// code under test spin forever (the pattern matcher NFA, the `create_directory` walk back) then FAILS the test within
+/// the bound instead of hanging the whole binary until cargo-mutants times it out; the spinning worker is leaked. A panic
+/// of the worker (a failed assertion) is re-raised on the test thread with its original payload.
+fn bounded<T: Send + 'static>(what: &str, work: impl FnOnce() -> T + Send + 'static) -> T {
+    bounded_for(20, what, work)
+}
+
+/// [`bounded`] with its own bound, for the whole-suite wrappers (they take 0.2 s and 2.3 s unmutated, so 60 s leaves
+/// room for a loaded machine without making a timeout look like a kill).
+fn bounded_for<T: Send + 'static>(seconds: u64, what: &str, work: impl FnOnce() -> T + Send + 'static) -> T {
+    let (tx, rx) = std::sync::mpsc::channel();
+    std::thread::spawn(move || {
+        let outcome = std::panic::catch_unwind(std::panic::AssertUnwindSafe(work));
+        let _ = tx.send(outcome);
+    });
+    match rx.recv_timeout(Duration::from_secs(seconds)) {
+        Ok(Ok(value)) => value,
+        Ok(Err(payload)) => std::panic::resume_unwind(payload),
+        Err(err) => panic!("{what} did not finish within {seconds} s ({err})"),
+    }
+}
+
 /// C# `TempRoot.File(name, bytes)`: writes the file (creating its folder) and returns its full path.
 fn file_in(root: &Path, name: &str, bytes: &[u8]) -> PathBuf {
     let path = root.join(name);
@@ -179,6 +202,8 @@ fn access_denied_retried_then_rethrown() {
     let err = replace_with_retry(
         || {
             calls += 1;
+            // Bound the fake itself: a broken retry loop fails here instead of hanging the binary.
+            assert!(calls <= REPLACE_ATTEMPTS, "retry exceeded its attempt budget");
             Err(io::Error::from_raw_os_error(5))
         },
         |ms| sleeps.push(ms),
@@ -198,6 +223,7 @@ fn access_denied_without_code_is_retried() {
     let _ = replace_with_retry(
         || {
             calls += 1;
+            assert!(calls <= REPLACE_ATTEMPTS, "retry exceeded its attempt budget");
             Err(io::Error::new(io::ErrorKind::PermissionDenied, "denied"))
         },
         |_| {},
@@ -226,6 +252,10 @@ fn non_transient_surfaces_immediately() {
         let err = replace_with_retry(
             || {
                 calls += 1;
+                assert!(
+                    calls <= REPLACE_ATTEMPTS,
+                    "retry exceeded its attempt budget for {template}"
+                );
                 Err(make())
             },
             |_| sleeps += 1,
@@ -287,32 +317,38 @@ fn expected_names(case: &Value) -> Vec<String> {
 // Golden physical-fs-pattern through the matcher alone (file names; the directories are excluded by the listing).
 #[test]
 fn golden_physical_fs_pattern_matcher() {
-    let golden = golden::load("physical-fs-pattern");
-    assert_eq!(golden.cases.len(), 56);
-    for case in &golden.cases {
-        let pattern = str_of(case, "pattern");
-        let mut matched: Vec<String> = case["names"]
-            .as_array()
-            .unwrap()
-            .iter()
-            .map(|v| v.as_str().unwrap().to_owned())
-            .filter(|name| matches_win32_expression(pattern, name))
-            .collect();
-        matched.sort();
-        assert_eq!(matched, expected_names(case), "pattern {pattern:?}");
-    }
+    // Bounded: a matcher that never advances (`+=` -> `*=` in the NFA) must fail the test, not hang the binary.
+    bounded("golden pattern matcher", || {
+        let golden = golden::load("physical-fs-pattern");
+        assert_eq!(golden.cases.len(), 56);
+        for case in &golden.cases {
+            let pattern = str_of(case, "pattern");
+            let mut matched: Vec<String> = case["names"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .map(|v| v.as_str().unwrap().to_owned())
+                .filter(|name| matches_win32_expression(pattern, name))
+                .collect();
+            matched.sort();
+            assert_eq!(matched, expected_names(case), "pattern {pattern:?}");
+        }
+    });
 }
 
 #[test]
 fn matches_win32_expression_spot_checks() {
-    assert!(matches_win32_expression("*.jpg", "a.b.jpg"));
-    assert!(!matches_win32_expression("*.jpg", "x.jpg.tmp"));
-    assert!(matches_win32_expression("a?.jpg", "a.jpg"));
-    assert!(matches_win32_expression("*.", "noext"));
-    assert!(!matches_win32_expression("*.", "a.jpg"));
-    assert!(matches_win32_expression("ä.jpg", "Ä.JPG"));
-    assert!(!matches_win32_expression("?a", "a"));
-    assert!(matches_win32_expression(".", "anything"));
+    // Bounded: see `golden_physical_fs_pattern_matcher`.
+    bounded("pattern matcher spot checks", || {
+        assert!(matches_win32_expression("*.jpg", "a.b.jpg"));
+        assert!(!matches_win32_expression("*.jpg", "x.jpg.tmp"));
+        assert!(matches_win32_expression("a?.jpg", "a.jpg"));
+        assert!(matches_win32_expression("*.", "noext"));
+        assert!(!matches_win32_expression("*.", "a.jpg"));
+        assert!(matches_win32_expression("ä.jpg", "Ä.JPG"));
+        assert!(!matches_win32_expression("?a", "a"));
+        assert!(matches_win32_expression(".", "anything"));
+    });
 }
 
 // .NET `FileSystemName` walks UTF-16 code units: `?` / `>` consume ONE surrogate of an astral character. Expected values
@@ -963,10 +999,13 @@ const FAKE_GAPS: &[&str] = &["get_file_stat", "write_read_round_trip", "try_prob
 #[test]
 #[ignore = "native"]
 fn file_system_contract_physical() {
-    for (name, row) in CONTRACT_ROWS {
-        eprintln!("contract row (physical): {name}");
-        row(&Harness::physical());
-    }
+    // Bounded: the rows create folders, and a `create_directory` walk that never ends must fail, not hang the binary.
+    bounded_for(60, "physical contract rows", || {
+        for (name, row) in CONTRACT_ROWS {
+            eprintln!("contract row (physical): {name}");
+            row(&Harness::physical());
+        }
+    });
 }
 
 // C#: FileSystemContractTests.* and FileSystemCollisionContractTests.* (theories), InMemoryFileSystem rows => FakeFileSystem.
@@ -992,7 +1031,11 @@ fn long_path_full_lifecycle() {
     let root = TempRoot::new("fs-collision");
     let fs = phys();
     let deep = (0..8).fold(root.path().to_path_buf(), |acc, _| acc.join("d".repeat(40)));
-    fs.create_directory(&deep).unwrap();
+    let to_create = deep.clone();
+    bounded("long path create_directory", move || {
+        phys().create_directory(&to_create)
+    })
+    .unwrap();
     let file = deep.join(format!("{}.jpg", "f".repeat(60)));
     assert!(file.as_os_str().len() > 300);
 
@@ -1155,7 +1198,12 @@ fn write_all_text_atomic_rename_fails_leaves_no_temp_file() {
     let root = TempRoot::new("atomic-write");
     let target = dir_in(root.path(), "session.json");
 
-    assert!(phys().write_all_text_atomic(&target, "{}", false).is_err());
+    // Bounded: a retry loop that never gives up on the denied rename must fail the test, not hang the binary.
+    let to_write = target.clone();
+    let written = bounded("write over a directory", move || {
+        phys().write_all_text_atomic(&to_write, "{}", false)
+    });
+    assert!(written.is_err());
 
     assert_eq!(tmp_count(root.path()), 0);
     assert!(target.is_dir());
@@ -1168,8 +1216,12 @@ fn physical_non_durable_write_is_atomic_round_trip_and_leaves_no_temp_files() {
     let root = TempRoot::new("session-write-policy");
     let path = root.join("sub").join("state.json");
 
-    phys().write_all_text_atomic(&path, "first", false).unwrap();
-    phys().write_all_text_atomic(&path, "second \u{e9}", false).unwrap();
+    // Bounded: the first write creates `sub` through the `create_directory` walk; a walk that never ends must fail the test.
+    let to_write = path.clone();
+    bounded("atomic writes", move || {
+        phys().write_all_text_atomic(&to_write, "first", false).unwrap();
+        phys().write_all_text_atomic(&to_write, "second \u{e9}", false).unwrap();
+    });
 
     assert_eq!(phys().read_all_text(&path).unwrap(), "second \u{e9}");
     assert_eq!(file_names(&root.join("sub")), vec!["state.json"]);
@@ -1184,7 +1236,12 @@ fn physical_non_durable_write_failed_rename_cleans_up_temp_file() {
     let dir = dir_in(root.path(), "d");
     let target = dir_in(&dir, "target");
 
-    let err = phys().write_all_text_atomic(&target, "x", false).unwrap_err();
+    // Bounded: a retry loop that never gives up on the denied rename must fail the test, not hang the binary.
+    let to_write = target.clone();
+    let err = bounded("write over a directory", move || {
+        phys().write_all_text_atomic(&to_write, "x", false)
+    })
+    .unwrap_err();
 
     assert_eq!(err.kind(), io::ErrorKind::PermissionDenied);
     assert_eq!(err.raw_os_error(), Some(5));
@@ -1595,12 +1652,17 @@ fn golden_physical_fs_pattern_on_disk() {
     for dir in first["dirs"].as_array().unwrap() {
         dir_in(root.path(), dir.as_str().unwrap());
     }
-    for case in &golden.cases {
-        let pattern = str_of(case, "pattern");
-        let mut found = names_of(&phys().enumerate_files(root.path(), pattern).unwrap());
-        found.sort();
-        assert_eq!(found, expected_names(case), "pattern {pattern:?}");
-    }
+    // Bounded: a matcher that never advances must fail the test, not hang the binary (see `golden_physical_fs_pattern_matcher`).
+    let dir = root.path().to_path_buf();
+    let cases = golden.cases.clone();
+    bounded("golden pattern listing", move || {
+        for case in &cases {
+            let pattern = str_of(case, "pattern");
+            let mut found = names_of(&phys().enumerate_files(&dir, pattern).unwrap());
+            found.sort();
+            assert_eq!(found, expected_names(case), "pattern {pattern:?}");
+        }
+    });
 }
 
 // ---------------------------------------------------------------------------------------------------------------
@@ -1941,6 +2003,11 @@ fn check_error(name: &str, err: &io::Error, exception: &str, win32: i64) {
 #[test]
 #[ignore = "native"]
 fn golden_physical_fs_ops() {
+    // Bounded: the `mkdir` cases hang under a `create_directory` walk that never ends; fail instead of hanging the binary.
+    bounded_for(60, "golden physical-fs-ops", golden_physical_fs_ops_cases);
+}
+
+fn golden_physical_fs_ops_cases() {
     let golden = golden::load("physical-fs-ops");
     assert_eq!(golden.cases.len(), 145);
     let mut failures = Vec::new();
@@ -2170,10 +2237,18 @@ fn create_directory_on_a_dangling_junction_is_ok() {
     let jd = links.junction(&root.path().join("jd"), &gone);
     fs::remove_dir(&gone).unwrap();
 
-    phys().create_directory(&jd).unwrap();
-    let under = phys().create_directory(&jd.join("x"));
+    // Bounded: a `create_directory` walk that never ends must fail the test, not hang the binary.
+    let (on_junction, under, write) = {
+        let jd = jd.clone();
+        bounded("create_directory on a dangling junction", move || {
+            let on_junction = phys().create_directory(&jd);
+            let under = phys().create_directory(&jd.join("x"));
+            let write = phys().write_all_text_atomic(&jd.join("x").join("f.json"), "{}", false);
+            (on_junction, under, write)
+        })
+    };
+    on_junction.unwrap();
     assert_eq!(under.unwrap_err().raw_os_error(), Some(3));
-    let write = phys().write_all_text_atomic(&jd.join("x").join("f.json"), "{}", false);
     assert_eq!(write.unwrap_err().raw_os_error(), Some(3));
 }
 
@@ -2185,12 +2260,26 @@ fn create_directory_on_a_dangling_junction_is_ok() {
 fn create_directory_creates_missing_levels_and_rejects_a_file() {
     let root = spelled_root("dotnet-norm");
     let deep = root.path().join("n1").join("n2").join("n3");
-    phys().create_directory(&deep).unwrap();
+    let trailing = spelled(&root, r"\n1\n2\");
+    let on_file_path = root.path().join("a.txt");
+    let under_file_path = root.path().join("a.txt").join("x");
+    // Bounded: the `-=` mutants of the walk back in `create_directory_impl` never end; the calls run on a worker thread
+    // so the mutant fails this test within 20 s instead of hanging the binary.
+    let (created, again, trailing_created, on_file, under_file) = {
+        let deep = deep.clone();
+        bounded("create_directory walk", move || {
+            let created = phys().create_directory(&deep);
+            let again = phys().create_directory(&deep);
+            let trailing_created = phys().create_directory(&trailing);
+            let on_file = phys().create_directory(&on_file_path);
+            let under_file = phys().create_directory(&under_file_path);
+            (created, again, trailing_created, on_file, under_file)
+        })
+    };
+    created.unwrap();
     assert!(deep.is_dir());
-    phys().create_directory(&deep).unwrap();
-    phys().create_directory(&spelled(&root, r"\n1\n2\")).unwrap();
-    let on_file = phys().create_directory(&root.path().join("a.txt"));
+    again.unwrap();
+    trailing_created.unwrap();
     assert_eq!(on_file.unwrap_err().raw_os_error(), Some(183));
-    let under_file = phys().create_directory(&root.path().join("a.txt").join("x"));
     assert_eq!(under_file.unwrap_err().raw_os_error(), Some(183));
 }

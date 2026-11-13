@@ -496,6 +496,12 @@ fn is_device(path: &str) -> bool {
         || (b[0] == b'\\' && b[1] == b'?' && b[2] == b'?' && b[3] == b'\\')
 }
 
+/// Test seam of [`is_device`] (a private pure predicate over path text).
+#[doc(hidden)]
+pub fn is_device_for_tests(path: &str) -> bool {
+    is_device(path)
+}
+
 /// `PathInternal.EnsureExtendedPrefix`: `\\?\` (or `\\?\UNC\`) in front of a fully qualified, non-device path.
 fn ensure_extended_prefix(path: &str) -> String {
     if !dotnet_path::is_path_fully_qualified(path) || is_device(path) {
@@ -515,6 +521,13 @@ fn ensure_extended_prefix_if_needed(path: &str) -> String {
     } else {
         path.to_owned()
     }
+}
+
+/// Test seam of [`ensure_extended_prefix_if_needed`] (and through it of `ensure_extended_prefix`): a pure function of
+/// the path text.
+#[doc(hidden)]
+pub fn ensure_extended_prefix_if_needed_for_tests(path: &str) -> String {
+    ensure_extended_prefix_if_needed(path)
 }
 
 fn is_sep(c: char) -> bool {
@@ -951,7 +964,24 @@ fn open_physical_listing(directory: &Path) -> io::Result<Box<dyn Iterator<Item =
 /// `ResolveIfReparsePoint`: the final target of `candidate` when it exists (by the entry itself) and is a symlink or
 /// junction; otherwise `candidate` unchanged.
 fn resolve_if_reparse_point(candidate: String) -> io::Result<String> {
-    let Some(attributes) = entry_attributes(&candidate) else {
+    resolve_if_reparse_point_with(
+        candidate,
+        &mut entry_attributes,
+        &mut |path| fs::read_link(path).is_ok(),
+        &mut final_link_target,
+    )
+}
+
+/// [`resolve_if_reparse_point`] with the attribute query, the "`read_link` succeeds" probe and the final-target walk
+/// injected, so the reparse-attribute test can be checked with attribute values a test cannot always create (a file
+/// symlink whose archive bit is cleared has the attributes `0x400` alone, and a file symlink needs a privilege).
+fn resolve_if_reparse_point_with(
+    candidate: String,
+    attributes_of_entry: &mut dyn FnMut(&str) -> Option<u32>,
+    read_link_succeeds: &mut dyn FnMut(&str) -> bool,
+    final_target: &mut dyn FnMut(&str) -> io::Result<String>,
+) -> io::Result<String> {
+    let Some(attributes) = attributes_of_entry(&candidate) else {
         return Ok(candidate); // doesn't exist yet: nothing to resolve
     };
     if attributes & FILE_ATTRIBUTE_REPARSE_POINT == 0 {
@@ -959,10 +989,22 @@ fn resolve_if_reparse_point(candidate: String) -> io::Result<String> {
     }
     // `LinkTarget` is non-null only for a reparse point .NET understands (symlink or junction): `read_link` fails for
     // other tags (cloud placeholders, dedup ...).
-    if fs::read_link(&candidate).is_err() {
+    if !read_link_succeeds(&candidate) {
         return Ok(candidate);
     }
-    final_link_target(&candidate)
+    final_target(&candidate)
+}
+
+/// Test seam of [`resolve_if_reparse_point`]: the same decision with the attribute query, the `read_link` probe and the
+/// final-target walk injected.
+#[doc(hidden)]
+pub fn resolve_if_reparse_point_for_tests(
+    candidate: String,
+    attributes_of_entry: &mut dyn FnMut(&str) -> Option<u32>,
+    read_link_succeeds: &mut dyn FnMut(&str) -> bool,
+    final_target: &mut dyn FnMut(&str) -> io::Result<String>,
+) -> io::Result<String> {
+    resolve_if_reparse_point_with(candidate, attributes_of_entry, read_link_succeeds, final_target)
 }
 
 /// `FileSystem.GetFinalLinkTarget`: open the link following it and ask the OS for the final path; when the target is
