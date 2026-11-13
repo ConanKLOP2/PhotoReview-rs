@@ -626,7 +626,7 @@ pub fn try_parse(name: &str) -> Option<KeyId> {
     // Step 2: pre-checks. Behaviour-neutral (trap 7): no field name is empty, contains a comma, starts with a digit, `+` or
     // `-`, so the exact lookup below would reject these too. Kept to mirror the C# order.
     let first = canonical.chars().next()?;
-    if canonical.contains(',') || first.is_numeric() || first == '-' || first == '+' {
+    if precheck_rejects(&canonical, first) {
         return None;
     }
     // Step 3: exact, case-sensitive lookup (`Enum.TryParse(ignoreCase: false)`). Every field name, including `None` (trap 6).
@@ -634,4 +634,11 @@ pub fn try_parse(name: &str) -> Option<KeyId> {
         .iter()
         .find(|(declared, _)| *declared == canonical)
         .and_then(|&(_, value)| KeyId::from_value(value))
+}
+
+/// Step-2 pre-check of [`try_parse`] (C# order): comma anywhere, or a first char that is a Unicode digit, `'-'` or `'+'`.
+/// Behaviour-neutral test seam (P-407 candidate): the exact lookup rejects these names too, so only a direct call sees the predicate.
+#[doc(hidden)]
+pub fn precheck_rejects(canonical: &str, first: char) -> bool {
+    canonical.contains(',') || first.is_numeric() || first == '-' || first == '+'
 }

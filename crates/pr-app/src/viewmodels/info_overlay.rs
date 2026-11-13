@@ -392,6 +392,18 @@ fn trimmed_length(chars: &[char]) -> usize {
     }
 }
 
+/// Test seam (behaviour-neutral): runs the private [`is_device`] on `text`. `#[doc(hidden)]`.
+#[doc(hidden)]
+pub fn is_device_for_tests(text: &str) -> bool {
+    is_device(&text.chars().collect::<Vec<char>>())
+}
+
+/// Test seam (behaviour-neutral): runs the private [`root_length`] on `text`. `#[doc(hidden)]`.
+#[doc(hidden)]
+pub fn root_length_for_tests(text: &str) -> usize {
+    root_length(&text.chars().collect::<Vec<char>>())
+}
+
 /// .NET `PathInternal.IsDevice`: a `\\?\` prefix, or two separators + `.`/`?` + a separator.
 fn is_device(chars: &[char]) -> bool {
     let extended = chars.len() >= 4

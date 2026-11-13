@@ -256,9 +256,16 @@ pub fn route(input: WheelInput, enabled: bool, is_touchpad: bool, can_pan: bool)
 /// upward swipe (`delta > 0`) scrolls towards the top (negative offset change). The vertical negation is done on the integer
 /// (`delta.wrapping_neg()`, C# unchecked), then converted, so a zero delta gives `+0.0`, never `-0.0`.
 pub fn pan_offset_delta(input: WheelInput) -> (f64, f64) {
+    pan_offset_delta_scaled(input, PAN_DIP_PER_DELTA_UNIT)
+}
+
+/// [`pan_offset_delta`] with an explicit scale. Behaviour-neutral test seam (P-407 candidate): the production scale is 1.0, which
+/// hides `*` -> `/` mutations; a direct call with another factor makes them observable.
+#[doc(hidden)]
+pub fn pan_offset_delta_scaled(input: WheelInput, dip_per_unit: f64) -> (f64, f64) {
     if input.horizontal {
-        (f64::from(input.delta) * PAN_DIP_PER_DELTA_UNIT, 0.0)
+        (f64::from(input.delta) * dip_per_unit, 0.0)
     } else {
-        (0.0, f64::from(input.delta.wrapping_neg()) * PAN_DIP_PER_DELTA_UNIT)
+        (0.0, f64::from(input.delta.wrapping_neg()) * dip_per_unit)
     }
 }
