@@ -3,6 +3,10 @@
 //! the debug build panics on the `usize` underflow first, so the timeout may come from a build without overflow checks;
 //! 1187:47 and 1187:62 are equivalent). No `turbojpeg.dll`, no golden file, no sleep.
 //!
+//! The file name starts with `a_` on purpose: `cargo test` runs the test binaries in name order and stops at the first one that
+//! fails, so these fail-fast killers run BEFORE `decoder_native`, whose many decode tests would otherwise spin for ever under
+//! the 492:22 mutant (every real JPEG goes through the segment walk) and turn a kill into a timeout.
+//!
 //! Every call that a mutant can turn into an endless loop runs on a worker thread and is awaited with `recv_timeout`; the readers
 //! below additionally stop themselves after a call budget, so a mutated build ends the loop (with a wrong answer) instead of
 //! leaving a spinning thread behind.
