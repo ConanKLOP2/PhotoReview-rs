@@ -1,0 +1,9 @@
+C:/MyProjects/PhotoReview-rs/.claude/worktrees/app-b-killers/target-prepr\debug\deps\viewer_state-986260416e462ab8.d: crates\pr-app\tests\viewer_state.rs Cargo.toml
+
+C:/MyProjects/PhotoReview-rs/.claude/worktrees/app-b-killers/target-prepr\debug\deps\libviewer_state-986260416e462ab8.rmeta: crates\pr-app\tests\viewer_state.rs Cargo.toml
+
+crates\pr-app\tests\viewer_state.rs:
+Cargo.toml:
+
+# env-dep:CLIPPY_ARGS=-D__CLIPPY_HACKERY__warnings__CLIPPY_HACKERY__
+# env-dep:CLIPPY_CONF_DIR
