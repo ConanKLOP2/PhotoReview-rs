@@ -247,6 +247,20 @@ impl FileHashService {
             })
     }
 
+    /// Test seam (behaviour-neutral): runs the whole-file/stream compute and the post-hash check of [`Self::compute_and_cache`]
+    /// directly, with caller-chosen fingerprint and generation, so the length/mtime/generation decisions are observable.
+    #[doc(hidden)]
+    pub fn compute_and_cache_for_tests(
+        &self,
+        path: &str,
+        length: u64,
+        last_write_utc: DateTimeUtc,
+        generation: u64,
+        cancel: &CancelToken,
+    ) -> Result<String, FileHashError> {
+        self.compute_and_cache(path, length, last_write_utc, generation, cancel)
+    }
+
     /// C# `ComputeAndCacheAsync(path, length, lastWriteUtc, generation, token)`, run on the worker of a shared computation.
     /// Whole-file path (C# `CanCache(length)` and not a RAW file, see [`pr_core::catalog::types::is_raw_path`]): reads through
     /// `SourceBytesCache` and hashes the bytes in one call. Otherwise streams the file through `SourceReader` in
