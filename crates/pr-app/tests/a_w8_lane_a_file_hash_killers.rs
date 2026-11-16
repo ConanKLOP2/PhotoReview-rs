@@ -1,5 +1,9 @@
 //! Mutation killers for `pr_app::misc::file_hash` (lane A, part 1).
 //!
+//! The `a_` prefix is deliberate: `cargo test` runs test binaries in name order and stops at the first failing one. The
+//! wait-loop mutants of `get` hang the unbounded tests in `file_hash.rs`, so this bounded file must run (and fail) first.
+//! If it is renamed, or tests run with `--no-fail-fast`, those mutants time out again.
+//!
 //! Why the existing `file_hash*.rs` tests missed these mutants:
 //! - `FileHashService::compute_and_cache` / `complete_if_unchanged` have no production caller (`get` runs the free function
 //!   `compute_and_cache_parts`), so no test could reach them; they are driven through `compute_and_cache_for_tests`.
