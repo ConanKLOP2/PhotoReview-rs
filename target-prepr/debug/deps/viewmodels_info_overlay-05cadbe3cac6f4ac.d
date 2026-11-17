@@ -1,6 +1,6 @@
-C:/MyProjects/PhotoReview-rs/.claude/worktrees/lane-c/target-prepr\debug\deps\viewmodels_info_overlay-05cadbe3cac6f4ac.d: crates\pr-app\tests\viewmodels_info_overlay.rs Cargo.toml
+C:/MyProjects/PhotoReview-rs/.claude/worktrees/lane-d/target-prepr\debug\deps\viewmodels_info_overlay-05cadbe3cac6f4ac.d: crates\pr-app\tests\viewmodels_info_overlay.rs Cargo.toml
 
-C:/MyProjects/PhotoReview-rs/.claude/worktrees/lane-c/target-prepr\debug\deps\libviewmodels_info_overlay-05cadbe3cac6f4ac.rmeta: crates\pr-app\tests\viewmodels_info_overlay.rs Cargo.toml
+C:/MyProjects/PhotoReview-rs/.claude/worktrees/lane-d/target-prepr\debug\deps\libviewmodels_info_overlay-05cadbe3cac6f4ac.rmeta: crates\pr-app\tests\viewmodels_info_overlay.rs Cargo.toml
 
 crates\pr-app\tests\viewmodels_info_overlay.rs:
 Cargo.toml:

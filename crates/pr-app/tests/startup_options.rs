@@ -50,3 +50,19 @@ fn process_env_reads_an_unset_variable_as_none() {
     // New: read-only check of ProcessEnv, never mutates the environment.
     assert_eq!(ProcessEnv.var("PHOTOREVIEW_RS_TEST_UNSET_W8_17D_6E99431B"), None);
 }
+
+// Lane D killers (options.rs:41 `ProcessEnv::var` -> None, options.rs:72 `from_process` -> Default::default()).
+// Read-only: `PATH` is set on every machine that can run cargo, and the process environment is never changed.
+#[test]
+fn process_env_reads_a_set_variable() {
+    let expected = std::env::var_os("PATH").map(|v| v.to_string_lossy().into_owned());
+    assert!(expected.is_some(), "PATH must be set to run the tests");
+    assert_eq!(ProcessEnv.var("PATH"), expected);
+}
+
+#[test]
+fn from_process_equals_from_env_over_the_process_environment() {
+    // Under the `Default::default()` mutant `default()` and `from_process()` call each other and the test aborts.
+    assert_eq!(EnvOptions::from_process(), EnvOptions::from_env(&ProcessEnv));
+    assert_eq!(EnvOptions::default(), EnvOptions::from_process());
+}

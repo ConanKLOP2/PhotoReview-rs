@@ -1,6 +1,6 @@
-C:/MyProjects/PhotoReview-rs/.claude/worktrees/lane-c/target-prepr\debug\deps\viewing_scrollbar_geometry_kills-2bebe1574c080793.d: crates\pr-app\tests\viewing_scrollbar_geometry_kills.rs Cargo.toml
+C:/MyProjects/PhotoReview-rs/.claude/worktrees/lane-d/target-prepr\debug\deps\viewing_scrollbar_geometry_kills-2bebe1574c080793.d: crates\pr-app\tests\viewing_scrollbar_geometry_kills.rs Cargo.toml
 
-C:/MyProjects/PhotoReview-rs/.claude/worktrees/lane-c/target-prepr\debug\deps\libviewing_scrollbar_geometry_kills-2bebe1574c080793.rmeta: crates\pr-app\tests\viewing_scrollbar_geometry_kills.rs Cargo.toml
+C:/MyProjects/PhotoReview-rs/.claude/worktrees/lane-d/target-prepr\debug\deps\libviewing_scrollbar_geometry_kills-2bebe1574c080793.rmeta: crates\pr-app\tests\viewing_scrollbar_geometry_kills.rs Cargo.toml
 
 crates\pr-app\tests\viewing_scrollbar_geometry_kills.rs:
 Cargo.toml:

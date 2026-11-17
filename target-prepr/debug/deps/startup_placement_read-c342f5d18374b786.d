@@ -1,6 +1,6 @@
-C:/MyProjects/PhotoReview-rs/.claude/worktrees/lane-c/target-prepr\debug\deps\startup_placement_read-c342f5d18374b786.d: crates\pr-app\tests\startup_placement_read.rs Cargo.toml
+C:/MyProjects/PhotoReview-rs/.claude/worktrees/lane-d/target-prepr\debug\deps\startup_placement_read-c342f5d18374b786.d: crates\pr-app\tests\startup_placement_read.rs Cargo.toml
 
-C:/MyProjects/PhotoReview-rs/.claude/worktrees/lane-c/target-prepr\debug\deps\libstartup_placement_read-c342f5d18374b786.rmeta: crates\pr-app\tests\startup_placement_read.rs Cargo.toml
+C:/MyProjects/PhotoReview-rs/.claude/worktrees/lane-d/target-prepr\debug\deps\libstartup_placement_read-c342f5d18374b786.rmeta: crates\pr-app\tests\startup_placement_read.rs Cargo.toml
 
 crates\pr-app\tests\startup_placement_read.rs:
 Cargo.toml:

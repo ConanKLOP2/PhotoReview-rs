@@ -1,6 +1,6 @@
-C:/MyProjects/PhotoReview-rs/.claude/worktrees/lane-c/target-prepr\debug\deps\shell_viewing_scaling-f3dc1096bc588733.d: crates\pr-app\tests\shell_viewing_scaling.rs Cargo.toml
+C:/MyProjects/PhotoReview-rs/.claude/worktrees/lane-d/target-prepr\debug\deps\shell_viewing_scaling-f3dc1096bc588733.d: crates\pr-app\tests\shell_viewing_scaling.rs Cargo.toml
 
-C:/MyProjects/PhotoReview-rs/.claude/worktrees/lane-c/target-prepr\debug\deps\libshell_viewing_scaling-f3dc1096bc588733.rmeta: crates\pr-app\tests\shell_viewing_scaling.rs Cargo.toml
+C:/MyProjects/PhotoReview-rs/.claude/worktrees/lane-d/target-prepr\debug\deps\libshell_viewing_scaling-f3dc1096bc588733.rmeta: crates\pr-app\tests\shell_viewing_scaling.rs Cargo.toml
 
 crates\pr-app\tests\shell_viewing_scaling.rs:
 Cargo.toml:

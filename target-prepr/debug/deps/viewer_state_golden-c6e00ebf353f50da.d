@@ -1,6 +1,6 @@
-C:/MyProjects/PhotoReview-rs/.claude/worktrees/lane-c/target-prepr\debug\deps\viewer_state_golden-c6e00ebf353f50da.d: crates\pr-app\tests\viewer_state_golden.rs Cargo.toml
+C:/MyProjects/PhotoReview-rs/.claude/worktrees/lane-d/target-prepr\debug\deps\viewer_state_golden-c6e00ebf353f50da.d: crates\pr-app\tests\viewer_state_golden.rs Cargo.toml
 
-C:/MyProjects/PhotoReview-rs/.claude/worktrees/lane-c/target-prepr\debug\deps\libviewer_state_golden-c6e00ebf353f50da.rmeta: crates\pr-app\tests\viewer_state_golden.rs Cargo.toml
+C:/MyProjects/PhotoReview-rs/.claude/worktrees/lane-d/target-prepr\debug\deps\libviewer_state_golden-c6e00ebf353f50da.rmeta: crates\pr-app\tests\viewer_state_golden.rs Cargo.toml
 
 crates\pr-app\tests\viewer_state_golden.rs:
 Cargo.toml:
