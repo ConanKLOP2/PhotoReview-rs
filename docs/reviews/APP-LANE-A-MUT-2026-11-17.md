@@ -61,4 +61,8 @@ Lines at master 47995dc9.
 
 The two dead methods were deleted and the seam now calls the live `compute_and_cache_parts`; the 15 killer tests are unchanged and pass against live code. A reviewer hand-mutated four live conditions (staleness `||`, `!is_raw_path`, generation `==`, return value) and the killer binary failed for each. The live function has one check the deleted code lacked (cancel after the re-stat, before `cache.set`); C# has none, so no divergence was removed.
 
-The 17 identities inside the deleted methods no longer exist, and line numbers in `file_hash.rs` moved by about -64. The `file_hash.rs` counts above (killed through the seam) therefore describe the code before the removal; a whole-file rerun of `file_hash.rs` on the new code is pending and will replace them.
+The 17 identities inside the deleted methods no longer exist, and line numbers in `file_hash.rs` moved by about -64. The `file_hash.rs` counts above (killed through the seam) therefore describe the code before the removal.
+
+### Whole-file rerun on the new code (2026-11-18)
+
+`cargo-mutants` over `crates/pr-app/src/misc/file_hash.rs` alone, whole `pr-app` suite, `--jobs 1`, `MUT_TIMEOUT=900`, master at `691c9b6b`: 59 identities, 57 caught, 2 unviable, 0 missed, 0 timeout. These counts replace the `file_hash.rs` counts above. The `476:25` limit and the `497` wait-loop note still apply (line numbers have shifted).
