@@ -56,3 +56,9 @@ Lines at master 47995dc9.
 | `viewport_size_source.rs:102:36` `\|` -> `^` in `pack_box` | high word and zero-extended low word are disjoint |
 | `context.rs:119:24` `>` -> `==`, `<`, `>=` in `decimal_digits_15` (3) | the leading digit of a nonzero `{:.14e}` value is 1-9 and zero returns early, so the changed conditions never fire; not trimming trailing zeros gives the same output in the only caller `format_custom_fixed` |
 | `exif.rs:149:63` `>` -> `>=` in `shutter_text` | differs only if `abs(r - D) == D * 0.01` exactly in `f64` for an integer D in 2..10; checked with exact fractions, no `f64` satisfies it |
+
+## Update 2026-11-17: dead duplicate removed (P-408 option B)
+
+The two dead methods were deleted and the seam now calls the live `compute_and_cache_parts`; the 15 killer tests are unchanged and pass against live code. A reviewer hand-mutated four live conditions (staleness `||`, `!is_raw_path`, generation `==`, return value) and the killer binary failed for each. The live function has one check the deleted code lacked (cancel after the re-stat, before `cache.set`); C# has none, so no divergence was removed.
+
+The 17 identities inside the deleted methods no longer exist, and line numbers in `file_hash.rs` moved by about -64. The `file_hash.rs` counts above (killed through the seam) therefore describe the code before the removal; a whole-file rerun of `file_hash.rs` on the new code is pending and will replace them.

@@ -247,8 +247,14 @@ impl FileHashService {
             })
     }
 
-    /// Test seam (behaviour-neutral): runs the whole-file/stream compute and the post-hash check of [`Self::compute_and_cache`]
-    /// directly, with caller-chosen fingerprint and generation, so the length/mtime/generation decisions are observable.
+    /// Test seam (behaviour-neutral): runs the live compute (`compute_and_cache_parts`, the function `get` runs on its worker)
+    /// with the service's own seams and caller-chosen fingerprint and generation, so the length/mtime/generation decisions are
+    /// observable.
+    ///
+    /// C# `ComputeAndCacheAsync(path, length, lastWriteUtc, generation, token)`: whole-file path (C# `CanCache(length)` and not a
+    /// RAW file, see [`pr_core::catalog::types::is_raw_path`]) reads through `SourceBytesCache` and hashes the bytes in one
+    /// call; otherwise the file is streamed through `SourceReader` in [`HASH_STREAM_BUFFER_BYTES`] chunks, checking `cancel`
+    /// before each chunk. Then C# `CompleteIfUnchanged`: re-stat, reject a changed fingerprint, publish unless `clear` ran.
     #[doc(hidden)]
     pub fn compute_and_cache_for_tests(
         &self,
@@ -258,79 +264,21 @@ impl FileHashService {
         generation: u64,
         cancel: &CancelToken,
     ) -> Result<String, FileHashError> {
-        self.compute_and_cache(path, length, last_write_utc, generation, cancel)
-    }
-
-    /// C# `ComputeAndCacheAsync(path, length, lastWriteUtc, generation, token)`, run on the worker of a shared computation.
-    /// Whole-file path (C# `CanCache(length)` and not a RAW file, see [`pr_core::catalog::types::is_raw_path`]): reads through
-    /// `SourceBytesCache` and hashes the bytes in one call. Otherwise streams the file through `SourceReader` in
-    /// [`HASH_STREAM_BUFFER_BYTES`] chunks, checking `cancel` before each chunk.
-    fn compute_and_cache(
-        &self,
-        path: &str,
-        length: u64,
-        last_write_utc: DateTimeUtc,
-        generation: u64,
-        cancel: &CancelToken,
-    ) -> Result<String, FileHashError> {
-        let path_obj = Path::new(path);
-        if cancel.is_canceled() {
-            return Err(FileHashError::Canceled);
-        }
-        let hash = if let Some(cache) = &self.source_bytes {
-            if length <= i64::MAX as u64 && !is_raw_path(path) && cache.can_cache(length as i64) {
-                sha256_hex(&cache.get_or_read(path_obj).map_err(FileHashError::Source)?)
-            } else {
-                let mut r = self
-                    .reader
-                    .open_source(path_obj, SourceReadPriority::Viewer, HASH_STREAM_BUFFER_BYTES)
-                    .map_err(|e| FileHashError::Io(Arc::new(e)))?;
-                Self::hash_stream(&mut *r, cancel)?
-            }
-        } else {
-            let mut r = self
-                .reader
-                .open_source(path_obj, SourceReadPriority::Viewer, HASH_STREAM_BUFFER_BYTES)
-                .map_err(|e| FileHashError::Io(Arc::new(e)))?;
-            Self::hash_stream(&mut *r, cancel)?
-        };
-        self.complete_if_unchanged(path, length, last_write_utc, generation, hash)
-    }
-
-    /// C# `CompleteIfUnchanged(path, length, lastWriteUtc, generation, hash)`.
-    fn complete_if_unchanged(
-        &self,
-        path: &str,
-        length: u64,
-        last_write_utc: DateTimeUtc,
-        generation: u64,
-        hash: String,
-    ) -> Result<String, FileHashError> {
-        let stat = self
-            .fs
-            .try_get_file_stat(Path::new(path))
-            .map_err(|e| FileHashError::Io(Arc::new(e)))?
-            .ok_or_else(|| FileHashError::Io(Arc::new(io::Error::new(io::ErrorKind::NotFound, "file not found"))))?;
-        if stat.length != length || stat.last_write_utc != last_write_utc {
-            let p = path.to_owned();
-            let t = self.texts.clone();
-            return Err(FileHashError::ChangedWhileHashing {
-                path: p.clone(),
-                user_text: Arc::new(move || t.file_changed_while_hashing(&p)),
-            });
-        }
-        if *self.generation.lock().unwrap_or_else(|p| p.into_inner()) == generation {
-            self.cache.set(
-                ignore_case_key(path),
-                HashEntry {
-                    path: path.to_owned(),
-                    length,
-                    last_write_utc,
-                    hash: hash.clone(),
-                },
-            );
-        }
-        Ok(hash)
+        compute_and_cache_parts(
+            ComputeContext {
+                fs: self.fs.as_ref(),
+                reader: self.reader.as_ref(),
+                source_bytes: self.source_bytes.as_deref(),
+                texts: self.texts.clone(),
+                cache: self.cache.as_ref(),
+                generation_counter: self.generation.as_ref(),
+            },
+            path,
+            length,
+            last_write_utc,
+            generation,
+            cancel,
+        )
     }
 
     /// Streams `reader` through the incremental SHA-256 in [`HASH_STREAM_BUFFER_BYTES`] chunks and returns the upper-case hex digest.

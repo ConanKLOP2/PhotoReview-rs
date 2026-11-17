@@ -5,8 +5,8 @@
 //! If it is renamed, or tests run with `--no-fail-fast`, those mutants time out again.
 //!
 //! Why the existing `file_hash*.rs` tests missed these mutants:
-//! - `FileHashService::compute_and_cache` / `complete_if_unchanged` have no production caller (`get` runs the free function
-//!   `compute_and_cache_parts`), so no test could reach them; they are driven through `compute_and_cache_for_tests`.
+//! - the whole-file/stream compute and the post-hash check live in the private free function `compute_and_cache_parts`
+//!   (run by `get` on its worker), which no test could reach directly; they are driven through `compute_and_cache_for_tests`.
 //! - the constants, the English text, `Debug`/`Display`, `is_localized`/`user_text` were never asserted.
 //! - the in-flight bookkeeping after a finished or cancelled flight and the "hash returns with a token that never fires"
 //!   loop condition were only exercised through code paths that hide the difference.
@@ -158,7 +158,7 @@ fn service_debug_is_the_opaque_struct_name() {
     assert_eq!(format!("{service:?}"), "FileHashService { .. }");
 }
 
-// ---------------------------------------------------------------- compute_and_cache / complete_if_unchanged (seam)
+// ---------------------------------------------------------------- compute_and_cache_parts (seam)
 
 struct CountingReader {
     opens: AtomicUsize,
