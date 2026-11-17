@@ -1,6 +1,6 @@
-C:/MyProjects/PhotoReview-rs/.claude/worktrees/app-b-killers/target-prepr\debug\deps\pointer_zoom-9f186e760da12d5f.d: crates\pr-app\tests\pointer_zoom.rs crates\pr-app\tests\common\pointer_fixture.rs Cargo.toml
+C:/MyProjects/PhotoReview-rs/.claude/worktrees/lane-c/target-prepr\debug\deps\pointer_zoom-9f186e760da12d5f.d: crates\pr-app\tests\pointer_zoom.rs crates\pr-app\tests\common\pointer_fixture.rs Cargo.toml
 
-C:/MyProjects/PhotoReview-rs/.claude/worktrees/app-b-killers/target-prepr\debug\deps\libpointer_zoom-9f186e760da12d5f.rmeta: crates\pr-app\tests\pointer_zoom.rs crates\pr-app\tests\common\pointer_fixture.rs Cargo.toml
+C:/MyProjects/PhotoReview-rs/.claude/worktrees/lane-c/target-prepr\debug\deps\libpointer_zoom-9f186e760da12d5f.rmeta: crates\pr-app\tests\pointer_zoom.rs crates\pr-app\tests\common\pointer_fixture.rs Cargo.toml
 
 crates\pr-app\tests\pointer_zoom.rs:
 crates\pr-app\tests\common\pointer_fixture.rs:

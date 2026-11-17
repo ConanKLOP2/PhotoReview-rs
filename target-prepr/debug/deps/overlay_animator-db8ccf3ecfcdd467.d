@@ -1,6 +1,6 @@
-C:/MyProjects/PhotoReview-rs/.claude/worktrees/app-b-killers/target-prepr\debug\deps\overlay_animator-db8ccf3ecfcdd467.d: crates\pr-app\tests\overlay_animator.rs Cargo.toml
+C:/MyProjects/PhotoReview-rs/.claude/worktrees/lane-c/target-prepr\debug\deps\overlay_animator-db8ccf3ecfcdd467.d: crates\pr-app\tests\overlay_animator.rs Cargo.toml
 
-C:/MyProjects/PhotoReview-rs/.claude/worktrees/app-b-killers/target-prepr\debug\deps\liboverlay_animator-db8ccf3ecfcdd467.rmeta: crates\pr-app\tests\overlay_animator.rs Cargo.toml
+C:/MyProjects/PhotoReview-rs/.claude/worktrees/lane-c/target-prepr\debug\deps\liboverlay_animator-db8ccf3ecfcdd467.rmeta: crates\pr-app\tests\overlay_animator.rs Cargo.toml
 
 crates\pr-app\tests\overlay_animator.rs:
 Cargo.toml:

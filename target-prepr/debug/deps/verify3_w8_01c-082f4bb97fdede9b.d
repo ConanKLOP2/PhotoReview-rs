@@ -1,6 +1,6 @@
-C:/MyProjects/PhotoReview-rs/.claude/worktrees/app-b-killers/target-prepr\debug\deps\verify3_w8_01c-082f4bb97fdede9b.d: crates\pr-app\tests\verify3_w8_01c.rs Cargo.toml
+C:/MyProjects/PhotoReview-rs/.claude/worktrees/lane-c/target-prepr\debug\deps\verify3_w8_01c-082f4bb97fdede9b.d: crates\pr-app\tests\verify3_w8_01c.rs Cargo.toml
 
-C:/MyProjects/PhotoReview-rs/.claude/worktrees/app-b-killers/target-prepr\debug\deps\libverify3_w8_01c-082f4bb97fdede9b.rmeta: crates\pr-app\tests\verify3_w8_01c.rs Cargo.toml
+C:/MyProjects/PhotoReview-rs/.claude/worktrees/lane-c/target-prepr\debug\deps\libverify3_w8_01c-082f4bb97fdede9b.rmeta: crates\pr-app\tests\verify3_w8_01c.rs Cargo.toml
 
 crates\pr-app\tests\verify3_w8_01c.rs:
 Cargo.toml:

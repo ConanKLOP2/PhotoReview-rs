@@ -1,6 +1,6 @@
-C:/MyProjects/PhotoReview-rs/.claude/worktrees/app-b-killers/target-prepr\debug\deps\settings_presenter_shortcuts-c7149b762cbb6747.d: crates\pr-app\tests\settings_presenter_shortcuts.rs Cargo.toml
+C:/MyProjects/PhotoReview-rs/.claude/worktrees/lane-c/target-prepr\debug\deps\settings_presenter_shortcuts-c7149b762cbb6747.d: crates\pr-app\tests\settings_presenter_shortcuts.rs Cargo.toml
 
-C:/MyProjects/PhotoReview-rs/.claude/worktrees/app-b-killers/target-prepr\debug\deps\libsettings_presenter_shortcuts-c7149b762cbb6747.rmeta: crates\pr-app\tests\settings_presenter_shortcuts.rs Cargo.toml
+C:/MyProjects/PhotoReview-rs/.claude/worktrees/lane-c/target-prepr\debug\deps\libsettings_presenter_shortcuts-c7149b762cbb6747.rmeta: crates\pr-app\tests\settings_presenter_shortcuts.rs Cargo.toml
 
 crates\pr-app\tests\settings_presenter_shortcuts.rs:
 Cargo.toml:

@@ -1,6 +1,6 @@
-C:/MyProjects/PhotoReview-rs/.claude/worktrees/app-b-killers/target-prepr\debug\deps\mut_render_geometry_killers-f1cf08036aa4c61f.d: crates\pr-app\tests\mut_render_geometry_killers.rs Cargo.toml
+C:/MyProjects/PhotoReview-rs/.claude/worktrees/lane-c/target-prepr\debug\deps\mut_render_geometry_killers-f1cf08036aa4c61f.d: crates\pr-app\tests\mut_render_geometry_killers.rs Cargo.toml
 
-C:/MyProjects/PhotoReview-rs/.claude/worktrees/app-b-killers/target-prepr\debug\deps\libmut_render_geometry_killers-f1cf08036aa4c61f.rmeta: crates\pr-app\tests\mut_render_geometry_killers.rs Cargo.toml
+C:/MyProjects/PhotoReview-rs/.claude/worktrees/lane-c/target-prepr\debug\deps\libmut_render_geometry_killers-f1cf08036aa4c61f.rmeta: crates\pr-app\tests\mut_render_geometry_killers.rs Cargo.toml
 
 crates\pr-app\tests\mut_render_geometry_killers.rs:
 Cargo.toml:

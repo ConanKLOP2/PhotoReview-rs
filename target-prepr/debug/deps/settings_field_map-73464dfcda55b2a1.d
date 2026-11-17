@@ -1,6 +1,6 @@
-C:/MyProjects/PhotoReview-rs/.claude/worktrees/app-b-killers/target-prepr\debug\deps\settings_field_map-73464dfcda55b2a1.d: crates\pr-app\tests\settings_field_map.rs Cargo.toml
+C:/MyProjects/PhotoReview-rs/.claude/worktrees/lane-c/target-prepr\debug\deps\settings_field_map-73464dfcda55b2a1.d: crates\pr-app\tests\settings_field_map.rs Cargo.toml
 
-C:/MyProjects/PhotoReview-rs/.claude/worktrees/app-b-killers/target-prepr\debug\deps\libsettings_field_map-73464dfcda55b2a1.rmeta: crates\pr-app\tests\settings_field_map.rs Cargo.toml
+C:/MyProjects/PhotoReview-rs/.claude/worktrees/lane-c/target-prepr\debug\deps\libsettings_field_map-73464dfcda55b2a1.rmeta: crates\pr-app\tests\settings_field_map.rs Cargo.toml
 
 crates\pr-app\tests\settings_field_map.rs:
 Cargo.toml:

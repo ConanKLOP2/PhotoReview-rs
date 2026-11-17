@@ -1,6 +1,6 @@
-C:/MyProjects/PhotoReview-rs/.claude/worktrees/app-b-killers/target-prepr\debug\deps\viewport_arrow_pan-429f082f90990b5a.d: crates\pr-app\tests\viewport_arrow_pan.rs Cargo.toml
+C:/MyProjects/PhotoReview-rs/.claude/worktrees/lane-c/target-prepr\debug\deps\viewport_arrow_pan-429f082f90990b5a.d: crates\pr-app\tests\viewport_arrow_pan.rs Cargo.toml
 
-C:/MyProjects/PhotoReview-rs/.claude/worktrees/app-b-killers/target-prepr\debug\deps\libviewport_arrow_pan-429f082f90990b5a.rmeta: crates\pr-app\tests\viewport_arrow_pan.rs Cargo.toml
+C:/MyProjects/PhotoReview-rs/.claude/worktrees/lane-c/target-prepr\debug\deps\libviewport_arrow_pan-429f082f90990b5a.rmeta: crates\pr-app\tests\viewport_arrow_pan.rs Cargo.toml
 
 crates\pr-app\tests\viewport_arrow_pan.rs:
 Cargo.toml:

@@ -1,6 +1,6 @@
-C:/MyProjects/PhotoReview-rs/.claude/worktrees/app-b-killers/target-prepr\debug\deps\viewport_types-34efa469df24581f.d: crates\pr-app\tests\viewport_types.rs Cargo.toml
+C:/MyProjects/PhotoReview-rs/.claude/worktrees/lane-c/target-prepr\debug\deps\viewport_types-34efa469df24581f.d: crates\pr-app\tests\viewport_types.rs Cargo.toml
 
-C:/MyProjects/PhotoReview-rs/.claude/worktrees/app-b-killers/target-prepr\debug\deps\libviewport_types-34efa469df24581f.rmeta: crates\pr-app\tests\viewport_types.rs Cargo.toml
+C:/MyProjects/PhotoReview-rs/.claude/worktrees/lane-c/target-prepr\debug\deps\libviewport_types-34efa469df24581f.rmeta: crates\pr-app\tests\viewport_types.rs Cargo.toml
 
 crates\pr-app\tests\viewport_types.rs:
 Cargo.toml:

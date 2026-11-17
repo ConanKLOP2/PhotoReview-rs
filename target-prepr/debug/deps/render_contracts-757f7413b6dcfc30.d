@@ -1,6 +1,6 @@
-C:/MyProjects/PhotoReview-rs/.claude/worktrees/app-b-killers/target-prepr\debug\deps\render_contracts-757f7413b6dcfc30.d: crates\pr-app\tests\render_contracts.rs Cargo.toml
+C:/MyProjects/PhotoReview-rs/.claude/worktrees/lane-c/target-prepr\debug\deps\render_contracts-757f7413b6dcfc30.d: crates\pr-app\tests\render_contracts.rs Cargo.toml
 
-C:/MyProjects/PhotoReview-rs/.claude/worktrees/app-b-killers/target-prepr\debug\deps\librender_contracts-757f7413b6dcfc30.rmeta: crates\pr-app\tests\render_contracts.rs Cargo.toml
+C:/MyProjects/PhotoReview-rs/.claude/worktrees/lane-c/target-prepr\debug\deps\librender_contracts-757f7413b6dcfc30.rmeta: crates\pr-app\tests\render_contracts.rs Cargo.toml
 
 crates\pr-app\tests\render_contracts.rs:
 Cargo.toml:

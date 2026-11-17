@@ -1,6 +1,6 @@
-C:/MyProjects/PhotoReview-rs/.claude/worktrees/app-b-killers/target-prepr\debug\deps\mut_core2_killers-12ee7feda7a6f296.d: crates\pr-app\tests\mut_core2_killers.rs crates\pr-app\tests\support\preview_fakes.rs Cargo.toml
+C:/MyProjects/PhotoReview-rs/.claude/worktrees/lane-c/target-prepr\debug\deps\mut_core2_killers-12ee7feda7a6f296.d: crates\pr-app\tests\mut_core2_killers.rs crates\pr-app\tests\support\preview_fakes.rs Cargo.toml
 
-C:/MyProjects/PhotoReview-rs/.claude/worktrees/app-b-killers/target-prepr\debug\deps\libmut_core2_killers-12ee7feda7a6f296.rmeta: crates\pr-app\tests\mut_core2_killers.rs crates\pr-app\tests\support\preview_fakes.rs Cargo.toml
+C:/MyProjects/PhotoReview-rs/.claude/worktrees/lane-c/target-prepr\debug\deps\libmut_core2_killers-12ee7feda7a6f296.rmeta: crates\pr-app\tests\mut_core2_killers.rs crates\pr-app\tests\support\preview_fakes.rs Cargo.toml
 
 crates\pr-app\tests\mut_core2_killers.rs:
 crates\pr-app\tests\support\preview_fakes.rs:

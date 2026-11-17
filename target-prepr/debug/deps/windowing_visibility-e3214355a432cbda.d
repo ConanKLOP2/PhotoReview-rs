@@ -1,6 +1,6 @@
-C:/MyProjects/PhotoReview-rs/.claude/worktrees/app-b-killers/target-prepr\debug\deps\windowing_visibility-e3214355a432cbda.d: crates\pr-app\tests\windowing_visibility.rs Cargo.toml
+C:/MyProjects/PhotoReview-rs/.claude/worktrees/lane-c/target-prepr\debug\deps\windowing_visibility-e3214355a432cbda.d: crates\pr-app\tests\windowing_visibility.rs Cargo.toml
 
-C:/MyProjects/PhotoReview-rs/.claude/worktrees/app-b-killers/target-prepr\debug\deps\libwindowing_visibility-e3214355a432cbda.rmeta: crates\pr-app\tests\windowing_visibility.rs Cargo.toml
+C:/MyProjects/PhotoReview-rs/.claude/worktrees/lane-c/target-prepr\debug\deps\libwindowing_visibility-e3214355a432cbda.rmeta: crates\pr-app\tests\windowing_visibility.rs Cargo.toml
 
 crates\pr-app\tests\windowing_visibility.rs:
 Cargo.toml:
