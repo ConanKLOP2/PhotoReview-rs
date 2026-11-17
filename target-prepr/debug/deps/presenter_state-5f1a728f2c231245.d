@@ -1,6 +1,6 @@
-C:/MyProjects/PhotoReview-rs/.claude/worktrees/lane-c/target-prepr\debug\deps\presenter_state-5f1a728f2c231245.d: crates\pr-app\tests\presenter_state.rs crates\pr-app\tests\support\presenter_fakes.rs crates\pr-app\tests\support\preview_fakes.rs crates\pr-app\tests\support\../../../../assets/languages/en.json crates\pr-app\tests\support\../../../../assets/languages/vi.json Cargo.toml
+C:/MyProjects/PhotoReview-rs/.claude/worktrees/lane-d/target-prepr\debug\deps\presenter_state-5f1a728f2c231245.d: crates\pr-app\tests\presenter_state.rs crates\pr-app\tests\support\presenter_fakes.rs crates\pr-app\tests\support\preview_fakes.rs crates\pr-app\tests\support\../../../../assets/languages/en.json crates\pr-app\tests\support\../../../../assets/languages/vi.json Cargo.toml
 
-C:/MyProjects/PhotoReview-rs/.claude/worktrees/lane-c/target-prepr\debug\deps\libpresenter_state-5f1a728f2c231245.rmeta: crates\pr-app\tests\presenter_state.rs crates\pr-app\tests\support\presenter_fakes.rs crates\pr-app\tests\support\preview_fakes.rs crates\pr-app\tests\support\../../../../assets/languages/en.json crates\pr-app\tests\support\../../../../assets/languages/vi.json Cargo.toml
+C:/MyProjects/PhotoReview-rs/.claude/worktrees/lane-d/target-prepr\debug\deps\libpresenter_state-5f1a728f2c231245.rmeta: crates\pr-app\tests\presenter_state.rs crates\pr-app\tests\support\presenter_fakes.rs crates\pr-app\tests\support\preview_fakes.rs crates\pr-app\tests\support\../../../../assets/languages/en.json crates\pr-app\tests\support\../../../../assets/languages/vi.json Cargo.toml
 
 crates\pr-app\tests\presenter_state.rs:
 crates\pr-app\tests\support\presenter_fakes.rs:

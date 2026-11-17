@@ -1,6 +1,6 @@
-C:/MyProjects/PhotoReview-rs/.claude/worktrees/lane-c/target-prepr\debug\deps\coordinators_autohide-a7e5661a326720cf.d: crates\pr-app\tests\coordinators_autohide.rs Cargo.toml
+C:/MyProjects/PhotoReview-rs/.claude/worktrees/lane-d/target-prepr\debug\deps\coordinators_autohide-a7e5661a326720cf.d: crates\pr-app\tests\coordinators_autohide.rs Cargo.toml
 
-C:/MyProjects/PhotoReview-rs/.claude/worktrees/lane-c/target-prepr\debug\deps\libcoordinators_autohide-a7e5661a326720cf.rmeta: crates\pr-app\tests\coordinators_autohide.rs Cargo.toml
+C:/MyProjects/PhotoReview-rs/.claude/worktrees/lane-d/target-prepr\debug\deps\libcoordinators_autohide-a7e5661a326720cf.rmeta: crates\pr-app\tests\coordinators_autohide.rs Cargo.toml
 
 crates\pr-app\tests\coordinators_autohide.rs:
 Cargo.toml:

@@ -1,6 +1,6 @@
-C:/MyProjects/PhotoReview-rs/.claude/worktrees/lane-c/target-prepr\debug\deps\viewport_snapshot_eq_killers-1bcf0f895117502e.d: crates\pr-app\tests\viewport_snapshot_eq_killers.rs Cargo.toml
+C:/MyProjects/PhotoReview-rs/.claude/worktrees/lane-d/target-prepr\debug\deps\viewport_snapshot_eq_killers-1bcf0f895117502e.d: crates\pr-app\tests\viewport_snapshot_eq_killers.rs Cargo.toml
 
-C:/MyProjects/PhotoReview-rs/.claude/worktrees/lane-c/target-prepr\debug\deps\libviewport_snapshot_eq_killers-1bcf0f895117502e.rmeta: crates\pr-app\tests\viewport_snapshot_eq_killers.rs Cargo.toml
+C:/MyProjects/PhotoReview-rs/.claude/worktrees/lane-d/target-prepr\debug\deps\libviewport_snapshot_eq_killers-1bcf0f895117502e.rmeta: crates\pr-app\tests\viewport_snapshot_eq_killers.rs Cargo.toml
 
 crates\pr-app\tests\viewport_snapshot_eq_killers.rs:
 Cargo.toml:

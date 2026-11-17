@@ -1,6 +1,6 @@
-C:/MyProjects/PhotoReview-rs/.claude/worktrees/lane-c/target-prepr\debug\deps\startup_launch-44442ae5a12cf7ee.d: crates\pr-app\tests\startup_launch.rs Cargo.toml
+C:/MyProjects/PhotoReview-rs/.claude/worktrees/lane-d/target-prepr\debug\deps\startup_launch-44442ae5a12cf7ee.d: crates\pr-app\tests\startup_launch.rs Cargo.toml
 
-C:/MyProjects/PhotoReview-rs/.claude/worktrees/lane-c/target-prepr\debug\deps\libstartup_launch-44442ae5a12cf7ee.rmeta: crates\pr-app\tests\startup_launch.rs Cargo.toml
+C:/MyProjects/PhotoReview-rs/.claude/worktrees/lane-d/target-prepr\debug\deps\libstartup_launch-44442ae5a12cf7ee.rmeta: crates\pr-app\tests\startup_launch.rs Cargo.toml
 
 crates\pr-app\tests\startup_launch.rs:
 Cargo.toml:

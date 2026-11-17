@@ -1,6 +1,6 @@
-C:/MyProjects/PhotoReview-rs/.claude/worktrees/lane-c/target-prepr\debug\deps\touchpad_gestures-0dadc151021ac6df.d: crates\pr-app\tests\touchpad_gestures.rs Cargo.toml
+C:/MyProjects/PhotoReview-rs/.claude/worktrees/lane-d/target-prepr\debug\deps\touchpad_gestures-0dadc151021ac6df.d: crates\pr-app\tests\touchpad_gestures.rs Cargo.toml
 
-C:/MyProjects/PhotoReview-rs/.claude/worktrees/lane-c/target-prepr\debug\deps\libtouchpad_gestures-0dadc151021ac6df.rmeta: crates\pr-app\tests\touchpad_gestures.rs Cargo.toml
+C:/MyProjects/PhotoReview-rs/.claude/worktrees/lane-d/target-prepr\debug\deps\libtouchpad_gestures-0dadc151021ac6df.rmeta: crates\pr-app\tests\touchpad_gestures.rs Cargo.toml
 
 crates\pr-app\tests\touchpad_gestures.rs:
 Cargo.toml:

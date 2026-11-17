@@ -1,6 +1,6 @@
-C:/MyProjects/PhotoReview-rs/.claude/worktrees/lane-c/target-prepr\debug\deps\golden_gestures-a9c9e24ea44bc09c.d: crates\pr-app\tests\golden_gestures.rs Cargo.toml
+C:/MyProjects/PhotoReview-rs/.claude/worktrees/lane-d/target-prepr\debug\deps\golden_gestures-a9c9e24ea44bc09c.d: crates\pr-app\tests\golden_gestures.rs Cargo.toml
 
-C:/MyProjects/PhotoReview-rs/.claude/worktrees/lane-c/target-prepr\debug\deps\libgolden_gestures-a9c9e24ea44bc09c.rmeta: crates\pr-app\tests\golden_gestures.rs Cargo.toml
+C:/MyProjects/PhotoReview-rs/.claude/worktrees/lane-d/target-prepr\debug\deps\libgolden_gestures-a9c9e24ea44bc09c.rmeta: crates\pr-app\tests\golden_gestures.rs Cargo.toml
 
 crates\pr-app\tests\golden_gestures.rs:
 Cargo.toml:
