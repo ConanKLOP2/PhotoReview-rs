@@ -1,6 +1,6 @@
-C:/MyProjects/PhotoReview-rs/.claude/worktrees/app-b-killers/target-prepr\debug\deps\startup_early_decode-10f32c74cefb01a7.d: crates\pr-app\tests\startup_early_decode.rs Cargo.toml
+C:/MyProjects/PhotoReview-rs/.claude/worktrees/lane-c/target-prepr\debug\deps\startup_early_decode-10f32c74cefb01a7.d: crates\pr-app\tests\startup_early_decode.rs Cargo.toml
 
-C:/MyProjects/PhotoReview-rs/.claude/worktrees/app-b-killers/target-prepr\debug\deps\libstartup_early_decode-10f32c74cefb01a7.rmeta: crates\pr-app\tests\startup_early_decode.rs Cargo.toml
+C:/MyProjects/PhotoReview-rs/.claude/worktrees/lane-c/target-prepr\debug\deps\libstartup_early_decode-10f32c74cefb01a7.rmeta: crates\pr-app\tests\startup_early_decode.rs Cargo.toml
 
 crates\pr-app\tests\startup_early_decode.rs:
 Cargo.toml:

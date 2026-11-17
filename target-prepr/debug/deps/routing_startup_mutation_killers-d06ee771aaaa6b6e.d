@@ -1,6 +1,6 @@
-C:/MyProjects/PhotoReview-rs/.claude/worktrees/app-b-killers/target-prepr\debug\deps\routing_startup_mutation_killers-d06ee771aaaa6b6e.d: crates\pr-app\tests\routing_startup_mutation_killers.rs Cargo.toml
+C:/MyProjects/PhotoReview-rs/.claude/worktrees/lane-c/target-prepr\debug\deps\routing_startup_mutation_killers-d06ee771aaaa6b6e.d: crates\pr-app\tests\routing_startup_mutation_killers.rs Cargo.toml
 
-C:/MyProjects/PhotoReview-rs/.claude/worktrees/app-b-killers/target-prepr\debug\deps\librouting_startup_mutation_killers-d06ee771aaaa6b6e.rmeta: crates\pr-app\tests\routing_startup_mutation_killers.rs Cargo.toml
+C:/MyProjects/PhotoReview-rs/.claude/worktrees/lane-c/target-prepr\debug\deps\librouting_startup_mutation_killers-d06ee771aaaa6b6e.rmeta: crates\pr-app\tests\routing_startup_mutation_killers.rs Cargo.toml
 
 crates\pr-app\tests\routing_startup_mutation_killers.rs:
 Cargo.toml:

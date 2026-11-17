@@ -711,3 +711,50 @@ fn dropping_queued_turn_releases_and_starts_successor() {
     assert_eq!(runs.load(Ordering::SeqCst), 1);
     assert!(!gate.is_held());
 }
+
+// Lane C killer (file_action_gate.rs:147 `&&` -> `||` in GateInner::release): a waiter must NOT be posted when the queue
+// still has a successor, even though no exclusive holder exists. The successor is the only posted action.
+#[test]
+fn finishing_queued_turn_with_successor_posts_only_the_successor_not_the_waiters() {
+    let (gate, scheduler) = gate();
+    let held = slot();
+    let first_held = held.clone();
+    gate.run_queued(move |turn| *first_held.lock().unwrap() = Some(turn));
+    gate.run_queued(|_| {});
+    let called = Arc::new(AtomicUsize::new(0));
+    let waiter_called = called.clone();
+    assert!(!gate.when_released(Box::new(move || {
+        waiter_called.fetch_add(1, Ordering::SeqCst);
+    })));
+
+    finish(&held);
+
+    assert_eq!(
+        scheduler.pending(),
+        1,
+        "only the successor may be posted while the queue is not empty"
+    );
+    assert!(scheduler.pump_one());
+    assert_eq!(called.load(Ordering::SeqCst), 0);
+    assert_eq!(
+        scheduler.pending(),
+        1,
+        "the successor dropped its turn: now the waiter is posted"
+    );
+    scheduler.pump();
+    assert_eq!(called.load(Ordering::SeqCst), 1);
+}
+
+// Lane C killer (file_action_gate.rs:95 Debug for GateTurn): the formatted text names the type and both fields.
+#[test]
+fn gate_turn_debug_names_type_kind_and_finished_flag() {
+    let (gate, _) = gate();
+    let held = slot();
+    let work_held = held.clone();
+    gate.run_exclusive(move |turn| *work_held.lock().unwrap() = Some(turn));
+    let text = format!("{:?}", held.lock().unwrap().as_ref().unwrap());
+    assert!(text.contains("GateTurn"), "{text}");
+    assert!(text.contains("Exclusive"), "{text}");
+    assert!(text.contains("finished: false"), "{text}");
+    finish(&held);
+}

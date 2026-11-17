@@ -1,6 +1,6 @@
-C:/MyProjects/PhotoReview-rs/.claude/worktrees/app-b-killers/target-prepr\debug\deps\viewport_convergence-395bd8d6d4eb2912.d: crates\pr-app\tests\viewport_convergence.rs Cargo.toml
+C:/MyProjects/PhotoReview-rs/.claude/worktrees/lane-c/target-prepr\debug\deps\viewport_convergence-395bd8d6d4eb2912.d: crates\pr-app\tests\viewport_convergence.rs Cargo.toml
 
-C:/MyProjects/PhotoReview-rs/.claude/worktrees/app-b-killers/target-prepr\debug\deps\libviewport_convergence-395bd8d6d4eb2912.rmeta: crates\pr-app\tests\viewport_convergence.rs Cargo.toml
+C:/MyProjects/PhotoReview-rs/.claude/worktrees/lane-c/target-prepr\debug\deps\libviewport_convergence-395bd8d6d4eb2912.rmeta: crates\pr-app\tests\viewport_convergence.rs Cargo.toml
 
 crates\pr-app\tests\viewport_convergence.rs:
 Cargo.toml:

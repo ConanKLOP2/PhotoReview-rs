@@ -1,6 +1,6 @@
-C:/MyProjects/PhotoReview-rs/.claude/worktrees/app-b-killers/target-prepr\debug\deps\menus_zoom_rules-9963bda88556098b.d: crates\pr-app\tests\menus_zoom_rules.rs Cargo.toml
+C:/MyProjects/PhotoReview-rs/.claude/worktrees/lane-c/target-prepr\debug\deps\menus_zoom_rules-9963bda88556098b.d: crates\pr-app\tests\menus_zoom_rules.rs Cargo.toml
 
-C:/MyProjects/PhotoReview-rs/.claude/worktrees/app-b-killers/target-prepr\debug\deps\libmenus_zoom_rules-9963bda88556098b.rmeta: crates\pr-app\tests\menus_zoom_rules.rs Cargo.toml
+C:/MyProjects/PhotoReview-rs/.claude/worktrees/lane-c/target-prepr\debug\deps\libmenus_zoom_rules-9963bda88556098b.rmeta: crates\pr-app\tests\menus_zoom_rules.rs Cargo.toml
 
 crates\pr-app\tests\menus_zoom_rules.rs:
 Cargo.toml:

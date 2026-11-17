@@ -1,6 +1,6 @@
-C:/MyProjects/PhotoReview-rs/.claude/worktrees/app-b-killers/target-prepr\debug\deps\coordinators_sibling_navigator-8c2b68d9f9f7b164.d: crates\pr-app\tests\coordinators_sibling_navigator.rs Cargo.toml
+C:/MyProjects/PhotoReview-rs/.claude/worktrees/lane-c/target-prepr\debug\deps\coordinators_sibling_navigator-8c2b68d9f9f7b164.d: crates\pr-app\tests\coordinators_sibling_navigator.rs Cargo.toml
 
-C:/MyProjects/PhotoReview-rs/.claude/worktrees/app-b-killers/target-prepr\debug\deps\libcoordinators_sibling_navigator-8c2b68d9f9f7b164.rmeta: crates\pr-app\tests\coordinators_sibling_navigator.rs Cargo.toml
+C:/MyProjects/PhotoReview-rs/.claude/worktrees/lane-c/target-prepr\debug\deps\libcoordinators_sibling_navigator-8c2b68d9f9f7b164.rmeta: crates\pr-app\tests\coordinators_sibling_navigator.rs Cargo.toml
 
 crates\pr-app\tests\coordinators_sibling_navigator.rs:
 Cargo.toml:

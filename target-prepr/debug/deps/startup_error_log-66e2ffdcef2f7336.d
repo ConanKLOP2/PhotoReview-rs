@@ -1,6 +1,6 @@
-C:/MyProjects/PhotoReview-rs/.claude/worktrees/app-b-killers/target-prepr\debug\deps\startup_error_log-66e2ffdcef2f7336.d: crates\pr-app\tests\startup_error_log.rs Cargo.toml
+C:/MyProjects/PhotoReview-rs/.claude/worktrees/lane-c/target-prepr\debug\deps\startup_error_log-66e2ffdcef2f7336.d: crates\pr-app\tests\startup_error_log.rs Cargo.toml
 
-C:/MyProjects/PhotoReview-rs/.claude/worktrees/app-b-killers/target-prepr\debug\deps\libstartup_error_log-66e2ffdcef2f7336.rmeta: crates\pr-app\tests\startup_error_log.rs Cargo.toml
+C:/MyProjects/PhotoReview-rs/.claude/worktrees/lane-c/target-prepr\debug\deps\libstartup_error_log-66e2ffdcef2f7336.rmeta: crates\pr-app\tests\startup_error_log.rs Cargo.toml
 
 crates\pr-app\tests\startup_error_log.rs:
 Cargo.toml:

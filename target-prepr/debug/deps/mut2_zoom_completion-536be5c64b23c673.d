@@ -1,6 +1,6 @@
-C:/MyProjects/PhotoReview-rs/.claude/worktrees/app-b-killers/target-prepr\debug\deps\mut2_zoom_completion-536be5c64b23c673.d: crates\pr-app\tests\mut2_zoom_completion.rs crates\pr-app\tests\support\preview_fakes.rs Cargo.toml
+C:/MyProjects/PhotoReview-rs/.claude/worktrees/lane-c/target-prepr\debug\deps\mut2_zoom_completion-536be5c64b23c673.d: crates\pr-app\tests\mut2_zoom_completion.rs crates\pr-app\tests\support\preview_fakes.rs Cargo.toml
 
-C:/MyProjects/PhotoReview-rs/.claude/worktrees/app-b-killers/target-prepr\debug\deps\libmut2_zoom_completion-536be5c64b23c673.rmeta: crates\pr-app\tests\mut2_zoom_completion.rs crates\pr-app\tests\support\preview_fakes.rs Cargo.toml
+C:/MyProjects/PhotoReview-rs/.claude/worktrees/lane-c/target-prepr\debug\deps\libmut2_zoom_completion-536be5c64b23c673.rmeta: crates\pr-app\tests\mut2_zoom_completion.rs crates\pr-app\tests\support\preview_fakes.rs Cargo.toml
 
 crates\pr-app\tests\mut2_zoom_completion.rs:
 crates\pr-app\tests\support\preview_fakes.rs:

@@ -1,6 +1,6 @@
-C:/MyProjects/PhotoReview-rs/.claude/worktrees/app-b-killers/target-prepr\debug\deps\services_render_frame_trace-eebda9bc00523d23.d: crates\pr-app\tests\services_render_frame_trace.rs Cargo.toml
+C:/MyProjects/PhotoReview-rs/.claude/worktrees/lane-c/target-prepr\debug\deps\services_render_frame_trace-eebda9bc00523d23.d: crates\pr-app\tests\services_render_frame_trace.rs Cargo.toml
 
-C:/MyProjects/PhotoReview-rs/.claude/worktrees/app-b-killers/target-prepr\debug\deps\libservices_render_frame_trace-eebda9bc00523d23.rmeta: crates\pr-app\tests\services_render_frame_trace.rs Cargo.toml
+C:/MyProjects/PhotoReview-rs/.claude/worktrees/lane-c/target-prepr\debug\deps\libservices_render_frame_trace-eebda9bc00523d23.rmeta: crates\pr-app\tests\services_render_frame_trace.rs Cargo.toml
 
 crates\pr-app\tests\services_render_frame_trace.rs:
 Cargo.toml:

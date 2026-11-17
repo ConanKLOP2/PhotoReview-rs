@@ -1,6 +1,6 @@
-C:/MyProjects/PhotoReview-rs/.claude/worktrees/app-b-killers/target-prepr\debug\deps\verify_w8_16a_scaling-5856bdd5088f17a2.d: crates\pr-app\tests\verify_w8_16a_scaling.rs Cargo.toml
+C:/MyProjects/PhotoReview-rs/.claude/worktrees/lane-c/target-prepr\debug\deps\verify_w8_16a_scaling-5856bdd5088f17a2.d: crates\pr-app\tests\verify_w8_16a_scaling.rs Cargo.toml
 
-C:/MyProjects/PhotoReview-rs/.claude/worktrees/app-b-killers/target-prepr\debug\deps\libverify_w8_16a_scaling-5856bdd5088f17a2.rmeta: crates\pr-app\tests\verify_w8_16a_scaling.rs Cargo.toml
+C:/MyProjects/PhotoReview-rs/.claude/worktrees/lane-c/target-prepr\debug\deps\libverify_w8_16a_scaling-5856bdd5088f17a2.rmeta: crates\pr-app\tests\verify_w8_16a_scaling.rs Cargo.toml
 
 crates\pr-app\tests\verify_w8_16a_scaling.rs:
 Cargo.toml:

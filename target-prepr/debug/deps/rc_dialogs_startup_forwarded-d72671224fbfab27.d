@@ -1,6 +1,6 @@
-C:/MyProjects/PhotoReview-rs/.claude/worktrees/app-b-killers/target-prepr\debug\deps\rc_dialogs_startup_forwarded-d72671224fbfab27.d: crates\pr-app\tests\rc_dialogs_startup_forwarded.rs Cargo.toml
+C:/MyProjects/PhotoReview-rs/.claude/worktrees/lane-c/target-prepr\debug\deps\rc_dialogs_startup_forwarded-d72671224fbfab27.d: crates\pr-app\tests\rc_dialogs_startup_forwarded.rs Cargo.toml
 
-C:/MyProjects/PhotoReview-rs/.claude/worktrees/app-b-killers/target-prepr\debug\deps\librc_dialogs_startup_forwarded-d72671224fbfab27.rmeta: crates\pr-app\tests\rc_dialogs_startup_forwarded.rs Cargo.toml
+C:/MyProjects/PhotoReview-rs/.claude/worktrees/lane-c/target-prepr\debug\deps\librc_dialogs_startup_forwarded-d72671224fbfab27.rmeta: crates\pr-app\tests\rc_dialogs_startup_forwarded.rs Cargo.toml
 
 crates\pr-app\tests\rc_dialogs_startup_forwarded.rs:
 Cargo.toml:
