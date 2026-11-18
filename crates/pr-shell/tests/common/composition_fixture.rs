@@ -269,6 +269,21 @@ fn shared_services_with_parts(
     )
 }
 
+/// The inputs of the default fixture graph, before `SharedServices::build` (for tests of `SharedServiceInputs` itself).
+#[allow(dead_code)]
+pub fn shared_service_inputs() -> (SharedServiceInputs, TempRoot, Arc<RecordingLog>) {
+    inputs_with_parts_and_platform(
+        Arc::new(FakeMemoryProbe::new()),
+        None,
+        None,
+        None,
+        None,
+        None,
+        None,
+        None,
+    )
+}
+
 #[allow(clippy::too_many_arguments)] // Test fixture: every optional seam is its own parameter.
 fn shared_services_with_parts_and_platform(
     probe: Arc<dyn pr_core::abstractions::MemoryProbe>,
@@ -280,6 +295,30 @@ fn shared_services_with_parts_and_platform(
     fake_fs: Option<Arc<FakeFileSystem>>,
     edit_paths: Option<&dyn Fn(&mut AppPaths)>,
 ) -> (SharedServices, TempRoot, Arc<RecordingLog>) {
+    let (inputs, root, log) = inputs_with_parts_and_platform(
+        probe,
+        wpf_fallback_decoder,
+        decoder_wrapper,
+        data_root_override,
+        move_override,
+        source_reader,
+        fake_fs,
+        edit_paths,
+    );
+    (SharedServices::build(inputs), root, log)
+}
+
+#[allow(clippy::too_many_arguments)] // Test fixture: every optional seam is its own parameter.
+fn inputs_with_parts_and_platform(
+    probe: Arc<dyn pr_core::abstractions::MemoryProbe>,
+    wpf_fallback_decoder: Option<pr_imaging::factory::DecoderProvider>,
+    decoder_wrapper: Option<pr_shell::composition::registry::DecoderFactoryWrapper>,
+    data_root_override: Option<String>,
+    move_override: Option<Arc<dyn pr_app::coordinators::traits::IMoveOverride>>,
+    source_reader: Option<Arc<dyn SourceReader>>,
+    fake_fs: Option<Arc<FakeFileSystem>>,
+    edit_paths: Option<&dyn Fn(&mut AppPaths)>,
+) -> (SharedServiceInputs, TempRoot, Arc<RecordingLog>) {
     let root = temp_root();
     let log = Arc::new(RecordingLog::new());
     let fs = fake_fs.unwrap_or_else(|| Arc::new(FakeFileSystem::new()));
@@ -326,5 +365,5 @@ fn shared_services_with_parts_and_platform(
         decoder_wrapper,
         move_override,
     };
-    (SharedServices::build(inputs), root, log)
+    (inputs, root, log)
 }
