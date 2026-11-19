@@ -19,8 +19,10 @@ fn native_compare(left: &str, right: &str) -> Option<Ordering> {
         // SAFETY: the DLL name is a static NUL-terminated UTF-16 string.
         let module = match unsafe { LoadLibraryW(w!("shlwapi.dll")) } {
             Ok(module) => module,
-            Err(error) if win32_error_code(&error) == ERROR_MOD_NOT_FOUND.0 => return None,
-            Err(error) => panic!("loading shlwapi.dll failed: {error}"),
+            Err(error) => {
+                fallback_for_load_error(&error);
+                return None;
+            }
         };
         // SAFETY: the module handle is valid and the export name is a static NUL-terminated ANSI string.
         let Some(address) = (unsafe { GetProcAddress(module, windows::core::s!("StrCmpLogicalW")) }) else {
@@ -47,6 +49,15 @@ fn native_compare(left: &str, right: &str) -> Option<Ordering> {
             Ordering::Greater => Ordering::Greater,
         },
     )
+}
+
+/// A missing shlwapi (`ERROR_MOD_NOT_FOUND`) selects the managed fallback; any other load failure is a hard error.
+/// Test seam too: returns normally only for the fallback case.
+#[doc(hidden)]
+pub fn fallback_for_load_error(error: &windows::core::Error) {
+    if win32_error_code(error) != ERROR_MOD_NOT_FOUND.0 {
+        panic!("loading shlwapi.dll failed: {error}");
+    }
 }
 
 fn win32_error_code(error: &windows::core::Error) -> u32 {

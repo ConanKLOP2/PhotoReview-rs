@@ -190,6 +190,20 @@ fn read_session_id() -> u32 {
     0
 }
 
+/// Test seam: runs the uncached process-SID reader so its handle handling can be observed repeatedly.
+#[doc(hidden)]
+#[allow(dead_code)]
+pub fn read_user_sid_for_tests() -> String {
+    read_user_sid()
+}
+
+/// Test seam: runs the uncached session-id reader.
+#[doc(hidden)]
+#[allow(dead_code)]
+pub fn read_session_id_for_tests() -> u32 {
+    read_session_id()
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
