@@ -89,14 +89,42 @@ impl LiveOperationRegistry for WindowsLiveOperationRegistry {
                 let _ = unsafe { CloseHandle(handle) };
                 true
             }
-            Err(error) if win32_error_code(&error) == ERROR_ACCESS_DENIED.0 => true,
-            Err(error) if win32_error_code(&error) == ERROR_FILE_NOT_FOUND.0 => false,
-            Err(error) => {
-                self.report(operation_id, "checked", &error);
+            Err(error) => self.open_failure_is_live(operation_id, &error),
+        }
+    }
+}
+
+impl WindowsLiveOperationRegistry {
+    /// Classifies an `OpenEventW` failure: access denied means a live event owned by another identity, file not found
+    /// means no operation, anything else is logged and treated as not live.
+    fn open_failure_is_live(&self, operation_id: &str, error: &windows::core::Error) -> bool {
+        match win32_error_code(error) {
+            code if code == ERROR_ACCESS_DENIED.0 => true,
+            code if code == ERROR_FILE_NOT_FOUND.0 => false,
+            _ => {
+                self.report(operation_id, "checked", error);
                 false
             }
         }
     }
+
+    /// Test seam for the failure classification of `is_live`.
+    #[doc(hidden)]
+    pub fn open_failure_is_live_for_tests(&self, operation_id: &str, error: &windows::core::Error) -> bool {
+        self.open_failure_is_live(operation_id, error)
+    }
+
+    /// Test seam: the exact kernel object name used for an operation id.
+    #[doc(hidden)]
+    pub fn event_name_for_tests(&self, operation_id: &str) -> windows::core::Result<String> {
+        self.name_for(operation_id)
+    }
+}
+
+/// Test seam: the uncached current-user SID reader of this module.
+#[doc(hidden)]
+pub fn current_user_sid_for_tests() -> windows::core::Result<String> {
+    current_user_sid()
 }
 
 struct EventMarker(HANDLE);
