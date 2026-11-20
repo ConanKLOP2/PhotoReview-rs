@@ -820,21 +820,56 @@ pub fn enumerate_image_files(
     if !Path::new(folder).is_dir() {
         return Err(BenchmarkScanError::DirectoryNotFound);
     }
+    let entries = std::fs::read_dir(folder).map_err(|error| BenchmarkScanError::Io(error.to_string()))?;
+    enumerate_scan_entries(
+        entries.map(|entry| {
+            let entry = entry?;
+            let is_dir = entry.file_type()?.is_dir();
+            Ok(ScanEntry {
+                is_dir,
+                path: entry.path(),
+            })
+        }),
+        image_limit,
+        cancel,
+    )
+}
+
+/// One directory entry as [`enumerate_scan_entries`] sees it: whether it is a directory and its path.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct ScanEntry {
+    /// A directory is skipped and not counted.
+    pub is_dir: bool,
+    /// The full path of the entry.
+    pub path: PathBuf,
+}
+
+/// The loop of [`enumerate_image_files`] over any entry source (the seam that lets a test observe the cancel-poll cadence: its iterator can cancel the token or fail at a chosen entry).
+/// Directories are skipped, every other entry counts in `seen`, the token is polled when `seen % ENUMERATION_CANCELLATION_CHECK_INTERVAL == 0`, once more after the loop, then
+/// `apply_image_limit`. An `Err` item is `Io(message)` and ends the scan at once.
+pub fn enumerate_scan_entries<I>(
+    entries: I,
+    image_limit: i32,
+    cancel: &CancelToken,
+) -> Result<Vec<String>, BenchmarkScanError>
+where
+    I: IntoIterator<Item = std::io::Result<ScanEntry>>,
+{
     let io_error = |error: std::io::Error| BenchmarkScanError::Io(error.to_string());
     let canceled = |_| BenchmarkScanError::Canceled;
     let mut supported: Vec<String> = Vec::new();
     let mut seen = 0usize;
-    for entry in std::fs::read_dir(folder).map_err(io_error)? {
+    for entry in entries {
         let entry = entry.map_err(io_error)?;
         // Top-level FILES only (C# `EnumerateFiles`): a directory is skipped and not counted.
-        if entry.file_type().map_err(io_error)?.is_dir() {
+        if entry.is_dir {
             continue;
         }
         seen += 1;
         if seen % ENUMERATION_CANCELLATION_CHECK_INTERVAL == 0 {
             cancel.check().map_err(canceled)?;
         }
-        let path = entry.path().to_string_lossy().into_owned();
+        let path = entry.path.to_string_lossy().into_owned();
         if is_supported(&path) {
             supported.push(path);
         }
