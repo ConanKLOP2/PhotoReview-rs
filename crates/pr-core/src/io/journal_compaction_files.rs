@@ -475,6 +475,23 @@ mod win32 {
 mod tests {
     use super::*;
 
+    // Equivalence proof for the mutants `|` -> `^` at 329:37, 360:36 and 387:52 (COMPACTION-FILES-MUT-2026-11-20): on operands with no
+    // common bit `a | b == a ^ b`, so those mutants cannot change behaviour. The compile-time asserts check the operand pairs.
+    #[cfg(windows)]
+    #[test]
+    fn or_ed_flag_pairs_share_no_bit_so_or_and_xor_agree() {
+        const _: () = assert!(FILE_SHARE_READ & FILE_SHARE_DELETE == 0);
+        const _: () = assert!(GENERIC_WRITE & DELETE == 0);
+        const _: () = assert!(FILE_RENAME_FLAG_REPLACE_IF_EXISTS & FILE_RENAME_FLAG_POSIX_SEMANTICS == 0);
+        for (a, b) in [
+            (FILE_SHARE_READ, FILE_SHARE_DELETE),
+            (GENERIC_WRITE, DELETE),
+            (FILE_RENAME_FLAG_REPLACE_IF_EXISTS, FILE_RENAME_FLAG_POSIX_SEMANTICS),
+        ] {
+            assert_eq!(a | b, a ^ b);
+        }
+    }
+
     #[test]
     fn rename_info_layout_matches_the_csharp_marshal_writes() {
         let (info, size) = rename_info("C:\\a").expect("short name");

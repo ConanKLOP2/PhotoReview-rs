@@ -1,4 +1,5 @@
-# Task on progress
+#- ST-LOOP27 2026-11-20 (branch test/compaction-rerun): `io/journal_compaction_files.rs` whole-file rerun on master 1c5cabec ([COMPACTION-FILES-MUT-2](docs/reviews/COMPACTION-FILES-MUT-2-2026-11-20.md): 99 identities, 79 caught, 13 unviable, 3 equivalent now proven by a compile-time-assert test, 4 not compiled on Windows (P-412), 0 timeout). PARITY journal rows: file no longer blocks rule B, status unchanged.
+ Task on progress
 
 **Rule: one line per unit here (status, PR number); details belong in the PR body and `docs/PARITY.md`; new sections only for decisions or incidents.**
 Keep this file under about 10 KB. When it grows, move old sections verbatim to `docs/archive/` and add a row to the table below.

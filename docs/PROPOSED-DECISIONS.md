@@ -1,4 +1,5 @@
-# Proposed decisions (not yet confirmed by the user)
+#| P-412 | 2026-11-20 | `io/journal_compaction_files.rs`: the mutants 349:5, 368:5, 432:5 and 453:5 are bodies of the `#[cfg(not(windows))]` twins and are not compiled on Windows, so no test can reach them. Option A: accept the label (as CL-MUT-BENCH3 and CL-PHYS5 did). Option B: delete the twins (as #709 did for `tool_path_guard.rs`); they return `NOT_WINDOWS_MESSAGE` errors that keep `pr-core` compiling on other targets. | A: no production change, and the twins stay as the portable stub; the mutation gate runs on Windows only. B shrinks the mutant count by 4 but removes the non-Windows build path. | PROPOSED, option A applied (standing instruction; the owner may reverse it). Evidence: [COMPACTION-FILES-MUT-2](reviews/COMPACTION-FILES-MUT-2-2026-11-20.md). |
+ Proposed decisions (not yet confirmed by the user)
 
 The user's standing instruction (2026-10-15): run the whole project end to end without stopping; record every
 proposal that has not been confirmed and proceed on it. Each row is acted on as written. The user may reverse any
