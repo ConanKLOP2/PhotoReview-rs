@@ -31,7 +31,7 @@ Gate 0 (contract W10-B1: JSON key set and order, .NET `R` number tokens of non-t
 
 ## 5. Stale "Still open" lists in `task_on_progress.md`
 
-ST-LOOP13's list named items that were closed since: D-10 Settings glue (ST-LOOP14, 15), `physical.rs` (ST-LOOP16), pr-app lanes A to D (ST-LOOP18..21), overlay input (ST-LOOP26), benchmark 832/833 (this note). The ST-LOOP22 remark "2 equivalent without libraw.dll, to be checked once" is closed by #740. The list now keeps only what is still open: 679:13 and 680:13 (P-402), the 12 pre-existing `Url::parse` mutants of win-seams, selector 376:22; ST-LOOP21's `startup/mod.rs` and `placement_read.rs` remain as written there.
+ST-LOOP13's list named items that were closed since: D-10 Settings glue (ST-LOOP14, 15), `physical.rs` (ST-LOOP16), pr-app lanes A to D (ST-LOOP18..21), overlay input (ST-LOOP26), benchmark 832/833 (this note). The ST-LOOP22 remark "2 equivalent without libraw.dll, to be checked once" is closed by #740. The list now keeps only what is still open: 679:13 and 680:13 (P-402), selector 376:22 (the win-seams `Url::parse` mutants were decided by #741 meanwhile); ST-LOOP21's `startup/mod.rs` and `placement_read.rs` remain as written there.
 
 ## Not run
 
