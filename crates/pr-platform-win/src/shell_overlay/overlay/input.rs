@@ -109,6 +109,15 @@ impl ShellOverlay {
         }
     }
 
+    /// Test seam (P-411): C# tests set `ButtonElement.IsEnabled = false` directly; the overlay never disables a button itself, so a test needs this
+    /// to exercise the disabled-button branch of [`pointer_down`](Self::pointer_down).
+    #[doc(hidden)]
+    pub fn set_button_enabled_for_tests(&self, button: OverlayButton, enabled: bool) {
+        if let Some(element) = self.state.borrow_mut().button_mut(button) {
+            element.is_enabled = enabled;
+        }
+    }
+
     /// C# `IsPointerDown`: the left press is held by the overlay (button or panel).
     pub fn is_pointer_down(&self) -> bool {
         self.state.borrow().pointer_down
