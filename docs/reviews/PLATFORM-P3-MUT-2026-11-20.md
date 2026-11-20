@@ -6,7 +6,7 @@ Status: evidence report (2026-11-20). Whole-file verdict for the `pr-platform-wi
 
 The whole-file run (before this PR) covered the five files: 164 caught, 32 unviable, 5 timeouts (detected, endless loops), 42 survivors. All 42 survivors are decided here: **42 of 42 killed or detected (no equivalent, none left open)**; one behaviour-neutral test seam is logged as P-411. `state.rs` and `autohide.rs` had no survivor (their timeouts are hang detections) and were not rerun.
 
-Why so many survivors were false: the first run did not execute the existing tests that already guard these functions. `upload.rs` is guarded by `#[ignore = "native: needs desktop"]` tests (offscreen WARP, no window shown), which cargo-mutants skips unless `-- --include-ignored` is passed; `policy.rs` and `input.rs` are guarded by `render_image_cache_policy`, `shell_overlay_input` and `shell_overlay_behavior`, which the first run did not list in `--tests`. With the right test binaries most survivors were already caught; the rest needed 8 new tests and one assertion.
+Why so many survivors were false: the first run did not execute the existing tests that already guard these functions. `upload.rs` is guarded by `#[ignore = "native: needs desktop"]` tests (offscreen WARP, no window shown), which cargo-mutants skips unless `-- --include-ignored` is passed; `policy.rs` and `input.rs` are guarded by `render_image_cache_policy`, `shell_overlay_input` and `shell_overlay_behavior`, which the first run did not list in `--tests`. With the right test binaries most survivors were already caught; the rest needed 11 new tests and one assertion.
 
 ## Rerun (survivor functions only, new test set)
 
