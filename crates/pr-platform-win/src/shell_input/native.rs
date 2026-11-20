@@ -144,8 +144,14 @@ pub fn dpi_of(dpi_scale: f64) -> u32 {
 /// C# `WheelMessageSource.Current()`: `GetCurrentInputMessageSource`; `Touchpad` when the device type is `IMDT_TOUCHPAD` (0x10), else `Unknown`.
 /// Valid only while the wheel message is being dispatched.
 pub fn current_wheel_device() -> WheelDeviceHint {
-    match user32::get_current_input_message_source() {
-        Some(source) if source.deviceType.0 == IMDT_TOUCHPAD => WheelDeviceHint::Touchpad,
+    wheel_device_from_device_type(user32::get_current_input_message_source().map(|source| source.deviceType.0))
+}
+
+/// The pure half of `current_wheel_device` (P-430 test seam, no behaviour change): `Touchpad` only for a known source of type `IMDT_TOUCHPAD`.
+/// A real precision touchpad cannot be produced by a test, so the mapping is exercised here.
+pub fn wheel_device_from_device_type(device_type: Option<i32>) -> WheelDeviceHint {
+    match device_type {
+        Some(device_type) if device_type == IMDT_TOUCHPAD => WheelDeviceHint::Touchpad,
         _ => WheelDeviceHint::Unknown,
     }
 }

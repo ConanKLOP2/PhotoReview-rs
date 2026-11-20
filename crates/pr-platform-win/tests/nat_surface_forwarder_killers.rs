@@ -88,3 +88,21 @@ fn controller_api_pointer_position_forwards_the_cursor_in_viewport_dips() {
     let api: &dyn ViewportControllerApi = &*viewport;
     assert_eq!(api.pointer_position(), Some(PointD { x: 10.0, y: 20.0 }));
 }
+
+// ---- shell_input/native.rs `current_wheel_device` (P-430 seam) ----
+
+// C#: WheelMessageSource.Current(): IMDT_TOUCHPAD (0x10) is the only device type that says "touchpad"; an unavailable source or any other type is Unknown.
+#[test]
+fn wheel_device_from_device_type_is_touchpad_only_for_the_touchpad_type() {
+    use pr_app::input::touchpad_gestures::WheelDeviceHint;
+    use pr_platform_win::shell_input::native::wheel_device_from_device_type;
+    assert_eq!(WheelDeviceHint::Touchpad, wheel_device_from_device_type(Some(0x10)));
+    assert_eq!(WheelDeviceHint::Unknown, wheel_device_from_device_type(None));
+    for other in [0x00, 0x01, 0x02, 0x04, 0x08, 0x20, 0x11, -1] {
+        assert_eq!(
+            WheelDeviceHint::Unknown,
+            wheel_device_from_device_type(Some(other)),
+            "device type {other:#x}"
+        );
+    }
+}
