@@ -617,6 +617,32 @@ fn impl_overlay_input_forwards_every_method() {
     assert!(input.pointer_up(fit));
     assert_eq!(rig.log(), vec!["Fit".to_owned()]);
     assert!(input.wheel(fit));
+    assert!(!input.wheel(FAR_AWAY)); // P3: the forwarder must not turn "not over the overlay" into "consumed"
     assert!(input.key_down(VK_TAB, false, false));
     assert!(!input.key_down(VK_A, false, false));
+}
+
+// new (P3 killer for `match guard element.is_enabled -> true` in `pointer_down`): a disabled button swallows the press like a panel,
+// but is not pressed, and its release does not click.
+#[test]
+fn pointer_down_on_a_disabled_button_is_swallowed_without_pressing_it() {
+    let rig = rig();
+    rig.overlay.set_button_enabled_for_tests(OverlayButton::Fit, false);
+    let point = rig.center(OverlayButton::Fit);
+
+    assert!(rig.overlay.pointer_down(point));
+
+    assert!(rig.overlay.is_pointer_down());
+    assert_eq!(rig.overlay.pressed_button(), None);
+    assert!(!is_pressed(&rig, OverlayButton::Fit));
+    assert!(rig.overlay.pointer_up(point));
+    assert!(rig.log().is_empty());
+
+    // an enabled neighbour still works, and re-enabling the button restores the press
+    assert!(rig.overlay.pointer_down(rig.center(OverlayButton::Settings)));
+    assert_eq!(rig.overlay.pressed_button(), Some(OverlayButton::Settings));
+    rig.overlay.pointer_cancel();
+    rig.overlay.set_button_enabled_for_tests(OverlayButton::Fit, true);
+    assert!(rig.overlay.pointer_down(point));
+    assert_eq!(rig.overlay.pressed_button(), Some(OverlayButton::Fit));
 }

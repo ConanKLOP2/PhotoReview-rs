@@ -11,8 +11,8 @@ use std::sync::Arc;
 
 use pr_app::services::render::RenderError;
 use pr_app::services::render::gpu_image::{GpuImageCache, PrefetchStatus};
-use pr_app::services::render::tiled::TiledGpuImage;
-use pr_app::viewport::render_geometry::ImageInterpolation;
+use pr_app::services::render::tiled::{GpuTile, TiledGpuImage};
+use pr_app::viewport::render_geometry::{ImageInterpolation, compute_tiles};
 use pr_imaging::pixels::{PixelBuffer, PixelLayout};
 use pr_platform_win::gfx::com::GfxError;
 use pr_platform_win::gfx::d2d;
@@ -303,6 +303,91 @@ fn adapter_forwards_budget_retain_clear_and_maps_errors() {
         }
     );
     assert_eq!(cache.inner().count(), 0);
+}
+
+// P3 killers (whole-file mutation run of upload.rs, 2026-11-20): pure, over the `NoDevice` fake.
+
+#[test]
+fn tiled_image_gpu_bytes_is_the_sum_of_the_texture_rectangles_times_four() {
+    let buffer = PixelBuffer::allocate(100, 60, PixelLayout::Pbgra32).unwrap();
+    let specs = compute_tiles(100, 60, 64, 8).unwrap();
+    assert!(specs.len() > 1);
+    let expected: i64 = specs
+        .iter()
+        .map(|spec| i64::from(spec.texture.width) * i64::from(spec.texture.height) * 4)
+        .sum();
+    let tiles: Vec<GpuTile<()>> = specs.iter().map(|spec| GpuTile::new(*spec, Some(()))).collect();
+    let image = TiledGpuImage::<()>::new(&buffer, tiles, 0);
+    assert!(expected > 100 * 60 * 4); // the gutters make the tiles overlap
+    assert_eq!(CachedImage::gpu_bytes(&image), expected);
+}
+
+#[test]
+fn cache_debug_names_the_adapter_and_the_inner_cache() {
+    let sched: Rc<dyn StripeScheduler> = Rc::new(ManualScheduler::default());
+    let cache = D2dGpuImageCache::with_options(NoDevice::new(16384), sched, 1000, 64, None, 16).unwrap();
+    let text = format!("{cache:?}");
+    assert!(text.contains("D2dGpuImageCache"), "{text}");
+    assert!(text.contains("inner"), "{text}");
+    assert!(text.contains("BudgetedImageCache"), "{text}");
+}
+
+#[test]
+fn adapter_prefetch_and_retain_forward_their_results_and_errors() {
+    let sched = Rc::new(ManualScheduler::default());
+    let cache = D2dGpuImageCache::with_options(
+        NoDevice::new(16384),
+        Rc::clone(&sched) as Rc<dyn StripeScheduler>,
+        1000,
+        64,
+        None,
+        16,
+    )
+    .unwrap();
+    let buffer = Arc::new(PixelBuffer::allocate(4, 4, PixelLayout::Pbgra32).unwrap());
+    // the failing device surfaces through `prefetch` (an `Ok(())` stub would hide it) and nothing is scheduled
+    assert_eq!(
+        cache.prefetch(&buffer).unwrap_err(),
+        RenderError::Device {
+            hresult: E_FAIL,
+            operation: "CreateBitmap"
+        }
+    );
+    assert!(sched.queue.borrow().is_empty());
+    // a disposed inner cache reports `Disposed` through both
+    cache.inner().dispose();
+    assert!(matches!(cache.prefetch(&buffer), Err(RenderError::Disposed { .. })));
+    assert!(matches!(cache.retain(&[1]), Err(RenderError::Disposed { .. })));
+}
+
+// P3 killer for `D2dGpuImageBackend::unsubscribe_device_recreated -> ()`: disposing the cache gives its device subscription back.
+#[test]
+fn disposing_the_cache_unsubscribes_it_from_the_device() {
+    let device = NoDevice::new(16384);
+    let sched: Rc<dyn StripeScheduler> = Rc::new(ManualScheduler::default());
+    let cache = D2dGpuImageCache::with_options(Rc::clone(&device), sched, 1000, 64, None, 16).unwrap();
+    assert_eq!(device.handlers.borrow().len(), 1);
+
+    cache.inner().dispose();
+
+    assert!(device.handlers.borrow().is_empty());
+}
+
+#[test]
+fn adapter_upload_completed_subscriptions_get_distinct_ids() {
+    let sched: Rc<dyn StripeScheduler> = Rc::new(ManualScheduler::default());
+    let cache = D2dGpuImageCache::with_options(NoDevice::new(16384), sched, 1000, 64, None, 16).unwrap();
+    let first = cache.subscribe_upload_completed(Rc::new(|_| {}));
+    let second = cache.subscribe_upload_completed(Rc::new(|_| {}));
+    let third = cache.subscribe_upload_completed(Rc::new(|_| {}));
+    assert_ne!(first, second);
+    assert_ne!(second, third);
+    assert_ne!(first, third);
+    // the inner cache hands out the very same ids
+    let inner = cache.inner().subscribe_upload_completed(Rc::new(|_| {}));
+    assert_ne!(inner, first);
+    assert_ne!(inner, second);
+    assert_ne!(inner, third);
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

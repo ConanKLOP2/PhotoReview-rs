@@ -28,6 +28,8 @@ struct FakeImage {
     bytes: i64,
     uploaded_rows: Cell<i32>,
     released: Cell<bool>,
+    /// A fake whose `is_complete` never says yes (P3 killer for `write_rows`: no empty row range).
+    never_complete: bool,
 }
 
 impl CachedImage for FakeImage {
@@ -47,7 +49,7 @@ impl CachedImage for FakeImage {
         self.uploaded_rows.set(rows);
     }
     fn is_complete(&self) -> bool {
-        self.uploaded_rows.get() >= self.height
+        !self.never_complete && self.uploaded_rows.get() >= self.height
     }
     fn is_released(&self) -> bool {
         self.released.get()
@@ -73,6 +75,7 @@ struct FakeState {
     next_handler: Cell<u64>,
     fail_next_upload: Cell<Option<GfxError>>,
     fail_next_rows: Cell<Option<GfxError>>,
+    never_complete: Cell<bool>,
     /// Runs inside `upload` and `upload_rows` (P-312): a backend that calls back into the cache.
     reenter: RefCell<Option<Rc<dyn Fn()>>>,
 }
@@ -133,6 +136,7 @@ impl GpuImageBackend for FakeBackend {
             bytes: i64::from(pixels.width()) * i64::from(pixels.height()) * 4,
             uploaded_rows: Cell::new(0),
             released: Cell::new(false),
+            never_complete: self.state.never_complete.get(),
         });
         self.state.images.borrow_mut().push(Rc::clone(&image));
         Ok(image)
@@ -1214,4 +1218,97 @@ fn get_or_upload_disposed_by_the_backend_mid_upload_releases_the_image() {
     assert!(matches!(result, Err(CacheError::Disposed { .. })));
     assert_eq!(fx.cache.count(), 0);
     assert_eq!(fx.backend.released(), vec![px.id()]);
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// P3 killers (whole-file mutation run of policy.rs, 2026-11-20)
+// ---------------------------------------------------------------------------------------------------------------------
+
+// new (P3): `get_or_upload` of an already complete image returns at once and does not finish it a second time
+// (kills `match guard entry.image.is_complete() -> false`: that path would drop the pending source).
+#[test]
+fn get_or_upload_of_a_complete_cached_image_returns_early_and_keeps_the_pending_source() {
+    let fx = fixture(10_000, 80);
+    let px = sized(10, 9);
+    fx.cache.prefetch(&px).unwrap();
+    assert!(fx.scheduler.run_one(&fx.cache));
+    fx.backend.image_of(px.id()).set_uploaded_rows(9); // complete without `finish_rows`
+    assert_eq!(Arc::strong_count(&px), 2);
+
+    let image = fx.cache.get_or_upload(&px).unwrap();
+
+    assert!(image.is_complete());
+    assert_eq!(Arc::strong_count(&px), 2);
+    assert_eq!(fx.backend.row_uploads(), vec![(0, 2)]);
+}
+
+// new (P3): completing a prefetched image makes it the protected current image (kills `entry.serial == serial -> !=`)
+#[test]
+fn get_or_upload_completing_a_prefetched_image_protects_it_from_eviction() {
+    let fx = cache(10_000);
+    let px = image();
+    fx.cache.prefetch(&px).unwrap();
+
+    fx.cache.get_or_upload(&px).unwrap();
+    fx.cache.set_budget_bytes(0).unwrap();
+
+    assert!(fx.cache.contains(px.id()));
+    assert_eq!(fx.cache.count(), 1);
+}
+
+// new (P3): the same completion touches the entry (most recent), so the older one is evicted first
+#[test]
+fn get_or_upload_completing_a_prefetched_image_touches_it() {
+    let fx = cache(10_000);
+    let (a, b, c) = (image(), image(), image());
+    fx.cache.prefetch(&a).unwrap();
+    fx.cache.get_or_upload(&b).unwrap();
+    fx.cache.get_or_upload(&a).unwrap(); // a is newer than b now
+    fx.cache.get_or_upload(&c).unwrap(); // current: c
+    fx.cache.set_budget_bytes(800).unwrap();
+
+    assert!(!fx.cache.contains(b.id()));
+    assert!(fx.cache.contains(a.id()));
+    assert!(fx.cache.contains(c.id()));
+}
+
+// new (P3): a backend that caches the same buffer while `upload` runs: the duplicate is released, the existing entry kept
+// (kills `delete !` in `!Rc::ptr_eq(&existing, &image)`).
+#[test]
+fn get_or_upload_duplicate_from_a_reentering_backend_is_released_and_the_existing_entry_wins() {
+    let fx = cache(10_000);
+    let px = image();
+    let once = Cell::new(false);
+    let weak = Rc::downgrade(&fx.cache);
+    let source = Arc::clone(&px);
+    *fx.backend.reenter.borrow_mut() = Some(Rc::new(move || {
+        if !once.replace(true) {
+            weak.upgrade().unwrap().get_or_upload(&source).unwrap();
+        }
+    }));
+
+    let returned = fx.cache.get_or_upload(&px).unwrap();
+
+    let images = fx.backend.images.borrow();
+    assert_eq!(images.len(), 2);
+    assert!(Rc::ptr_eq(&returned, &images[0])); // the entry cached by the re-entering call
+    assert!(!images[0].released.get());
+    assert!(images[1].released.get()); // the duplicate
+    assert_eq!(fx.backend.released(), vec![px.id()]);
+    assert_eq!(fx.cache.count(), 1);
+    assert_eq!(fx.cache.total_gpu_bytes(), 400);
+}
+
+// new (P3): `write_rows` never asks the backend for an empty row range, even when the image does not report completion
+// (kills `end > start -> end >= start`).
+#[test]
+fn write_rows_never_uploads_an_empty_range() {
+    let fx = cache(10_000);
+    fx.backend.never_complete.set(true);
+    let px = image();
+    fx.cache.get_or_upload(&px).unwrap(); // uploaded_rows == height
+
+    fx.cache.get_or_upload(&px).unwrap();
+
+    assert!(fx.backend.row_uploads().is_empty());
 }
