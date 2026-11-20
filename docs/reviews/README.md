@@ -1,4 +1,5 @@
-# docs/reviews index
+#| [`COMPACTION-FILES-MUT-2-2026-11-20.md`](COMPACTION-FILES-MUT-2-2026-11-20.md) | 2026-11-20 | `io/journal_compaction_files.rs` whole-file rerun on current master: 99 mutants, 79 caught, 13 unviable, 3 equivalent (proof test), 4 not compiled on Windows (P-412), 0 timeout. | Measured |
+ docs/reviews index
 
 Static review reports written by Machine C (cloud session) on 2026-10-23, plus the consolidated [`BACKLOG.md`](BACKLOG.md). The report files are evidence and are not edited; this index only points to them.
 
