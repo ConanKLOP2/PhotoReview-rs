@@ -10,6 +10,7 @@ use std::io;
 
 use pr_core::abstractions::{ShellIntegration, ShellMenuState, shell_menu_command};
 use windows::Win32::Foundation::{ERROR_FILE_NOT_FOUND, ERROR_PATH_NOT_FOUND, ERROR_SUCCESS, WIN32_ERROR};
+use windows::Win32::System::Environment::ExpandEnvironmentStringsW;
 use windows::Win32::System::Registry::{
     HKEY, HKEY_CURRENT_USER, KEY_ALL_ACCESS, KEY_READ, KEY_WRITE, REG_EXPAND_SZ, REG_OPTION_NON_VOLATILE, REG_SZ,
     REG_VALUE_TYPE, RegCloseKey, RegCreateKeyExW, RegDeleteTreeW, RegOpenKeyExW, RegQueryValueExW, RegSetValueExW,
@@ -163,7 +164,30 @@ fn read_default_string(key: &KeyGuard) -> Option<String> {
         return None;
     }
     let written = (capacity as usize).min(buffer.len());
-    Some(decode_reg_sz(&buffer[..written]))
+    let text = decode_reg_sz(&buffer[..written]);
+    // .NET `GetValue` expands `REG_EXPAND_SZ` values (no `DoNotExpandEnvironmentNames`), so `%VAR%` in a default value is read expanded.
+    Some(if kind == REG_EXPAND_SZ {
+        expand_environment_strings(&text)
+    } else {
+        text
+    })
+}
+
+/// `Environment.ExpandEnvironmentVariables`: `ExpandEnvironmentStringsW`; a variable that is not set stays as written. The input is returned unchanged when the API fails.
+fn expand_environment_strings(text: &str) -> String {
+    let source = wide(text);
+    // SAFETY: `source` is a live NUL-terminated UTF-16 buffer; a null destination with size 0 only asks for the required length (including the NUL).
+    let needed = unsafe { ExpandEnvironmentStringsW(PCWSTR(source.as_ptr()), None) };
+    if needed == 0 {
+        return text.to_owned();
+    }
+    let mut buffer = vec![0u16; needed as usize];
+    // SAFETY: `source` as above; `buffer` is a live writable slice of exactly the length the API asked for.
+    let written = unsafe { ExpandEnvironmentStringsW(PCWSTR(source.as_ptr()), Some(&mut buffer)) };
+    if written == 0 || written as usize > buffer.len() {
+        return text.to_owned();
+    }
+    String::from_utf16_lossy(&buffer[..written as usize - 1])
 }
 
 /// `key.DeleteSubKeyTree(relative, throwOnMissingSubKey: false)`.
@@ -290,6 +314,22 @@ mod tests {
         assert_eq!(decode_reg_sz(&[b'a', 0, b'b', 0]), "ab");
         assert_eq!(decode_reg_sz(&[b'a', 0, 0, 0, b'z', 0]), "a");
         assert_eq!(decode_reg_sz(&[]), "");
+    }
+
+    // new (ST-LOOP28, X-platform-adapters): the REG_EXPAND_SZ expansion .NET `GetValue` does.
+    #[test]
+    fn expand_environment_strings_expands_set_variables_and_keeps_unset_ones() {
+        let system_root = std::env::var("SystemRoot").expect("SystemRoot is always set on Windows");
+        assert_eq!(
+            expand_environment_strings(r"%SystemRoot%\app.exe"),
+            format!(r"{system_root}\app.exe")
+        );
+        assert_eq!(expand_environment_strings(r"C:\plain\app.exe"), r"C:\plain\app.exe");
+        assert_eq!(
+            expand_environment_strings(r"%PRRS_NO_SUCH_VARIABLE_9%\x"),
+            r"%PRRS_NO_SUCH_VARIABLE_9%\x"
+        );
+        assert_eq!(expand_environment_strings(""), "");
     }
 
     // new: a Win32 registry status becomes the io::Error the trait returns, keeping the OS code.

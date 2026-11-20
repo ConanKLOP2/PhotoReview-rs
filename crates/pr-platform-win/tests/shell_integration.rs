@@ -14,8 +14,9 @@ use pr_core::abstractions::{ShellIntegration, ShellMenuState, shell_menu_command
 use pr_platform_win::shell_integration::{BlankClassesKey, DEFAULT_CLASSES_KEY, WindowsShellIntegration};
 use windows::Win32::Foundation::{ERROR_SUCCESS, WIN32_ERROR};
 use windows::Win32::System::Registry::{
-    HKEY, HKEY_CURRENT_USER, KEY_READ, KEY_WRITE, REG_OPTION_NON_VOLATILE, REG_SZ, REG_VALUE_TYPE, RegCloseKey,
-    RegCreateKeyExW, RegDeleteKeyW, RegDeleteTreeW, RegOpenKeyExW, RegQueryValueExW, RegSetValueExW,
+    HKEY, HKEY_CURRENT_USER, KEY_READ, KEY_WRITE, REG_BINARY, REG_EXPAND_SZ, REG_OPTION_NON_VOLATILE, REG_SZ,
+    REG_VALUE_TYPE, RegCloseKey, RegCreateKeyExW, RegDeleteKeyW, RegDeleteTreeW, RegOpenKeyExW, RegQueryValueExW,
+    RegSetValueExW,
 };
 use windows::core::PCWSTR;
 
@@ -129,6 +130,41 @@ fn write_default_string(path: &str, value: &str) {
     let bytes: Vec<u8> = wide(value).iter().flat_map(|unit| unit.to_le_bytes()).collect();
     // SAFETY: `key` is open with write access, the name is null (default value) and `bytes` is a live slice whose length is passed.
     let status = unsafe { RegSetValueExW(key.0, PCWSTR::null(), None, REG_SZ, Some(&bytes)) };
+    assert!(ok(status), "set test value: {status:?}");
+}
+
+/// Like [`write_default_string`] but stores the value as `REG_EXPAND_SZ` (a command an installer or a person wrote with `%VAR%` in it).
+fn write_default_expand_string(path: &str, value: &str) {
+    write_default_of_kind(path, value, REG_EXPAND_SZ);
+}
+
+/// Stores the UTF-16 bytes of `value` as the default value with an arbitrary registry type (a `REG_BINARY` command is not a string for C# `GetValue(null) as string`).
+fn write_default_of_kind(path: &str, value: &str, kind: REG_VALUE_TYPE) {
+    assert!(
+        path.starts_with(TEST_ROOT_PREFIX),
+        "tests write only below {TEST_ROOT_PREFIX}"
+    );
+    let path = wide(path);
+    let mut created = HKEY::default();
+    // SAFETY: `path` is a live NUL-terminated buffer, the class is null, `created` is a writable HKEY.
+    let status = unsafe {
+        RegCreateKeyExW(
+            HKEY_CURRENT_USER,
+            PCWSTR(path.as_ptr()),
+            None,
+            PCWSTR::null(),
+            REG_OPTION_NON_VOLATILE,
+            KEY_WRITE | KEY_READ,
+            None,
+            &mut created,
+            None,
+        )
+    };
+    assert!(ok(status), "create test key: {status:?}");
+    let key = Key(created);
+    let bytes: Vec<u8> = wide(value).iter().flat_map(|unit| unit.to_le_bytes()).collect();
+    // SAFETY: `key` is open with write access, the name is null (default value) and `bytes` is a live slice whose length is passed.
+    let status = unsafe { RegSetValueExW(key.0, PCWSTR::null(), None, kind, Some(&bytes)) };
     assert!(ok(status), "set test value: {status:?}");
 }
 
@@ -344,4 +380,50 @@ fn constructors_reject_a_blank_key_and_the_default_is_the_real_classes_root() {
     assert_eq!(DEFAULT_CLASSES_KEY, r"Software\Classes");
     assert_eq!(WindowsShellIntegration::with_classes_key("  "), Err(BlankClassesKey));
     assert_eq!(WindowsShellIntegration::new(), WindowsShellIntegration::default());
+}
+
+// new (ST-LOOP28, X-platform-adapters): C# `key.GetValue(null) as string` expands a `REG_EXPAND_SZ` value, so a command stored with `%SystemRoot%` is read expanded.
+#[test]
+#[ignore = "native: registry"]
+fn a_reg_expand_sz_command_is_read_with_its_variables_expanded() {
+    bounded(|| {
+        let root = PrivateRoot::new();
+        let shell = root.shell();
+        let system_root = std::env::var("SystemRoot").expect("SystemRoot is always set on Windows");
+        let expanded_exe = format!(r"{system_root}\PhotoReviewRsTests\PhotoReviewRs.exe");
+        let raw_exe = r"%SystemRoot%\PhotoReviewRsTests\PhotoReviewRs.exe";
+        write_default_expand_string(
+            &format!(r"{}\{}\command", root.classes(), folder_verb()),
+            &shell_menu_command::for_folder(raw_exe),
+        );
+        write_default_expand_string(
+            &format!(r"{}\{}\command", root.classes(), background_verb()),
+            &shell_menu_command::for_background(raw_exe),
+        );
+
+        assert_eq!(shell.get_state(&expanded_exe), ShellMenuState::Registered);
+        assert_eq!(shell.get_state(EXE), ShellMenuState::RegisteredElsewhere);
+    });
+}
+
+// new (ST-LOOP28): C# `GetValue(null) as string` is null for a value that is neither `REG_SZ` nor `REG_EXPAND_SZ`, so a binary value holding a correct command text is not a registration.
+#[test]
+#[ignore = "native: registry"]
+fn a_command_stored_with_a_non_string_registry_type_is_not_a_registration() {
+    bounded(|| {
+        let root = PrivateRoot::new();
+        let shell = root.shell();
+        write_default_of_kind(
+            &format!(r"{}\{}\command", root.classes(), folder_verb()),
+            &shell_menu_command::for_folder(EXE),
+            REG_BINARY,
+        );
+        write_default_of_kind(
+            &format!(r"{}\{}\command", root.classes(), background_verb()),
+            &shell_menu_command::for_background(EXE),
+            REG_BINARY,
+        );
+
+        assert_eq!(shell.get_state(EXE), ShellMenuState::NotRegistered);
+    });
 }

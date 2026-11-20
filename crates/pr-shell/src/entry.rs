@@ -50,15 +50,30 @@ pub fn production_run(args: &[String]) -> i32 {
 /// 3. The guard is dropped (`CoUninitialize`) AFTER `run` returned, i.e. after the window, the dispatcher and the services are gone.
 /// 4. `std::process::exit(code)`: the code is an `i32` (a forced smoke code may exceed `u8`, so `ExitCode` is not used).
 pub fn main_entry() -> ! {
-    let apartment = match StaApartment::enter() {
-        Ok(guard) => Some(guard),
-        Err(error) => {
-            AppLog::global().error_forced("COM apartment", &error);
-            None
-        }
-    };
+    let apartment = enter_apartment_or_log(StaApartment::enter, |error| {
+        AppLog::global().error_forced(APARTMENT_LOG_MESSAGE, error);
+    });
     let code = run_main(std::env::args_os(), production_run);
     // `process::exit` does not run destructors of locals: drop the apartment guard explicitly, after `run` has returned.
     drop(apartment);
     std::process::exit(code)
+}
+
+/// The message of the forced error-log line written when the COM apartment cannot be entered.
+pub const APARTMENT_LOG_MESSAGE: &str = "COM apartment";
+
+/// Step 1 of [`main_entry`] with the apartment call and the log sink as parameters (the seam that makes the error branch testable, `main_entry` itself never returns): `Ok(guard)` gives
+/// `Some(guard)` and logs nothing; `Err(error)` calls `log(&error)` exactly once and gives `None` (the start continues without the guard).
+pub fn enter_apartment_or_log<G, E, F, L>(enter: F, log: L) -> Option<G>
+where
+    F: FnOnce() -> Result<G, E>,
+    L: FnOnce(&E),
+{
+    match enter() {
+        Ok(guard) => Some(guard),
+        Err(error) => {
+            log(&error);
+            None
+        }
+    }
 }

@@ -5,7 +5,8 @@
 use std::cell::Cell;
 use std::ffi::OsString;
 
-use pr_shell::entry::{args_from_os, run_main};
+use pr_platform_win::shell_startup::apartment::{ApartmentError, StaApartment};
+use pr_shell::entry::{APARTMENT_LOG_MESSAGE, args_from_os, enter_apartment_or_log, run_main};
 
 fn os(items: &[&str]) -> Vec<OsString> {
     items.iter().map(OsString::from).collect()
@@ -39,4 +40,48 @@ fn run_main_returns_the_runner_code_and_runs_it_exactly_once() {
         assert_eq!(got, code);
         assert_eq!(calls.get(), 1);
     }
+}
+
+// X-exe-entry (ST-LOOP28): the `StaApartment::enter` error branch of `main_entry`, through the `enter_apartment_or_log` seam.
+#[test]
+fn enter_apartment_or_log_error_logs_once_and_gives_none() {
+    let logged = Cell::new(0);
+    let seen = Cell::new(None);
+    let result: Option<u8> = enter_apartment_or_log(
+        || Err(ApartmentError::ChangedMode),
+        |error: &ApartmentError| {
+            logged.set(logged.get() + 1);
+            seen.set(Some(*error));
+        },
+    );
+    assert_eq!(result, None);
+    assert_eq!(logged.get(), 1);
+    assert_eq!(seen.get(), Some(ApartmentError::ChangedMode));
+}
+
+#[test]
+fn enter_apartment_or_log_ok_keeps_the_guard_and_logs_nothing() {
+    let logged = Cell::new(0);
+    let result = enter_apartment_or_log(|| Ok::<_, ApartmentError>(7u8), |_| logged.set(logged.get() + 1));
+    assert_eq!(result, Some(7));
+    assert_eq!(logged.get(), 0);
+}
+
+// Real apartment, real error: a thread that is already in the MTA gets `ChangedMode` and the seam turns it into `None` plus one log call.
+#[test]
+fn enter_apartment_or_log_after_mta_gives_none_with_changed_mode() {
+    std::thread::spawn(|| {
+        pr_platform_win::wic::interop::ensure_com_initialized().unwrap();
+        let logged = Cell::new(None);
+        let result = enter_apartment_or_log(StaApartment::enter, |error| logged.set(Some(*error)));
+        assert!(result.is_none());
+        assert_eq!(logged.get(), Some(ApartmentError::ChangedMode));
+    })
+    .join()
+    .unwrap();
+}
+
+#[test]
+fn apartment_log_message_is_the_documented_text() {
+    assert_eq!(APARTMENT_LOG_MESSAGE, "COM apartment");
 }
