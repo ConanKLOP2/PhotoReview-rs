@@ -210,6 +210,13 @@ fn with_input<R>(id: u64, f: impl FnOnce(&InputCore) -> R) -> Option<R> {
     Some(f(&core))
 }
 
+/// P-431 test seam (read only, no behaviour change): how many inputs the calling thread's registry still holds. A stale entry is a dead `Weak` under an id
+/// that is never issued again, so without this the removal done by `dispose` and by `Drop` of the core has no other observable effect.
+#[doc(hidden)]
+pub fn registered_input_count() -> usize {
+    INPUTS.with(|inputs| inputs.borrow().len())
+}
+
 fn unregister_input(id: u64) {
     // `try_with`: the thread-local may already be gone when the last handle drops during thread teardown.
     let _ = INPUTS.try_with(|inputs| {

@@ -516,6 +516,17 @@ pub struct RigSurface {
     viewer: ViewerHandle,
     rig_content: Rc<RigContent>,
     router: Rc<RefCell<Option<FrameRouter>>>,
+    /// What the Fit driver asked of the `FitSurface` (nat dispatch killers): the call names in order and two scripted answers.
+    pub fit_spy: Rc<FitSpy>,
+}
+
+/// Records the `FitSurface` calls of a Fit pass and lets a test script `viewport_size` and suppress `update_fit_size`.
+#[derive(Default)]
+pub struct FitSpy {
+    pub calls: RefCell<Vec<&'static str>>,
+    pub viewport_size: Cell<Option<(f64, f64)>>,
+    pub skip_update_fit_size: Cell<bool>,
+    pub skip_update_layout: Cell<bool>,
 }
 
 impl RigSurface {
@@ -526,6 +537,7 @@ impl RigSurface {
             viewer,
             rig_content,
             router: Rc::new(RefCell::new(None)),
+            fit_spy: Rc::new(FitSpy::default()),
         }
     }
 }
@@ -616,20 +628,33 @@ impl ImageSurface for RigSurface {
 
 impl FitSurface for RigSurface {
     fn viewport_size(&self) -> (f64, f64) {
-        self.viewport.viewport_size()
+        self.fit_spy.calls.borrow_mut().push("viewport_size");
+        self.fit_spy
+            .viewport_size
+            .get()
+            .unwrap_or_else(|| self.viewport.viewport_size())
     }
     fn is_loaded(&self) -> bool {
+        self.fit_spy.calls.borrow_mut().push("is_loaded");
         self.viewport.is_loaded()
     }
     fn update_layout(&mut self) {
+        self.fit_spy.calls.borrow_mut().push("update_layout");
+        if self.fit_spy.skip_update_layout.get() {
+            return;
+        }
         // The Fit path holds no viewer borrow (the adapter takes it only inside `reset_fit`), so the content may be re-read.
         self.rig_content.refresh(&self.viewer);
         self.viewport.update_layout();
     }
     fn update_fit_size(&mut self) {
-        self.viewport.update_fit_size();
+        self.fit_spy.calls.borrow_mut().push("update_fit_size");
+        if !self.fit_spy.skip_update_fit_size.get() {
+            self.viewport.update_fit_size();
+        }
     }
     fn capture(&self) -> ViewportSnapshot {
+        self.fit_spy.calls.borrow_mut().push("capture");
         let layout = self.viewport.layout();
         let (zoom, stretch, max_width, max_height) = {
             let viewer = self.viewer.borrow();
@@ -658,6 +683,7 @@ impl FitSurface for RigSurface {
         }
     }
     fn scroll_home(&mut self) {
+        self.fit_spy.calls.borrow_mut().push("scroll_home");
         self.viewport.scroll_home();
     }
 }
@@ -851,6 +877,7 @@ impl Rig {
             viewer: viewer.clone(),
             rig_content: Rc::clone(&content),
             router: Rc::new(RefCell::new(None)),
+            fit_spy: Rc::new(FitSpy::default()),
         }));
 
         let modifiers = Rc::new(Cell::new(KeyModifiers::NONE));
