@@ -488,6 +488,20 @@ impl MainWindowInput {
         self.services.show_status(&self.services.folder_open_failed_text(error));
     }
 
+    /// Read-only test seam (P-432): the services the wiring was registered with, so a native test can call the production adapter's forwarders
+    /// (`MainWindowInputAdapter`, private) directly and look at what each one does to the real window and view model.
+    #[doc(hidden)]
+    pub fn services_for_test(&self) -> Rc<dyn MainWindowInputServices> {
+        Rc::clone(&self.services)
+    }
+
+    /// Read-only test seam (P-433): `MainWindowInputHost::action_profile_name`. Its only caller names a failure of `RunAction`, which cannot fail (the guarded
+    /// closure always returns `Ok`), so no command-level test can read the name.
+    #[doc(hidden)]
+    pub fn action_profile_name_for_test(&self, index: i32) -> String {
+        self.host.action_profile_name(index)
+    }
+
     /// C# `Input`.
     pub fn input(&self) -> &ShellInput {
         &self.input
