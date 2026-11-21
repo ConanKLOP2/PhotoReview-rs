@@ -2071,4 +2071,96 @@ mod tests {
         resources.dispose();
         assert_eq!(dc.pop_clip().unwrap_err(), invalid("PopClip without PushClip."));
     }
+
+    // ---------------------------------------------------------------- lane H killers
+
+    // `Debug for D2dDrawContext` names the type and the `active` flag.
+    #[test]
+    #[ignore = "native: needs desktop"]
+    fn debug_names_the_draw_context_and_its_active_flag() {
+        let mut surface = surface(8, 8, 1.0);
+        let context = surface.begin_draw_context().unwrap();
+        let text = format!("{context:?}");
+        assert!(
+            text.contains("D2dDrawContext") && text.contains("active: true"),
+            "{text}"
+        );
+        context.end();
+        let text = format!("{context:?}");
+        assert!(text.contains("active: false"), "{text}");
+        surface.end_draw_and_present().ok();
+    }
+
+    // The `DrawContext` trait forwarders `clear` and `draw_rectangle` reach the inherent drawing (called through the trait path).
+    #[test]
+    #[ignore = "native: needs desktop"]
+    fn trait_clear_and_draw_rectangle_draw_through_the_inherent_context() {
+        let mut surface = surface(16, 16, 1.0);
+        let pixels = render(&mut surface, |dc| {
+            <D2dDrawContext as DrawContext>::clear(dc, WHITE);
+            <D2dDrawContext as DrawContext>::draw_rectangle(dc, rect(4.0, 4.0, 8.0, 8.0), BLACK, 2.0);
+        });
+        assert_eq!(
+            pixel(&pixels, 0, 0),
+            (255, 255, 255, 255),
+            "clear painted the target white"
+        );
+        assert_eq!(pixel(&pixels, 4, 8), (0, 0, 0, 255), "the stroke is black");
+        assert_eq!(pixel(&pixels, 8, 8), (255, 255, 255, 255), "the inside stays white");
+    }
+
+    // `draw_image` returns early for an empty destination (`rect_is_empty(source) || rect_is_empty(destination)`): a non-positive
+    // size draws nothing and is not counted as skipped.
+    #[test]
+    #[ignore = "native: needs desktop"]
+    fn draw_image_with_an_empty_destination_draws_nothing() {
+        let source = create_solid(8, 8, 0, 0, 255, 255);
+        let mut surface = surface(16, 16, 1.0);
+        let image = upload_single(surface.resources(), &source);
+        for destination in [
+            rect(4.0, 4.0, 0.0, 8.0),
+            rect(4.0, 4.0, 8.0, 0.0),
+            rect(12.0, 4.0, -8.0, 8.0),
+            rect(4.0, 12.0, 8.0, -8.0),
+            rect(12.0, 12.0, -8.0, -8.0),
+        ] {
+            let pixels = render(&mut surface, |dc| {
+                dc.clear(TRANSPARENT);
+                dc.draw_image(&image, destination, None, ImageInterpolation::Linear, 1.0);
+                assert_eq!(dc.skipped_image_draws(), 0);
+            });
+            for (x, y) in [(2, 2), (6, 6), (8, 8), (10, 6), (6, 10), (13, 13)] {
+                assert_eq!(pixel(&pixels, x, y), (0, 0, 0, 0), "{destination:?} at ({x}, {y})");
+            }
+        }
+    }
+
+    // `draw_tile` source rectangle: the bottom edge is `region.bottom() - texture.y`. A crop that lies inside a lower tile row
+    // (texture.y > 0) is drawn like the single-texture twin, pixel for pixel at 1:1.
+    #[test]
+    #[ignore = "native: needs desktop"]
+    fn tiled_crop_inside_a_lower_tile_row_matches_a_single_texture() {
+        let source = create_noise(300, 300, 21, false);
+        let mut surface = surface(40, 30, 1.0);
+        let single = upload_single(surface.resources(), &source);
+        let tiled = upload(surface.resources(), &source, 128, 16);
+        assert!(tiled.tiles().len() > 4, "test must actually tile");
+        for crop in [
+            rect(30.0, 115.0, 20.0, 10.0),
+            rect(130.0, 240.0, 20.0, 10.0),
+            rect(20.0, 130.0, 20.0, 6.0),
+        ] {
+            let target = rect(5.0, 5.0, crop.width, crop.height);
+            let expected = render(&mut surface, |dc| {
+                dc.clear(BLACK);
+                dc.draw_image(&single, target, Some(crop), ImageInterpolation::Linear, 1.0)
+            });
+            let actual = render(&mut surface, |dc| {
+                dc.clear(BLACK);
+                dc.draw_image(&tiled, target, Some(crop), ImageInterpolation::Linear, 1.0)
+            });
+            assert_identical(&expected, &actual);
+            assert_ne!(pixel(&actual, 8, 8), (0, 0, 0, 255), "the crop was drawn");
+        }
+    }
 }
