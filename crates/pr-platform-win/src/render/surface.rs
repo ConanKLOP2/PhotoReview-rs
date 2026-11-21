@@ -214,7 +214,13 @@ impl D2dRenderSurface {
                 message: "Resize is not allowed between BeginDraw and EndDrawAndPresent.",
             });
         }
-        match self.resources.resize(pixel_width, pixel_height, dpi_scale)? {
+        let outcome = self.resources.resize(pixel_width, pixel_height, dpi_scale)?;
+        self.finish_resize(outcome)
+    }
+
+    /// The outcome half of [`Self::resize`] (P-440: split out so a device-loss `ResizeBuffers` result can be injected by a test).
+    fn finish_resize(&mut self, outcome: ResizeOutcome) -> Result<(), RenderFault> {
+        match outcome {
             ResizeOutcome::Resized => Ok(()),
             // The size and DPI were stored before `ResizeBuffers` ran, so the new device is built at the NEW size.
             ResizeOutcome::BuffersFailed(hresult) if com::is_device_lost(hresult) => self.recreate_device(),
@@ -1178,5 +1184,113 @@ mod tests {
         let id = surface.subscribe_device_recreated(handler);
         surface.unsubscribe_device_recreated(id);
         assert_eq!(count.get(), 0);
+    }
+
+    // ---------------------------------------------------------------- lane H killers (P-440)
+
+    // `finish_resize` (resize guard `com::is_device_lost`): a device-loss `ResizeBuffers` result rebuilds the device, any other
+    // failure is a `Device` error and rebuilds nothing.
+    #[test]
+    #[ignore = "native: needs desktop"]
+    fn finish_resize_recreates_on_device_loss_and_errors_on_other_failures() {
+        let window = HiddenWindow::new();
+        let mut surface = D2dRenderSurface::create_window_surface(window.raw(), warp_options()).unwrap();
+        let (recreated, handler) = counter();
+        surface.subscribe_device_recreated(handler);
+        for (n, lost) in [
+            DXGI_ERROR_DEVICE_REMOVED_HRESULT,
+            D2DERR_RECREATE_TARGET_HRESULT,
+            crate::gfx::com::DXGI_ERROR_DEVICE_RESET_HRESULT,
+        ]
+        .into_iter()
+        .enumerate()
+        {
+            surface.finish_resize(ResizeOutcome::BuffersFailed(lost)).unwrap();
+            assert_eq!(recreated.get(), n as i32 + 1);
+            assert_eq!(surface.device_generation(), n as i64 + 1);
+        }
+        let error = surface
+            .finish_resize(ResizeOutcome::BuffersFailed(DXGI_ERROR_INVALID_CALL.0))
+            .unwrap_err();
+        assert_eq!(
+            error,
+            RenderFault::Device(GfxError::new(
+                "IDXGISwapChain::ResizeBuffers",
+                DXGI_ERROR_INVALID_CALL.0
+            ))
+        );
+        assert_eq!(recreated.get(), 3, "no device loss: no recreate");
+        surface.finish_resize(ResizeOutcome::Resized).unwrap();
+        assert_eq!(surface.device_generation(), 3);
+    }
+
+    // `RenderSurface` forwarders of a window surface (`hwnd`, `dpi_scale`, `frame_latency_wait_handle`) read what the inherent getters read.
+    #[test]
+    #[ignore = "native: needs desktop"]
+    fn trait_surface_forwards_window_hwnd_dpi_and_wait_handle() {
+        let window = HiddenWindow::new();
+        let mut surface = D2dRenderSurface::create_window_surface(window.raw(), warp_options()).unwrap();
+        surface.resize(160, 90, 1.25).unwrap();
+        let handle = surface.frame_latency_wait_handle();
+        assert_ne!(handle, 0);
+        let via_trait: &dyn RenderSurface = &surface;
+        assert_eq!(via_trait.hwnd(), window.raw());
+        assert_eq!(via_trait.dpi_scale(), 1.25);
+        assert_eq!(via_trait.frame_latency_wait_handle(), handle);
+        assert!(via_trait.is_warp());
+    }
+
+    // `is_warp` (inherent and trait): a surface that asked for the hardware adapter is not WARP. Skipped (and says so) on a machine
+    // that has no hardware Direct3D 11 device, where the documented WARP fallback applies.
+    #[test]
+    #[ignore = "native: needs desktop and a hardware adapter"]
+    fn hardware_surface_is_not_warp() {
+        use crate::gfx::d3d11::{DriverKind, create_device};
+        use windows::Win32::Graphics::Direct3D11::D3D11_CREATE_DEVICE_BGRA_SUPPORT;
+        if create_device(DriverKind::Hardware, D3D11_CREATE_DEVICE_BGRA_SUPPORT).is_err() {
+            eprintln!("no hardware Direct3D 11 device on this machine: hardware_surface_is_not_warp skipped");
+            return;
+        }
+        let surface = D2dRenderSurface::create_offscreen_surface(8, 8, 1.0, true).unwrap();
+        assert!(!surface.is_warp());
+        let via_trait: &dyn RenderSurface = &surface;
+        assert!(!via_trait.is_warp());
+    }
+
+    // `last_end_draw` / `last_present`: a frame on a window surface measured both calls, so neither is zero any more.
+    #[test]
+    #[ignore = "native: needs desktop"]
+    fn frame_timings_are_recorded_after_a_window_frame() {
+        let window = HiddenWindow::new();
+        let mut surface = D2dRenderSurface::create_window_surface(window.raw(), warp_options()).unwrap();
+        assert_eq!(
+            (surface.last_end_draw(), surface.last_present()),
+            (Duration::ZERO, Duration::ZERO)
+        );
+        surface.begin_draw_context().unwrap().clear(WHITE);
+        surface.end_draw_and_present().unwrap();
+        assert!(surface.last_end_draw() > Duration::ZERO);
+        assert!(surface.last_present() > Duration::ZERO);
+        let mut offscreen_surface = offscreen(8, 8, 1.0);
+        offscreen_surface.begin_draw_context().unwrap().clear(WHITE);
+        offscreen_surface.end_draw_and_present().unwrap();
+        assert!(offscreen_surface.last_end_draw() > Duration::ZERO);
+        assert_eq!(offscreen_surface.last_present(), Duration::ZERO);
+    }
+
+    // `Debug` names the type and the `drawing` flag.
+    #[test]
+    #[ignore = "native: needs desktop"]
+    fn debug_names_the_surface_and_its_drawing_flag() {
+        let mut surface = offscreen(8, 8, 1.0);
+        let idle = format!("{surface:?}");
+        assert!(
+            idle.contains("D2dRenderSurface") && idle.contains("drawing: false"),
+            "{idle}"
+        );
+        surface.begin_draw_context().unwrap();
+        let busy = format!("{surface:?}");
+        assert!(busy.contains("drawing: true"), "{busy}");
+        surface.end_draw_and_present().unwrap();
     }
 }
