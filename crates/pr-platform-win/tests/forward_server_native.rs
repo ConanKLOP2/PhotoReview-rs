@@ -66,6 +66,8 @@ struct FactoryData {
     accept_started: Option<mpsc::Sender<()>>,
     /// `(reply was already written, ...)` for every `wait_reply_delivered` call, in order.
     reply_waits: Vec<bool>,
+    /// Time left until the deadline handed to every `wait_reply_delivered` call, in order.
+    reply_wait_remaining: Vec<Duration>,
 }
 
 #[derive(Default)]
@@ -119,6 +121,10 @@ impl FakeFactory {
                 .0;
         }
         state.reply_waits.clone()
+    }
+
+    fn reply_wait_remaining(&self) -> Vec<Duration> {
+        lock(&self.data).reply_wait_remaining.clone()
     }
 
     fn counts(&self) -> (usize, usize) {
@@ -239,7 +245,10 @@ impl ForwardPipe for FakePipe {
         Ok(())
     }
 
-    fn wait_reply_delivered(&mut self, _deadline: Instant) -> Result<(), ForwardPipeError> {
+    fn wait_reply_delivered(&mut self, deadline: Instant) -> Result<(), ForwardPipeError> {
+        lock(&self.factory.data)
+            .reply_wait_remaining
+            .push(deadline.saturating_duration_since(Instant::now()));
         let request = self.request.as_ref().expect("accept must select a fake request");
         // `write_all` took the sender, so a missing sender means the reply was written before this call.
         let written = lock(&request.data).reply.is_none();
@@ -458,7 +467,8 @@ fn server_callback_failure_rejects_one_request_and_keeps_listening() {
         receive_reply(factory.submit(valid_message(r"C:\first.jpg"), true)),
         "ERR\n"
     );
-    log.wait_for("handler failed");
+    // Mutant forward_server.rs:210 `Display for CallbackPanic -> Ok(Default::default())`: the logged error text names the panic.
+    log.wait_for("handler failed instance forward callback panicked");
     assert_eq!(
         receive_reply(factory.submit(valid_message(r"C:\second.jpg"), true)),
         "OK\n"
@@ -609,4 +619,50 @@ fn server_waits_for_reply_delivery_after_writing_ok_and_err_but_not_after_a_time
         vec![true, true, true],
         "exactly one wait per written reply"
     );
+}
+
+#[test]
+fn server_reply_delivery_wait_is_bounded_by_a_deadline_in_the_future() {
+    // Mutant forward_server.rs:307:58 `+` -> `-`: the delivery deadline would lie one second in the past and the wait would give up at once.
+    let server = RunningServer::new(|_| {}, |_| true, Duration::from_secs(2));
+    assert_eq!(
+        receive_reply(server.factory.submit(valid_message(r"C:\ok.jpg"), true)),
+        "OK\n"
+    );
+    server.factory.wait_for_reply_waits(1);
+    let remaining = server.factory.reply_wait_remaining();
+    assert_eq!(remaining.len(), 1);
+    assert!(remaining[0] > Duration::from_millis(500), "{:?}", remaining[0]);
+    assert!(remaining[0] <= Duration::from_secs(1), "{:?}", remaining[0]);
+}
+
+#[test]
+fn server_logs_a_listener_failure_with_its_error_and_the_consecutive_count() {
+    // Mutant forward_server.rs:222 `log_listener_failure -> ()`: the first failure (count 1, a power of two) is logged.
+    let log = Arc::new(EventLog::default());
+    let factory = Arc::new(FakeFactory::default());
+    factory.fail_next_creates(1);
+    let server = InstanceForwardServer::with_factory(
+        "PhotoReview.Test.fake",
+        |_| {},
+        Some(log.clone()),
+        |_| true,
+        Some(Duration::from_secs(1)),
+        factory.clone(),
+    );
+    server.start().expect("fake server thread starts");
+    log.wait_for("Instance forward listener error: synthetic create failure (consecutive failures: 1)");
+    server.dispose();
+}
+
+#[test]
+fn dropping_a_started_server_cancels_its_factory() {
+    // Mutant forward_server.rs:201 `Drop for InstanceForwardServer -> ()`: a dropped server would leave its listener running.
+    let (factory, accepting) = FakeFactory::with_accept_signal();
+    let server =
+        InstanceForwardServer::with_factory("PhotoReview.Test.fake", |_| {}, None, |_| true, None, factory.clone());
+    server.start().expect("fake server thread starts");
+    accepting.recv_timeout(TEST_TIMEOUT).expect("listener entered accept");
+    drop(server);
+    assert!(factory.is_canceled(), "drop must dispose the server");
 }

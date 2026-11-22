@@ -642,3 +642,10 @@ mod native_pipe {
 
 #[cfg(windows)]
 use native_pipe::Factory as NativeForwardPipeFactory;
+
+/// Test seam (P-456, behaviour-neutral): the production native factory behind `InstanceForwardServer::new`, so native tests can drive `cancel`, `is_canceled` and `wait_retry` directly.
+#[doc(hidden)]
+#[cfg(windows)]
+pub fn native_factory_for_tests() -> windows_core::Result<Arc<dyn ForwardPipeFactory>> {
+    Ok(Arc::new(NativeForwardPipeFactory::new()?))
+}
