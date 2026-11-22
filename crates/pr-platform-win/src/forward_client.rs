@@ -249,6 +249,12 @@ mod native {
         sid
     }
 
+    #[allow(dead_code)] // Only the seam `current_user_sid_for_tests` calls it; test targets that include this source do not.
+    pub(super) fn current_process_user_sid() -> Option<Vec<u8>> {
+        // SAFETY: GetCurrentProcess returns the process pseudo-handle and does not transfer ownership.
+        process_user_sid(unsafe { GetCurrentProcess() })
+    }
+
     // SAFETY: kernel handles are process-wide values; moving this owner between threads does not alter handle validity.
     unsafe impl Send for WindowsForwardTransport {}
     // SAFETY: all access to the owned handle is serialized by `pipe`, including I/O and close.
@@ -540,6 +546,14 @@ mod native {
 
 #[cfg(windows)]
 pub use native::WindowsForwardTransport;
+
+/// Test seam (P-459, behaviour-neutral): the user SID bytes of the current process token, to check `sid_bytes` and `process_user_sid` return real SIDs.
+#[doc(hidden)]
+#[cfg(windows)]
+#[allow(dead_code)] // Used by `tests/forward_native_j_killers.rs`; test targets that include this source do not call it.
+pub fn current_user_sid_for_tests() -> Option<Vec<u8>> {
+    native::current_process_user_sid()
+}
 
 #[cfg(windows)]
 impl ForwardPipeClient<WindowsForwardTransport> {
