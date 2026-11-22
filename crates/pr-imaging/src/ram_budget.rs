@@ -269,24 +269,23 @@ pub fn should_preload_whole_folder_estimate(
 
 /// C# internal `FolderEstimateCache`: remembers the last estimate for one catalog snapshot (compared by `Arc` identity,
 /// C# `ReferenceEquals`), decode box and measured mean (`Option<f64>` equality: NaN never matches, as in C#).
-// No non-test caller until the W4-15 scheduler lands.
-#[allow(dead_code)]
 #[derive(Debug, Default)]
 pub(crate) struct FolderEstimateCache {
     entries: Option<Arc<[CatalogEntry]>>,
     decode_box: DecodeBox,
     measured: Option<f64>,
     estimate: i64,
+    #[cfg(test)]
     compute_count: u32,
 }
 
-#[allow(dead_code)] // same justification as the struct
 impl FolderEstimateCache {
     pub(crate) fn new() -> Self {
         Self::default()
     }
 
     /// C# `ComputeCount` (test seam).
+    #[cfg(test)]
     pub(crate) fn compute_count(&self) -> u32 {
         self.compute_count
     }
@@ -309,7 +308,10 @@ impl FolderEstimateCache {
         self.decode_box = decode_box;
         self.measured = measured_mean_preview_bytes;
         self.estimate = estimate;
-        self.compute_count += 1;
+        #[cfg(test)]
+        {
+            self.compute_count += 1;
+        }
         estimate
     }
 }

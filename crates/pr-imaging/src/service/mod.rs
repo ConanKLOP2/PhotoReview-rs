@@ -16,8 +16,6 @@
 //!
 //! Target path: `crates/pr-imaging/src/service/mod.rs` (lead adds `pub mod service;` to `lib.rs`).
 
-#![allow(unused_variables, unused_imports, dead_code)] // D11: remove with the last `todo!()` of the W4-14 stubs.
-
 pub mod decode; // W4-14b
 pub mod deps; // wiring stand-in, see its header
 pub mod disk; // W4-14c
@@ -29,6 +27,7 @@ use std::io;
 use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicI32, AtomicI64, AtomicU64, Ordering};
 use std::sync::{Arc, Mutex, MutexGuard, PoisonError};
+#[cfg(test)]
 use std::time::Duration;
 
 use pr_core::abstractions::{Clock, FileSystem, Log, NullLog, PhysicalSourceReader, SourceReader, SystemClock};

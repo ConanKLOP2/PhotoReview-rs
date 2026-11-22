@@ -215,6 +215,7 @@ impl PersistState {
     }
 
     /// Items waiting right now (tests).
+    #[cfg(test)]
     pub(crate) fn len(&self) -> usize {
         lock(&self.queue).items.len()
     }
