@@ -1354,4 +1354,121 @@ mod tests {
             .unwrap_or_else(PoisonError::into_inner);
         assert!(attempts.get(name).copied().unwrap_or_default() >= expected && !result.timed_out());
     }
+
+    // Mutation lane I killers (docs/reviews/PLATFORM-NATIVE-I-MUT-2026-11-21.md).
+    #[test]
+    fn blank_prefix_error_displays_its_message() {
+        // C# twin: InstanceScopeGapTests.Constructor_BlankPrefixOrNullHandler_Throws (message text).
+        let error = InstanceScope::with_options(InstanceMode::SingleWindow, |_| {}, None, " ", None, false)
+            .expect_err("a blank prefix is refused");
+        assert_eq!(error.to_string(), "name prefix cannot be empty or whitespace");
+    }
+
+    #[test]
+    fn debug_output_names_the_scope() {
+        let scope = scope(InstanceMode::SingleWindow, "ScopeDebugName");
+        assert_eq!(format!("{scope:?}"), "InstanceScope");
+    }
+
+    #[test]
+    fn dropping_the_scope_disposes_its_claims() {
+        // C# twin: InstanceScope.Dispose through `using`: the claims are released without an explicit dispose call.
+        let shared = Arc::new(FakeClaims::default());
+        let scope = fake_scope(
+            InstanceMode::PerFolder,
+            "ScopeDropDisposes",
+            Arc::clone(&shared),
+            Arc::new(FakeClients::default()),
+        );
+        scope.claim(Some(r"C:\A")).unwrap();
+        let (name, _) = scope.keys_for(Some(r"C:\A")).unwrap();
+        drop(scope);
+        assert_eq!(lock(&shared.disposed).as_slice(), std::slice::from_ref(&name));
+        assert!(!lock(&shared.held).contains(&name));
+    }
+
+    fn native_claim(scope: &InstanceScope, folder: &str) -> (String, String, Option<HeldClaim>) {
+        let (mutex, pipe) = scope.keys_for(Some(folder)).unwrap();
+        let callback: Arc<PathsCallback> = Arc::new(|_| {});
+        let claim = HeldClaim::try_create(&mutex, &pipe, callback, Arc::new(NullLog)).expect("claim setup succeeds");
+        (mutex, pipe, claim)
+    }
+
+    fn send_missing_path(pipe: &str) -> pr_core::instance::forwarding::ForwardOutcome {
+        ForwardPipeClient::new(Some(pipe.to_owned()), false)
+            .expect("client for the pipe")
+            .send(
+                &[r"C:\instance-scope-native-missing.jpg".to_owned()],
+                Duration::from_secs(3),
+                &CancelToken::none(),
+            )
+            .expect("send returns an outcome")
+    }
+
+    #[test]
+    #[ignore = "native: creates a uniquely named kernel mutex and named pipe"]
+    fn held_claim_names_itself_stops_listening_and_frees_the_name_on_dispose() {
+        // C# twin: InstanceScopeGapTests.StopListening_KeepsTheLockButStopsAnsweringTheForwardPipe over the real objects.
+        use pr_core::instance::forwarding::ForwardOutcome;
+        let prefix = format!("PhotoReviewRsI{}", std::process::id());
+        let scope = scope(InstanceMode::PerFolder, &prefix);
+        let (mutex, pipe, claim) = native_claim(&scope, r"C:\i-native-held");
+        let claim = claim.expect("the name is free");
+        assert_eq!(claim.mutex_name(), mutex);
+        assert_eq!(send_missing_path(&pipe), ForwardOutcome::Rejected);
+
+        claim.stop_listening();
+        assert_eq!(send_missing_path(&pipe), ForwardOutcome::NoInstance);
+        assert!(
+            native_claim(&scope, r"C:\i-native-held").2.is_none(),
+            "stop_listening keeps the mutex"
+        );
+
+        // `claim` stays alive, so only an explicit dispose can free the name.
+        claim.dispose().expect("dispose closes the mutex");
+        let again = native_claim(&scope, r"C:\i-native-held").2;
+        assert!(
+            again.is_some(),
+            "dispose frees the name while the claim object still lives"
+        );
+        drop(again);
+        drop(claim);
+    }
+
+    #[test]
+    #[ignore = "native: creates uniquely named kernel objects"]
+    fn create_mutex_handles_foreign_objects_errors_and_closes_on_drop() {
+        use std::ffi::OsStr;
+        use std::os::windows::ffi::OsStrExt;
+        use windows::Win32::Foundation::CloseHandle;
+        use windows::Win32::System::Threading::CreateEventW;
+        use windows::core::PCWSTR;
+
+        let name = format!(r"Local\PhotoReviewRsINative{}", std::process::id());
+
+        // A named event owns the name: CreateMutexW fails with ERROR_INVALID_HANDLE, which means "owned elsewhere".
+        let wide: Vec<u16> = OsStr::new(&name).encode_wide().chain(Some(0)).collect();
+        // SAFETY: `wide` is NUL terminated and outlives the synchronous CreateEventW call.
+        let event = unsafe { CreateEventW(None, true, false, PCWSTR(wide.as_ptr())) }.expect("event created");
+        let foreign = OwnedKernelHandle::create_mutex(&name).expect("a foreign object is not an error");
+        assert!(foreign.is_none());
+        // SAFETY: `event` is the handle returned above and is closed exactly once.
+        unsafe { CloseHandle(event) }.expect("event closed");
+
+        // Any other failure is an error: a name with a path separator inside the namespace is not valid.
+        assert!(OwnedKernelHandle::create_mutex(r"Local\i-native\bad\name").is_err());
+
+        let first = OwnedKernelHandle::create_mutex(&name)
+            .expect("create succeeds")
+            .expect("the name is free now");
+        assert!(
+            OwnedKernelHandle::create_mutex(&name).expect("no error").is_none(),
+            "an existing mutex of that name is owned elsewhere"
+        );
+        drop(first);
+        let reopened = OwnedKernelHandle::create_mutex(&name)
+            .expect("create succeeds")
+            .expect("dropping the handle closed the mutex");
+        drop(reopened);
+    }
 }
