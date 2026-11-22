@@ -12,7 +12,6 @@
 //!
 //! Open items:
 //! * `TODO(W3-07)`: the C# `RecoveryFileCheck` assertions are replaced by disk-state assertions until W3-07 merges.
-//! * `TODO(W3-05)`: the two `UndoLastAsync_*` tests need the real `UndoService` and go green only after W3-05 merges.
 //! * `DIVERGENCE:` marks the C# behaviour the Rust port reproduces differently by construction (no thread hop, no
 //!   `catch (Exception)` arm for a panic; see each test).
 
@@ -1592,7 +1591,7 @@ fn execute_group_second_call_while_first_runs_is_rejected_without_journal_line_a
 }
 
 // C#: CaptureGroupSidecarAndGateTests.UndoLastAsync_AfterGroupMoveWithXmp_RestoresAllThree
-// TODO(W3-05): needs the real UndoService (W3-05). Red until that unit merges; the group move side is what this asserts.
+// Uses the real `UndoService`; the group move side is what this asserts.
 #[test]
 fn undo_last_async_after_group_move_with_xmp_restores_all_three() {
     let fx = Fixture::new();
@@ -1612,7 +1611,7 @@ fn undo_last_async_after_group_move_with_xmp_restores_all_three() {
 }
 
 // C#: CaptureGroupSidecarAndGateTests.UndoLastAsync_WhileAnotherActionRuns_IsRejectedAndKeepsTheUndoAction
-// TODO(W3-05): needs the real UndoService. The gate is shared: while the service is busy, undo is refused.
+// Uses the real `UndoService`. The gate is shared: while the service is busy, undo is refused.
 #[test]
 fn undo_last_async_while_another_action_runs_is_rejected_and_keeps_the_undo_action() {
     let fx = Fixture::new();

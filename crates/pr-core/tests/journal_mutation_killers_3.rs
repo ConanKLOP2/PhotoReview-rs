@@ -21,7 +21,6 @@ fn fake_paths() -> AppPaths {
     AppPaths::new(std::path::Path::new(r"C:\Users\test\AppData\Local"), None, false)
 }
 
-#[allow(dead_code)]
 fn entry(id: &str, state: JournalState, op: FileOperationType) -> JournalEntry {
     JournalEntry {
         id: id.to_owned(),
@@ -41,7 +40,6 @@ fn entry(id: &str, state: JournalState, op: FileOperationType) -> JournalEntry {
     }
 }
 
-#[allow(dead_code)]
 fn rig() -> (Arc<FakeClock>, Arc<FakeFileSystem>, OperationJournal) {
     let clock = Arc::new(FakeClock::at(base()));
     let fs = Arc::new(FakeFileSystem::with_clock(clock.clone()));

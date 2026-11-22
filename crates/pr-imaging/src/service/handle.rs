@@ -90,6 +90,7 @@ impl LoadCell {
     }
 
     /// Non-blocking peek.
+    #[cfg(test)]
     pub(crate) fn try_result(&self) -> Option<PreviewResult> {
         lock(&self.result).clone()
     }
@@ -142,6 +143,7 @@ impl SlotGate {
     }
 
     /// Free tokens right now (tests).
+    #[cfg(test)]
     pub(crate) fn available(&self) -> i32 {
         *lock(&self.available)
     }
