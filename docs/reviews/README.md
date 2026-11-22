@@ -1,5 +1,4 @@
-#| [`COMPACTION-FILES-MUT-2-2026-11-20.md`](COMPACTION-FILES-MUT-2-2026-11-20.md) | 2026-11-20 | `io/journal_compaction_files.rs` whole-file rerun on current master: 99 mutants, 79 caught, 13 unviable, 3 equivalent (proof test), 4 not compiled on Windows (P-412), 0 timeout. | Measured |
- docs/reviews index
+# docs/reviews index
 
 Static review reports written by Machine C (cloud session) on 2026-10-23, plus the consolidated [`BACKLOG.md`](BACKLOG.md). The report files are evidence and are not edited; this index only points to them.
 
@@ -89,6 +88,7 @@ There were 18 files here on 2026-10-23: 17 reports and `BACKLOG.md` (the first t
 | [`P394-MUT-2026-11-06.md`](P394-MUT-2026-11-06.md) | 2026-11-06 | P-394 seams: mutation evidence, no behaviour change versus the C# baseline. | Done |
 | [`TRANSACTION-RERUN-2026-11-10.md`](TRANSACTION-RERUN-2026-11-10.md) | 2026-11-10 | F-12 / F-15 transaction rerun: `journal_rules.rs`, `transaction.rs` and the first 24 identities of `journal_compaction_files.rs` (no valid verdict for that file yet). | Measured; `journal_compaction_files.rs` NOT decided |
 | [`COMPACTION-FILES-MUT-2026-11-11.md`](COMPACTION-FILES-MUT-2026-11-11.md) | 2026-11-11 | `io/journal_compaction_files.rs`: 100 mutants decided after a flake analysis (79 caught, 13 unviable, 3 equivalent, 4 not compiled on Windows, 1 removed by refactor); test-helper flake fixed and the 19 affected catches rerun; const-mask refactor tried and reverted. | Measured |
+| [`COMPACTION-FILES-MUT-2-2026-11-20.md`](COMPACTION-FILES-MUT-2-2026-11-20.md) | 2026-11-20 | `io/journal_compaction_files.rs` whole-file rerun on current master: 99 mutants, 79 caught, 13 unviable, 3 equivalent (proof test), 4 not compiled on Windows (P-412), 0 timeout. | Measured |
 | [`D10-GLUE-MUT-2026-11-11.md`](D10-GLUE-MUT-2026-11-11.md) | 2026-11-11 | Settings glue `builder/{inputs,groups,rows}` and `context`: 446 mutants run completely (372 caught, 38 unviable, 36 equivalent by argument, 0 NOT RUN); 10 survivors killed by new tests; `dialog/{host,surface,frame}` still open. | Measured |
 | [`D10-GLUE-NATIVE-2026-11-12.md`](D10-GLUE-NATIVE-2026-11-12.md) | 2026-11-12 | Settings glue `dialog/{host,surface,frame}`: 403 mutants run completely with native tests (369 caught, 20 unviable, 13 equivalent by argument, 1 timeout that a test assertion also detects, 0 NOT RUN); 114 survivors killed by new native tests; read-only seam `subclass_registry_len` (P-405). | Measured |
 | [`PHYSICAL-FULL-MUT-2026-11-13.md`](PHYSICAL-FULL-MUT-2026-11-13.md) | 2026-11-13 | `pr-core` `io/physical.rs`: first complete native mutation run of the whole file (455 identities: 405 caught, 14 unviable, 15 not compiled on Windows, 21 equivalent by argument, 0 timeout, 0 NOT RUN); 15 survivors and 8 hang mutants killed (`w2_phys6_killers`, bounded `io_physical` tests); test seams P-406. | Measured |
