@@ -94,7 +94,7 @@ impl TextElement {
 
     /// C# `internal ITextLayout? Layout` (the layout held after Measure, `None` before it). Used by the parts' tests and the
     /// render path; `pub(crate)` only.
-    #[allow(dead_code)] // C# `Layout` accessor; its first caller (parts tests, render path) lands with W8-15d/15e.
+    #[cfg(test)]
     pub(crate) fn layout(&self) -> Option<&dyn TextLayout> {
         self.layout.as_deref()
     }

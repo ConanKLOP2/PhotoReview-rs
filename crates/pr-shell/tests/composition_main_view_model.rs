@@ -8,6 +8,7 @@ use pr_shell::composition::main_view_model::CatalogFeed;
 #[allow(dead_code)]
 #[path = "common/composition_fixture.rs"]
 mod composition_fixture;
+use composition_fixture::{Dialogs, Sink};
 
 use pr_app::{
     coordinators::{
@@ -18,36 +19,10 @@ use pr_app::{
     },
     services::contracts::{ClipboardService, PresentationObserver},
 };
-use pr_core::abstractions::{BatchReviewItem, DialogService, SkippedEntry};
-use pr_imaging::{cache_key::ImageCacheKey, decode_types::PlatformImage, preload::scheduler::RunHandle};
+use pr_imaging::{cache_key::ImageCacheKey, preload::scheduler::RunHandle};
 use pr_shell::composition::main_view_model::{MainViewModelHost, create_main_view_model};
-use std::{
-    cell::RefCell,
-    path::{Path, PathBuf},
-    rc::Rc,
-};
+use std::{cell::RefCell, path::Path, rc::Rc};
 
-struct Dialogs;
-impl DialogService for Dialogs {
-    fn show_confirmation(&self, _: &str, _: &str) -> bool {
-        false
-    }
-    fn show_message(&self, _: &str, _: &str) {}
-    fn show_error(&self, _: &str, _: &str) {}
-    fn pick_folder(&self, _: Option<&Path>) -> Option<PathBuf> {
-        None
-    }
-    fn show_batch_review(&self, _: &[BatchReviewItem]) -> bool {
-        false
-    }
-    fn show_recovery(&self) {}
-    fn show_diagnostics(&self) {}
-    fn show_settings(&self) -> bool {
-        false
-    }
-    fn show_benchmark(&self, _: Option<&Path>) {}
-    fn show_skipped_files(&self, _: &[SkippedEntry]) {}
-}
 #[derive(Default)]
 struct Clipboard(Rc<RefCell<Vec<String>>>);
 impl ClipboardService for Clipboard {
@@ -61,14 +36,6 @@ impl PresentationObserver for Observer {
     fn on_presented(&self, path: &str) {
         self.0.borrow_mut().push(path.to_owned());
     }
-}
-struct Sink;
-impl IPresentationSink for Sink {
-    fn set_current_image(&mut self, _: Option<PlatformImage>, _: bool, _: &ImageChange<'_>) {}
-    fn set_status_text(&mut self, _: &str) {}
-    fn apply_initial_view_mode(&mut self) {}
-    fn on_presented(&mut self, _: &str) {}
-    fn trace_presented(&mut self, _: i64, _: &str, _: i64) {}
 }
 struct SinkFactory(Rc<RefCell<Option<MainViewModelSinkCallbacks>>>);
 impl PresentationSinkFactory for SinkFactory {

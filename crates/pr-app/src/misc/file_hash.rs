@@ -12,8 +12,6 @@
 //! OS access is injected: stat through `FileSystem::try_get_file_stat`, the streamed read through `SourceReader` (shared
 //! ReadWrite | Delete, SequentialScan, the INV-8 rule), the whole-file path through `SourceBytesCache`.
 
-#![allow(unused_variables, dead_code)] // retained generated test seam fields
-
 use std::collections::HashMap;
 use std::fmt;
 use std::io;

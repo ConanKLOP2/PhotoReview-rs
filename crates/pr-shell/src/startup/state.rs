@@ -37,7 +37,6 @@ use super::options::ShellStartupOptions;
 pub type EarlyDecodeSlot = Arc<Mutex<Option<StartupTask<Option<EarlyDecodePlan>>>>>;
 
 /// C# `ShellStartup` instance fields. See the module doc.
-#[allow(dead_code)] // Phase-two fields are consumed by the separately ported W8-17e.
 pub struct StartupState {
     // ---- given by `run` (17e) ----------------------------------------------------------------------------------------------------------------------------------------
     /// C# `_args`.
