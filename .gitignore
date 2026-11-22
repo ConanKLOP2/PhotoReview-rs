@@ -24,3 +24,6 @@ tools/autopilot/state/
 .codex-*
 /target-mut/
 /mut-out-*/
+/target-prepr/
+/mut-p10-out/
+/mut-p10.log

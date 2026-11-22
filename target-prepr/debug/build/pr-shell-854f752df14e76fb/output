@@ -1,8 +1,0 @@
-cargo:rerun-if-env-changed=PHOTOREVIEW_RS_VERSION
-cargo:rerun-if-env-changed=PHOTOREVIEW_RS_RELEASE
-cargo:rerun-if-changed=build_support/version_info.rs
-cargo:rerun-if-changed=build.rs
-cargo:rerun-if-changed=build_support/res_writer.rs
-cargo:rerun-if-changed=../pr-platform-win/src/win32/shell.manifest
-cargo:rerun-if-changed=../../assets
-cargo:rustc-link-arg-bin=PhotoReviewRs=C:/MyProjects/PhotoReview-rs/.claude/worktrees/shell-w/target-prepr\debug\build\pr-shell-854f752df14e76fb\out\photoreview.res
