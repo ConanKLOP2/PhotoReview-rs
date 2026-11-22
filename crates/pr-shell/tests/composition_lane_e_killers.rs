@@ -3,27 +3,25 @@
 #[allow(dead_code)]
 #[path = "common/composition_fixture.rs"]
 mod composition_fixture;
+use composition_fixture::{Dialogs, Sink};
 
 use std::cell::RefCell;
-use std::path::{Path, PathBuf};
+use std::path::Path;
 use std::rc::Rc;
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::{Arc, Mutex, PoisonError};
 use std::time::{Duration, SystemTime};
 
-use pr_app::coordinators::presenter::ImageChange;
 use pr_app::coordinators::sink_callbacks::{MainViewModelSinkCallbacks, PresentationSinkFactory};
 use pr_app::coordinators::traits::IPresentationSink;
 use pr_app::coordinators::zoom_detail::ThreadRunner;
 use pr_app::misc::app_log::{AppLog, AppLogTarget};
 use pr_app::services::contracts::{ClipboardService, PresentationObserver};
-use pr_core::abstractions::{BatchReviewItem, DialogService, SkippedEntry};
 use pr_core::diagnostics::file_log::{DEFAULT_MAX_LOG_BYTES, FileLog};
 use pr_core::file_actions::journal::JournalCompactionOutcome;
 use pr_core::file_actions::reconcile::ReconcileJournal;
 use pr_core::model::JournalDurability;
 use pr_core::model::enums::{DecoderBackend, RawFullDecode};
-use pr_imaging::decode_types::PlatformImage;
 use pr_l10n::localizer::{Localizer, built_in_english_localizer, create_show_keys};
 use pr_shell::composition::contracts::SharedServiceOptions;
 use pr_shell::composition::graph::GraphOverrides;
@@ -96,27 +94,6 @@ fn debug_of_catalog_feed_feed_preload_controller_and_host_name_the_types() {
     assert!(format!("{host:?}").contains("MainViewModelHost"));
 }
 
-struct Dialogs;
-impl DialogService for Dialogs {
-    fn show_confirmation(&self, _: &str, _: &str) -> bool {
-        false
-    }
-    fn show_message(&self, _: &str, _: &str) {}
-    fn show_error(&self, _: &str, _: &str) {}
-    fn pick_folder(&self, _: Option<&Path>) -> Option<PathBuf> {
-        None
-    }
-    fn show_batch_review(&self, _: &[BatchReviewItem]) -> bool {
-        false
-    }
-    fn show_recovery(&self) {}
-    fn show_diagnostics(&self) {}
-    fn show_settings(&self) -> bool {
-        false
-    }
-    fn show_benchmark(&self, _: Option<&Path>) {}
-    fn show_skipped_files(&self, _: &[SkippedEntry]) {}
-}
 struct Clipboard;
 impl ClipboardService for Clipboard {
     fn try_set_text(&self, _: &str) -> bool {
@@ -128,14 +105,6 @@ impl PresentationObserver for Observer {
     fn on_presented(&self, path: &str) {
         self.0.borrow_mut().push(path.to_owned());
     }
-}
-struct Sink;
-impl IPresentationSink for Sink {
-    fn set_current_image(&mut self, _: Option<PlatformImage>, _: bool, _: &ImageChange<'_>) {}
-    fn set_status_text(&mut self, _: &str) {}
-    fn apply_initial_view_mode(&mut self) {}
-    fn on_presented(&mut self, _: &str) {}
-    fn trace_presented(&mut self, _: i64, _: &str, _: i64) {}
 }
 struct SinkFactory;
 impl PresentationSinkFactory for SinkFactory {

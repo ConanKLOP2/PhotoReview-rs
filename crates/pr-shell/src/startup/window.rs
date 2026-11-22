@@ -103,7 +103,6 @@ impl StartupState {
     /// 13. **Renderer** (450): `main.attach_renderer(None)?`.
     /// 14. **Overlay** (451): [`attach_overlay`](Self::attach_overlay) (the HUD is there from the first frame).
     /// 15. `mark("mainWindowConstructed")`; **first frame NOW** (455): `main.render_now()`; smoke -> `arm_smoke_exit` (`smoke.rs`).
-    #[allow(dead_code)] // W8-17e part B wires the caller in run.rs; keep its binding visibility.
     pub(super) fn create_main_window(self: &Rc<Self>) -> Result<(), StartupError> {
         let smoke = self.launch.smoke;
         let activate = self.options.borrow().activate && !smoke;
@@ -279,7 +278,6 @@ impl StartupState {
     /// Some(graph.settings_store.clone())`, `poster = Rc::new(UiLocalPoster::new(dispatcher))`, `wake = Arc::new(WindowUiWake::new(dispatcher, None))`, `fit` = `move || { if let Some(window) = slot
     /// .upgrade().and_then(..) { window.with_feature::<MainWindowInputFeature, _>(|f| f.input().input().apply_fit()); } }` (the Fit closure is mandatory: without it the Fit button does nothing),
     /// `tooltip_factory: None`, `os = Rc::new(Win32OverlayOs)`, `log`.
-    #[allow(dead_code)] // Reachable through create_main_window once part B wires run.rs.
     pub(super) fn attach_overlay(self: &Rc<Self>, main: &Rc<MainWindow>) -> Result<(), StartupError> {
         let (settings_store, log) = {
             let graph = self.graph.borrow();

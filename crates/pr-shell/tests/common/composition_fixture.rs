@@ -4,11 +4,12 @@ use std::{
     sync::Arc,
 };
 
+use pr_app::coordinators::{presenter::ImageChange, traits::IPresentationSink};
 use pr_app::localization::service::CultureLookup;
 use pr_core::{
     abstractions::{
-        DisplayClock, DisplayTiming, ExplorerOrderProvider, InProcessLiveOperationRegistry, ReadSeek, ShellIntegration,
-        SourceReadPriority, SourceReader,
+        BatchReviewItem, DialogService, DisplayClock, DisplayTiming, ExplorerOrderProvider,
+        InProcessLiveOperationRegistry, ReadSeek, ShellIntegration, SkippedEntry, SourceReadPriority, SourceReader,
     },
     app_paths::AppPaths,
     catalog::{
@@ -18,7 +19,7 @@ use pr_core::{
     time::DateTimeUtc,
 };
 use pr_imaging::{
-    decode_types::{DecodeRequest, DecodedImageView, ImageInfo},
+    decode_types::{DecodeRequest, DecodedImageView, ImageInfo, PlatformImage},
     decoder_traits::{DecodeError, ImageDecoder},
     memory_headroom::MemoryInfo,
     pixels::PixelBuffer,
@@ -366,4 +367,36 @@ fn inputs_with_parts_and_platform(
         move_override,
     };
     (inputs, root, log)
+}
+
+#[allow(dead_code)] // Shared by two test binaries only; the other targets that include this fixture do not use it.
+pub struct Dialogs;
+impl DialogService for Dialogs {
+    fn show_confirmation(&self, _: &str, _: &str) -> bool {
+        false
+    }
+    fn show_message(&self, _: &str, _: &str) {}
+    fn show_error(&self, _: &str, _: &str) {}
+    fn pick_folder(&self, _: Option<&Path>) -> Option<PathBuf> {
+        None
+    }
+    fn show_batch_review(&self, _: &[BatchReviewItem]) -> bool {
+        false
+    }
+    fn show_recovery(&self) {}
+    fn show_diagnostics(&self) {}
+    fn show_settings(&self) -> bool {
+        false
+    }
+    fn show_benchmark(&self, _: Option<&Path>) {}
+    fn show_skipped_files(&self, _: &[SkippedEntry]) {}
+}
+#[allow(dead_code)] // Shared by two test binaries only; the other targets that include this fixture do not use it.
+pub struct Sink;
+impl IPresentationSink for Sink {
+    fn set_current_image(&mut self, _: Option<PlatformImage>, _: bool, _: &ImageChange<'_>) {}
+    fn set_status_text(&mut self, _: &str) {}
+    fn apply_initial_view_mode(&mut self) {}
+    fn on_presented(&mut self, _: &str) {}
+    fn trace_presented(&mut self, _: i64, _: &str, _: i64) {}
 }
