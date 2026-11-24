@@ -174,6 +174,15 @@ pub struct FileHashService {
     in_flight: Arc<Mutex<HashMap<String, Arc<InFlight>>>>,
     /// C# `_generation`: [`FileHashService::clear`] increments it; a computation that started before a clear is not cached.
     generation: Arc<Mutex<u64>>,
+    /// Starts a flight's worker thread. Production: `thread::Builder::spawn`; tests inject a failing one.
+    spawner: Spawner,
+}
+
+/// Starts the worker closure on a new thread; `Err` when the OS refuses a thread.
+pub type Spawner = Arc<dyn Fn(Box<dyn FnOnce() + Send>) -> io::Result<()> + Send + Sync>;
+
+fn spawn_os_thread(job: Box<dyn FnOnce() + Send>) -> io::Result<()> {
+    thread::Builder::new().spawn(job).map(drop)
 }
 
 impl fmt::Debug for FileHashService {
@@ -216,7 +225,16 @@ impl FileHashService {
             })?),
             in_flight: Arc::new(Mutex::new(HashMap::new())),
             generation: Arc::new(Mutex::new(0)),
+            spawner: Arc::new(spawn_os_thread),
         })
+    }
+
+    /// Test seam: replaces the worker thread start (a failing spawner simulates thread exhaustion).
+    #[doc(hidden)]
+    #[must_use]
+    pub fn with_spawner_for_tests(mut self, spawner: Spawner) -> Self {
+        self.spawner = spawner;
+        self
     }
 
     /// C# `Clear()`: bumps the generation and empties the cache. A computation already in flight still returns its hash but does
@@ -382,7 +400,10 @@ impl FileHasher for FileHashService {
                 let worker_map = self.in_flight.clone();
                 let worker_path = full.clone();
                 let worker_flight = flight.clone();
-                thread::spawn(move || {
+                let spawn_flight = flight.clone();
+                let spawn_key = key.clone();
+                let spawn_map = self.in_flight.clone();
+                let spawned = (self.spawner)(Box::new(move || {
                     {
                         let mut state = worker_flight.state.lock().unwrap_or_else(|p| p.into_inner());
                         state.started = true;
@@ -437,7 +458,19 @@ impl FileHasher for FileHashService {
                     {
                         map.remove(&worker_key);
                     }
-                });
+                }));
+                if let Err(error) = spawned {
+                    // No worker will ever run: complete the flight as failed and unregister it, so this caller and any
+                    // joined waiter get the error and the next call starts a fresh flight instead of joining a dead one.
+                    let mut state = spawn_flight.state.lock().unwrap_or_else(|p| p.into_inner());
+                    state.result = Some(Err(FileHashError::Io(Arc::new(error))));
+                    spawn_flight.done.notify_all();
+                    drop(state);
+                    let mut map = spawn_map.lock().unwrap_or_else(|p| p.into_inner());
+                    if map.get(&spawn_key).is_some_and(|f| Arc::ptr_eq(f, &spawn_flight)) {
+                        map.remove(&spawn_key);
+                    }
+                }
             }
             let mut state = flight.state.lock().unwrap_or_else(|p| p.into_inner());
             while state.result.is_none() && !cancel.is_canceled() {
