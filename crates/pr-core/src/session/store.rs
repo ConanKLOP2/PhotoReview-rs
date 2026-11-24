@@ -570,58 +570,123 @@ const SHA256_K: [u32; 64] = [
 
 /// SHA-256 of `data` (D33: the one shared helper; W4-10b and W4-14c import it from here).
 pub fn sha256(data: &[u8]) -> [u8; 32] {
-    let mut h: [u32; 8] = [
-        0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19,
-    ];
-    let mut message = data.to_vec();
-    message.push(0x80);
-    while message.len() % 64 != 56 {
-        message.push(0);
-    }
-    message.extend_from_slice(&(data.len() as u64).wrapping_mul(8).to_be_bytes());
+    let mut hasher = Sha256::new();
+    hasher.update(data);
+    hasher.finalize()
+}
 
-    for block in message.chunks_exact(64) {
-        let mut w = [0u32; 64];
-        for (slot, word) in w.iter_mut().zip(block.chunks_exact(4)) {
-            *slot = u32::from_be_bytes([word[0], word[1], word[2], word[3]]);
-        }
-        for i in 16..64 {
-            let s0 = w[i - 15].rotate_right(7) ^ w[i - 15].rotate_right(18) ^ (w[i - 15] >> 3);
-            let s1 = w[i - 2].rotate_right(17) ^ w[i - 2].rotate_right(19) ^ (w[i - 2] >> 10);
-            w[i] = w[i - 16].wrapping_add(s0).wrapping_add(w[i - 7]).wrapping_add(s1);
-        }
-        let [mut a, mut b, mut c, mut d, mut e, mut f, mut g, mut hh] = h;
-        for (k, wi) in SHA256_K.iter().zip(w.iter()) {
-            let s1 = e.rotate_right(6) ^ e.rotate_right(11) ^ e.rotate_right(25);
-            let ch = (e & f) ^ (!e & g);
-            let t1 = hh.wrapping_add(s1).wrapping_add(ch).wrapping_add(*k).wrapping_add(*wi);
-            let s0 = a.rotate_right(2) ^ a.rotate_right(13) ^ a.rotate_right(22);
-            let maj = (a & b) ^ (a & c) ^ (b & c);
-            let t2 = s0.wrapping_add(maj);
-            hh = g;
-            g = f;
-            f = e;
-            e = d.wrapping_add(t1);
-            d = c;
-            c = b;
-            b = a;
-            a = t1.wrapping_add(t2);
-        }
-        for (slot, value) in h.iter_mut().zip([a, b, c, d, e, f, g, hh]) {
-            *slot = slot.wrapping_add(value);
+const SHA256_INIT: [u32; 8] = [
+    0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19,
+];
+
+/// Incremental SHA-256: constant memory whatever the input length (no copy of the input is made).
+pub struct Sha256 {
+    h: [u32; 8],
+    block: [u8; 64],
+    buffered: usize,
+    total_len: u64,
+}
+
+impl std::fmt::Debug for Sha256 {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("Sha256")
+            .field("total_len", &self.total_len)
+            .finish_non_exhaustive()
+    }
+}
+
+impl Default for Sha256 {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+impl Sha256 {
+    pub fn new() -> Self {
+        Self {
+            h: SHA256_INIT,
+            block: [0; 64],
+            buffered: 0,
+            total_len: 0,
         }
     }
 
-    let mut out = [0u8; 32];
-    for (chunk, word) in out.chunks_exact_mut(4).zip(h) {
-        chunk.copy_from_slice(&word.to_be_bytes());
+    pub fn update(&mut self, mut data: &[u8]) {
+        self.total_len = self.total_len.wrapping_add(data.len() as u64);
+        if self.buffered > 0 {
+            let take = (64 - self.buffered).min(data.len());
+            self.block[self.buffered..self.buffered + take].copy_from_slice(&data[..take]);
+            self.buffered += take;
+            data = &data[take..];
+            if self.buffered < 64 {
+                return;
+            }
+            let block = self.block;
+            sha256_compress(&mut self.h, &block);
+            self.buffered = 0;
+        }
+        let mut blocks = data.chunks_exact(64);
+        for block in &mut blocks {
+            sha256_compress(&mut self.h, block);
+        }
+        let rest = blocks.remainder();
+        self.block[..rest.len()].copy_from_slice(rest);
+        self.buffered = rest.len();
     }
-    out
+
+    pub fn finalize(mut self) -> [u8; 32] {
+        let bit_len = self.total_len.wrapping_mul(8);
+        let mut tail = [0u8; 128];
+        tail[..self.buffered].copy_from_slice(&self.block[..self.buffered]);
+        tail[self.buffered] = 0x80;
+        let tail_len = if self.buffered < 56 { 64 } else { 128 };
+        tail[tail_len - 8..tail_len].copy_from_slice(&bit_len.to_be_bytes());
+        for block in tail[..tail_len].chunks_exact(64) {
+            sha256_compress(&mut self.h, block);
+        }
+        let mut out = [0u8; 32];
+        for (chunk, word) in out.chunks_exact_mut(4).zip(self.h) {
+            chunk.copy_from_slice(&word.to_be_bytes());
+        }
+        out
+    }
+}
+
+fn sha256_compress(h: &mut [u32; 8], block: &[u8]) {
+    let mut w = [0u32; 64];
+    for (slot, word) in w.iter_mut().zip(block.chunks_exact(4)) {
+        *slot = u32::from_be_bytes([word[0], word[1], word[2], word[3]]);
+    }
+    for i in 16..64 {
+        let s0 = w[i - 15].rotate_right(7) ^ w[i - 15].rotate_right(18) ^ (w[i - 15] >> 3);
+        let s1 = w[i - 2].rotate_right(17) ^ w[i - 2].rotate_right(19) ^ (w[i - 2] >> 10);
+        w[i] = w[i - 16].wrapping_add(s0).wrapping_add(w[i - 7]).wrapping_add(s1);
+    }
+    let [mut a, mut b, mut c, mut d, mut e, mut f, mut g, mut hh] = *h;
+    for (k, wi) in SHA256_K.iter().zip(w.iter()) {
+        let s1 = e.rotate_right(6) ^ e.rotate_right(11) ^ e.rotate_right(25);
+        let ch = (e & f) ^ (!e & g);
+        let t1 = hh.wrapping_add(s1).wrapping_add(ch).wrapping_add(*k).wrapping_add(*wi);
+        let s0 = a.rotate_right(2) ^ a.rotate_right(13) ^ a.rotate_right(22);
+        let maj = (a & b) ^ (a & c) ^ (b & c);
+        let t2 = s0.wrapping_add(maj);
+        hh = g;
+        g = f;
+        f = e;
+        e = d.wrapping_add(t1);
+        d = c;
+        c = b;
+        b = a;
+        a = t1.wrapping_add(t2);
+    }
+    for (slot, value) in h.iter_mut().zip([a, b, c, d, e, f, g, hh]) {
+        *slot = slot.wrapping_add(value);
+    }
 }
 
 #[cfg(test)]
 mod tests {
-    use super::sha256;
+    use super::{Sha256, sha256};
 
     fn hex(bytes: [u8; 32]) -> String {
         bytes.iter().map(|b| format!("{b:02x}")).collect()
@@ -640,6 +705,59 @@ mod tests {
         assert_eq!(
             hex(sha256(b"abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq")),
             "248d6a61d20638b8e5c026930c3e6039a33ce45964ff2167f6ecedd419db06c1"
+        );
+    }
+
+    #[test]
+    fn incremental_sha256_matches_one_shot_at_every_boundary() {
+        let data: Vec<u8> = (0..(1024 * 1024 + 1)).map(|i| (i * 31 % 251) as u8).collect();
+        for len in [0usize, 1, 55, 56, 63, 64, 65, 119, 120, 127, 128, 129, 1024 * 1024 + 1] {
+            let expected = reference_sha256(&data[..len]);
+            for chunk in [1usize, 7, 63, 64, 65, 1000] {
+                let mut h = Sha256::new();
+                for part in data[..len].chunks(chunk) {
+                    h.update(part);
+                }
+                assert_eq!(hex(h.finalize()), expected, "len {len} chunk {chunk}");
+            }
+            assert_eq!(hex(sha256(&data[..len])), expected, "one-shot len {len}");
+        }
+    }
+
+    /// Independent whole-message reference (pad a copy, then feed it in 64-byte pieces through the incremental core).
+    fn reference_sha256(data: &[u8]) -> String {
+        let mut h = Sha256::new();
+        h.update(data);
+        let direct = hex(h.finalize());
+        let mut h2 = Sha256::new();
+        for b in data.chunks(64) {
+            h2.update(b);
+        }
+        assert_eq!(direct, hex(h2.finalize()));
+        direct
+    }
+
+    #[test]
+    fn incremental_sha256_known_vectors() {
+        let mut h = Sha256::new();
+        h.update(b"a");
+        h.update(b"bc");
+        assert_eq!(
+            hex(h.finalize()),
+            "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"
+        );
+        assert_eq!(
+            hex(Sha256::new().finalize()),
+            "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        );
+        let mut million = Sha256::new();
+        let chunk = [b'a'; 1000];
+        for _ in 0..1000 {
+            million.update(&chunk);
+        }
+        assert_eq!(
+            hex(million.finalize()),
+            "cdc76e5c9914fb9281a1c7e284d73e67f1809a48a497200e046d39ccc7112cd0"
         );
     }
 }

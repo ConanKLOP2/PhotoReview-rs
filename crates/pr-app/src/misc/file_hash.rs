@@ -282,7 +282,7 @@ impl FileHashService {
     /// Streams `reader` through the incremental SHA-256 in [`HASH_STREAM_BUFFER_BYTES`] chunks and returns the upper-case hex digest.
     /// `cancel` is checked before every chunk (C# `SHA256.HashDataAsync(stream, token)`).
     fn hash_stream(reader: &mut dyn io::Read, cancel: &CancelToken) -> Result<String, FileHashError> {
-        let mut data = Vec::new();
+        let mut hasher = pr_core::session::store::Sha256::new();
         let mut buf = vec![0; HASH_STREAM_BUFFER_BYTES];
         loop {
             if cancel.is_canceled() {
@@ -292,20 +292,21 @@ impl FileHashService {
             if n == 0 {
                 break;
             }
-            data.extend_from_slice(&buf[..n]);
+            hasher.update(&buf[..n]);
         }
         if cancel.is_canceled() {
             return Err(FileHashError::Canceled);
         }
-        Ok(sha256_hex(&data))
+        Ok(hex_upper(&hasher.finalize()))
     }
 }
 
 fn sha256_hex(data: &[u8]) -> String {
-    pr_core::session::store::sha256(data)
-        .iter()
-        .map(|b| format!("{b:02X}"))
-        .collect()
+    hex_upper(&pr_core::session::store::sha256(data))
+}
+
+fn hex_upper(digest: &[u8; 32]) -> String {
+    digest.iter().map(|b| format!("{b:02X}")).collect()
 }
 
 impl FileHasher for FileHashService {
