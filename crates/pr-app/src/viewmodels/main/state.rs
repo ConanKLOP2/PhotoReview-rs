@@ -435,7 +435,7 @@ type SourceSizeSwappingHook = Box<dyn FnMut(&ViewerState)>;
 
 /// The four C# `MainViewModelSinkCallbacks` as methods on a shared handle. The composition root (W8-09b) builds the closures of
 /// `composition::contracts::MainViewModelSinkCallbacks` around a clone of this handle; the view model holds another clone and drains
-/// it with [`MainViewModel::finish_presenter_call`]. UI thread only.
+/// it with `MainViewModel::finish_presenter_call`. UI thread only.
 #[derive(Clone)]
 pub struct PresentationBridge {
     inner: Rc<RefCell<BridgeState>>,

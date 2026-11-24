@@ -5,7 +5,7 @@
 //! The Direct2D bitmap type is NOT named here: both structs are generic over the bitmap handle `B` (C# `ID2D1Bitmap1`), so this
 //! file has no `windows` type and the bookkeeping is tested with `B = ()` or `B = u32` (D-W8-12a-1). `pr_platform_win::render`
 //! (W8-12g) instantiates `TiledGpuImage<ID2D1Bitmap1>`; the draw context (W8-12e) gets it back through
-//! [`GpuImage::as_any`](super::gpu_image::GpuImage::as_any).
+//! [`GpuImage::as_any`].
 //!
 //! UI thread only. The cache and the holders of an image share it through `Rc`, so the mutable state (`uploaded_rows`,
 //! `is_released`, a tile's bitmap) sits in `Cell`/`RefCell` (the C# object is mutated through shared references too).
