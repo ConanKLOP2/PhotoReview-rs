@@ -103,7 +103,7 @@ fn existing_full_path(path: &str, want_dir: bool, file_system: &dyn FileSystem) 
 /// 1. `valid` = the non-blank paths (`trim().is_empty()` filtered out), input order. None => `Invalid`, no folder, no image,
 ///    ignored 0, warning `NoValidInput`.
 /// 2. Folder drop: the FIRST valid path for which `file_system.directory_exists` is true. Then `ignored` = number of valid
-///    paths that are not [`is_same_folder`] as it (the folder itself, dropped twice, recased or with a trailing separator,
+///    paths that are not `is_same_folder` as it (the folder itself, dropped twice, recased or with a trailing separator,
 ///    counts as the same); result `Folder`, `folder_path = get_full_path(folder)` (NOT trimmed: a trailing separator
 ///    stays), no image, ignored, warning `OnlyFirstFolder` iff ignored > 0.
 /// 3. Image drop: `images` = valid paths for which `file_system.file_exists` is true AND

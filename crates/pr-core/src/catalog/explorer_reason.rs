@@ -5,7 +5,7 @@
 //! `code|detail|detail`; the UI maps the code to catalog text and inserts the technical details (exception type,
 //! HRESULT, counts) verbatim, so the library never carries user-visible prose.
 //!
-//! The separator cannot be escaped: a `'|'` inside the code or a detail is replaced by `'/'` by [`format`], which
+//! The separator cannot be escaped: a `'|'` inside the code or a detail is replaced by `'/'` by [`format()`], which
 //! keeps [`parse`] returning exactly the details that were given.
 
 pub const TIMEOUT: &str = "timeout";

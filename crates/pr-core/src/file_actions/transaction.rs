@@ -171,7 +171,7 @@ impl<'a> JournalTransaction<'a> {
 
     /// C# `VerifyDestination(FileStat?, string errorCode)`: `stat` is `None`, or its length differs from
     /// `prepared.size` (a length above `i64::MAX` never matches) -> `Err` of a
-    /// [`JournalCodedError`](super::errors::JournalCodedError)`::new(error_code, localized text)` converted with
+    /// [`JournalCodedError`]`::new(error_code, localized text)` converted with
     /// `into_io_error()` (message = `errors::text(error_code, &|k| journal.texts().localized(k))`). An unknown code is a
     /// caller bug (callers pass `errors::*` constants only): C# throws `ArgumentException` while building the exception;
     /// Rust uses the code itself as the message (`// DIVERGENCE:` comment, no test, no golden case). Otherwise `mutation_completed = true`. The write time is NOT

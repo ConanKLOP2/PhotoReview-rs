@@ -129,7 +129,7 @@ fn is_transient_replace_failure(err: &io::Error) -> bool {
 }
 
 /// C# `IsSwallowedAsDestinationExists` (internal): the failures of the no-overwrite copy that mean "the destination
-/// already exists" (`TryCopyNew` returns false): exactly [`errors::is_destination_exists`](crate::file_actions::errors::is_destination_exists).
+/// already exists" (`TryCopyNew` returns false): exactly [`errors::is_destination_exists`].
 pub fn is_swallowed_as_destination_exists(err: &io::Error) -> bool {
     errors::is_destination_exists(err)
 }
@@ -1163,7 +1163,7 @@ fn is_path_unreachable(err: &io::Error) -> bool {
 }
 
 /// P-12 classification of a failed metadata query: `true` = "nothing there" (`Ok(None)`), `false` = "cannot be
-/// inspected" (`Err`). Missing = not found, every .NET "path unreachable" code ([`is_path_unreachable`]: missing
+/// inspected" (`Err`). Missing = not found, every .NET "path unreachable" code (`is_path_unreachable`: missing
 /// file/folder, bad name, missing network host or share, drive not ready, too long), ERROR_INVALID_FUNCTION (1, a
 /// device such as `CON` that has no file information) and ERROR_DIRECTORY (267, a file used as a folder).
 /// Access denied (5), sharing (32) and lock (33) violations and anything else are NOT missing.

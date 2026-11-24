@@ -172,7 +172,7 @@ impl fmt::Debug for SessionStore {
 impl SessionStore {
     /// C# `new SessionStore(paths, fileSystem, metrics)`: keeps `paths.sessions_dir` and starts the background sweep of
     /// stale temp files on a thread named `PhotoReview.SessionSweep` (it runs `sweep_stale_temp_files(DateTimeUtc::now())`
-    /// and then marks the sweep done, also when it panics). The log starts as [`NullLog`](crate::abstractions::NullLog)
+    /// and then marks the sweep done, also when it panics). The log starts as [`NullLog`]
     /// (C# defaults to `FileLog.Default`); set the real one with [`with_log`](Self::with_log).
     pub fn new(
         paths: &AppPaths,
@@ -206,7 +206,7 @@ impl SessionStore {
     }
 
     /// C# parameterless constructor: `AppPaths::from_environment()` over the real file system
-    /// ([`PhysicalFileSystem`](crate::io::physical::PhysicalFileSystem)), no metrics.
+    /// ([`PhysicalFileSystem`]), no metrics.
     pub fn from_environment() -> Self {
         Self::new(&AppPaths::from_environment(), Arc::new(PhysicalFileSystem), None)
     }

@@ -154,7 +154,7 @@ pub fn find_groups(
 }
 
 /// `NumberedPattern` = ` \(\d+\)$` (unanchored at the start) applied to a file stem: the stem ends with a space, `(`, one or
-/// more digits, `)`. Same .NET regex rules as `compare::numbered_stem_base`: `\d` = [`is_dotnet_digit`](crate::catalog::natural_cmp::is_dotnet_digit),
+/// more digits, `)`. Same .NET regex rules as `compare::numbered_stem_base`: `\d` = [`is_dotnet_digit`],
 /// `$` also matches before one final `'\n'`. Unlike `numbered_stem_base` a `'\n'` earlier in the stem does not matter:
 /// `"a\nb (1)"` => true. `"img (1)"` => true, `"img(1)"` => false, `"img (1) "` => false, `" (1)"` => true, `"img (１)"` => true.
 pub fn has_numbered_suffix(stem: &str) -> bool {
