@@ -337,7 +337,7 @@ impl ImageDecoder for WicDirectDecoder {
     /// C# `Decode`. Order: without `bytes`, a null/whitespace `path` (Unicode `char::is_whitespace`, same set as .NET
     /// `char.IsWhiteSpace`) is `Err(InvalidArgument)` NOT relabelled; the source is `bytes` (read-only stream, the path
     /// is only a label) or `source_reader.open_source(path, request.priority, DECODE_SOURCE_BUFFER_SIZE)` (open errors
-    /// propagate unchanged via `From<io::Error>`); then [`Self::decode_from_stream`] whose `InvalidArgument` errors become
+    /// propagate unchanged via `From<io::Error>`); then `Self::decode_from_stream` whose `InvalidArgument` errors become
     /// `InvalidData` ([`relabel_invalid_argument`]). The source is closed before returning, success or failure (INV-8).
     fn decode(&self, request: &DecodeRequest) -> Result<Arc<dyn DecodedImageView>, DecodeError> {
         let stream = match &request.bytes {
@@ -365,7 +365,7 @@ impl ImageDecoder for WicDirectDecoder {
     }
 
     /// C# `ReadInfo`: blank `path` -> `Err(InvalidArgument)` not relabelled; open with `SourceReadPriority::Viewer` and
-    /// [`READ_INFO_SOURCE_BUFFER_SIZE`]; [`Self::read_info_core`] with [`relabel_invalid_argument`] on its errors.
+    /// `READ_INFO_SOURCE_BUFFER_SIZE`; `Self::read_info_core` with `relabel_invalid_argument` on its errors.
     fn read_info(&self, path: &str) -> Result<ImageInfo, DecodeError> {
         if path.chars().all(char::is_whitespace) {
             return Err(blank_argument("path"));

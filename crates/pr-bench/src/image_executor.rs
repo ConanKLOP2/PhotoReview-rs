@@ -676,7 +676,7 @@ impl BenchmarkImageExecutor {
     ///    `log.error("Benchmark persist workers failed to shut down cleanly", None)`; teardown continues.
     /// 5. start the background pass on a NAMED std thread and return WITHOUT waiting for it (the next profile must not be
     ///    blocked by a slow prune): `teardown = TeardownHandle::pending()`; the thread runs
-    ///    [`delete_scratch_directory_after_prune`] and then `finish()` (also when the pass failed or panicked). A spawn
+    ///    `delete_scratch_directory_after_prune` and then `finish()` (also when the pass failed or panicked). A spawn
     ///    failure logs `Benchmark scratch directory could not be removed: {dir}` with the `io::Error`, completes the
     ///    handle and returns.
     pub fn dispose(&self) {

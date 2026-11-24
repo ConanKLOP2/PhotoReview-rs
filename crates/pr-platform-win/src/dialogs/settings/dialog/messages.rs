@@ -5,7 +5,7 @@
 //! dialog; the navigation list and the page comboboxes are subclassed for the mouse wheel only (the list is a direct child of the dialog); the mouse wheel drives the page scroll; work posted from any thread is queued and run on the UI thread; a language change relabels everything.
 //!
 //! `unsafe` here: `post_message` (an `unsafe fn` of `win32::api`: `WindowPoster::post`, `post_language_changed`, `post_local`; integer-only messages), `set_window_subclass` /
-//! `remove_window_subclass` / `def_subclass_proc` (unsafe comctl wrappers), [`forward_proc`] (a `SUBCLASSPROC`; `ref_data` is the registry key of the content, D-W8B5-908) and the `send_message` that forwards a notification whose
+//! `remove_window_subclass` / `def_subclass_proc` (unsafe comctl wrappers), `forward_proc` (a `SUBCLASSPROC`; `ref_data` is the registry key of the content, D-W8B5-908) and the `send_message` that forwards a notification whose
 //! `lParam` points to a structure owned by the sender for the duration of the call.
 
 use std::collections::VecDeque;

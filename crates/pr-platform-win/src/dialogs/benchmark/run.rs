@@ -6,9 +6,9 @@
 //! Run / Quick check gives a [`BenchmarkStep`] (a `Send` job), the job runs on a worker, and its outcome comes back to the UI thread to be fed to the matching `on_*`
 //! method, which returns the next step. Here:
 //! - a job is handed to a [`BackgroundRunner`] by [`dispatch_step`]; its outcome (and every progress message of a profile job) is sent to a
-//!   `CompletionInbox<BenchmarkEvent>` whose wake-up posts [`WM_BENCHMARK_WAKE`] to the dialog window ([`post_wake`]);
+//!   `CompletionInbox<BenchmarkEvent>` whose wake-up posts `WM_BENCHMARK_WAKE` to the dialog window (`post_wake`);
 //! - the dialog procedure receives the message and `BenchmarkContent::drain_inbox` applies the events in arrival order ([`apply_event`]), dispatching each next step;
-//! - the presenter writes to a [`DialogView`] that applies `set_status`, `set_progress` and `set_running` to the controls at once and only RECORDS `refresh_rows`
+//! - the presenter writes to a `DialogView` that applies `set_status`, `set_progress` and `set_running` to the controls at once and only RECORDS `refresh_rows`
 //!   (`rows_dirty`); the grid is rebuilt after the presenter call returns, because the rebuild reads the presenter (D-W8B5-504).
 //!
 //! A window closed in the middle of a run cancels the token; the job still ends through its own cancel path and disposes its session on the worker; its late event finds

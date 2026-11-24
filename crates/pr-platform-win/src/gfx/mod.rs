@@ -5,7 +5,7 @@
 //! `contracts/W8-11h.md`. All `unsafe` of the graphics layer lives in these files, each block with `// SAFETY:`.
 //!
 //! No `pr_app` type is used here (`pr-app` depends on this crate, D-W8B1-1); window handles cross the boundary as `HWND`
-//! (callers convert from `isize` with [`com::hwnd`]).
+//! (callers convert from `isize` with `com::hwnd`).
 
 pub mod com;
 pub mod d2d;

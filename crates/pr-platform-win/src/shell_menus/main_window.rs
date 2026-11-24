@@ -368,7 +368,7 @@ pub struct MainWindowMenuFeature {
 }
 
 impl MainWindowMenuFeature {
-    /// Wraps a menu wiring (production: made by [`MainWindowInner::register_context_menu`]).
+    /// Wraps a menu wiring (production: made by `MainWindowInner::register_context_menu`).
     pub fn new(menus: MainWindowMenus) -> Self {
         Self { menus }
     }
