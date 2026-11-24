@@ -14,6 +14,7 @@ CI runs these workspace checks on Rust-relevant changes:
 ```powershell
 cargo fmt -p <pkg> --check
 cargo clippy --workspace --all-targets --locked -- -D warnings
+$env:RUSTDOCFLAGS='-D warnings'; cargo doc --workspace --no-deps --locked
 cargo build --workspace --release --locked
 cargo test -p pr-core --locked
 cargo test --workspace --exclude pr-app --exclude pr-core --exclude pr-platform-win --locked
@@ -55,7 +56,7 @@ To add a command, add its input file under `tests/golden-inputs/`, add a command
 | `changes` | Detects whether Rust checks are needed. |
 | `repo-checks` | Runs `tools/sync-from-csharp.ps1 -Check` and the release tooling selftests on Windows, and the cargo-deny audit when Cargo files, `deny.toml` or the workflow changed (formerly the separate `deny` job). |
 | `unsafe-audit` | Every `unsafe` block has a SAFETY comment; the advisory actionlint workflow lint runs in the same Ubuntu job and never fails it (formerly the separate `actionlint` job). |
-| `lint` | Per-package format and workspace Clippy. |
+| `lint` | Per-package format, workspace Clippy and rustdoc (`-D warnings`). |
 | `release build` | Locked workspace release build, parallel to `lint`. |
 | `test (core)` | `pr-core` tests. |
 | `test (crates-shell)` | `pr-shell`, `pr-turbojpeg`, `pr-bench-win`, `pr-perf`, `pr-test-support` tests. |
