@@ -20,7 +20,7 @@ use crate::formats::is_raw_extension;
 
 /// The UI sentence the router attaches to its refusal (C# `Tr.ImageErrorRawDisabled`, key `image.error.rawDisabled`).
 /// Injected instead of a static `Tr` (same idea as `WebpHeicTexts` in W4-12c, decision D13). Each call renders in the
-/// language current NOW: the router stores `Arc<dyn RawRoutingTexts>` + the file name in the error's [`UserText`]
+/// language current NOW: the router stores `Arc<dyn RawRoutingTexts>` + the file name in the error's `UserText`
 /// closure, so a language switch applies at display time.
 pub trait RawRoutingTexts: Send + Sync {
     /// "RAW support is turned off in Settings, so {fileName} cannot be shown." (`en.json`).

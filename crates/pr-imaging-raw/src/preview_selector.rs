@@ -70,7 +70,7 @@ pub fn select_preview(
 
 /// `PreviewSelector.SelectPreview(.., out resolvedPreviews)`. Steps (the order of reads is observable through the budget):
 /// 1. `state = previews.to_vec()`; `chosen = select_preview_core(..)`.
-/// 2. If `chosen` is a JPEG, [`resolve_color_space`] on it (a no-op when already resolved or the colour space is known).
+/// 2. If `chosen` is a JPEG, `resolve_color_space` on it (a no-op when already resolved or the colour space is known).
 /// 3. Return both. On `Err` nothing is returned (C# leaves `resolvedPreviews` unassigned by the throw).
 ///
 /// # Errors

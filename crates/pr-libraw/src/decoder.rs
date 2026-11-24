@@ -339,7 +339,7 @@ impl LibRawDecoder {
     /// 2. `!request.apply_orientation` => `NotSupported` [`ORIENTATION_REQUIRED_MESSAGE`];
     /// 3. `cancel.check()` => `Canceled`;
     /// 4. `self.gate.enter(request.priority, cancel)` (`GateError` -> `DecodeError` via W5-16a's `From`: `Busy` / `Canceled`);
-    /// 5. `core_override` if set, else [`Self::decode_core`], with the lease held; the lease is released on EVERY exit (`Drop`);
+    /// 5. `core_override` if set, else `Self::decode_core`, with the lease held; the lease is released on EVERY exit (`Drop`);
     /// 6. an `Err(DecodeError::OutOfMemory { .. })` from step 5 becomes `InvalidOperation` [`NOT_ENOUGH_MEMORY_MESSAGE`]
     ///    (C# `catch (OutOfMemoryException)`; no inner error in Rust). Every other error passes unchanged.
     pub fn decode_with_cancel(
@@ -477,7 +477,7 @@ impl LibRawDecoder {
         check_result(code, "open RAW file", cancel, format_error)
     }
 
-    /// C# `AdmitDecode`: [`Self::ensure_memory_headroom`] first, then (only when it passes) `lease.mark_worked()`. A refusal is an
+    /// C# `AdmitDecode`: `Self::ensure_memory_headroom` first, then (only when it passes) `lease.mark_worked()`. A refusal is an
     /// instant failure that must not age queued preloads.
     pub fn admit_decode(
         &self,
@@ -716,7 +716,7 @@ pub fn trim_to_end_of_image(bytes: Vec<u8>) -> Result<Vec<u8>, DecodeError> {
 /// The length [`trim_to_end_of_image`] keeps (pure, golden-tested). `InvalidData` [`INCOMPLETE_JPEG_MESSAGE`] when:
 /// `len < 4` or the stream does not start with `FF D8`; or neither the structure walk nor the structure-free fallback finds an EOI.
 /// Fast path: strip trailing `00`/`FF` bytes (never below 2); if the rest ends with `FF D9` (and is at least 4 long) keep it.
-/// Else [`find_end_of_image_by_structure`], else [`find_trailing_eoi_with_structure_free_tail`]. Never panics, never reads
+/// Else `find_end_of_image_by_structure`, else `find_trailing_eoi_with_structure_free_tail`. Never panics, never reads
 /// past the slice (every index is checked as in C#).
 pub fn find_end_of_image(bytes: &[u8]) -> Result<usize, DecodeError> {
     let len = bytes.len();
