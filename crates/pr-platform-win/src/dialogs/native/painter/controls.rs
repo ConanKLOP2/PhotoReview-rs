@@ -3,7 +3,7 @@
 //!
 //! The pure decisions (which colour, which rectangle) are plain functions with plain inputs ([`push_button_draw`]); the GDI part only reads the window state and
 //! calls them. Every GDI object created here (pens, brushes, memory DC, bitmap) is released on every path by a guard (trap T1); a font selected into the DC is
-//! restored. The drawing of the other kinds is `painter::{widgets, frame}` (W8-18n) and is reached through [`draw`].
+//! restored. The drawing of the other kinds is `painter::{widgets, frame}` (W8-18n) and is reached through `draw`.
 
 use windows::Win32::Foundation::COLORREF;
 use windows::Win32::UI::Controls::{NMCUSTOMDRAW_DRAW_STATE_FLAGS, NMLVCUSTOMDRAW};
@@ -327,7 +327,7 @@ pub(super) fn ui_state(hwnd: Hwnd) -> UiState {
 
 // ---- push button (C# lines 614-657) ------------------------------------------------------------------------------------------------------------------------------
 
-/// The state of a push button as the drawing needs it (decoded by [`draw_push_button`] from `BM_GETSTATE`, the style, `IsWindowEnabled`, `BM_GETCHECK`,
+/// The state of a push button as the drawing needs it (decoded by `draw_push_button` from `BM_GETSTATE`, the style, `IsWindowEnabled`, `BM_GETCHECK`,
 /// `WM_QUERYUISTATE` and `PaintState::hot`).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub struct PushButtonInput {

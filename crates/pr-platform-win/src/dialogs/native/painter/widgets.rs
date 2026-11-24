@@ -83,7 +83,7 @@ fn round_even(value: f64) -> i32 {
 
 // ---- check box and radio button -----------------------------------------------------------------------------------------------------------------------------------
 
-/// The inputs of the layout of a check box or radio button (decoded by [`draw_check_or_radio`] from the style, `BM_GETSTATE`, `BM_GETCHECK`, `IsWindowEnabled`,
+/// The inputs of the layout of a check box or radio button (decoded by `draw_check_or_radio` from the style, `BM_GETSTATE`, `BM_GETCHECK`, `IsWindowEnabled`,
 /// `WM_QUERYUISTATE`, the DC font metrics and `PaintState::hot`).
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct CheckInput {
@@ -493,7 +493,7 @@ pub(super) fn draw_progress(hwnd: Hwnd, hdc: Hdc, width: i32, height: i32) {
 
 // ---- trackbar -----------------------------------------------------------------------------------------------------------------------------------------------------
 
-/// The inputs of the trackbar layout (decoded by [`draw_trackbar`]).
+/// The inputs of the trackbar layout (decoded by `draw_trackbar`).
 #[derive(Debug, Clone, PartialEq)]
 pub struct TrackbarInput {
     /// `TBM_GETCHANNELRECT` (client coordinates).

@@ -726,7 +726,7 @@ impl DialogContent for SettingsContent {
         self.layout_controls(dialog, client_width, client_height)
     }
 
-    /// C# `OnInitialized` -> [`SettingsContent::initialize`].
+    /// C# `OnInitialized` -> `SettingsContent::initialize`.
     fn on_initialized(&self, dialog: &NativeDialog) {
         self.initialize(dialog)
     }

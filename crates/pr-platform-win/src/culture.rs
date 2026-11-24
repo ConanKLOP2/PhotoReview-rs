@@ -1,15 +1,15 @@
 //! Windows culture and time-zone services for the localization service and the view-model texts (W8-09b slice S2, `contracts/W8-09b.md`, decision D-W8B6-151).
 //!
 //! `pr_app::localization::service::LocalizationService::new` takes two values the C# class got from .NET statics (its module doc names `pr-platform-win` as the home of both):
-//! - `CultureInfo.InstalledUICulture` -> [`installed_ui_culture`] (the Windows display language, `GetUserDefaultLocaleName` for the user locale is NOT the same thing: the C# property is
+//! - `CultureInfo.InstalledUICulture` -> `installed_ui_culture` (the Windows display language, `GetUserDefaultLocaleName` for the user locale is NOT the same thing: the C# property is
 //!   the OS UI language, `GetSystemDefaultUILanguage` + `GetLocaleInfoEx(LOCALE_SNAME)`);
-//! - `CultureInfo.GetCultureInfo(name)` (throws for an unknown name) -> [`WindowsCultureLookup`] (`GetLocaleInfoEx(name, LOCALE_SNAME)` succeeds only for a name Windows knows).
+//! - `CultureInfo.GetCultureInfo(name)` (throws for an unknown name) -> `WindowsCultureLookup` (`GetLocaleInfoEx(name, LOCALE_SNAME)` succeeds only for a name Windows knows).
 //!
 //! Both build a `pr_l10n::loader::UiCulture { name, two_letter_iso_language_name }`; the two-letter name is `LOCALE_SISO639LANGNAME` (the C# `TwoLetterISOLanguageName`:
 //! `"vi"`, `"fil"` for Filipino is the three-letter code .NET reports as is).
 //!
-//! The same file holds the two services `MainViewModel` formats dates with (`FormatContextSource::to_local_time` and `FormatContext::dates`): [`utc_to_local`] and
-//! [`WindowsDateText`]. `shell_startup::locale` (W8-17c) has the same Win32 calls inside `WindowsRecoveryTimeFormatter`, but private and shaped for another trait; the porter reuses its
+//! The same file holds the two services `MainViewModel` formats dates with (`FormatContextSource::to_local_time` and `FormatContext::dates`): `utc_to_local` and
+//! `WindowsDateText`. `shell_startup::locale` (W8-17c) has the same Win32 calls inside `WindowsRecoveryTimeFormatter`, but private and shaped for another trait; the porter reuses its
 //! helpers if 17c made them `pub`, else repeats the few calls (open question O4). No `unsafe` outside the small safe wrappers, each with a `// SAFETY:` comment (a live `u16`
 //! buffer of `LOCALE_NAME_MAX_LENGTH` and the returned length bounding the read). An API failure gives `UiCulture::invariant()` / `None`.
 use pr_app::localization::service::CultureLookup;
