@@ -52,16 +52,61 @@ pub trait BackgroundRunner: Send + Sync {
 }
 
 /// Production [`BackgroundRunner`]: `std::thread::Builder::new().name(name).spawn(job)`. A spawn failure is logged with
-/// `AppLog` and the job is dropped (the navigation then stays unfinished until the next one supersedes it, like a C# task that
-/// never completes).
+/// `AppLog` and the job runs inline on the caller, so its completion event is still sent (a dropped job would leave a file
+/// action in flight with the gate held).
 #[derive(Debug, Default, Clone, Copy)]
 pub struct ThreadRunner;
 
 impl BackgroundRunner for ThreadRunner {
     fn run(&self, name: &'static str, job: BackgroundJob) {
-        if let Err(error) = std::thread::Builder::new().name(name.to_owned()).spawn(job) {
-            AppLog::global().error(&format!("Could not start the worker thread {name}"), Some(&error));
+        run_with_spawner(
+            |name, body| std::thread::Builder::new().name(name.to_owned()).spawn(body).map(drop),
+            name,
+            job,
+        );
+    }
+}
+
+/// `ThreadRunner::run` with the thread spawn injected (tests make it fail).
+fn run_with_spawner(
+    spawn: impl FnOnce(&'static str, BackgroundJob) -> std::io::Result<()>,
+    name: &'static str,
+    job: BackgroundJob,
+) {
+    // `spawn` consumes the closure even when it fails, so the job sits in a shared slot that either side can take.
+    let slot = Arc::new(Mutex::new(Some(job)));
+    let worker_slot = Arc::clone(&slot);
+    let body: BackgroundJob = Box::new(move || {
+        let job = worker_slot.lock().unwrap_or_else(PoisonError::into_inner).take();
+        if let Some(job) = job {
+            job();
         }
+    });
+    if let Err(error) = spawn(name, body) {
+        AppLog::global().error(&format!("Could not start the worker thread {name}"), Some(&error));
+        // The job is the only sender of the completion event (file-action gate release, INV-5 restore): run it inline.
+        let job = slot.lock().unwrap_or_else(PoisonError::into_inner).take();
+        if let Some(job) = job {
+            job();
+        }
+    }
+}
+
+#[cfg(test)]
+mod thread_runner_tests {
+    use super::*;
+    use std::sync::atomic::{AtomicBool, Ordering};
+
+    #[test]
+    fn job_still_runs_when_the_thread_spawn_fails() {
+        let ran = Arc::new(AtomicBool::new(false));
+        let flag = Arc::clone(&ran);
+        run_with_spawner(
+            |_, _| Err(std::io::Error::other("spawn failed")),
+            "test-worker",
+            Box::new(move || flag.store(true, Ordering::SeqCst)),
+        );
+        assert!(ran.load(Ordering::SeqCst), "the completion-producing job was dropped");
     }
 }
 
