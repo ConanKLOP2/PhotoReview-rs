@@ -35,7 +35,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     // Both files are written on every run so `include!` always finds them (also when the build then fails).
     let (keys, tr) = if plan.generated {
-        (keygen::render_keys(&plan), keygen::render_tr(&plan))
+        (keygen::render_keys(&plan), escape_doc_html(&keygen::render_tr(&plan)))
     } else {
         (
             "// not generated: see the build error\n".to_owned(),
@@ -55,4 +55,19 @@ fn main() -> Result<(), Box<dyn Error>> {
         return Err(lines.join("\n").into());
     }
     Ok(())
+}
+
+/// Escapes `<` in the generated `/// English: ...` doc lines (`\<`), so a catalog text such as `as <code>.json` is shown
+/// literally and rustdoc does not read it as an unclosed HTML tag. Only the build output is changed: the generator
+/// (`keygen::render_tr`) keeps the English text as is.
+fn escape_doc_html(tr: &str) -> String {
+    let mut out = String::with_capacity(tr.len());
+    for line in tr.split_inclusive('\n') {
+        if line.starts_with("/// English:") {
+            out.push_str(&line.replace('<', "\\<"));
+        } else {
+            out.push_str(line);
+        }
+    }
+    out
 }

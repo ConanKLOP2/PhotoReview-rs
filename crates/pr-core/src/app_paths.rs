@@ -1,5 +1,5 @@
 //! Port of `PhotoReview.Core/AppPaths.cs` (C# baseline e441d67a) with the root renamed to
-//! [`APP_DIR_NAME`](crate::identity::APP_DIR_NAME) and Rust-specific environment variables, so a test or a
+//! [`APP_DIR_NAME`] and Rust-specific environment variables, so a test or a
 //! debug run of one app can never redirect the other app's data.
 
 use std::path::{Path, PathBuf};

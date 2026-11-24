@@ -298,7 +298,7 @@ impl RecoveryRetryService {
     /// C# `RetryMoveOrCopyAsync(failed, confirmedFinishCancelled, ct)`. Blocking (R0003).
     ///
     /// Order (contract semantics E): gate (`try_begin`; refused => busy result, NOTHING read or journaled, the gate
-    /// is NOT released because this call does not own it); then [`Self::retry_core`]; the gate taken here is released
+    /// is NOT released because this call does not own it); then `Self::retry_core`; the gate taken here is released
     /// on every path (the `GateToken` drops, also on `Err` and on panic).
     ///
     /// `Err(Canceled)` reproduces the C# `TaskCanceledException` that escapes `await Task.Run(..., ct)` when `cancel`
