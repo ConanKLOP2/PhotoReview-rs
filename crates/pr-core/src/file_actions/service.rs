@@ -34,6 +34,7 @@ use crate::file_actions::errors::{self, JournalCodedError};
 use crate::file_actions::journal::OperationJournal;
 use crate::file_actions::journal_line::{JournalDateTime, JournalEntry};
 use crate::file_actions::partial_cleanup;
+use crate::file_actions::recovery_retry::same_fingerprint;
 use crate::file_actions::transaction::JournalTransaction;
 use crate::file_actions::types::{
     CaptureGroupActionRequest, CaptureGroupActionResult, CaptureGroupMemberResult, FileActionRequest, FileActionResult,
@@ -679,19 +680,26 @@ impl FileActionService {
             };
         }
         // S7.5 (F3, INV-3): only a journaled Move that then failed can have removed the source; ask the disk.
-        let source_removed = !mutation_completed
-            && request.operation == FileOperationType::Move
+        // Hardening (no C# test): a single Recycle whose shell call errored after the file was already gone
+        // (DeletedPermanently / Failed / Unknown) also reports source_removed, so no phantom catalog entry is restored.
+        let recycle_source_gone = request.operation == FileOperationType::Recycle
             && prepared
-            && !CaseOnlyRename::exists_as(
-                &*self.fs,
-                &request.source,
-                if run.rename_operation {
-                    run.destination_path.as_deref()
-                } else {
-                    None
-                },
-            )
-            .unwrap_or(true);
+            && !mutation_completed
+            && !self.fs.file_exists(Path::new(&request.source));
+        let source_removed = recycle_source_gone
+            || !mutation_completed
+                && request.operation == FileOperationType::Move
+                && prepared
+                && !CaseOnlyRename::exists_as(
+                    &*self.fs,
+                    &request.source,
+                    if run.rename_operation {
+                        run.destination_path.as_deref()
+                    } else {
+                        None
+                    },
+                )
+                .unwrap_or(true);
 
         FileActionResult {
             journal_persisted: journal_error.is_none(),
@@ -947,6 +955,22 @@ impl FileActionService {
                 }
                 FileOperationType::Recycle => {
                     hand_off(cancel)?;
+                    // DIVERGENCE (hardening, no C# test: intentional): C# goes from the G3 preflight straight to the
+                    // shell call for every member. Re-stat right before each mutation (like the single path and the
+                    // group retry) so a member replaced or removed after the Prepared line is never recycled or
+                    // deleted for good under the old fingerprint, and a vanished one is not counted as done.
+                    match self.fs.try_get_file_stat(source)? {
+                        None => return Err(self.source_missing(&member.source).into()),
+                        Some(now) if !same_fingerprint(&now, member.size, &member.last_write_utc) => {
+                            return Err(self.coded_error(errors::VERIFY_SIZE_CHANGED).into());
+                        }
+                        Some(_) => {}
+                    }
+                    // Q-R8 (as the retry): a member planned as a permanent delete whose drive now has a bin is not
+                    // deleted for good.
+                    if member.permanent && self.recycle_bin.can_recycle(source) {
+                        return Err(self.coded_error(errors::VERIFY_SIZE_CHANGED).into());
+                    }
                     if member.permanent {
                         self.recycle_bin.delete_permanently(source)?;
                     } else {

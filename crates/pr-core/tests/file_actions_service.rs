@@ -22,8 +22,8 @@ use std::sync::Arc;
 use std::sync::atomic::{AtomicUsize, Ordering};
 
 use common_file_actions::{
-    Fixture, LAST_WRITE_TICKS, canceled_error, english_code_text, english_texts, fail_journal_append_nth, journal_path,
-    last_write_plus, outside_text, single, stamp,
+    Fixture, LAST_WRITE_TICKS, canceled_error, english_code_text, english_texts, fail_journal_append_nth, group,
+    journal_path, last_write_plus, outside_text, single, stamp,
 };
 use pr_core::abstractions::FileSystem;
 use pr_core::app_paths::AppPaths;
@@ -1701,4 +1701,113 @@ fn recycle_source_replaced_after_prepared_is_not_recycled() {
         "the replacement must not be sent to the bin"
     );
     assert!(fx.file_exists(SOURCE));
+}
+
+const GROUP_JPEG: &str = r"C:\photos\IMG_0001.JPG";
+const GROUP_RAW: &str = r"C:\photos\IMG_0001.CR3";
+
+/// Runs `act` once, when the group's Prepared line is appended (member 1 is not yet touched).
+fn on_first_append(fx: &Fixture, act: impl Fn() + Send + Sync + 'static) {
+    let done = Arc::new(AtomicUsize::new(0));
+    let journal = journal_path();
+    fx.hooks.set_open_append_hook(Some(Arc::new(move |path: &Path| {
+        if path.to_string_lossy().eq_ignore_ascii_case(&journal) && done.fetch_add(1, Ordering::SeqCst) == 0 {
+            act();
+        }
+        None
+    })));
+}
+
+fn assert_group_failed_with(fx: &Fixture, code: Option<&str>) {
+    let last = fx.journal_entries().pop().expect("an outcome line");
+    assert_eq!(last.state, JournalState::Failed);
+    if let Some(code) = code {
+        assert_eq!(last.error_code.as_deref(), Some(code));
+    }
+}
+
+// Not a C# port and there is NO C# test: intentional hardening divergence (P-nn in docs/PROPOSED-DECISIONS.md). C# goes
+// from the G3 preflight straight to the shell call for every group member; Rust re-stats each member first.
+#[test]
+fn group_recycle_member_replaced_after_prepared_is_not_recycled() {
+    let fx = Fixture::new();
+    fx.add_file(GROUP_JPEG, 40);
+    fx.add_file(GROUP_RAW, 60);
+    let disk = fx.disk.clone();
+    on_first_append(&fx, move || {
+        disk.add_file_at(
+            Path::new(GROUP_RAW),
+            b"a different, longer replacement",
+            last_write_plus(500),
+        );
+    });
+    let result = fx.run_group(&group(GROUP_JPEG, GROUP_RAW, None, Recycle, None));
+    assert!(!result.succeeded);
+    assert_eq!(
+        fx.bin.recycled(),
+        vec![GROUP_JPEG.to_owned()],
+        "only the untouched member is recycled"
+    );
+    assert!(fx.file_exists(GROUP_RAW), "the replacement must survive");
+    assert_group_failed_with(&fx, Some(VERIFY_SIZE_CHANGED));
+}
+
+// Not a C# port, no C# test (intentional divergence), permanent branch.
+#[test]
+fn group_permanent_delete_member_replaced_after_prepared_is_not_deleted() {
+    let fx = Fixture::new();
+    fx.add_file(GROUP_JPEG, 40);
+    fx.add_file(GROUP_RAW, 60);
+    fx.bin.set_no_bin_roots(&[r"C:\"]);
+    let disk = fx.disk.clone();
+    on_first_append(&fx, move || {
+        disk.add_file_at(
+            Path::new(GROUP_RAW),
+            b"a different, longer replacement",
+            last_write_plus(500),
+        );
+    });
+    let mut request = group(GROUP_JPEG, GROUP_RAW, None, Recycle, None);
+    request.allow_permanent_delete = true;
+    let result = fx.run_group(&request);
+    assert!(!result.succeeded);
+    assert_eq!(fx.bin.permanently_deleted(), vec![GROUP_JPEG.to_owned()]);
+    assert!(
+        fx.file_exists(GROUP_RAW),
+        "the replacement must not be deleted for good"
+    );
+    assert_group_failed_with(&fx, Some(VERIFY_SIZE_CHANGED));
+}
+
+// Not a C# port, no C# test (intentional divergence): a member that vanished is a failure, never counted as done.
+#[test]
+fn group_recycle_member_vanished_after_prepared_fails_group_instead_of_counting_done() {
+    let fx = Fixture::new();
+    fx.add_file(GROUP_JPEG, 40);
+    fx.add_file(GROUP_RAW, 60);
+    let disk = fx.disk.clone();
+    on_first_append(&fx, move || {
+        disk.delete(Path::new(GROUP_RAW)).expect("delete");
+    });
+    let result = fx.run_group(&group(GROUP_JPEG, GROUP_RAW, None, Recycle, None));
+    assert!(!result.succeeded, "a vanished member must not make the group succeed");
+    assert_eq!(fx.bin.recycled(), vec![GROUP_JPEG.to_owned()]);
+    assert_group_failed_with(&fx, None);
+}
+
+// Not a C# port, no C# test (intentional divergence): a Recycle whose shell call errored after the file was already
+// gone reports source_removed, so the app never restores a phantom catalog entry.
+#[test]
+fn recycle_bin_error_with_source_gone_sets_source_removed() {
+    let fx = Fixture::new();
+    fx.add_file(SOURCE, 11);
+    let disk = fx.disk.clone();
+    fx.bin.set_send_hook(Some(Arc::new(move |path: &Path| {
+        disk.delete(path).expect("delete");
+        Some(io::Error::other("shell failed after deleting"))
+    })));
+    let result = fx.run(&single(SOURCE, Recycle, None));
+    assert!(!result.succeeded);
+    assert!(result.source_removed);
+    assert!(!fx.file_exists(SOURCE));
 }
