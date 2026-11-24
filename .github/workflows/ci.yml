@@ -186,6 +186,11 @@ jobs:
           }
       - name: Clippy
         run: cargo clippy --workspace --all-targets --locked -- -D warnings
+      # Rustdoc warnings (broken or private intra-doc links, redundant link targets) are not clippy lints; keep the docs at zero.
+      - name: Rustdoc
+        env:
+          RUSTDOCFLAGS: -D warnings
+        run: cargo doc --workspace --no-deps --locked
 
   # The release profile is a separate compile (optimised, no clippy/test coverage of it), so it stays; as its own job it runs in
   # parallel with lint instead of after it.
