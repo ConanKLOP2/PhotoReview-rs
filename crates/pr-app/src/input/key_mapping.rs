@@ -576,7 +576,7 @@ pub const KEY_NAMES: &[(&str, i32)] = &[
 /// - a code outside `0..=255` (negative, 256, `i32::MIN`, `i32::MAX`) gives `KeyId::None` (value 0), it never panics;
 /// - `is_extended` changes only the codes `0x11` (Control) and `0x12` (Menu): they become `RightCtrl` (119) and
 ///   `RightAlt` (121). Every other code ignores the flag;
-/// - otherwise the row of [`VIRTUAL_KEY_TO_KEY`] for that code, or `KeyId::None` when the code has no row.
+/// - otherwise the row of `VIRTUAL_KEY_TO_KEY` for that code, or `KeyId::None` when the code has no row.
 pub fn from_virtual_key(virtual_key: i32, is_extended: bool) -> KeyId {
     // Range check on the i32 itself (trap 1): a cast to usize first would wrap -1 into a huge index.
     if !(0..=255).contains(&virtual_key) {
@@ -601,7 +601,7 @@ const VK_CONTROL_CODE: i32 = 0x11;
 /// `VkMenu` (C# line 15), used only by the extended-flag rule.
 const VK_MENU_CODE: i32 = 0x12;
 
-/// `KeyIdMapping.ToVirtualKey` (C# lines 39-43): the row of [`KEY_TO_VIRTUAL_KEY`] for `key`, or `0` when the key has no code
+/// `KeyIdMapping.ToVirtualKey` (C# lines 39-43): the row of `KEY_TO_VIRTUAL_KEY` for `key`, or `0` when the key has no code
 /// (`None`, `LineFeed`, `System`, `DeadCharProcessed`) or the value is outside the enum (negative, above 172, `i32::MIN`).
 pub fn to_virtual_key(key: KeyId) -> i32 {
     // The reverse table has one row per value: the aliases share it, and LeftShift/LeftCtrl/LeftAlt map to 0xA0/0xA2/0xA4

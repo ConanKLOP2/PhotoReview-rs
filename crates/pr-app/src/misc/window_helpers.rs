@@ -88,7 +88,7 @@ pub fn normalize_image_point(point: PointD, size: SizeD) -> ZoomImagePoint {
 }
 
 /// C# `CalculateOffsetsFromAnchorDelta(current H/V offset, anchor before X/Y, anchor after X/Y, new extent W/H, viewport W/H)`:
-/// the new scroll offset `current + anchorAfter - anchorBefore`, clamped per axis by [`clamp_offset`].
+/// the new scroll offset `current + anchorAfter - anchorBefore`, clamped per axis by `clamp_offset`.
 pub fn calculate_offsets_from_anchor_delta(
     current: PointD,
     anchor_before: PointD,
@@ -155,7 +155,7 @@ pub fn fit_width_anchor_for(settings: &AppSettings, second_command: bool) -> Fit
 }
 
 /// C# `CalculatePanOffsets(current H/V offset, deltaX, deltaY, extent, viewport)`: the pointer moved by `delta`, so the offset
-/// moves by `-delta` (opposite to the drag), each axis clamped by [`clamp_offset`].
+/// moves by `-delta` (opposite to the drag), each axis clamped by `clamp_offset`.
 pub fn calculate_pan_offsets(current: PointD, delta: PointD, extent: SizeD, viewport: SizeD) -> ZoomViewportOffsets {
     ZoomViewportOffsets {
         horizontal: clamp_offset(current.x - delta.x, extent.width, viewport.width),

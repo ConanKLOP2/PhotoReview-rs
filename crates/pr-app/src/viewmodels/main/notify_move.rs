@@ -6,7 +6,7 @@
 //!
 //! DECISION D-08e-1 (the sinks are recorders). The coordinators receive the catalog AND the sink in one call (`FolderLoadCx`,
 //! `FileActionCx`, `DuplicateCleanupCx`), so the sink cannot be the view model (it needs the catalog, which the coordinator holds
-//! `&mut`). [`SinkLog`] implements the four sink traits by RECORDING each call as a [`SinkAction`]; after every coordinator call the
+//! `&mut`). [`SinkLog`] implements the four sink traits by RECORDING each call as a `SinkAction`; after every coordinator call the
 //! view model replays the log in order with `apply_sink_actions`, with full access to the catalog, the presenter and the settings.
 //! The order of the calls is kept; what changes is that a replayed action sees the catalog AFTER the whole coordinator step (see the
 //! contract, trap T3).
