@@ -478,7 +478,7 @@ impl TurboJpegLibrary {
 impl TurboJpegLibrary {
     /// Loads `path` (must be absolute; a relative path is `InvalidArgument` and nothing is searched) with
     /// `LoadLibraryExW(path, NULL, LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR | LOAD_LIBRARY_SEARCH_DEFAULT_DIRS)` and resolves
-    /// every `tj3*` export of [`Symbols`] with `GetProcAddress` (missing ones stay `None`). Load errors:
+    /// every `tj3*` export of `Symbols` with `GetProcAddress` (missing ones stay `None`). Load errors:
     /// `ERROR_BAD_EXE_FORMAT` -> `BadImageFormat`, everything else -> `DllNotFound`, message
     /// `"Unable to load DLL 'turbojpeg.dll' or one of its dependencies: {os message}"`. Non-Windows targets always
     /// return `DllNotFound`. Never panics.
@@ -520,7 +520,7 @@ impl TurboJpegLibrary {
     }
 
     /// C# `TurboJpegNative.CreateDecompressor()` against THIS library: `tj3Init(TJINIT_DECOMPRESS)` then
-    /// [`wrap_init_result`] semantics (NULL -> `InvalidOperation(INIT_FAILED_MESSAGE)`). Missing `tj3Init` ->
+    /// `wrap_init_result` semantics (NULL -> `InvalidOperation(INIT_FAILED_MESSAGE)`). Missing `tj3Init` ->
     /// `EntryPointNotFound` naming `tj3Init`. The handle is owning and holds an `Arc` of this library.
     pub fn create_decompressor(self: &Arc<Self>) -> Result<TurboJpegHandle, NativeError> {
         self.create(TjInit::Decompress, INIT_FAILED_MESSAGE)

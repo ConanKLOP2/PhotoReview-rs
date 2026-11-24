@@ -4,7 +4,7 @@
 //! single-preview read (`decode_preview` / `read_preview_range`, never a whole-file read).
 //!
 //! The fallback chain (next-best preview, ORF thumbnail fallback, no-preview path, full-decode last resort, failure
-//! classification) is W5-12b2 and lives in the child module [`fallback`] (`decoder/fallback.rs`), which sees the private
+//! classification) is W5-12b2 and lives in the child module `fallback` (`decoder/fallback.rs`), which sees the private
 //! fields of [`RawDecoder`] because it is a descendant module.
 //!
 //! RAW-21/22 steps (C# class summary):
@@ -706,7 +706,7 @@ impl RawDecoder {
 
 impl ImageDecoder for RawDecoder {
     /// C# `Decode(DecodeRequest)`: blank path (`ArgumentException.ThrowIfNullOrWhiteSpace(request.Path)`) =>
-    /// `InvalidArgument`; else [`RawDecoder::decode_impl`].
+    /// `InvalidArgument`; else `RawDecoder::decode_impl`.
     fn decode(&self, request: &DecodeRequest) -> Result<Arc<dyn DecodedImageView>, DecodeError> {
         if is_blank(&request.path.to_string_lossy()) {
             return Err(blank_path_error("path"));
@@ -714,7 +714,7 @@ impl ImageDecoder for RawDecoder {
         self.decode_impl(request)
     }
 
-    /// C# `ReadInfo(string)`: blank path => `InvalidArgument`; else [`RawDecoder::read_info_impl`].
+    /// C# `ReadInfo(string)`: blank path => `InvalidArgument`; else `RawDecoder::read_info_impl`.
     fn read_info(&self, path: &str) -> Result<ImageInfo, DecodeError> {
         if is_blank(path) {
             return Err(blank_path_error("path"));

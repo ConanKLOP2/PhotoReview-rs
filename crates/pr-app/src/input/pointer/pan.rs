@@ -4,7 +4,7 @@
 //! (W8-05g); this file adds an `impl` block. `can_pan`, `cancel_pan` and `stop_kinetic` live in `wheel.rs` (05g uses them).
 //!
 //! The glide is driven by the surface's render frames. The C# code registers its own `EventHandler`. A Rust closure cannot
-//! borrow the controller, so the controller registers a NO-OP handler (`Box::new(|_| {})`) only to obtain the [`RenderHookId`]
+//! borrow the controller, so the controller registers a NO-OP handler (`Box::new(|_| {})`) only to obtain the `RenderHookId`
 //! (`hook_render_frame` / `unhook_render_frame` stay balanced, which is what the C# tests observe) and the SHELL routes every
 //! frame of a hooked surface to [`PointerInputController::on_kinetic_frame`] while `is_kinetic_hooked()` is true. Recommended
 //! B1 change (lead, optional): drop the handler parameter of `ImageSurface::hook_render_frame` (contract O1).

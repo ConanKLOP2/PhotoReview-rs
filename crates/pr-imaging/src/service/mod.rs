@@ -1500,7 +1500,7 @@ mod white_box_tests {
 // ---- PreloadTarget adapter (W4-14d; contract semantics 13 of W4-14a) ------------------------------------------------
 
 /// C# `IPreloadTarget` implemented by `PreviewImageService`: an ADAPTER over the inherent methods, not a pure
-/// delegation (the trait is blocking and maps errors by kind, see [`preview_error_to_decode_error`]). Where a trait
+/// delegation (the trait is blocking and maps errors by kind, see `preview_error_to_decode_error`). Where a trait
 /// method and an inherent method share a name the call is written `PreviewImageService::name(self, ..)`, so the
 /// inherent (W4-14a/b/c) body is always the one called.
 impl PreloadTarget for PreviewImageService {
@@ -1516,7 +1516,7 @@ impl PreloadTarget for PreviewImageService {
 
     /// C# `PreloadAsync(path, ct)` awaited: a cancelled token is `Err(DecodeError::Canceled)` before any work; otherwise
     /// `get_preview_path(path).wait()` (the token is NOT passed on, as C# `GetPreviewAsync(path)`), `Ok(_) -> Ok(())`,
-    /// and each error mapped by kind ([`preview_error_to_decode_error`]).
+    /// and each error mapped by kind (`preview_error_to_decode_error`).
     fn preload(&self, path: &str, cancel: &CancelToken) -> Result<(), DecodeError> {
         if cancel.is_canceled() {
             return Err(DecodeError::Canceled);

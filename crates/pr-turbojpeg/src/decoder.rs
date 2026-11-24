@@ -1057,7 +1057,7 @@ impl TurboJpegDecoder {
         }
     }
 
-    /// P-393 test seam: replace the file open of `load_file` (default [`open_shared`]) to simulate a file that vanishes
+    /// P-393 test seam: replace the file open of `load_file` (default `open_shared`) to simulate a file that vanishes
     /// between the existence check and the open.
     #[must_use]
     pub fn with_file_opener(mut self, open_file: fn(&Path) -> io::Result<File>) -> Self {

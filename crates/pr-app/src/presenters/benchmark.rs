@@ -407,7 +407,7 @@ impl BenchmarkPresenter {
 
     /// C# `RunSelectedAsync(profiles, folder, imageLimitText)`, step 1 (UI thread). A run in progress: `Idle`, nothing happens (checked
     /// BEFORE the empty-selection check). No profile: `view.set_status(benchmark.status.noProfileSelected)` and `Idle` (never busy). Else the run
-    /// starts: see [`Self::start`].
+    /// starts: see `Self::start`.
     pub fn run_selected(
         &mut self,
         profiles: &[BenchmarkProfile],
@@ -487,7 +487,7 @@ impl BenchmarkPresenter {
     /// Step 2 (UI thread), with the scan's outcome. `Error(DirectoryNotFound)` => status `benchmark.status.folderMissing`; `Error(Io(m))` =>
     /// `benchmark.status.cannotReadFolder {message}`; `Error(Canceled)` => `benchmark.status.canceled`; `Error(Other(m))` =>
     /// `bench.status.failed {message: describe_error(RowError::Other(m))}`; `Files([])` => `benchmark.status.noImages`; each of these ends the run
-    /// (`finish_run`) and returns `Idle`. `Files(files)` => [`Self::next_profile_step`].
+    /// (`finish_run`) and returns `Idle`. `Files(files)` => `Self::next_profile_step`.
     pub fn on_scan_finished(
         &mut self,
         outcome: BenchmarkScanOutcome,
@@ -574,7 +574,7 @@ impl BenchmarkPresenter {
     /// phase.clone(), None)` per phase; `recompute_best`. `Canceled`: status `benchmark.status.canceled`, `finish_run`, `Idle` (no Fail row).
     /// `Failed`: log `"Benchmark profile failed: {id}"`, a Fail row (`BenchmarkPhaseResult::new(id, workload, vec![], Fail, Some(message), None)`
     /// with `Some(error)`), `recompute_best`, status `benchmark.status.profileFailed {profileName, message: describe_error(error)}`. After
-    /// `Report` and `Failed` the loop goes on with [`Self::next_profile_step`] (`next_profile += 1`).
+    /// `Report` and `Failed` the loop goes on with `Self::next_profile_step` (`next_profile += 1`).
     pub fn on_profile_finished(
         &mut self,
         outcome: BenchmarkProfileOutcome,

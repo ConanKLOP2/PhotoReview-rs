@@ -1,5 +1,5 @@
 //! Port of `PhotoReview.Core/Diagnostics/PerfCsvListener.cs` (C# baseline d92d6aae, 367 lines): the opt-in CSV
-//! writer for the [`PhotoReviewPerf`](super::perf::PhotoReviewPerf) events.
+//! writer for the [`PhotoReviewPerf`] events.
 //!
 //! Only active when the trace variable ([`TRACE_ENV_VAR`]) names a directory that can be created and written;
 //! otherwise [`PerfCsvListener::try_start`] returns `None` and nothing is created on disk. Event delivery never
@@ -88,7 +88,7 @@ pub struct LocalTimeParts {
 }
 
 /// `PerfCsvListener.BuildRow(eventName, names, values)`: maps a payload to the columns, stamping `utc_ticks`
-/// (`DateTimeUtc::now().ticks()`), `qpc_ticks` ([`timestamp`](super::perf::timestamp)) and `thread`
+/// (`DateTimeUtc::now().ticks()`), `qpc_ticks` ([`timestamp`]) and `thread`
 /// ([`current_thread_number`]). `None` names or values (C# null) give an empty payload. Never panics.
 pub fn build_row(event_name: &str, names: Option<&[&str]>, values: Option<&[PerfValue]>) -> PerfRow {
     let utc_ticks = DateTimeUtc::now().ticks();
@@ -229,7 +229,7 @@ pub fn current_thread_number() -> i32 {
     })
 }
 
-/// The CSV writer. Subscribes to [`PhotoReviewPerf`](super::perf::PhotoReviewPerf) when started and unsubscribes in
+/// The CSV writer. Subscribes to [`PhotoReviewPerf`] when started and unsubscribes in
 /// [`dispose`](Self::dispose) (also on drop).
 pub struct PerfCsvListener {
     shared: Arc<Shared>,

@@ -313,7 +313,7 @@ impl MainWindow {
         self.inner.modal_intents.dropped_commands()
     }
 
-    /// C# `Dispose()` (lines 421-445); see [`MainWindowInner::dispose_inner`]. Idempotent. Safe to call on the UI thread after `WM_CLOSE` or without it.
+    /// C# `Dispose()` (lines 421-445); see `MainWindowInner::dispose_inner`. Idempotent. Safe to call on the UI thread after `WM_CLOSE` or without it.
     pub fn dispose(&self) {
         self.inner.dispose_inner(true);
     }

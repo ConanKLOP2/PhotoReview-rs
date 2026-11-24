@@ -1,5 +1,5 @@
 //! Port of `PhotoReview.Shell.Rendering/GpuImageCache.cs` lines 301-414 (`IGpuImageBackend`, whose trait is
-//! [`GpuImageBackend`](super::policy::GpuImageBackend) in W8-12f, and the class `D2DGpuImageBackend`), baseline `d92d6aae`.
+//! [`GpuImageBackend`] in W8-12f, and the class `D2DGpuImageBackend`), baseline `d92d6aae`.
 //! Unit W8-12g (native, test kind N, with small pure helpers).
 //!
 //! The Direct2D side of the cache: an image becomes one `ID2D1Bitmap1` per tile (`compute_tiles`, W8-01c, splits an image over the

@@ -961,7 +961,7 @@ impl<'buf> LibRawHandle<'buf> {
         unsafe { c_string(info.name) }
     }
 
-    /// C# `TryGetRawStructure` (production): [`raw_structure_with`](Self::raw_structure_with) gated by
+    /// C# `TryGetRawStructure` (production): `raw_structure_with` gated by
     /// `crate::availability::is_exact_pinned_version` (W5-15b).
     pub fn raw_structure(&self) -> Option<RawStructure> {
         self.raw_structure_impl(crate::availability::is_exact_pinned_version)
@@ -994,7 +994,7 @@ impl<'buf> LibRawHandle<'buf> {
         try_read_raw_structure(block)
     }
 
-    /// Installs [`cancellation_progress_callback`] with this token (C# `LibRawSetProgressHandler(raw, CancellationCallback,
+    /// Installs `cancellation_progress_callback` with this token (C# `LibRawSetProgressHandler(raw, CancellationCallback,
     /// state.Pointer)`). The token is boxed inside the handle so its address outlives every LibRaw call; a second call
     /// installs the new box first and only then frees the old one.
     pub fn set_cancel_token(&mut self, token: CancelToken) {
@@ -1022,10 +1022,8 @@ impl<'buf> LibRawHandle<'buf> {
         self.call_setter(self.api.libraw_set_no_auto_bright, value);
     }
 
-    /// C# production `TrySetUseCameraWb(handle, outputColor, outputBps, noAutoBright)`: [`try_set_use_camera_wb_with`]
+    /// C# production `TrySetUseCameraWb(handle, outputColor, outputBps, noAutoBright)`: `try_set_use_camera_wb_with`
     /// with `crate::availability::is_exact_pinned_version` (W5-15b) and [`PINNED_WHITE_BALANCE_LAYOUT`].
-    ///
-    /// [`try_set_use_camera_wb_with`]: Self::try_set_use_camera_wb_with
     pub fn try_set_use_camera_wb(&mut self, output_color: i32, output_bps: i32, no_auto_bright: i32) -> bool {
         try_set_use_camera_wb_core(
             &mut ProbeTarget(self),

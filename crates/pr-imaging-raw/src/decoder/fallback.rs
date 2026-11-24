@@ -60,7 +60,7 @@ pub fn is_corrupt_hresult(hresult: i32) -> bool {
 }
 
 /// C# `IsRecoverablePreviewFailure(ex)`: corrupt, truncated or unsupported preview data. Order (C#):
-/// 1. a directly wrapped COM failure ([`inner_com_hresult`]) that is resource exhaustion => `false`;
+/// 1. a directly wrapped COM failure (`inner_com_hresult`) that is resource exhaustion => `false`;
 /// 2. `Com { hresult }` => `!is_resource_exhaustion(hresult)`;
 /// 3. else `InvalidData`, `Format` (C# `FormatException` and WPF `FileFormatException`), `NotSupported` and
 ///    `MissingCodec` (a `NotSupportedException` subclass) => `true`;
@@ -82,7 +82,7 @@ pub fn is_recoverable_preview_failure(error: &DecodeError) -> bool {
 }
 
 /// C# `IsCorruptDataFailure(ex)`: `InvalidData` or `Format`, or `Com` with a corrupt HRESULT, or a directly wrapped COM
-/// failure ([`inner_com_hresult`]) with a corrupt HRESULT. `NotSupported` alone is NOT corrupt data.
+/// failure (`inner_com_hresult`) with a corrupt HRESULT. `NotSupported` alone is NOT corrupt data.
 pub fn is_corrupt_data_failure(error: &DecodeError) -> bool {
     let nested = inner_com_hresult(error).is_some_and(is_corrupt_hresult);
     nested

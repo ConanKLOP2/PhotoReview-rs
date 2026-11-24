@@ -5,10 +5,10 @@
 //!
 //! D-W8-2: every C# `async Task` here becomes a synchronous method that returns the [`ChangeSet`] of its synchronous part. What C#
 //! `await`ed comes back as a [`MainEvent`] applied by [`MainViewModel::pump`](super::state::MainViewModel::pump):
-//! - `await WaitForPendingExplorerOrderAsync()` becomes a parked [`Deferred`] command, resumed in submission order when the folder
+//! - `await WaitForPendingExplorerOrderAsync()` becomes a parked `Deferred` command, resumed in submission order when the folder
 //!   coordinator reports `order_gate_released` (INV-9);
 //! - `await ownership.BeforeOpenAsync` becomes a worker job and `MainEvent::Ownership`;
-//! - `await FolderLoadTask` becomes the [`PendingOpen`] record, finished by the `FolderLoadStep::Finished` update;
+//! - `await FolderLoadTask` becomes the `PendingOpen` record, finished by the `FolderLoadStep::Finished` update;
 //! - `await Task.Run(find sibling folder)` becomes a worker job and `MainEvent::SiblingFound`.
 // The step commands are named like the C# members (`next`, `previous`, ...); they are inherent methods, not `Iterator::next`.
 #![allow(clippy::should_implement_trait)]

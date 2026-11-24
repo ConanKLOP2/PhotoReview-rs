@@ -55,7 +55,7 @@ impl DeviceResources {
     /// C# `CreateForWindow(hwnd, options)` with the three `RenderSurfaceOptions` fields that matter here (`allow_tearing` is the
     /// surface's). `hwnd == 0` is `Err(InvalidArgument { param: "hwnd", message: "A window handle is required." })`. Size is the client
     /// rectangle of the window (`GetClientRect`; `1 x 1` when the call fails), DPI scale is [`dpi_scale_from_window_dpi`] of
-    /// `GetDpiForWindow`. `max_frame_latency` is clamped to 1..=16. Builds everything ([`DeviceResources::create_all`]); a failure
+    /// `GetDpiForWindow`. `max_frame_latency` is clamped to 1..=16. Builds everything (`DeviceResources::create_all`); a failure
     /// drops what was built (C# leaked it until finalization; Rust `Drop`).
     pub fn create_for_window(hwnd: isize, prefer_warp: bool, max_frame_latency: i32) -> Result<Rc<Self>, RenderFault> {
         if hwnd == 0 {

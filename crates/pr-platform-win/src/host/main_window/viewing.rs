@@ -3,8 +3,8 @@
 //! `GpuImageCache.Retain`, the GPU cache clear (INV-2) and `DrawPresentation`. Unit W8-13j. Contract: `contracts/W8-13j.md`.
 //!
 //! What is NOT in C#: the hub calls the window's `ImageChanged` handler while the view model is borrowed (the sink replay runs inside a view-model call), so the
-//! handler only QUEUES the image ([`MainWindowInner::on_hub_image_changed`]) and `apply_changes` (13h) handles the queue after the borrow was released
-//! ([`MainWindowInner::drain_pending_images`], D-W8B4M-7). `present` still draws the first image in the same UI turn (`render_now`), as C# does.
+//! handler only QUEUES the image (`MainWindowInner::on_hub_image_changed`) and `apply_changes` (13h) handles the queue after the borrow was released
+//! (`MainWindowInner::drain_pending_images`, D-W8B4M-7). `present` still draws the first image in the same UI turn (`render_now`), as C# does.
 
 use std::cell::{Cell, RefCell};
 use std::collections::{BTreeSet, VecDeque};

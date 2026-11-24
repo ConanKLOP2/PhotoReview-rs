@@ -176,7 +176,7 @@ pub struct WicCacheImageInfo {
 /// `DiskCacheStore.IsCacheEntryFailure` for these types.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum CacheImageError {
-    /// `InvalidDataException` with one of the four fixed texts of the C# (see [`INVALID_DATA_*`] constants).
+    /// `InvalidDataException` with one of the four fixed texts of the C# (see `INVALID_DATA_*` constants).
     InvalidData(&'static str),
     /// A WIC failure other than `E_OUTOFMEMORY` (C# type from `Marshal.GetExceptionForHR`, usually `COMException`: a damaged payload; see [`com_is_entry_failure`]). `hresult` is signed.
     Com { hresult: i32 },

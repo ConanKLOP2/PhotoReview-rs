@@ -1,8 +1,8 @@
 //! Port of `PhotoReview.Shell.Win32/Program.cs` (16 lines, baseline `d92d6aae`): `Main(string[] args) => ShellStartup.Run(args)` and the `SmokeArgument` constant. Unit W8-20a.
 //! Contract: `contracts/W8-20a.md`.
 //!
-//! The binary's `main` calls [`main_entry`]. The logic is split so that everything but the last line is testable without starting a window: [`args_from_os`] (argument decoding),
-//! [`run_main`] (decode, run, return the code; the runner is a parameter), [`production_run`] (`ShellStartup::run` with the default options), [`main_entry`] (apartment, run, exit).
+//! The binary's `main` calls `main_entry`. The logic is split so that everything but the last line is testable without starting a window: `args_from_os` (argument decoding),
+//! `run_main` (decode, run, return the code; the runner is a parameter), `production_run` (`ShellStartup::run` with the default options), `main_entry` (apartment, run, exit).
 
 use std::ffi::OsString;
 

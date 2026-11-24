@@ -1131,7 +1131,7 @@ impl fmt::Debug for MainWindow {
 }
 
 impl MainWindow {
-    /// C# constructor. Builds the inner state with `Rc::new_cyclic` and runs [`MainWindowInner::new`].
+    /// C# constructor. Builds the inner state with `Rc::new_cyclic` and runs `MainWindowInner::new`.
     pub fn new(deps: MainWindowDeps) -> MainWindow {
         let inner = Rc::new_cyclic(|weak| MainWindowInner::new(deps, weak.clone()));
         // The owner exists before the wiring runs: a panic in it drops the owner, which disposes what was wired so far.
@@ -1146,12 +1146,12 @@ impl MainWindow {
     }
 
     /// Read-only probe of the UI-thread registry (cl-mut-zoomcore seam, no behaviour of its own): the id of the live, not disposed window registered under
-    /// `id` on THIS thread, via [`with_window`]; `None` when it is gone or belongs to another thread.
+    /// `id` on THIS thread, via `with_window`; `None` when it is gone or belongs to another thread.
     pub fn registered_id(id: MainWindowId) -> Option<MainWindowId> {
         with_window(id, |window| window.id())
     }
 
-    /// Read-only probe of the UI-thread registry (cl-mut-zoomcore seam): the id [`with_current_window`] resolves to on THIS thread (the newest live window).
+    /// Read-only probe of the UI-thread registry (cl-mut-zoomcore seam): the id `with_current_window` resolves to on THIS thread (the newest live window).
     pub fn current_registered_id() -> Option<MainWindowId> {
         with_current_window(|window| window.id())
     }
