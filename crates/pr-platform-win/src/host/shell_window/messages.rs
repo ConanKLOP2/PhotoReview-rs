@@ -1,7 +1,7 @@
 //! Port of `PhotoReview.Shell.Win32/Hosting/ShellWindow.cs` `ProcessMessage` (lines 251-314) and the helpers it alone calls (`UpdateClientSize`,
 //! `RaiseClientSizeChangedIfNeeded`, `UpdateActive`, `RaiseClosing`; baseline `d92d6aae`). Unit W8-13f.
 //!
-//! The order inside [`ShellWindowInner::process_message`] is the contract:
+//! The order inside `ShellWindowInner::process_message` is the contract:
 //! 1. lifecycle messages (`WM_NCCREATE`, `WM_CREATE`, `WM_DESTROY`, `WM_NCDESTROY`) are handled first and never reach the message handlers;
 //! 2. the window updates its OWN state for `WM_SIZE`, `WM_DPICHANGED`, `WM_ACTIVATE` (so handlers see the new client size / dpi / active flag);
 //! 3. the registered handlers run in registration order; the first `Some(result)` wins and ends the processing;

@@ -1,6 +1,6 @@
 //! Port of `PhotoReview.Shell.Win32/Overlay/OverlayMessageHandler.cs` (111 lines, baseline `d92d6aae`). Unit W8-15f.
 //!
-//! Connects the mouse and key messages of the shell window to [`ShellOverlay`]. It must be FIRST in the window's handler chain
+//! Connects the mouse and key messages of the shell window to `ShellOverlay`. It must be FIRST in the window's handler chain
 //! (`ShellWindow::insert_message_handler_first`): the overlay sees a message before the image does, like the WPF buttons that sit above the
 //! `ScrollViewer`. Mouse move and keys are only OBSERVED (`None`: the image still gets them); a left press or release that belongs to the overlay, the
 //! wheel over an overlay panel and Tab/Space/Enter of the toolbar are SWALLOWED (`Some(0)`).

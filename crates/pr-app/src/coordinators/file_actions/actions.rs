@@ -4,7 +4,7 @@
 //!
 //! The C# core is one `async` method with six `await` points. Here it is cut at those points: `execute_core` runs up to the
 //! executor call (INV-3: the next photo is requested BEFORE the I/O), the worker runs the executor, `handle_event` runs the
-//! result handling, and the `await presentTask` points become a parked continuation ([`ParkedTail`]) that
+//! result handling, and the `await presentTask` points become a parked continuation (`ParkedTail`) that
 //! `on_present_finished` resumes (RV-A09, R08).
 //! W9-R5 adds the C# `7eaee2a2` rename slice, lines 529-782, using the same worker/event/present continuations.
 use std::any::Any;

@@ -6,7 +6,7 @@
 //! Target path: `crates/pr-platform-win/src/wic/scaler.rs` (lead adds `pub mod scaler;` to
 //! `crates/pr-platform-win/src/wic/mod.rs`).
 //!
-//! The argument checks and the same-size copy are pure; only [`native::scale`] is `unsafe` (W4-11a wrappers, one
+//! The argument checks and the same-size copy are pure; only `native::scale` is `unsafe` (W4-11a wrappers, one
 //! `// SAFETY:` per block, every COM pointer released by guards on every path).
 //!
 //! `PixelBuffer` / `PixelLayout` come from `pr_imaging::pixels` (re-exported by `cache_image.rs`).

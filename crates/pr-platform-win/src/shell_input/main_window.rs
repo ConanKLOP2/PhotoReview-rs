@@ -770,7 +770,7 @@ pub struct MainWindowInputFeature {
 }
 
 impl MainWindowInputFeature {
-    /// Wraps an input wiring (production: made by [`MainWindowInner::register_input`]).
+    /// Wraps an input wiring (production: made by `MainWindowInner::register_input`).
     pub fn new(input: Rc<MainWindowInput>) -> Self {
         Self { input }
     }

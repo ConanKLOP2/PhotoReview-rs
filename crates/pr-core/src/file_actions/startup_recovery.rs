@@ -32,7 +32,7 @@ pub fn run(journal: &OperationJournal, clock: &dyn Clock, log: Option<&dyn Log>)
 /// The body of C# `RunAsync` after `startedUtc` was taken. In order:
 /// 1. inside `catch_unwind`: `reconciled = journal.reconcile_pending_operations(Some(started_utc))`; on `Ok`, the
 ///    compaction of step 2 runs on this same thread BEFORE anything is logged here;
-/// 2. [`compact`]`(journal, log)`;
+/// 2. `compact``(journal, log)`;
 /// 3. `failed` = the reconciled entries with `state == Failed`, in order; when `reconciled` is not empty, warn
 ///    `"Startup journal reconcile: {reconciled.len()} pending operation(s), {failed.len()} failed."`; return `failed`.
 ///

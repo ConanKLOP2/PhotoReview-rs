@@ -153,7 +153,7 @@ impl SettingsPresenterOptions {
     }
 }
 
-/// C# `SettingsPresenter`. UI-thread object (the dialog's), except [`UpdateCheckJob`] which runs on a worker.
+/// C# `SettingsPresenter`. UI-thread object (the dialog's), except `UpdateCheckJob` which runs on a worker.
 pub struct SettingsPresenter {
     /// C# `Settings`: the working copy the dialog edits.
     pub(super) settings: AppSettings,

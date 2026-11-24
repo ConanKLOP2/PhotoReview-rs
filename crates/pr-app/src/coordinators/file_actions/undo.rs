@@ -4,7 +4,7 @@
 //!
 //! `UndoService::undo_last` blocks (file moves), so it runs on `WorkerLane::FileAction`; the result handling and the three
 //! `await _sink.PresentAsync(..)` sites of the C# method run on the UI thread, the awaits become parked continuations
-//! ([`UndoTail`]) resumed by `on_present_finished`.
+//! (`UndoTail`) resumed by `on_present_finished`.
 //! W9-R5 adds C# `7eaee2a2` rename-Undo detection (878-897) and its same-folder re-key continuation (725-782).
 // The three variants all end in `Presented` because each names the present they wait for.
 #![allow(clippy::enum_variant_names)]

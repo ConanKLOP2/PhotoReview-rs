@@ -61,7 +61,7 @@ impl StartupState {
     ///    preparation when `launch.initial_file` is `Some`: it takes the placement handle (smoke: none) and spawns `StartupTask::spawn("PhotoReview.EarlyDecodePlan", ..)` that joins the handle and calls
     ///    `early_decode::prepare_early_decode(placement.as_ref(), previews, &Win32MonitorProbe, DEFAULT_WIDTH_DIP, DEFAULT_HEIGHT_DIP, PREVIEW_QUALITY_MULTIPLIER, &*log)`, and stores the task in
     ///    `self.early_decode` (the SLOT, so the UI thread finds it after the hop). The placement handle NOT consumed (no initial file) goes to the context: it lives in an `Arc<Mutex<Option<PrefetchHandle>>>` created in step 7, captured by `after_file_loaded` (an `Fn`, it `take()`s) and by the hop continuation (which `take()`s what is left for `build_startup_context`). Every continuation of this half captures a `Weak<StartupState>` (upgrade failure = the run is over: do nothing). `start_phase_one` is `pub` because the integration tests of `crates/pr-shell/tests/` (separate crate) call it; the other steps stay `pub(super)`.
-    /// 8. The continuation ([`on_settings_loaded`](Self::on_settings_loaded)) runs on the UI thread when the worker sent its result.
+    /// 8. The continuation (`on_settings_loaded`) runs on the UI thread when the worker sent its result.
     ///
     /// `done` receives the outcome of the whole half.
     pub fn start_phase_one(self: &Rc<Self>, done: PhaseOneDone) {

@@ -5,7 +5,7 @@
 //! decision "which key becomes which text" is pure: [`key_box_text`] (virtual key + extended bit -> `KeyId` -> `SettingsPresenter::capture_shortcut`), checked against the
 //! golden `settings-dialog-state`.
 //!
-//! `unsafe` here: `set_window_subclass` / `remove_window_subclass` / `def_subclass_proc` (unsafe wrappers of `win32::comctl`), the subclass procedure [`key_box_proc`] (an `extern "system" fn` registered with `set_window_subclass`; its `ref_data` is the REGISTRY KEY of the content, never
+//! `unsafe` here: `set_window_subclass` / `remove_window_subclass` / `def_subclass_proc` (unsafe wrappers of `win32::comctl`), the subclass procedure `key_box_proc` (an `extern "system" fn` registered with `set_window_subclass`; its `ref_data` is the REGISTRY KEY of the content, never
 //! a pointer, D-W8B5-908) and the `Hdc` handed to the colour answer.
 
 use super::frame::SettingsContent;

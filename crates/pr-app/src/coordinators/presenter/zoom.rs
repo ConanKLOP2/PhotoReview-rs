@@ -4,7 +4,7 @@
 //! `contracts/W8-07h.md`. Target: `crates/pr-app/src/coordinators/presenter/zoom.rs` (`coordinators::presenter::zoom`).
 //!
 //! The C# loader calls back into the presenter (`_show`); here the loader RETURNS `ZoomDetailEffect`s and the presenter applies them
-//! with [`ImagePresenter::apply_zoom_effects`], in order.
+//! with `ImagePresenter::apply_zoom_effects`, in order.
 
 use pr_imaging::decode_types::PlatformImage;
 

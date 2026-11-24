@@ -82,7 +82,7 @@ pub enum PointerButton {
     XButton2 = 4,
 }
 
-/// `KeyModifiers` = `System.Windows.Input.ModifierKeys` ([Flags], raw bits kept as in C#).
+/// `KeyModifiers` = `System.Windows.Input.ModifierKeys` (`Flags`, raw bits kept as in C#).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
 pub struct KeyModifiers(pub u8);
 

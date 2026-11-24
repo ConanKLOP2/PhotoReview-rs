@@ -4,7 +4,7 @@
 //! One call builds ONE complete `MainViewModel` with everything C# wired by hand: a FRESH catalog, generation clock, viewer and compare view model (registrations 43 to 46 are
 //! `AddTransient`), the SHARED singletons of [`SharedServices`], and the host's UI-thread services. The C# trick "VM <-> sink cycle by null-initialisation" (`MainViewModel? vm = null`
 //! captured by the sink callbacks and by `ForwardingFolderSink`) is gone: the Rust coordinators take their sink PER CALL and the presenter's sink reaches the view model through the
-//! [`PresentationBridge`] (08a), so the order is simply viewer, bridge, sink, presenter, coordinators, view model.
+//! `PresentationBridge` (08a), so the order is simply viewer, bridge, sink, presenter, coordinators, view model.
 //!
 //! UI thread only: the result is `!Send`. The result is NOT wrapped: the shell wraps it as `SharedViewModel = Rc<RefCell<MainViewModel>>` (`graph::build_shared_view_model`).
 
