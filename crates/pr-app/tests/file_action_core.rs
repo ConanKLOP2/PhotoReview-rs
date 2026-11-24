@@ -886,6 +886,32 @@ fn unverified_move_stays_out_of_catalog_warns_after_the_present_and_registers_no
     assert!(!has_undo_action(&env));
 }
 
+// Hardening, NO C# test (intentional divergence, docs/PROPOSED-DECISIONS.md): a single Recycle that errored after the file was
+// already gone (core `source_removed`) must not restore a phantom catalog entry and registers no Undo; the failure is reported.
+#[test]
+fn recycle_err_after_source_vanished_does_not_restore_catalog_entry_and_reports_outcome_unknown() {
+    let mut env = move_env(&["a.jpg", "b.jpg"]);
+    let mut result = single_fail(Recycle, &p("a.jpg"), "shell failed after deleting");
+    result.source_removed = true;
+    env.exec.script(Scripted::Single(result));
+
+    env.run_action(1, None, Some(&p("a.jpg")));
+    env.run_worker();
+    assert_eq!(env.present_finished(false), DONE_FALSE);
+
+    assert_eq!(
+        env.catalog_paths(),
+        vec![p("b.jpg")],
+        "the vanished entry is NOT restored"
+    );
+    assert!(
+        env.sink
+            .last_status()
+            .is_some_and(|s| s.contains("shell failed after deleting"))
+    );
+    assert!(!has_undo_action(&env));
+}
+
 // C#: FileActionControllerFolderIdentityTests.UnverifiedMove_FolderSwitchedDuringIo_AnnouncedLate
 #[test]
 fn unverified_move_folder_switched_during_io_announced_late() {

@@ -1009,6 +1009,11 @@ impl FileActionController {
                         .restore_members(&available, flight.source_index, Some(group), raw);
                     cx.sink.on_catalog_changed(None);
                 }
+                // Hardening (no C# twin: intentional divergence): a single Recycle that errored AFTER the file was already
+                // gone (core `source_removed`) must not bring a phantom entry back into the catalog; the failure status
+                // below is still shown and no Undo is registered. There is no dedicated "outcome unknown" text, so the
+                // existing failure status/dialog carries it. The Move case is handled by the F3 branch above.
+                _ if operation == FileOperationType::Recycle && source_removed => {}
                 _ => {
                     cx.catalog.restore(&flight.source, flight.source_index);
                 }
