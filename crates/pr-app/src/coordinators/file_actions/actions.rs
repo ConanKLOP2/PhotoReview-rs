@@ -985,8 +985,11 @@ impl FileActionController {
             self.with_undo(|u| u.register_group(group_result));
         }
 
-        // INV-5: on failure the source goes back into the catalog.
-        if flight.is_remove && flight.source_index >= 0 {
+        // INV-5: on failure the source goes back into the catalog, unless a single Recycle already took the file off the disk
+        // (a permanent delete reported as an error): a restored row would be a ghost.
+        let recycled_away =
+            operation == FileOperationType::Recycle && source_removed && matches!(result, IoResult::Single(_));
+        if flight.is_remove && flight.source_index >= 0 && !recycled_away {
             match (&result, &flight.group) {
                 (IoResult::Group(group_result), Some(group)) => {
                     // No member state at all: nothing changed on disk, the whole capture returns as one grouped entry. Otherwise

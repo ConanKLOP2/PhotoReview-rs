@@ -886,6 +886,23 @@ fn unverified_move_stays_out_of_catalog_warns_after_the_present_and_registers_no
     assert!(!has_undo_action(&env));
 }
 
+// Rust-only (ST-INVMAP M2): a single Recycle that failed after the shell already took the file off the disk must not put a ghost
+// row back into the catalog, and registers no Undo.
+#[test]
+fn single_recycle_failed_with_the_source_gone_is_not_restored_and_registers_no_undo() {
+    let mut env = move_env(&["a.jpg", "b.jpg"]);
+    let mut result = single_fail(Recycle, &p("a.jpg"), "deleted permanently");
+    result.source_removed = true;
+    env.exec.script(Scripted::Single(result));
+
+    env.run_action(1, None, Some(&p("a.jpg")));
+    env.run_worker();
+    env.present_finished(false);
+
+    assert_eq!(env.catalog_paths(), vec![p("b.jpg")], "the entry is NOT restored");
+    assert!(!has_undo_action(&env));
+}
+
 // C#: FileActionControllerFolderIdentityTests.UnverifiedMove_FolderSwitchedDuringIo_AnnouncedLate
 #[test]
 fn unverified_move_folder_switched_during_io_announced_late() {

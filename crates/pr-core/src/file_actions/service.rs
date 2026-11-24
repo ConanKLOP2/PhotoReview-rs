@@ -678,9 +678,9 @@ impl FileActionService {
                 tx.fail(&failure.error).1
             };
         }
-        // S7.5 (F3, INV-3): only a journaled Move that then failed can have removed the source; ask the disk.
+        // S7.5 (F3, INV-3): only a journaled Move or Recycle that then failed can have removed the source; ask the disk.
         let source_removed = !mutation_completed
-            && request.operation == FileOperationType::Move
+            && matches!(request.operation, FileOperationType::Move | FileOperationType::Recycle)
             && prepared
             && !CaseOnlyRename::exists_as(
                 &*self.fs,

@@ -695,6 +695,25 @@ fn execute_async_failure_after_the_source_vanished_reports_source_removed_only_f
     assert!(!copied.source_removed);
 }
 
+// Rust-only (ST-INVMAP M2): a shell that deletes the file and then reports an error (permanent delete) leaves no source.
+#[test]
+fn execute_async_recycle_failure_with_the_source_gone_reports_source_removed() {
+    let fx = Fixture::new();
+    fx.add_file(SOURCE, 11);
+    let disk = fx.disk.clone();
+    fx.bin.set_send_hook(Some(Arc::new(move |path: &Path| {
+        disk.delete(path).ok();
+        Some(io::Error::other("deleted permanently"))
+    })));
+    let result = fx.run(&single(SOURCE, Recycle, None));
+    assert!(!result.succeeded);
+    assert!(!fx.file_exists(SOURCE));
+    assert!(
+        result.source_removed,
+        "the source is gone, so the row must not come back"
+    );
+}
+
 // C#: FileActionServiceSingleMutationGapTests.ExecuteAsync_CancelledCopy_IsDismissedOnlyWhileTheSourceIsUntouched
 // Theory: same content and stamp => Dismissed; other content or +1 s => Failed.
 #[test]
